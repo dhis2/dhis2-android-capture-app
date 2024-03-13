@@ -566,28 +566,17 @@ class TeiDashboardMobileActivity :
                     deleteTeiItem.isVisible = false
                 }
 
-                val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
-                deleteEnrollmentItem.isVisible = if (enrollmentUid != null) {
-                    presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
-                } else {
-                    false
-                }
-
                 if (enrollmentUid != null) {
                     popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
+                        deleteEnrollmentItem.isVisible =
+                            presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
                         deleteEnrollmentItem.title = resourceManager.formatWithEnrollmentLabel(
                             programUid!!,
                             R.string.dashboard_menu_delete_enrollment_V2,
                             1,
                         )
                     }
-                    popupMenu.menu.findItem(R.id.programSelector).let { programSelectorItem ->
-                        programSelectorItem.title = resourceManager.formatWithEnrollmentLabel(
-                            programUid!!,
-                            R.string.program_selector_V2,
-                            2,
-                        )
-                    }
+
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {
                         popupMenu.menu.findItem(R.id.complete).isVisible = false
@@ -599,6 +588,13 @@ class TeiDashboardMobileActivity :
                     if (dashboardViewModel.showFollowUpBar.value) {
                         popupMenu.menu.findItem(R.id.markForFollowUp).isVisible = false
                     }
+                }
+                popupMenu.menu.findItem(R.id.programSelector).let { programSelectorItem ->
+                    programSelectorItem.title = resourceManager.formatWithEnrollmentLabel(
+                        programUid ?: "",
+                        R.string.program_selector_V2,
+                        3,
+                    )
                 }
                 Unit
             }

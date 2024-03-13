@@ -16,6 +16,10 @@ import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.map
+import androidx.recyclerview.widget.DividerItemDecoration
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -43,6 +47,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
+import org.dhis2.usescases.teiDashboard.DashboardTEIModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
@@ -132,110 +137,158 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 updateEnrollment.observe(viewLifecycleOwner) { update ->
                     updateEnrollment(update)
                 }
+                noEnrollmentSelected.observe(viewLifecycleOwner) { noEnrollmentSelected ->
+                    if (noEnrollmentSelected) {
+                        showLegacyCard(dashboardModel.value as DashboardTEIModel)
+                    } else {
+                        showDetailCard()
+                    }
+                }
+                dashboardModel.observe(viewLifecycleOwner) {
+                    if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
+                        presenter.displayGenerateEvent(
+                            sharedPreferences.getString(
+                                PREF_COMPLETED_EVENT,
+                                null,
+                            ),
+                        )
+                        sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
+                    }
+                }
             }
 
             presenter.events.observe(viewLifecycleOwner) {
                 setEvents(it)
                 showLoadingProgress(false)
             }
+        }.root
+    }
 
-            binding.detailCard.setContent {
-                val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
-                val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
-                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
-                val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
-                val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
-                val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
-                    false,
+    private fun showDetailCard() {
+        binding.detailCard.setContent {
+            val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
+            val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
+            val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
+            val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
+            val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
+            val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
+                false,
+            )
+            val eventCount by presenter.events.map { it.count() }.observeAsState(0)
+
+            val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                infoBarMapper.map(
+                    infoBarType = InfoBarType.SYNC,
+                    item = dashboardModel as DashboardEnrollmentModel,
+                    actionCallback = { dashboardActivity.openSyncDialog() },
+                    showInfoBar = syncNeeded,
                 )
-                val eventCount by presenter.totalTimeLineEvents.map { it }.observeAsState(0)
+            }
 
-                val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+            val followUpInfoBar =
+                dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
                     infoBarMapper.map(
-                        infoBarType = InfoBarType.SYNC,
+                        infoBarType = InfoBarType.FOLLOW_UP,
                         item = dashboardModel as DashboardEnrollmentModel,
-                        actionCallback = { dashboardActivity.openSyncDialog() },
-                        showInfoBar = syncNeeded,
+                        actionCallback = {
+                            dashboardViewModel.onFollowUp()
+                        },
+                        showInfoBar = followUp,
+                    )
+                }
+            val enrollmentInfoBar =
+                dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                    infoBarMapper.map(
+                        infoBarType = InfoBarType.ENROLLMENT_STATUS,
+                        item = dashboardModel as DashboardEnrollmentModel,
+                        actionCallback = { },
+                        showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
                     )
                 }
 
-                val followUpInfoBar =
-                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
-                        infoBarMapper.map(
-                            infoBarType = InfoBarType.FOLLOW_UP,
-                            item = dashboardModel as DashboardEnrollmentModel,
-                            actionCallback = {
-                                dashboardViewModel.onFollowUp()
-                            },
-                            showInfoBar = followUp,
+            val card = dashboardModel?.let {
+                teiDashboardCardMapper.map(
+                    dashboardModel = it,
+                    onImageClick = { fileToShow ->
+                        val intent = ImageDetailActivity.intent(
+                            context = requireActivity(),
+                            title = null,
+                            imagePath = fileToShow.path,
                         )
-                    }
-                val enrollmentInfoBar =
-                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
-                        infoBarMapper.map(
-                            infoBarType = InfoBarType.ENROLLMENT_STATUS,
-                            item = dashboardModel as DashboardEnrollmentModel,
-                            actionCallback = { },
-                            showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+
+                        startActivity(intent)
+                    },
+                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                    programsCallback = {
+                        startActivity(
+                            TeiDashboardMobileActivity.intent(
+                                dashboardActivity.context,
+                                dashboardActivity.teiUid,
+                                null,
+                                null,
+                            ),
                         )
-                    }
-
-                val card = dashboardModel?.let {
-                    teiDashboardCardMapper.map(
-                        dashboardModel = it,
-                        onImageClick = { fileToShow ->
-                            val intent = ImageDetailActivity.intent(
-                                context = requireActivity(),
-                                title = null,
-                                imagePath = fileToShow.path,
-                            )
-
-                            startActivity(intent)
-                        },
-                        phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
-                        emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
-                        programsCallback = {
-                            startActivity(
-                                TeiDashboardMobileActivity.intent(
-                                    dashboardActivity.context,
-                                    dashboardActivity.teiUid,
-                                    null,
-                                    null,
-                                ),
-                            )
-                        },
-                    )
-                }
-
-                TeiDetailDashboard(
-                    syncData = syncInfoBar,
-                    followUpData = followUpInfoBar,
-                    enrollmentData = enrollmentInfoBar,
-                    card = card,
-                    isGrouped = groupingEvents ?: true,
-                    timelineEventHeaderModel = TimelineEventsHeaderModel(
-                        displayEventCreationButton,
-                        eventCount,
-                        presenter.getNewEventOptionsByStages(null),
-                    ),
-                    timelineOnEventCreationOptionSelected = {
-                        presenter.onAddNewEventOptionSelected(it, null)
                     },
                 )
             }
 
-            dashboardViewModel.dashboardModel.observe(viewLifecycleOwner) {
-                if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
-                    presenter.displayGenerateEvent(
-                        sharedPreferences.getString(
-                            PREF_COMPLETED_EVENT,
-                            null,
-                        ),
-                    )
-                    sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
-                }
+            TeiDetailDashboard(
+                syncData = syncInfoBar,
+                followUpData = followUpInfoBar,
+                enrollmentData = enrollmentInfoBar,
+                card = card,
+                isGrouped = groupingEvents ?: true,
+                timelineEventHeaderModel = TimelineEventsHeaderModel(
+                    displayEventCreationButton,
+                    eventCount,
+                    presenter.getNewEventOptionsByStages(null),
+                ),
+                timelineOnEventCreationOptionSelected = {
+                    presenter.onAddNewEventOptionSelected(it, null)
+                },
+            )
+        }
+    }
+
+    private fun showLegacyCard(dashboardModel: DashboardTEIModel?) {
+        binding.noEnrollmentSelected = true
+        if (dashboardModel?.avatarPath.isNullOrEmpty()) {
+            binding.cardFront?.teiImage?.visibility = View.GONE
+        } else {
+            binding.cardFront?.teiImage?.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(dashboardModel?.avatarPath)
+                .fallback(R.drawable.photo_temp_gray)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CircleCrop())
+                .into(binding.cardFront!!.teiImage)
+        }
+        binding.header = when {
+            !dashboardModel?.teiHeader.isNullOrEmpty() -> {
+                dashboardModel?.teiHeader
             }
-        }.root
+            else -> {
+                String.format(
+                    "%s %s",
+                    if (dashboardModel?.getTrackedEntityAttributeValueBySortOrder(1) != null) {
+                        dashboardModel.getTrackedEntityAttributeValueBySortOrder(1)
+                    } else {
+                        ""
+                    },
+                    if (dashboardModel?.getTrackedEntityAttributeValueBySortOrder(2) != null) {
+                        dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)
+                    } else {
+                        ""
+                    },
+                )
+            }
+        }
+        binding.teiRecycler.adapter = DashboardProgramAdapter(presenter, dashboardModel!!)
+        binding.teiRecycler.addItemDecoration(
+            DividerItemDecoration(abstracContext, DividerItemDecoration.VERTICAL),
+        )
+        showLoadingProgress(false)
     }
 
     override fun onResume() {

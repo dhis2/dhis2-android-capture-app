@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
@@ -47,6 +48,9 @@ class DashboardViewModel(
     private val _groupByStage = MutableLiveData<Boolean>()
     val groupByStage: LiveData<Boolean> = _groupByStage
 
+    private val _noEnrollmentSelected = MutableLiveData(false)
+    val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
+
     init {
         fetchDashboardModel()
         fetchGrouping()
@@ -57,20 +61,25 @@ class DashboardViewModel(
             val result = async {
                 repository.getDashboardModel()
             }
-            try {
-                val model = result.await()
-                _dashboardModel.postValue(model)
-                if (model is DashboardEnrollmentModel) {
-                    _showFollowUpBar.value =
-                        model.currentEnrollment.followUp() ?: false
-                    _syncNeeded.value =
-                        model.currentEnrollment.aggregatedSyncState() != SYNCED
-                    _showStatusBar.value = model.currentEnrollment.status()
-                    _state.value =
-                        model.currentEnrollment.aggregatedSyncState()
+            withContext(dispatcher.ui()) {
+                try {
+                    val model = result.await()
+                    _dashboardModel.postValue(model)
+                    if (model is DashboardEnrollmentModel) {
+                        _showFollowUpBar.value =
+                            model.currentEnrollment.followUp() ?: false
+                        _syncNeeded.value =
+                            model.currentEnrollment.aggregatedSyncState() != SYNCED
+                        _showStatusBar.value = model.currentEnrollment.status()
+                        _state.value =
+                            model.currentEnrollment.aggregatedSyncState()
+                        _noEnrollmentSelected.value = false
+                    } else {
+                        _noEnrollmentSelected.value = true
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e)
                 }
-            } catch (e: Exception) {
-                Timber.e(e)
             }
         }
     }
