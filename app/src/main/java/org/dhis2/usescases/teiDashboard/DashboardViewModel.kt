@@ -76,7 +76,16 @@ class DashboardViewModel(
     }
 
     private fun fetchGrouping() {
-        _groupByStage.value = repository.getGrouping()
+        viewModelScope.launch(dispatcher.io()) {
+            val result = async {
+                repository.getGrouping()
+            }
+            try {
+                _groupByStage.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
     }
 
     fun setGrouping(groupEvents: Boolean) {
