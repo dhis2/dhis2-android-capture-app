@@ -82,7 +82,7 @@ class TeiDashboardPresenterTest {
         val programs = listOf(
             Pair(
                 Program.builder().uid(programUid).build(),
-                MetadataIconData.Resource(1, 1),
+                MetadataIconData.defaultIcon(),
             ),
         )
 

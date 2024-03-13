@@ -64,7 +64,7 @@ class ProgramStageSelectionPresenterTest {
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
+        on { invoke(any(), any<String>(), any()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before
@@ -87,11 +87,11 @@ class ProgramStageSelectionPresenterTest {
         val programStageData = listOf(
             ProgramStageData(
                 ProgramStage.builder().uid("programStage1").build(),
-                MetadataIconData.Resource(1, 1),
+                MetadataIconData.defaultIcon(),
             ),
             ProgramStageData(
                 ProgramStage.builder().uid("programStage2").build(),
-                MetadataIconData.Resource(1, 1),
+                MetadataIconData.defaultIcon(),
             ),
         )
         val calcResult = Result.success(

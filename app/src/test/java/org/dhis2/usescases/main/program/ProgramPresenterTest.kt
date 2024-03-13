@@ -1,17 +1,17 @@
 package org.dhis2.usescases.main.program
 
-import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
-import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -171,9 +171,9 @@ class ProgramPresenterTest {
         return ProgramViewModel(
             "uid",
             "displayName",
-            MetadataIconData.Resource(
-                programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive,
+            MetadataIconData(
+                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+                color = "#84FFFF".toColor(),
             ),
             1,
             "type",
@@ -194,9 +194,9 @@ class ProgramPresenterTest {
         return ProgramViewModel(
             "uid",
             "displayName",
-            MetadataIconData.Resource(
-                programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive,
+            MetadataIconData(
+                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+                color = "#84FFFF".toColor(),
             ),
             1,
             "type",

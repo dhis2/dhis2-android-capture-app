@@ -28,7 +28,7 @@ internal class ProgramRepositoryImpl(
     private val schedulerProvider: SchedulerProvider,
 ) : ProgramRepository {
 
-    private val programViewModelMapper = ProgramViewModelMapper(resourceManager)
+    private val programViewModelMapper = ProgramViewModelMapper()
     private var lastSyncStatus: SyncStatusData? = null
     private var baseProgramCache: List<ProgramViewModel> = emptyList()
 

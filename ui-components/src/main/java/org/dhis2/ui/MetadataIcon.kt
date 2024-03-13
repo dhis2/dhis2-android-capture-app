@@ -1,20 +1,16 @@
 package org.dhis2.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
@@ -28,46 +24,27 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.ui.theme.programColorDark
 import org.dhis2.ui.theme.programColorLight
-import org.dhis2.ui.utils.getAlphaContrastColor
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
 fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconData) {
-    when (metadataIconData) {
-        is MetadataIconData.Custom -> MetadataResourceCustom(modifier, metadataIconData)
-        is MetadataIconData.Resource -> MetadataResourceIcon(modifier, metadataIconData)
-    }
-}
-
-@Composable
-private fun MetadataResourceCustom(
-    modifier: Modifier,
-    metadataIconData: MetadataIconData.Custom,
-) {
-    Image(
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .size(metadataIconData.sizeInDp.dp),
-        bitmap = metadataIconData.file.asImageBitmap(),
-        contentDescription = "",
-        contentScale = ContentScale.Crop,
-    )
-}
-
-@Composable
-private fun MetadataResourceIcon(
-    modifier: Modifier,
-    metadataIconData: MetadataIconData.Resource,
-) {
-    Image(
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(color = Color(metadataIconData.programColor))
-            .size(metadataIconData.sizeInDp.dp),
-        painter = painterResource(id = metadataIconData.iconResource),
-        contentDescription = "",
-        colorFilter = ColorFilter.tint(
-            metadataIconData.programColor.getAlphaContrastColor(),
-        ),
+    MetadataAvatar(
+        icon = {
+            if (metadataIconData.isFileLoaded()) {
+                org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon(
+                    imageCardData = metadataIconData.imageCardData,
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.image_not_supported),
+                    contentDescription = "",
+                )
+            }
+        },
+        iconTint = metadataIconData.color,
+        size = AvatarSize.Normal,
     )
 }
 
@@ -122,30 +99,23 @@ fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData> {
     override val values: Sequence<MetadataIconData>
         get() = sequenceOf(
-            MetadataIconData.Resource(
-                programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_negative,
+            MetadataIconData(
+                imageCardData = ImageCardData.IconCardData(
+                    "",
+                    "",
+                    "dhis2_home_positive",
+                    programColorDark,
+                ),
+                color = programColorDark,
             ),
-            MetadataIconData.Resource(
-                programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_positive,
+            MetadataIconData(
+                imageCardData = ImageCardData.IconCardData(
+                    "",
+                    "",
+                    "dhis2_home_positive",
+                    programColorLight,
+                ),
+                color = programColorLight,
             ),
-            MetadataIconData.Resource(
-                programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_outline,
-            ),
-            MetadataIconData.Resource(
-                programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_negative,
-            ),
-            MetadataIconData.Resource(
-                programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_positive,
-            ),
-            MetadataIconData.Resource(
-                programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_outline,
-            ),
-
         )
 }

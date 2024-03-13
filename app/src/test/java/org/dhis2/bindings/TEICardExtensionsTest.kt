@@ -21,7 +21,7 @@ class TEICardExtensionsTest {
     private val resourceManager: ResourceManager = mock()
     private val resources: Resources = mock()
     private val colorUtils: ColorUtils = mock()
-    private val metadataIconData: MetadataIconData = MetadataIconData.Resource(1, 1)
+    private val metadataIconData: MetadataIconData = MetadataIconData.defaultIcon()
 
     @Test
     fun `Should return list of enrollment data icons that is smaller than four and all icons`() {

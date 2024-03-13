@@ -3,8 +3,6 @@ package org.dhis2.form.ui.provider.inputfield
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.option.Option
@@ -23,25 +21,23 @@ fun rememberInputCardList(
         if (!icon.startsWith("dhis2_")) {
             icon = "dhis2_$icon"
         }
-
-        val imageCardItem = when (metadataIconData) {
-            is MetadataIconData.Custom ->
-                ImageCardData.CustomIconData(
-                    uid = option.code() ?: "",
-                    label = option.displayName() ?: "",
-                    image = metadataIconData.file.asImageBitmap(),
-                )
-
-            is MetadataIconData.Resource ->
-                ImageCardData.IconCardData(
-                    uid = option.code() ?: "",
-                    label = option.displayName() ?: "",
-                    iconRes = icon,
-                    iconTint = Color(metadataIconData.programColor),
-                )
-        }
-        imageCardItem
+        imageCardDataWithUidAndLabel(
+            metadataIconData.imageCardData,
+            option.code() ?: "",
+            option.displayName() ?: "",
+        )
     } ?: emptyList()
+}
+
+private fun imageCardDataWithUidAndLabel(
+    imageCardData: ImageCardData,
+    optionCode: String,
+    label: String,
+): ImageCardData {
+    return when (imageCardData) {
+        is ImageCardData.CustomIconData -> imageCardData.copy(uid = optionCode, label = label)
+        is ImageCardData.IconCardData -> imageCardData.copy(uid = optionCode, label = label)
+    }
 }
 
 @Composable

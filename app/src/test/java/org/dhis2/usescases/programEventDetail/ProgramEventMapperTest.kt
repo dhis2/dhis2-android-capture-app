@@ -28,7 +28,7 @@ class ProgramEventMapperTest {
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
+        on { invoke(any(), any<String>(), any()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

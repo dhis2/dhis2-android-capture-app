@@ -10,7 +10,9 @@ import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 import org.junit.Rule
 import org.junit.Test
 
@@ -82,9 +84,9 @@ class ProgramUiTest {
         ProgramViewModel(
             uid = "qweqwe",
             title = "Program title",
-            metadataIconData = MetadataIconData.Resource(
-                programColor = Color.parseColor("#00BCD4"),
-                iconResource = R.drawable.ic_info
+            MetadataIconData(
+                imageCardData = ImageCardData.IconCardData("", "", "ic_info", "#00BCD4".toColor()),
+                color =  "#00BCD4".toColor(),
             ),
             count = 12,
             type = "type",

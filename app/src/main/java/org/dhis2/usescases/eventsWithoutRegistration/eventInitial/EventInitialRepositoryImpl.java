@@ -335,7 +335,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         List<Option> options = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet();
                         HashMap<String, MetadataIconData> metadataIconMap = new HashMap<>();
                         for (Option optionItem : options) {
-                            metadataIconMap.put(optionItem.uid(), metadataIconProvider.invoke(optionItem.style(), R.drawable.ic_default_outline, 40));
+                            metadataIconMap.put(optionItem.uid(), metadataIconProvider.invoke(optionItem.style()));
                         }
 
                         return new OptionSetConfiguration.OptionConfigData(

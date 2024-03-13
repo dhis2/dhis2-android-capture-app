@@ -73,7 +73,7 @@ class MapTeiEventsToFeatureCollectionTest {
             "image",
             "default",
             "orgUnit",
-            MetadataIconData.Resource(1, 1),
+            MetadataIconData.defaultIcon(),
         )
         return listOf(event)
     }

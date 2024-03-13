@@ -75,8 +75,8 @@ object Injector {
         )
     }
 
-    private fun provideMetadataIconProvider(context: Context) =
-        MetadataIconProvider(provideD2(), provideResourcesManager(context))
+    private fun provideMetadataIconProvider() =
+        MetadataIconProvider(provideD2())
 
     fun provideDispatchers(): DispatcherProvider {
         return FormDispatcher()
@@ -99,7 +99,7 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
                 context = context,
                 repositoryRecords = repositoryRecords,
-                metadataIconProvider = provideMetadataIconProvider(context),
+                metadataIconProvider = provideMetadataIconProvider(),
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
@@ -152,7 +152,7 @@ object Injector {
             fieldFactory = provideFieldFactory(context),
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
-            metadataIconProvider = provideMetadataIconProvider(context),
+            metadataIconProvider = provideMetadataIconProvider(),
         )
     }
 

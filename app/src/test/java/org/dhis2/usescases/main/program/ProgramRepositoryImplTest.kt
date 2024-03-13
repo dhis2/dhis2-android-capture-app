@@ -51,7 +51,7 @@ class ProgramRepositoryImplTest {
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any(), any()) } doReturn MetadataIconData.Resource(1, 1)
+        on { invoke(any(), any<String>(), any()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

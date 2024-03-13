@@ -53,11 +53,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import java.util.Locale
 
 @ExperimentalFoundationApi
@@ -445,7 +447,12 @@ fun ProgramRuleConfigurationProgram(
                 onProgramClick(programUid)
             },
     ) {
-        MetadataIcon(metadataIconData = metadataIconData)
+        MetadataAvatar(
+            icon = { MetadataIcon(imageCardData = metadataIconData.imageCardData) },
+            iconTint = metadataIconData.color,
+            size = AvatarSize.Normal,
+        )
+
         Text(
             modifier = Modifier
                 .weight(weight = 1f)

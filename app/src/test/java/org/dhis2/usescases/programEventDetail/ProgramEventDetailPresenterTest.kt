@@ -100,7 +100,7 @@ class ProgramEventDetailPresenterTest {
             valueListIsOpen = false,
             displayDate = "2/01/2021",
             nameCategoryOptionCombo = "Category Option Combo",
-            metadataIconData = MetadataIconData.Resource(1, 1),
+            metadataIconData = MetadataIconData.defaultIcon(),
         )
         val events =
             MutableLiveData<PagedList<EventViewModel>>().also {

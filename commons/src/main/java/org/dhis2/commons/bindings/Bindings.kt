@@ -160,7 +160,7 @@ fun TextView.parseDate(date: Date?) {
 fun ComposeView.setIconStyle(metadataIconData: MetadataIconData?) {
     metadataIconData?.let {
         setUpMetadataIcon(
-            metadataIconData.withSize(48),
+            metadataIconData,
             true,
         )
     }
