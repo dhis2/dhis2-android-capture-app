@@ -52,6 +52,53 @@ class EventRepository(
             .blockingGet()
     }
 
+    private val programStage by lazy {
+        d2.programModule()
+            .programStages()
+            .uid(event?.programStage())
+            .blockingGet()
+    }
+
+    override fun firstSectionToOpen(): String? {
+        return when (eventMode) {
+            EventMode.NEW -> super.firstSectionToOpen()
+            EventMode.CHECK -> firstSectionToOpenForEvent()
+        }
+    }
+
+    private fun firstSectionToOpenForEvent(): String? {
+        val (eventDataCompleted, attrOptionComboCompleted) = isEventDataCompleted()
+        return when {
+            !eventDataCompleted ->
+                EVENT_DETAILS_SECTION_UID
+
+            !attrOptionComboCompleted ->
+                EVENT_CATEGORY_COMBO_SECTION_UID
+
+            else -> sectionUids().blockingFirst().firstOrNull { sectionUid ->
+                sectionUid != EVENT_DETAILS_SECTION_UID &&
+                    sectionUid != EVENT_CATEGORY_COMBO_SECTION_UID
+            }
+        }
+    }
+
+    private fun isEventDataCompleted(): Pair<Boolean, Boolean> {
+        val eventDateCompleted = event?.eventDate() != null
+        val orgUnitCompleted = event?.organisationUnit() != null
+        val hasFeatureType = programStage?.featureType() != null &&
+            programStage?.featureType() == FeatureType.NONE
+        val coordinatesCompleted = if (programStage?.featureType() != null) {
+            hasFeatureType && event?.geometry() != null
+        } else {
+            true
+        }
+
+        val dataCompleted = eventDateCompleted && orgUnitCompleted && coordinatesCompleted
+        val attrOptionComboCompleted = event?.attributeOptionCombo() != null
+
+        return Pair(dataCompleted, attrOptionComboCompleted)
+    }
+
     override val programUid by lazy {
         event?.program()
     }
@@ -63,13 +110,6 @@ class EventRepository(
             .blockingGet()
             .map { section -> section.uid() to section }
             .toMap()
-    }
-
-    private val programStage by lazy {
-        d2.programModule()
-            .programStages()
-            .uid(event?.programStage())
-            .blockingGet()
     }
 
     override fun sectionUids(): Flowable<List<String>> {
