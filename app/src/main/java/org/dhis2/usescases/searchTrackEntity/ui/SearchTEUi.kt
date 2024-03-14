@@ -1,10 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -226,7 +223,6 @@ fun FullSearchButtonAndWorkingList(
     teTypeName: String,
     modifier: Modifier,
     createButtonVisible: Boolean = false,
-    visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
     queryData: MutableMap<String, String> = mutableMapOf(),
@@ -235,71 +231,64 @@ fun FullSearchButtonAndWorkingList(
     onCloseFilters: () -> Unit = {},
     workingListViewModel: WorkingListViewModel? = null,
 ) {
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = visible,
-        enter = slideInVertically(initialOffsetY = { -it }),
-        exit = slideOutVertically(targetOffsetY = { -it }),
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.padding(
-                    top = Spacing.Spacing16,
-                    start = Spacing.Spacing16,
-                    end = Spacing.Spacing16,
-                    bottom = Spacing.Spacing8,
-                ),
-                verticalAlignment = Alignment.CenterVertically,
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.padding(
+                top = Spacing.Spacing16,
+                start = Spacing.Spacing16,
+                end = Spacing.Spacing16,
+                bottom = Spacing.Spacing8,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Column(
+                if (queryData.isNotEmpty()) {
+                    SearchButtonWithQuery(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onSearchClick,
+                    )
+                } else {
+                    SearchAndCreateTEIButton(
+                        onSearchClick = onSearchClick,
+                        teTypeName = teTypeName,
+                        createButtonVisible = createButtonVisible,
+                        onEnrollClick = onEnrollClick,
+                    )
+                }
+            }
+
+            if (!isLandscape && closeFilterVisibility) {
+                Spacer(modifier = Modifier.size(16.dp))
+                Box(
                     modifier = Modifier
-                        .wrapContentHeight()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                        .size(48.dp)
+                        .shadow(2.dp, CircleShape, clip = false)
+                        .clip(CircleShape)
+                        .background(Color.White),
                 ) {
-                    if (queryData.isNotEmpty()) {
-                        SearchButtonWithQuery(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onSearchClick,
-                        )
-                    } else {
-                        SearchAndCreateTEIButton(
-                            onSearchClick = onSearchClick,
-                            teTypeName = teTypeName,
-                            createButtonVisible = createButtonVisible,
-                            onEnrollClick = onEnrollClick,
-                        )
-                    }
-                }
-
-                if (!isLandscape && closeFilterVisibility) {
-                    Spacer(modifier = Modifier.size(16.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .shadow(2.dp, CircleShape, clip = false)
-                            .clip(CircleShape)
-                            .background(Color.White),
-                    ) {
-                        IconButton(onClick = onCloseFilters) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_arrow_up),
-                                contentDescription = "",
-                                tint = Color(
-                                    ColorUtils().getPrimaryColor(
-                                        LocalContext.current,
-                                        ColorType.PRIMARY,
-                                    ),
+                    IconButton(onClick = onCloseFilters) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_up),
+                            contentDescription = "",
+                            tint = Color(
+                                ColorUtils().getPrimaryColor(
+                                    LocalContext.current,
+                                    ColorType.PRIMARY,
                                 ),
-                            )
-                        }
+                            ),
+                        )
                     }
                 }
             }
+        }
 
-            workingListViewModel?.let {
-                WorkingListChipGroup(workingListViewModel = it)
-            }
+        workingListViewModel?.let {
+            WorkingListChipGroup(workingListViewModel = it)
         }
     }
 }
@@ -639,7 +628,7 @@ fun CreateNewButton(
 @Preview(showBackground = true, backgroundColor = 0xFFF)
 @Composable
 fun SearchFullWidthPreview() {
-    FullSearchButtonAndWorkingList(modifier = Modifier, teTypeName = "Person")
+    FullSearchButtonAndWorkingList(teTypeName = "Person", modifier = Modifier)
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF)

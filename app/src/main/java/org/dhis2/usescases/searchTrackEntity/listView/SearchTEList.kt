@@ -181,7 +181,6 @@ class SearchTEList : FragmentGlobalAbstract() {
                 if (LocalConfiguration.current.orientation ==
                     Configuration.ORIENTATION_PORTRAIT && !teTypeName.isNullOrBlank()
                 ) {
-                    val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
@@ -190,11 +189,11 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
 
                     FullSearchButtonAndWorkingList(
-                        modifier = Modifier,
                         teTypeName = teTypeName!!,
+                        modifier = Modifier,
+                        createButtonVisible = createButtonVisibility,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
-                        createButtonVisible = createButtonVisibility,
                         queryData = queryData,
                         onSearchClick = { viewModel.setSearchScreen() },
                         onEnrollClick = { viewModel.onEnrollClick() },
