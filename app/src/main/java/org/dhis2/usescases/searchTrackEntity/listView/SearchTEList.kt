@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
@@ -214,6 +215,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
                 val teTypeName by viewModel.teTypeName.observeAsState()
+                val hasQueryData = remember(viewModel.uiState) {
+                    viewModel.queryData.isNotEmpty()
+                }
 
                 updateLayoutParams<ConstraintLayout.LayoutParams> {
                     val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
@@ -223,7 +227,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                     setMargins(0, 0, 0, bottomMargin)
                 }
-                if (createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
+                if (hasQueryData && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
