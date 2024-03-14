@@ -615,7 +615,7 @@ fun CreateNewButton(
             ExtendedFAB(
                 modifier = modifier,
                 onClick = onClick,
-                text = stringResource(R.string.search_new_te_type, teTypeName),
+                text = stringResource(R.string.search_new_te_type, teTypeName.lowercase()),
                 icon = icon,
                 style = FABStyle.SECONDARY,
             )
