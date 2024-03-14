@@ -178,9 +178,7 @@ class SearchTEList : FragmentGlobalAbstract() {
             setContent {
                 val teTypeName by viewModel.teTypeName.observeAsState()
 
-                if (LocalConfiguration.current.orientation ==
-                    Configuration.ORIENTATION_PORTRAIT && !teTypeName.isNullOrBlank()
-                ) {
+                if (!teTypeName.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
@@ -233,7 +231,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                     setMargins(0, 0, 0, bottomMargin)
                 }
-                if (hasQueryData && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
+
+                val orientation = LocalConfiguration.current.orientation
+                if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,

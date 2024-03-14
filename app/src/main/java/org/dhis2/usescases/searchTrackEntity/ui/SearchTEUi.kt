@@ -234,58 +234,60 @@ fun FullSearchButtonAndWorkingList(
     workingListViewModel: WorkingListViewModel? = null,
 ) {
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(
-                top = Spacing.Spacing16,
-                start = Spacing.Spacing16,
-                end = Spacing.Spacing16,
-                bottom = Spacing.Spacing8,
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        if (!isLandscape || queryData.isNotEmpty()) {
+            Row(
+                modifier = Modifier.padding(
+                    top = Spacing.Spacing16,
+                    start = Spacing.Spacing16,
+                    end = Spacing.Spacing16,
+                    bottom = Spacing.Spacing8,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (queryData.isNotEmpty()) {
-                    SearchButtonWithQuery(
-                        modifier = Modifier.fillMaxWidth(),
-                        queryData = queryData,
-                        onClick = onSearchClick,
-                        onClearSearchQuery = onClearSearchQuery,
-                    )
-                } else {
-                    SearchAndCreateTEIButton(
-                        onSearchClick = onSearchClick,
-                        teTypeName = teTypeName,
-                        createButtonVisible = createButtonVisible,
-                        onEnrollClick = onEnrollClick,
-                    )
-                }
-            }
-
-            if (!isLandscape && closeFilterVisibility) {
-                Spacer(modifier = Modifier.size(16.dp))
-                Box(
+                Column(
                     modifier = Modifier
-                        .size(48.dp)
-                        .shadow(2.dp, CircleShape, clip = false)
-                        .clip(CircleShape)
-                        .background(Color.White),
+                        .wrapContentHeight()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    IconButton(onClick = onCloseFilters) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_up),
-                            contentDescription = "",
-                            tint = Color(
-                                ColorUtils().getPrimaryColor(
-                                    LocalContext.current,
-                                    ColorType.PRIMARY,
-                                ),
-                            ),
+                    if (queryData.isNotEmpty()) {
+                        SearchButtonWithQuery(
+                            modifier = Modifier.fillMaxWidth(),
+                            queryData = queryData,
+                            onClick = onSearchClick,
+                            onClearSearchQuery = onClearSearchQuery,
                         )
+                    } else {
+                        SearchAndCreateTEIButton(
+                            onSearchClick = onSearchClick,
+                            teTypeName = teTypeName,
+                            createButtonVisible = createButtonVisible,
+                            onEnrollClick = onEnrollClick,
+                        )
+                    }
+                }
+
+                if (closeFilterVisibility) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .shadow(2.dp, CircleShape, clip = false)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                    ) {
+                        IconButton(onClick = onCloseFilters) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_up),
+                                contentDescription = "",
+                                tint = Color(
+                                    ColorUtils().getPrimaryColor(
+                                        LocalContext.current,
+                                        ColorType.PRIMARY,
+                                    ),
+                                ),
+                            )
+                        }
                     }
                 }
             }
