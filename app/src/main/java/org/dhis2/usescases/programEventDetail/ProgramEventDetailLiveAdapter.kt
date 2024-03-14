@@ -75,8 +75,8 @@ class ProgramEventDetailLiveAdapter(
                         .padding(
                             start = Spacing.Spacing8,
                             end = Spacing.Spacing8,
-                            bottom = Spacing.Spacing8
-                        )
+                            bottom = Spacing.Spacing8,
+                        ),
                 ) {
                     ListCard(
                         modifier = Modifier.testTag("EVENT_ITEM"),

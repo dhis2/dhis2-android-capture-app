@@ -161,8 +161,8 @@ class EventAdapter(
                                 .padding(
                                     start = leftSpacing,
                                     end = Spacing.Spacing16,
-                                    bottom = bottomSpacing
-                                )
+                                    bottom = bottomSpacing,
+                                ),
                         ) {
                             ListCard(
                                 listAvatar = card.avatar,
