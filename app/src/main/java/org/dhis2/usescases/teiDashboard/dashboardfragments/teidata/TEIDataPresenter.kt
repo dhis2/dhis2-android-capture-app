@@ -86,6 +86,9 @@ class TEIDataPresenter(
     private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
     val events: LiveData<List<EventViewModel>> = _events
 
+    private val _totalTimeLineEvents: MutableLiveData<Int> = MutableLiveData()
+    val totalTimeLineEvents: LiveData<Int> = _totalTimeLineEvents
+
     fun init() {
         programUid?.let {
             val program = d2.program(it) ?: throw NullPointerException()
@@ -129,6 +132,7 @@ class TEIDataPresenter(
                     .subscribe(
                         { events ->
                             _events.postValue(events)
+                            _totalTimeLineEvents.postValue(events.firstOrNull()?.eventCount ?: 0)
                             decrement()
                         },
                         Timber.Forest::d,

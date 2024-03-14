@@ -144,7 +144,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
                     false,
                 )
-                val eventCount by presenter.events.map { it.count() }.observeAsState(0)
+                val eventCount by presenter.totalTimeLineEvents.map { it }.observeAsState(0)
 
                 val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
                     infoBarMapper.map(
@@ -299,6 +299,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun setEvents(events: List<EventViewModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
+            binding.teiRecycler.visibility = View.GONE
+
             if (presenter.shouldDisplayEventCreationButton.value == true) {
                 binding.emptyTeis.setText(R.string.empty_tei_add)
             } else {
@@ -306,6 +308,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
         } else {
             binding.emptyTeis.visibility = View.GONE
+            binding.teiRecycler.visibility = View.VISIBLE
+
             eventAdapter?.submitList(events)
             for (eventViewModel in events) {
                 if (eventViewModel.isAfterToday(DateUtils.getInstance().today)) {

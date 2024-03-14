@@ -279,7 +279,7 @@ class TeiDataRepositoryImpl(
                             EventViewModelType.EVENT,
                             programStage,
                             event,
-                            0,
+                            eventList.size,
                             null,
                             isSelected = true,
                             canAddNewEvent = true,
