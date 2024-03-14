@@ -225,7 +225,7 @@ fun FullSearchButtonAndWorkingList(
     createButtonVisible: Boolean = false,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
-    queryData: MutableMap<String, String> = mutableMapOf(),
+    queryData: Map<String, String> = emptyMap(),
     onSearchClick: () -> Unit = {},
     onEnrollClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
