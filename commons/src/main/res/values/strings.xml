@@ -259,7 +259,7 @@
         <item quantity="other">enrollment</item>
     </plurals>
     <string name="dialog_layer_enrollment_coordinates_v2">Show %s coordinates</string>
-
+    <string name="empty_enrollment">%s</string>
     <string name="enrollment_data_section_label_V2">%s data</string>
     <string name="enrollment_coordinates_V2">%s coordinates</string>
     <string name="enrollment_date_V2">%s date</string>

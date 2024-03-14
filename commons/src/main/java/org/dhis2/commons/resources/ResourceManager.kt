@@ -58,6 +58,31 @@ class ResourceManager(
         }
     }
 
+    fun defaultEnrollmentLabel(
+        programUid: String?,
+        quantity: Int,
+    ): String {
+        val enrollmentLabel = try {
+            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
+                ?.enrollmentLabel()
+        } catch (e: Exception) {
+            null
+        } ?: getPlural(R.plurals.enrollment, quantity)
+
+        return enrollmentLabel.capitalize(Locale.current)
+    }
+
+    fun defaultEnrollmentLabel(
+        programUid: String?,
+    ): String {
+        return try {
+            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
+                ?.enrollmentLabel()
+        } catch (e: Exception) {
+            null
+        } ?: getPlural(R.plurals.enrollment, 1)
+    }
+
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
