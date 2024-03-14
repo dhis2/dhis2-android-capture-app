@@ -80,7 +80,7 @@ class EventInitialTest {
     }
 
     private val metadataIconProvider:MetadataIconProvider = mock{
-        on { invoke(any(), any<String>(), any()) }doReturn MetadataIconData.defaultIcon()
+        on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
     }
 
     private lateinit var viewModel: EventDetailsViewModel
