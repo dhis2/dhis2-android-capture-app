@@ -29,7 +29,6 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -64,8 +63,6 @@ class EventAdapter(
         }
     },
 ) {
-
-    private lateinit var enrollment: Enrollment
 
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
 
@@ -203,10 +200,5 @@ class EventAdapter(
 
     override fun getItemId(position: Int): Long {
         return getItem(position).hashCode().toLong()
-    }
-
-    fun setEnrollment(enrollment: Enrollment) {
-        this.enrollment = enrollment
-        this.notifyDataSetChanged()
     }
 }

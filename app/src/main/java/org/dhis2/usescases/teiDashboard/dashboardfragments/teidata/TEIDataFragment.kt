@@ -246,7 +246,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun setEnrollmentData(program: Program?, enrollment: Enrollment?) {
         enrollment?.let {
-            eventAdapter?.setEnrollment(enrollment)
             followUp.set(
                 when (enrollment.followUp()) {
                     true -> true
@@ -288,9 +287,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 currentProgram,
                 colorUtils,
                 cardMapper,
-            ).also {
-                it.setEnrollment(currentEnrollment)
-            }
+            )
             binding.teiRecycler.adapter = eventAdapter
         }
         return eventAdapter?.stageSelector() ?: Flowable.empty()
@@ -497,7 +494,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun updateEnrollment(update: Boolean) {
         if (update) {
             presenter.fetchEvents(update)
-            presenter.getEnrollment()?.let { eventAdapter?.setEnrollment(it) }
             dashboardViewModel.updateDashboard()
         }
     }
