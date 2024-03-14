@@ -5,6 +5,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +60,7 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -168,40 +172,37 @@ fun AddNewButton(
     }
 }
 
-// TODO: Update to new search input design
 @Composable
 fun SearchButtonWithQuery(
     modifier: Modifier = Modifier,
+    queryData: Map<String, String> = emptyMap(),
     onClick: () -> Unit,
+    onClearSearchQuery: () -> Unit,
 ) {
-    Button(
-        modifier = modifier,
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-        shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation(),
-    ) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "",
-                tint = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
+    Box(modifier) {
+        SearchBar(
+            text = queryData.values.joinToString(separator = ", "),
+            modifier = Modifier.fillMaxWidth(),
+            onQueryChange = {
+                if (it.isBlank()) onClearSearchQuery()
+            },
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(end = 48.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color.Unspecified)
+                .clickable(
+                    onClick = onClick,
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple(
+                        true,
+                        color = SurfaceColor.Primary,
                     ),
                 ),
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = colorResource(id = R.color.textSecondary),
-            )
-        }
+        )
     }
 }
 
@@ -229,6 +230,7 @@ fun FullSearchButtonAndWorkingList(
     onSearchClick: () -> Unit = {},
     onEnrollClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
+    onClearSearchQuery: () -> Unit = {},
     workingListViewModel: WorkingListViewModel? = null,
 ) {
     Column(modifier = modifier) {
@@ -250,7 +252,9 @@ fun FullSearchButtonAndWorkingList(
                 if (queryData.isNotEmpty()) {
                     SearchButtonWithQuery(
                         modifier = Modifier.fillMaxWidth(),
+                        queryData = queryData,
                         onClick = onSearchClick,
+                        onClearSearchQuery = onClearSearchQuery,
                     )
                 } else {
                     SearchAndCreateTEIButton(

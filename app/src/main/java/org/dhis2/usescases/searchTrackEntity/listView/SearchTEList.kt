@@ -198,6 +198,10 @@ class SearchTEList : FragmentGlobalAbstract() {
                         onSearchClick = { viewModel.setSearchScreen() },
                         onEnrollClick = { viewModel.onEnrollClick() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
+                        onClearSearchQuery = {
+                            viewModel.clearQueryData()
+                            viewModel.clearFocus()
+                        },
                         workingListViewModel = workingListViewModel,
                     )
                 }
