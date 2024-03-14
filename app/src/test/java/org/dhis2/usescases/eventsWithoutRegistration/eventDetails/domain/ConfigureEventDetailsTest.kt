@@ -33,7 +33,7 @@ class ConfigureEventDetailsTest {
     private val event: Event = mock()
     private val program: Program = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any<String>(), any()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(any()) } doReturn MetadataIconData.defaultIcon()
     }
     private val repository: EventDetailsRepository = mock {
         on { getProgramStage() } doReturn programStage
