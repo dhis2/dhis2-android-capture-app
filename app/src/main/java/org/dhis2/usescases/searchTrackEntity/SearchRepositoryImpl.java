@@ -721,7 +721,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .byTrackedEntityInstance().eq(dbTei.uid());
 
             if (selectedProgram != null) {
-                enrollmentRepository.byProgram().eq(selectedProgram.uid());
+                enrollmentRepository = enrollmentRepository.byProgram().eq(selectedProgram.uid());
             }
 
             List<Enrollment> enrollmentsInProgram = enrollmentRepository
