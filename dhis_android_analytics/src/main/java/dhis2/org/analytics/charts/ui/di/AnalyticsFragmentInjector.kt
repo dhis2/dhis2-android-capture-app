@@ -17,12 +17,12 @@ interface AnalyticsFragmentComponent {
 @Module
 class AnalyticsFragmentModule(
     private val mode: AnalyticMode,
-    private val uid: String?
+    private val uid: String?,
 ) {
     @Provides
     fun provideViewModelFactory(
         charts: Charts,
-        matomoAnalyticsController: MatomoAnalyticsController
+        matomoAnalyticsController: MatomoAnalyticsController,
     ): GroupAnalyticsViewModelFactory {
         return GroupAnalyticsViewModelFactory(mode, uid, charts, matomoAnalyticsController)
     }

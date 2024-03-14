@@ -90,5 +90,4 @@
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>
     <string name="enrollmment_date">تاريخ التسجيل</string>
     <string name="incident_date">تاريخ الحدوث</string>
-
-</resources>
+    </resources>

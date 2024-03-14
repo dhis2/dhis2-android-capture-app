@@ -5,6 +5,6 @@ import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 
 interface AnalyticsComponentProvider {
     fun provideAnalyticsFragmentComponent(
-        module: AnalyticsFragmentModule?
+        module: AnalyticsFragmentModule?,
     ): AnalyticsFragmentComponent?
 }

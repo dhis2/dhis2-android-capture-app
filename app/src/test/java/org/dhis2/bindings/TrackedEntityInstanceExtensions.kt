@@ -1,6 +1,5 @@
 package org.dhis2.bindings
 
-import org.dhis2.Bindings.filterDeletedEnrollment
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -21,7 +20,7 @@ class TrackedEntityInstanceExtensions {
         val testList = mutableListOf(
             TrackedEntityInstance.builder().uid("tei_A").build(),
             TrackedEntityInstance.builder().uid("tei_C").build(),
-            TrackedEntityInstance.builder().uid("tei_D").build()
+            TrackedEntityInstance.builder().uid("tei_D").build(),
         )
 
         testList.filterDeletedEnrollment(d2, null)
@@ -34,22 +33,22 @@ class TrackedEntityInstanceExtensions {
         val testList = mutableListOf(
             TrackedEntityInstance.builder().uid("tei_A").build(),
             TrackedEntityInstance.builder().uid("tei_C").build(),
-            TrackedEntityInstance.builder().uid("tei_D").build()
+            TrackedEntityInstance.builder().uid("tei_D").build(),
         )
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
+                .byAggregatedSyncState().neq(State.RELATIONSHIP),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances()
                 .byAggregatedSyncState().neq(State.RELATIONSHIP)
+                .uid(anyString()),
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
                 .byAggregatedSyncState().neq(State.RELATIONSHIP)
                 .uid(anyString())
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP)
-                .uid(anyString())
-                .blockingExists()
+                .blockingExists(),
         ) doReturn true
         testList.forEachIndexed { index, tei ->
             handleEnrollmentCall(tei.uid(), "programUid", index == 0)
@@ -63,36 +62,36 @@ class TrackedEntityInstanceExtensions {
     private fun handleEnrollmentCall(teiUid: String, programUid: String, returnValue: Boolean) {
         whenever(
             d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
+                .byTrackedEntityInstance().eq(teiUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
-                .byProgram()
+                .byProgram(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(teiUid)
+                .byProgram().eq(programUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(programUid)
+                .byDeleted(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(programUid)
-                .byDeleted()
+                .byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byTrackedEntityInstance().eq(teiUid)
                 .byProgram().eq(programUid)
                 .byDeleted().isFalse
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn returnValue
     }
 }

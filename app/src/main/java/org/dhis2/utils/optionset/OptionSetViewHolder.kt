@@ -6,7 +6,7 @@ import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
 
 class OptionSetViewHolder internal constructor(
-    private val binding: ItemOptionBinding
+    private val binding: ItemOptionBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(option: Option, listener: OptionSetOnClickListener) {

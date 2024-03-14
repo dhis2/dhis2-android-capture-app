@@ -3,7 +3,6 @@ package org.dhis2.data.filter
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.DataSetFilterSearchHelper
 import org.dhis2.commons.filters.data.FilterRepository
@@ -23,6 +22,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class DataSetFilterSearchHelperTest {
 
@@ -41,10 +41,10 @@ class DataSetFilterSearchHelperTest {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
         dataSetFilterSearchHelper = DataSetFilterSearchHelper(
             filterRepository,
-            filterManager
+            filterManager,
         )
         whenever(
-            filterRepository.dataSetInstanceSummaries()
+            filterRepository.dataSetInstanceSummaries(),
         ) doReturn mock()
     }
 
@@ -83,7 +83,7 @@ class DataSetFilterSearchHelperTest {
         filterManager.apply {
             addOrgUnit(
                 OrganisationUnit.builder()
-                    .uid("ouUid").build()
+                    .uid("ouUid").build(),
             )
             addState(false, State.ERROR)
             addPeriod(arrayListOf(DatePeriod.create(Date(), Date())))
@@ -92,17 +92,17 @@ class DataSetFilterSearchHelperTest {
         whenever(
             filterRepository.applyOrgUnitFilter(
                 any<DataSetInstanceSummaryCollectionRepository>(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn mock()
         whenever(
             filterRepository.applyStateFilter(
                 any<DataSetInstanceSummaryCollectionRepository>(),
-                any()
-            )
+                any(),
+            ),
         ) doReturn mock()
         whenever(
-            filterRepository.applyPeriodFilter(any(), any())
+            filterRepository.applyPeriodFilter(any(), any()),
         ) doReturn mock()
 
         dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()

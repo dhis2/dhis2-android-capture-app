@@ -10,7 +10,7 @@ import android.view.Window
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import org.dhis2.Bindings.app
+import org.dhis2.bindings.app
 import org.dhis2.R
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.network.NetworkUtils

@@ -84,7 +84,7 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
         } catch (e: Exception) {
             RuleActionError(
                 action = it.programRuleActionType().toString(),
-                message = e.message ?: "UNKNOWN"
+                message = e.message ?: "UNKNOWN",
             )
         }
     }
@@ -93,7 +93,7 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
 fun List<ProgramRuleVariable>.toRuleVariableList(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<RuleVariable> {
     return filter {
         when {
@@ -123,7 +123,7 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
         name(),
-        uid()
+        uid(),
     )
 }
 
@@ -141,12 +141,12 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             if (location() == RuleActionDisplayText.LOCATION_FEEDBACK_WIDGET) {
                 RuleActionDisplayText.createForFeedback(
                     content(),
-                    data()
+                    data(),
                 )
             } else {
                 RuleActionDisplayText.createForIndicators(
                     content(),
-                    data()
+                    data(),
                 )
             }
 
@@ -154,12 +154,12 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             if (location() == RuleActionDisplayText.LOCATION_FEEDBACK_WIDGET) {
                 RuleActionDisplayKeyValuePair.createForFeedback(
                     content(),
-                    data()
+                    data(),
                 )
             } else {
                 RuleActionDisplayKeyValuePair.createForIndicators(
                     content(),
-                    data()
+                    data(),
                 )
             }
 
@@ -168,7 +168,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionHideSection.create(it.uid())
             } ?: RuleActionUnsupported.create(
                 "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.HIDEPROGRAMSTAGE ->
@@ -176,14 +176,14 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionHideProgramStage.create(it.uid())
             } ?: RuleActionUnsupported.create(
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.ASSIGN -> {
             if (field.isEmpty() && content().isNullOrEmpty()) {
                 RuleActionUnsupported.create(
                     "ASSIGN RULE IS MISSING FIELD TO ASSIGN TO",
-                    name() ?: uid()
+                    name() ?: uid(),
                 )
             } else {
                 RuleActionAssign.create(content(), data() ?: "", field)
@@ -194,14 +194,14 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
         ProgramRuleActionType.WARNINGONCOMPLETE -> RuleActionWarningOnCompletion.create(
             content(),
             data(),
-            field
+            field,
         )
 
         ProgramRuleActionType.SHOWERROR -> RuleActionShowError.create(content(), data(), field)
         ProgramRuleActionType.ERRORONCOMPLETE -> RuleActionErrorOnCompletion.create(
             content(),
             data(),
-            field
+            field,
         )
 
         ProgramRuleActionType.CREATEEVENT ->
@@ -209,11 +209,11 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionCreateEvent.create(
                     content(),
                     data(),
-                    it.uid()
+                    it.uid(),
                 )
             } ?: RuleActionUnsupported.create(
                 "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.SETMANDATORYFIELD -> RuleActionSetMandatoryField.create(field)
@@ -222,11 +222,11 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionHideOption.create(
                     content(),
                     it.uid(),
-                    field
+                    field,
                 )
             } ?: RuleActionUnsupported.create(
                 "HIDE OPTION RULE IS MISSING OPTION",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.SHOWOPTIONGROUP ->
@@ -234,11 +234,11 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionShowOptionGroup.create(
                     content(),
                     it.uid(),
-                    field
+                    field,
                 )
             } ?: RuleActionUnsupported.create(
                 "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.HIDEOPTIONGROUP ->
@@ -246,17 +246,17 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleActionHideOptionGroup.create(
                     content(),
                     it.uid(),
-                    field
+                    field,
                 )
             } ?: RuleActionUnsupported.create(
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
-                name() ?: uid()
+                name() ?: uid(),
             )
 
         ProgramRuleActionType.SENDMESSAGE, ProgramRuleActionType.SCHEDULEMESSAGE, null ->
             RuleActionUnsupported.create(
                 "UNSUPPORTED RULE ACTION TYPE",
-                name() ?: uid()
+                name() ?: uid(),
             )
     }
 }
@@ -264,22 +264,23 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): RuleVariable {
     val valueType = when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM,
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT,
-        ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
+        ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT,
+        ->
             dataElement()?.let {
                 dataElementRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
             trackedEntityAttribute()?.let {
                 attributeRepository.uid(it.uid()).blockingGet()
-                    .valueType()?.toRuleValueType()
+                    ?.valueType()?.toRuleValueType()
             } ?: RuleValueType.TEXT
 
         ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
@@ -292,7 +293,7 @@ fun ProgramRuleVariable.toRuleVariable(
         trackedEntityAttribute()?.uid(),
         attributeRepository,
         dataElementRepository,
-        optionRepository
+        optionRepository,
     )
 
     return when (programRuleVariableSourceType()) {
@@ -302,7 +303,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
@@ -311,7 +312,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 trackedEntityAttribute()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE ->
@@ -321,7 +322,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 programStage()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM ->
@@ -330,7 +331,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT ->
@@ -339,7 +340,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
@@ -348,7 +349,7 @@ fun ProgramRuleVariable.toRuleVariable(
                 dataElement()?.uid() ?: "",
                 valueType,
                 useCodeForOptionSet,
-                options
+                options,
             )
 
         else -> throw IllegalArgumentException("Unsupported variable ")
@@ -361,7 +362,7 @@ fun getOptions(
     trackedEntityAttributeUid: String?,
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<Option> {
     if (useCodeForOptionSet) {
         return emptyList()
@@ -394,33 +395,33 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
     event: Event,
     dataElementRepository: DataElementCollectionRepository,
     ruleVariableRepository: ProgramRuleVariableCollectionRepository,
-    optionRepository: OptionCollectionRepository
+    optionRepository: OptionCollectionRepository,
 ): List<RuleDataValue> {
     return map {
         var value = if (it.value() != null) it.value() else ""
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
-        if (!de.optionSetUid().isNullOrEmpty()) {
+        if (!de?.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
-                .byProgramUid().eq(event.program())
-                .byDataElementUid().eq(it.dataElement())
-                .byUseCodeForOptionSet().isTrue
-                .blockingIsEmpty()
+                    .byProgramUid().eq(event.program())
+                    .byDataElementUid().eq(it.dataElement())
+                    .byUseCodeForOptionSet().isTrue
+                    .blockingIsEmpty()
             ) {
                 value =
                     if (optionRepository
-                        .byOptionSetUid().eq(de.optionSetUid())
-                        .byCode().eq(value)
-                        .one().blockingExists()
+                            .byOptionSetUid().eq(de?.optionSetUid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
                     ) {
                         optionRepository
-                            .byOptionSetUid().eq(de.optionSetUid())
+                            .byOptionSetUid().eq(de?.optionSetUid())
                             .byCode().eq(value)
-                            .one().blockingGet().name()
+                            .one().blockingGet()?.name()
                     } else {
                         ""
                     }
             }
-        } else if (de.valueType()!!.isNumeric) {
+        } else if (de?.valueType()?.isNumeric == true) {
             value = if (value.isNullOrEmpty()) {
                 ""
             } else {
@@ -436,43 +437,54 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             event.eventDate()!!,
             event.programStage()!!,
             it.dataElement()!!,
-            value!!
+            value!!,
         )
     }.filter { it.value().isNotEmpty() }
 }
 
 fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
     d2: D2,
-    program: String
+    program: String,
 ): List<RuleAttributeValue> {
     return map {
         var value = if (it.value() != null) it.value() else ""
         val attr =
             d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute())
                 .blockingGet()
-        if (!attr.optionSet()?.uid().isNullOrEmpty()) {
+        if (!attr?.optionSet()?.uid().isNullOrEmpty()) {
             if (d2.programModule().programRuleVariables()
-                .byProgramUid().eq(program)
-                .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
-                .byUseCodeForOptionSet().isTrue
-                .blockingIsEmpty()
+                    .byProgramUid().eq(program)
+                    .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
+                    .byUseCodeForOptionSet().isTrue
+                    .blockingIsEmpty()
             ) {
                 value =
-                    if (d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
-                        .byCode().eq(value)
-                        .one().blockingExists()
+                    if (d2.optionModule().options().byOptionSetUid().eq(attr?.optionSet()?.uid())
+                            .byCode().eq(value)
+                            .one().blockingExists()
                     ) {
-                        d2.optionModule().options().byOptionSetUid().eq(attr.optionSet()?.uid())
+                        d2.optionModule().options().byOptionSetUid().eq(attr?.optionSet()?.uid())
                             .byCode().eq(value)
                             .one()
-                            .blockingGet().name()!!
+                            .blockingGet()?.name() ?: ""
                     } else {
                         ""
                     }
             }
-        } else if (attr.valueType()!!.isNumeric) {
+        } else if (attr?.valueType()?.isNumeric == true) {
             value = try {
-                value?.toFloat().toString()
+                when (attr.valueType()) {
+                    ValueType.INTEGER_NEGATIVE,
+                    ValueType.INTEGER_ZERO_OR_POSITIVE,
+                    ValueType.INTEGER_POSITIVE,
+                    ValueType.INTEGER,
+                    -> value?.toInt().toString()
+                    ValueType.PERCENTAGE,
+                    ValueType.UNIT_INTERVAL,
+                    ValueType.NUMBER,
+                    -> value?.toFloat().toString()
+                    else -> value
+                }
             } catch (e: Exception) {
                 Timber.e(e)
                 ""

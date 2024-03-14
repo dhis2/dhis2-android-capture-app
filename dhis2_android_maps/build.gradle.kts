@@ -30,18 +30,23 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
+        compose = true
         dataBinding = true
     }
-
-    flavorDimensions("default")
+    flavorDimensions += listOf("default")
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 
@@ -62,4 +67,5 @@ dependencies {
 
     androidTestImplementation(libs.bundles.map.androidTest)
     testImplementation(libs.bundles.map.test)
+    coreLibraryDesugaring(libs.desugar)
 }

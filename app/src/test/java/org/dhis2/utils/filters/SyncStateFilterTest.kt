@@ -42,7 +42,7 @@ class SyncStateFilterTest {
             ProgramType.ALL,
             sortingItem,
             openFilter,
-            "sync"
+            "sync",
         )
     }
 
@@ -64,9 +64,9 @@ class SyncStateFilterTest {
                 listOf(
                     State.TO_UPDATE,
                     State.TO_POST,
-                    State.UPLOADING
-                )
-            )
+                    State.UPLOADING,
+                ),
+            ),
         )
     }
 
@@ -80,14 +80,14 @@ class SyncStateFilterTest {
                 listOf(
                     State.TO_UPDATE,
                     State.TO_POST,
-                    State.UPLOADING
-                )
+                    State.UPLOADING,
+                ),
             ) && !filterManager.stateFilters.containsAll(
                 listOf(
                     State.SYNCED_VIA_SMS,
-                    State.SENT_VIA_SMS
-                )
-            )
+                    State.SENT_VIA_SMS,
+                ),
+            ),
         )
     }
 

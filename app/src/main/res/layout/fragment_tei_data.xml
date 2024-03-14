@@ -46,85 +46,110 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-         <LinearLayout
-            android:id="@+id/cardLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/tei_data"
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardElevation="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/cardLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/detailCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/tei_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <include
+                            android:id="@+id/card_front"
+                            layout="@layout/fragment_tei_data_card_front"
+                            android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
+                            app:dashboardModel="@{dashboardModel}"
+                            app:enrollment="@{enrollment}"
+                            app:followup="@{followup}"
+                            app:presenter="@{presenter}"
+                            app:program="@{program}"
+                            app:trackEntity="@{trackEntity}" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/filterLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?colorPrimary"
+                        android:visibility="gone"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:listitem="@layout/item_header_filter" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tei_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingBottom="200dp"
+                    app:layout_constraintVertical_weight="0"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout"
+                    tools:listitem="@layout/item_event"
+                    android:overScrollMode="never"/>
+
+                <TextView
+                    android:id="@+id/empty_teis"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:padding="42dp"
+                    android:text="@string/empty_tei_add"
+                    android:textSize="@dimen/primaryTextSize"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
                 <include
-                    android:id="@+id/card_front"
-                    layout="@layout/fragment_tei_data_card_front"
-                    app:dashboardModel="@{dashboardModel}"
-                    app:enrollment="@{enrollment}"
-                    app:followup="@{followup}"
-                    app:presenter="@{presenter}"
-                    app:program="@{program}"
-                    app:trackEntity="@{trackEntity}" />
-            </androidx.cardview.widget.CardView>
+                    android:id="@+id/loading_progress"
+                    layout="@layout/progress_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/filterLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimary"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_header_filter" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </LinearLayout>
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tei_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
-            android:paddingBottom="200dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardLayout"
-            tools:listitem="@layout/item_event" />
-
-        <TextView
-            android:id="@+id/empty_teis"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/white"
-            android:gravity="center"
-            android:padding="42dp"
-            android:text="@string/empty_tei_add"
-            android:textSize="@dimen/primaryTextSize"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardLayout" />
-
-        <include
-            android:id="@+id/loading_progress"
-            layout="@layout/progress_layout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+        </androidx.core.widget.NestedScrollView>
 
     <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
         android:id="@+id/dialFabLayout"
@@ -133,8 +158,8 @@
         app:fab_extra_bottom_margin="@{16}"
         app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

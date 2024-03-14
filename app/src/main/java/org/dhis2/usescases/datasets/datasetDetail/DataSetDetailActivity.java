@@ -17,9 +17,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
+import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -50,6 +50,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private ActivityDatasetDetailBinding binding;
     private String dataSetUid;
     public DataSetDetailComponent dataSetDetailComponent;
+
+    private Fragment fragment;
 
     @Inject
     DataSetDetailPresenter presenter;
@@ -104,19 +106,21 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private void configureBottomNavigation() {
         boolean accessWriteData = Boolean.parseBoolean(getIntent().getStringExtra(Constants.ACCESS_DATA));
         viewModel.getPageConfiguration().observe(this, binding.navigationBar::pageConfiguration);
-        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-            Fragment fragment = null;
+
+        binding.navigationBar.setOnItemSelectedListener(item -> {
+            Fragment newFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_list_view:
-                    fragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
+                    newFragment = DataSetListFragment.newInstance(dataSetUid, accessWriteData);
                     break;
                 case R.id.navigation_analytics:
                     presenter.trackDataSetAnalytics();
-                    fragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
+                    newFragment = GroupAnalyticsFragment.Companion.forDataSet(dataSetUid);
                     break;
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (fragment != null) {
+            if (fragment == null ||(newFragment != null  && !fragment.getClass().toString().equals(newFragment.getClass().toString()))) {
+                fragment = newFragment;
                 transaction.replace(R.id.fragmentContainer, fragment).commit();
             }
             return true;

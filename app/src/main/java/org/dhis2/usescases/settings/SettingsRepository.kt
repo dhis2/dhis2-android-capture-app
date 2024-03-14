@@ -2,7 +2,7 @@ package org.dhis2.usescases.settings
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import org.dhis2.Bindings.toSeconds
+import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
@@ -28,7 +28,7 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 
 class SettingsRepository(
     val d2: D2,
-    val prefs: PreferenceProvider
+    val prefs: PreferenceProvider,
 ) {
     private val generalSettings: GeneralSettings?
         get() = if (d2.settingModule().generalSetting().blockingExists()) {
@@ -43,7 +43,7 @@ class SettingsRepository(
             null
         }
     private val smsConfig: ConfigCase.SmsConfig
-        get() = d2.smsModule().configCase().smsModuleConfig.blockingGet()
+        get() = d2.smsModule().configCase().getSmsModuleConfig().blockingGet()
 
     fun dataSync(): Single<DataSettingsViewModel> {
         return Single.just(
@@ -56,8 +56,8 @@ class SettingsRepository(
                 generalSettings?.dataSync() == null,
                 prefs.getString(Constants.SYNC_RESULT, null)?.let {
                     SyncResult.valueOf(it)
-                }
-            )
+                },
+            ),
         )
     }
 
@@ -70,8 +70,8 @@ class SettingsRepository(
                 metadataPeriod(),
                 prefs.getString(Constants.LAST_META_SYNC, "-")!!,
                 !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
-                generalSettings?.metadataSync() == null
-            )
+                generalSettings?.metadataSync() == null,
+            ),
         )
     }
 
@@ -86,8 +86,8 @@ class SettingsRepository(
                 programSettings?.globalSettings()?.teiDownload() == null,
                 programSettings?.globalSettings()?.eventsDownload() == null,
                 programSettings?.globalSettings()?.settingDownload() == null,
-                programSettings?.specificSettings()?.size ?: 0
-            )
+                programSettings?.specificSettings()?.size ?: 0,
+            ),
         )
     }
 
@@ -96,10 +96,10 @@ class SettingsRepository(
             ReservedValueSettingsViewModel(
                 generalSettings?.reservedValues() ?: prefs.getInt(
                     NUMBER_RV,
-                    DEFAULT_NUMBER_RV
+                    DEFAULT_NUMBER_RV,
                 ),
-                generalSettings?.reservedValues() == null
-            )
+                generalSettings?.reservedValues() == null,
+            ),
         )
     }
 
@@ -112,8 +112,8 @@ class SettingsRepository(
                 smsConfig.resultWaitingTimeout,
                 generalSettings?.smsGateway() == null,
                 generalSettings?.smsResultSender() == null,
-                smsConfig.isWaitingForResult
-            )
+                smsConfig.isWaitingForResult,
+            ),
         )
     }
 
@@ -144,21 +144,21 @@ class SettingsRepository(
     private fun metadataPeriod(): Int {
         return generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_META,
-            TIME_WEEKLY
+            TIME_WEEKLY,
         )
     }
 
     private fun dataPeriod(): Int {
         return generalSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_DATA,
-            TIME_DAILY
+            TIME_DAILY,
         )
     }
 
     private fun teiToDownload(): Int {
         return programSettings?.globalSettings()?.teiDownload() ?: prefs.getInt(
             Constants.TEI_MAX,
-            Constants.TEI_MAX_DEFAULT
+            Constants.TEI_MAX_DEFAULT,
         )
     }
 
@@ -180,7 +180,7 @@ class SettingsRepository(
     private fun eventsToDownload(): Int {
         return programSettings?.globalSettings()?.eventsDownload() ?: prefs.getInt(
             Constants.EVENT_MAX,
-            Constants.EVENT_MAX_DEFAULT
+            Constants.EVENT_MAX_DEFAULT,
         )
     }
 

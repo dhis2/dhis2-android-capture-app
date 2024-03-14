@@ -6,13 +6,13 @@ import org.dhis2.databinding.ItemDashboardProgramBinding
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 
 class DashboardProgramViewHolder(
-    private val binding: ItemDashboardProgramBinding
+    private val binding: ItemDashboardProgramBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(
         presenter: TEIDataPresenter,
         dashboardProgramModel: DashboardProgramModel,
-        position: Int
+        position: Int,
     ) {
         val program = dashboardProgramModel.programsWithActiveEnrollment[position]
         val enrollment = dashboardProgramModel.getEnrollmentForProgram(program.uid())
@@ -23,14 +23,14 @@ class DashboardProgramViewHolder(
             binding.setVariable(BR.enrollment, enrollment)
             binding.setVariable(
                 BR.orgUnit,
-                presenter.getOrgUnitName(enrollment.organisationUnit() ?: "")
+                presenter.getOrgUnitName(enrollment.organisationUnit() ?: ""),
             )
         }
         binding.executePendingBindings()
         itemView.setOnClickListener {
             presenter.setProgram(
                 dashboardProgramModel.programsWithActiveEnrollment[position],
-                enrollment!!.uid()
+                enrollment!!.uid(),
             )
         }
     }

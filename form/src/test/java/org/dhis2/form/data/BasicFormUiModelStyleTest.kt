@@ -30,7 +30,7 @@ class BasicFormUiModelStyleTest {
             FormUiColorType.PRIMARY to 1,
             FormUiColorType.TEXT_PRIMARY to 2,
             FormUiColorType.WARNING to 3,
-            FormUiColorType.ERROR to 4
+            FormUiColorType.ERROR to 4,
         )
         whenever(colorFactory.getBasicColors()) doReturn mapOfColors
 

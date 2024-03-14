@@ -8,14 +8,13 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      base_branch: 
-        description: 'Base branch'
+      release_version_name:
+        description: 'New release version name'
         required: true
-        default: 'develop'
         type: string
-      version_name:
-        description: 'Release version name'
-        # default: 'World'
+
+      development_version_name:
+        description: 'Development version name'
         required: true
         type: string
 
@@ -26,11 +25,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    # override vName with new version
-    - name: Checkout base branch
-      run: git checkout ${{ inputs.base_branch }}
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12.1
+
+    - name: setup git config
+      run: |
+        # setup the username and email.
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<android@dhis2.org>"
+
+    - name: Run Python script to update base branch version
+      run: python scripts/updateVersionName.py ${{ inputs.development_version_name }}
+
+    - name: Commit and Push Changes
+      run: |
+        git add .
+        git commit -m "Update version to ${{ inputs.development_version_name }}"
+        git push
+
+      # override vName with new version
     - name: Create release branch
-      run: git checkout -b release/${{ inputs.version_name }}
+      run: git checkout -b release/${{ inputs.release_version_name }}
+
+    - name: Run Python script to update release branch version
+      run: python scripts/updateVersionName.py ${{ inputs.release_version_name }}
+
     - name: Push
-      run: git push origin release/${{ inputs.version_name }}
+      run: |
+        git add .
+        git commit -m "Update version to ${{ inputs.release_version_name }}"
+        git push origin release/${{ inputs.release_version_name }}

@@ -32,7 +32,7 @@ class GraphToRadarData {
                     serie.fieldName,
                     serieToHighlight,
                     graph.series.size == 1,
-                    index
+                    index,
                 )
                 addDataSet(dataSet)
             }
@@ -48,7 +48,7 @@ class GraphToRadarData {
 
     private fun getHighlightedSeriesMaximum(
         series: List<SerieData>,
-        serieToHighlight: String?
+        serieToHighlight: String?,
     ): Float? {
         return series.find {
             it.fieldName == serieToHighlight
@@ -64,7 +64,7 @@ class GraphToRadarData {
     private fun shouldSetData(
         serieToHighlight: String?,
         serie: SerieData,
-        highlightSeriesMax: Float?
+        highlightSeriesMax: Float?,
     ): Boolean {
         val serieMax = serie.getSerieMaximun()
         return serieToHighlight == null ||
@@ -75,7 +75,7 @@ class GraphToRadarData {
     private fun setEntries(
         serieLabel: String,
         categories: List<String>,
-        coordinates: List<GraphPoint>
+        coordinates: List<GraphPoint>,
     ) = categories.mapIndexed { categoryIndex, _ ->
         val point =
             coordinates.find { it.position == categoryIndex.toFloat() }
@@ -92,7 +92,7 @@ class GraphToRadarData {
         serieLabel: String,
         serieToHighlight: String?,
         onlyOneSerie: Boolean,
-        serieIndex: Int
+        serieIndex: Int,
     ): RadarDataSet {
         val dataSet = RadarDataSet(radarEntry, serieLabel).apply {
             if (onlyOneSerie || label == serieToHighlight) {

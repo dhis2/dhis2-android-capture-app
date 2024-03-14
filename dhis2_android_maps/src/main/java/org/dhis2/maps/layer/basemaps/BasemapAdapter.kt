@@ -29,10 +29,10 @@ class BasemapAdapter(val mapLayerManager: MapLayerManager) :
             BasemapItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             ).apply {
                 currentSelectedStyle = currentStyle
-            }
+            },
         ) {
             mapLayerManager.changeStyle(it)
             currentStyle.set(it)

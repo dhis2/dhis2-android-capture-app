@@ -62,12 +62,12 @@ class HomeActivity : AppCompatActivity() {
 
         setContent {
             val settingsUiState by viewModel.settingsUiState.collectAsState()
-            updateTheme(settingsUiState.transactionType)
+            updateTheme(settingsUiState.selectedTransactionItem.type)
             manageStockViewModel.setThemeColor(Color(colorResource(themeColor).toArgb()))
             MdcTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(colorResource(themeColor).toArgb())
+                    color = Color(colorResource(themeColor).toArgb()),
                 ) {
                     HomeScreen(
                         this,
@@ -76,12 +76,12 @@ class HomeActivity : AppCompatActivity() {
                         Color(colorResource(themeColor).toArgb()),
                         supportFragmentManager,
                         barcodeLauncher,
-                        { _, _ -> manageStockViewModel.onButtonClick() }
+                        { _, _ -> manageStockViewModel.onButtonClick() },
                     ) { scope, scaffold ->
                         synchronizeData(
                             scope,
                             scaffold,
-                            settingsUiState.programUid
+                            settingsUiState.programUid,
                         )
                     }
                 }
@@ -126,14 +126,14 @@ class HomeActivity : AppCompatActivity() {
     private fun synchronizeData(
         scope: CoroutineScope,
         scaffoldState: ScaffoldState,
-        programUid: String
+        programUid: String,
     ) {
         val isNetworkAvailable: Boolean = NetworkUtils.isOnline(this@HomeActivity)
         if (!isNetworkAvailable) {
             showSnackBar(
                 scope,
                 scaffoldState,
-                getString(R.string.unable_to_sync_data_no_network_available)
+                getString(R.string.unable_to_sync_data_no_network_available),
             )
         } else {
             SyncDialog(
@@ -148,11 +148,11 @@ class HomeActivity : AppCompatActivity() {
                 onSyncNavigationListener = object : OnSyncNavigationListener {
                     override fun intercept(
                         syncStatusItem: SyncStatusItem,
-                        intent: Intent
+                        intent: Intent,
                     ): Intent? {
                         return null
                     }
-                }
+                },
             ).show()
         }
     }
@@ -166,13 +166,13 @@ class HomeActivity : AppCompatActivity() {
     private fun configureScanner() {
         val barcodeLauncher: ActivityResultLauncher<ScanOptions> =
             registerForActivityResult(
-                ScanContract()
+                ScanContract(),
             ) { scanIntentResult ->
                 if (scanIntentResult.contents == null) {
                     Toast.makeText(this, "Scan cancelled!", Toast.LENGTH_SHORT).show()
                 } else {
                     onScanCompleted(
-                        scanIntentResult
+                        scanIntentResult,
                     )
                 }
             }

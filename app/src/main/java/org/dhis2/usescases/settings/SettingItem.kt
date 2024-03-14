@@ -7,5 +7,5 @@ enum class SettingItem {
     RESERVED_VALUES,
     DELETE_LOCAL_DATA,
     SMS,
-    VERSION_UPDATE
+    VERSION_UPDATE,
 }

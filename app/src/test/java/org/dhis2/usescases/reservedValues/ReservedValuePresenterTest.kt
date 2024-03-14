@@ -67,7 +67,7 @@ class ReservedValuePresenterTest {
     @Test
     fun `Should not catch exception random when error happens during download`() {
         whenever(
-            repository.refillReservedValues("attr")
+            repository.refillReservedValues("attr"),
         ) doReturn Observable.error(Throwable("random"))
 
         reservedValuePresenter.init()
@@ -85,7 +85,7 @@ class ReservedValuePresenterTest {
 
     private fun dummyD2Progress(): Observable<D2Progress> = Observable.just(
         BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
-            .isComplete(false).build()
+            .isComplete(false).build(),
     )
 
     private fun D2Error(): Observable<D2Progress> {
@@ -93,8 +93,8 @@ class ReservedValuePresenterTest {
             D2Error.builder().httpErrorCode(500)
                 .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
                 .errorComponent(
-                    D2ErrorComponent.Database
-                ).errorDescription("buug").build()
+                    D2ErrorComponent.Database,
+                ).errorDescription("buug").build(),
         )
     }
 
@@ -107,7 +107,7 @@ class ReservedValuePresenterTest {
                 "orgUnitName",
                 3,
                 "%d values left",
-                refillFlowable
+                refillFlowable,
             )
         return Single.just(mutableListOf(reservedValue))
     }

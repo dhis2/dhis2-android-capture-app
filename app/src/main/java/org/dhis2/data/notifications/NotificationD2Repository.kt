@@ -87,7 +87,7 @@ class NotificationD2Repository(
 
     private fun getUserGroups(): UserGroups {
         val userGroupsResponse =
-            userGroupsApi.getData(d2.userModule().user().blockingGet().uid()).execute()
+            userGroupsApi.getData(d2.userModule().user().blockingGet()!!.uid()).execute()
 
         return if (userGroupsResponse.isSuccessful) {
             userGroupsResponse.body() ?: UserGroups(listOf())
@@ -105,7 +105,7 @@ class NotificationD2Repository(
 
         val nonReadByUserNotifications = allNotifications.filter { notification ->
             notification.readBy.none { readBy ->
-                readBy.id == d2.userModule().user().blockingGet().uid()
+                readBy.id == d2.userModule().user().blockingGet()!!.uid()
             }
         }
 
@@ -119,7 +119,7 @@ class NotificationD2Repository(
 
         val notificationsByUser = nonReadByUserNotifications.filter { notification ->
             notification.recipients.users.any {
-                it.id == d2.userModule().user().blockingGet().uid()
+                it.id == d2.userModule().user().blockingGet()!!.uid()
             }
         }
 

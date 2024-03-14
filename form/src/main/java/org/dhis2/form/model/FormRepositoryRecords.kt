@@ -6,30 +6,30 @@ sealed class FormRepositoryRecords(
     val recordUid: String?,
     val entryMode: EntryMode? = null,
     val allowMandatoryFields: Boolean = true,
-    val isBackgroundTransparent: Boolean = true
+    val isBackgroundTransparent: Boolean = true,
 ) : java.io.Serializable
 
 class EnrollmentRecords(
     val enrollmentUid: String,
-    val enrollmentMode: EnrollmentMode
+    val enrollmentMode: EnrollmentMode,
 ) : FormRepositoryRecords(
     recordUid = enrollmentUid,
-    entryMode = EntryMode.ATTR
+    entryMode = EntryMode.ATTR,
 )
 
 class EventRecords(
-    val eventUid: String
+    val eventUid: String,
 ) : FormRepositoryRecords(
     recordUid = eventUid,
-    entryMode = EntryMode.DE
+    entryMode = EntryMode.DE,
 )
 
 class SearchRecords(
     val programUid: String?,
     val teiTypeUid: String,
-    val currentSearchValues: Map<String, String>
+    val currentSearchValues: Map<String, String>,
 ) : FormRepositoryRecords(
     recordUid = programUid,
     allowMandatoryFields = false,
-    isBackgroundTransparent = false
+    isBackgroundTransparent = false,
 )

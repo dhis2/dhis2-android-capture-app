@@ -17,17 +17,17 @@ fun TableTheme(
     tableValidator: Validator? = null,
     tableResizeActions: TableResizeActions,
     content: @Composable
-    () -> Unit
+    () -> Unit,
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),
         LocalTableDimensions provides (tableDimensions ?: TableDimensions()),
         LocalTableConfiguration provides (tableConfiguration ?: TableConfiguration()),
         LocalValidator provides (tableValidator ?: DefaultValidator()),
-        LocalTableResizeActions provides tableResizeActions
+        LocalTableResizeActions provides tableResizeActions,
     ) {
         MaterialTheme(
-            content = content
+            content = content,
         )
     }
 }

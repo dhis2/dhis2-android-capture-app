@@ -1,7 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import io.reactivex.Single
-import java.util.UUID
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -28,6 +27,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class DataValueRepositoryTest {
 
@@ -47,20 +47,20 @@ class DataValueRepositoryTest {
             sectionUid,
             orgUnitUid,
             periodId,
-            attrOptionCombo
+            attrOptionCombo,
         )
     }
 
     @Test
     fun `Should return period`() {
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId)
+            d2.periodModule().periods().byPeriodId().eq(periodId),
         ) doReturn mock()
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId).one()
+            d2.periodModule().periods().byPeriodId().eq(periodId).one(),
         ) doReturn mock()
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId).one().get()
+            d2.periodModule().periods().byPeriodId().eq(periodId).one().get(),
         ) doReturn Single.just(dummyPeriod(periodId))
 
         val testObserver = repository.getPeriod().test()
@@ -78,26 +78,26 @@ class DataValueRepositoryTest {
     fun `Should return dataInputPeriod`() {
         val dataInputPeriods = listOf(
             dummyDataInputPeriod(periodId),
-            dummyDataInputPeriod()
+            dummyDataInputPeriod(),
         )
 
         whenever(
             d2.dataSetModule().dataSets()
                 .withDataInputPeriods()
+                .uid(dataSetUid),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets()
+                .withDataInputPeriods()
                 .uid(dataSetUid)
+                .blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets()
                 .withDataInputPeriods()
                 .uid(dataSetUid)
                 .blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSets()
-                .withDataInputPeriods()
-                .uid(dataSetUid)
-                .blockingGet()
-                .dataInputPeriods()
+                ?.dataInputPeriods(),
         ) doReturn dataInputPeriods
 
         val result = repository.getDataInputPeriod()
@@ -112,65 +112,65 @@ class DataValueRepositoryTest {
             DataElement.builder().uid(it.dataElement().uid()).build()
         }
         whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements(),
         ) doReturn dataSetElements
 
         whenever(
-            d2.dataSetModule().sections().withDataElements()
+            d2.dataSetModule().sections().withDataElements(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid()
+                .byDataSetUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
+                .blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid().eq(dataSetUid)
-                .uid(sectionUid)
-                .blockingGet()
-                .dataElements()
+                ?.dataElements(),
         ) doReturn dataElements
 
-        val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
+        val categoryCombosUids = dataSetElements.mapNotNull { it.categoryCombo()?.uid() }
         val categoryCombos = dataSetElements.map {
             CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
         }
 
         whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .get()
+                .get(),
         ) doReturn Single.just(categoryCombos)
 
         val testObserver = repository.getCatCombo().test()
@@ -191,78 +191,78 @@ class DataValueRepositoryTest {
             DataElement.builder().uid(it.dataElement().uid()).build()
         }
         whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements(),
         ) doReturn dataSetElements
 
         whenever(
             d2.dataElementModule()
                 .dataElements()
+                .uid(dataSetElements.first().dataElement().uid()),
+        ) doReturn mock()
+        whenever(
+            d2.dataElementModule()
+                .dataElements()
                 .uid(dataSetElements.first().dataElement().uid())
+                .blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataElementModule()
                 .dataElements()
                 .uid(dataSetElements.first().dataElement().uid())
                 .blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataElementModule()
-                .dataElements()
-                .uid(dataSetElements.first().dataElement().uid())
-                .blockingGet()
-                .categoryComboUid()
+                ?.categoryComboUid(),
         ) doReturn categoryCombosUids.first()
 
         whenever(
-            d2.dataSetModule().sections().withDataElements()
+            d2.dataSetModule().sections().withDataElements(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid()
+                .byDataSetUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
+                .blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid().eq(dataSetUid)
-                .uid(sectionUid)
-                .blockingGet()
-                .dataElements()
+                ?.dataElements(),
         ) doReturn dataElements
         whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .get()
+                .get(),
         ) doReturn Single.just(categoryCombos)
 
         val testObserver = repository.getCatCombo().test()
@@ -282,65 +282,65 @@ class DataValueRepositoryTest {
         }
 
         whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid)
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                .dataSetElements()
+                ?.dataSetElements(),
         ) doReturn dataSetElements
 
         whenever(
-            d2.dataSetModule().sections().withDataElements()
+            d2.dataSetModule().sections().withDataElements(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid()
+                .byDataSetUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
+                .blockingGet(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().sections().withDataElements()
                 .byDataSetUid().eq(dataSetUid)
                 .uid(sectionUid)
                 .blockingGet()
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().sections().withDataElements()
-                .byDataSetUid().eq(dataSetUid)
-                .uid(sectionUid)
-                .blockingGet()
-                .dataElements()
+                ?.dataElements(),
         ) doReturn dataElements
 
-        val categoryCombosUids = dataSetElements.map { it.categoryCombo()?.uid() }
+        val categoryCombosUids = dataSetElements.mapNotNull { it.categoryCombo()?.uid() }
         val categoryCombos = dataSetElements.map {
             CategoryCombo.builder().uid(it.categoryCombo()?.uid()).build()
         }
 
         whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids)
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories(),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
             d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().byUid().`in`(categoryCombosUids).withCategories()
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .get()
+                .get(),
         ) doReturn Single.just(categoryCombos)
 
         val testObserver = repository.getCatCombo().test()
@@ -356,7 +356,7 @@ class DataValueRepositoryTest {
     fun `Should return dataSet`() {
         val dataSet = dummyDataSet()
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         val testObserver = repository.getDataSet().test()
@@ -373,19 +373,19 @@ class DataValueRepositoryTest {
         val section = dummySection()
         whenever(
             d2.dataSetModule()
-                .sections().withGreyedFields().byDataSetUid()
+                .sections().withGreyedFields().byDataSetUid(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule()
-                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid)
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule()
-                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).uid(sectionUid)
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).uid(sectionUid),
         ) doReturn mock()
         whenever(
             d2.dataSetModule()
-                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).uid(sectionUid).get()
+                .sections().withGreyedFields().byDataSetUid().eq(dataSetUid).uid(sectionUid).get(),
         ) doReturn Single.just(section)
         val testObserver = repository.getGreyFields().test()
 
@@ -406,7 +406,7 @@ class DataValueRepositoryTest {
             sectionName,
             orgUnitUid,
             periodId,
-            attrOptionCombo
+            attrOptionCombo,
         )
 
         val testObserver = repositoryNoSection.getGreyFields().test()
@@ -428,45 +428,45 @@ class DataValueRepositoryTest {
             DataApprovalState.APPROVED_ABOVE,
             DataApprovalState.APPROVED_HERE,
             DataApprovalState.ACCEPTED_ELSEWHERE,
-            DataApprovalState.ACCEPTED_HERE
+            DataApprovalState.ACCEPTED_HERE,
         )
 
         whenever(
             d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid()
+                .byOrganisationUnitUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId()
+                .byPeriodId().eq(period),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
+                .byAttributeOptionComboUid(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
-                .byAttributeOptionComboUid()
+                .byAttributeOptionComboUid().eq(attributeOptionCombo),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one()
+                .one(),
         ) doReturn mock()
 
         approvalStates.forEach { dataApprovalState ->
@@ -483,7 +483,7 @@ class DataValueRepositoryTest {
                     .byOrganisationUnitUid().eq(orgUnit)
                     .byPeriodId().eq(period)
                     .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                    .one().blockingGet()
+                    .one().blockingGet(),
             ) doReturn dataApproval
 
             val testObserver = repository.isApproval().test()
@@ -503,40 +503,40 @@ class DataValueRepositoryTest {
 
         whenever(
             d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid()
+                .byOrganisationUnitUid(),
+        ) doReturn mock()
+        whenever(
+            d2.dataSetModule().dataApprovals()
+                .byOrganisationUnitUid().eq(orgUnit),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
+                .byPeriodId(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId()
+                .byPeriodId().eq(period),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
+                .byAttributeOptionComboUid(),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
-                .byAttributeOptionComboUid()
+                .byAttributeOptionComboUid().eq(attributeOptionCombo),
         ) doReturn mock()
         whenever(
             d2.dataSetModule().dataApprovals()
                 .byOrganisationUnitUid().eq(orgUnit)
                 .byPeriodId().eq(period)
                 .byAttributeOptionComboUid().eq(attributeOptionCombo)
-        ) doReturn mock()
-        whenever(
-            d2.dataSetModule().dataApprovals()
-                .byOrganisationUnitUid().eq(orgUnit)
-                .byPeriodId().eq(period)
-                .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                .one()
+                .one(),
         ) doReturn mock()
 
         val approvalStates = listOf(
@@ -544,7 +544,7 @@ class DataValueRepositoryTest {
             DataApprovalState.APPROVED_ABOVE,
             DataApprovalState.APPROVED_HERE,
             DataApprovalState.ACCEPTED_ELSEWHERE,
-            DataApprovalState.ACCEPTED_HERE
+            DataApprovalState.ACCEPTED_HERE,
         )
         val unapprovedStates = DataApprovalState.values().filter { !approvalStates.contains(it) }
 
@@ -562,7 +562,7 @@ class DataValueRepositoryTest {
                     .byOrganisationUnitUid().eq(orgUnit)
                     .byPeriodId().eq(period)
                     .byAttributeOptionComboUid().eq(attributeOptionCombo)
-                    .one().blockingGet()
+                    .one().blockingGet(),
             ) doReturn dataApproval
 
             val testObserver = repository.isApproval().test()
@@ -587,41 +587,41 @@ class DataValueRepositoryTest {
             .build()
 
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
+                .categoryOptionCombos().withCategoryOptions(),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid()
+                .byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid()),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(listOf(categoryOptionCombo))
         whenever(
             d2.userModule().authorities()
-                .byName()
+                .byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule().authorities()
                 .byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule().authorities()
-                .byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -645,41 +645,41 @@ class DataValueRepositoryTest {
             .build()
 
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
+                .categoryOptionCombos().withCategoryOptions(),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid()
+                .byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid()),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(listOf(categoryOptionCombo))
         whenever(
             d2.userModule().authorities()
-                .byName()
+                .byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule().authorities()
                 .byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule().authorities()
-                .byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -703,49 +703,49 @@ class DataValueRepositoryTest {
             .build()
 
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
+                .categoryOptionCombos().withCategoryOptions(),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid()
+                .byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid()),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(listOf(categoryOptionCombo))
 
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(listOf(dataSetUid))
                 .byOrganisationUnitScope(
-                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
-                ).blockingGet()
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE,
+                ).blockingGet(),
         ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
         whenever(
             d2.userModule().authorities()
-                .byName()
+                .byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule().authorities()
                 .byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule().authorities()
-                .byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -769,49 +769,49 @@ class DataValueRepositoryTest {
             .build()
 
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
+                .categoryOptionCombos().withCategoryOptions(),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid()
+                .byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid()),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq(dataSet.categoryCombo()?.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(listOf(categoryOptionCombo))
 
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(listOf(dataSetUid))
                 .byOrganisationUnitScope(
-                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
-                ).blockingGet()
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE,
+                ).blockingGet(),
         ) doReturn listOf(OrganisationUnit.builder().uid(UUID.randomUUID().toString()).build())
         whenever(
             d2.userModule().authorities()
-                .byName()
+                .byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule().authorities()
+                .byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule().authorities()
                 .byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule().authorities()
-                .byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn true
 
         val testObserver = repository.canWriteAny().test()
@@ -825,12 +825,12 @@ class DataValueRepositoryTest {
     @Test
     fun `Should return dataSet don't have write permission`() {
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(
             DataSet.builder()
                 .uid(UUID.randomUUID().toString())
                 .access(Access.create(false, false, DataAccess.create(false, false)))
-                .build()
+                .build(),
         )
 
         val testObserver = repository.canWriteAny().test()
@@ -847,7 +847,7 @@ class DataValueRepositoryTest {
             .build()
 
     private fun dummyDataInputPeriod(
-        periodId: String = UUID.randomUUID().toString()
+        periodId: String = UUID.randomUUID().toString(),
     ): DataInputPeriod = DataInputPeriod.builder()
         .period(ObjectWithUid.create(periodId))
         .build()
@@ -876,7 +876,7 @@ class DataValueRepositoryTest {
     private fun dummySection(): Section = Section.builder()
         .uid(UUID.randomUUID().toString())
         .greyedFields(
-            listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build())
+            listOf(DataElementOperand.builder().uid(UUID.randomUUID().toString()).build()),
         )
         .build()
 }

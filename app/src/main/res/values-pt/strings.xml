@@ -87,14 +87,6 @@
     <string name="program_inactive">Programa inativo</string>
 
     <string name="event_open">Abrir</string>
-    <string name="event_completed">Evento concluído</string>
-    <string name="event_skipped">Evento Ignorado</string>
-    <string name="event_schedule">Agenda de Eventos</string>
-    <string name="event_expired">Evento Expirado</string>
-    <string name="event_editing_expired">Edição expirada</string>
-    <string name="event_accepted">Evento Aceito</string>
-    <string name="event_approved">Evento Aprovado</string>
-    <string name="event_inactive">Evento Inativo</string>
     <string name="read_only">Apenas leitura</string>
     <string name="finish_and_complete">Terminar e concluir</string>
     <string name="completed">Completo</string>
@@ -164,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Veja detalhes</string>
     <string name="view_more">VEJA MAIS</string>
-    <string name="edit">EDITAR</string>
     <string name="enrolling_ou">Inscrição UO:</string>
     <string name="follow_up">Acompanhamento</string>
     <string name="follow_up_enabled">Acompanhamento ativado</string>

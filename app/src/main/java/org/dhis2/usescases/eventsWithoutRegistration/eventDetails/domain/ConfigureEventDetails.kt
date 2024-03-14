@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -14,12 +13,13 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
 import org.hisp.dhis.android.core.event.EventStatus.OVERDUE
+import java.util.Date
 
 class ConfigureEventDetails(
     private val repository: EventDetailsRepository,
     private val resourcesProvider: EventDetailResourcesProvider,
     private val creationType: EventCreationType,
-    private val enrollmentStatus: EnrollmentStatus?
+    private val enrollmentStatus: EnrollmentStatus?,
 ) {
 
     operator fun invoke(
@@ -28,20 +28,20 @@ class ConfigureEventDetails(
         catOptionComboUid: String?,
         isCatComboCompleted: Boolean,
         coordinates: String?,
-        tempCreate: String?
+        tempCreate: String?,
     ): Flow<EventDetails> {
         val isEventCompleted = isCompleted(
             selectedDate = selectedDate,
             selectedOrgUnit = selectedOrgUnit,
             isCatComboCompleted = isCatComboCompleted,
-            tempCreate = tempCreate
+            tempCreate = tempCreate,
         )
         val storedEvent = repository.getEvent()
         val programStage = repository.getProgramStage()
         return flowOf(
             EventDetails(
-                name = programStage.displayName(),
-                description = programStage.displayDescription(),
+                name = programStage?.displayName(),
+                description = programStage?.displayDescription(),
                 style = repository.getObjectStyle(),
                 enabled = isEnable(storedEvent),
                 isEditable = isEditable(),
@@ -54,8 +54,8 @@ class ConfigureEventDetails(
                 isCompleted = isEventCompleted,
                 isActionButtonVisible = isActionButtonVisible(isEventCompleted, storedEvent),
                 actionButtonText = getActionButtonText(),
-                canReopen = repository.getCanReopen()
-            )
+                canReopen = repository.getCanReopen(),
+            ),
         )
     }
 
@@ -69,10 +69,14 @@ class ConfigureEventDetails(
     }
 
     private fun isActionButtonVisible(isEventCompleted: Boolean, storedEvent: Event?): Boolean {
-        return storedEvent?.let {
-            !(it.status() == OVERDUE && enrollmentStatus == CANCELLED) &&
-                repository.getEditableStatus() !is NonEditable
-        } ?: isEventCompleted
+        return if (!isEventCompleted) {
+            false
+        } else {
+            storedEvent?.let {
+                !(it.status() == OVERDUE && enrollmentStatus == CANCELLED) &&
+                    repository.getEditableStatus() !is NonEditable
+            } ?: true
+        }
     }
 
     fun reopenEvent() = repository.reopenEvent()
@@ -81,7 +85,7 @@ class ConfigureEventDetails(
         selectedDate: Date?,
         selectedOrgUnit: String?,
         isCatComboCompleted: Boolean,
-        tempCreate: String?
+        tempCreate: String?,
     ) = selectedDate != null &&
         !selectedOrgUnit.isNullOrEmpty() &&
         isCatComboCompleted &&

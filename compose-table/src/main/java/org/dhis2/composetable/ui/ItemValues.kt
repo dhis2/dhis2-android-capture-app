@@ -19,11 +19,11 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
     headerExtraSize: Int,
-    options: List<String>
+    options: List<String>,
 ) {
     Row(
         modifier = Modifier
-            .horizontalScroll(state = horizontalScrollState)
+            .horizontalScroll(state = horizontalScrollState),
     ) {
         repeat(
             times = cellValues.size,
@@ -33,7 +33,7 @@ fun ItemValues(
                         overridenValues[columnIndex]
                     } else {
                         cellValues[columnIndex]
-                    } ?: TableCell(value = "")
+                    } ?: TableCell(value = "", column = columnIndex)
 
                 key("$tableId$CELL_TEST_TAG${cellValue.row}${cellValue.column}") {
                     TableCell(
@@ -41,10 +41,10 @@ fun ItemValues(
                         cell = cellValue,
                         maxLines = maxLines,
                         headerExtraSize = headerExtraSize,
-                        options = options
+                        options = options,
                     )
                 }
-            }
+            },
         )
         Spacer(Modifier.size(TableTheme.dimensions.tableEndExtraScroll))
     }

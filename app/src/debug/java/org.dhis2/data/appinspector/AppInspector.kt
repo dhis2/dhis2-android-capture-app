@@ -23,19 +23,19 @@ class AppInspector(private val context: Context) {
             if (BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhisUITesting") {
                 AndroidFlipperClient.getInstance(context).apply {
                     addPlugin(
-                        layoutInspectorPlugin()
+                        layoutInspectorPlugin(),
                     )
                     addPlugin(
-                        databaseInspectorPlugin()
+                        databaseInspectorPlugin(),
                     )
                     addPlugin(
-                        networkInspectorPlugin()
+                        networkInspectorPlugin(),
                     )
                     addPlugin(
-                        sharedPreferencesPlugin()
+                        sharedPreferencesPlugin(),
                     )
                     addPlugin(
-                        crashPlugin()
+                        crashPlugin(),
                     )
                     start()
                 }

@@ -4,9 +4,9 @@ import android.transition.TransitionManager
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.composethemeadapter.MdcTheme
-import org.dhis2.Bindings.display
-import org.dhis2.Bindings.dp
 import org.dhis2.R
+import org.dhis2.bindings.display
+import org.dhis2.bindings.dp
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
@@ -16,7 +16,7 @@ import org.dhis2.utils.isPortrait
 
 class SearchScreenConfigurator(
     val binding: ActivitySearchBinding,
-    val filterIsOpenCallback: (isOpen: Boolean) -> Unit
+    val filterIsOpenCallback: (isOpen: Boolean) -> Unit,
 ) {
     fun configure(screenState: SearchTEScreenState) {
         when (screenState) {
@@ -48,7 +48,7 @@ class SearchScreenConfigurator(
                     searchConfiguration.searchForm.isOpened
                 ) {
                     MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch
+                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
                     )
                 }
             }
@@ -63,10 +63,10 @@ class SearchScreenConfigurator(
         }
         binding.searchButton.display(
             searchConfiguration.displaySearchButton() ||
-                !searchConfiguration.searchFilters.isOpened
+                !searchConfiguration.searchFilters.isOpened,
         )
         binding.clearFilterSearchButton.display(
-            searchConfiguration.displayResetInLandscape()
+            searchConfiguration.displayResetInLandscape(),
         )
         syncButtonVisibility(true)
         setFiltersVisibility(true)
@@ -76,7 +76,7 @@ class SearchScreenConfigurator(
                     !searchConfiguration.searchFilters.isOpened
                 ) {
                     MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch
+                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
                     )
                 }
             }
@@ -130,7 +130,7 @@ class SearchScreenConfigurator(
             isPortrait(),
             binding.backdropLayout,
             endID,
-            margin
+            margin,
         )
     }
 }

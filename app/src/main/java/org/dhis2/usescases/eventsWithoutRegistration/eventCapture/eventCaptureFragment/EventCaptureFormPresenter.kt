@@ -14,7 +14,7 @@ class EventCaptureFormPresenter(
     private val view: EventCaptureFormView,
     private val activityPresenter: EventCaptureContract.Presenter,
     private val d2: D2,
-    private val eventUid: String
+    private val eventUid: String,
 ) {
 
     fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
@@ -24,28 +24,28 @@ class EventCaptureFormPresenter(
                 result.onCompleteMessage,
                 result.fieldUidErrorList,
                 result.mandatoryFields,
-                result.warningFields
+                result.warningFields,
             )
             is FieldsWithWarningResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
                 emptyList(),
                 emptyMap(),
-                result.fieldUidWarningList
+                result.fieldUidWarningList,
             )
             is MissingMandatoryResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
                 result.errorFields,
                 result.mandatoryFields,
-                result.warningFields
+                result.warningFields,
             )
             is SuccessfulResult -> activityPresenter.attemptFinish(
                 result.canComplete,
                 result.onCompleteMessage,
                 emptyList(),
                 emptyMap(),
-                emptyList()
+                emptyList(),
             )
             NotSavedResult -> {
                 // Nothing to do in this case

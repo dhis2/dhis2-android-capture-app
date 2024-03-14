@@ -24,7 +24,7 @@ class GeometryControllerTest {
     @Test
     fun `Should return null if coordinates is null`() {
         assertTrue(
-            controller.generateLocationFromCoordinates(FeatureType.POINT, null) == null
+            controller.generateLocationFromCoordinates(FeatureType.POINT, null) == null,
         )
     }
 
@@ -32,17 +32,17 @@ class GeometryControllerTest {
     fun `Should parse coordinates`() {
         val point = listOf(12.0, 12.0)
         whenever(
-            geometryParser.parsePoint(any())
+            geometryParser.parsePoint(any()),
         ) doReturn point
 
         val result = controller.generateLocationFromCoordinates(
             FeatureType.POINT,
-            "coordinates"
+            "coordinates",
         )
 
         assertTrue(
             result?.type() == FeatureType.POINT &&
-                result.coordinates()?.isNotEmpty() == true
+                result.coordinates()?.isNotEmpty() == true,
         )
     }
 
@@ -54,27 +54,27 @@ class GeometryControllerTest {
                 currentCallback = 0
             },
             { currentCallback = 1 },
-            { _, _, _ -> currentCallback = 2 }
+            { _, _, _ -> currentCallback = 2 },
         )
 
         coordinateCallback.intent(
             FormIntent.SaveCurrentLocation(
                 uid = "fieldUid",
                 value = null,
-                featureType = "none"
-            )
+                featureType = "none",
+            ),
         )
         assertTrue(currentCallback == 0)
         coordinateCallback.recyclerViewUiEvents(
-            RecyclerViewUiEvents.RequestCurrentLocation("fieldUid")
+            RecyclerViewUiEvents.RequestCurrentLocation("fieldUid"),
         )
         assertTrue(currentCallback == 1)
         coordinateCallback.recyclerViewUiEvents(
             RecyclerViewUiEvents.RequestLocationByMap(
                 "fieldUid",
                 FeatureType.POINT,
-                null
-            )
+                null,
+            ),
         )
         assertTrue(currentCallback == 2)
     }

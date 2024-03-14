@@ -24,7 +24,8 @@ class EnrollmentMapLayer(
     val style: Style,
     val featureType: FeatureType,
     private val enrollmentColor: Int,
-    private val enrollmentDarkColor: Int
+    private val enrollmentDarkColor: Int,
+    private val colorUtils: ColorUtils,
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
@@ -54,7 +55,7 @@ class EnrollmentMapLayer(
                     PropertyFactory.iconImage(MapLayerManager.ENROLLMENT_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
                     PropertyFactory.textAllowOverlap(true),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.visibility(Property.NONE),
                 ).withFilter(isPoint())
 
     private val teiPointLayer: Layer
@@ -75,8 +76,8 @@ class EnrollmentMapLayer(
         get() = style.getLayer(POLYGON_LAYER_ID)
             ?: FillLayer(POLYGON_LAYER_ID, ENROLLMENT_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(ColorUtils.withAlpha(enrollmentColor)),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor)),
+                    PropertyFactory.visibility(Property.NONE),
                 )
                 .withFilter(isPolygon())
 
@@ -86,7 +87,7 @@ class EnrollmentMapLayer(
                 .withProperties(
                     PropertyFactory.lineColor(enrollmentDarkColor),
                     PropertyFactory.lineWidth(2f),
-                    PropertyFactory.visibility(Property.NONE)
+                    PropertyFactory.visibility(Property.NONE),
                 )
                 .withFilter(isPolygon())
 
@@ -118,21 +119,21 @@ class EnrollmentMapLayer(
 
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1.5f),
-            PropertyFactory.visibility(Property.VISIBLE)
+            PropertyFactory.visibility(Property.VISIBLE),
         )
     }
 
     private fun deselectCurrentPoint() {
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1f),
-            PropertyFactory.visibility(Property.NONE)
+            PropertyFactory.visibility(Property.NONE),
         )
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return style.getSourceAs<GeoJsonSource>(ENROLLMENT_SOURCE_ID)
             ?.querySourceFeatures(
-                Expression.eq(Expression.get("enrollmentUid"), featureUidProperty)
+                Expression.eq(Expression.get("enrollmentUid"), featureUidProperty),
             )?.firstOrNull()
             .also { setSelectedItem(it) }
     }
@@ -143,7 +144,7 @@ class EnrollmentMapLayer(
 
     override fun layerIdsToSearch(): Array<String> {
         return arrayOf(
-            TEI_POINT_LAYER_ID
+            TEI_POINT_LAYER_ID,
         )
     }
 }

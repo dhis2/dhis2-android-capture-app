@@ -1,7 +1,7 @@
 package org.dhis2.usescases.notes
 
 import io.reactivex.Single
-import org.dhis2.Bindings.toDate
+import org.dhis2.bindings.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.note.Note
 
@@ -12,13 +12,13 @@ class NotesRepository(private val d2: D2, val programUid: String) {
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet().uid()
+                .one().blockingGet()?.uid(),
         ).get()
         .map { notes ->
             notes.sortedWith(
                 Comparator { note1, note2 ->
                     note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
-                }
+                },
             )
         }
 
@@ -28,10 +28,11 @@ class NotesRepository(private val d2: D2, val programUid: String) {
                 notes.sortedWith(
                     Comparator { note1, note2 ->
                         note1.storedDate()?.toDate()?.compareTo(note2.storedDate()?.toDate()) ?: 0
-                    }
+                    },
                 )
             }
 
     fun hasProgramWritePermission(): Boolean =
-        d2.programModule().programs().uid(programUid).blockingGet().access().data().write()
+        d2.programModule().programs().uid(programUid).blockingGet()?.access()?.data()
+            ?.write() == true
 }

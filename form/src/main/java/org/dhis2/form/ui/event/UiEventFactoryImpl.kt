@@ -1,7 +1,6 @@
 package org.dhis2.form.ui.event
 
 import android.content.Intent
-import java.util.Calendar
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.FieldUiModel
@@ -27,6 +26,7 @@ import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
+import java.util.Calendar
 
 class UiEventFactoryImpl(
     val uid: String,
@@ -34,13 +34,13 @@ class UiEventFactoryImpl(
     val description: String?,
     val valueType: ValueType,
     val allowFutureDates: Boolean?,
-    val optionSet: String?
+    val optionSet: String?,
 ) : UiEventFactory {
     override fun generateEvent(
         value: String?,
         uiEventType: UiEventType?,
         renderingType: UiRenderType?,
-        fieldUiModel: FieldUiModel
+        fieldUiModel: FieldUiModel,
     ): RecyclerViewUiEvents? {
         var uiEvent: RecyclerViewUiEvents? = null
         try {
@@ -51,19 +51,19 @@ class UiEventFactoryImpl(
                             uid,
                             label,
                             value?.let { DateUtils.oldUiDateFormat().parse(it) },
-                            allowFutureDates ?: true
+                            allowFutureDates ?: true,
                         )
                         ValueType.DATETIME -> RecyclerViewUiEvents.OpenCustomCalendar(
                             uid,
                             label,
                             value?.let { DateUtils.databaseDateFormatNoSeconds().parse(it) },
                             allowFutureDates ?: true,
-                            isDateTime = true
+                            isDateTime = true,
                         )
                         ValueType.TIME -> RecyclerViewUiEvents.OpenTimePicker(
                             uid,
                             label,
-                            value?.let { DateUtils.timeFormat().parse(it) }
+                            value?.let { DateUtils.timeFormat().parse(it) },
                         )
                         else -> null
                     }
@@ -72,7 +72,7 @@ class UiEventFactoryImpl(
                     uid = uid,
                     label = label,
                     date = value?.toDate(),
-                    allowFutureDates = allowFutureDates ?: false
+                    allowFutureDates = allowFutureDates ?: false,
                 )
                 AGE_YEAR_MONTH_DAY -> {
                     val yearMonthDay = valueToYearMonthDay(value)
@@ -80,40 +80,41 @@ class UiEventFactoryImpl(
                         uid = uid,
                         year = yearMonthDay[0],
                         month = yearMonthDay[1],
-                        day = yearMonthDay[2]
+                        day = yearMonthDay[2],
                     )
                 }
                 ORG_UNIT -> RecyclerViewUiEvents.OpenOrgUnitDialog(
                     uid,
                     label,
-                    value
+                    value,
+                    fieldUiModel.orgUnitSelectorScope,
                 )
                 REQUEST_CURRENT_LOCATION -> RecyclerViewUiEvents.RequestCurrentLocation(
-                    uid = uid
+                    uid = uid,
                 )
                 REQUEST_LOCATION_BY_MAP -> RecyclerViewUiEvents.RequestLocationByMap(
                     uid = uid,
                     featureType = getFeatureType(renderingType),
-                    value = value
+                    value = value,
                 )
                 SHOW_DESCRIPTION -> RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                     title = label,
-                    message = description
+                    message = description,
                 )
                 ADD_PICTURE -> RecyclerViewUiEvents.AddImage(uid)
                 SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
                     label,
-                    value ?: ""
+                    value ?: "",
                 )
                 COPY_TO_CLIPBOARD -> RecyclerViewUiEvents.CopyToClipboard(
-                    value = value
+                    value = value,
                 )
                 QR_CODE -> {
                     if (value.isNullOrEmpty() && fieldUiModel.editable) {
                         RecyclerViewUiEvents.ScanQRCode(
                             uid = uid,
                             optionSet = optionSet,
-                            renderingType = renderingType
+                            renderingType = renderingType,
                         )
                     } else if (value != null) {
                         RecyclerViewUiEvents.DisplayQRCode(
@@ -121,7 +122,8 @@ class UiEventFactoryImpl(
                             optionSet = optionSet,
                             value = value,
                             renderingType = renderingType,
-                            editable = fieldUiModel.editable
+                            editable = fieldUiModel.editable,
+                            label = label,
                         )
                     } else {
                         null
@@ -135,7 +137,7 @@ class UiEventFactoryImpl(
                 PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
                     value,
-                    uid
+                    uid,
                 )
                 else -> null
             }

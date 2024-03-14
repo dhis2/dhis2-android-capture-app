@@ -30,17 +30,17 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
     ConstraintLayout(
         modifier = Modifier
             .height(56.dp)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         val (snackbar) = createRefs()
         val painterResource = painterResource(
-            id = dataEntryUiState.snackBarUiState.icon
+            id = dataEntryUiState.snackBarUiState.icon,
         )
         Snackbar(
             backgroundColor = Color(
                 colorResource(
-                    id = dataEntryUiState.snackBarUiState.color
-                ).toArgb()
+                    id = dataEntryUiState.snackBarUiState.color,
+                ).toArgb(),
             ),
             content = {
                 Row(
@@ -48,17 +48,17 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
                         .fillMaxWidth()
                         .height(56.dp),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         painter = painterResource,
                         contentDescription = "",
-                        modifier = Modifier.padding(end = (11.23).dp)
+                        modifier = Modifier.padding(end = (11.23).dp),
                     )
                     Text(
                         text = stringResource(
-                            id = dataEntryUiState.snackBarUiState.message
-                        )
+                            id = dataEntryUiState.snackBarUiState.message,
+                        ),
                     )
                 }
             },
@@ -67,7 +67,7 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
                 .height(56.dp)
                 .background(
                     shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp)),
-                    color = Color(0xFF4CAF50)
+                    color = Color(0xFF4CAF50),
                 )
                 .constrainAs(snackbar) {
                     bottom.linkTo(parent.bottom, margin = 16.dp)
@@ -75,7 +75,7 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
                     end.linkTo(parent.end, margin = 16.dp)
                 },
             action = {
-            }
+            },
         )
     }
 }

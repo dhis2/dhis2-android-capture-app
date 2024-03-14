@@ -37,7 +37,7 @@ class SMSSyncProviderTest {
             SmsRepository.SmsSendingState(0, 3),
             SmsRepository.SmsSendingState(1, 3),
             SmsRepository.SmsSendingState(2, 3),
-            SmsRepository.SmsSendingState(3, 3)
+            SmsRepository.SmsSendingState(3, 3),
         )
     }
 
@@ -128,7 +128,7 @@ class SMSSyncProviderTest {
             "uid",
             "orgUnitUid",
             "periodId",
-            "attComboUid"
+            "attComboUid",
         )
     }
 
@@ -149,7 +149,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         testObserver
@@ -174,7 +174,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         testObserver
@@ -200,7 +200,7 @@ class SMSSyncProviderTest {
                 },
                 {
                     statuses.add(it)
-                }
+                },
             )
             .test()
         statuses.apply {
@@ -213,15 +213,15 @@ class SMSSyncProviderTest {
 
     private fun mockConfirmationSMS() {
         whenever(
-            smsSender.checkConfirmationSms(any())
+            smsSender.checkConfirmationSms(any()),
         )doReturn Completable.complete()
     }
 
     private fun mockConfirmationSMSTimeout() {
         whenever(
-            smsSender.checkConfirmationSms(any())
+            smsSender.checkConfirmationSms(any()),
         )doReturn Completable.error(
-            SmsRepository.ResultResponseException(SmsRepository.ResultResponseIssue.TIMEOUT)
+            SmsRepository.ResultResponseException(SmsRepository.ResultResponseIssue.TIMEOUT),
         )
     }
 
@@ -230,10 +230,10 @@ class SMSSyncProviderTest {
             mock { on { isWaitingForResult } doReturn waitingForResult }
 
         whenever(
-            d2.smsModule().configCase()
+            d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig
+            d2.smsModule().configCase().getSmsModuleConfig(),
         ) doReturn Single.just(smsConfig)
     }
 
@@ -249,10 +249,10 @@ class SMSSyncProviderTest {
                 "uid",
                 "periodId",
                 "orgUnitUid",
-                "attComboUid"
+                "attComboUid",
             )
         },
-        resources
+        resources,
     )
 
     fun smsSyncProviderDataValue(conflictType: ConflictType) = SMSSyncProviderImpl(
@@ -261,9 +261,9 @@ class SMSSyncProviderTest {
             "uid",
             "periodId",
             "orgUnitUid",
-            "attComboUid"
+            "attComboUid",
         ),
-        resources
+        resources,
     )
 
     private fun mockTrackerSMSVersion(version: SMSVersion) {
@@ -271,13 +271,13 @@ class SMSSyncProviderTest {
             on { getSmsVersion() } doReturn version
         }
         whenever(
-            d2.systemInfoModule().versionManager()
+            d2.systemInfoModule().versionManager(),
         ) doReturn dhisVersionManager
     }
 
     private fun mockEnrollmentExists(exists: Boolean) {
         whenever(
-            d2.enrollmentModule().enrollments().uid("uid").blockingExists()
+            d2.enrollmentModule().enrollments().uid("uid").blockingExists(),
         ) doReturn exists
     }
 
@@ -287,7 +287,7 @@ class SMSSyncProviderTest {
         }
 
         whenever(
-            d2.eventModule().events().uid("uid").blockingGet()
+            d2.eventModule().events().uid("uid").blockingGet(),
         ) doReturn event
     }
 
@@ -295,10 +295,10 @@ class SMSSyncProviderTest {
         val smsConfig: ConfigCase.SmsConfig = mock { on { isModuleEnabled } doReturn isEnabled }
 
         whenever(
-            d2.smsModule().configCase()
+            d2.smsModule().configCase(),
         ) doReturn mock()
         whenever(
-            d2.smsModule().configCase().smsModuleConfig
+            d2.smsModule().configCase().getSmsModuleConfig(),
         ) doReturn Single.just(smsConfig)
     }
 }

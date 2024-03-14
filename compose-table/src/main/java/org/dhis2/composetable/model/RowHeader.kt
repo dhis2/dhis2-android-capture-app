@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class RowHeader(
     val id: String? = null,
     val title: String,
-    val row: Int? = null,
+    val row: Int,
     val showDecoration: Boolean = false,
-    val description: String? = null
+    val description: String? = null,
 )

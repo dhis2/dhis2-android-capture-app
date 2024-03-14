@@ -1,12 +1,13 @@
 package org.dhis2.form.model
 
-import java.io.File
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
+import java.io.File
 
 data class FieldUiModelImpl(
     override val uid: String,
@@ -33,6 +34,8 @@ data class FieldUiModelImpl(
     override val fieldMask: String? = null,
     override val isLoadingData: Boolean = false,
     override var optionSetConfiguration: OptionSetConfiguration?,
+    override var autocompleteList: List<String>?,
+    override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val url: String? = null,
 ) : FieldUiModel {
 
@@ -65,7 +68,7 @@ data class FieldUiModelImpl(
         callback?.recyclerViewUiEvents(
             RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                 label,
-                if (url== null) description else description + "\n" + url
+                if (url== null) description else description + "\n" + url,
             )
         )
     }

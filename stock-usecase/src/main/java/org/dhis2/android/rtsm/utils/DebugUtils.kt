@@ -50,14 +50,14 @@ fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events
     events.forEach {
         printRuleEngineData(
             buffer,
-            "   Event uid = ${it.event()}, status = ${it.status()}, eventDate = ${it.eventDate()}"
+            "   Event uid = ${it.event()}, status = ${it.status()}, eventDate = ${it.eventDate()}",
         )
 
         printRuleEngineData(buffer, "   Data values:")
         it.dataValues().forEach { dv ->
             printRuleEngineData(
                 buffer,
-                "      DE = ${dv.dataElement()}, value = ${dv.value()}"
+                "      DE = ${dv.dataElement()}, value = ${dv.value()}",
             )
         }
 
@@ -71,7 +71,7 @@ fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events
 fun printRuleEffects(
     label: String,
     ruleEffects: List<RuleEffect>,
-    dataValues: List<RuleDataValue>?
+    dataValues: List<RuleDataValue>?,
 ) {
     val buffer = StringBuilder()
     buffer.append("\n")
@@ -86,7 +86,7 @@ fun printRuleEffects(
                     buffer,
                     "field = ${ruleAction.field()}, " +
                         "data = ${ruleEffect.data()}, " +
-                        "rule = ${ruleAction.data()}"
+                        "rule = ${ruleAction.data()}",
                 )
             }
         }
@@ -97,7 +97,7 @@ fun printRuleEffects(
     dataValues?.forEach {
         printRuleEngineData(
             buffer,
-            "      DE = ${it.dataElement()}, value = ${it.value()}, eventDate= ${it.eventDate()}"
+            "      DE = ${it.dataElement()}, value = ${it.value()}, eventDate= ${it.eventDate()}",
         )
     }
     printSeparator(buffer)

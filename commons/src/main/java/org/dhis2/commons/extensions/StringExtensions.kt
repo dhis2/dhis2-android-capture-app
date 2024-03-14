@@ -1,8 +1,8 @@
 package org.dhis2.commons.extensions
 
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
 import timber.log.Timber
+import java.util.Date
 
 fun String.toDate(): Date? {
     var date: Date? = null

@@ -50,7 +50,7 @@ fun Backdrop(
     supportFragmentManager: FragmentManager,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     scaffoldState: ScaffoldState,
-    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> }
+    syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
 ) {
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     var isFrontLayerDisabled by remember { mutableStateOf<Boolean?>(null) }
@@ -70,7 +70,7 @@ fun Backdrop(
             onDiscard = {
                 manageStockViewModel.onBottomSheetClosed()
                 activity.finish()
-            }
+            },
         )
     }
 
@@ -84,7 +84,7 @@ fun Backdrop(
         modifier = modifier,
         appBar = {
             Toolbar(
-                settingsUiState.transactionType.name,
+                settingsUiState.selectedTransactionItem.label,
                 settingsUiState.fromFacilitiesLabel().asString(),
                 settingsUiState.deliverToLabel()?.asString(),
                 themeColor,
@@ -95,7 +95,7 @@ fun Backdrop(
                 scaffoldState,
                 syncAction,
                 settingsUiState.hasFacilitySelected(),
-                settingsUiState.hasDestinationSelected()
+                settingsUiState.hasDestinationSelected(),
             )
         },
         backLayerBackgroundColor = themeColor,
@@ -117,7 +117,7 @@ fun Backdrop(
                             manageStockViewModel.cleanItemsFromCache()
                             result.invoke(EditionDialogResult.DISCARD)
                             manageStockViewModel.onHandleBackNavigation()
-                        }
+                        },
                     )
                 },
                 onTransitionSelected = {
@@ -125,7 +125,7 @@ fun Backdrop(
                 },
                 onFacilitySelected = {
                     viewModel.setFacility(it)
-                }
+                },
             ) {
                 viewModel.setDestination(it)
             }
@@ -138,14 +138,14 @@ fun Backdrop(
                 themeColor,
                 viewModel,
                 manageStockViewModel,
-                barcodeLauncher
+                barcodeLauncher,
             )
         },
         scaffoldState = backdropState,
         gesturesEnabled = false,
         frontLayerBackgroundColor = Color.White,
         frontLayerScrimColor = if (
-            settingsUiState.transactionType == TransactionType.DISTRIBUTION
+            settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
         ) {
             if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
                 isFrontLayerDisabled = false
@@ -162,7 +162,7 @@ fun Backdrop(
                 isFrontLayerDisabled = false
                 Color.Unspecified
             }
-        }
+        },
     )
 
     if (dataEntryUiState.step == DataEntryStep.COMPLETED) {
@@ -179,7 +179,7 @@ private fun launchBottomSheet(
     subtitle: String,
     supportFragmentManager: FragmentManager,
     onDiscard: () -> Unit, // Perform the transaction change and clear data
-    onKeepEdition: () -> Unit // Leave it as it was
+    onKeepEdition: () -> Unit, // Leave it as it was
 ) {
     BottomSheetDialog(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
@@ -187,13 +187,13 @@ private fun launchBottomSheet(
             message = subtitle,
             iconResource = R.drawable.ic_outline_error_36,
             mainButton = DialogButtonStyle.MainButton(org.dhis2.commons.R.string.keep_editing),
-            secondaryButton = DialogButtonStyle.DiscardButton()
+            secondaryButton = DialogButtonStyle.DiscardButton(),
         ),
         onMainButtonClicked = {
             supportFragmentManager.popBackStack()
             onKeepEdition.invoke()
         },
-        onSecondaryButtonClicked = { onDiscard.invoke() }
+        onSecondaryButtonClicked = { onDiscard.invoke() },
     ).apply {
         this.show(supportFragmentManager.beginTransaction(), "DIALOG")
         this.isCancelable = false
@@ -211,7 +211,7 @@ fun DisplaySnackBar(manageStockViewModel: ManageStockViewModel, scaffoldState: S
                     val result = scaffoldState.snackbarHostState.showSnackbar(
                         message = "Snackbar # ",
                         actionLabel = "Action on ",
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                     when (result) {
                         SnackbarResult.ActionPerformed -> {

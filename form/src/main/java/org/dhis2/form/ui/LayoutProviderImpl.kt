@@ -1,12 +1,12 @@
 package org.dhis2.form.ui
 
 import androidx.annotation.LayoutRes
-import kotlin.reflect.KClass
 import org.dhis2.form.R
 import org.dhis2.form.ui.provider.LayoutProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import kotlin.reflect.KClass
 
 private val layouts = mapOf<KClass<*>, Int>()
 
@@ -16,7 +16,7 @@ class LayoutProviderImpl : LayoutProvider {
         valueType: ValueType?,
         renderingType: ValueTypeRenderingType?,
         optionSet: String?,
-        sectionRenderingType: SectionRenderingType?
+        sectionRenderingType: SectionRenderingType?,
     ): Int {
         val layout = when (valueType) {
             ValueType.AGE -> R.layout.form_age_custom
@@ -26,14 +26,16 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.COORDINATE -> R.layout.form_coordinate_custom
             ValueType.IMAGE -> R.layout.form_picture
             ValueType.TRUE_ONLY,
-            ValueType.BOOLEAN -> return when (renderingType) {
+            ValueType.BOOLEAN,
+            -> return when (renderingType) {
                 ValueTypeRenderingType.TOGGLE -> when (valueType) {
                     ValueType.TRUE_ONLY -> R.layout.form_toggle
                     else -> R.layout.form_radio_button
                 }
 
                 ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-                ValueTypeRenderingType.VERTICAL_CHECKBOXES -> R.layout.form_check_button
+                ValueTypeRenderingType.VERTICAL_CHECKBOXES,
+                -> R.layout.form_check_button
 
                 else -> R.layout.form_radio_button
             }
@@ -53,7 +55,8 @@ class LayoutProviderImpl : LayoutProvider {
             ValueType.REFERENCE,
             ValueType.GEOJSON,
             ValueType.USERNAME,
-            ValueType.TRACKER_ASSOCIATE -> R.layout.form_unsupported
+            ValueType.TRACKER_ASSOCIATE,
+            -> R.layout.form_unsupported
 
             else -> R.layout.form_edit_text_custom
         }
@@ -64,7 +67,7 @@ class LayoutProviderImpl : LayoutProvider {
         optionSet: String?,
         sectionRenderingType: SectionRenderingType?,
         renderingType: ValueTypeRenderingType?,
-        @LayoutRes defaultLayout: Int
+        @LayoutRes defaultLayout: Int,
     ): Int {
         return when {
             shouldRenderAsMatrixImage(optionSet, sectionRenderingType, renderingType) ->
@@ -97,14 +100,15 @@ class LayoutProviderImpl : LayoutProvider {
 
     private fun shouldRenderAsSelector(
         optionSet: String?,
-        renderingType: ValueTypeRenderingType?
+        renderingType: ValueTypeRenderingType?,
     ): Boolean {
         val isOptionSet = optionSet != null
         val isSelectorRendering = when (renderingType) {
             ValueTypeRenderingType.HORIZONTAL_RADIOBUTTONS,
             ValueTypeRenderingType.VERTICAL_RADIOBUTTONS,
             ValueTypeRenderingType.HORIZONTAL_CHECKBOXES,
-            ValueTypeRenderingType.VERTICAL_CHECKBOXES -> {
+            ValueTypeRenderingType.VERTICAL_CHECKBOXES,
+            -> {
                 true
             }
 
@@ -116,7 +120,7 @@ class LayoutProviderImpl : LayoutProvider {
     private fun shouldRenderAsMatrixImage(
         optionSet: String?,
         sectionRenderingType: SectionRenderingType?,
-        renderingType: ValueTypeRenderingType?
+        renderingType: ValueTypeRenderingType?,
     ): Boolean {
         val isOptionSet = optionSet != null
         val isDefaultRendering =

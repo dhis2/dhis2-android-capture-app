@@ -7,14 +7,14 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.Bindings.buildInfo
+import org.dhis2.bindings.buildInfo
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.databinding.FragmentAboutBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.user.User
+import javax.inject.Inject
 
 class AboutFragment : FragmentGlobalAbstract(), AboutView {
 
@@ -30,7 +30,7 @@ class AboutFragment : FragmentGlobalAbstract(), AboutView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         aboutBinding = FragmentAboutBinding.inflate(inflater, container, false)
         return aboutBinding.apply {

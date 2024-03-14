@@ -1,6 +1,6 @@
 package org.dhis2.bindings
 
-import org.dhis2.Bindings.withValueTypeCheck
+import org.dhis2.commons.bindings.withValueTypeCheck
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,7 +15,7 @@ class ValueExtensionsTest {
             "1",
             "1234",
             "214748999",
-            null
+            null,
         )
 
         val expectedResults = arrayListOf(
@@ -25,12 +25,12 @@ class ValueExtensionsTest {
             "1",
             "1234",
             "214748999",
-            null
+            null,
         )
 
         valueList.forEachIndexed { index, value ->
             assertTrue(
-                value.withValueTypeCheck(ValueType.INTEGER) == expectedResults[index]
+                value.withValueTypeCheck(ValueType.INTEGER) == expectedResults[index],
             )
         }
     }
@@ -42,7 +42,7 @@ class ValueExtensionsTest {
             "0",
             ".2233",
             "1",
-            null
+            null,
         )
 
         val expectedResults = arrayListOf(
@@ -50,12 +50,12 @@ class ValueExtensionsTest {
             "0",
             "0.2233",
             "1",
-            null
+            null,
         )
 
         valueList.forEachIndexed { index, value ->
             assertTrue(
-                value.withValueTypeCheck(ValueType.UNIT_INTERVAL) == expectedResults[index]
+                value.withValueTypeCheck(ValueType.UNIT_INTERVAL) == expectedResults[index],
             )
         }
     }

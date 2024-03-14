@@ -80,14 +80,6 @@
     <string name="program_inactive">Dastur nofaol</string>
 
     <string name="event_open">Ochiq</string>
-    <string name="event_completed">Hodisa/Tadbir tugallandi</string>
-    <string name="event_skipped">Tadbir oʼtkazib yuborildi</string>
-    <string name="event_schedule">Tadbir rejasi</string>
-    <string name="event_expired">Tadbir muddati tugagan</string>
-    <string name="event_editing_expired">Tahrirlash muddati tugagan</string>
-    <string name="event_accepted">Tadbir qabul qilingan</string>
-    <string name="event_approved">Tadbir tasdiqlandi</string>
-    <string name="event_inactive">Tadbir nofaol</string>
     <string name="read_only">Faqat oʼqish uchun</string>
     <string name="finish_and_complete">Yakunlash va toʼldirish</string>
     <string name="completed">bajarildi</string>
@@ -154,7 +146,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Tafsilotlarni koʼring</string>
     <string name="view_more">KOʼPROQ KOʼRISh</string>
-    <string name="edit">TАHRIRLАSh</string>
     <string name="enrolling_ou">OUga roʼyxatga olish</string>
     <string name="follow_up">Kuzatib borish</string>
     <string name="follow_up_enabled">Kuzatuv yoqilgan</string>

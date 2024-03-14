@@ -20,11 +20,11 @@ class MapTeisToFeatureCollection(
     private val mapPolygonToFeature: MapPolygonToFeature,
     private val mapPolygonPointToFeature: MapPolygonPointToFeature,
     private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
-    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection
+    private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
 ) {
     fun map(
         teiList: List<SearchTeiModel>,
-        shouldAddRelationships: Boolean
+        shouldAddRelationships: Boolean,
     ): Pair<HashMap<String, FeatureCollection>, BoundingBox> {
         val featureMap: HashMap<String?, ArrayList<Feature>> = HashMap()
         val featureCollectionMap = HashMap<String, FeatureCollection>()
@@ -60,7 +60,7 @@ class MapTeisToFeatureCollection(
                     mapRelationshipsToFeatureCollection.map(relationshipModels)
                 relationshipsFeatureCollections.first.forEach { (key, featureCollection) ->
                     featureCollectionMap[key]?.features()?.addAll(
-                        featureCollection.features() ?: listOf()
+                        featureCollection.features() ?: listOf(),
                     ) ?: run {
                         featureCollectionMap[key] = featureCollection
                     }
@@ -78,15 +78,15 @@ class MapTeisToFeatureCollection(
                 bounds.westBound,
                 bounds.southBound,
                 bounds.eastBound,
-                bounds.northBound
-            )
+                bounds.northBound,
+            ),
         )
     }
 
     private fun mapToPointTei(
         geometry: Geometry,
         searchTeiModel: SearchTeiModel,
-        featureMap: HashMap<String?, ArrayList<Feature>>
+        featureMap: HashMap<String?, ArrayList<Feature>>,
     ) {
         val point = mapPointToFeature.map(geometry, bounds)?.first
         point?.addTeiInfo(searchTeiModel)?.also { featureMap[TEI]?.add(it) }
@@ -95,7 +95,7 @@ class MapTeisToFeatureCollection(
     private fun mapToPolygonTei(
         searchTeiModel: SearchTeiModel,
         featureMap: HashMap<String?, ArrayList<Feature>>,
-        geometry: Geometry
+        geometry: Geometry,
     ) {
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
         polygon?.addTeiInfo(searchTeiModel)?.also { featureMap[TEI]?.add(it) }
@@ -109,7 +109,7 @@ class MapTeisToFeatureCollection(
     private fun mapToPointEnrollment(
         geometry: Geometry,
         searchTeiModel: SearchTeiModel,
-        featureMap: HashMap<String?, ArrayList<Feature>>
+        featureMap: HashMap<String?, ArrayList<Feature>>,
     ) {
         val point = mapPointToFeature.map(geometry, bounds)?.first
         point?.addTeiEnrollmentInfo(searchTeiModel)?.also {
@@ -120,7 +120,7 @@ class MapTeisToFeatureCollection(
     private fun mapToPolygonEnrollment(
         geometry: Geometry,
         searchTeiModel: SearchTeiModel,
-        featureMap: HashMap<String?, ArrayList<Feature>>
+        featureMap: HashMap<String?, ArrayList<Feature>>,
     ) {
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
         polygon?.addTeiEnrollmentInfo(searchTeiModel)?.also {

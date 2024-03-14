@@ -1,8 +1,8 @@
 package org.dhis2.android.rtsm.utils
 
 import android.text.TextUtils
-import java.util.regex.Pattern
 import timber.log.Timber
+import java.util.regex.Pattern
 
 class Utils {
     companion object {

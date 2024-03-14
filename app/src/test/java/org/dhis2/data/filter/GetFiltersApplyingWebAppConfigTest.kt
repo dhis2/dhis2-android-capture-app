@@ -27,7 +27,7 @@ class GetFiltersApplyingWebAppConfigTest {
     fun `Should get filters applying webapp config deleting last item`() {
         val result = getFiltersApplyingWebAppConfig.execute(
             getDefaultTrackerFilters(),
-            getWebAppFiltersFirstConfig()
+            getWebAppFiltersFirstConfig(),
         )
         assert(result[0].filterLabel == EVENT_DATE)
         assert(result[1].filterLabel == ENROLLMENT_DATE)
@@ -40,7 +40,7 @@ class GetFiltersApplyingWebAppConfigTest {
     fun `Should get filters applying webapp config deleting random items`() {
         val result = getFiltersApplyingWebAppConfig.execute(
             getDefaultTrackerFilters(),
-            getWebAppFiltersSecondConfig()
+            getWebAppFiltersSecondConfig(),
         )
         assert(result[0].filterLabel == EVENT_DATE)
         assert(result[1].filterLabel == ENROLLMENT_DATE)
@@ -52,7 +52,7 @@ class GetFiltersApplyingWebAppConfigTest {
     fun `Should get empty filters applying webapp config with all of them false`() {
         val result = getFiltersApplyingWebAppConfig.execute(
             getDefaultTrackerFilters(),
-            getWebAppFitersNoFiltersToShow()
+            getWebAppFitersNoFiltersToShow(),
         )
         assert(result.isEmpty())
     }
@@ -62,39 +62,39 @@ class GetFiltersApplyingWebAppConfigTest {
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            EVENT_DATE
+            EVENT_DATE,
         ),
         ProgramFilter.ENROLLMENT_DATE to EnrollmentDateFilter(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            ENROLLMENT_DATE
+            ENROLLMENT_DATE,
         ),
         ProgramFilter.ORG_UNIT to OrgUnitFilter(
             FilterManager.getInstance().observeOrgUnitFilters(),
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            ORG_UNIT
+            ORG_UNIT,
         ),
         ProgramFilter.SYNC_STATUS to SyncStateFilter(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            SYNC_STATUS
+            SYNC_STATUS,
         ),
         ProgramFilter.ENROLLMENT_STATUS to EnrollmentStatusFilter(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            ENROLLMENT_STATUS
+            ENROLLMENT_STATUS,
         ),
         ProgramFilter.EVENT_STATUS to EventStatusFilter(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            EVENT_STATUS
-        )
+            EVENT_STATUS,
+        ),
     )
 
     fun getWebAppFiltersFirstConfig() = mapOf(
@@ -105,7 +105,7 @@ class GetFiltersApplyingWebAppConfigTest {
         ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
         ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(true),
         ProgramFilter.ORG_UNIT to createFilterSetting(true),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false)
+        ProgramFilter.CAT_COMBO to createFilterSetting(false),
     )
 
     fun getWebAppFiltersSecondConfig() = mapOf(
@@ -116,7 +116,7 @@ class GetFiltersApplyingWebAppConfigTest {
         ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
         ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
         ProgramFilter.ORG_UNIT to createFilterSetting(false),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false)
+        ProgramFilter.CAT_COMBO to createFilterSetting(false),
     )
 
     fun getWebAppFitersNoFiltersToShow() = mapOf(
@@ -127,7 +127,7 @@ class GetFiltersApplyingWebAppConfigTest {
         ProgramFilter.ENROLLMENT_DATE to createFilterSetting(false),
         ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
         ProgramFilter.ORG_UNIT to createFilterSetting(false),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false)
+        ProgramFilter.CAT_COMBO to createFilterSetting(false),
     )
 
     fun createFilterSetting(hasToShowFilter: Boolean): FilterSetting {

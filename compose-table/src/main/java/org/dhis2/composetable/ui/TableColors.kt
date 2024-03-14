@@ -19,7 +19,7 @@ data class TableColors(
     val warningColor: Color = Color(0xFFFF9800),
     val tableBackground: Color = Color(0xFFFFFFFF),
     val iconColor: Color = Color.LightGray,
-    val onPrimary: Color = Color.White
+    val onPrimary: Color = Color.White,
 ) {
     fun cellTextColor(hasError: Boolean, hasWarning: Boolean, isEditable: Boolean) = when {
         hasError -> errorColor

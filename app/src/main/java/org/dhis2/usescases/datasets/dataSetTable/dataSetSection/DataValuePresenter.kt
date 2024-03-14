@@ -3,8 +3,8 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 class DataValuePresenter(
     private val view: DataValueContract.View,
@@ -37,18 +38,18 @@ class DataValuePresenter(
     private val tableDimensionStore: TableDimensionStore,
     private val schedulerProvider: SchedulerProvider,
     private val mapper: TableDataToTableModelMapper,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
 ) : CoroutineScope, Validator {
     var disposable: CompositeDisposable = CompositeDisposable()
     private val screenState: MutableStateFlow<TableScreenState> = MutableStateFlow(
-        TableScreenState(emptyList())
+        TableScreenState(emptyList()),
     )
     private val tableConfigurationState = MutableStateFlow(
         TableConfigurationState(
             overwrittenTableWidth = tableDimensionStore.getTableWidth(),
             overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
-            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
-        )
+            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null),
+        ),
     )
 
     private val errors: MutableMap<String, String> = mutableMapOf()
@@ -80,8 +81,8 @@ class DataValuePresenter(
                             currentScreenState.copy(tables = it.tables)
                         }
                     },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
     }
 
@@ -107,15 +108,11 @@ class DataValuePresenter(
         val tableData = repository.setTableData(dataTableModel, errors)
         val updatedTableModel = mapper(tableData)
 
-        val updatedIndicators = indicatorTables()
-
         val updatedTables = screenState.value.tables.map { tableModel ->
             if (tableModel.id == catComboUid) {
                 updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
-            } else if (tableModel.id == null && updatedIndicators != null) {
-                updatedIndicators
             } else {
-                tableModel
+                indicatorTables() ?: tableModel
             }
         }
 
@@ -144,21 +141,21 @@ class DataValuePresenter(
     fun onCellClick(
         tableId: String,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ): TextInputModel? {
         val ids = cell.id?.split("_") ?: return null
         val dataElementUid = ids[0]
         val dataElement = getDataElement(dataElementUid)
-        handleElementInteraction(dataElement, cell, updateCellValue)
-        return dataElement.takeIf { it.optionSetUid() == null }
+        dataElement?.let { handleElementInteraction(dataElement, cell, updateCellValue) }
+        return dataElement.takeIf { it?.optionSetUid() == null }
             ?.valueType()?.toKeyBoardInputType()?.let { inputType ->
                 TextInputModel(
                     id = cell.id ?: "",
-                    mainLabel = dataElement.displayFormName() ?: "-",
+                    mainLabel = dataElement?.displayFormName() ?: "-",
                     secondaryLabels = repository.getCatOptComboOptions(ids[1]),
                     currentValue = cell.value,
                     keyboardInputType = inputType,
-                    error = errors[cell.id]
+                    error = errors[cell.id],
                 )
             }
     }
@@ -166,32 +163,33 @@ class DataValuePresenter(
     private fun handleElementInteraction(
         dataElement: DataElement,
         cell: TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) {
         if (dataElement.optionSetUid() != null) {
             view.showOptionSetDialog(
                 dataElement,
                 cell,
                 getSpinnerViewModel(dataElement, cell),
-                updateCellValue
+                updateCellValue,
             )
         } else {
             when (dataElement.valueType()) {
                 ValueType.BOOLEAN,
-                ValueType.TRUE_ONLY -> view.showBooleanDialog(dataElement, cell, updateCellValue)
+                ValueType.TRUE_ONLY,
+                -> view.showBooleanDialog(dataElement, cell, updateCellValue)
                 ValueType.DATE -> view.showCalendar(dataElement, cell, false, updateCellValue)
                 ValueType.DATETIME -> view.showCalendar(dataElement, cell, true, updateCellValue)
                 ValueType.TIME -> view.showTimePicker(dataElement, cell, updateCellValue)
                 ValueType.COORDINATE -> view.showCoordinatesDialog(
                     dataElement,
                     cell,
-                    updateCellValue
+                    updateCellValue,
                 )
                 ValueType.ORGANISATION_UNIT -> view.showOtgUnitDialog(
                     dataElement,
                     cell,
                     repository.orgUnits(),
-                    updateCellValue
+                    updateCellValue,
                 )
                 ValueType.AGE -> view.showAgeDialog(dataElement, cell, updateCellValue)
                 else -> {}
@@ -203,12 +201,15 @@ class DataValuePresenter(
         return repository.getOptionSetViewModel(dataElement, cell)
     }
 
-    private fun getDataElement(dataElementUid: String): DataElement {
+    private fun getDataElement(dataElementUid: String): DataElement? {
         return repository.getDataElement(dataElementUid)
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        launch(dispatcherProvider.io()) {
+        launch(
+            dispatcherProvider.io(),
+            start = CoroutineStart.ATOMIC,
+        ) {
             saveValue(cell)
             view.onValueProcessed()
         }
@@ -236,7 +237,7 @@ class DataValuePresenter(
             dataSetInfo.third,
             dataElementUid,
             catOptCombUid,
-            cell.value
+            cell.value,
         )
         val storeResult = result.blockingFirst()
         val saveResult = storeResult.valueStoreResult

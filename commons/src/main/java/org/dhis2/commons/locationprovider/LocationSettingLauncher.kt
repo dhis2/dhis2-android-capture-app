@@ -10,7 +10,7 @@ object LocationSettingLauncher {
     fun requestEnableLocationSetting(
         activityContext: Context,
         onAccept: (() -> Unit)? = null,
-        onCancel: () -> Unit = {}
+        onCancel: () -> Unit = {},
     ) {
         MaterialAlertDialogBuilder(activityContext, R.style.MaterialDialog)
             .setMessage(activityContext.getString(R.string.enable_location_message))

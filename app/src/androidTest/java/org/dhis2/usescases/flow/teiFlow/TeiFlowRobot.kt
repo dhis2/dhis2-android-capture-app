@@ -1,5 +1,6 @@
 package org.dhis2.usescases.flow.teiFlow
 
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
@@ -65,13 +66,17 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun checkPastEventsAreClosed(totalEvents: Int, programPosition: Int) {
+    fun checkPastEventsAreClosed(
+        composeTestRule: ComposeContentTestRule,
+        totalEvents: Int,
+        programPosition: Int
+    ) {
         enrollmentRobot {
             clickOnEnrolledProgram(programPosition)
         }
 
         teiDashboardRobot {
-            checkLockCompleteIconIsDisplay()
+            checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreClosed(totalEvents)
         }
@@ -88,14 +93,14 @@ class TeiFlowRobot : BaseRobot() {
         }
     }
 
-    fun changeDueDate(date: DateRegistrationUIModel, programStage: String, orgUnit: String) {
+    fun changeDueDate(date: DateRegistrationUIModel, programStage: String, orgUnit: String, composeTestRule: ComposeTestRule) {
         teiDashboardRobot {
             clickOnStageGroup(programStage)
             clickOnEventGroupByStageUsingOU(orgUnit)
         }
 
         eventRobot {
-            clickOnEventDueDate()
+            clickOnEventDueDate(composeTestRule)
             selectSpecificDate(date.year, date.month, date.day)
             acceptUpdateEventDate()
         }

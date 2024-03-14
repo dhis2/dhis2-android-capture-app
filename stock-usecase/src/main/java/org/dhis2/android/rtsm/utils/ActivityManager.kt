@@ -36,10 +36,10 @@ class ActivityManager {
 
             if (message.isNotEmpty()) {
                 Snackbar.make(view, message, LENGTH_LONG).setBackgroundTint(
-                    ContextCompat.getColor(view.context, color)
+                    ContextCompat.getColor(view.context, color),
                 ).apply {
                     this.view.findViewById<TextView>(
-                        com.google.android.material.R.id.snackbar_text
+                        com.google.android.material.R.id.snackbar_text,
                     )?.maxLines = 2
                 }.show()
             }
@@ -76,7 +76,7 @@ class ActivityManager {
             context: Context,
             titleRes: Int,
             messageRes: String,
-            confirmationCallback: () -> Unit
+            confirmationCallback: () -> Unit,
         ) {
             MaterialAlertDialogBuilder(context, R.style.MaterialDialog)
                 .setMessage(messageRes)
@@ -91,13 +91,13 @@ class ActivityManager {
         fun checkPermission(activity: Activity, requestCode: Int) {
             if (ContextCompat.checkSelfPermission(
                     activity.applicationContext,
-                    Manifest.permission.RECORD_AUDIO
+                    Manifest.permission.RECORD_AUDIO,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(Manifest.permission.RECORD_AUDIO),
-                    requestCode
+                    requestCode,
                 )
             }
         }

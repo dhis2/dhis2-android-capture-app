@@ -3,7 +3,6 @@ package org.dhis2.data.filter
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.EventProgramFilterSearchHelper
@@ -27,6 +26,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class EventProgramFilterSearchHelperTest {
 
@@ -45,10 +45,10 @@ class EventProgramFilterSearchHelperTest {
 
         eventFilterSearchHelper = EventProgramFilterSearchHelper(
             filterRepository,
-            filterManager
+            filterManager,
         )
         whenever(
-            filterRepository.eventsByProgram(any())
+            filterRepository.eventsByProgram(any()),
         ) doReturn mock()
     }
 
@@ -75,7 +75,7 @@ class EventProgramFilterSearchHelperTest {
         )
         verify(filterRepository, times(0)).applyOrgUnitFilter(
             any<EventQueryCollectionRepository>(),
-            any()
+            any(),
         )
         verify(filterRepository, times(0))
             .applyStateFilter(any<EventQueryCollectionRepository>(), any())
@@ -93,7 +93,7 @@ class EventProgramFilterSearchHelperTest {
         filterManager.apply {
             addOrgUnit(
                 OrganisationUnit.builder()
-                    .uid("ouUid").build()
+                    .uid("ouUid").build(),
             )
             addState(false, State.ERROR)
             addPeriod(arrayListOf(DatePeriod.create(Date(), Date())))
@@ -101,16 +101,16 @@ class EventProgramFilterSearchHelperTest {
         }
 
         whenever(
-            filterRepository.applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyStateFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyStateFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyDateFilter(any<EventQueryCollectionRepository>(), any())
+            filterRepository.applyDateFilter(any<EventQueryCollectionRepository>(), any()),
         ) doReturn mock()
         whenever(
-            filterRepository.applyAssignToMe(any<EventQueryCollectionRepository>())
+            filterRepository.applyAssignToMe(any<EventQueryCollectionRepository>()),
         ) doReturn mock()
 
         eventFilterSearchHelper.getFilteredEventRepository(

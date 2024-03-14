@@ -16,13 +16,15 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
-import javax.inject.Inject
-import org.dhis2.Bindings.dp
+import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.filters.workingLists.WorkingListViewModel
+import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
@@ -30,8 +32,11 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiLiveAdapter
 import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
-import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButton
+import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButtonAndWorkingList
+import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.dhis2.utils.isLandscape
+import java.io.File
+import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 private const val DIRECTION_DOWN = 1
@@ -41,7 +46,18 @@ class SearchTEList : FragmentGlobalAbstract() {
     @Inject
     lateinit var viewModelFactory: SearchTeiViewModelFactory
 
+    @Inject
+    lateinit var workingListViewModelFactory: WorkingListViewModelFactory
+
+    @Inject
+    lateinit var colorUtils: ColorUtils
+
+    @Inject
+    lateinit var teiCardMapper: TEICardMapper
+
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
+
+    private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
 
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
@@ -52,22 +68,26 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val liveAdapter by lazy {
         SearchTeiLiveAdapter(
             fromRelationship,
+            colorUtils,
+            cardMapper = teiCardMapper,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,
             onTeiClick = viewModel::onTeiClick,
-            onImageClick = ::displayImageDetail
+            onImageClick = ::displayImageDetail,
         )
     }
 
     private val globalAdapter by lazy {
         SearchTeiLiveAdapter(
             fromRelationship,
+            colorUtils,
+            cardMapper = teiCardMapper,
             onAddRelationship = viewModel::onAddRelationship,
             onSyncIconClick = viewModel::onSyncIconClick,
             onDownloadTei = viewModel::onDownloadTei,
             onTeiClick = viewModel::onTeiClick,
-            onImageClick = ::displayImageDetail
+            onImageClick = ::displayImageDetail,
         )
     }
 
@@ -102,7 +122,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context as SearchTEActivity).searchComponent.plus(
-            SearchTEListModule()
+            SearchTEListModule(),
         ).inject(this)
     }
 
@@ -110,7 +130,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return FragmentSearchListBinding.inflate(inflater, container, false).apply {
             configureList(scrollView)
@@ -127,7 +147,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val paddingTop = if (isLandscape()) {
                     0.dp
                 } else {
-                    80.dp
+                    130.dp
                 }
                 setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
             }
@@ -158,7 +178,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun configureOpenSearchButton(openSearchButton: ComposeView) {
         openSearchButton.apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
                 if (LocalConfiguration.current.orientation ==
@@ -166,13 +186,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ) {
                     val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
-                    FullSearchButton(
+                    FullSearchButtonAndWorkingList(
                         modifier = Modifier,
                         visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
                         onClick = { viewModel.setSearchScreen() },
-                        onCloseFilters = { viewModel.onFiltersClick(isLandscape()) }
+                        onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
+                        workingListViewModel = workingListViewModel,
                     )
                 }
             }
@@ -183,7 +204,7 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun configureCreateButton(createButton: ComposeView) {
         createButton.apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
                 val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
@@ -202,7 +223,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
-                        onClick = viewModel::onEnrollClick
+                        onClick = viewModel::onEnrollClick,
                     )
                 }
             }
@@ -239,19 +260,20 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun updateRecycler() {
+        val paddingTop = if (workingListViewModel.workingListFilter.value != null) 130.dp else 80.dp
         recycler.setPaddingRelative(
             0,
             when {
-                !isLandscape() && listAdapter.itemCount > 1 -> 80.dp
+                !isLandscape() && listAdapter.itemCount > 1 -> paddingTop
                 !isLandscape() && liveAdapter.itemCount == 0 &&
-                    resultAdapter.itemCount == 1 -> 80.dp
+                    resultAdapter.itemCount == 1 -> paddingTop
                 else -> 0.dp
             },
             0,
             when {
                 listAdapter.itemCount > 1 -> 160.dp
                 else -> 0.dp
-            }
+            },
         )
     }
 
@@ -314,7 +336,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                 null
             },
             isLandscape = isLandscape(),
-            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode
+            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode,
         )
     }
 
@@ -322,7 +344,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
             globalResultCount = globalAdapter.itemCount,
-            isLandscape = isLandscape()
+            isLandscape = isLandscape(),
         )
     }
 
@@ -342,11 +364,11 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun displayLoadingData() {
         if (listAdapter.itemCount == 0) {
             initLoading(
-                listOf(SearchResult(SearchResult.SearchResultType.LOADING))
+                listOf(SearchResult(SearchResult.SearchResultType.LOADING)),
             )
         } else {
             displayResult(
-                listOf(SearchResult(SearchResult.SearchResultType.LOADING))
+                listOf(SearchResult(SearchResult.SearchResultType.LOADING)),
             )
         }
     }

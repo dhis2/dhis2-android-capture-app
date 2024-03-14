@@ -17,16 +17,16 @@ class JiraIssueAdapter(private val onJiraIssueClick: (String) -> Unit) :
             override fun areContentsTheSame(oldItem: JiraIssue, newItem: JiraIssue): Boolean {
                 return oldItem == newItem
             }
-        }
+        },
     ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JiraIssueHolder {
         return JiraIssueHolder(
             JiraIssueItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
+                false,
             ),
-            onJiraIssueClick
+            onJiraIssueClick,
         )
     }
 

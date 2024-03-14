@@ -15,7 +15,7 @@ import java.lang.IllegalArgumentException
 class Chart private constructor(
     private val chartType: ChartType,
     private val graphData: Graph,
-    private val resetDimensionButton: View?
+    private val resetDimensionButton: View?,
 ) {
     private val graphToLineChartMapper: GraphToLineChart by lazy { GraphToLineChart() }
     private val graphToNutritionChartMapper: GraphToNutritionChart by lazy {

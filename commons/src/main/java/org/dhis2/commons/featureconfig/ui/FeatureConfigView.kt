@@ -5,10 +5,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import javax.inject.Inject
 import org.dhis2.commons.R
 import org.dhis2.commons.databinding.FeatureConfigViewBinding
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider
+import javax.inject.Inject
 
 class FeatureConfigView : AppCompatActivity() {
 
@@ -26,7 +26,7 @@ class FeatureConfigView : AppCompatActivity() {
 
         val binding = DataBindingUtil.setContentView<FeatureConfigViewBinding>(
             this,
-            R.layout.feature_config_view
+            R.layout.feature_config_view,
         )
 
         binding.lifecycleOwner = this
@@ -39,7 +39,7 @@ class FeatureConfigView : AppCompatActivity() {
             this,
             Observer {
                 (binding.recyclerview.adapter as FeatureListAdapter).submitList(it)
-            }
+            },
         )
     }
 }

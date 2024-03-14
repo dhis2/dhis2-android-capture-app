@@ -10,7 +10,7 @@ data class AuthServiceModel(
     val redirectUri: String,
     val discoveryUri: String?,
     val authorizationUrl: String?,
-    val tokenUrl: String?
+    val tokenUrl: String?,
 ) {
     fun toOpenIdConfig(): OpenIDConnectConfig {
         return OpenIDConnectConfig(
@@ -18,7 +18,7 @@ data class AuthServiceModel(
             Uri.parse(redirectUri),
             discoveryUri?.let { Uri.parse(discoveryUri) },
             authorizationUrl,
-            tokenUrl
+            tokenUrl,
         )
     }
 

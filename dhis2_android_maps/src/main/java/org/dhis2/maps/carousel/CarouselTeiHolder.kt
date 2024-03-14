@@ -4,25 +4,27 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.Bindings.getEnrollmentIconsData
-import org.dhis2.Bindings.hasFollowUp
-import org.dhis2.Bindings.paintAllEnrollmentIcons
-import org.dhis2.Bindings.setAttributeList
-import org.dhis2.Bindings.setStatusText
-import org.dhis2.Bindings.setTeiImage
+import org.dhis2.bindings.getEnrollmentIconsData
+import org.dhis2.bindings.hasFollowUp
+import org.dhis2.bindings.paintAllEnrollmentIcons
+import org.dhis2.bindings.setAttributeList
+import org.dhis2.bindings.setStatusText
+import org.dhis2.bindings.setTeiImage
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselTeiBinding
 
 class CarouselTeiHolder(
     val binding: ItemCarouselTeiBinding,
+    val colorUtils: ColorUtils,
     val onClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Boolean,
     val onSyncClick: (String) -> Boolean,
     val onNavigate: (teiUid: String) -> Unit,
     val profileImagePreviewCallback: (String) -> Unit,
-    val attributeVisibilityCallback: (SearchTeiModel) -> Unit
+    val attributeVisibilityCallback: (SearchTeiModel) -> Unit,
 ) :
     RecyclerView.ViewHolder(binding.root),
     CarouselBinder<SearchTeiModel> {
@@ -31,7 +33,7 @@ class CarouselTeiHolder(
 
     init {
         binding.composeProgramList.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -65,22 +67,24 @@ class CarouselTeiHolder(
             val enrollmentIconDataList: List<EnrollmentIconData> =
                 programInfo.getEnrollmentIconsData(
                     itemView.context,
-                    if (selectedEnrollment != null) selectedEnrollment.program() else null
+                    if (selectedEnrollment != null) selectedEnrollment.program() else null,
+                    colorUtils,
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
-                binding.composeProgramList
+                binding.composeProgramList,
             )
             selectedEnrollment?.setStatusText(
                 itemView.context,
                 binding.enrollmentStatus,
                 isHasOverdue,
-                overdueDate
+                overdueDate,
             )
             setTeiImage(
                 itemView.context,
                 binding.trackedEntityImage,
                 binding.imageText,
-                profileImagePreviewCallback
+                colorUtils,
+                profileImagePreviewCallback,
             )
             attributeValues.setAttributeList(
                 binding.attributeList,
@@ -89,7 +93,7 @@ class CarouselTeiHolder(
                 data.isAttributeListOpen,
                 data.sortingKey,
                 data.sortingValue,
-                data.enrolledOrgUnit
+                data.enrolledOrgUnit,
             ) {
                 attributeVisibilityCallback(this)
             }
@@ -104,7 +108,7 @@ class CarouselTeiHolder(
                 Toast.makeText(
                     itemView.context,
                     itemView.context.getString(R.string.record_marked_for_deletion),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                 ).show()
             } else {
                 onSyncClick(data.selectedEnrollment.uid())
@@ -117,7 +121,7 @@ class CarouselTeiHolder(
             onClick(
                 data.tei.uid(),
                 if (data.selectedEnrollment != null) data.selectedEnrollment.uid() else null,
-                data.isOnline
+                data.isOnline,
             )
         }
 

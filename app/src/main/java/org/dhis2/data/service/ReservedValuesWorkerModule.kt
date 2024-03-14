@@ -42,6 +42,7 @@ class ReservedValuesWorkerModule {
         val userGroupsApi = d2.retrofit().create(UserGroupsApi::class.java)
         return NotificationD2Repository(d2, preference, notificationsApi, userGroupsApi)
     }
+
     @Provides
     @PerService
     internal fun syncPresenter(
@@ -60,7 +61,7 @@ class ReservedValuesWorkerModule {
             analyticsHelper,
             syncStatusController,
             syncRepository,
-            notificationsRepository
+            notificationsRepository,
         )
     }
 }

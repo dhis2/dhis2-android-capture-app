@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,11 +25,11 @@ import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import javax.inject.Inject
 import org.dhis2.App
-import org.dhis2.Bindings.checkSMSPermission
-import org.dhis2.Bindings.showSMS
+import org.dhis2.bindings.checkSMSPermission
+import org.dhis2.bindings.showSMS
 import org.dhis2.R
+
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.sync.OnDismissListener
@@ -42,6 +43,8 @@ import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.MessageAmountDialog
+import org.hisp.dhis.android.core.common.State
+import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
 private const val SYNC_CONTEXT = "SYNC_CONTEXT"
@@ -74,8 +77,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 requireContext(),
                 this,
                 arguments?.getParcelable(SYNC_CONTEXT)
-                    ?: throw NullPointerException("Missing sync context")
-            )
+                    ?: throw NullPointerException("Missing sync context"),
+            ),
         ).inject(this)
     }
 
@@ -87,7 +90,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -95,12 +98,22 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 Mdc3Theme {
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
-                        if (syncUiState.shouldDismissOnUpdate) dismiss()
+                        when {
+                            syncUiState.shouldDismissOnUpdate -> dismiss()
+                            syncing && syncUiState.syncState == State.SYNCED -> {
+                                dismiss()
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.sync_successful),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
+                        }
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                                 title = syncUiState.title,
                                 subtitle = syncUiState.lastSyncDate?.date?.toDateSpan(
-                                    requireContext()
+                                    requireContext(),
                                 ),
                                 message = syncUiState.message,
                                 iconResource = R.drawable.ic_sync_warning,
@@ -109,7 +122,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                 },
                                 secondaryButton = syncUiState.secondaryActionLabel?.let {
                                     DialogButtonStyle.SecondaryButtonLabel(it)
-                                }
+                                },
                             ),
                             onMainButtonClicked = {
                                 onSyncClick()
@@ -123,7 +136,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                             extraContent = if (syncUiState.content.isNotEmpty()) {
                                 {
                                     LazyColumn(
-                                        verticalArrangement = spacedBy(8.dp)
+                                        verticalArrangement = spacedBy(8.dp),
                                     ) {
                                         items(syncUiState.content) { item ->
                                             SyncStatusItem(
@@ -133,7 +146,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                                     syncStatusDialogNavigator?.navigateTo(item) {
                                                         dismiss()
                                                     }
-                                                }
+                                                },
                                             ) {
                                                 SyncStateIcon(state = item.state)
                                             }
@@ -142,7 +155,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                 }
                             } else {
                                 null
-                            }
+                            },
                         )
                     }
                 }
@@ -166,7 +179,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     private fun syncGranular() {
         syncing = true
         viewModel.initGranularSync().observe(
-            this
+            this,
         ) { workInfo ->
             viewModel.manageWorkInfo(workInfo[0])
         }
@@ -193,7 +206,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     SMSSenderHelper.Status.RETURNED_TO_APP -> { // Do nothing
                     }
                 }
-            }
+            },
         ).also {
             if (it.smsCount() > 1) {
                 askForMessagesAmount(
@@ -201,7 +214,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                     onAccept = { it.pollSms() },
                     onDecline = {
                         /*Do nothing*/
-                    }
+                    },
                 )
             } else {
                 it.pollSms()
@@ -229,7 +242,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -264,7 +277,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 askForMessagesAmount(
                     amount = lastState.total,
                     onAccept = { viewModel.sendSMS() },
-                    onDecline = { viewModel.onSmsNotAccepted() }
+                    onDecline = { viewModel.onSmsNotAccepted() },
                 )
                 syncing = true
             }
@@ -273,13 +286,15 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.SENDING,
             SmsSendingService.State.WAITING_RESULT,
             SmsSendingService.State.RESULT_CONFIRMED,
-            SmsSendingService.State.SENT ->
+            SmsSendingService.State.SENT,
+            ->
                 syncing = true
             SmsSendingService.State.ITEM_NOT_READY,
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
             SmsSendingService.State.ERROR,
-            SmsSendingService.State.COMPLETED ->
+            SmsSendingService.State.COMPLETED,
+            ->
                 viewModel.restartSmsSender()
         }
     }
@@ -298,10 +313,11 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         dialog.show(requireActivity().supportFragmentManager, null)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == SMS_PERMISSIONS_REQ_ID &&
             grantResults.all { it == PackageManager.PERMISSION_GRANTED }
@@ -323,12 +339,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         fun withContext(
             context: FragmentActivity,
-            onSyncNavigationListener: OnSyncNavigationListener? = null
+            onSyncNavigationListener: OnSyncNavigationListener? = null,
         ): Builder {
             this.context = context
             this.navigator = SyncStatusDialogNavigator(
                 context,
-                onSyncNavigationListener = onSyncNavigationListener
+                onSyncNavigationListener = onSyncNavigationListener,
             )
             this.fm = context.supportFragmentManager
             return this
@@ -336,12 +352,12 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
         fun withContext(
             fragment: Fragment,
-            onSyncNavigationListener: OnSyncNavigationListener? = null
+            onSyncNavigationListener: OnSyncNavigationListener? = null,
         ): Builder {
             this.context = fragment.context
             this.navigator = SyncStatusDialogNavigator(
                 fragment.requireActivity(),
-                onSyncNavigationListener = onSyncNavigationListener
+                onSyncNavigationListener = onSyncNavigationListener,
             )
             this.fm = fragment.childFragmentManager
             return this
@@ -372,7 +388,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 build().show(fm!!, tag)
             } else {
                 throw NullPointerException(
-                    "Required non null fragment manager. Use withContext builder method."
+                    "Required non null fragment manager. Use withContext builder method.",
                 )
             }
         }

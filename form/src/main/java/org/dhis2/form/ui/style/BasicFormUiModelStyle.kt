@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.common.ValueType
 data class BasicFormUiModelStyle(
     val factory: FormUiColorFactory,
     val valueType: ValueType,
-    val actionIconClickable: Boolean
+    val actionIconClickable: Boolean,
 ) : FormUiModelStyle {
     private var colors = factory.getBasicColors()
 
@@ -28,10 +28,12 @@ data class BasicFormUiModelStyle(
         return when (valueType) {
             ValueType.DATE,
             ValueType.DATETIME,
-            ValueType.TIME -> true
+            ValueType.TIME,
+            -> true
             ValueType.PERCENTAGE -> false
             ValueType.EMAIL,
-            ValueType.PHONE_NUMBER -> actionIconClickable
+            ValueType.PHONE_NUMBER,
+            -> actionIconClickable
             else -> false
         }
     }
@@ -48,7 +50,7 @@ data class BasicFormUiModelStyle(
     override fun backgroundColor(
         valueType: ValueType,
         error: String?,
-        warning: String?
+        warning: String?,
     ): Pair<Array<Int>, Int?> {
         val colorType = when {
             warning != null -> FormUiColorType.WARNING

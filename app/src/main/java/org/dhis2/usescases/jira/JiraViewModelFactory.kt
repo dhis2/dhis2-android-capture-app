@@ -16,7 +16,7 @@ const val JIRA_URL = "https://jira.dhis2.org/"
 class JiraViewModelFactory(
     val preferenceProvider: PreferenceProvider,
     val resourceManager: ResourceManager,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
 ) : ViewModelProvider.Factory {
 
     private fun jiraService(): JiraIssueService {
@@ -35,7 +35,7 @@ class JiraViewModelFactory(
         return JiraViewModel(
             JiraRepository(jiraService(), preferenceProvider),
             resourceManager,
-            schedulerProvider
+            schedulerProvider,
         ) as T
     }
 }

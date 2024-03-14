@@ -8,5 +8,5 @@ import org.dhis2.ui.R
 val defaultFontFamily = FontFamily(
     Font(R.font.rubik_regular),
     Font(R.font.rubik_bold, FontWeight.Bold),
-    Font(R.font.rubik_light, FontWeight.Light)
+    Font(R.font.rubik_light, FontWeight.Light),
 )

@@ -64,21 +64,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.dhis2.R
+import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
+import org.dhis2.commons.filters.workingLists.WorkingListViewModel
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
     when (searchResult.type) {
         SearchResult.SearchResultType.LOADING ->
             LoadingContent(
-                loadingDescription = stringResource(R.string.search_loading_more)
+                loadingDescription = stringResource(R.string.search_loading_more),
             )
         SearchResult.SearchResultType.SEARCH_OUTSIDE -> SearchOutsideProgram(
             resultText = stringResource(R.string.search_no_results_in_program)
                 .format(searchResult.extraData!!),
             buttonText = stringResource(R.string.search_outside_action),
-            onSearchOutsideClick = onSearchOutsideClick
+            onSearchOutsideClick = onSearchOutsideClick,
         )
         SearchResult.SearchResultType.NO_MORE_RESULTS -> NoMoreResults()
         SearchResult.SearchResultType.TOO_MANY_RESULTS -> TooManyResults()
@@ -86,10 +90,10 @@ fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit)
         SearchResult.SearchResultType.SEARCH_OR_CREATE -> SearchOrCreate(searchResult.extraData!!)
         SearchResult.SearchResultType.SEARCH -> InitSearch(searchResult.extraData!!)
         SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE -> NoMoreResults(
-            message = stringResource(id = R.string.search_no_more_results_offline)
+            message = stringResource(id = R.string.search_no_more_results_offline),
         )
         SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE -> UnableToSearchOutside(
-            uiData = searchResult.uiData as UnableToSearchOutsideData
+            uiData = searchResult.uiData as UnableToSearchOutsideData,
         )
     }
 }
@@ -101,27 +105,27 @@ fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
         shape = RoundedCornerShape(24.dp),
-        elevation = ButtonDefaults.elevation()
+        elevation = ButtonDefaults.elevation(),
     ) {
         Row(
             modifier = modifier,
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
-                    )
-                )
+                        ColorType.PRIMARY,
+                    ),
+                ),
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = stringResource(id = R.string.search),
-                color = colorResource(id = R.color.textSecondary)
+                color = colorResource(id = R.color.textSecondary),
             )
         }
     }
@@ -133,57 +137,69 @@ fun WrappedSearchButton(onClick: () -> Unit) {
         modifier = Modifier
             .wrapContentWidth(align = Alignment.CenterHorizontally)
             .height(44.dp),
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
 @ExperimentalAnimationApi
 @Composable
-fun FullSearchButton(
+fun FullSearchButtonAndWorkingList(
     modifier: Modifier,
     visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
     onClick: () -> Unit = {},
-    onCloseFilters: () -> Unit = {}
+    onCloseFilters: () -> Unit = {},
+    workingListViewModel: WorkingListViewModel? = null,
 ) {
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
         enter = slideInVertically(initialOffsetY = { -it }),
-        exit = slideOutVertically(targetOffsetY = { -it })
+        exit = slideOutVertically(targetOffsetY = { -it }),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SearchButton(
-                modifier = Modifier
-                    .weight(weight = 1f)
-                    .height(48.dp),
-                onClick = onClick
-            )
-            if (!isLandscape && closeFilterVisibility) {
-                Spacer(modifier = Modifier.size(16.dp))
-                Box(
+        Column {
+            Row(
+                modifier = Modifier.padding(
+                    top = Spacing.Spacing16,
+                    start = Spacing.Spacing16,
+                    end = Spacing.Spacing16,
+                    bottom = Spacing.Spacing8,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SearchButton(
                     modifier = Modifier
-                        .size(48.dp)
-                        .shadow(2.dp, CircleShape, clip = false)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                ) {
-                    IconButton(onClick = onCloseFilters) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_up),
-                            contentDescription = "",
-                            tint = Color(
-                                ColorUtils.getPrimaryColor(
-                                    LocalContext.current,
-                                    ColorUtils.ColorType.PRIMARY
-                                )
+                        .weight(weight = 1f)
+                        .height(48.dp),
+                    onClick = onClick,
+                )
+                if (!isLandscape && closeFilterVisibility) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .shadow(2.dp, CircleShape, clip = false)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                    ) {
+                        IconButton(onClick = onCloseFilters) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_up),
+                                contentDescription = "",
+                                tint = Color(
+                                    ColorUtils().getPrimaryColor(
+                                        LocalContext.current,
+                                        ColorType.PRIMARY,
+                                    ),
+                                ),
                             )
-                        )
+                        }
                     }
                 }
+            }
+            workingListViewModel?.let {
+                WorkingListChipGroup(workingListViewModel = it)
             }
         }
     }
@@ -195,7 +211,7 @@ fun LoadingContent(loadingDescription: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator()
         Spacer(modifier = Modifier.size(16.dp))
@@ -205,8 +221,8 @@ fun LoadingContent(loadingDescription: String) {
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 10.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -217,7 +233,7 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = resultText,
@@ -225,8 +241,8 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
@@ -234,35 +250,35 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
             border = BorderStroke(
                 1.dp,
                 Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
-                    )
-                )
+                        ColorType.PRIMARY,
+                    ),
+                ),
             ),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.white)
-            )
+                backgroundColor = colorResource(id = R.color.white),
+            ),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
-                    )
-                )
+                        ColorType.PRIMARY,
+                    ),
+                ),
             )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = buttonText,
                 color = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
-                    )
-                )
+                        ColorType.PRIMARY,
+                    ),
+                ),
             )
         }
     }
@@ -274,7 +290,7 @@ fun NoMoreResults(message: String = stringResource(R.string.string_no_more_resul
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 96.dp, 16.dp, 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = message,
@@ -282,8 +298,8 @@ fun NoMoreResults(message: String = stringResource(R.string.string_no_more_resul
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 10.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -294,7 +310,7 @@ fun UnableToSearchOutside(uiData: UnableToSearchOutsideData) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = stringResource(R.string.search_unable_search_outside)
@@ -302,8 +318,8 @@ fun UnableToSearchOutside(uiData: UnableToSearchOutsideData) {
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
         Spacer(modifier = Modifier.size(16.dp))
         uiData.trackedEntityTypeAttributes.forEach {
@@ -316,7 +332,7 @@ fun UnableToSearchOutside(uiData: UnableToSearchOutsideData) {
 @Composable
 fun AttributeField(fieldName: String) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
             Spacer(modifier = Modifier.size(6.dp))
@@ -325,11 +341,11 @@ fun AttributeField(fieldName: String) {
                 painter = painterResource(id = R.drawable.ic_circle),
                 contentDescription = "",
                 tint = Color(
-                    ColorUtils.getPrimaryColor(
+                    ColorUtils().getPrimaryColor(
                         LocalContext.current,
-                        ColorUtils.ColorType.PRIMARY
-                    )
-                )
+                        ColorType.PRIMARY,
+                    ),
+                ),
             )
         }
         Spacer(modifier = Modifier.size(8.dp))
@@ -338,8 +354,8 @@ fun AttributeField(fieldName: String) {
             color = colorResource(id = R.color.textSecondary),
             fontSize = 14.sp,
             style = LocalTextStyle.current.copy(
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -352,11 +368,11 @@ fun NoResults() {
             .fillMaxHeight()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_empty_folder),
-            contentDescription = ""
+            contentDescription = "",
         )
         Spacer(modifier = Modifier.size(16.dp))
         Text(
@@ -365,8 +381,8 @@ fun NoResults() {
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -379,11 +395,11 @@ fun TooManyResults() {
             .fillMaxHeight()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_too_many),
-            contentDescription = ""
+            contentDescription = "",
         )
         Spacer(modifier = Modifier.size(16.dp))
         Text(
@@ -393,8 +409,8 @@ fun TooManyResults() {
             textAlign = TextAlign.Center,
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
         Text(
             text = stringResource(R.string.search_too_many_results_message),
@@ -402,8 +418,8 @@ fun TooManyResults() {
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -416,11 +432,11 @@ fun SearchOrCreate(teTypeName: String) {
             .fillMaxHeight()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_searchvscreate),
-            contentDescription = ""
+            contentDescription = "",
         )
         Spacer(modifier = Modifier.size(16.dp))
         Text(
@@ -429,8 +445,8 @@ fun SearchOrCreate(teTypeName: String) {
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -443,7 +459,7 @@ fun InitSearch(teTypeName: String) {
             .fillMaxHeight()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = stringResource(R.string.init_search).format(teTypeName),
@@ -451,8 +467,8 @@ fun InitSearch(teTypeName: String) {
             color = Color.Black.copy(alpha = 0.38f),
             style = LocalTextStyle.current.copy(
                 lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
-            )
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
         )
     }
 }
@@ -475,18 +491,18 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
         shape = RoundedCornerShape(16.dp),
-        elevation = ButtonDefaults.elevation()
+        elevation = ButtonDefaults.elevation(),
     ) {
         Icon(
             modifier = Modifier.size(24.dp),
             painter = painterResource(id = R.drawable.ic_add_accent),
             contentDescription = "",
             tint = Color(
-                ColorUtils.getPrimaryColor(
+                ColorUtils().getPrimaryColor(
                     LocalContext.current,
-                    ColorUtils.ColorType.PRIMARY
-                )
-            )
+                    ColorType.PRIMARY,
+                ),
+            ),
         )
         AnimatedVisibility(visible = extended) {
             Row {
@@ -494,11 +510,11 @@ fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () ->
                 Text(
                     text = stringResource(R.string.search_create_new),
                     color = Color(
-                        ColorUtils.getPrimaryColor(
+                        ColorUtils().getPrimaryColor(
                             LocalContext.current,
-                            ColorUtils.ColorType.PRIMARY
-                        )
-                    )
+                            ColorType.PRIMARY,
+                        ),
+                    ),
                 )
             }
         }
@@ -513,7 +529,7 @@ fun MinAttributesMessage(minAttributes: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Icon(
             modifier = Modifier
@@ -521,7 +537,7 @@ fun MinAttributesMessage(minAttributes: Int) {
                 .size(9.dp),
             painter = painterResource(id = R.drawable.ic_info_outline),
             contentDescription = "",
-            tint = colorResource(id = R.color.primaryBgTextColor)
+            tint = colorResource(id = R.color.primaryBgTextColor),
         )
         Spacer(modifier = Modifier.size(9.dp))
         Text(
@@ -540,19 +556,19 @@ fun MinAttributesMessage(minAttributes: Int) {
                     AnnotatedString.Range(
                         SpanStyle(fontWeight = FontWeight.Bold),
                         start = message.indexOf("$minAttributes"),
-                        end = message.indexOf("$minAttributes") + "$minAttributes".length
-                    )
-                )
+                        end = message.indexOf("$minAttributes") + "$minAttributes".length,
+                    ),
+                ),
             ),
             fontSize = 12.sp,
             color = colorResource(id = R.color.primaryBgTextColor),
             style = LocalTextStyle.current.copy(
                 lineHeight = 16.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular))
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
             ),
             onTextLayout = {
                 lineCount = it.lineCount
-            }
+            },
         )
     }
 }
@@ -574,11 +590,11 @@ fun MinAttributesSnackbar(minAttributes: Int) {
                     TextButton(onClick = { }) {
                         Text(text = stringResource(id = R.string.button_ok))
                     }
-                }
+                },
             ) {
                 Text(text = snackBarData.message)
             }
-        }
+        },
     )
 
     snackScope.launch { snackState.showSnackbar(message) }
@@ -588,8 +604,7 @@ fun MinAttributesSnackbar(minAttributes: Int) {
 @Preview(showBackground = true, backgroundColor = 0x2C98F0)
 @Composable
 fun SearchFullWidthPreview() {
-    FullSearchButton(modifier = Modifier) {
-    }
+    FullSearchButtonAndWorkingList(modifier = Modifier)
 }
 
 @Preview(showBackground = true, backgroundColor = 0x2C98F0)
@@ -661,8 +676,8 @@ fun SearchOrCreatePreview() {
     SearchResultUi(
         searchResult = SearchResult(
             SearchResult.SearchResultType.SEARCH_OR_CREATE,
-            "Person"
-        )
+            "Person",
+        ),
     ) {}
 }
 
@@ -674,9 +689,9 @@ fun FieldItemPreview() {
             listOf(
                 "Last Name",
                 "First Name",
-                "Unique Id"
+                "Unique Id",
             ),
-            "Person"
-        )
+            "Person",
+        ),
     )
 }

@@ -4,7 +4,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 
 class OptionsRepository(
-    private val d2: D2
+    private val d2: D2,
 ) {
 
     fun getOptionByDisplayName(optionSet: String, displayName: String): Option? = d2.optionModule()

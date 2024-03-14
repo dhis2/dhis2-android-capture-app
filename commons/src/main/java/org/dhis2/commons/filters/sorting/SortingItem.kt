@@ -4,7 +4,7 @@ import org.dhis2.commons.filters.Filters
 
 data class SortingItem(
     var filterSelectedForSorting: Filters,
-    var sortingStatus: SortingStatus = SortingStatus.ASC
+    var sortingStatus: SortingStatus = SortingStatus.ASC,
 ) {
     companion object {
         @JvmStatic

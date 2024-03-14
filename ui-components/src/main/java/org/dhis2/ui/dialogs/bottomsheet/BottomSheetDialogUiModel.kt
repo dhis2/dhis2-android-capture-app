@@ -7,7 +7,7 @@ data class BottomSheetDialogUiModel(
     var clickableWord: String? = null,
     var iconResource: Int,
     var mainButton: DialogButtonStyle? = null,
-    var secondaryButton: DialogButtonStyle? = null
+    var secondaryButton: DialogButtonStyle? = null,
 ) {
     fun hasButtons() = mainButton != null || secondaryButton != null
 

@@ -6,7 +6,7 @@ import org.dhis2.data.server.ServerComponent
 
 fun ActivityGlobalAbstract.wrappedContextForLanguage(
     serverComponent: ServerComponent?,
-    newBaseContext: Context
+    newBaseContext: Context,
 ): Context = serverComponent?.getD2()?.let {
     LocaleSelector(newBaseContext, it).updateUiLanguage()
 } ?: newBaseContext

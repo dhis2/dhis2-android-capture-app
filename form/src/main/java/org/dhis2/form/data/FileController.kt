@@ -6,6 +6,6 @@ import java.io.File
 class FileController {
     fun resize(
         path: String,
-        dimension: FileResizerHelper.Dimension = FileResizerHelper.Dimension.MEDIUM
+        dimension: FileResizerHelper.Dimension = FileResizerHelper.Dimension.MEDIUM,
     ) = FileResizerHelper.resizeFile(File(path), dimension)
 }

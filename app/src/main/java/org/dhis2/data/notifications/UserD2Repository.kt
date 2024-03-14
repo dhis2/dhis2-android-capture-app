@@ -11,7 +11,7 @@ class UserD2Repository(
     override fun getCurrentUser(): User {
         val user = d2.userModule().user().blockingGet()
         return  User(
-            user.uid(),
+            user!!.uid(),
             user.displayName()!!
         )
     }

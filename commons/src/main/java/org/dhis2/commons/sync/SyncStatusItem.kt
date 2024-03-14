@@ -7,29 +7,29 @@ data class SyncStatusItem(
     val type: SyncStatusType,
     val displayName: String,
     val description: String,
-    val state: State
+    val state: State,
 )
 
 sealed class SyncStatusType {
     data class TrackerProgram(
         val programUid: String,
-        val trackedEntityTypeUid: String
+        val trackedEntityTypeUid: String,
     ) : SyncStatusType()
 
     data class StockProgram(
         val programUid: String,
-        val stockUsecase: StockUseCase
+        val stockUsecase: StockUseCase,
     ) : SyncStatusType()
 
     data class TrackedEntity(
         val teiUid: String,
         val programUid: String?,
-        val enrollmentUid: String?
+        val enrollmentUid: String?,
     ) : SyncStatusType()
 
     data class Enrollment(
         val enrollmentUid: String,
-        val programUid: String
+        val programUid: String,
     ) : SyncStatusType()
 
     data class EventProgram(val programUid: String) : SyncStatusType()
@@ -37,7 +37,7 @@ sealed class SyncStatusType {
         val eventUid: String,
         val programUid: String,
         val programStageUid: String?,
-        val hasNullDataElementConflict: Boolean = false
+        val hasNullDataElementConflict: Boolean = false,
     ) : SyncStatusType()
 
     data class DataSet(val dataSetUid: String) : SyncStatusType()
@@ -45,6 +45,6 @@ sealed class SyncStatusType {
         val dataSetUid: String,
         val orgUnitUid: String,
         val periodId: String,
-        val attrOptComboUid: String
+        val attrOptComboUid: String,
     ) : SyncStatusType()
 }

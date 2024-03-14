@@ -1,8 +1,6 @@
 package org.dhis2.android.rtsm.services
 
 import com.google.common.collect.Lists
-import java.util.Arrays
-import java.util.Date
 import org.hisp.dhis.rules.RuleEngine
 import org.hisp.dhis.rules.RuleEngineContext
 import org.hisp.dhis.rules.models.Rule
@@ -20,6 +18,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.util.Arrays
+import java.util.Date
 
 @RunWith(JUnit4::class)
 class ProgramRuleTests {
@@ -35,7 +35,7 @@ class ProgramRuleTests {
                     "ypCQAFr1a5l",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
+                    emptyList(),
                 ),
             RuleVariableCurrentEvent
                 .create(
@@ -43,7 +43,7 @@ class ProgramRuleTests {
                     "oc8tn8CewiP",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
+                    emptyList(),
                 ),
             RuleVariableCurrentEvent
                 .create(
@@ -51,7 +51,7 @@ class ProgramRuleTests {
                     "lpGYJoVUudr",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
+                    emptyList(),
                 ),
             RuleVariableCurrentEvent
                 .create(
@@ -59,7 +59,7 @@ class ProgramRuleTests {
                     "ej1YwWaYGmm",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
+                    emptyList(),
                 ),
             RuleVariableCurrentEvent
                 .create(
@@ -67,7 +67,7 @@ class ProgramRuleTests {
                     "I7cmT3iXT0y",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
+                    emptyList(),
                 ),
             RuleVariableCurrentEvent
                 .create(
@@ -75,8 +75,8 @@ class ProgramRuleTests {
                     "j3ydinp6Qp8",
                     RuleValueType.NUMERIC,
                     false,
-                    emptyList()
-                )
+                    emptyList(),
+                ),
         )
         return RuleEngineContext
             .builder()
@@ -105,7 +105,7 @@ class ProgramRuleTests {
                 "#{PSM- Previous stock balance} + " +
                     "#{PSM- Stock received} - #{PSM- Stock consumed distributed} -" +
                     " #{PSM- Stock discarded} - #{PSM- Stock corrected}",
-                "ypCQAFr1a5l"
+                "ypCQAFr1a5l",
             )
         val rule1 = Rule
             .create(
@@ -114,7 +114,7 @@ class ProgramRuleTests {
                 "true",
                 listOf(assignAction),
                 "PSM- Assign Stock on Hand",
-                "rule1Uid"
+                "rule1Uid",
             )
         rules.add(rule1)
 
@@ -153,37 +153,37 @@ class ProgramRuleTests {
                         Date(),
                         "",
                         "oc8tn8CewiP",
-                        "3"
+                        "3",
                     ),
                     // PSM Stock received
                     RuleDataValue.create(
                         Date(),
                         "",
                         "j3ydinp6Qp8",
-                        "4"
+                        "4",
                     ),
                     // PSM- Stock consumed distributed
                     RuleDataValue.create(
                         Date(),
                         "",
                         "lpGYJoVUudr",
-                        "2"
+                        "2",
                     ),
                     // PSM- Stock discarded
                     RuleDataValue.create(
                         Date(),
                         "",
                         "I7cmT3iXT0y",
-                        "1"
+                        "1",
                     ),
                     // PSM- Stock corrected
                     RuleDataValue.create(
                         Date(),
                         "",
                         "ej1YwWaYGmm",
-                        "3"
-                    )
-                )
+                        "3",
+                    ),
+                ),
             )
             .build()
         val ruleEngine = ruleEngineBuilder.enrollment(enrollment).build()

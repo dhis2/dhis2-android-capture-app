@@ -38,7 +38,7 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnAcceptEnrollmentDate() {
-        onView(withId(R.id.acceptBtn)).perform(click())
+        waitForView(withId(R.id.acceptBtn)).perform(click())
     }
 
     fun clickOnSaveEnrollment() {
@@ -104,7 +104,7 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnDatePicker() {
-        onView(withId(R.id.date_picker)).perform(click())
+        waitForView(withId(R.id.date_picker)).perform(click())
     }
 
     companion object {

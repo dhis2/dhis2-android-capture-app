@@ -20,7 +20,7 @@ class BottomSheetDialog(
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
     val content: @Composable
-    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null
+    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class BottomSheetDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -49,8 +49,10 @@ class BottomSheetDialog(
                         },
                         onMessageClick = onMessageClick,
                         extraContent = content?.let {
-                            { it.invoke(this@BottomSheetDialog) }
-                        }
+                            {
+                                it.invoke(this@BottomSheetDialog)
+                            }
+                        },
                     )
                 }
             }
@@ -65,7 +67,7 @@ class BottomSheetDialog(
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

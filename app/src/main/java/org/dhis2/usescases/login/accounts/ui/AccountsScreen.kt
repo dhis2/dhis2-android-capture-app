@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import org.dhis2.Bindings.buildInfo
+import org.dhis2.bindings.buildInfo
 import org.dhis2.R
 import org.dhis2.usescases.login.accounts.AccountModel
 
@@ -41,13 +41,13 @@ import org.dhis2.usescases.login.accounts.AccountModel
 fun AccountsScreen(
     accounts: List<AccountModel>,
     onAccountClicked: (AccountModel) -> Unit,
-    onAddAccountClicked: () -> Unit
+    onAddAccountClicked: () -> Unit,
 ) {
     MaterialTheme {
         Column(
             Modifier
                 .fillMaxWidth()
-                .background(colorResource(id = R.color.colorPrimary))
+                .background(colorResource(id = R.color.colorPrimary)),
         ) {
             LoginHeader()
             Column(
@@ -55,14 +55,14 @@ fun AccountsScreen(
                 modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(Color.White)
+                    .background(Color.White),
             ) {
                 LazyColumn(Modifier.weight(1f).padding(top = 16.dp)) {
                     items(accounts) {
                         AccountItem(
                             Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             it,
-                            onAccountClicked
+                            onAccountClicked,
                         )
                     }
                 }
@@ -73,20 +73,20 @@ fun AccountsScreen(
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = colorResource(id = R.color.colorPrimary),
-                            contentColor = Color.White
+                            contentColor = Color.White,
                         ),
                         elevation = ButtonDefaults.elevation(
                             defaultElevation = 5.dp,
                             pressedElevation = 15.dp,
-                            disabledElevation = 0.dp
+                            disabledElevation = 0.dp,
                         ),
-                        onClick = { onAddAccountClicked() }
+                        onClick = { onAddAccountClicked() },
                     ) {
                         Text(
                             text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
                             fontFamily = FontFamily(
-                                Font(R.font.rubik_regular, FontWeight.Medium)
-                            )
+                                Font(R.font.rubik_regular, FontWeight.Medium),
+                            ),
                         )
                     }
                 }
@@ -100,22 +100,22 @@ fun LoginHeader() {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp, 8.dp, 16.dp, 12.dp)
+            .padding(16.dp, 8.dp, 16.dp, 12.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             AndroidView(factory = { View.inflate(it, R.layout.dhis_logo, null) })
         }
         Row(
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = LocalContext.current.buildInfo(),
                 color = colorResource(id = R.color.colorAccentAlpha),
-                fontSize = 9.sp
+                fontSize = 9.sp,
             )
         }
     }
@@ -133,7 +133,7 @@ fun AccountsPreview() {
     AccountsScreen(
         accounts,
         {},
-        {}
+        {},
     )
 }
 
@@ -149,6 +149,6 @@ fun FewAccountsPreview() {
     AccountsScreen(
         accounts,
         {},
-        {}
+        {},
     )
 }

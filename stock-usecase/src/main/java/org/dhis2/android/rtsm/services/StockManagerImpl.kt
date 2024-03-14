@@ -1,13 +1,11 @@
 package org.dhis2.android.rtsm.services
 
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
+import androidx.lifecycle.liveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Collections
-import javax.inject.Inject
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
-import org.dhis2.android.rtsm.commons.Constants
+import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -30,76 +28,70 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.Collections
+import javax.inject.Inject
 
 class StockManagerImpl @Inject constructor(
     val d2: D2,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
-    private val ruleValidationHelper: RuleValidationHelper
+    private val ruleValidationHelper: RuleValidationHelper,
+    private val dispatcher: StockDispatcherProvider,
 ) : StockManager {
 
-    override fun search(
+    override suspend fun search(
         query: SearchParametersModel,
         ou: String?,
-        config: AppConfig
+        config: AppConfig,
     ): SearchResult {
-        var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
+        val list = withContext(dispatcher.io()) {
+            var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
-        if (!ou.isNullOrEmpty()) {
-            teiRepository.byOrgUnits()
-                .eq(ou)
-                .byOrgUnitMode()
-                .eq(OrganisationUnitMode.SELECTED)
+            if (!ou.isNullOrEmpty()) {
+                teiRepository.byOrgUnits()
+                    .eq(ou)
+                    .byOrgUnitMode()
+                    .eq(OrganisationUnitMode.SELECTED)
+                    .also { teiRepository = it }
+            }
+
+            teiRepository.byProgram()
+                .eq(config.program)
                 .also { teiRepository = it }
-        }
 
-        teiRepository.byProgram()
-            .eq(config.program)
-            .also { teiRepository = it }
+            if (!query.name.isNullOrEmpty()) {
+                teiRepository
+                    .byQuery()
+                    .like(query.name).also { teiRepository = it }
+            }
 
-        if (!query.name.isNullOrEmpty()) {
-            teiRepository
-                .byQuery()
-                .like(query.name).also { teiRepository = it }
-        }
+            if (!query.code.isNullOrEmpty()) {
+                teiRepository
+                    .byQuery()
+                    .eq(query.code)
+                    .also { teiRepository = it }
+            }
 
-        if (!query.code.isNullOrEmpty()) {
-            teiRepository
-                .byQuery()
-                .eq(query.code)
+            teiRepository.orderByAttribute(config.itemName)
+                .eq(RepositoryScope.OrderByDirection.ASC)
                 .also { teiRepository = it }
+
+            val teiList = teiRepository.blockingGet()
+                .filter { it.deleted() == null || !it.deleted()!! }
+                .map { transform(it, config) }
+
+            teiList
         }
 
-        teiRepository.orderByAttribute(config.itemName)
-            .eq(RepositoryScope.OrderByDirection.ASC)
-            .also { teiRepository = it }
-
-        val dataSource: DataSource<TrackedEntityInstance, StockItem> = teiRepository.dataSource
-            .mapByPage(this::filterDeleted)
-            .mapByPage { transform(it, config) }
-
-        val totalCount = teiRepository.blockingCount()
-        val pagedList = LivePagedListBuilder(
-            object : DataSource.Factory<TrackedEntityInstance, StockItem>() {
-                override fun create(): DataSource<TrackedEntityInstance, StockItem> {
-                    return dataSource
-                }
-            },
-            Constants.ITEM_PAGE_SIZE
-        )
-            .build()
-
-        return SearchResult(pagedList, totalCount)
+        return SearchResult(liveData { emit(list) })
     }
 
-    private fun transform(teis: List<TrackedEntityInstance>, config: AppConfig): List<StockItem> {
-        return teis.map { tei ->
-            StockItem(
-                tei.uid(),
-                AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemName) ?: "",
-                getStockOnHand(tei, config.stockOnHand) ?: ""
-            )
-        }
+    private fun transform(tei: TrackedEntityInstance, config: AppConfig): StockItem {
+        return StockItem(
+            tei.uid(),
+            AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemName) ?: "",
+            getStockOnHand(tei, config.stockOnHand) ?: "",
+        )
     }
 
     private fun getStockOnHand(tei: TrackedEntityInstance, stockOnHandUid: String): String? {
@@ -125,29 +117,17 @@ class StockManagerImpl @Inject constructor(
         return null
     }
 
-    private fun filterDeleted(
-        list: MutableList<TrackedEntityInstance>
-    ): List<TrackedEntityInstance> {
-        val iterator = list.iterator()
-        while (iterator.hasNext()) {
-            val tei = iterator.next()
-            if (tei.deleted() != null && tei.deleted()!!) iterator.remove()
-        }
-
-        return list
-    }
-
     private fun createEventProjection(
         facility: IdentifiableModel,
         programStage: ProgramStage,
         enrollment: Enrollment,
-        programUid: String
+        programUid: String,
     ): String {
         Timber.tag("EVENT_CREATION").i(
             "Enrollment: ${enrollment.uid()}\n" +
                 "Program: ${programUid}\n" +
                 "Stage: ${programStage.uid()}\n" +
-                "OU: ${facility.uid}\n"
+                "OU: ${facility.uid}\n",
         )
         return d2.eventModule().events().blockingAdd(
             EventCreateProjection.builder()
@@ -155,14 +135,14 @@ class StockManagerImpl @Inject constructor(
                 .program(programUid)
                 .programStage(programStage.uid())
                 .organisationUnit(facility.uid)
-                .build()
+                .build(),
         )
     }
 
     override fun saveTransaction(
         items: List<StockEntry>,
         transaction: Transaction,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ): Single<Unit> {
         Timber.i("SAVING TRANSACTION")
 
@@ -171,11 +151,12 @@ class StockManagerImpl @Inject constructor(
             .byProgramUid()
             .eq(appConfig.program)
             .one()
-            .blockingGet()
+            .blockingGet() ?: return Single.just(Unit)
 
         items.forEach { entry ->
-            val enrollment = getEnrollment(entry.item.id)
-            createEvent(entry, programStage, enrollment, transaction, appConfig)
+            getEnrollment(entry.item.id)?.let { enrollment ->
+                createEvent(entry, programStage, enrollment, transaction, appConfig)
+            }
         }
         return Single.just(Unit)
     }
@@ -185,14 +166,14 @@ class StockManagerImpl @Inject constructor(
         programStage: ProgramStage,
         enrollment: Enrollment,
         transaction: Transaction,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ) {
         val eventUid = try {
             createEventProjection(
                 transaction.facility,
                 programStage,
                 enrollment,
-                appConfig.program
+                appConfig.program,
             )
         } catch (e: Exception) {
             if (e is D2Error) {
@@ -222,7 +203,7 @@ class StockManagerImpl @Inject constructor(
                 Timber.i("data to save:${item.qty}")
                 d2.trackedEntityModule().trackedEntityDataValues().value(
                     eventUid,
-                    getTransactionDataElement(transaction.transactionType, appConfig)
+                    getTransactionDataElement(transaction.transactionType, appConfig),
                 ).blockingSet(item.qty.toString())
             } catch (e: Exception) {
                 if (e is D2Error) {
@@ -242,8 +223,8 @@ class StockManagerImpl @Inject constructor(
 
                     d2.trackedEntityModule().trackedEntityDataValues().value(
                         eventUid,
-                        appConfig.distributedTo
-                    ).blockingSet(destination.code())
+                        appConfig.distributedTo,
+                    ).blockingSet(destination?.code())
                 }
             } catch (e: Exception) {
                 if (e is D2Error) {
@@ -272,14 +253,14 @@ class StockManagerImpl @Inject constructor(
         program: String,
         transaction: Transaction,
         eventUid: String,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ) {
         disposable.add(
             ruleValidationHelper.evaluate(entry, program, transaction, eventUid, appConfig)
                 .doOnError { it.printStackTrace() }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
-                .subscribe { ruleEffects -> performRuleActions(ruleEffects, eventUid) }
+                .subscribe { ruleEffects -> performRuleActions(ruleEffects, eventUid) },
         )
     }
 
@@ -308,7 +289,7 @@ class StockManagerImpl @Inject constructor(
                             if (e is D2Error) {
                                 Timber.e(
                                     "Unable to save rule effect data: %s",
-                                    e.errorCode().toString()
+                                    e.errorCode().toString(),
                                 )
                             }
                         }
@@ -320,7 +301,7 @@ class StockManagerImpl @Inject constructor(
         }
     }
 
-    private fun getEnrollment(teiUid: String): Enrollment {
+    private fun getEnrollment(teiUid: String): Enrollment? {
         return d2.enrollmentModule()
             .enrollments()
             .byTrackedEntityInstance()

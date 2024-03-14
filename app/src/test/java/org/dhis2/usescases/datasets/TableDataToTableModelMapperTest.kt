@@ -11,7 +11,10 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 const val DATAELEMENT_FORM_NAME = "dataElement_formName"
 const val DATAELEMENT_DESCRIPTION = "dataElement_description"
@@ -28,10 +31,13 @@ class TableDataToTableModelMapperTest {
 
     @Test
     fun `Should Map Indicators`() {
+        whenever(mapFieldValueToUser.resources) doReturn mock()
+        whenever(mapFieldValueToUser.resources.getString(any())) doReturn "Value"
+
         val map = mapOf<String?, String>(
             Pair("Indicator 1", "2"),
             Pair("Indicator 2", "1"),
-            Pair("Indicator 3", "3")
+            Pair("Indicator 3", "3"),
         )
         val sorted = map.toSortedMap { o1, o2 -> if (o1!! > o2!!) -1 else 1 }
 
@@ -60,7 +66,7 @@ class TableDataToTableModelMapperTest {
             null,
             null,
             null,
-            null
+            null,
         )
 
         val tableData = TableData(
@@ -70,7 +76,7 @@ class TableDataToTableModelMapperTest {
             true,
             showRowTotals = false,
             showColumnTotals = false,
-            hasDataElementDecoration = false
+            hasDataElementDecoration = false,
         )
 
         val result = tableDataToTableModelMapper(tableData)
@@ -93,7 +99,7 @@ class TableDataToTableModelMapperTest {
             null,
             null,
             null,
-            null
+            null,
         )
 
         val tableData = TableData(
@@ -103,7 +109,7 @@ class TableDataToTableModelMapperTest {
             false,
             showRowTotals = false,
             showColumnTotals = false,
-            hasDataElementDecoration = false
+            hasDataElementDecoration = false,
         )
 
         val result = tableDataToTableModelMapper(tableData)
@@ -133,7 +139,7 @@ class TableDataToTableModelMapperTest {
             0,
             1,
             "1",
-            ""
+            "",
         )
     }
 

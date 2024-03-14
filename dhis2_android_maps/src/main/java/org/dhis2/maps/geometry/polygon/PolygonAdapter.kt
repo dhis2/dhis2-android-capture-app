@@ -9,7 +9,7 @@ import org.dhis2.maps.databinding.ItemPolygonFullBinding
 
 class PolygonAdapter(
     val list: List<PolygonViewModel.PolygonPoint>,
-    val viewModel: PolygonViewModel
+    val viewModel: PolygonViewModel,
 ) : RecyclerView.Adapter<PolygonAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -17,7 +17,7 @@ class PolygonAdapter(
             LayoutInflater.from(parent.context),
             R.layout.item_polygon_full,
             parent,
-            false
+            false,
         )
         return Holder(binding)
     }

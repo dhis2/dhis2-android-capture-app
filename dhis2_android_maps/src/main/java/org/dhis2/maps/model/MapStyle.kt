@@ -8,10 +8,10 @@ data class MapStyle(
     var enrollmentColor: Int,
     var enrollmentSymbolIcon: Drawable?,
     var stagesStyle: HashMap<String, StageStyle>,
-    var programDarkColor: Int
+    var programDarkColor: Int,
 )
 
 data class StageStyle(
     val stageColor: Int,
-    val stageIcon: Drawable
+    val stageIcon: Drawable,
 )

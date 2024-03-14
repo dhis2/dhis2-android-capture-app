@@ -13,7 +13,7 @@ import java.util.Date
 class SMSSyncProviderImpl(
     override val d2: D2,
     override val syncContext: SyncContext,
-    override val resourceManager: ResourceManager
+    override val resourceManager: ResourceManager,
 ) : SMSSyncProvider {
 
     override var smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
@@ -22,7 +22,7 @@ class SMSSyncProviderImpl(
 
     override fun sendSms(
         doOnNext: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
-        doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit
+        doOnNewState: (sendingStatus: SmsSendingService.SendingStatus) -> Unit,
     ): Completable {
         val startDate = Date()
 
@@ -36,21 +36,21 @@ class SMSSyncProviderImpl(
                         SmsSendingService.State.SENDING
                     },
                     state.sent,
-                    state.total
-                )
+                    state.total,
+                ),
             )
         }
             .ignoreElements()
             .doOnComplete {
                 doOnNewState(
-                    reportState(SmsSendingService.State.SENT, 0, 0)
+                    reportState(SmsSendingService.State.SENT, 0, 0),
                 )
             }
-            .andThen(d2.smsModule().configCase().smsModuleConfig)
+            .andThen(d2.smsModule().configCase().getSmsModuleConfig())
             .flatMapCompletable { config ->
                 if (config.isWaitingForResult) {
                     doOnNewState(
-                        reportState(SmsSendingService.State.WAITING_RESULT, 0, 0)
+                        reportState(SmsSendingService.State.WAITING_RESULT, 0, 0),
                     )
                     smsSender.checkConfirmationSms(startDate)
                         .doOnError { throwable ->
@@ -61,14 +61,14 @@ class SMSSyncProviderImpl(
                                         reportState(
                                             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
                                             0,
-                                            0
-                                        )
+                                            0,
+                                        ),
                                     )
                                 }
                             }
                         }.doOnComplete {
                             doOnNewState(
-                                reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0)
+                                reportState(SmsSendingService.State.RESULT_CONFIRMED, 0, 0),
                             )
                         }
                 } else {
@@ -102,7 +102,7 @@ class SMSSyncProviderImpl(
     private fun reportState(
         state: SmsSendingService.State,
         sent: Int,
-        total: Int
+        total: Int,
     ): SmsSendingService.SendingStatus {
         val submissionId = smsSender.submissionId
         return SmsSendingService.SendingStatus(submissionId, state, null, sent, total)

@@ -10,13 +10,18 @@ import org.dhis2.commons.R
 
 object ObjectStyleUtils {
     @JvmStatic
-    fun getIconResource(context: Context, resourceName: String?, defaultResource: Int): Drawable? {
+    fun getIconResource(
+        context: Context,
+        resourceName: String?,
+        defaultResource: Int,
+        colorUtils: ColorUtils,
+    ): Drawable? {
         if (defaultResource == -1) {
             return null
         }
         val defaultDrawable = AppCompatResources.getDrawable(context, defaultResource)
         return if (resourceName?.isNotEmpty() == true) {
-            val iconResource = ResourceManager(context)
+            val iconResource = ResourceManager(context, colorUtils)
                 .getObjectStyleDrawableResource(resourceName, R.drawable.ic_default_icon)
             val drawable = AppCompatResources.getDrawable(context, iconResource)
             drawable?.mutate()
@@ -29,7 +34,7 @@ object ObjectStyleUtils {
     fun getColorResource(
         context: Context,
         styleColor: String?,
-        @ColorRes defaultColorResource: Int
+        @ColorRes defaultColorResource: Int,
     ): Int {
         return styleColor?.let {
             val color: String = when {

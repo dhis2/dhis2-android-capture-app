@@ -12,8 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.scottyab.rootbeer.RootBeer
-import javax.inject.Inject
-import javax.inject.Named
 import org.dhis2.App
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -22,6 +20,8 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
+import javax.inject.Inject
+import javax.inject.Named
 
 class SplashActivity : ActivityGlobalAbstract(), SplashView {
     companion object {
@@ -59,13 +59,13 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
             } else {
                 showRootedDialog(
                     getString(R.string.security_title),
-                    getString(R.string.security_debugger_message)
+                    getString(R.string.security_debugger_message),
                 )
             }
         } else {
             showRootedDialog(
                 getString(R.string.security_title),
-                getString(R.string.security_rooted_message)
+                getString(R.string.security_rooted_message),
             )
         }
     }
@@ -116,7 +116,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         isUserLogged: Boolean,
         sessionLocked: Boolean,
         initialSyncDone: Boolean,
-        initialDataSyncDone: Boolean
+        initialDataSyncDone: Boolean,
     ) {
         if (isUserLogged && initialSyncDone && !sessionLocked) {
             startActivity(
@@ -124,7 +124,7 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
                 MainActivity.bundle(launchDataSync = initialDataSyncDone),
                 true,
                 true,
-                null
+                null,
             )
         } else if (isUserLogged && !initialSyncDone) {
             startActivity(
@@ -132,17 +132,17 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
                 null,
                 true,
                 true,
-                null
+                null,
             )
         } else {
             startActivity(
                 LoginActivity::class.java,
                 LoginActivity.bundle(
-                    accountsCount = presenter.getAccounts()
+                    accountsCount = presenter.getAccounts(),
                 ),
                 true,
                 true,
-                null
+                null,
             )
         }
     }

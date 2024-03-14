@@ -59,8 +59,8 @@ class NoteDetailRepositoryTest {
                     .noteType(Note.NoteType.ENROLLMENT_NOTE)
                     .enrollment(enrollmentUid)
                     .value(message)
-                    .build()
-            )
+                    .build(),
+            ),
         ) doReturn Single.just(note.uid())
 
         val testObserver = repository.saveNote(noteType, teiUid, message).test()
@@ -83,8 +83,8 @@ class NoteDetailRepositoryTest {
                     .noteType(Note.NoteType.EVENT_NOTE)
                     .event(eventUid)
                     .value(message)
-                    .build()
-            )
+                    .build(),
+            ),
         ) doReturn Single.just(note.uid())
         val testObserver = repository.saveNote(NoteType.EVENT, eventUid, message).test()
 
@@ -102,29 +102,29 @@ class NoteDetailRepositoryTest {
     private fun mockEnrollment(teiUid: String) {
         whenever(
             d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
+                .byProgram().eq(programUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
-                .byTrackedEntityInstance()
+                .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-        ) doReturn mock()
-        whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .one()
+                .byTrackedEntityInstance().eq(teiUid),
         ) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollments()
                 .byProgram().eq(programUid)
                 .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet()
+                .one(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments()
+                .byProgram().eq(programUid)
+                .byTrackedEntityInstance().eq(teiUid)
+                .one().blockingGet(),
         ) doReturn Enrollment.builder().uid("EnrollmentUid").build()
     }
 }

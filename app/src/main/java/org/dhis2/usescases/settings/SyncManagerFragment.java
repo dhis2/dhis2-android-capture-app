@@ -2,12 +2,12 @@ package org.dhis2.usescases.settings;
 
 import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
 import static android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_12_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_24_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_30_MIN;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_6_HOUR;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_7_DAYS;
-import static org.dhis2.Bindings.SettingExtensionsKt.EVERY_HOUR;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_12_HOUR;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_24_HOUR;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_30_MIN;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_6_HOUR;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_7_DAYS;
+import static org.dhis2.bindings.SettingExtensionsKt.EVERY_HOUR;
 import static org.dhis2.commons.Constants.DATA_NOW;
 import static org.dhis2.commons.Constants.META_NOW;
 import static org.dhis2.commons.Constants.TIME_MANUAL;
@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -39,24 +40,25 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.work.WorkInfo;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.dhis2.Bindings.ContextExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
+import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
 import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
-import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.FragmentSettingsBinding;
+import org.dhis2.ui.dialogs.alert.AlertDialog;
+import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.settings.models.DataSettingsViewModel;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
@@ -85,6 +87,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Inject
     NetworkUtils networkUtils;
+
+    @Inject
+    ColorUtils colorUtils;
 
     private FragmentSettingsBinding binding;
     private Context context;
@@ -200,16 +205,26 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void deleteLocalData() {
-        new MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
-                .setTitle(getString(R.string.delete_local_data))
-                .setMessage(getString(R.string.delete_local_data_message))
-                .setView(R.layout.warning_layout)
-                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
-                    analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
-                    presenter.deleteLocalData();
-                })
-                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
-                .show();
+        new AlertDialog(
+                getString(R.string.delete_local_data),
+                getString(R.string.delete_local_data_message),
+                null,
+                null,
+                R.raw.warning,
+                new ButtonUiModel(
+                        getString(R.string.cancel),
+                        true,
+                        () -> null
+                ),
+                new ButtonUiModel(
+                        getString(R.string.action_accept),
+                        true,
+                        () -> {
+                            analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                            presenter.deleteLocalData();
+                            return null;
+                        })
+        ).show(requireActivity().getSupportFragmentManager());
     }
 
     @Override
@@ -271,6 +286,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.dataDivider.setVisibility(View.GONE);
                         binding.dataSyncBottomShadow.setVisibility(View.VISIBLE);
                         binding.dataSyncTopShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemData);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -280,6 +296,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.metaDivider.setVisibility(View.GONE);
                         binding.metaDataTopShadow.setVisibility(View.VISIBLE);
                         binding.metaDataBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemMeta);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -289,6 +306,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.parameterDivider.setVisibility(View.GONE);
                         binding.itemParamsSyncTopShadow.setVisibility(View.VISIBLE);
                         binding.itemParamsSyncBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemParams);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -298,12 +316,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.reservedValueDivider.setVisibility(View.GONE);
                         binding.reservedValueTopShadow.setVisibility(View.VISIBLE);
                         binding.reservedValueBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemValues);
                         return Unit.INSTANCE;
                     });
                     break;
                 case DELETE_LOCAL_DATA:
                     ViewAnimationsKt.expand(binding.deleteDataButton, true, () -> {
                         binding.deleteDataButton.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemDeleteData);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -312,12 +332,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         binding.smsContent.setVisibility(View.VISIBLE);
                         binding.smsTopShadow.setVisibility(View.VISIBLE);
                         binding.smsBottomShadow.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.smsSettings);
                         return Unit.INSTANCE;
                     });
                     break;
                 case VERSION_UPDATE:
-                    ViewAnimationsKt.expand(binding.versionButton,true, () -> {
+                    ViewAnimationsKt.expand(binding.versionButton, true, () -> {
                         binding.versionButton.setVisibility(View.VISIBLE);
+                        scrollToChild(binding.settingsItemVersion);
                         return Unit.INSTANCE;
                     });
                     break;
@@ -328,6 +350,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             closedSettingItem(settingOpened);
             settingOpened = null;
         }
+    }
+
+    private void scrollToChild(View child) {
+        int[] l = new int[2];
+        child.getLocationOnScreen(l);
+        Rect rect = new Rect(l[0], l[1], l[0] + child.getWidth(), l[1] + child.getHeight());
+        binding.scrollView.requestChildRectangleOnScreen(child,rect, false);
     }
 
     private void closedSettingItem(SettingItem settingItemToClose) {
@@ -674,7 +703,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             SpannableString str = new SpannableString(String.format(quantityString,
                     parameterSettings.getHasSpecificProgramSettings()));
             int indexOfNumber = str.toString().indexOf(String.valueOf(parameterSettings.getHasSpecificProgramSettings()));
-            str.setSpan(new ForegroundColorSpan(ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)),
+            str.setSpan(new ForegroundColorSpan(colorUtils.getPrimaryColor(context, ColorType.PRIMARY)),
                     indexOfNumber,
                     indexOfNumber + 1,
                     SPAN_INCLUSIVE_EXCLUSIVE);
@@ -1020,7 +1049,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private void observeVersionUpdates() {
         presenter.getUpdatesLoading().observe(getViewLifecycleOwner(), loading -> {
-            if (loading) {
+            if (Boolean.TRUE.equals(loading)) {
                 ViewAnimationsKt.expand(binding.loadingCheckVersion, true, () -> Unit.INSTANCE);
             }
         });

@@ -21,6 +21,10 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
+import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
+import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 
@@ -29,23 +33,25 @@ class TEIDataModule(
     private val view: TEIDataContracts.View,
     private val programUid: String?,
     private val teiUid: String,
-    private val enrollmentUid: String?
+    private val enrollmentUid: String,
 ) {
     @Provides
     @PerFragment
     fun providesPresenter(
-        d2: D2?,
-        dashboardRepository: DashboardRepository?,
-        teiDataRepository: TeiDataRepository?,
-        ruleEngineRepository: RuleEngineRepository?,
-        schedulerProvider: SchedulerProvider?,
-        analyticsHelper: AnalyticsHelper?,
-        preferenceProvider: PreferenceProvider?,
-        filterManager: FilterManager?,
-        filterRepository: FilterRepository?,
-        valueStore: FormValueStore?,
+        d2: D2,
+        dashboardRepository: DashboardRepository,
+        teiDataRepository: TeiDataRepository,
+        ruleEngineRepository: RuleEngineRepository,
+        schedulerProvider: SchedulerProvider,
+        analyticsHelper: AnalyticsHelper,
+        preferenceProvider: PreferenceProvider,
+        filterManager: FilterManager,
+        filterRepository: FilterRepository,
+        valueStore: FormValueStore,
         resources: ResourceManager,
-        optionsRepository: OptionsRepository
+        optionsRepository: OptionsRepository,
+        getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
+        eventCreationOptionsMapper: EventCreationOptionsMapper,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -63,7 +69,9 @@ class TEIDataModule(
             filterRepository,
             valueStore,
             resources,
-            optionsRepository
+            optionsRepository,
+            getNewEventCreationTypeOptions,
+            eventCreationOptionsMapper,
         )
     }
 
@@ -81,7 +89,7 @@ class TEIDataModule(
             programUid,
             teiUid,
             enrollmentUid,
-            periodUtils
+            periodUtils,
         )
     }
 
@@ -97,7 +105,7 @@ class TEIDataModule(
         d2: D2,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): FormValueStore {
         return FormValueStore(
             d2,
@@ -106,7 +114,42 @@ class TEIDataModule(
             null,
             crashReportController,
             networkUtils,
-            resourceManager
+            resourceManager,
         )
+    }
+
+    @Provides
+    fun provideGetNewEventCreationTypeOptions(
+        programConfigurationRepository: ProgramConfigurationRepository,
+    ): GetNewEventCreationTypeOptions {
+        return GetNewEventCreationTypeOptions(programConfigurationRepository)
+    }
+
+    @Provides
+    fun provideProgramConfigurationRepository(
+        d2: D2,
+    ): ProgramConfigurationRepository {
+        return ProgramConfigurationRepository(d2)
+    }
+
+    @Provides
+    fun provideEventCreationsOptionsMapper(
+        resourceManager: ResourceManager,
+    ): EventCreationOptionsMapper {
+        return EventCreationOptionsMapper(resourceManager)
+    }
+
+    @Provides
+    fun provideTeiCardMapper(
+        resourceManager: ResourceManager,
+    ): TeiDashboardCardMapper {
+        return TeiDashboardCardMapper(resourceManager)
+    }
+
+    @Provides
+    fun provideInfoBarMapper(
+        resourceManager: ResourceManager,
+    ): InfoBarMapper {
+        return InfoBarMapper(resourceManager)
     }
 }

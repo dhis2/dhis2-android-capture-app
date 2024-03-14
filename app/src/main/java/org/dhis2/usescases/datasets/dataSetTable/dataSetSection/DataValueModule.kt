@@ -26,7 +26,7 @@ class DataValueModule(
     private val periodId: String,
     private val attributeOptionComboUid: String,
     private val view: DataValueContract.View,
-    private val activityContext: Context
+    private val activityContext: Context,
 ) {
 
     @Provides
@@ -43,7 +43,7 @@ class DataValueModule(
         tableDimensionStore: TableDimensionStore,
         schedulerProvider: SchedulerProvider,
         tableDataToTableModelMapper: TableDataToTableModelMapper,
-        dispatcherProvider: DispatcherProvider
+        dispatcherProvider: DispatcherProvider,
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
@@ -52,7 +52,7 @@ class DataValueModule(
             tableDimensionStore,
             schedulerProvider,
             tableDataToTableModelMapper,
-            dispatcherProvider
+            dispatcherProvider,
         )
     }
 
@@ -65,7 +65,7 @@ class DataValueModule(
             sectionUid,
             orgUnitUid,
             periodId,
-            attributeOptionComboUid
+            attributeOptionComboUid,
         )
     }
 
@@ -74,7 +74,7 @@ class DataValueModule(
     internal fun TableDimensionStore(d2: D2) = TableDimensionStore(
         d2,
         dataSetUid,
-        sectionUid
+        sectionUid,
     )
 
     @Provides
@@ -90,7 +90,7 @@ class DataValueModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         searchRepository: SearchTEIRepository,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -101,7 +101,7 @@ class DataValueModule(
             networkUtils,
             searchRepository,
             FieldErrorMessageProvider(activityContext),
-            resourceManager
+            resourceManager,
         )
     }
 
@@ -109,7 +109,7 @@ class DataValueModule(
     @PerFragment
     fun provideTableDataToTableModelMapper(
         resourceManager: ResourceManager,
-        repository: DataValueRepository
+        repository: DataValueRepository,
     ): TableDataToTableModelMapper {
         return TableDataToTableModelMapper(MapFieldValueToUser(resourceManager, repository))
     }

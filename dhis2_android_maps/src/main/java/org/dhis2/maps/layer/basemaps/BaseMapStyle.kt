@@ -9,9 +9,9 @@ object BaseMapStyleBuilder {
             rasterTiles = RasterTiles(
                 type = "raster",
                 tiles = tileUrls,
-                tileSize = 256
+                tileSize = 256,
             ),
-            attribution = attribution
+            attribution = attribution,
         ),
         layers = listOf(
             StyleLayers(
@@ -19,11 +19,11 @@ object BaseMapStyleBuilder {
                 type = "raster",
                 source = "raster-tiles",
                 minZoom = 0,
-                maxZoom = 22
-            )
+                maxZoom = 22,
+            ),
         ),
         id = id,
-        glyphs = DEFAULT_GLYPH_URL
+        glyphs = DEFAULT_GLYPH_URL,
     )
 
     fun internalBaseMap(): BaseMapStyle {
@@ -33,9 +33,9 @@ object BaseMapStyleBuilder {
                 DEFAULT_TILE_URL.replace("{s}", "a"),
                 DEFAULT_TILE_URL.replace("{s}", "b"),
                 DEFAULT_TILE_URL.replace("{s}", "c"),
-                DEFAULT_TILE_URL.replace("{s}", "d")
+                DEFAULT_TILE_URL.replace("{s}", "d"),
             ),
-            DEFAULT_ATTRIBUTION
+            DEFAULT_ATTRIBUTION,
         )
     }
 }
@@ -45,18 +45,18 @@ data class BaseMapStyle(
     val sources: StyleSources,
     val layers: List<StyleLayers>,
     val id: String,
-    var glyphs: String
+    var glyphs: String,
 )
 
 data class StyleSources(
     @SerializedName("raster-tiles") val rasterTiles: RasterTiles,
-    val attribution: String
+    val attribution: String,
 )
 
 data class RasterTiles(
     val type: String,
     val tiles: List<String>,
-    val tileSize: Int
+    val tileSize: Int,
 )
 
 data class StyleLayers(
@@ -64,5 +64,5 @@ data class StyleLayers(
     val type: String,
     val source: String,
     val minZoom: Int,
-    val maxZoom: Int
+    val maxZoom: Int,
 )

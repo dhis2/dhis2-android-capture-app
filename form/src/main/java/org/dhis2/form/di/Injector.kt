@@ -3,7 +3,9 @@ package org.dhis2.form.di
 import android.content.Context
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
@@ -31,6 +33,7 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
 import org.dhis2.form.ui.LayoutProviderImpl
+import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
@@ -49,15 +52,18 @@ object Injector {
     fun provideFormViewModelFactory(
         context: Context,
         repositoryRecords: FormRepositoryRecords,
-        openErrorLocation: Boolean
+        openErrorLocation: Boolean,
+        useCompose: Boolean,
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
-                repositoryRecords
+                repositoryRecords,
+                useCompose,
             ),
             provideDispatchers(),
-            openErrorLocation
+            openErrorLocation,
+            providePreferenceProvider(context),
         )
     }
 
@@ -65,7 +71,7 @@ object Injector {
 
     fun provideOptionSetDialog(): SearchOptionSetOption {
         return SearchOptionSetOption(
-            provideD2().optionModule().options()
+            provideD2().optionModule().options(),
         )
     }
 
@@ -75,99 +81,101 @@ object Injector {
 
     private fun provideFormRepository(
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
+        useCompose: Boolean,
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
                 context = context,
                 recordUid = repositoryRecords.recordUid,
-                entryMode = repositoryRecords.entryMode
+                entryMode = repositoryRecords.entryMode,
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
             displayNameProvider = provideDisplayNameProvider(),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
                 context = context,
-                repositoryRecords = repositoryRecords
+                repositoryRecords = repositoryRecords,
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
-                repositoryRecords.recordUid
+                repositoryRecords.recordUid,
             ),
             rulesUtilsProvider = provideRulesUtilsProvider(),
-            legendValueProvider = provideLegendValueProvider(context)
+            legendValueProvider = provideLegendValueProvider(context),
+            useCompose = useCompose,
         )
     }
 
     private fun provideDataEntryRepository(
         entryMode: EntryMode?,
         context: Context,
-        repositoryRecords: FormRepositoryRecords
+        repositoryRecords: FormRepositoryRecords,
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
                 context,
-                repositoryRecords as EnrollmentRecords
+                repositoryRecords as EnrollmentRecords,
             )
 
             EntryMode.DE -> provideEventRepository(
                 context,
-                repositoryRecords as EventRecords
+                repositoryRecords as EventRecords,
             )
 
             else -> provideSearchRepository(
                 context,
-                repositoryRecords as SearchRecords
+                repositoryRecords as SearchRecords,
             )
         }
     }
 
     private fun provideSearchRepository(
         context: Context,
-        searchRecords: SearchRecords
+        searchRecords: SearchRecords,
     ): DataEntryRepository {
         return SearchRepository(
             d2 = provideD2(),
             fieldViewModelFactory = provideFieldFactory(
                 context,
                 searchRecords.allowMandatoryFields,
-                searchRecords.isBackgroundTransparent
+                searchRecords.isBackgroundTransparent,
             ),
             programUid = searchRecords.programUid,
             teiTypeUid = searchRecords.teiTypeUid,
-            currentSearchValues = searchRecords.currentSearchValues
+            currentSearchValues = searchRecords.currentSearchValues,
         )
     }
 
     private fun provideEnrollmentRepository(
         context: Context,
-        enrollmentRecords: EnrollmentRecords
+        enrollmentRecords: EnrollmentRecords,
     ): DataEntryRepository {
         return EnrollmentRepository(
             fieldFactory = provideFieldFactory(
                 context,
                 enrollmentRecords.allowMandatoryFields,
-                enrollmentRecords.isBackgroundTransparent
+                enrollmentRecords.isBackgroundTransparent,
             ),
             enrollmentUid = enrollmentRecords.enrollmentUid,
             d2 = provideD2(),
             enrollmentMode = enrollmentRecords.enrollmentMode,
-            enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context)
+            enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
         )
     }
 
     private fun provideEventRepository(
         context: Context,
-        eventRecords: EventRecords
+        eventRecords: EventRecords,
     ): DataEntryRepository {
         return EventRepository(
             fieldFactory = provideFieldFactory(
                 context,
                 eventRecords.allowMandatoryFields,
-                eventRecords.isBackgroundTransparent
+                eventRecords.isBackgroundTransparent,
             ),
             eventUid = eventRecords.eventUid,
-            d2 = provideD2()
+            d2 = provideD2(),
         )
     }
 
@@ -177,7 +185,7 @@ object Injector {
     private fun provideFieldFactory(
         context: Context,
         allowMandatoryFields: Boolean,
-        isBackgroundTransparent: Boolean
+        isBackgroundTransparent: Boolean,
     ): FieldViewModelFactory = FieldViewModelFactoryImpl(
         noMandatoryFields = !allowMandatoryFields,
         uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
@@ -186,7 +194,8 @@ object Injector {
         displayNameProvider = provideDisplayNameProvider(),
         uiEventTypesProvider = provideUiEventTypesProvider(),
         keyboardActionProvider = provideKeyBoardActionProvider(),
-        legendValueProvider = provideLegendValueProvider(context)
+        legendValueProvider = provideLegendValueProvider(context),
+        autoCompleteProvider = provideAutoCompleteProvider(context),
     )
 
     private fun provideKeyBoardActionProvider() = KeyboardActionProviderImpl()
@@ -199,17 +208,25 @@ object Injector {
 
     private fun provideUiStyleProvider(
         context: Context,
-        isBackgroundTransparent: Boolean
+        isBackgroundTransparent: Boolean,
     ): UiStyleProvider = UiStyleProviderImpl(
-        colorFactory = FormUiModelColorFactoryImpl(context, isBackgroundTransparent),
-        longTextColorFactory = LongTextUiColorFactoryImpl(context, isBackgroundTransparent),
-        actionIconClickable = isBackgroundTransparent
+        colorFactory = FormUiModelColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils(),
+        ),
+        longTextColorFactory = LongTextUiColorFactoryImpl(
+            context,
+            isBackgroundTransparent,
+            provideColorUtils(),
+        ),
+        actionIconClickable = isBackgroundTransparent,
     )
 
     private fun provideFormValueStore(
         context: Context,
         recordUid: String?,
-        entryMode: EntryMode?
+        entryMode: EntryMode?,
     ): FormValueStore? {
         return entryMode?.let { it ->
             val enrollmentObjectRepository = if (it == EntryMode.ATTR) {
@@ -225,13 +242,13 @@ object Injector {
                 enrollmentRepository = enrollmentObjectRepository,
                 crashReportController = provideCrashReportController(),
                 networkUtils = provideNetworkUtils(context),
-                resourceManager = provideResourcesManager(context)
+                resourceManager = provideResourcesManager(context),
             )
         }
     }
 
     private fun provideEnrollmentObjectRepository(
-        enrollmentUid: String
+        enrollmentUid: String,
     ): EnrollmentObjectRepository {
         return provideD2().enrollmentModule().enrollments().uid(enrollmentUid)
     }
@@ -240,19 +257,24 @@ object Injector {
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    private fun provideResourcesManager(context: Context) = ResourceManager(context)
+    fun provideResourcesManager(context: Context) = ResourceManager(
+        context,
+        provideColorUtils(),
+    )
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
     private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
         OrgUnitConfiguration(provideD2()),
-        FileResourceConfiguration(provideD2())
+        FileResourceConfiguration(provideD2()),
     )
+
+    private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 
     private fun provideRuleEngineRepository(
         entryMode: EntryMode?,
-        recordUid: String?
+        recordUid: String?,
     ): RuleEngineRepository? {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRuleEngineRepository(recordUid!!)
@@ -269,13 +291,17 @@ object Injector {
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
         provideD2(),
-        provideOptionsRepository()
+        provideOptionsRepository(),
     )
 
     private fun provideOptionsRepository() = OptionsRepository(provideD2())
 
     private fun provideLegendValueProvider(context: Context) = LegendValueProviderImpl(
         provideD2(),
-        provideResourcesManager(context)
+        provideResourcesManager(context),
     )
+    private fun provideAutoCompleteProvider(context: Context) = AutoCompleteProviderImpl(
+        providePreferenceProvider(context),
+    )
+    private fun provideColorUtils() = ColorUtils()
 }

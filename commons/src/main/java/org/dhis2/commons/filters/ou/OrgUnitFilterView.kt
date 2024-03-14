@@ -19,7 +19,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 class OrgUnitFilterView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val ouFilterAdapter by lazy { OUFilterAdapter() }
@@ -43,15 +43,15 @@ class OrgUnitFilterView @JvmOverloads constructor(
                                 ArrayAdapter(
                                     context,
                                     android.R.layout.simple_dropdown_item_1line,
-                                    filteredOrgUnitResult.names()
+                                    filteredOrgUnitResult.names(),
                                 )
                             orgUnitSearchEditText.setAdapter(
-                                autoCompleteAdapter
+                                autoCompleteAdapter,
                             )
                             orgUnitSearchEditText.showDropDown()
                         }
                     },
-                    { progress.visibility = View.GONE }
+                    { progress.visibility = View.GONE },
                 )
             }
             addButton.setOnClickListener {
@@ -71,7 +71,7 @@ class OrgUnitFilterView @JvmOverloads constructor(
         binding.filterType = filterItem.type
         filterItem.selectedOrgUnits.observe(
             (context as LifecycleOwner),
-            Observer<List<OrganisationUnit?>> { ouFilterAdapter.notifyDataSetChanged() }
+            Observer<List<OrganisationUnit?>> { ouFilterAdapter.notifyDataSetChanged() },
         )
     }
 }

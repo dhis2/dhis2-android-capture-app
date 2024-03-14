@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.common.FeatureType
@@ -28,6 +29,8 @@ interface FieldViewModelFactory {
         fieldMask: String? = null,
         optionSetConfiguration: OptionSetConfiguration? = null,
         featureType: FeatureType? = null,
+        autoCompleteList: List<String>? = null,
+        orgUnitSelectorScope: OrgUnitSelectorScope? = null,
         url: String?,
     ): FieldUiModel
 
@@ -36,7 +39,7 @@ interface FieldViewModelFactory {
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         value: String?,
         editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?
+        optionSetConfiguration: OptionSetConfiguration?,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel
@@ -48,7 +51,7 @@ interface FieldViewModelFactory {
         isOpen: Boolean,
         totalFields: Int,
         completedFields: Int,
-        rendering: String?
+        rendering: String?,
     ): FieldUiModel
 
     fun createClosingSection(): FieldUiModel

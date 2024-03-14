@@ -1,11 +1,11 @@
 package org.dhis2.android.rtsm.services
 
-import javax.inject.Inject
 import org.dhis2.composetable.model.TableModel
 import org.hisp.dhis.android.core.D2
+import javax.inject.Inject
 
 class StockTableDimensionStore @Inject constructor(
-    val d2: D2
+    val d2: D2,
 ) {
     private var programUid: String = ""
     private var sectionUid: String = ""
@@ -104,7 +104,7 @@ class StockTableDimensionStore @Inject constructor(
     }
 
     fun getColumnWidthForSection(
-        tableList: MutableList<TableModel>?
+        tableList: MutableList<TableModel>?,
     ): Map<String, Map<Int, Float>>? {
         return if (tableList != null) {
             columnWidthForTableModels(tableList.map { it.id ?: "" })

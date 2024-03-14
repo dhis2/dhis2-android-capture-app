@@ -10,7 +10,7 @@ class FilterHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(bindi
             setVariable(BR.filterItem, filterItem)
             setVariable(
                 BR.workingListScope,
-                FilterManager.getInstance().observeWorkingListScope()
+                FilterManager.getInstance().observeWorkingListScope(),
             )
             executePendingBindings()
         }

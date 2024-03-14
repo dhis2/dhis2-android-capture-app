@@ -23,9 +23,6 @@
             name="dashboardModel"
             type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
 
-        <variable
-            name="totalFilters"
-            type="Integer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,52 +59,30 @@
                 android:textSize="20sp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
+                app:layout_constraintEnd_toStartOf="@id/editButton"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/filterCounter"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:padding="2dp"
-                app:layout_constraintStart_toStartOf="@id/search_filter_general"
-                app:layout_constraintTop_toTopOf="@id/search_filter_general">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/ic_oval_shape_white"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text='@{""+totalFilters}'
-                    android:textColor="?colorPrimary"
-                    android:textSize="10sp"
-                    android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
-                    tools:text="1" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{presenter.getProgramUid() == null ? View.GONE : View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <ImageView
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_sync"
-                app:tint="?colorOnPrimary"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/search_filter_general"
-                style="@style/ActionIcon"
-                android:onClick="@{ () -> presenter.generalFiltersClick() }"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/relationshipMapIcon"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_filter"
-                tools:ignore="ContentDescription" />
+                app:srcCompat="@drawable/ic_sync"
+                app:tint="?colorOnPrimary"
+                tools:ignore="ContentDescription"
+                tools:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/relationshipMapIcon"
@@ -119,7 +94,7 @@
                 app:srcCompat="@drawable/ic_map"
                 app:tint="@color/white"
                 tools:ignore="ContentDescription"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/moreOptions"
