@@ -141,7 +141,7 @@ class DashboardViewModel(
 
     fun deleteEnrollment(
         onSuccess: (Boolean?) -> Unit,
-        onAuthorityError: () -> Unit
+        onAuthorityError: () -> Unit,
     ) {
         viewModelScope.launch(dispatcher.io()) {
             val result = async {

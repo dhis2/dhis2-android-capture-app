@@ -702,7 +702,7 @@ class TeiDashboardMobileActivity :
                         },
                         onAuthorityError = {
                             authorityErrorMessage()
-                        }
+                        },
                     )
                 },
             ).show(
