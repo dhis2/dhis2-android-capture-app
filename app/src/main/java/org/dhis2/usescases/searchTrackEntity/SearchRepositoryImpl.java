@@ -49,6 +49,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
@@ -716,9 +717,14 @@ public class SearchRepositoryImpl implements SearchRepository {
         SearchTeiModel searchTei = new SearchTeiModel();
         if (dbTei != null && dbTei.aggregatedSyncState() != State.RELATIONSHIP) {
             searchTei.setTei(dbTei);
-            List<Enrollment> enrollmentsInProgram = d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(dbTei.uid())
-                    .byProgram().eq(selectedProgram.uid())
+            EnrollmentCollectionRepository enrollmentRepository = d2.enrollmentModule().enrollments()
+                    .byTrackedEntityInstance().eq(dbTei.uid());
+
+            if (selectedProgram != null) {
+                enrollmentRepository.byProgram().eq(selectedProgram.uid());
+            }
+
+            List<Enrollment> enrollmentsInProgram = enrollmentRepository
                     .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                     .blockingGet();
 
