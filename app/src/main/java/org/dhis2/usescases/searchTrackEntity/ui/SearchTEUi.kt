@@ -240,7 +240,7 @@ fun FullSearchButtonAndWorkingList(
                     top = Spacing.Spacing16,
                     start = Spacing.Spacing16,
                     end = Spacing.Spacing16,
-                    bottom = Spacing.Spacing8,
+                    bottom = Spacing.Spacing16,
                 ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -248,7 +248,7 @@ fun FullSearchButtonAndWorkingList(
                     modifier = Modifier
                         .wrapContentHeight()
                         .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
                 ) {
                     if (queryData.isNotEmpty()) {
                         SearchButtonWithQuery(
@@ -292,6 +292,8 @@ fun FullSearchButtonAndWorkingList(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.requiredHeight(Spacing.Spacing16))
 
         workingListViewModel?.let {
             WorkingListChipGroup(workingListViewModel = it)
