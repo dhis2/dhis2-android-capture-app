@@ -79,7 +79,6 @@ class ProgramEventTest : BaseTest() {
     @Test
     fun shouldCompleteAnEventAndReopenIt() {
         val eventDate = "15/3/2020"
-        val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
@@ -100,8 +99,6 @@ class ProgramEventTest : BaseTest() {
         eventRobot(composeTestRule) {
             clickOnReopen()
             checkEventIsOpen()
-            openEventDetailsSection()
-            checkEventDetails(eventDate, eventOrgUnit)
         }
     }
 

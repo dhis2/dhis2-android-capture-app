@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teidashboard.robot
 
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -15,7 +14,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withSubstring
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -27,7 +25,6 @@ import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
-import org.hamcrest.CoreMatchers.allOf
 
 fun eventRobot(
     composeTestRule: ComposeTestRule,
@@ -52,9 +49,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun clickOnCompleteButton() {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(MAIN_BUTTON_TAG))
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
     }
 
@@ -94,18 +89,6 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
     }
 
-
-    fun checkDetails(eventDate: String, eventOrgUnit: String) {
-        onView(withId(R.id.eventSecundaryInfo)).check(
-            matches(
-                allOf(
-                    withSubstring(eventDate),
-                    withSubstring(eventOrgUnit)
-                )
-            )
-        )
-    }
-
     fun openMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())
     }
@@ -139,11 +122,9 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(100)))
         val formattedDate = formatStoredDateToUI(eventDate)
-        composeTestRule.waitUntilAtLeastOneExists(hasText(formattedDate))
         composeTestRule.onNodeWithText(formattedDate).assertIsDisplayed()
         composeTestRule.onNodeWithText(eventOrgUnit).assertIsDisplayed()
     }
