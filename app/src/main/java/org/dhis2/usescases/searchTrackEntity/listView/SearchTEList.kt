@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -192,7 +192,6 @@ class SearchTEList : FragmentGlobalAbstract() {
                     FullSearchButtonAndWorkingList(
                         modifier = Modifier,
                         teTypeName = teTypeName!!,
-                        visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
                         createButtonVisible = createButtonVisibility,
@@ -223,7 +222,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     viewModel.queryData.isNotEmpty()
                 }
 
-                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
                         56.dp
                     } else {
