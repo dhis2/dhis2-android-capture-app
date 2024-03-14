@@ -1,6 +1,7 @@
 package org.dhis2.composetable.ui
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
@@ -24,6 +25,7 @@ data class TableDimensions(
     val totalWidth: Int = 0,
     val cellVerticalPadding: Dp = 4.dp,
     val cellHorizontalPadding: Dp = 4.dp,
+    val headerCellPaddingValues: PaddingValues = PaddingValues(horizontal = 4.dp, vertical = 11.dp),
     val tableBottomPadding: Dp = 200.dp,
     val extraWidths: Map<String, Int> = emptyMap(),
     val rowHeaderWidths: Map<String, Int> = emptyMap(),

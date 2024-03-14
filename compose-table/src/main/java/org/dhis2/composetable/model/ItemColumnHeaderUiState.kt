@@ -1,5 +1,6 @@
 package org.dhis2.composetable.model
 
+import androidx.compose.foundation.layout.PaddingValues
 import org.dhis2.composetable.ui.CellStyle
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.semantics.HEADER_CELL
@@ -10,6 +11,7 @@ data class ItemColumnHeaderUiState(
     val columnIndex: Int,
     val headerCell: TableHeaderCell,
     val headerMeasures: HeaderMeasures,
+    val paddingValues: PaddingValues,
     val cellStyle: CellStyle,
     val onCellSelected: (Int) -> Unit,
     val onHeaderResize: (Int, Float) -> Unit,

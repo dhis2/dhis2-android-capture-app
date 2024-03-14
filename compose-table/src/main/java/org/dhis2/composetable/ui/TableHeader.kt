@@ -58,16 +58,17 @@ fun TableHeader(
                                     rowIndex = rowIndex,
                                     columnIndex = columnIndex,
                                     headerCell = tableHeaderRow.cells[cellIndex],
-                                    HeaderMeasures(
-                                        dimensions.headerCellWidth(
-                                            tableId ?: "",
-                                            columnIndex,
-                                            tableHeaderModel.numberOfColumns(rowIndex),
-                                            tableHeaderModel.tableMaxColumns(),
-                                            tableHeaderModel.hasTotals,
+                                    headerMeasures = HeaderMeasures(
+                                        width = dimensions.headerCellWidth(
+                                            tableId = tableId ?: "",
+                                            column = columnIndex,
+                                            headerRowColumns = tableHeaderModel.numberOfColumns(rowIndex),
+                                            totalColumns = tableHeaderModel.tableMaxColumns(),
+                                            hasTotal = tableHeaderModel.hasTotals,
                                         ),
-                                        dimensions.defaultHeaderHeight,
+                                        height = dimensions.defaultHeaderHeight,
                                     ),
+                                    paddingValues = dimensions.headerCellPaddingValues,
                                     cellStyle = cellStyle(columnIndex, rowIndex),
                                     onCellSelected = { onHeaderCellSelected(it, rowIndex) },
                                     onHeaderResize = onHeaderResize,
@@ -100,6 +101,7 @@ fun TableHeader(
                                     ),
                                     dimensions.defaultHeaderHeight * tableHeaderModel.rows.size,
                                 ),
+                                paddingValues = dimensions.headerCellPaddingValues,
                                 cellStyle = cellStyle(
                                     tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
                                     tableHeaderModel.rows.size - 1,

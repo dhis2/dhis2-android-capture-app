@@ -57,19 +57,19 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
 
         is TrackerLineListItem.ProgramAttribute -> this.copy(
             filters = listOf(
-                DataFilter.EqualTo(value),
+                DataFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.ProgramDataElement -> this.copy(
             filters = listOf(
-                DataFilter.EqualTo(value),
+                DataFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.ProgramIndicator -> this.copy(
             filters = listOf(
-                DataFilter.EqualTo(value),
+                DataFilter.Like(value),
             ),
         )
 

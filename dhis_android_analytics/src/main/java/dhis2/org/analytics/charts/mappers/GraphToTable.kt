@@ -3,6 +3,7 @@ package dhis2.org.analytics.charts.mappers
 import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -221,6 +222,7 @@ class GraphToTable {
             defaultHeaderTextSize = 10.sp,
             defaultCellTextSize = 10.sp,
             defaultHeaderHeight = 24,
+            headerCellPaddingValues = PaddingValues(horizontal = 4.dp),
         )
 
     private fun tableModelForLineListing(graph: Graph): TableModel {
