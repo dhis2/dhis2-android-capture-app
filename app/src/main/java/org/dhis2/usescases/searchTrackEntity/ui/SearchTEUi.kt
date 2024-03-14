@@ -171,8 +171,9 @@ fun AddNewButton(
     }
 }
 
+// TODO: Update to new search input design
 @Composable
-fun SearchButton_Old(
+fun SearchButtonWithQuery(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
