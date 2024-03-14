@@ -229,6 +229,7 @@ fun FullSearchButtonAndWorkingList(
     visible: Boolean = true,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
+    queryData: MutableMap<String, String> = mutableMapOf(),
     onSearchClick: () -> Unit = {},
     onEnrollClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
@@ -256,18 +257,17 @@ fun FullSearchButtonAndWorkingList(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    SearchButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onSearchClick,
-                        teTypeName = teTypeName,
-                        createButtonVisible = createButtonVisible,
-                    )
-
-                    if (createButtonVisible) {
-                        AddNewButton(
+                    if (queryData.isNotEmpty()) {
+                        SearchButtonWithQuery(
                             modifier = Modifier.fillMaxWidth(),
+                            onClick = onSearchClick,
+                        )
+                    } else {
+                        SearchAndCreateTEIButton(
+                            onSearchClick = onSearchClick,
                             teTypeName = teTypeName,
-                            onClick = onEnrollClick,
+                            createButtonVisible = createButtonVisible,
+                            onEnrollClick = onEnrollClick,
                         )
                     }
                 }
@@ -301,6 +301,29 @@ fun FullSearchButtonAndWorkingList(
                 WorkingListChipGroup(workingListViewModel = it)
             }
         }
+    }
+}
+
+@Composable
+private fun SearchAndCreateTEIButton(
+    onSearchClick: () -> Unit,
+    teTypeName: String,
+    createButtonVisible: Boolean,
+    onEnrollClick: () -> Unit,
+) {
+    SearchButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onSearchClick,
+        teTypeName = teTypeName,
+        createButtonVisible = createButtonVisible,
+    )
+
+    if (createButtonVisible) {
+        AddNewButton(
+            modifier = Modifier.fillMaxWidth(),
+            teTypeName = teTypeName,
+            onClick = onEnrollClick,
+        )
     }
 }
 

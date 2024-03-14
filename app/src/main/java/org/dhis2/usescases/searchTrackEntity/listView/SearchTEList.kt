@@ -185,6 +185,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
+                    val queryData = remember(viewModel.uiState) {
+                        viewModel.queryData
+                    }
 
                     FullSearchButtonAndWorkingList(
                         modifier = Modifier,
@@ -192,11 +195,12 @@ class SearchTEList : FragmentGlobalAbstract() {
                         visible = !isScrollingDown,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
+                        createButtonVisible = createButtonVisibility,
+                        queryData = queryData,
                         onSearchClick = { viewModel.setSearchScreen() },
                         onEnrollClick = { viewModel.onEnrollClick() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
                         workingListViewModel = workingListViewModel,
-                        createButtonVisible = createButtonVisibility,
                     )
                 }
             }
