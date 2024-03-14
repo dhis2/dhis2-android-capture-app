@@ -13,6 +13,7 @@ import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.hisp.dhis.android.core.D2
@@ -106,15 +107,18 @@ class EventCaptureFormPresenter(
     }
 
     fun reOpenEvent() {
+        EventIdlingResourceSingleton.increment()
         CoroutineScope(dispatcherProvider.ui()).launch {
             reOpenEventUseCase(eventUid).fold(
                 onSuccess = {
                     view.onReopen()
                     view.showSaveButton()
                     view.hideNonEditableMessage()
+                    EventIdlingResourceSingleton.decrement()
                 },
                 onFailure = { error ->
                     resourceManager.parseD2Error(error)
+                    EventIdlingResourceSingleton.decrement()
                 },
             )
         }
