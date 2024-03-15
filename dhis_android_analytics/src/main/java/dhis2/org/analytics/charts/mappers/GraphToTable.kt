@@ -3,7 +3,6 @@ package dhis2.org.analytics.charts.mappers
 import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,7 +18,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
@@ -207,22 +205,17 @@ class GraphToTable {
 
     private fun dimensionsForLinelisting(localDensity: Density, conf: Configuration) =
         TableDimensions(
-            cellVerticalPadding = 0.dp,
+            defaultRowHeaderWidth = 0,
+            cellVerticalPadding = 11.dp,
             maxRowHeaderWidth = with(localDensity) {
                 (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
                     .roundToInt()
             },
             tableHorizontalPadding = 0.dp,
             tableVerticalPadding = 0.dp,
-            defaultRowHeaderWidth = 0,
-            defaultCellHeight = 16.dp,
             extraWidths = emptyMap(),
             rowHeaderWidths = emptyMap(),
             columnWidth = emptyMap(),
-            defaultHeaderTextSize = 10.sp,
-            defaultCellTextSize = 10.sp,
-            defaultHeaderHeight = 24,
-            headerCellPaddingValues = PaddingValues(horizontal = 4.dp),
         )
 
     private fun tableModelForLineListing(graph: Graph): TableModel {
@@ -252,8 +245,8 @@ class GraphToTable {
             rows.first().mapIndexed { rowIndex, rowHeaderCell ->
                 TableRowModel(
                     rowHeader = RowHeader(
-                        id = rowHeaderCell?.text ?: rowIndex.toString(),
-                        title = rowHeaderCell?.text ?: "-",
+                        id = rowHeaderCell.text,
+                        title = rowHeaderCell.text,
                         row = rowIndex,
                     ),
                     values = cells.mapIndexed { columnIndex, cellModels ->
