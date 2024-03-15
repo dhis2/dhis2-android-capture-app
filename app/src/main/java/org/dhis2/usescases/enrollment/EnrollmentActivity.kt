@@ -312,9 +312,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     override fun displayTeiInfo(teiInfo: TeiAttributesInfo) {
         if (mode != EnrollmentMode.NEW) {
             binding.title.text =
-                resourceManager.formatWithEnrollmentLabel(
+                resourceManager.defaultEnrollmentLabel(
                     programUid = presenter.getProgram()?.uid()!!,
-                    R.string.empty_enrollment,
+                    true,
                     1,
                 )
         } else {

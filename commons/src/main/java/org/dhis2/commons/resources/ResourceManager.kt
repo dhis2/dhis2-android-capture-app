@@ -36,31 +36,19 @@ class ResourceManager(
         quantity: Int,
         formatWithQuantity: Boolean = false,
     ): String {
-        val enrollmentLabel = try {
-            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
-                ?.enrollmentLabel()
-        } catch (e: Exception) {
-            null
-        } ?: getPlural(R.plurals.enrollment, quantity)
+        val enrollmentLabel = defaultEnrollmentLabel(programUid, getString(stringResource).startsWith("%s"), quantity)
 
-        return with(getString(stringResource)) {
-            val finalLabel = if (this@with.startsWith("%s")) {
-                enrollmentLabel.capitalize(Locale.current)
-            } else {
-                enrollmentLabel
-            }
-
-            if (formatWithQuantity) {
-                format(quantity, finalLabel)
-            } else {
-                format(finalLabel)
-            }
+        return if (formatWithQuantity) {
+            getString(stringResource).format(quantity, enrollmentLabel)
+        } else {
+            getString(stringResource).format(enrollmentLabel)
         }
     }
 
     fun defaultEnrollmentLabel(
         programUid: String?,
-        quantity: Int,
+        capitalize: Boolean = false,
+        quantity: Int = 1,
     ): String {
         val enrollmentLabel = try {
             D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
@@ -69,18 +57,11 @@ class ResourceManager(
             null
         } ?: getPlural(R.plurals.enrollment, quantity)
 
-        return enrollmentLabel.capitalize(Locale.current)
-    }
-
-    fun defaultEnrollmentLabel(
-        programUid: String?,
-    ): String {
-        return try {
-            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
-                ?.enrollmentLabel()
-        } catch (e: Exception) {
-            null
-        } ?: getPlural(R.plurals.enrollment, 1)
+        return if (capitalize) {
+            enrollmentLabel.capitalize(Locale.current)
+        } else {
+            enrollmentLabel
+        }
     }
 
     fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
