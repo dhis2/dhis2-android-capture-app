@@ -86,6 +86,9 @@ class SearchTEIViewModel(
     private val _filtersOpened = MutableLiveData(false)
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
+    private val _teTypeName = MutableLiveData("")
+    val teTypeName: LiveData<String> = _teTypeName
+
     var uiState by mutableStateOf(SearchParametersUiState())
         private set
 
@@ -97,6 +100,10 @@ class SearchTEIViewModel(
                 searchRepository.canCreateInProgramWithoutSearch(),
             )
             _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
+
+            _teTypeName.postValue(
+                searchRepository.trackedEntityType.displayName(),
+            )
         }
     }
 
