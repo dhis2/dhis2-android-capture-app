@@ -22,10 +22,10 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.dhis2.bindings.hasPermissions
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
+import org.dhis2.bindings.hasPermissions
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
@@ -43,8 +43,6 @@ import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.dhis2.utils.session.CHANGE_SERVER_URL_DIALOG_TAG
-import org.dhis2.utils.session.ChangeServerUrlDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import java.io.File
@@ -383,12 +381,6 @@ class MainActivity :
         }
     }
 
-    private fun onChangeServerURL(){
-        binding.mainDrawerLayout.closeDrawers()
-        ChangeServerUrlDialog().show(supportFragmentManager, CHANGE_SERVER_URL_DIALOG_TAG)
-        isChangeServerURLVisible = true
-    }
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when {
@@ -516,9 +508,6 @@ class MainActivity :
 
             R.id.delete_account -> {
                 confirmAccountDelete()
-            }
-            R.id.change_url -> {
-                onChangeServerURL()
             }
         }
 
