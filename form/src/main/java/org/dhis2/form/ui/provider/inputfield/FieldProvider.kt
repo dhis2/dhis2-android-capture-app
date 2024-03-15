@@ -117,7 +117,6 @@ fun FieldProvider(
             modifier = modifierWithFocus,
             inputStyle = inputStyle,
             fieldUiModel = fieldUiModel,
-            resources = resources,
         )
 
         else -> ProvideByValueType(

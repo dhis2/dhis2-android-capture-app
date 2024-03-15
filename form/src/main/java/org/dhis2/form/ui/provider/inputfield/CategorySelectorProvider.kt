@@ -6,14 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import org.dhis2.commons.extensions.inDateRange
-import org.dhis2.commons.extensions.inOrgUnit
-import org.dhis2.commons.resources.ResourceManager
+import androidx.compose.ui.res.stringResource
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.model.EventCategory
-import org.dhis2.form.model.EventCategoryCombo
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -29,11 +26,15 @@ internal fun ProvideCategorySelectorInput(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
-    resources: ResourceManager,
 ) {
-    var selectedCategoryOptions by remember {
+    val selectedCategoryOptions: Map<String, CategoryOption?> by remember(fieldUiModel.value) {
         mutableStateOf(
-            fieldUiModel.eventCatCombo?.selectedCategoryOptions?.toMap() ?: emptyMap(),
+            fieldUiModel.eventCatCombo?.categoryOptions?.entries?.associate { entry ->
+                val selectedCategoryOption = fieldUiModel.eventCatCombo?.categories?.find {
+                    it.uid == entry.key
+                }?.options?.find { fieldUiModel.value?.split(",")?.contains(it.uid()) == true }
+                entry.key to selectedCategoryOption
+            } ?: emptyMap(),
         )
     }
 
@@ -44,15 +45,18 @@ internal fun ProvideCategorySelectorInput(
                     modifier = modifier,
                     fieldUiModel = fieldUiModel,
                     inputStyle = inputStyle,
-                    eventCatCombo = eventCatCombo,
                     category = category,
-                    resources = resources,
+                    selectedCategoryOption = selectedCategoryOptions[category.uid],
                     onCategoryOptionSelected = { categoryOption ->
-                        selectedCategoryOptions += (category.uid to categoryOption)
+                        val updatedCategoryOptions = selectedCategoryOptions.toMutableMap()
+                        updatedCategoryOptions[category.uid] = categoryOption
+                        val filteredList = updatedCategoryOptions.values.filterNotNull()
                         fieldUiModel.onSave(
-                            getUidsList(
-                                selectedCategoryOptions.values.filterNotNull(),
-                            ).joinToString(","),
+                            if (filteredList.isEmpty()) {
+                                null
+                            } else {
+                                getUidsList(filteredList).joinToString(",")
+                            },
                         )
                     },
                 )
@@ -60,8 +64,7 @@ internal fun ProvideCategorySelectorInput(
         } else {
             ProvideEmptyCategorySelector(
                 modifier = modifier,
-                name = eventCatCombo.displayName ?: resources.getString(R.string.cat_combo),
-                option = resources.getString(R.string.no_options),
+                name = fieldUiModel.label,
                 inputStyle = inputStyle,
             )
         }
@@ -69,37 +72,24 @@ internal fun ProvideCategorySelectorInput(
 }
 
 @Composable
-fun ProvideCategorySelector(
+private fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
-    eventCatCombo: EventCategoryCombo,
     category: EventCategory,
-    resources: ResourceManager,
     onCategoryOptionSelected: (CategoryOption?) -> Unit,
+    selectedCategoryOption: CategoryOption?,
 ) {
-    var selectedItem by remember {
+    val selectedItem by remember(selectedCategoryOption) {
         mutableStateOf(
-            DropdownItem(
-                eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
-                    ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName() ?: "",
-            ),
+            DropdownItem(selectedCategoryOption?.displayName() ?: ""),
         )
     }
 
-    val selectableOptions = category.options
-        .filter { option ->
-            option.access().data().write()
-        }.filter { option ->
-            option.inDateRange(eventCatCombo.date)
-        }.filter { option ->
-            option.inOrgUnit(eventCatCombo.orgUnitUID)
-        }
-
     val dropdownItems =
-        selectableOptions.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
+        category.options.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
 
-    if (selectableOptions.isNotEmpty()) {
+    if (category.options.isNotEmpty()) {
         InputDropDown(
             modifier = modifier,
             title = category.name,
@@ -107,13 +97,11 @@ fun ProvideCategorySelector(
             inputStyle = inputStyle,
             selectedItem = selectedItem,
             onResetButtonClicked = {
-                selectedItem = DropdownItem("")
                 onCategoryOptionSelected(null)
             },
             onItemSelected = { newSelectedItem ->
-                selectedItem = newSelectedItem
                 onCategoryOptionSelected(
-                    selectableOptions.firstOrNull {
+                    category.options.firstOrNull {
                         it.displayName() == newSelectedItem.label
                     },
                 )
@@ -130,7 +118,6 @@ fun ProvideCategorySelector(
         ProvideEmptyCategorySelector(
             modifier = modifier,
             name = category.name,
-            option = resources.getString(R.string.no_options),
             inputStyle = inputStyle,
         )
     }
@@ -140,7 +127,6 @@ fun ProvideCategorySelector(
 fun ProvideEmptyCategorySelector(
     modifier: Modifier = Modifier,
     name: String,
-    option: String,
     inputStyle: InputStyle,
 ) {
     var selectedItem by remember {
@@ -159,7 +145,7 @@ fun ProvideEmptyCategorySelector(
         onItemSelected = { newSelectedDropdownItem ->
             selectedItem = newSelectedDropdownItem.label
         },
-        dropdownItems = listOf(DropdownItem(option)),
+        dropdownItems = listOf(DropdownItem(stringResource(id = R.string.no_options))),
         isRequiredField = false,
     )
 }

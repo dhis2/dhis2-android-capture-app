@@ -6,6 +6,8 @@ import io.reactivex.Single
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -182,7 +184,7 @@ class EventRepository(
             getCatCombo()?.let { categoryCombo ->
                 if (categoryCombo.isDefault == false) {
                     add(createCategoryComboSection())
-                    addAll(createEventCategoryComboFields(categoryCombo))
+                    add(createEventCategoryComboField(categoryCombo))
                 }
             }
         }
@@ -195,50 +197,34 @@ class EventRepository(
         } ?: false
     }
 
-    private fun createEventCategoryComboFields(categoryCombo: CategoryCombo): List<FieldUiModel> {
-        val fields = mutableListOf<FieldUiModel>()
+    private fun createEventCategoryComboField(categoryCombo: CategoryCombo): FieldUiModel {
         val categories = getCategories(categoryCombo.categories())
         val categoryOptions = getOptionsFromCatOptionCombo(categoryCombo)
-
         val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid() ?: "")
 
         val eventCatCombo = EventCategoryCombo(
             categories = categories,
             categoryOptions = categoryOptions,
-            selectedCategoryOptions = getSelectedCategoryOptions(categories, categoryOptions),
-            displayName = catComboDisplayName,
-            date = event?.eventDate(),
-            orgUnitUID = event?.organisationUnit(),
         )
 
-        fields.add(
-            fieldFactory.create(
-                id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
-                label = eventCatCombo.displayName ?: "",
-                valueType = ValueType.TEXT,
-                value = getUidsList(
-                    eventCatCombo.selectedCategoryOptions.toMap().values.filterNotNull(),
-                ).joinToString(","),
-                mandatory = true,
-                programStageSection = EVENT_CATEGORY_COMBO_SECTION_UID,
-                editable = isEventEditable(),
-                description = null,
-                eventCatCombo = eventCatCombo,
-            ),
+        return fieldFactory.create(
+            id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
+            label = catComboDisplayName ?: resources.getString(R.string.cat_combo),
+            valueType = ValueType.TEXT,
+            value = eventCatCombo.categoryOptions?.let {
+                getUidsList(it.values).joinToString(",")
+            },
+            mandatory = true,
+            programStageSection = EVENT_CATEGORY_COMBO_SECTION_UID,
+            editable = isEventEditable(),
+            description = null,
+            eventCatCombo = eventCatCombo,
         )
-        return fields
     }
 
     private fun getCatComboDisplayName(categoryComboUid: String): String? {
         return d2.categoryModule().categoryCombos().uid(categoryComboUid)
             .blockingGet()?.displayName()
-    }
-
-    private fun getSelectedCategoryOptions(
-        categories: List<EventCategory>,
-        categoryOptions: Map<String, CategoryOption>?,
-    ) = categories.associateBy(EventCategory::uid) { category ->
-        categoryOptions?.get(category.uid)
     }
 
     private fun getOptionsFromCatOptionCombo(categoryCombo: CategoryCombo): Map<String, CategoryOption>? {
@@ -271,7 +257,14 @@ class EventRepository(
             EventCategory(
                 uid = category.uid(),
                 name = category.displayName() ?: category.uid(),
-                options = getCategoryOptions(category.uid()),
+                options = getCategoryOptions(category.uid())
+                    .filter { option ->
+                        option.access().data().write()
+                    }.filter { option ->
+                        option.inDateRange(event?.eventDate())
+                    }.filter { option ->
+                        option.inOrgUnit(event?.organisationUnit())
+                    },
             )
         } ?: emptyList()
     }
@@ -460,7 +453,9 @@ class EventRepository(
 
     override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
         return when (uid) {
-            EVENT_ORG_UNIT_UID -> {
+            EVENT_REPORT_DATE_UID,
+            EVENT_ORG_UNIT_UID,
+            -> {
                 getEventDetails()
             }
 
