@@ -157,14 +157,14 @@ class InfoBarMapperTest {
                 .uid("Program1Uid")
                 .displayName("Program 1")
                 .build(),
-            MetadataIconData.Resource(-1, -1),
+            MetadataIconData.defaultIcon(),
         ),
         Pair(
             Program.builder()
                 .uid("Program2Uid")
                 .displayName("Program 2")
                 .build(),
-            MetadataIconData.Resource(-1, -1),
+            MetadataIconData.defaultIcon(),
         ),
     )
 }

@@ -63,12 +63,10 @@ public class TeiProgramListModule {
     @PerActivity
     TeiProgramListRepository eventDetailRepository(
             D2 d2,
-            ColorUtils colorUtils,
             MetadataIconProvider metadataIconProvider) {
-        ResourceManager resourceManager = new ResourceManager(view.getContext(), colorUtils);
         return new TeiProgramListRepositoryImpl(
                 d2,
-                new ProgramViewModelMapper(resourceManager),
+                new ProgramViewModelMapper(),
                 metadataIconProvider
         );
     }

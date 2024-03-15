@@ -24,9 +24,11 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
 fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
@@ -86,9 +88,14 @@ fun EnrollToProgramDisabledPreview() {
 private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramViewModel(
     uid = "qweqwe",
     title = "A very long long long program title",
-    metadataIconData = MetadataIconData.Resource(
-        programColor = android.graphics.Color.parseColor("#00BCD4"),
-        iconResource = R.drawable.ic_positive_negative,
+    metadataIconData = MetadataIconData(
+        imageCardData = ImageCardData.IconCardData(
+            uid = "",
+            label = "",
+            iconRes = "ic_positive_negative",
+            iconTint = "#00BCD4".toColor(),
+        ),
+        color = "#00BCD4".toColor(),
     ),
     count = 12,
     type = "type",

@@ -43,7 +43,7 @@ class ProgramStageSelectionPresenter(
                 programStages.map { programStage ->
                     ProgramStageData(
                         programStage,
-                        metadataIconProvider(programStage.style(), sizeInDp = 80),
+                        metadataIconProvider(programStage.style()),
                     )
                 }
             }

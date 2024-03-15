@@ -36,6 +36,7 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.ui.MetadataIconData;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.ValueUtils;
@@ -334,7 +335,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (program.displayFrontPageList()) {
                 searchTei.addProgramInfo(
                         program,
-                        metadataIconProvider.invoke(program.style(), R.drawable.ic_default_icon, 40)
+                        metadataIconProvider.invoke(program.style())
                 );
             }
             searchTei.addEnrollmentInfo(getProgramInfo(program));
@@ -479,7 +480,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         profilePicturePath(toTei, selectedProgram.uid()),
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
-                        -1,
+                        MetadataIconData.Companion.defaultIcon(),
                         true
                 ));
             }
@@ -654,9 +655,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             0,
                             periodUtils.getPeriodUIString(cacheStages.get(event.programStage()).periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
                             null,
-                            metadataIconProvider.invoke(cacheStages.get(event.programStage()).style(),
-                                    R.drawable.ic_default_outline,
-                                    40)
+                            metadataIconProvider.invoke(cacheStages.get(event.programStage()).style())
                     ));
         }
 

@@ -3,6 +3,7 @@ package org.dhis2.uicomponents.map.mocks
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -46,7 +47,7 @@ object RelationshipViewModelDummy {
             "",
             -1,
             -1,
-            -1,
+            MetadataIconData.defaultIcon(),
         )
     }
 
@@ -82,7 +83,7 @@ object RelationshipViewModelDummy {
             "",
             -1,
             -1,
-            -1,
+            MetadataIconData.defaultIcon(),
         )
     }
 

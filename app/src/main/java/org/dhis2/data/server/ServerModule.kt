@@ -154,9 +154,8 @@ class ServerModule {
     @PerServer
     fun metadataIconProvider(
         d2: D2,
-        resourceManager: ResourceManager,
     ): MetadataIconProvider {
-        return MetadataIconProvider(d2, resourceManager)
+        return MetadataIconProvider(d2)
     }
 
     @Provides

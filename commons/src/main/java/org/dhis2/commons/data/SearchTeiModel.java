@@ -1,6 +1,7 @@
 package org.dhis2.commons.data;
 
-import org.dhis2.commons.R;
+import androidx.compose.ui.graphics.Color;
+
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.ui.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -8,6 +9,7 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,10 +196,7 @@ public class SearchTeiModel implements CarouselItemModel {
         if (iconData != null) {
             return iconData;
         } else {
-            return new MetadataIconData.Resource(
-                    -1,
-                    R.drawable.ic_default_icon,
-                    40);
+            return MetadataIconData.Companion.defaultIcon();
         }
     }
 

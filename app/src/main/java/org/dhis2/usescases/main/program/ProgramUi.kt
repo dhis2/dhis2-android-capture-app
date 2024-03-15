@@ -72,9 +72,11 @@ import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -172,9 +174,9 @@ fun ProgramItem(
             contentAlignment = Alignment.BottomEnd,
         ) {
             MetadataIcon(
-                modifier = Modifier.alpha(programViewModel.getAlphaValue()),
                 metadataIconData = programViewModel.metadataIconData,
             )
+
             var openDescriptionDialog by remember {
                 mutableStateOf(false) // Initially dialog is closed
             }
@@ -226,6 +228,7 @@ fun ProgramItem(
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
+
             ProgramDownloadState.ERROR -> DownloadErrorIcon {
                 onGranularSyncClick(programViewModel)
             }
@@ -494,9 +497,14 @@ fun ProgramDescriptionDialogPReview() {
 private fun testingProgramModel() = ProgramViewModel(
     uid = "qweqwe",
     title = "Program title",
-    metadataIconData = MetadataIconData.Resource(
-        programColor = android.graphics.Color.parseColor("#00BCD4"),
-        iconResource = R.drawable.ic_positive_negative,
+    metadataIconData = MetadataIconData(
+        imageCardData = ImageCardData.IconCardData(
+            uid = "",
+            label = "",
+            iconRes = "ic_positive_negative",
+            iconTint = "#00BCD4".toColor(),
+        ),
+        color = "#00BCD4".toColor(),
     ),
     count = 12,
     type = "type",
