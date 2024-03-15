@@ -49,16 +49,20 @@ fun ProvideInputAge(
     DisposableEffect(fieldUiModel.value) {
         when (inputType) {
             is AgeInputType.Age ->
-                calculateAgeFromDate(
-                    fieldUiModel.value!!,
-                    (inputType as AgeInputType.Age).unit,
-                )?.let {
-                    (inputType as AgeInputType.Age).copy(value = TextFieldValue(it, TextRange(it.length)))
-                } ?: AgeInputType.None
+                if (!fieldUiModel.value.isNullOrEmpty()) {
+                    calculateAgeFromDate(
+                        fieldUiModel.value!!,
+                        (inputType as AgeInputType.Age).unit,
+                    )?.let {
+                        (inputType as AgeInputType.Age).copy(value = TextFieldValue(it, TextRange(it.length)))
+                    } ?: AgeInputType.None
+                }
 
             is AgeInputType.DateOfBirth ->
-                formatStoredDateToUI(fieldUiModel.value!!).let {
-                    (inputType as AgeInputType.DateOfBirth).copy(value = TextFieldValue(it, TextRange(it.length)))
+                if (!fieldUiModel.value.isNullOrEmpty()) {
+                    formatStoredDateToUI(fieldUiModel.value!!).let {
+                        (inputType as AgeInputType.DateOfBirth).copy(value = TextFieldValue(it, TextRange(it.length)))
+                    }
                 }
 
             AgeInputType.None -> {
