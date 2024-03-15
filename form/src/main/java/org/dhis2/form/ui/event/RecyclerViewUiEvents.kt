@@ -106,6 +106,7 @@ sealed class RecyclerViewUiEvents {
 
     class SelectPeriod(
         val uid: String,
+        val title: String,
         val periodType: PeriodType,
         val minDate: Date?,
         val maxDate: Date?,

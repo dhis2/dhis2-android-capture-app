@@ -605,6 +605,7 @@ class FormView : Fragment() {
 
     private fun showPeriodDialog(uiEvent: RecyclerViewUiEvents.SelectPeriod) {
         PeriodDialog()
+            .setTitle(uiEvent.title)
             .setPeriod(uiEvent.periodType)
             .setMinDate(uiEvent.minDate)
             .setMaxDate(uiEvent.maxDate)
@@ -732,9 +733,9 @@ class FormView : Fragment() {
             binding.recyclerView.layoutManager as LinearLayoutManager
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
+                lastVisiblePosition == adapter.itemCount - 1 ||
+                        adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
+                )
     }
 
     private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {

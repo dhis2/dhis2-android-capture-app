@@ -74,14 +74,23 @@ class FormValueStore(
             }
 
             EVENT_ORG_UNIT_UID -> {
-                eventRepository?.setOrganisationUnitUid(value)
+                try {
+                    eventRepository?.setOrganisationUnitUid(value)
 
-                Flowable.just(
-                    StoreResult(
-                        EVENT_ORG_UNIT_UID,
-                        ValueStoreResult.VALUE_CHANGED,
-                    ),
-                )
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_ORG_UNIT_UID,
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
+                    )
+                } catch (e: Exception) {
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_ORG_UNIT_UID,
+                            ValueStoreResult.ERROR_UPDATING_VALUE,
+                        ),
+                    )
+                }
             }
 
             EVENT_COORDINATE_UID -> {
