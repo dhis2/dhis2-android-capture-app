@@ -43,7 +43,13 @@ class TEIEventCardMapper(
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            avatar = { ProvideAvatar(event) },
+            avatar = if (event.groupedByStage != true) {
+                {
+                    ProvideAvatar(eventItem = event)
+                }
+            } else {
+                null
+            },
             title = getTitle(event),
             description = getDescription(event),
             additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
@@ -61,14 +67,12 @@ class TEIEventCardMapper(
 
     @Composable
     private fun ProvideAvatar(eventItem: EventViewModel) {
-        if (eventItem.groupedByStage != true) {
-            Avatar(
-                metadataAvatar = {
-                    MetadataIcon(metadataIconData = eventItem.metadataIconData)
-                },
-                style = AvatarStyle.METADATA,
-            )
-        }
+        Avatar(
+            metadataAvatar = {
+                MetadataIcon(metadataIconData = eventItem.metadataIconData)
+            },
+            style = AvatarStyle.METADATA,
+        )
     }
 
     private fun getTitle(event: EventViewModel): String {
