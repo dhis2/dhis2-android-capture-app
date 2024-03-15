@@ -92,7 +92,7 @@ class EventCardMapperTest {
             showBottomShadow = false,
             displayDate = "21/11/2023",
             nameCategoryOptionCombo = "Name Category option combo",
-            metadataIconData = MetadataIconData.Resource(1, 1),
+            metadataIconData = MetadataIconData.defaultIcon(),
         )
     }
 }

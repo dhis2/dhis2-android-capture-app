@@ -52,7 +52,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
-                            metadataIconProvider.invoke(program.style(),R.drawable.ic_default_outline,40),
+                            metadataIconProvider.invoke(program.style()),
                             program.displayName(),
                             orgUnit.displayName(),
                             enrollment.followUp() != null ? enrollment.followUp() : false,
@@ -74,7 +74,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     return EnrollmentViewModel.create(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
-                            metadataIconProvider.invoke(program.style(), R.drawable.ic_default_outline,40),
+                            metadataIconProvider.invoke(program.style()),
                             program.displayName(),
                             orgUnit.displayName(),
                             enrollment.followUp() != null ? enrollment.followUp() : false,
@@ -111,7 +111,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                                 State.SYNCED,
                                 false,
                                 false,
-                                metadataIconProvider.invoke(program.style(), R.drawable.ic_default_outline, 40)
+                                metadataIconProvider.invoke(program.style())
                         )
                 )
                 .toList()

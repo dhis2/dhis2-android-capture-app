@@ -7,7 +7,9 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
@@ -27,6 +29,7 @@ class RelationshipRepositoryImpl(
     private val config: RelationshipConfiguration,
     private val resources: ResourceManager,
     private val teiAttributesProvider: TeiAttributesProvider,
+    private val metadataIconProvider: MetadataIconProvider,
 ) : RelationshipRepository {
 
     override fun relationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
@@ -348,19 +351,17 @@ class RelationshipRepositoryImpl(
         } ?: false
     }
 
-    private fun getOwnerColor(uid: String, relationshipOwnerType: RelationshipOwnerType): Int {
+    private fun getOwnerColor(uid: String, relationshipOwnerType: RelationshipOwnerType): MetadataIconData {
         return when (relationshipOwnerType) {
             RelationshipOwnerType.EVENT -> {
                 val event = d2.eventModule().events().uid(uid).blockingGet()
                 val program = d2.programModule().programs().uid(event?.program()).blockingGet()
                 if (program?.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                    resources.getColorFrom(program.style()?.color())
+                    metadataIconProvider.invoke(program.style())
                 } else {
                     val programStage =
                         d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-                    resources.getColorFrom(
-                        programStage?.style()?.color() ?: program?.style()?.color(),
-                    )
+                    metadataIconProvider(programStage!!.style())
                 }
             }
             RelationshipOwnerType.TEI -> {
@@ -368,7 +369,7 @@ class RelationshipRepositoryImpl(
                     .uid(uid).blockingGet()
                 val teType = d2.trackedEntityModule().trackedEntityTypes()
                     .uid(tei?.trackedEntityType()).blockingGet()
-                return resources.getColorFrom(teType?.style()?.color())
+                return metadataIconProvider(teType!!.style())
             }
         }
     }

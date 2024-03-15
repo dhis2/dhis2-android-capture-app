@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.journeyapps.barcodescanner.ScanOptions
@@ -55,6 +56,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelecto
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun SearchParametersScreen(
@@ -242,6 +244,19 @@ fun SearchParametersScreen(
                     .testTag("SEARCH_BUTTON"),
                 style = ButtonStyle.FILLED,
                 text = resourceManager.getString(R.string.search),
+                icon = {
+                    val iconTint = if (uiState.searchEnabled) {
+                        TextColor.OnPrimary
+                    } else {
+                        TextColor.OnDisabledSurface
+                    }
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                        tint = iconTint,
+                    )
+                },
             ) {
                 focusManager.clearFocus()
                 onSearch()

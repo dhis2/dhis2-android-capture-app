@@ -96,9 +96,7 @@ fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
                     forEach { enrollmentIcon ->
                         if (enrollmentIcon.isIcon) {
                             MetadataIcon(
-                                metadataIconData = enrollmentIcon.metadataIconData.withSize(
-                                    24,
-                                ),
+                                metadataIconData = enrollmentIcon.metadataIconData,
                             )
                         } else {
                             SquareWithNumber(enrollmentIcon.remainingEnrollments)

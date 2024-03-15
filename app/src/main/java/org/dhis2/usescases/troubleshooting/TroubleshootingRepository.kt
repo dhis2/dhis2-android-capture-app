@@ -80,7 +80,7 @@ class TroubleshootingRepository(
             ProgramRuleValidation(
                 programUid = program.uid(),
                 programName = program.displayName() ?: program.uid(),
-                metadataIconData = metadataIconProvider(program.style(), sizeInDp = 24),
+                metadataIconData = metadataIconProvider(program.style()),
                 validations = validationList,
             )
         }.sortedBy { it.programName }
@@ -226,7 +226,7 @@ class TroubleshootingRepository(
         return if (ruleAction.needsContent()) {
             val actionConditionResult =
                 process(
-                    ruleAction.data!!,
+                    ruleAction.data ?: "",
                     valueMap,
                     ruleAction.ruleActionType(),
                     Expression.Mode.RULE_ENGINE_ACTION,
