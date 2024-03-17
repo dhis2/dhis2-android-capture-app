@@ -13,14 +13,13 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.EventCategory
-import org.dhis2.form.model.EventCategoryCombo
+import org.dhis2.form.model.EventCategoryOption
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -199,26 +198,27 @@ class EventRepository(
 
     private fun createEventCategoryComboField(categoryCombo: CategoryCombo): FieldUiModel {
         val categories = getCategories(categoryCombo.categories())
-        val categoryOptions = getOptionsFromCatOptionCombo(categoryCombo)
+        val categoryOptions =
+            getOptionsFromCatOptionCombo(categoryCombo)?.entries?.associate { entry ->
+                entry.key to EventCategoryOption(
+                    uid = entry.value.uid(),
+                    name = entry.value.displayName() ?: entry.value.code() ?: "",
+                )
+            } ?: emptyMap()
         val catComboDisplayName = getCatComboDisplayName(categoryCombo.uid() ?: "")
-
-        val eventCatCombo = EventCategoryCombo(
-            categories = categories,
-            categoryOptions = categoryOptions,
-        )
 
         return fieldFactory.create(
             id = "$EVENT_CATEGORY_COMBO_UID-${categoryCombo.uid()}",
             label = catComboDisplayName ?: resources.getString(R.string.cat_combo),
             valueType = ValueType.TEXT,
-            value = eventCatCombo.categoryOptions?.let {
-                getUidsList(it.values).joinToString(",")
+            value = categoryOptions.values.joinToString(",") {
+                it.uid
             },
             mandatory = true,
             programStageSection = EVENT_CATEGORY_COMBO_SECTION_UID,
             editable = isEventEditable(),
             description = null,
-            eventCatCombo = eventCatCombo,
+            eventCategories = categories,
         )
     }
 
@@ -264,6 +264,11 @@ class EventRepository(
                         option.inDateRange(event?.eventDate())
                     }.filter { option ->
                         option.inOrgUnit(event?.organisationUnit())
+                    }.map {
+                        EventCategoryOption(
+                            uid = it.uid(),
+                            name = it.displayName() ?: it.code() ?: "",
+                        )
                     },
             )
         } ?: emptyList()

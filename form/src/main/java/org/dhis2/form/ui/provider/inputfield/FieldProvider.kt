@@ -113,7 +113,7 @@ fun FieldProvider(
             context = context,
         )
 
-        fieldUiModel.eventCatCombo != null -> ProvideCategorySelectorInput(
+        fieldUiModel.eventCategories != null -> ProvideCategorySelectorInput(
             modifier = modifierWithFocus,
             inputStyle = inputStyle,
             fieldUiModel = fieldUiModel,

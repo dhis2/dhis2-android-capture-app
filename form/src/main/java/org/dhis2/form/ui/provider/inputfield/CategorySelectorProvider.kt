@@ -11,15 +11,12 @@ import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.model.EventCategory
+import org.dhis2.form.model.EventCategoryOption
 import org.dhis2.form.model.FieldUiModel
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
-import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
 @Composable
 internal fun ProvideCategorySelectorInput(
@@ -27,48 +24,45 @@ internal fun ProvideCategorySelectorInput(
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
 ) {
-    val selectedCategoryOptions: Map<String, CategoryOption?> by remember(fieldUiModel.value) {
+    val selectedCategoryOptions: Map<String, EventCategoryOption?> by remember(fieldUiModel.value) {
         mutableStateOf(
-            fieldUiModel.eventCatCombo?.categoryOptions?.entries?.associate { entry ->
-                val selectedCategoryOption = fieldUiModel.eventCatCombo?.categories?.find {
-                    it.uid == entry.key
-                }?.options?.find { fieldUiModel.value?.split(",")?.contains(it.uid()) == true }
-                entry.key to selectedCategoryOption
+            fieldUiModel.eventCategories?.associate { category ->
+                category.options.find { option ->
+                    fieldUiModel.value?.split(",")?.contains(option.uid) == true
+                }?.let {
+                    category.uid to it
+                } ?: (category.uid to null)
             } ?: emptyMap(),
         )
     }
 
-    fieldUiModel.eventCatCombo?.let { eventCatCombo ->
-        if (eventCatCombo.categories.isNotEmpty()) {
-            eventCatCombo.categories.forEach { category ->
-                ProvideCategorySelector(
-                    modifier = modifier,
-                    fieldUiModel = fieldUiModel,
-                    inputStyle = inputStyle,
-                    category = category,
-                    selectedCategoryOption = selectedCategoryOptions[category.uid],
-                    onCategoryOptionSelected = { categoryOption ->
-                        val updatedCategoryOptions = selectedCategoryOptions.toMutableMap()
-                        updatedCategoryOptions[category.uid] = categoryOption
-                        val filteredList = updatedCategoryOptions.values.filterNotNull()
-                        fieldUiModel.onSave(
-                            if (filteredList.isEmpty()) {
-                                null
-                            } else {
-                                getUidsList(filteredList).joinToString(",")
-                            },
-                        )
+    fieldUiModel.eventCategories?.forEach { category ->
+        ProvideCategorySelector(
+            modifier = modifier,
+            fieldUiModel = fieldUiModel,
+            inputStyle = inputStyle,
+            category = category,
+            selectedCategoryOption = selectedCategoryOptions[category.uid],
+            onCategoryOptionSelected = { categoryOption ->
+                val updatedCategoryOptions = selectedCategoryOptions.toMutableMap()
+                updatedCategoryOptions[category.uid] = categoryOption
+                val filteredList = updatedCategoryOptions.values.filterNotNull()
+                fieldUiModel.onSave(
+                    if (filteredList.isEmpty()) {
+                        null
+                    } else {
+                        filteredList.joinToString(",") {
+                            it.uid
+                        }
                     },
                 )
-            }
-        } else {
-            ProvideEmptyCategorySelector(
-                modifier = modifier,
-                name = fieldUiModel.label,
-                inputStyle = inputStyle,
-            )
-        }
-    }
+            },
+        )
+    } ?: ProvideEmptyCategorySelector(
+        modifier = modifier,
+        name = fieldUiModel.label,
+        inputStyle = inputStyle,
+    )
 }
 
 @Composable
@@ -77,19 +71,18 @@ private fun ProvideCategorySelector(
     fieldUiModel: FieldUiModel,
     inputStyle: InputStyle,
     category: EventCategory,
-    onCategoryOptionSelected: (CategoryOption?) -> Unit,
-    selectedCategoryOption: CategoryOption?,
+    onCategoryOptionSelected: (EventCategoryOption?) -> Unit,
+    selectedCategoryOption: EventCategoryOption?,
 ) {
     val selectedItem by remember(selectedCategoryOption) {
         mutableStateOf(
-            DropdownItem(selectedCategoryOption?.displayName() ?: ""),
+            DropdownItem(selectedCategoryOption?.name ?: ""),
         )
     }
 
-    val dropdownItems =
-        category.options.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
-
     if (category.options.isNotEmpty()) {
+        val dropdownItems = category.options.map { DropdownItem(it.name) }
+
         InputDropDown(
             modifier = modifier,
             title = category.name,
@@ -102,16 +95,12 @@ private fun ProvideCategorySelector(
             onItemSelected = { newSelectedItem ->
                 onCategoryOptionSelected(
                     category.options.firstOrNull {
-                        it.displayName() == newSelectedItem.label
+                        it.name == newSelectedItem.label
                     },
                 )
             },
             dropdownItems = dropdownItems,
             isRequiredField = fieldUiModel.mandatory,
-            supportingTextData = getSupportingText(
-                fieldUiModel,
-                selectedItem.label.isEmpty(),
-            ),
             legendData = fieldUiModel.legend(),
         )
     } else {
@@ -166,31 +155,3 @@ private fun getInputState(
         else -> inputState
     }
 }
-
-private fun getSupportingText(
-    fieldUiModel: FieldUiModel,
-    isEmpty: Boolean,
-): List<SupportingTextData>? = listOfNotNull(
-    fieldUiModel.error?.let {
-        if (isEmpty) {
-            SupportingTextData(
-                it,
-                SupportingTextState.ERROR,
-            )
-        } else {
-            null
-        }
-    },
-    fieldUiModel.warning?.let {
-        SupportingTextData(
-            it,
-            SupportingTextState.WARNING,
-        )
-    },
-    fieldUiModel.description?.let {
-        SupportingTextData(
-            it,
-            SupportingTextState.DEFAULT,
-        )
-    },
-).ifEmpty { null }

@@ -47,7 +47,7 @@ data class SectionUiModelImpl(
     override val autocompleteList: List<String>? = null,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
-    override val eventCatCombo: EventCategoryCombo? = null,
+    override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
 ) : FieldUiModel {
 

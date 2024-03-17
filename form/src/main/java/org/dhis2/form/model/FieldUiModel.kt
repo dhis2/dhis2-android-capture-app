@@ -77,7 +77,7 @@ interface FieldUiModel {
 
     val selectableDates: SelectableDates?
 
-    val eventCatCombo: EventCategoryCombo?
+    val eventCategories: List<EventCategory>?
 
     val periodSelector: PeriodSelector?
 
