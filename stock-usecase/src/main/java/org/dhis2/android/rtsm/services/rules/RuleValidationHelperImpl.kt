@@ -240,7 +240,7 @@ class RuleValidationHelperImpl @Inject constructor(
                     event.organisationUnit()!!,
                     d2.organisationUnitModule()
                         .organisationUnits().uid(event.organisationUnit())
-                        .blockingGet()!!.code(),
+                        .blockingGet()?.code() ?: "",
                     event.trackedEntityDataValues()?.toRuleDataValue(
                         event,
                         d2.dataElementModule().dataElements(),

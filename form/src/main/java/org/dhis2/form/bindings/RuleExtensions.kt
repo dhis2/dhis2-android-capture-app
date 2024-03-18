@@ -438,12 +438,12 @@ fun getOptions(
         dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code()!!) } ?: emptyList()
+            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
     } else if (trackedEntityAttributeUid != null) {
         attributeRepository.uid(trackedEntityAttributeUid).blockingGet()?.optionSet()?.uid()
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code()!!) } ?: emptyList()
+            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
     } else {
         emptyList()
     }

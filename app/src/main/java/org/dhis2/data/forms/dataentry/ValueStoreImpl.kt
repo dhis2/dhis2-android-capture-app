@@ -269,7 +269,7 @@ class ValueStoreImpl(
                 .uid(optionGroupUid)
                 .blockingGet()
                 ?.options()
-                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet()?.code()!! }
+                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet()?.code() ?: "" }
                 ?: arrayListOf()
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(

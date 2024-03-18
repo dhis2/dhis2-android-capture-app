@@ -148,7 +148,7 @@ class RulesRepository(private val d2: D2) {
                             organisationUnitCode = d2.organisationUnitModule().organisationUnits()
                                 .uid(
                                     event.organisationUnit(),
-                                ).blockingGet()!!.code(),
+                                ).blockingGet()?.code() ?: "",
                             dataValues = event.trackedEntityDataValues()?.toRuleDataValue(
                                 event,
                                 d2.dataElementModule().dataElements(),
@@ -236,7 +236,7 @@ class RulesRepository(private val d2: D2) {
                     organisationUnit = event.organisationUnit()!!,
                     organisationUnitCode = d2.organisationUnitModule()
                         .organisationUnits().uid(event.organisationUnit())
-                        .blockingGet()!!.code(),
+                        .blockingGet()?.code() ?: "",
                     dataValues =
                     event.trackedEntityDataValues()?.toRuleDataValue(
                         event,
@@ -253,7 +253,7 @@ class RulesRepository(private val d2: D2) {
             .flatMap { event ->
                 val ouCode = d2.organisationUnitModule().organisationUnits()
                     .uid(event.organisationUnit())
-                    .blockingGet()!!.code()
+                    .blockingGet()?.code() ?: ""
                 val programName =
                     d2.programModule().programs().uid(event.program()).blockingGet()!!.name()
                 if (event.enrollment() == null) {

@@ -41,9 +41,9 @@ class RulesRepository(private val d2: D2) {
             .let { orgUnit ->
                 orgUnit?.organisationUnitGroups()?.map {
                     if (it.code() != null) {
-                        supData[it.code()!!] = arrayListOf(orgUnit.uid())
+                        supData[it.code() ?: ""] = arrayListOf(orgUnit.uid())
                     }
-                    supData[it.uid()!!] = arrayListOf(orgUnit.uid())
+                    supData[it.uid() ?: ""] = arrayListOf(orgUnit.uid())
                 }
             }
 
@@ -131,7 +131,7 @@ class RulesRepository(private val d2: D2) {
                             organisationUnitCode = d2.organisationUnitModule().organisationUnits()
                                 .uid(
                                     event.organisationUnit(),
-                                ).blockingGet()!!.code(),
+                                ).blockingGet()?.code() ?: "",
                             dataValues = event.trackedEntityDataValues()?.toRuleDataValue(
                                 event,
                                 d2.dataElementModule().dataElements(),
@@ -218,7 +218,7 @@ class RulesRepository(private val d2: D2) {
                     organisationUnit = event.organisationUnit()!!,
                     organisationUnitCode = d2.organisationUnitModule()
                         .organisationUnits().uid(event.organisationUnit())
-                        .blockingGet()!!.code(),
+                        .blockingGet()?.code() ?: "",
                     dataValues =
                     event.trackedEntityDataValues()?.toRuleDataValue(
                         event,
@@ -235,7 +235,7 @@ class RulesRepository(private val d2: D2) {
 
         val ouCode = d2.organisationUnitModule().organisationUnits()
             .uid(event.organisationUnit())
-            .blockingGet()!!.code()
+            .blockingGet()?.code() ?: ""
         val programName =
             d2.programModule().programs().uid(event.program()).blockingGet()!!.name()
         return if (event.enrollment() == null) {
@@ -319,7 +319,7 @@ class RulesRepository(private val d2: D2) {
             status = RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
             organisationUnit = enrollment.organisationUnit()!!,
             organisationUnitCode = d2.organisationUnit(enrollment.organisationUnit()!!)
-                ?.code()!!,
+                ?.code() ?: "",
             attributeValues = emptyList(),
         )
     }
@@ -335,7 +335,7 @@ class RulesRepository(private val d2: D2) {
             dueDate = event.dueDate()?.toRuleEngineLocalDate(),
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
             organisationUnit = event.organisationUnit()!!,
-            organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code()!!,
+            organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code() ?: "",
             dataValues = emptyList(),
         )
     }
