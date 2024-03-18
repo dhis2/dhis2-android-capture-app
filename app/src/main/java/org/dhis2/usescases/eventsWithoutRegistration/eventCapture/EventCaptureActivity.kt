@@ -50,8 +50,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import javax.inject.Inject
 
-const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
-
 class EventCaptureActivity :
     ActivityGlobalAbstract(),
     EventCaptureContract.View,

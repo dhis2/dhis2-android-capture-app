@@ -259,8 +259,6 @@ class EventRepository(
                 name = category.displayName() ?: category.uid(),
                 options = getCategoryOptions(category.uid())
                     .filter { option ->
-                        option.access().data().write()
-                    }.filter { option ->
                         option.inDateRange(event?.eventDate())
                     }.filter { option ->
                         option.inOrgUnit(event?.organisationUnit())
@@ -279,6 +277,7 @@ class EventRepository(
             .categoryOptions()
             .withOrganisationUnits()
             .byCategoryUid(categoryUid)
+            .byAccessDataWrite().isTrue
             .blockingGet()
     }
 
