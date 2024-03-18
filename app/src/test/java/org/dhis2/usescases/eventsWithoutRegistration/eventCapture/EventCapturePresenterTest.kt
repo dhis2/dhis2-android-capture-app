@@ -59,7 +59,7 @@ class EventCapturePresenterTest {
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         presenter.init()
-        verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).renderInitialInfo(any())
 
         verifyNoMoreInteractions(view)
     }
@@ -73,7 +73,7 @@ class EventCapturePresenterTest {
 
         presenter.init()
         verify(view).showEventIntegrityAlert()
-        verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).renderInitialInfo(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -259,7 +259,7 @@ class EventCapturePresenterTest {
 
         presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
 
-        verify(view).SaveAndFinish()
+        verify(view).saveAndFinish()
     }
 
     @Test
@@ -416,14 +416,10 @@ class EventCapturePresenterTest {
 
     private fun initializeMocks() {
         val stage = ProgramStage.builder().uid("stage").displayName("stageName").build()
-        val date = "date"
         val orgUnit = OrganisationUnit.builder().uid("orgUnit").displayName("OrgUnitName").build()
-        val catOption = "catOption"
 
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
-        whenever(eventRepository.eventDate()) doReturn Flowable.just(date)
         whenever(eventRepository.orgUnit()) doReturn Flowable.just(orgUnit)
-        whenever(eventRepository.catOption()) doReturn Flowable.just(catOption)
         doNothing().`when`(preferences).setValue(any(), any())
         whenever(eventRepository.programStage()) doReturn Observable.just(stage.uid())
     }

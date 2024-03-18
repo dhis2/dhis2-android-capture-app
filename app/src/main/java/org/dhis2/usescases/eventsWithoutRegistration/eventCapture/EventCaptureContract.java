@@ -23,7 +23,7 @@ public class EventCaptureContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption);
+        void renderInitialInfo(String stageName);
 
         EventCaptureContract.Presenter getPresenter();
 
@@ -38,7 +38,7 @@ public class EventCaptureContract {
 
         void finishDataEntry();
 
-        void SaveAndFinish();
+        void saveAndFinish();
 
         void showSnackBar(int messageId, String programStage);
 
@@ -110,11 +110,7 @@ public class EventCaptureContract {
 
         Flowable<String> programStageName();
 
-        Flowable<String> eventDate();
-
         Flowable<OrganisationUnit> orgUnit();
-
-        Flowable<String> catOption();
 
         Observable<Boolean> completeEvent();
 
