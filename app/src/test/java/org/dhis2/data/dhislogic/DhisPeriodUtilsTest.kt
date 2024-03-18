@@ -1,5 +1,6 @@
 package org.dhis2.data.dhislogic
 
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType

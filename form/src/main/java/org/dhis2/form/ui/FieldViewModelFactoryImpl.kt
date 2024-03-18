@@ -3,9 +3,11 @@ package org.dhis2.form.ui
 import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.event.UiEventFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProvider
@@ -55,6 +57,8 @@ class FieldViewModelFactoryImpl(
         autoCompleteList: List<String>?,
         orgUnitSelectorScope: OrgUnitSelectorScope?,
         selectableDates: SelectableDates?,
+        eventCategories: List<EventCategory>?,
+        periodSelector: PeriodSelector?,
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -88,7 +92,12 @@ class FieldViewModelFactoryImpl(
                 allowFutureDates,
                 optionSet,
             ),
-            displayName = displayNameProvider.provideDisplayName(valueType, value, optionSet),
+            displayName = displayNameProvider.provideDisplayName(
+                valueType,
+                value,
+                optionSet,
+                periodSelector?.type,
+            ),
             renderingType = uiEventTypesProvider.provideUiRenderType(
                 featureType,
                 fieldRendering?.type(),
@@ -100,6 +109,8 @@ class FieldViewModelFactoryImpl(
             autocompleteList = autoCompleteProvider.provideAutoCompleteValues(id),
             orgUnitSelectorScope = orgUnitSelectorScope,
             selectableDates = selectableDates,
+            eventCategories = eventCategories,
+            periodSelector = periodSelector,
         )
     }
 

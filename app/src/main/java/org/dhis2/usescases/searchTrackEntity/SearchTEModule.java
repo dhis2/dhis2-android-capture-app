@@ -20,11 +20,11 @@ import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
+import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
@@ -202,7 +202,8 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            ColorUtils colorUtils
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 new UiStyleProviderImpl(
@@ -215,7 +216,8 @@ public class SearchTEModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -317,11 +319,15 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    DisplayNameProvider provideDisplayNameProvider(D2 d2) {
+    DisplayNameProvider provideDisplayNameProvider(
+            D2 d2,
+            DhisPeriodUtils periodUtils
+    ) {
         return new DisplayNameProviderImpl(
                 new OptionSetConfiguration(d2),
                 new OrgUnitConfiguration(d2),
-                new FileResourceConfiguration(d2)
+                new FileResourceConfiguration(d2),
+                periodUtils
         );
     }
 

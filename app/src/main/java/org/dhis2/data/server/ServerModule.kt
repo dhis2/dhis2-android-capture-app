@@ -15,10 +15,10 @@ import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.FileController

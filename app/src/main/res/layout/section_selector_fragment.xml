@@ -54,5 +54,12 @@
             app:srcCompat="@drawable/ic_save"
             app:tint="?colorAccent" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/editableReasonContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

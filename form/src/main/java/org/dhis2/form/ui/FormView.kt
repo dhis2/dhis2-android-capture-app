@@ -52,8 +52,10 @@ import org.dhis2.commons.bindings.getFileFromGallery
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
@@ -101,6 +103,7 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 import java.io.File
 import java.util.Calendar
+import java.util.Date
 
 class FormView : Fragment() {
 
@@ -596,7 +599,27 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
+            is RecyclerViewUiEvents.SelectPeriod -> showPeriodDialog(uiEvent)
         }
+    }
+
+    private fun showPeriodDialog(uiEvent: RecyclerViewUiEvents.SelectPeriod) {
+        PeriodDialog()
+            .setTitle(uiEvent.title)
+            .setPeriod(uiEvent.periodType)
+            .setMinDate(uiEvent.minDate)
+            .setMaxDate(uiEvent.maxDate)
+            .setPossitiveListener { selectedDate: Date ->
+                val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
+                intentHandler(
+                    FormIntent.OnSave(
+                        uiEvent.uid,
+                        dateString,
+                        ValueType.DATE,
+                    ),
+                )
+            }
+            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {

@@ -11,7 +11,6 @@ import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -148,7 +147,7 @@ class FilterTest : BaseTest() {
             clickOnEventAtPosition(0)
         }
         formRobot {
-            clickOnSelectOption("ZZ TEST RULE ACTIONS A", 1, "Hide Field", 1)
+            clickOnSelectOption(1, 1)
             pressBack()
             pressBack()
             pressBack()

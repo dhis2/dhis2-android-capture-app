@@ -2,8 +2,8 @@ package org.dhis2.usescases.form
 
 import androidx.test.core.app.ApplicationProvider
 import org.dhis2.LazyActivityScenarioRule
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.utils.EventMode
 
 const val PROGRAM_UID = "PROGRAM_UID"
 const val PROGRAM_XX_PROGRAM_RULES = "jIT6KcSZiAN"
@@ -15,7 +15,6 @@ fun prepareIntentAndLaunchEventActivity(rule: LazyActivityScenarioRule<EventCapt
         ApplicationProvider.getApplicationContext(),
         EVENT_GAMMA,
         PROGRAM_XX_PROGRAM_RULES,
-        false,
         EventMode.CHECK
     ).also { rule.launch(it) }
 }

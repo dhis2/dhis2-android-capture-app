@@ -14,7 +14,7 @@ interface ProgramEventDetailView : AbstractActivityContracts.View {
     fun updateFilters(totalFilters: Int)
     fun openOrgUnitTreeSelector()
     fun showPeriodRequest(periodRequest: PeriodRequest)
-    fun startNewEvent()
+    fun selectOrgUnitForNewEvent()
     fun navigateToEvent(eventId: String, orgUnit: String)
     fun showSyncDialog(uid: String)
     fun showCatOptComboDialog(catComboUid: String)

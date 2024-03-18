@@ -14,9 +14,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.inDateRange
-import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel

@@ -1,11 +1,14 @@
 package org.dhis2.form.di
 
 import android.content.Context
+import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -47,6 +50,7 @@ import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventObjectRepository
 
 object Injector {
     fun provideFormViewModelFactory(
@@ -94,7 +98,7 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
-            displayNameProvider = provideDisplayNameProvider(),
+            displayNameProvider = provideDisplayNameProvider(context),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
                 context = context,
@@ -153,6 +157,9 @@ object Injector {
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(),
+            resources = provideResourcesManager(context),
+            dateUtils = DateUtils.getInstance(),
+            eventMode = eventRecords.eventMode,
         )
     }
 
@@ -165,7 +172,7 @@ object Injector {
         uiStyleProvider = provideUiStyleProvider(context),
         layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
-        displayNameProvider = provideDisplayNameProvider(),
+        displayNameProvider = provideDisplayNameProvider(context),
         uiEventTypesProvider = provideUiEventTypesProvider(),
         keyboardActionProvider = provideKeyBoardActionProvider(),
         legendValueProvider = provideLegendValueProvider(context),
@@ -197,25 +204,35 @@ object Injector {
     private fun provideFormValueStore(
         context: Context,
         recordUid: String?,
-        entryMode: EntryMode?,
-    ): FormValueStore? {
-        return entryMode?.let { it ->
-            val enrollmentObjectRepository = if (it == EntryMode.ATTR) {
-                provideEnrollmentObjectRepository(recordUid!!)
-            } else {
-                null
-            }
-            FormValueStore(
-                d2 = provideD2(),
-                recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
-                    ?: recordUid!!,
-                entryMode = it,
-                enrollmentRepository = enrollmentObjectRepository,
-                crashReportController = provideCrashReportController(),
-                networkUtils = provideNetworkUtils(context),
-                resourceManager = provideResourcesManager(context),
-            )
+        entryMode: EntryMode,
+    ): FormValueStore {
+        val enrollmentObjectRepository = if (entryMode == EntryMode.ATTR) {
+            provideEnrollmentObjectRepository(recordUid!!)
+        } else {
+            null
         }
+
+        val eventObjectRepository = if (entryMode == EntryMode.DE) {
+            provideEventObjectRepository(recordUid!!)
+        } else {
+            null
+        }
+
+        return FormValueStore(
+            d2 = provideD2(),
+            recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
+                ?: recordUid!!,
+            entryMode = entryMode,
+            enrollmentRepository = enrollmentObjectRepository,
+            eventRepository = eventObjectRepository,
+            crashReportController = provideCrashReportController(),
+            networkUtils = provideNetworkUtils(context),
+            resourceManager = provideResourcesManager(context),
+        )
+    }
+
+    private fun provideEventObjectRepository(recordUid: String): EventObjectRepository {
+        return provideD2().eventModule().events().uid(recordUid)
     }
 
     private fun provideEnrollmentObjectRepository(
@@ -235,28 +252,32 @@ object Injector {
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
-    private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
+    private fun provideDisplayNameProvider(context: Context) = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
         OrgUnitConfiguration(provideD2()),
         FileResourceConfiguration(provideD2()),
+        DhisPeriodUtils(
+            d2 = provideD2(),
+            defaultPeriodLabel = context.getString(R.string.period_span_default_label),
+            defaultWeeklyLabel = context.getString(R.string.week_period_span_default_label),
+            defaultBiWeeklyLabel = context.getString(R.string.biweek_period_span_default_label),
+        ),
     )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 
     private fun provideRuleEngineRepository(
-        entryMode: EntryMode?,
-        recordUid: String?,
-    ): RuleEngineHelper? {
-        return recordUid?.let {
-            RuleEngineHelper(
-                when (entryMode) {
-                    EntryMode.DE -> EvaluationType.Event(recordUid)
-                    EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
-                    else -> throw IllegalArgumentException()
-                },
-                RulesRepository(provideD2()),
-            )
-        }
+        entryMode: EntryMode,
+        recordUid: String,
+    ): RuleEngineHelper {
+        return RuleEngineHelper(
+            when (entryMode) {
+                EntryMode.DE -> EvaluationType.Event(recordUid)
+                EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
+                else -> throw IllegalArgumentException()
+            },
+            RulesRepository(provideD2()),
+        )
     }
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(

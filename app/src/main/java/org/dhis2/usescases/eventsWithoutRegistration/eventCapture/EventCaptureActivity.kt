@@ -24,6 +24,7 @@ import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
@@ -38,20 +39,16 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.customviews.navigationbar.setInitialPage
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import javax.inject.Inject
-
-const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
     ActivityGlobalAbstract(),
@@ -97,15 +94,9 @@ class EventCaptureActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding.presenter = presenter
-        val navigationInitialPage =
-            if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
-                0
-            } else {
-                1
-            }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter(navigationInitialPage)
-        setUpNavigationBar(navigationInitialPage)
+        setUpViewPagerAdapter()
+        setUpNavigationBar()
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -116,19 +107,18 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpViewPagerAdapter(initialPage: Int) {
+    private fun setUpViewPagerAdapter() {
         binding.eventViewPager.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
             intent.getStringExtra(Constants.PROGRAM_UID),
             intent.getStringExtra(Constants.EVENT_UID),
-            presenter?.programStage(),
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+            eventMode,
         )
         binding.eventViewPager.adapter = adapter
-        binding.eventViewPager.setCurrentItem(initialPage, false)
         binding.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -144,8 +134,7 @@ class EventCaptureActivity :
         })
     }
 
-    private fun setUpNavigationBar(initialPage: Int) {
-        binding.navigationBar.setInitialPage(initialPage)
+    private fun setUpNavigationBar() {
         binding.navigationBar.pageConfiguration(pageConfigurator!!)
         binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
             binding.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
@@ -288,13 +277,16 @@ class EventCaptureActivity :
                 isEventCompleted = true
                 presenter!!.completeEvent(false)
             }
+
             FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
             FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
             FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
             }
+
             FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
             }
+
             FormBottomDialog.ActionType.FINISH -> finishDataEntry()
             FormBottomDialog.ActionType.NONE -> { // Do nothing
             }
@@ -353,7 +345,6 @@ class EventCaptureActivity :
                 popupMenu.menu.findItem(R.id.menu_delete).isVisible =
                     presenter!!.canWrite() && presenter!!.isEnrollmentOpen
                 popupMenu.menu.findItem(R.id.menu_share).isVisible = false
-                Unit
             }
             .onMenuItemClicked { itemId: Int? ->
                 when (itemId) {
@@ -361,6 +352,7 @@ class EventCaptureActivity :
                         analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(false)
                     }
+
                     R.id.menu_delete -> confirmDeleteEvent()
                     else -> { // Do nothing
                     }
@@ -491,13 +483,11 @@ class EventCaptureActivity :
             context: Context,
             eventUid: String,
             programUid: String,
-            openDetailsAsFirstPage: Boolean,
             eventMode: EventMode,
         ): Intent {
             return Intent(context, EventCaptureActivity::class.java).apply {
                 putExtra(Constants.EVENT_UID, eventUid)
                 putExtra(Constants.PROGRAM_UID, programUid)
-                putExtra(EXTRA_DETAILS_AS_FIRST_PAGE, openDetailsAsFirstPage)
                 putExtra(Constants.EVENT_MODE, eventMode)
             }
         }

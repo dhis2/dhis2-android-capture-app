@@ -3,9 +3,15 @@ package org.dhis2.usescases.programStageSelection
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
+import org.dhis2.form.model.EventMode
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -17,6 +23,9 @@ class ProgramStageSelectionPresenter(
     private val ruleUtils: RulesUtilsProvider,
     private val metadataIconProvider: MetadataIconProvider,
     private val schedulerProvider: SchedulerProvider,
+    private val dispatcher: DispatcherProvider,
+    private val createEventUseCase: CreateEventUseCase,
+    private val d2ErrorUtils: D2ErrorUtils,
 ) {
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -103,5 +112,32 @@ class ProgramStageSelectionPresenter(
 
     fun getStandardInterval(programStageUid: String): Int {
         return programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
+    }
+
+    fun onOrgUnitForNewEventSelected(
+        programStageUid: String,
+        programUid: String,
+        orgUnitUid: String,
+        enrollmentUid: String?,
+    ) {
+        CoroutineScope(dispatcher.io()).launch {
+            createEventUseCase(
+                programUid = programUid,
+                orgUnitUid = orgUnitUid,
+                programStageUid = programStageUid,
+                enrollmentUid = enrollmentUid,
+            ).fold(
+                onSuccess = { eventUid ->
+                    view.goToEventDetails(
+                        eventUid = eventUid,
+                        eventMode = EventMode.NEW,
+                        programUid = programUid,
+                    )
+                },
+                onFailure = {
+                    view.displayMessage(d2ErrorUtils.getErrorMessage(it))
+                },
+            )
+        }
     }
 }

@@ -112,6 +112,7 @@ public class EventCaptureModule {
                 eventUid,
                 EntryMode.DE,
                 null,
+                null,
                 crashReportController,
                 networkUtils,
                 resourceManager,

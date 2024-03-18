@@ -19,7 +19,7 @@ import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
-import org.dhis2.data.dhislogic.SIMPLE_DATE_FORMAT
+import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.BaseTest

@@ -38,6 +38,8 @@ data class FieldUiModelImpl(
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
+    override val eventCategories: List<EventCategory>? = null,
+    override val periodSelector: PeriodSelector? = null,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -182,6 +184,7 @@ data class FieldUiModelImpl(
         if (allowFutureDates != item.allowFutureDates) return false
         if (callback != item.callback) return false
         if (selectableDates != item.selectableDates) return false
+        if (eventCategories != item.eventCategories) return false
 
         return true
     }

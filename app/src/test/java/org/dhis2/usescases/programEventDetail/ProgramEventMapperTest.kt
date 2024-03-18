@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
