@@ -355,6 +355,7 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
         },
         confirmButton = {
             Button(
+                modifier = Modifier.padding(bottom = 8.dp, end = 16.dp),
                 text = stringResource(id = R.string.action_close).uppercase(),
                 onClick = { onDismiss() },
             )

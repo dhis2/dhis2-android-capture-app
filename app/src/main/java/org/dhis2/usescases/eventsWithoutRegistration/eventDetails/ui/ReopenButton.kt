@@ -33,7 +33,6 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_lock_open_white),
                     contentDescription = "reopen",
-                    tint = Color.White,
                 )
             },
             colorStyle = ColorStyle.ERROR,
