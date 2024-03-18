@@ -1,7 +1,9 @@
 package org.dhis2.usescases.searchte
 
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
@@ -107,6 +109,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(lastName)
             clickOnSearch()
+            composeTestRule.waitForIdle()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
                 attributes = mapOf("Last name:" to lastName)
