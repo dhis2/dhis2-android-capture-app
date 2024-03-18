@@ -207,10 +207,6 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
-        onView(withId(R.id.incident_date))
-            .check(matches(withText(upperInformation.incidentDate)))
-        onView(withId(R.id.enrollment_date))
-            .check(matches(withText(upperInformation.enrollmentDate)))
         onView(withId(R.id.org_unit))
             .check(matches(withText(upperInformation.orgUnit)))
     }

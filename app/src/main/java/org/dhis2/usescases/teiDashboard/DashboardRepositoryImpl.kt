@@ -373,7 +373,7 @@ class DashboardRepositoryImpl(
     }
 
     override fun getDashboardModel(): DashboardModel {
-        return if (programUid == null) {
+        return if (programUid.isNullOrEmpty()) {
             DashboardTEIModel(
                 getTEIEnrollments(teiUid).blockingFirst(),
                 getTrackedEntityInstance(teiUid).blockingFirst(),
@@ -525,7 +525,7 @@ class DashboardRepositoryImpl(
     }
 
     override fun programHasRelationships(): Boolean {
-        return if (programUid != null) {
+        return if (!programUid.isNullOrEmpty()) {
             val teiTypeUid = d2.programModule().programs()
                 .uid(programUid)
                 .blockingGet()
@@ -538,7 +538,7 @@ class DashboardRepositoryImpl(
     }
 
     override fun programHasAnalytics(): Boolean {
-        return if (programUid != null) {
+        return if (!programUid.isNullOrEmpty()) {
             val enrollmentScopeRulesUids = d2.programModule().programRules()
                 .byProgramUid().eq(programUid)
                 .byProgramStageUid().isNull
