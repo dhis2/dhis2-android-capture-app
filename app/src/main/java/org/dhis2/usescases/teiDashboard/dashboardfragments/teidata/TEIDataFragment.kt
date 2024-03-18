@@ -254,15 +254,15 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private fun showLegacyCard(dashboardModel: DashboardTEIModel?) {
         binding.noEnrollmentSelected = true
         if (dashboardModel?.avatarPath.isNullOrEmpty()) {
-            binding.cardFront?.teiImage?.visibility = View.GONE
+            binding.cardFront.teiImage.visibility = View.GONE
         } else {
-            binding.cardFront?.teiImage?.visibility = View.VISIBLE
+            binding.cardFront.teiImage.visibility = View.VISIBLE
             Glide.with(this)
                 .load(dashboardModel?.avatarPath)
                 .fallback(R.drawable.photo_temp_gray)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .transform(CircleCrop())
-                .into(binding.cardFront!!.teiImage)
+                .into(binding.cardFront.teiImage)
         }
         binding.header = when {
             !dashboardModel?.teiHeader.isNullOrEmpty() -> {
