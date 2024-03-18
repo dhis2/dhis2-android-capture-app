@@ -3,8 +3,8 @@ package org.dhis2.composetable.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.ui.semantics.columnBackground
@@ -30,7 +29,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = 
     Box(
         modifier = modifier
             .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
-            .height(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.height.toDp() })
+            .fillMaxHeight()
             .background(itemHeaderUiState.cellStyle.backgroundColor())
             .testTag(itemHeaderUiState.testTag)
             .semantics {
@@ -46,7 +45,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = 
     ) {
         Text(
             modifier = Modifier
-                .padding(horizontal = 4.dp)
+                .padding(itemHeaderUiState.paddingValues)
                 .align(Alignment.Center)
                 .fillMaxWidth()
                 .align(Alignment.Center),

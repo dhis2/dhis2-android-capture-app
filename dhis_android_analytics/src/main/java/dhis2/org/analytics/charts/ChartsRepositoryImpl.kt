@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.analytics.aggregated.DimensionItem
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListResponse
+import org.hisp.dhis.android.core.arch.repositories.paging.PageConfig
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -318,6 +319,9 @@ class ChartsRepositoryImpl(
                 }
                 filteredRepository
             }
+            .withPageConfig(
+                PageConfig.Paging(1, 501),
+            )
             .blockingEvaluate()
             .fold(
                 { trackerLineListResponse ->
@@ -350,7 +354,7 @@ class ChartsRepositoryImpl(
         visualisationUid: String,
         trackerLineListResponse: TrackerLineListResponse,
     ) {
-        lineListHeaderCache[visualisationUid] = trackerLineListResponse.headers
+        lineListHeaderCache.putIfAbsent(visualisationUid, trackerLineListResponse.headers)
     }
 
     private fun getSettingsAnalytics(enrollment: Enrollment): List<Graph> {
