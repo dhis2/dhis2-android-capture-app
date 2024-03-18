@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -36,7 +38,7 @@ fun ProvideInputAge(
         mutableStateOf(
             if (!fieldUiModel.value.isNullOrEmpty()) {
                 formatStoredDateToUI(fieldUiModel.value!!).let {
-                    AgeInputType.DateOfBirth(it)
+                    AgeInputType.DateOfBirth(TextFieldValue(it, TextRange(it.length)))
                 }
             } else {
                 AgeInputType.None
@@ -47,16 +49,20 @@ fun ProvideInputAge(
     DisposableEffect(fieldUiModel.value) {
         when (inputType) {
             is AgeInputType.Age ->
-                calculateAgeFromDate(
-                    fieldUiModel.value!!,
-                    (inputType as AgeInputType.Age).unit,
-                )?.let {
-                    (inputType as AgeInputType.Age).copy(value = it)
-                } ?: AgeInputType.None
+                if (!fieldUiModel.value.isNullOrEmpty()) {
+                    calculateAgeFromDate(
+                        fieldUiModel.value!!,
+                        (inputType as AgeInputType.Age).unit,
+                    )?.let {
+                        (inputType as AgeInputType.Age).copy(value = TextFieldValue(it, TextRange(it.length)))
+                    } ?: AgeInputType.None
+                }
 
             is AgeInputType.DateOfBirth ->
-                formatStoredDateToUI(fieldUiModel.value!!).let {
-                    (inputType as AgeInputType.DateOfBirth).copy(value = it)
+                if (!fieldUiModel.value.isNullOrEmpty()) {
+                    formatStoredDateToUI(fieldUiModel.value!!).let {
+                        (inputType as AgeInputType.DateOfBirth).copy(value = TextFieldValue(it, TextRange(it.length)))
+                    }
                 }
 
             AgeInputType.None -> {
@@ -99,7 +105,7 @@ fun ProvideInputAge(
                         saveValue(
                             intentHandler,
                             fieldUiModel.uid,
-                            formatUIDateToStored(type.value),
+                            formatUIDateToStored(type.value.text),
                             fieldUiModel.valueType,
                             fieldUiModel.allowFutureDates,
                         )
@@ -167,9 +173,9 @@ private fun calculateDateFromAge(age: AgeInputType.Age): String? {
     val calendar = Calendar.getInstance()
     return try {
         when (age.unit) {
-            TimeUnitValues.YEARS -> calendar.add(Calendar.YEAR, -age.value.toInt())
-            TimeUnitValues.MONTHS -> calendar.add(Calendar.MONTH, -age.value.toInt())
-            TimeUnitValues.DAYS -> calendar.add(Calendar.DAY_OF_MONTH, -age.value.toInt())
+            TimeUnitValues.YEARS -> calendar.add(Calendar.YEAR, -age.value.text.toInt())
+            TimeUnitValues.MONTHS -> calendar.add(Calendar.MONTH, -age.value.text.toInt())
+            TimeUnitValues.DAYS -> calendar.add(Calendar.DAY_OF_MONTH, -age.value.text.toInt())
         }
 
         val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())

@@ -75,8 +75,7 @@ class AgeProviderTest {
                 resources = resourceManager,
             )
         }
-        composeTestRule.onNodeWithTag(INPUT_AGE)
-        composeTestRule.onNodeWithTag(INPUT_AGE_MODE_SELECTOR)
+        composeTestRule.onNodeWithTag(INPUT_AGE_MODE_SELECTOR).assertIsDisplayed()
 
     }
 
@@ -95,8 +94,6 @@ class AgeProviderTest {
                 resources = resourceManager,
             )
         }
-        composeTestRule.onNodeWithTag(INPUT_AGE)
-        composeTestRule.onNodeWithTag(INPUT_AGE_MODE_SELECTOR)
         composeTestRule.onNodeWithText(DATE_OF_BIRTH).performClick()
         composeTestRule.onNodeWithTag(INPUT_AGE_OPEN_CALENDAR_BUTTON).assertIsDisplayed()
 
@@ -138,8 +135,6 @@ class AgeProviderTest {
                 resources = resourceManager,
             )
         }
-        composeTestRule.onNodeWithTag(INPUT_AGE)
-        composeTestRule.onNodeWithTag(INPUT_AGE_MODE_SELECTOR)
         composeTestRule.onNodeWithText(AGE_BUTTON_TEXT).performClick()
         composeTestRule.onNodeWithTag(INPUT_AGE_TIME_UNIT_SELECTOR).assertIsDisplayed()
         composeTestRule.onNodeWithTag(INPUT_AGE_TEXT_FIELD).performTextInput("6")
