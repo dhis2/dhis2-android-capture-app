@@ -12,13 +12,12 @@ import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
+import org.dhis2.ui.MetadataIcon
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -27,7 +26,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -45,7 +43,13 @@ class TEIEventCardMapper(
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            avatar = { ProvideAvatar(event) },
+            avatar = if (event.groupedByStage != true) {
+                {
+                    ProvideAvatar(eventItem = event)
+                }
+            } else {
+                null
+            },
             title = getTitle(event),
             description = getDescription(event),
             additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
@@ -63,35 +67,12 @@ class TEIEventCardMapper(
 
     @Composable
     private fun ProvideAvatar(eventItem: EventViewModel) {
-        if (eventItem.groupedByStage != true) {
-            val color = resourceManager.getColorFrom(eventItem.stage?.style()?.color())
-            val iconColor = if (color == -1) {
-                SurfaceColor.Primary
-            } else {
-                Color(color)
-            }
-
-            val imageResource = resourceManager.getObjectStyleDrawableResource(
-                eventItem.stage?.style()?.icon(),
-                R.drawable.ic_default_outline,
-            )
-
-            Avatar(
-                metadataAvatar = {
-                    MetadataAvatar(
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = imageResource),
-                                contentDescription = "Button",
-                                tint = iconColor,
-                            )
-                        },
-                        iconTint = iconColor,
-                    )
-                },
-                style = AvatarStyle.METADATA,
-            )
-        }
+        Avatar(
+            metadataAvatar = {
+                MetadataIcon(metadataIconData = eventItem.metadataIconData)
+            },
+            style = AvatarStyle.METADATA,
+        )
     }
 
     private fun getTitle(event: EventViewModel): String {

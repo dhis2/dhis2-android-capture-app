@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
 import io.reactivex.Single
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
@@ -31,6 +32,7 @@ class EventInitialRepositoryImplTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val fieldFactory: FieldViewModelFactory = mock()
     private val ruleEngineHelper: RuleEngineHelper = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     @Before
     fun setUp() {
@@ -40,6 +42,7 @@ class EventInitialRepositoryImplTest {
             d2,
             fieldFactory,
             ruleEngineHelper,
+            metadataIconProvider,
         )
     }
 

@@ -6,6 +6,7 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.forms.EnrollmentFormRepository
@@ -58,6 +59,7 @@ class TeiDashboardModule(
         charts: Charts,
         preferenceProvider: PreferenceProvider,
         teiAttributesProvider: TeiAttributesProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): DashboardRepository {
         return DashboardRepositoryImpl(
             d2,
@@ -67,6 +69,7 @@ class TeiDashboardModule(
             enrollmentUid,
             teiAttributesProvider,
             preferenceProvider,
+            metadataIconProvider,
         )
     }
 

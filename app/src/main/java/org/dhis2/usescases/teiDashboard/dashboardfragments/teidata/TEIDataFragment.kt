@@ -26,15 +26,20 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
+import org.dhis2.form.model.EventMode
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
@@ -50,7 +55,6 @@ import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -144,7 +148,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
                     false,
                 )
-                val eventCount by presenter.events.map { it.count() }.observeAsState(0)
+                val eventCount by presenter.totalTimeLineEvents.map { it }.observeAsState(0)
 
                 val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
                     infoBarMapper.map(
@@ -246,7 +250,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun setEnrollmentData(program: Program?, enrollment: Enrollment?) {
         enrollment?.let {
-            eventAdapter?.setEnrollment(enrollment)
             followUp.set(
                 when (enrollment.followUp()) {
                     true -> true
@@ -288,9 +291,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 currentProgram,
                 colorUtils,
                 cardMapper,
-            ).also {
-                it.setEnrollment(currentEnrollment)
-            }
+            )
             binding.teiRecycler.adapter = eventAdapter
         }
         return eventAdapter?.stageSelector() ?: Flowable.empty()
@@ -299,6 +300,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun setEvents(events: List<EventViewModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
+            binding.teiRecycler.visibility = View.GONE
+
             if (presenter.shouldDisplayEventCreationButton.value == true) {
                 binding.emptyTeis.setText(R.string.empty_tei_add)
             } else {
@@ -306,6 +309,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
         } else {
             binding.emptyTeis.visibility = View.GONE
+            binding.teiRecycler.visibility = View.VISIBLE
+
             eventAdapter?.submitList(events)
             for (eventViewModel in events) {
                 if (eventViewModel.isAfterToday(DateUtils.getInstance().today)) {
@@ -358,7 +363,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     presenter.completeEnrollment()
                 }
 
-                override fun onNegative() {}
+                override fun onNegative() {
+                    // Not necessary for this implementation
+                }
             },
         )
         dialog?.show()
@@ -379,7 +386,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                             presenter.completeEnrollment()
                         }
 
-                        override fun onNegative() {}
+                        override fun onNegative() {
+                            // Not necessary for this implementation
+                        }
                     },
                 )
                 dialog?.show()
@@ -458,6 +467,39 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
+    override fun goToEventDetails(
+        eventUid: String,
+        eventMode: EventMode,
+        programUid: String,
+    ) {
+        val intent = EventCaptureActivity.intent(
+            context = requireContext(),
+            eventUid = eventUid,
+            programUid = programUid,
+            eventMode = eventMode,
+        )
+        startActivity(intent)
+    }
+
+    override fun displayOrgUnitSelectorForNewEvent(programUid: String, programStageUid: String) {
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .singleSelection()
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+            )
+            .onSelection { selectedOrgUnits ->
+                if (selectedOrgUnits.isNotEmpty()) {
+                    presenter.onOrgUnitForNewEventSelected(
+                        orgUnitUid = selectedOrgUnits.first().uid(),
+                        programStageUid = programStageUid,
+                    )
+                }
+            }
+            .build()
+            .show(parentFragmentManager, "ORG_UNIT_DIALOG")
+    }
+
     override fun showSyncDialog(eventUid: String, enrollmentUid: String) {
         SyncStatusDialog.Builder()
             .withContext(this, null)
@@ -493,7 +535,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun updateEnrollment(update: Boolean) {
         if (update) {
             presenter.fetchEvents(update)
-            presenter.getEnrollment()?.let { eventAdapter?.setEnrollment(it) }
             dashboardViewModel.updateDashboard()
         }
     }

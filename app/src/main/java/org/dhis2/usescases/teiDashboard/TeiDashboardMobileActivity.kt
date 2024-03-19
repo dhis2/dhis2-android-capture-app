@@ -150,8 +150,8 @@ class TeiDashboardMobileActivity :
             TeiDashboardModule(
                 this,
                 teiUid ?: "",
-                programUid ?: "",
-                enrollmentUid ?: "",
+                programUid,
+                enrollmentUid,
                 this.isPortrait(),
             ),
         ).inject(this)
@@ -432,7 +432,7 @@ class TeiDashboardMobileActivity :
         finish()
     }
 
-    override fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
+    fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
         if (hasMoreEnrollments) {
             startActivity(intent(this, teiUid, null, null))
             finish()
@@ -567,8 +567,11 @@ class TeiDashboardMobileActivity :
                 }
 
                 val deleteEnrollmentItem = popupMenu.menu.findItem(R.id.deleteEnrollment)
-                deleteEnrollmentItem.isVisible =
+                deleteEnrollmentItem.isVisible = if (enrollmentUid != null) {
                     presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
+                } else {
+                    false
+                }
 
                 if (enrollmentUid != null) {
                     popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
@@ -691,7 +694,16 @@ class TeiDashboardMobileActivity :
                 ),
                 mainButtonText = getString(R.string.remove),
                 onMainButtonClick = {
-                    dashboardViewModel.deleteEnrollment { authorityErrorMessage() }
+                    binding.toolbarProgress.show()
+                    dashboardViewModel.deleteEnrollment(
+                        onSuccess = {
+                            binding.toolbarProgress.hide()
+                            handleEnrollmentDeletion(it == true)
+                        },
+                        onAuthorityError = {
+                            authorityErrorMessage()
+                        },
+                    )
                 },
             ).show(
                 supportFragmentManager,

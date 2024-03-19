@@ -10,7 +10,6 @@ import dhis2.org.analytics.charts.mappers.GraphToPieChart
 import dhis2.org.analytics.charts.mappers.GraphToRadarChart
 import dhis2.org.analytics.charts.mappers.GraphToTable
 import dhis2.org.analytics.charts.mappers.GraphToValue
-import java.lang.IllegalArgumentException
 
 class Chart private constructor(
     private val chartType: ChartType,
@@ -42,6 +41,12 @@ class Chart private constructor(
     @Composable
     fun getComposeChart() {
         return when (chartType) {
+            ChartType.LINE_LISTING -> graphToTableMapper.mapToCompose(
+                graphData,
+                resetDimensionButton,
+                false,
+            )
+
             ChartType.TABLE -> graphToTableMapper.mapToCompose(graphData, resetDimensionButton)
             else -> throw IllegalArgumentException("Not supported")
         }

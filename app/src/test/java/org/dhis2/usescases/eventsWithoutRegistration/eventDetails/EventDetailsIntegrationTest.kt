@@ -6,8 +6,9 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
@@ -89,6 +90,8 @@ class EventDetailsIntegrationTest {
         on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
         on { getEditableStatus() } doReturn EventEditableStatus.Editable()
     }
+
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     private lateinit var viewModel: EventDetailsViewModel
 
@@ -178,6 +181,7 @@ class EventDetailsIntegrationTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
+        metadataIconProvider = metadataIconProvider,
     )
 
     private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)

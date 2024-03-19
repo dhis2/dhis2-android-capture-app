@@ -3,6 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.MissingMandatoryResult
@@ -11,6 +13,7 @@ import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
@@ -38,6 +41,9 @@ class EventIntegrationTest {
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val reOpenUseCase: ReOpenEventUseCase = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     private val resourceProvider: EventCaptureResourcesProvider = mock {
         on { provideNotSavedText() } doReturn "not_saved"
@@ -67,6 +73,9 @@ class EventIntegrationTest {
         activityPresenter = eventCapturePresenter,
         d2 = d2,
         eventUid = eventUid,
+        resourceManager = resourceManager,
+        reOpenEventUseCase = reOpenUseCase,
+        dispatcherProvider = dispatcherProvider,
     )
 
     @Test
@@ -77,7 +86,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
 
         val mandatoryFields = mapOf("uid" to "message")
         val expectedDialog = EventCompletionDialog(
@@ -127,7 +136,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
 
         val errors = listOf(
             FieldWithIssue("fieldUid", "fieldName", IssueType.ERROR, "message"),
@@ -172,7 +181,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_COMPLETE
+        ) doReturn ValidationStrategy.ON_COMPLETE
 
         val errors = listOf(
             FieldWithIssue("fieldUid", "fieldName", IssueType.ERROR, "message"),

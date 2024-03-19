@@ -3,14 +3,10 @@ package org.dhis2.usescases.enrollment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.App
 import org.dhis2.R
@@ -27,6 +23,7 @@ import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.EnrollmentRecords
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
@@ -38,11 +35,9 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import java.io.File
 import javax.inject.Inject
 
 class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
@@ -316,36 +311,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     /*region TEI*/
     override fun displayTeiInfo(teiInfo: TeiAttributesInfo) {
         if (mode != EnrollmentMode.NEW) {
-            binding.title.visibility = View.GONE
-            binding.teiDataHeader.root.visibility = View.VISIBLE
-
-            binding.teiDataHeader.mainAttributes.apply {
-                text = teiInfo.teiMainLabel(getString(R.string.tracked_entity_type_details))
-                setTextColor(Color.WHITE)
-            }
-            when (val secondaryLabel = teiInfo.teiSecondaryLabel()) {
-                null -> binding.teiDataHeader.secundaryAttribute.visibility = View.GONE
-                else -> {
-                    binding.teiDataHeader.secundaryAttribute.text = secondaryLabel
-                    binding.teiDataHeader.secundaryAttribute.setTextColor(Color.WHITE)
-                }
-            }
-
-            if (teiInfo.profileImage.isEmpty()) {
-                binding.teiDataHeader.teiImage.visibility = View.GONE
-                binding.teiDataHeader.imageSeparator.visibility = View.GONE
-            } else {
-                Glide.with(this).load(File(teiInfo.profileImage))
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(CircleCrop())
-                    .into(binding.teiDataHeader.teiImage)
-                binding.teiDataHeader.teiImage.setOnClickListener {
-                    presenter.onTeiImageHeaderClick()
-                }
-            }
+            binding.title.text =
+                resourceManager.defaultEnrollmentLabel(
+                    programUid = presenter.getProgram()?.uid()!!,
+                    true,
+                    1,
+                )
         } else {
-            binding.title.visibility = View.VISIBLE
-            binding.teiDataHeader.root.visibility = View.GONE
             binding.title.text =
                 resourceManager.formatWithEnrollmentLabel(
                     programUid = presenter.getProgram()?.uid()!!,

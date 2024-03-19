@@ -9,14 +9,16 @@ import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -144,14 +146,6 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun configureList(scrollView: RecyclerView) {
         scrollView.apply {
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
-                val paddingTop = if (isLandscape()) {
-                    0.dp
-                } else {
-                    130.dp
-                }
-                setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
-            }
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -182,18 +176,30 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                if (LocalConfiguration.current.orientation ==
-                    Configuration.ORIENTATION_PORTRAIT
-                ) {
-                    val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                val teTypeName by viewModel.teTypeName.observeAsState()
+
+                if (!teTypeName.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
+                    val createButtonVisibility by viewModel
+                        .createButtonScrollVisibility.observeAsState(true)
+                    val queryData = remember(viewModel.uiState) {
+                        viewModel.queryData
+                    }
+
                     FullSearchButtonAndWorkingList(
+                        teTypeName = teTypeName!!,
                         modifier = Modifier,
-                        visible = !isScrollingDown,
+                        createButtonVisible = createButtonVisibility,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
-                        onClick = { viewModel.setSearchScreen() },
+                        queryData = queryData,
+                        onSearchClick = { viewModel.setSearchScreen() },
+                        onEnrollClick = { viewModel.onEnrollClick() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
+                        onClearSearchQuery = {
+                            viewModel.clearQueryData()
+                            viewModel.clearFocus()
+                        },
                         workingListViewModel = workingListViewModel,
                     )
                 }
@@ -212,7 +218,12 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val createButtonVisibility by viewModel
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
-                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                val teTypeName by viewModel.teTypeName.observeAsState()
+                val hasQueryData = remember(viewModel.uiState) {
+                    viewModel.queryData.isNotEmpty()
+                }
+
+                updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
                         56.dp
                     } else {
@@ -220,11 +231,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                     setMargins(0, 0, 0, bottomMargin)
                 }
-                if (createButtonVisibility && !filtersOpened) {
+
+                val orientation = LocalConfiguration.current.orientation
+                if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
                         onClick = viewModel::onEnrollClick,
+                        teTypeName = teTypeName!!,
                     )
                 }
             }
@@ -263,15 +277,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun updateRecycler() {
-        val paddingTop = if (workingListViewModel.workingListFilter.value != null) 130.dp else 80.dp
         recycler.setPaddingRelative(
             0,
-            when {
-                !isLandscape() && listAdapter.itemCount > 1 -> paddingTop
-                !isLandscape() && liveAdapter.itemCount == 0 &&
-                    resultAdapter.itemCount == 1 -> paddingTop
-                else -> 0.dp
-            },
+            0,
             0,
             when {
                 listAdapter.itemCount > 1 -> 160.dp
@@ -293,13 +301,14 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun initData() {
         displayLoadingData()
+
         viewModel.fetchListResults {
-            viewModel.viewModelScope.launch {
+            lifecycleScope.launch {
                 it?.takeIf { view != null }?.collectLatest {
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                     }
-                    liveAdapter.submitData(it)
+                    liveAdapter.submitData(lifecycle, it)
                 } ?: onInitDataLoaded()
             }
         }

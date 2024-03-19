@@ -35,10 +35,13 @@ class AnalyticsAdapter :
         INDICATOR, CHART, SECTION_TITLE
     }
 
-    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?, RelativePeriod?) -> Unit)? = null
-    var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType) -> Unit)? = null
+    var onRelativePeriodCallback: ((ChartModel, RelativePeriod?, RelativePeriod?, lineListingColumnId: Int?) -> Unit)? =
+        null
+    var onOrgUnitCallback: ((ChartModel, OrgUnitFilterType, lineListingColumnId: Int?) -> Unit)? =
+        null
     var onResetFilterCallback: ((ChartModel, ChartFilter) -> Unit)? = null
     var onChartTypeChanged: () -> Unit = {}
+    var onSearchCallback: ((ChartModel, Int) -> Unit)? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -53,14 +56,20 @@ class AnalyticsAdapter :
             AnalyticType.INDICATOR -> IndicatorViewHolder(
                 ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             )
+
             AnalyticType.CHART ->
                 ChartViewHolder(
                     ItemChartBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 ) {
                     onChartTypeChanged.invoke()
                 }
+
             AnalyticType.SECTION_TITLE -> SectionTitleViewHolder(
-                ItemSectionTittleBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                ItemSectionTittleBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false,
+                ),
             )
         }
     }
@@ -77,15 +86,24 @@ class AnalyticsAdapter :
         chart: ChartModel,
         period: RelativePeriod?,
         current: RelativePeriod?,
+        lineListingColumnId: Int?,
     ) {
-        onRelativePeriodCallback?.invoke(chart, period, current)
+        onRelativePeriodCallback?.invoke(chart, period, current, lineListingColumnId)
     }
 
-    override fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType) {
-        onOrgUnitCallback?.invoke(chart, filters)
+    override fun filterOrgUnit(
+        chart: ChartModel,
+        filters: OrgUnitFilterType,
+        lineListingColumnId: Int?,
+    ) {
+        onOrgUnitCallback?.invoke(chart, filters, lineListingColumnId)
     }
 
     override fun resetFilter(chart: ChartModel, filter: ChartFilter) {
         onResetFilterCallback?.invoke(chart, filter)
+    }
+
+    override fun filterColumnValue(chart: ChartModel, column: Int) {
+        onSearchCallback?.invoke(chart, column)
     }
 }

@@ -7,13 +7,18 @@ import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.bindings.teiAttribute
 import org.dhis2.commons.bindings.trackedEntityType
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class EnrollmentConfiguration(private val d2: D2, private val enrollmentUid: String) :
+class EnrollmentConfiguration(
+    private val d2: D2,
+    private val enrollmentUid: String,
+    private val metadataIconProvider: MetadataIconProvider,
+) :
     FormBaseConfiguration(d2) {
     private val _enrollment: Enrollment? by lazy {
         d2.enrollment(enrollmentUid)
@@ -31,6 +36,8 @@ class EnrollmentConfiguration(private val d2: D2, private val enrollmentUid: Str
         .withAttributes()
         .byProgramUid().eq(enrollment()?.program())
         .blockingGet()
+
+    fun orgUnit(orgUnitUid: String) = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
 
     fun programAttributes() =
         d2.programModule().programTrackedEntityAttributes()
@@ -114,10 +121,17 @@ class EnrollmentConfiguration(private val d2: D2, private val enrollmentUid: Str
         d2.optionModule().options().byOptionSetUid().eq(optionSetUid).blockingCount()
             .let { optionCount ->
                 OptionSetConfiguration.config(optionCount) {
-                    d2.optionModule().options()
+                    val options = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSetUid)
                         .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet()
+
+                    val metadataIconMap = options.associate { it.uid() to metadataIconProvider(it.style()) }
+
+                    OptionSetConfiguration.OptionConfigData(
+                        options = options,
+                        metadataIconMap = metadataIconMap,
+                    )
                 }
             }
 }

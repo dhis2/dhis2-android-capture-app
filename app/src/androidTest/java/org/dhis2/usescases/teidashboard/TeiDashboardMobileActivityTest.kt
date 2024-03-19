@@ -6,13 +6,14 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Observable
-import java.util.Calendar
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
@@ -26,9 +27,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 
 class TeiDashboardMobileActivityTest {
 
@@ -47,12 +50,15 @@ class TeiDashboardMobileActivityTest {
     private val teiAttributesProvider: TeiAttributesProvider = mock()
     private val preferences: PreferenceProvider = mock()
 
+    private val metadataIconProvider: MetadataIconProvider = mock {
+        on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
+    }
 
     private var repository: DashboardRepositoryImpl = mock {
 
     }
 
-    private var dispatcher:DispatcherProvider = mock()
+    private var dispatcher: DispatcherProvider = mock()
     var tei = Observable.just(
         TrackedEntityInstance.builder()
             .uid(TEI_Uid)
@@ -110,6 +116,7 @@ class TeiDashboardMobileActivityTest {
             ENROLLMENT_UID,
             teiAttributesProvider,
             preferences,
+            metadataIconProvider
         )
 
 
@@ -181,15 +188,10 @@ class TeiDashboardMobileActivityTest {
         ) doReturn mock()
 
 
-
-
         ActivityScenario.launch(TeiDashboardMobileActivity::class.java).onActivity { activity ->
 
             val showMoreOptions = activity.findViewById<View>(R.id.moreOptions)
             showMoreOptions.performClick()
         }
-
-
     }
-
 }

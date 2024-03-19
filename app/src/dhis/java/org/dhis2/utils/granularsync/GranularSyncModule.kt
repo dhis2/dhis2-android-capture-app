@@ -31,11 +31,11 @@ import dagger.Provides
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2

@@ -8,17 +8,20 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.reporting.CrashReportControllerImpl
+import org.dhis2.commons.resources.D2ErrorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.teiDashboard.DashboardRepository
-import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
@@ -49,7 +52,9 @@ class TEIDataModule(
         getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
         eventCreationOptionsMapper: EventCreationOptionsMapper,
         contractHandler: TeiDataContractHandler,
-        dashboardActivityPresenter: TeiDashboardContracts.Presenter,
+        dispatcherProvider: DispatcherProvider,
+        createEventUseCase: CreateEventUseCase,
+        d2ErrorUtils: D2ErrorUtils,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -67,7 +72,9 @@ class TEIDataModule(
             getNewEventCreationTypeOptions,
             eventCreationOptionsMapper,
             contractHandler,
-            dashboardActivityPresenter,
+            dispatcherProvider,
+            createEventUseCase,
+            d2ErrorUtils,
         )
     }
 
@@ -79,13 +86,18 @@ class TEIDataModule(
 
     @Provides
     @PerFragment
-    fun providesRepository(d2: D2, periodUtils: DhisPeriodUtils): TeiDataRepository {
+    fun providesRepository(
+        d2: D2,
+        periodUtils: DhisPeriodUtils,
+        metadataIconProvider: MetadataIconProvider,
+    ): TeiDataRepository {
         return TeiDataRepositoryImpl(
             d2,
             programUid,
             teiUid,
             enrollmentUid,
             periodUtils,
+            metadataIconProvider,
         )
     }
 
@@ -101,6 +113,7 @@ class TEIDataModule(
             d2,
             teiUid,
             EntryMode.ATTR,
+            null,
             null,
             crashReportController,
             networkUtils,
@@ -153,4 +166,16 @@ class TEIDataModule(
     ): TEIEventCardMapper {
         return TEIEventCardMapper(resourceManager)
     }
+
+    @Provides
+    fun provideCreateEventUseCase(
+        dispatcherProvider: DispatcherProvider,
+        d2: D2,
+    ) = CreateEventUseCase(
+        dispatcher = dispatcherProvider,
+        d2 = d2,
+    )
+
+    @Provides
+    fun provideD2ErrorUtils() = D2ErrorUtils(view.context, NetworkUtils(view.context))
 }

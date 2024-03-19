@@ -9,8 +9,9 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.metadata.FileResourceConfiguration
@@ -75,6 +76,7 @@ class EventDetailsModule(
         d2: D2,
         resourceManager: ResourceManager,
         colorUtils: ColorUtils,
+        periodUtils: DhisPeriodUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -93,6 +95,7 @@ class EventDetailsModule(
                     OptionSetConfiguration(d2),
                     OrgUnitConfiguration(d2),
                     FileResourceConfiguration(d2),
+                    periodUtils,
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
@@ -113,6 +116,7 @@ class EventDetailsModule(
         geometryController: GeometryController,
         locationProvider: LocationProvider,
         eventDetailResourcesProvider: EventDetailResourcesProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -120,6 +124,7 @@ class EventDetailsModule(
                 resourcesProvider = resourcesProvider,
                 creationType = eventCreationType,
                 enrollmentStatus = enrollmentStatus,
+                metadataIconProvider = metadataIconProvider,
             ),
             ConfigureEventReportDate(
                 creationType = eventCreationType,

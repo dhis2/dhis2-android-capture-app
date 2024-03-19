@@ -4,14 +4,13 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.dhislogic.inDateRange
-import org.dhis2.data.dhislogic.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import timber.log.Timber
-import java.util.ArrayList
 
 class DataSetInitialPresenter(
     private val view: DataSetInitialContract.View,

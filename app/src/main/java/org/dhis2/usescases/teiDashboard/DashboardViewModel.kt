@@ -81,7 +81,7 @@ class DashboardViewModel(
                 repository.getGrouping()
             }
             try {
-                _groupByStage.value = result.await()
+                _groupByStage.postValue(result.await())
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -139,7 +139,10 @@ class DashboardViewModel(
         }
     }
 
-    fun deleteEnrollment(onAuthorityError: () -> Unit) {
+    fun deleteEnrollment(
+        onSuccess: (Boolean?) -> Unit,
+        onAuthorityError: () -> Unit,
+    ) {
         viewModelScope.launch(dispatcher.io()) {
             val result = async {
                 dashboardModel.value.takeIf { it is DashboardEnrollmentModel }?.let {
@@ -148,7 +151,8 @@ class DashboardViewModel(
                 }
             }
             try {
-                result.await()
+                val hasMoreEnrollments = result.await()
+                onSuccess(hasMoreEnrollments)
             } catch (e: AuthorityException) {
                 onAuthorityError()
             } catch (e: Exception) {

@@ -32,7 +32,7 @@ class GraphCoordinatesToBarEntry {
                             minMonth = newValue
                         }
                 },
-                graphPoint.fieldValue,
+                graphPoint.numericValue(),
                 serieLabel,
             )
         }

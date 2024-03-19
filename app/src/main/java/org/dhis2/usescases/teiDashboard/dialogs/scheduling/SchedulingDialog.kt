@@ -11,10 +11,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.bindings.app
+import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.form.R
-import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date

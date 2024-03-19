@@ -12,6 +12,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.compose.animation.ExperimentalAnimationApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -145,7 +147,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @OptIn(markerClass = ExperimentalAnimationApi.class)
+    protected void  onCreate(@Nullable Bundle savedInstanceState) {
 
         initializeVariables(savedInstanceState);
         inject();
@@ -351,14 +354,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                             .withPreselectedOrgUnits(preselectedOrgUnits)
                             .singleSelection()
                             .onSelection(selectedOrgUnits -> {
-                                String selecteOrgUnit = null;
+                                String selectedOrgUnit = null;
                                 if (!selectedOrgUnits.isEmpty()) {
-                                    selecteOrgUnit = selectedOrgUnits.get(0).uid();
+                                    selectedOrgUnit = selectedOrgUnits.get(0).uid();
                                 }
                                 viewModel.onParameterIntent(
                                         new FormIntent.OnSave(
                                                 uid,
-                                                selecteOrgUnit,
+                                                selectedOrgUnit,
                                                 ValueType.ORGANISATION_UNIT,
                                                 null
                                         )

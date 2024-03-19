@@ -23,6 +23,8 @@ import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
+import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
@@ -51,7 +53,7 @@ open class BaseTest {
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
         )
-    }else {
+    } else {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA,
@@ -78,20 +80,24 @@ open class BaseTest {
 
     private fun registerCountingIdlingResource() {
         IdlingRegistry.getInstance().register(
+            EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
             SearchIdlingResourceSingleton.countingIdlingResource,
-            TeiDataIdlingResourceSingleton.countingIdlingResource
+            TeiDataIdlingResourceSingleton.countingIdlingResource,
+            EventIdlingResourceSingleton.countingIdlingResource,
         )
     }
 
     private fun unregisterCountingIdlingResource() {
         IdlingRegistry.getInstance()
             .unregister(
+                EventListIdlingResourceSingleton.countingIdlingResource,
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
                 SearchIdlingResourceSingleton.countingIdlingResource,
-                TeiDataIdlingResourceSingleton.countingIdlingResource
+                TeiDataIdlingResourceSingleton.countingIdlingResource,
+                EventIdlingResourceSingleton.countingIdlingResource,
             )
     }
 
@@ -129,7 +135,7 @@ open class BaseTest {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
-    private fun closeKeyboard(){
+    private fun closeKeyboard() {
         BaseRobot().closeKeyboard()
     }
 
@@ -161,6 +167,12 @@ open class BaseTest {
 
     private fun disableComposeForms() {
         preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
+    }
+
+
+    fun enableComposeForms() {
+        preferencesRobot.saveValue("SET_FROM_DEVELOPMENT", true)
+        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, true)
     }
 
     companion object {

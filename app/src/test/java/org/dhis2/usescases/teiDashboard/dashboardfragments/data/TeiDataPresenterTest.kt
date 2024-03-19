@@ -7,17 +7,23 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
+import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.teiDashboard.DashboardRepository
-import org.dhis2.usescases.teiDashboard.TeiDashboardPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
@@ -28,6 +34,8 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
@@ -39,6 +47,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.util.Date
 
@@ -65,7 +74,11 @@ class TeiDataPresenterTest {
     private val resources: ResourceManager = mock()
     private val eventCreationOptionsMapper = EventCreationOptionsMapper(resources)
     private val teiDataContractHandler: TeiDataContractHandler = mock()
-    private val activityPresenter: TeiDashboardPresenter = mock()
+    private val dispatcherProvider: DispatcherProvider = mock {
+        on { io() } doReturn Dispatchers.Unconfined
+    }
+    private val createEventUseCase: CreateEventUseCase = mock()
+    private val d2ErrorUtils: D2ErrorUtils = mock()
 
     @Before
     fun setUp() {
@@ -85,7 +98,9 @@ class TeiDataPresenterTest {
             getNewEventCreationTypeOptions,
             eventCreationOptionsMapper,
             teiDataContractHandler,
-            activityPresenter,
+            dispatcherProvider,
+            createEventUseCase,
+            d2ErrorUtils,
         )
     }
 
@@ -171,7 +186,7 @@ class TeiDataPresenterTest {
         val mockedEnrollment: Enrollment = mock {
             on { organisationUnit() } doReturn "orgUnitUid"
         }
-        whenever(teiDataRepository.getEnrollment())doReturn Single.just(mockedEnrollment)
+        whenever(teiDataRepository.getEnrollment()) doReturn Single.just(mockedEnrollment)
         mockEnrollmentOrgUnitInCaptureScope(false)
         teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
         contractLiveData.value = Unit
@@ -229,6 +244,60 @@ class TeiDataPresenterTest {
         verify(view).showDialogCloseProgram()
     }
 
+    @Test
+    fun `onOrgUnitForNewEventSelected success`() = runBlocking {
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val eventUid = "eventUid"
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (Result.success(eventUid))
+
+        teiDataPresenter.onOrgUnitForNewEventSelected(
+            orgUnitUid,
+            programStageUid,
+        )
+
+        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `onOrgUnitForNewEventSelected failure`() = runBlocking {
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val errorMessage = "Error message"
+        val d2Error = D2Error.builder()
+            .errorCode(D2ErrorCode.UNEXPECTED)
+            .errorDescription(errorMessage)
+            .build()
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (Result.failure(d2Error))
+
+        whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
+
+        teiDataPresenter.onOrgUnitForNewEventSelected(
+            orgUnitUid,
+            programStageUid,
+        )
+
+        verify(view).displayMessage(errorMessage)
+        verifyNoMoreInteractions(view)
+    }
+
     private fun fakeModel(
         eventCount: Int = 0,
         type: EventViewModelType = EventViewModelType.STAGE,
@@ -255,6 +324,7 @@ class TeiDataPresenterTest {
             showBottomShadow = false,
             displayDate = "21/11/2023",
             nameCategoryOptionCombo = "Name Category option combo",
+            metadataIconData = MetadataIconData.defaultIcon(),
         )
     }
 }

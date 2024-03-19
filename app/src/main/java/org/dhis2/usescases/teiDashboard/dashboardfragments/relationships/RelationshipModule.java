@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
@@ -63,14 +64,15 @@ public class RelationshipModule {
     @PerFragment
     RelationshipRepository providesRepository(D2 d2,
                                               ResourceManager resourceManager,
-                                              TeiAttributesProvider attributesProvider) {
+                                              TeiAttributesProvider attributesProvider,
+                                              MetadataIconProvider metadataIconProvider) {
         RelationshipConfiguration config;
         if (teiUid != null) {
             config = new TrackerRelationshipConfiguration(enrollmentUid, teiUid);
         } else {
             config = new EventRelationshipConfiguration(eventUid);
         }
-        return new RelationshipRepositoryImpl(d2, config, resourceManager, attributesProvider);
+        return new RelationshipRepositoryImpl(d2, config, resourceManager, attributesProvider, metadataIconProvider);
     }
 
     @Provides

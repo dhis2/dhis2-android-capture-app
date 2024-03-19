@@ -1,30 +1,35 @@
 package org.dhis2.usescases.searchTrackEntity.ui
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +58,15 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -86,7 +99,50 @@ fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit)
 }
 
 @Composable
-fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun SearchButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    createButtonVisible: Boolean = true,
+    onClick: () -> Unit,
+) {
+    val textId = if (createButtonVisible) {
+        R.string.search_te_type
+    } else {
+        R.string.search_add_new_te_type
+    }
+
+    OutlinedButton(
+        modifier = Modifier
+            .requiredHeight(56.dp)
+            .then(modifier),
+        onClick = onClick,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = SurfaceColor.Primary,
+        ),
+        border = BorderStroke(1.dp, SurfaceColor.Primary),
+        shape = RoundedCornerShape(Spacing.Spacing16),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+
+        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
+
+        Text(
+            text = stringResource(id = textId, teTypeName.lowercase()),
+            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+        )
+    }
+}
+
+@Composable
+fun AddNewButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     Button(
         text = stringResource(id = R.string.search),
         modifier = modifier,
@@ -108,49 +164,101 @@ fun SearchButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun WrappedSearchButton(onClick: () -> Unit) {
+fun SearchButtonWithQuery(
+    modifier: Modifier = Modifier,
+    queryData: Map<String, String> = emptyMap(),
+    onClick: () -> Unit,
+    onClearSearchQuery: () -> Unit,
+) {
+    Box(modifier) {
+        SearchBar(
+            text = queryData.values.joinToString(separator = ", "),
+            modifier = Modifier.fillMaxWidth(),
+            onQueryChange = {
+                if (it.isBlank()) onClearSearchQuery()
+            },
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(end = 48.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color.Unspecified)
+                .clickable(
+                    onClick = onClick,
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple(
+                        true,
+                        color = SurfaceColor.Primary,
+                    ),
+                ),
+        )
+    }
+}
+
+@Composable
+fun WrappedSearchButton(
+    teTypeName: String,
+    onClick: () -> Unit,
+) {
     SearchButton(
-        modifier = Modifier
-            .wrapContentWidth(align = Alignment.CenterHorizontally)
-            .height(44.dp),
+        modifier = Modifier.wrapContentWidth(align = Alignment.CenterHorizontally),
         onClick = onClick,
+        teTypeName = teTypeName,
     )
 }
 
 @ExperimentalAnimationApi
 @Composable
 fun FullSearchButtonAndWorkingList(
+    teTypeName: String,
     modifier: Modifier,
-    visible: Boolean = true,
+    createButtonVisible: Boolean = false,
     closeFilterVisibility: Boolean = false,
     isLandscape: Boolean = false,
-    onClick: () -> Unit = {},
+    queryData: Map<String, String> = emptyMap(),
+    onSearchClick: () -> Unit = {},
+    onEnrollClick: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
+    onClearSearchQuery: () -> Unit = {},
     workingListViewModel: WorkingListViewModel? = null,
 ) {
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = visible,
-        enter = slideInVertically(initialOffsetY = { -it }),
-        exit = slideOutVertically(targetOffsetY = { -it }),
-    ) {
-        Column {
+    Column(modifier = modifier) {
+        if (!isLandscape || queryData.isNotEmpty()) {
             Row(
                 modifier = Modifier.padding(
                     top = Spacing.Spacing16,
                     start = Spacing.Spacing16,
                     end = Spacing.Spacing16,
-                    bottom = Spacing.Spacing8,
+                    bottom = Spacing.Spacing16,
                 ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SearchButton(
+                Column(
                     modifier = Modifier
-                        .weight(weight = 1f)
-                        .height(48.dp),
-                    onClick = onClick,
-                )
-                if (!isLandscape && closeFilterVisibility) {
+                        .wrapContentHeight()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
+                ) {
+                    if (queryData.isNotEmpty()) {
+                        SearchButtonWithQuery(
+                            modifier = Modifier.fillMaxWidth(),
+                            queryData = queryData,
+                            onClick = onSearchClick,
+                            onClearSearchQuery = onClearSearchQuery,
+                        )
+                    } else {
+                        SearchAndCreateTEIButton(
+                            onSearchClick = onSearchClick,
+                            teTypeName = teTypeName,
+                            createButtonVisible = createButtonVisible,
+                            onEnrollClick = onEnrollClick,
+                        )
+                    }
+                }
+
+                if (closeFilterVisibility) {
                     Spacer(modifier = Modifier.size(16.dp))
                     Box(
                         modifier = Modifier
@@ -174,10 +282,36 @@ fun FullSearchButtonAndWorkingList(
                     }
                 }
             }
-            workingListViewModel?.let {
-                WorkingListChipGroup(workingListViewModel = it)
-            }
         }
+
+        Spacer(modifier = Modifier.requiredHeight(Spacing.Spacing16))
+
+        workingListViewModel?.let {
+            WorkingListChipGroup(workingListViewModel = it)
+        }
+    }
+}
+
+@Composable
+private fun SearchAndCreateTEIButton(
+    onSearchClick: () -> Unit,
+    teTypeName: String,
+    createButtonVisible: Boolean,
+    onEnrollClick: () -> Unit,
+) {
+    SearchButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onSearchClick,
+        teTypeName = teTypeName,
+        createButtonVisible = createButtonVisible,
+    )
+
+    if (createButtonVisible) {
+        AddNewButton(
+            modifier = Modifier.fillMaxWidth(),
+            teTypeName = teTypeName,
+            onClick = onEnrollClick,
+        )
     }
 }
 
@@ -432,48 +566,55 @@ fun InitSearch(teTypeName: String) {
 
 @ExperimentalAnimationApi
 @Composable
-fun CreateNewButton(modifier: Modifier, extended: Boolean = true, onClick: () -> Unit) {
-    Button(
-        text = stringResource(R.string.search_create_new),
-        modifier = modifier
-            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-            .apply {
-                if (extended) {
-                    wrapContentWidth()
-                } else {
-                    widthIn(56.dp)
-                }
-            }
-            .height(56.dp),
-        onClick = onClick,
-        icon = {
-            Icon(
-                modifier = Modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.ic_add_accent),
-                contentDescription = "",
-                tint = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
-                    ),
-                ),
+fun CreateNewButton(
+    teTypeName: String,
+    modifier: Modifier = Modifier,
+    extended: Boolean = true,
+    onClick: () -> Unit,
+) {
+    val icon = @Composable {
+        Icon(
+            modifier = Modifier.size(24.dp),
+            painter = painterResource(id = R.drawable.ic_add_accent),
+            contentDescription = "",
+            tint = TextColor.OnPrimaryContainer,
+        )
+    }
+
+    AnimatedContent(
+        targetState = extended,
+        label = "FAB_Expansion",
+    ) {
+        if (it) {
+            ExtendedFAB(
+                modifier = modifier,
+                onClick = onClick,
+                text = stringResource(R.string.search_new_te_type, teTypeName.lowercase()),
+                icon = icon,
+                style = FABStyle.SECONDARY,
             )
-        },
-        style = ButtonStyle.ELEVATED,
-    )
+        } else {
+            FAB(
+                modifier = modifier,
+                onClick = onClick,
+                icon = icon,
+                style = FABStyle.SECONDARY,
+            )
+        }
+    }
 }
 
 @ExperimentalAnimationApi
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
+@Preview(showBackground = true, backgroundColor = 0xFFF)
 @Composable
 fun SearchFullWidthPreview() {
-    FullSearchButtonAndWorkingList(modifier = Modifier)
+    FullSearchButtonAndWorkingList(teTypeName = "Person", modifier = Modifier)
 }
 
-@Preview(showBackground = true, backgroundColor = 0x2C98F0)
+@Preview(showBackground = true, backgroundColor = 0xFFF)
 @Composable
 fun SearchWrapWidthPreview() {
-    WrappedSearchButton {
+    WrappedSearchButton(teTypeName = "Person") {
     }
 }
 
@@ -481,14 +622,20 @@ fun SearchWrapWidthPreview() {
 @Preview
 @Composable
 fun ExtendedCreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier) {}
+    CreateNewButton(
+        teTypeName = "Patient",
+        extended = true,
+    ) {}
 }
 
 @ExperimentalAnimationApi
 @Preview
 @Composable
 fun CreateNewButtonPreview() {
-    CreateNewButton(modifier = Modifier, extended = false) {}
+    CreateNewButton(
+        teTypeName = "Patient",
+        extended = false,
+    ) {}
 }
 
 @Preview(showBackground = true)

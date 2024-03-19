@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
-import org.hisp.dhis.android.core.common.ObjectStyle
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 sealed class DashboardModel(
     open val trackedEntityInstance: TrackedEntityInstance,
     open val trackedEntityAttributeValues: List<TrackedEntityAttributeValue>,
-    open val enrollmentPrograms: List<Program>,
+    open val enrollmentPrograms: List<Pair<Program, MetadataIconData>>,
     open val orgUnits: List<OrganisationUnit>,
     open val teiHeader: String?,
     open val avatarPath: String?,
@@ -35,7 +35,7 @@ data class DashboardEnrollmentModel(
     override val trackedEntityInstance: TrackedEntityInstance,
     val trackedEntityAttributes: List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>,
     override val trackedEntityAttributeValues: List<TrackedEntityAttributeValue>,
-    override val enrollmentPrograms: List<Program>,
+    override val enrollmentPrograms: List<Pair<Program, MetadataIconData>>,
     override val orgUnits: List<OrganisationUnit>,
     override val teiHeader: String?,
     override val avatarPath: String?,
@@ -48,7 +48,7 @@ data class DashboardEnrollmentModel(
     avatarPath,
 ) {
     fun currentProgram(): Program {
-        return enrollmentPrograms.first { it.uid() == currentEnrollment.program() }
+        return enrollmentPrograms.first { it.first.uid() == currentEnrollment.program() }.first
     }
 
     fun getCurrentOrgUnit(): OrganisationUnit {
@@ -56,8 +56,8 @@ data class DashboardEnrollmentModel(
     }
 
     fun getEnrollmentActivePrograms(): List<Program> {
-        return enrollmentPrograms.sortedBy { it.displayName()?.lowercase() }
-            .filter { it.uid() != currentEnrollment.program() }
+        return enrollmentPrograms.sortedBy { it.first.displayName()?.lowercase() }
+            .filter { it.first.uid() != currentEnrollment.program() }.map { it.first }
     }
 }
 
@@ -65,7 +65,7 @@ data class DashboardTEIModel(
     val teiEnrollments: List<Enrollment>,
     override val trackedEntityInstance: TrackedEntityInstance,
     override val trackedEntityAttributeValues: List<TrackedEntityAttributeValue>,
-    override val enrollmentPrograms: List<Program>,
+    override val enrollmentPrograms: List<Pair<Program, MetadataIconData>>,
     override val orgUnits: List<OrganisationUnit>,
     override val teiHeader: String?,
     override val avatarPath: String?,
@@ -78,15 +78,15 @@ data class DashboardTEIModel(
     avatarPath,
 ) {
     fun getProgramsWithActiveEnrollment(): List<Program>? {
-        return enrollmentPrograms.sortedBy { it.displayName()?.lowercase() }
-            .filter { getEnrollmentForProgram(it.uid()) != null }
+        return enrollmentPrograms.sortedBy { it.first.displayName()?.lowercase() }
+            .filter { getEnrollmentForProgram(it.first.uid()) != null }.map { it.first }
     }
 
     fun getEnrollmentForProgram(uid: String): Enrollment? {
         return teiEnrollments.firstOrNull { it.program() == uid && it.status() == EnrollmentStatus.ACTIVE }
     }
 
-    fun getObjectStyleForProgram(programUid: String): ObjectStyle? {
-        return enrollmentPrograms.firstOrNull { it.uid() == programUid }?.style()
+    fun getIconForProgram(programUid: String): MetadataIconData? {
+        return enrollmentPrograms.firstOrNull { it.first.uid() == programUid }?.second
     }
 }

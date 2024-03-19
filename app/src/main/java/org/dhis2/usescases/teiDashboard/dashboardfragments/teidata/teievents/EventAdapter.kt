@@ -29,7 +29,6 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -64,8 +63,6 @@ class EventAdapter(
         }
     },
 ) {
-
-    private lateinit var enrollment: Enrollment
 
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
 
@@ -127,7 +124,12 @@ class EventAdapter(
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        val spacing = if (it.groupedByStage == true) Spacing.Spacing56 else Spacing.Spacing8
+                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
+                        val bottomSpacing = if (it.showBottomShadow) {
+                            Spacing.Spacing16
+                        } else {
+                            Spacing.Spacing4
+                        }
                         val card = cardMapper.map(
                             event = it,
                             editable = it.event?.uid()
@@ -157,7 +159,9 @@ class EventAdapter(
                         Box(
                             modifier = Modifier
                                 .padding(
-                                    start = spacing,
+                                    start = leftSpacing,
+                                    end = Spacing.Spacing16,
+                                    bottom = bottomSpacing,
                                 ),
                         ) {
                             ListCard(
@@ -203,10 +207,5 @@ class EventAdapter(
 
     override fun getItemId(position: Int): Long {
         return getItem(position).hashCode().toLong()
-    }
-
-    fun setEnrollment(enrollment: Enrollment) {
-        this.enrollment = enrollment
-        this.notifyDataSetChanged()
     }
 }

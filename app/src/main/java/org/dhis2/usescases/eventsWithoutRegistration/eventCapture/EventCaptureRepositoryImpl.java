@@ -174,7 +174,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return Flowable.just(currentEvent).map(event ->
                 (event.status() == EventStatus.COMPLETED ||
                         event.status() == EventStatus.ACTIVE) &&
-                        event.eventDate() != null && !event.eventDate().after(new Date())
+                        (event.eventDate() == null || !event.eventDate().after(new Date()))
         );
     }
 

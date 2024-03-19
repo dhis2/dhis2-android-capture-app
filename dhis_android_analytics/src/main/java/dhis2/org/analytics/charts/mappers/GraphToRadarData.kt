@@ -53,12 +53,12 @@ class GraphToRadarData {
         return series.find {
             it.fieldName == serieToHighlight
         }?.coordinates?.maxByOrNull {
-            it.fieldValue
-        }?.fieldValue
+            it.numericValue()
+        }?.numericValue()
     }
 
     private fun SerieData.getSerieMaximun(): Float? {
-        return coordinates.maxByOrNull { it.fieldValue }?.fieldValue
+        return coordinates.maxByOrNull { it.numericValue() }?.numericValue()
     }
 
     private fun shouldSetData(
@@ -79,7 +79,7 @@ class GraphToRadarData {
     ) = categories.mapIndexed { categoryIndex, _ ->
         val point =
             coordinates.find { it.position == categoryIndex.toFloat() }
-        RadarEntry(point?.fieldValue ?: 0f, serieLabel)
+        RadarEntry(point?.numericValue() ?: 0f, serieLabel)
     }
 
     private fun setEmptyEntries(serieLabel: String, categories: List<String>) =

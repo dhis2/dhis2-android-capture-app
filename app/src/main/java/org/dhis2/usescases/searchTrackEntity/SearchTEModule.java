@@ -19,11 +19,12 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
+import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
@@ -145,17 +146,30 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+    SearchRepository searchRepository(@NonNull D2 d2,
+                                      FilterPresenter filterPresenter,
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
-                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      DhisPeriodUtils periodUtils,
+                                      Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
                                       SearchTEIRepository searchTEIRepository,
-                                      ThemeManager themeManager) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
-                themeManager);
+                                      ThemeManager themeManager,
+                                      MetadataIconProvider metadataIconProvider) {
+        return new SearchRepositoryImpl(teiType,
+                initialProgram,
+                d2,
+                filterPresenter,
+                resources,
+                searchSortingValueSetter,
+                periodUtils,
+                charts,
+                crashReportController,
+                networkUtils,
+                searchTEIRepository,
+                themeManager,
+                metadataIconProvider);
     }
 
     @Provides
@@ -164,13 +178,15 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             D2 d2,
             DispatcherProvider dispatcherProvider,
-            FieldViewModelFactory fieldViewModelFactory
+            FieldViewModelFactory fieldViewModelFactory,
+            MetadataIconProvider metadataIconProvider
     ) {
         return new SearchRepositoryImplKt(
                 searchRepository,
                 d2,
                 dispatcherProvider,
-                fieldViewModelFactory
+                fieldViewModelFactory,
+                metadataIconProvider
         );
     }
 
@@ -186,7 +202,8 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            ColorUtils colorUtils
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
     ) {
         return new FieldViewModelFactoryImpl(
                 new UiStyleProviderImpl(
@@ -199,7 +216,8 @@ public class SearchTEModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -301,11 +319,15 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    DisplayNameProvider provideDisplayNameProvider(D2 d2) {
+    DisplayNameProvider provideDisplayNameProvider(
+            D2 d2,
+            DhisPeriodUtils periodUtils
+    ) {
         return new DisplayNameProviderImpl(
                 new OptionSetConfiguration(d2),
                 new OrgUnitConfiguration(d2),
-                new FileResourceConfiguration(d2)
+                new FileResourceConfiguration(d2),
+                periodUtils
         );
     }
 

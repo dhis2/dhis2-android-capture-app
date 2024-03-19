@@ -104,4 +104,11 @@
     <string name="bar_code">Bar code</string>
     <string name="add_location">Add location</string>
     <string name="form_without_fields">This form has no fields configured</string>
+    <string name="event_details_section_title">%s details</string>
+    <string name="event_data_section_title">%s data</string>
+    <string name="org_unit">Org unit</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="category_combo">Category Combo</string>
+    <string name="no_options">No options available</string>
+    <string name="cat_combo">Cat combo</string>
 </resources>

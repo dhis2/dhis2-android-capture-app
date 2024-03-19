@@ -66,4 +66,5 @@
     <string name="error_invalid_program">You do not have access to program %s</string>
     <string name="error_invalid_attribute">You do not have access to attribute %s</string>
     <string name="error_unsupported_aggregation_type">Unsupported aggregation type %s</string>
+    <string name="line_listing_max_results">Table limited to %1$s entries. Filter to refine results.</string>
 </resources>

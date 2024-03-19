@@ -1,6 +1,7 @@
 package org.dhis2.maps.model
 
 import org.dhis2.commons.data.CarouselItemModel
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
@@ -18,6 +19,7 @@ data class EventUiComponentModel(
     val teiImage: String,
     val teiDefaultIcon: String?,
     val orgUnitName: String,
+    val metadataIconData: MetadataIconData,
 ) : CarouselItemModel {
     override fun uid(): String = eventUid
     fun shouldShowNavigationButton(): Boolean {
