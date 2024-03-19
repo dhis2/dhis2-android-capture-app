@@ -10,12 +10,10 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
@@ -39,17 +37,14 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions
 import org.dhis2.utils.Result
-import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
-import org.dhis2.utils.analytics.FOLLOW_UP
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -144,23 +139,9 @@ class TEIDataPresenter(
                         Timber.Forest::d,
                     ),
             )
-            compositeDisposable.add(
-                Single.zip(
-                    teiDataRepository.getEnrollment(),
-                    teiDataRepository.getEnrollmentProgram(),
-                ) { val0, val1 -> Pair(val0, val1) }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe({ data ->
-                        view.setEnrollmentData(
-                            data.second,
-                            data.first,
-                        )
-                    }, Timber.Forest::e),
-            )
+
             getEventsWithoutCatCombo()
         } ?: run {
-            view.setEnrollmentData(null, null)
             _shouldDisplayEventCreationButton.value = false
         }
 
@@ -279,22 +260,6 @@ class TEIDataPresenter(
         } else {
             view.displayMessage(null)
         }
-    }
-
-    fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
-        val followup =
-            dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
-        analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP)
-        view.showToast(
-            if (followup) {
-                view.context.getString(R.string.follow_up_enabled)
-            } else {
-                view.context.getString(
-                    R.string.follow_up_disabled,
-                )
-            },
-        )
-        view.switchFollowUp(followup)
     }
 
     fun onEventCreationClick(eventCreationId: Int) {
