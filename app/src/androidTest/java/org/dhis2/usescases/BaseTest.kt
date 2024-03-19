@@ -24,6 +24,7 @@ import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
 import org.junit.After
@@ -86,6 +87,7 @@ open class BaseTest {
             SearchIdlingResourceSingleton.countingIdlingResource,
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
+            EventDetailIdlingResourceSingleton.countingIdlingResource,
         )
     }
 
@@ -98,6 +100,7 @@ open class BaseTest {
                 SearchIdlingResourceSingleton.countingIdlingResource,
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
+                EventDetailIdlingResourceSingleton.countingIdlingResource,
             )
     }
 
