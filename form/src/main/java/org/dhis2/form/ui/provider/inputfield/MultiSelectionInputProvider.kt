@@ -20,7 +20,7 @@ internal fun ProvideMultiSelectionInput(
     val data = optionsToDisplay.map { option ->
         CheckBoxData(
             uid = option.uid(),
-            checked = option.code()?.let { fieldUiModel.value?.contains(it) } ?: false,
+            checked = option.code()?.let { fieldUiModel.value?.split(",")?.contains(it) } ?: false,
             enabled = true,
             textInput = option.displayName() ?: "",
         )
