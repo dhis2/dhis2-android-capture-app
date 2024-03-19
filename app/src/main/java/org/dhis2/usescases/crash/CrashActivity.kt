@@ -197,7 +197,7 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = spacedBy(8.dp)
+        verticalArrangement = spacedBy(8.dp),
 
     ) {
         Column(
