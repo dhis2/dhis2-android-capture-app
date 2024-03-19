@@ -253,7 +253,8 @@ class EventDetailsViewModel(
         return if (eventDate.allowFutureDates) {
             SelectableDates(DEFAULT_MIN_DATE, DEFAULT_MAX_DATE)
         } else {
-            val currentDate = SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
+            val currentDate =
+                SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
             SelectableDates(DEFAULT_MIN_DATE, currentDate)
         }
     }
@@ -289,7 +290,7 @@ class EventDetailsViewModel(
 
     fun onOrgUnitClick() {
         if (!eventOrgUnit.value.fixed) {
-            if (eventOrgUnit.value.orgUnits.isNullOrEmpty()) {
+            if (eventOrgUnit.value.orgUnits.isEmpty()) {
                 showNoOrgUnits?.invoke()
             } else {
                 showOrgUnits?.invoke()
@@ -387,16 +388,16 @@ inline fun <R, reified T> Result<T>.mockSafeFold(
             if ((value as Result<*>).isSuccess) {
                 valueNotNull::class.java.getDeclaredField("value").let {
                     it.isAccessible = true
-                    it.get(value) as T
+                    it[value] as T
                 }.let(onSuccess)
             } else {
                 valueNotNull::class.java.getDeclaredField("value").let {
                     it.isAccessible = true
-                    it.get(value)
+                    it[value]
                 }.let { failure ->
                     failure!!::class.java.getDeclaredField("exception").let {
                         it.isAccessible = true
-                        it.get(failure) as Exception
+                        it[failure] as Exception
                     }
                 }.let(onFailure)
             }
