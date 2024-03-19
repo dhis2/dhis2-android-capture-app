@@ -40,10 +40,8 @@ class RulesRepository(private val d2: D2) {
             .withOrganisationUnitGroups().uid(orgUnitUid).blockingGet()
             .let { orgUnit ->
                 orgUnit?.organisationUnitGroups()?.map {
-                    if (it.code() != null) {
-                        supData[it.code() ?: ""] = arrayListOf(orgUnit.uid())
-                    }
-                    supData[it.uid() ?: ""] = arrayListOf(orgUnit.uid())
+                    it.code()?.let { code -> supData[code] = arrayListOf(orgUnit.uid()) }
+                    supData[it.uid()] = arrayListOf(orgUnit.uid())
                 }
             }
 
@@ -131,7 +129,7 @@ class RulesRepository(private val d2: D2) {
                             organisationUnitCode = d2.organisationUnitModule().organisationUnits()
                                 .uid(
                                     event.organisationUnit(),
-                                ).blockingGet()?.code() ?: "",
+                                ).blockingGet()?.code(),
                             dataValues = event.trackedEntityDataValues()?.toRuleDataValue(
                                 event,
                                 d2.dataElementModule().dataElements(),
@@ -218,7 +216,7 @@ class RulesRepository(private val d2: D2) {
                     organisationUnit = event.organisationUnit()!!,
                     organisationUnitCode = d2.organisationUnitModule()
                         .organisationUnits().uid(event.organisationUnit())
-                        .blockingGet()?.code() ?: "",
+                        .blockingGet()?.code(),
                     dataValues =
                     event.trackedEntityDataValues()?.toRuleDataValue(
                         event,
@@ -246,7 +244,7 @@ class RulesRepository(private val d2: D2) {
                 Calendar.getInstance().time.toRuleEngineLocalDate(),
                 RuleEnrollment.Status.CANCELLED,
                 event.organisationUnit()!!,
-                ouCode!!,
+                ouCode,
                 ArrayList(),
             )
         } else {
@@ -259,7 +257,7 @@ class RulesRepository(private val d2: D2) {
                 enrollment.enrollmentDate()!!.toRuleEngineLocalDate(),
                 RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
                 event.organisationUnit()!!,
-                ouCode!!,
+                ouCode,
                 getAttributesValues(enrollment),
             )
         }

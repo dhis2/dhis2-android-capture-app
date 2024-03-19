@@ -265,7 +265,7 @@ class RulesRepository(private val d2: D2) {
                             Calendar.getInstance().time.toRuleEngineLocalDate(),
                             RuleEnrollment.Status.CANCELLED,
                             event.organisationUnit()!!,
-                            ouCode!!,
+                            ouCode,
                             ArrayList(),
                         ),
                     )
@@ -280,7 +280,7 @@ class RulesRepository(private val d2: D2) {
                                 enrollment.enrollmentDate()!!.toRuleEngineLocalDate(),
                                 RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
                                 event.organisationUnit()!!,
-                                ouCode!!,
+                                ouCode,
                                 getAttributesValues(enrollment),
                             )
                         }
