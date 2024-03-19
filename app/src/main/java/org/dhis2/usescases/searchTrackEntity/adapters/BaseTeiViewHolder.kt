@@ -61,7 +61,9 @@ abstract class BaseTeiViewHolder(
             val enrollmentIconDataList: List<EnrollmentIconData> =
                 programInfo.getEnrollmentIconsData(
                     if (selectedEnrollment != null) selectedEnrollment.program() else null,
-                    getMetadataIconData(selectedEnrollment.program()),
+                    getMetadataIconData(
+                        if (selectedEnrollment != null) selectedEnrollment.program() else "",
+                    ),
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
                 binding.composeProgramList,

@@ -129,8 +129,13 @@ class TEICardMapper(
                 list = list,
                 enrolledPrograms = searchTEIModel.programInfo,
             )
+            val programUid: String = if (searchTEIModel.selectedEnrollment != null) {
+                searchTEIModel.selectedEnrollment.program().toString()
+            } else {
+                ""
+            }
             checkEnrollmentStatus(
-                programUid = searchTEIModel.selectedEnrollment.program()!!,
+                programUid = programUid,
                 list = list,
                 status = searchTEIModel.selectedEnrollment?.status(),
             )
