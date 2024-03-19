@@ -81,7 +81,7 @@ jobs:
         run: |
           git add .
           git commit -m "Update version to ${{ inputs.development_version_name }}"
-          git push origin/update_version_to${{ inputs.development_version_name }}
+          git push origin update_version_to${{ inputs.development_version_name }}
 
       - name: create pull request
         run: gh pr create -B develop -H update_version_to${{ inputs.development_version_name }} --title 'Merge update_version_to${{ inputs.development_version_name }} into develop' --body 'Created by Github action'
