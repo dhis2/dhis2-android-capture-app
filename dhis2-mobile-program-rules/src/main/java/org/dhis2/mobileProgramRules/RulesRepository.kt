@@ -333,7 +333,7 @@ class RulesRepository(private val d2: D2) {
             dueDate = event.dueDate()?.toRuleEngineLocalDate(),
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
             organisationUnit = event.organisationUnit()!!,
-            organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code() ?: "",
+            organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code(),
             dataValues = emptyList(),
         )
     }
