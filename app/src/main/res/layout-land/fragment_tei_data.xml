@@ -7,7 +7,13 @@
 
         <import type="android.view.View" />
 
-        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
+        <variable
+            name="header"
+            type="java.lang.String" />
+
+        <variable
+            name="noEnrollmentSelected"
+            type="java.lang.Boolean" />
 
     </data>
 
@@ -24,13 +30,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.compose.ui.platform.ComposeView
-                    android:id="@+id/detailCard"
+                <LinearLayout
+                    android:id="@+id/cardLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/detailCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/tei_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{ noEnrollmentSelected == true ? View.VISIBLE : View.GONE}"
+                        app:cardElevation="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <include
+                            android:id="@+id/card_front"
+                            layout="@layout/fragment_tei_data_card_front"
+                            app:header="@{header}" />
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tei_recycler"
@@ -43,7 +74,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/detailCard"
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout"
                     tools:listitem="@layout/item_event"
                     android:overScrollMode="never"/>
 
@@ -60,7 +91,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/detailCard" />
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
                 <include
                     android:id="@+id/loading_progress"
@@ -70,7 +101,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/detailCard" />
+                    app:layout_constraintTop_toBottomOf="@id/cardLayout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

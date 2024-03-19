@@ -124,7 +124,7 @@ class EventAdapter(
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
+                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing56 else Spacing.Spacing16
                         val bottomSpacing = if (it.showBottomShadow) {
                             Spacing.Spacing16
                         } else {
