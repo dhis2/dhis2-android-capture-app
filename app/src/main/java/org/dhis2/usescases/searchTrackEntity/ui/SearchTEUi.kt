@@ -129,7 +129,7 @@ fun AddNewButton(
     onClick: () -> Unit,
 ) {
     Button(
-        text = stringResource(id = R.string.search),
+        text = stringResource(id = R.string.add_te_type, teTypeName.lowercase()),
         modifier = modifier,
         onClick = onClick,
         icon = {
