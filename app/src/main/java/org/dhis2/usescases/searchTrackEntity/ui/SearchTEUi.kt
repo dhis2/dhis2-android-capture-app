@@ -2,7 +2,6 @@ package org.dhis2.usescases.searchTrackEntity.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,16 +15,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -60,11 +58,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -109,30 +105,21 @@ fun SearchButton(
         R.string.search_add_new_te_type
     }
 
-    OutlinedButton(
+    Button(
+        text = stringResource(id = textId, teTypeName.lowercase()),
         modifier = Modifier
             .requiredHeight(56.dp)
             .then(modifier),
         onClick = onClick,
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = SurfaceColor.Primary,
-        ),
-        border = BorderStroke(1.dp, SurfaceColor.Primary),
-        shape = RoundedCornerShape(Spacing.Spacing16),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = "",
-            tint = SurfaceColor.Primary,
-        )
-
-        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
-
-        Text(
-            text = stringResource(id = textId, teTypeName.lowercase()),
-            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
-        )
-    }
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "",
+                tint = SurfaceColor.Primary,
+            )
+        },
+        style = ButtonStyle.OUTLINED,
+    )
 }
 
 @Composable
