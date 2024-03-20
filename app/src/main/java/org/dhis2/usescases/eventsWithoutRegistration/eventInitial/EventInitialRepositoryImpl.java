@@ -58,8 +58,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     private final String stageUid;
 
     private final MetadataIconProvider metadataIconProvider;
-    private final ObjectStyle defaultObjectStyle;
-
     EventInitialRepositoryImpl(String eventUid,
                                String stageUid,
                                D2 d2,
@@ -72,8 +70,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         this.fieldFactory = fieldFactory;
         this.ruleEngineHelper = ruleEngineHelper;
         this.metadataIconProvider = metadataIconProvider;
-        String programUid = programStageWithId(stageUid).blockingFirst().program().uid();
-        this.defaultObjectStyle = d2.programModule().programs().uid(programUid).blockingGet().style();
     }
 
     @NonNull
