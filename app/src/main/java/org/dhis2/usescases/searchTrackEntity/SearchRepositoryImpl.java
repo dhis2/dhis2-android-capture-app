@@ -78,6 +78,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollec
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper;
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

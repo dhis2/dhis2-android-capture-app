@@ -3,12 +3,14 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 import io.reactivex.Single
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -21,6 +23,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Locale
 
 class TeiDataRepositoryImpl(
@@ -73,9 +76,11 @@ class TeiDataRepositoryImpl(
     override fun eventsWithoutCatCombo(): Single<List<EventViewModel>> {
         return getEnrollmentProgram()
             .flatMap { program ->
-                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get()
+                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get().map {
+                    Pair(program, it)
+                }
             }
-            .flatMap { categoryCombo ->
+            .flatMap { (program, categoryCombo) ->
                 if (categoryCombo.isDefault == true) {
                     Single.just(emptyList())
                 } else {
@@ -118,7 +123,10 @@ class TeiDataRepositoryImpl(
                                 dataElementValues = null,
                                 displayDate = null,
                                 nameCategoryOptionCombo = null,
-                                metadataIconData = metadataIconProvider(stage.style()),
+                                metadataIconData = metadataIconProvider(
+                                    stage.style(),
+                                    program.style().color()?.toColor() ?: SurfaceColor.Primary,
+                                ),
                             )
                         }
                     }
@@ -149,6 +157,7 @@ class TeiDataRepositoryImpl(
         val eventViewModels = mutableListOf<EventViewModel>()
         var eventRepo: EventCollectionRepository
         val maxEventToShow = 3
+        val program = programUid?.let { d2.program(programUid) }
 
         return d2.programModule().programStages()
             .byProgramUid().eq(programUid)
@@ -189,7 +198,10 @@ class TeiDataRepositoryImpl(
                             groupedByStage = true,
                             displayDate = null,
                             nameCategoryOptionCombo = null,
-                            metadataIconData = metadataIconProvider(programStage.style()),
+                            metadataIconData = metadataIconProvider(
+                                programStage.style(),
+                                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                            ),
                         ),
                     )
                     checkEventStatus(eventList).take(
@@ -224,7 +236,10 @@ class TeiDataRepositoryImpl(
                                 ),
                                 nameCategoryOptionCombo =
                                 getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
-                                metadataIconData = metadataIconProvider(programStage.style()),
+                                metadataIconData = metadataIconProvider(
+                                    programStage.style(),
+                                    program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                                ),
                             ),
                         )
                     }
@@ -247,7 +262,10 @@ class TeiDataRepositoryImpl(
                                 nameCategoryOptionCombo = null,
                                 showAllEvents = showAllEvents,
                                 maxEventsToShow = maxEventToShow,
-                                metadataIconData = metadataIconProvider(programStage.style()),
+                                metadataIconData = metadataIconProvider(
+                                    programStage.style(),
+                                    program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                                ),
                             ),
                         )
                     }
@@ -262,6 +280,7 @@ class TeiDataRepositoryImpl(
     ): Single<List<EventViewModel>> {
         val eventViewModels = mutableListOf<EventViewModel>()
         val maxEventToShow = 5
+        val program = programUid?.let { d2.program(it) }
 
         return eventRepository
             .orderByTimeline(RepositoryScope.OrderByDirection.DESC)
@@ -296,7 +315,10 @@ class TeiDataRepositoryImpl(
                             ),
                             nameCategoryOptionCombo =
                             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
-                            metadataIconData = metadataIconProvider(programStage.style()),
+                            metadataIconData = metadataIconProvider(
+                                programStage.style(),
+                                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                            ),
                         ),
                     )
                 }
@@ -323,7 +345,10 @@ class TeiDataRepositoryImpl(
                             nameCategoryOptionCombo = null,
                             showAllEvents = showAllEvents,
                             maxEventsToShow = maxEventToShow,
-                            metadataIconData = metadataIconProvider(programStage.style()),
+                            metadataIconData = metadataIconProvider(
+                                programStage.style(),
+                                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                            ),
                         ),
                     )
                 }

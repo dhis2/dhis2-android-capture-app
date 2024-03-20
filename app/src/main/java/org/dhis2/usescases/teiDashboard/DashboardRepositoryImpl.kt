@@ -35,6 +35,7 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 
 class DashboardRepositoryImpl(
@@ -414,7 +415,7 @@ class DashboardRepositoryImpl(
             .map { programUids ->
                 d2.programModule().programs().byUid()
                     .`in`(programUids.filterNotNull()).blockingGet().map {
-                        Pair(it, metadataIconProvider(it.style()))
+                        Pair(it, metadataIconProvider(it.style(), SurfaceColor.Primary))
                     }
             }
     }

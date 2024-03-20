@@ -3,13 +3,12 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.R;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.OptionSetConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.ui.MetadataIconData;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
@@ -59,6 +58,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     private final String stageUid;
 
     private final MetadataIconProvider metadataIconProvider;
+    private final ObjectStyle defaultObjectStyle;
 
     EventInitialRepositoryImpl(String eventUid,
                                String stageUid,
@@ -72,6 +72,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         this.fieldFactory = fieldFactory;
         this.ruleEngineHelper = ruleEngineHelper;
         this.metadataIconProvider = metadataIconProvider;
+        String programUid = programStageWithId(stageUid).blockingFirst().program().uid();
+        this.defaultObjectStyle = d2.programModule().programs().uid(programUid).blockingGet().style();
     }
 
     @NonNull
@@ -303,9 +305,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        if(ruleEngineHelper!=null) {
+        if (ruleEngineHelper != null) {
             return Flowable.just(ruleEngineHelper.evaluate()).map(Result::success);
-        }else{
+        } else {
             return Flowable.just(Result.success(new ArrayList<>()));
         }
     }
@@ -323,6 +325,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
 
+
         OptionSetConfiguration optionSetConfig = null;
         if (optionSet != null) {
             List<Option> dataValueOptions = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
@@ -335,7 +338,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         List<Option> options = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet();
                         HashMap<String, MetadataIconData> metadataIconMap = new HashMap<>();
                         for (Option optionItem : options) {
-                            metadataIconMap.put(optionItem.uid(), metadataIconProvider.invoke(optionItem.style()));
+                            metadataIconMap.put(
+                                    optionItem.uid(),
+                                    metadataIconProvider.invoke(optionItem.style()));
                         }
 
                         return new OptionSetConfiguration.OptionConfigData(
