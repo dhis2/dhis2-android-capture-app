@@ -21,10 +21,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.checkSMSPermission
@@ -94,15 +99,14 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                Mdc3Theme {
-                    val syncState by viewModel.currentState.collectAsState()
-                    syncState?.let { syncUiState ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentState
+                    .filterNotNull()
+                    .collect { state ->
                         when {
-                            syncUiState.shouldDismissOnUpdate -> dismiss()
-                            syncing && syncUiState.syncState == State.SYNCED -> {
+                            state.shouldDismissOnUpdate -> dismiss()
+                            syncing && state.syncState == State.SYNCED -> {
                                 dismiss()
                                 Toast.makeText(
                                     requireContext(),
@@ -110,7 +114,20 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }
+                            else -> {
+                                // no-op
+                            }
                         }
+                    }
+            }
+        }
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Mdc3Theme {
+                    val syncState by viewModel.currentState.collectAsState()
+                    syncState?.let { syncUiState ->
                         BottomSheetDialogUi(
                             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                                 title = syncUiState.title,
