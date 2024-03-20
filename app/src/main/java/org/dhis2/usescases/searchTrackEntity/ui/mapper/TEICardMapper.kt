@@ -129,10 +129,10 @@ class TEICardMapper(
                 list = list,
                 enrolledPrograms = searchTEIModel.programInfo,
             )
-            val programUid: String = if (searchTEIModel.selectedEnrollment != null) {
+            val programUid: String? = if (searchTEIModel.selectedEnrollment != null) {
                 searchTEIModel.selectedEnrollment.program().toString()
             } else {
-                ""
+                null
             }
             checkEnrollmentStatus(
                 programUid = programUid,
@@ -181,7 +181,7 @@ class TEICardMapper(
     }
 
     private fun checkEnrollmentStatus(
-        programUid: String,
+        programUid: String?,
         list: MutableList<AdditionalInfoItem>,
         status: EnrollmentStatus?,
     ) {

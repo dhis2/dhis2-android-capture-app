@@ -62,7 +62,7 @@ abstract class BaseTeiViewHolder(
                 programInfo.getEnrollmentIconsData(
                     if (selectedEnrollment != null) selectedEnrollment.program() else null,
                     getMetadataIconData(
-                        if (selectedEnrollment != null) selectedEnrollment.program() else "",
+                        if (selectedEnrollment != null) selectedEnrollment.program() else null,
                     ),
                 )
             enrollmentIconDataList.paintAllEnrollmentIcons(
