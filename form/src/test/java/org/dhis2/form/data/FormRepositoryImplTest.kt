@@ -3,6 +3,7 @@ package org.dhis2.form.data
 import androidx.databinding.ObservableField
 import io.reactivex.Flowable
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.RowAction
@@ -288,6 +289,20 @@ class FormRepositoryImplTest {
         }
     }
 
+    @Test
+    fun `Should show mandatory warning when some cat combo is missing`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1"))
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1,option2"))
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+    }
+
     private fun mockedSections() = listOf(
         "section1",
     )
@@ -381,6 +396,27 @@ class FormRepositoryImplTest {
             autocompleteList = null,
         ),
         section2(),
+    )
+
+    private fun provideMandatoryListWithCategoryCombo(value: String) = listOf(
+        section1(),
+        FieldUiModelImpl(
+            uid = "EVENT_CATEGORY_COMBO_UID-uid001",
+            layoutId = 1,
+            value = value,
+            displayName = "displayValue",
+            label = "field1",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            mandatory = true,
+            optionSetConfiguration = null,
+            autocompleteList = null,
+            eventCategories = listOf(
+                EventCategory("categoryUid1", "Category1", emptyList()),
+                EventCategory("categoryUid2", "Category2", emptyList()),
+            ),
+        ),
     )
 
     private fun provideMandatoryItemList() = listOf(

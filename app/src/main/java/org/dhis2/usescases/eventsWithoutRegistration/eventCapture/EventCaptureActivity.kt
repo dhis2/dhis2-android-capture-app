@@ -248,7 +248,7 @@ class EventCaptureActivity :
         }
     }
 
-    override fun SaveAndFinish() {
+    override fun saveAndFinish() {
         displayMessage(getString(R.string.saved))
         setAction(FormBottomDialog.ActionType.FINISH)
     }
@@ -321,18 +321,8 @@ class EventCaptureActivity :
         finish()
     }
 
-    override fun renderInitialInfo(
-        stageName: String,
-        eventDate: String,
-        orgUnit: String,
-        catOption: String,
-    ) {
+    override fun renderInitialInfo(stageName: String) {
         binding.programStageName.text = stageName
-        val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
-        if (catOption.isNotEmpty()) {
-            eventDataString.append(String.format(" | %s", catOption))
-        }
-        binding.eventSecundaryInfo.text = eventDataString
     }
 
     override fun getPresenter(): EventCaptureContract.Presenter {
