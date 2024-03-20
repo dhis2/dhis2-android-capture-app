@@ -158,11 +158,13 @@ class EventCapturePresenterImpl(
     }
 
     override fun completeEvent(addNew: Boolean) {
+        EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
             eventCaptureRepository.completeEvent()
                 .defaultSubscribe(
                     schedulerProvider,
-                    {
+                    onNext = {
+                        EventIdlingResourceSingleton.decrement()
                         if (addNew) {
                             view.restartDataEntry()
                         } else {
@@ -170,7 +172,10 @@ class EventCapturePresenterImpl(
                             view.finishDataEntry()
                         }
                     },
-                    Timber::e,
+                    onError = {
+                        EventIdlingResourceSingleton.decrement()
+                        Timber.e(it)
+                    },
                 ),
         )
     }
