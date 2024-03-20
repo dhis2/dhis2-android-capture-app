@@ -104,6 +104,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 viewModel.currentState
                     .filterNotNull()
                     .collect { state ->
+                        dialog?.setCancelable(!syncing)
+
                         when {
                             state.shouldDismissOnUpdate -> dismiss()
                             syncing && state.syncState == State.SYNCED -> {
