@@ -475,17 +475,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
-        contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
+        contractHandler.scheduleEvent(intent, options).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventInitial(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventCapture(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
@@ -514,9 +514,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
             intent.putExtras(bundle)
-            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
-                updateEnrollment(true)
-            }
+            contractHandler.createEvent(intent)
         }
     }
 

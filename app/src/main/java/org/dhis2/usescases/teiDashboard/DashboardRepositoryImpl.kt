@@ -74,7 +74,7 @@ class DashboardRepositoryImpl(
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byDeleted().isFalse
             .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-            .get().toFlowable().flatMapIterable { events: List<Event>? -> events }
+            .get().toFlowable().flatMapIterable { events: List<Event>? -> events }.distinct()
             .map { event: Event ->
                 var event = event
                 if (java.lang.Boolean.FALSE
