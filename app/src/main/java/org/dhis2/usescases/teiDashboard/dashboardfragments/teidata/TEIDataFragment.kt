@@ -12,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
-import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.map
@@ -96,7 +95,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
     private var programStageFromEvent: ProgramStage? = null
-    private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
@@ -294,22 +292,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        dashboardViewModel.updateDashboard()
     }
 
     override fun onPause() {
         presenter.onDettach()
         super.onPause()
-    }
-
-    override fun setEnrollmentData(program: Program?, enrollment: Enrollment?) {
-        enrollment?.let {
-            followUp.set(
-                when (enrollment.followUp()) {
-                    true -> true
-                    else -> false
-                },
-            )
-        }
     }
 
     private fun openChooser(value: String, action: String) {
@@ -453,10 +441,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return this.viewLifecycleOwner
     }
 
-    override fun switchFollowUp(followUp: Boolean) {
-        this.followUp.set(followUp)
-    }
-
     override fun displayGenerateEvent(eventUid: String) {
         presenter.displayGenerateEvent(eventUid)
         dashboardViewModel.updateEventUid(null)
@@ -475,17 +459,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
-        contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
+        contractHandler.scheduleEvent(intent, options).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventInitial(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventCapture(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
@@ -514,9 +498,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
             intent.putExtras(bundle)
-            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
-                updateEnrollment(true)
-            }
+            contractHandler.createEvent(intent)
         }
     }
 
@@ -593,7 +575,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     companion object {
-        const val RC_GENERATE_EVENT = 1501
         const val RC_EVENTS_COMPLETED = 1601
         const val PREF_COMPLETED_EVENT = "COMPLETED_EVENT"
 

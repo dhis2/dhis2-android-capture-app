@@ -22,7 +22,6 @@ class TEIDataContracts {
         fun displayScheduleEvent()
         fun showDialogCloseProgram()
         fun areEventsCompleted(): Consumer<Single<Boolean>>
-        fun switchFollowUp(followUp: Boolean)
         fun displayGenerateEvent(eventUid: String)
         fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
         fun openEventDetails(intent: Intent, options: ActivityOptionsCompat)
@@ -32,8 +31,6 @@ class TEIDataContracts {
             currentProgram: Program,
             currentEnrollment: Enrollment,
         ): Flowable<StageSection>
-
-        fun setEnrollmentData(program: Program?, enrollment: Enrollment?)
 
         fun showSyncDialog(eventUid: String, enrollmentUid: String)
         fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)

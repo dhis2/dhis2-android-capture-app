@@ -332,9 +332,7 @@ class FormRepositoryImpl(
     }
 
     private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
-        val needsMandatoryWarning = fieldUiModel.mandatory &&
-            fieldUiModel.value.isNullOrEmpty()
-
+        val needsMandatoryWarning = hasMandatoryWarnings(fieldUiModel)
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
         }
@@ -348,6 +346,20 @@ class FormRepositoryImpl(
             ruleEffectsResult?.optionGroupsToHide(fieldUiModel.uid) ?: emptyList(),
             ruleEffectsResult?.optionGroupsToShow(fieldUiModel.uid) ?: emptyList(),
         )
+    }
+
+    private fun hasMandatoryWarnings(fieldUiModel: FieldUiModel): Boolean {
+        return if (fieldUiModel.uid.contains(EventRepository.EVENT_CATEGORY_COMBO_UID)) {
+            fieldUiModel.mandatory &&
+                (
+                    fieldUiModel.value.isNullOrEmpty() ||
+                        fieldUiModel.value?.split(",")?.size !=
+                        fieldUiModel.eventCategories?.size
+                    )
+        } else {
+            fieldUiModel.mandatory &&
+                fieldUiModel.value.isNullOrEmpty()
+        }
     }
 
     private fun getNextItem(currentItemUid: String): String? {
@@ -444,7 +456,7 @@ class FormRepositoryImpl(
     ): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()
         val mergedList = this.map { item ->
-            if (item.mandatory && item.value.isNullOrEmpty()) {
+            if (hasMandatoryWarnings(item)) {
                 mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
             }
             fieldsWithError.find { it.id == item.uid }?.let { action ->

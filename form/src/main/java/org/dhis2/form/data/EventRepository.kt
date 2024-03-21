@@ -8,6 +8,7 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -359,6 +360,7 @@ class EventRepository(
             programStageSection = EVENT_DETAILS_SECTION_UID,
             editable = eventMode == EventMode.NEW,
             description = null,
+            orgUnitSelectorScope = programUid?.let { OrgUnitSelectorScope.ProgramCaptureScope(it) },
         )
     }
 

@@ -56,9 +56,7 @@ class EventCapturePresenterImpl(
         compositeDisposable.add(
             Flowable.zip(
                 eventCaptureRepository.programStageName(),
-                eventCaptureRepository.eventDate(),
                 eventCaptureRepository.orgUnit(),
-                eventCaptureRepository.catOption(),
                 ::EventCaptureInitialInfo,
             ).defaultSubscribe(
                 schedulerProvider,
@@ -69,9 +67,6 @@ class EventCapturePresenterImpl(
                     )
                     view.renderInitialInfo(
                         initialInfo.programStageName,
-                        initialInfo.eventDate,
-                        initialInfo.organisationUnit.displayName(),
-                        initialInfo.categoryOption,
                     )
                 },
                 Timber::e,
@@ -145,7 +140,7 @@ class EventCapturePresenterImpl(
         when (eventStatus) {
             EventStatus.COMPLETED ->
                 if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
-                    view.SaveAndFinish()
+                    view.saveAndFinish()
                 } else {
                     view.finishDataEntry()
                 }
@@ -163,11 +158,13 @@ class EventCapturePresenterImpl(
     }
 
     override fun completeEvent(addNew: Boolean) {
+        EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
             eventCaptureRepository.completeEvent()
                 .defaultSubscribe(
                     schedulerProvider,
-                    {
+                    onNext = {
+                        EventIdlingResourceSingleton.decrement()
                         if (addNew) {
                             view.restartDataEntry()
                         } else {
@@ -175,7 +172,10 @@ class EventCapturePresenterImpl(
                             view.finishDataEntry()
                         }
                     },
-                    Timber::e,
+                    onError = {
+                        EventIdlingResourceSingleton.decrement()
+                        Timber.e(it)
+                    },
                 ),
         )
     }
