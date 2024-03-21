@@ -118,7 +118,7 @@ fun OrgUnitSelectorDialog(
                     ),
                 horizontalArrangement = spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                ) {
+            ) {
                 Button(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
                     text = stringResource(id = R.string.action_cancel),
