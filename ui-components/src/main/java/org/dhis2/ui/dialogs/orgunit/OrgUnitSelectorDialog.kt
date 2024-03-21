@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.defaultFontFamily
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @Composable
 fun OrgUnitSelectorDialog(
@@ -85,18 +86,8 @@ fun OrgUnitSelectorDialog(
                 )
                 Button(
                     modifier = Modifier.testTag(CLEAR_TEST_TAG),
-
                     text = stringResource(id = R.string.action_clear_all),
                     onClick = actions.onClearClick,
-
-                    icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(
-                                id = R.drawable.ic_tree_node_clear,
-                            ),
-                            contentDescription = "",
-                        )
-                    },
                 )
             }
             Divider()
@@ -126,7 +117,8 @@ fun OrgUnitSelectorDialog(
                         horizontal = 16.dp,
                     ),
                 horizontalArrangement = spacedBy(16.dp),
-            ) {
+                verticalAlignment = Alignment.CenterVertically,
+                ) {
                 Button(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
                     text = stringResource(id = R.string.action_cancel),
@@ -136,6 +128,7 @@ fun OrgUnitSelectorDialog(
                     modifier = Modifier.testTag(DONE_TEST_TAG),
                     text = stringResource(id = R.string.action_done),
                     onClick = actions.onDoneClick,
+                    style = ButtonStyle.FILLED,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Check,
