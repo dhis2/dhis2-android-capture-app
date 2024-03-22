@@ -88,6 +88,7 @@ fun OrgUnitSelectorDialog(
                     modifier = Modifier.testTag(CLEAR_TEST_TAG),
                     text = stringResource(id = R.string.action_clear_all),
                     onClick = actions.onClearClick,
+                    style = ButtonStyle.TEXT,
                 )
             }
             Divider()
@@ -122,6 +123,7 @@ fun OrgUnitSelectorDialog(
                 Button(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
                     text = stringResource(id = R.string.action_cancel),
+                    style = ButtonStyle.TEXT,
                     onClick = actions.onCancelClick,
                 )
                 Button(
