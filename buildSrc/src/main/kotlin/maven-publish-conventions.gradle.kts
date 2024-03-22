@@ -29,11 +29,11 @@ val releaseRepositoryUrl: String = "https://oss.sonatype.org/service/local/stagi
 val snapshotRepositoryUrl: String = "https://oss.sonatype.org/content/repositories/snapshots/"
 
 fun getRepositoryUsername(): String? {
-    return System.getenv("NEXUS_USERNAME")
+    return System.getenv("OSSRH_USERNAME")
 }
 
 fun getRepositoryPassword(): String? {
-    return System.getenv("NEXUS_PASSWORD")
+    return System.getenv("OSSRH_PASSWORD")
 }
 
 afterEvaluate {
