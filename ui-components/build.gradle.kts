@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-parcelize")
     id("kotlinx-serialization")
+    id("maven-publish-conventions")
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
@@ -12,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.sdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -53,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.bundles.uicomponents.implementation)
     api(libs.bundles.uicomponents.api)
     debugApi(libs.bundles.uicomponents.debugapi)

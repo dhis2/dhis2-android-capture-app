@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     kotlin("android")
+    id("maven-publish-conventions")
 }
 
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")

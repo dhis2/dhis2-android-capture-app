@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
+    id("maven-publish-conventions")
 }
 
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
