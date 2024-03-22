@@ -20,6 +20,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
@@ -270,9 +271,22 @@ class SearchTEList : FragmentGlobalAbstract() {
                 if (searchResult.shouldClearGlobalData()) {
                     globalAdapter.refresh()
                 }
+                if (searchResult.type == SearchResult.SearchResultType.TOO_MANY_RESULTS) {
+                    listAdapter.removeAdapter(liveAdapter)
+                }
+                displayResult(it)
+                updateRecycler()
             }
-            displayResult(it)
-            updateRecycler()
+        }
+
+        liveAdapter.addLoadStateListener { state ->
+            if (state.append == LoadState.Loading) {
+                displayResult(
+                    listOf(SearchResult(SearchResult.SearchResultType.LOADING)),
+                )
+            } else {
+                displayResult(null)
+            }
         }
     }
 
@@ -289,6 +303,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun restoreAdapters() {
+        if (!listAdapter.adapters.contains(liveAdapter)) {
+            listAdapter.addAdapter(1, liveAdapter)
+        }
         initLoading(null)
         liveAdapter.refresh()
         if (!viewModel.filtersApplyOnGlobalSearch()) {
