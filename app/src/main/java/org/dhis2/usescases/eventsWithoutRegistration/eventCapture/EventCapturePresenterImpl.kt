@@ -13,6 +13,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
@@ -181,17 +182,25 @@ class EventCapturePresenterImpl(
 
     override fun deleteEvent() {
         val programStage = programStage()
+        EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
             eventCaptureRepository.deleteEvent()
                 .defaultSubscribe(
                     schedulerProvider,
-                    { result ->
+                    onNext = { result ->
+                        EventIdlingResourceSingleton.decrement()
                         if (result) {
                             view.showSnackBar(R.string.event_label_was_deleted, programStage)
                         }
                     },
-                    Timber::e,
-                    view::finishDataEntry,
+                    onError = {
+                        EventIdlingResourceSingleton.decrement()
+                        Timber.e(it)
+                    },
+                    onComplete = {
+                        EventIdlingResourceSingleton.decrement()
+                        view.finishDataEntry()
+                    },
                 ),
         )
     }

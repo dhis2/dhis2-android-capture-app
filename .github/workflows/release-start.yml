@@ -39,15 +39,6 @@ jobs:
         git config user.name "GitHub Actions Bot"
         git config user.email "<android@dhis2.org>"
 
-    - name: Run Python script to update base branch version
-      run: python scripts/updateVersionName.py ${{ inputs.development_version_name }}
-
-    - name: Commit and Push Changes
-      run: |
-        git add .
-        git commit -m "Update version to ${{ inputs.development_version_name }}"
-        git push
-
       # override vName with new version
     - name: Create release branch
       run: git checkout -b release/${{ inputs.release_version_name }}
@@ -60,3 +51,39 @@ jobs:
         git add .
         git commit -m "Update version to ${{ inputs.release_version_name }}"
         git push origin release/${{ inputs.release_version_name }}
+
+  update_version:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.1
+
+      - name: setup git config
+        run: |
+          # setup the username and email.
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<android@dhis2.org>"
+
+      - name: Create release branch
+        run: git checkout -b update_version_to${{ inputs.development_version_name }}
+
+      - name: Run Python script to update base branch version
+        run: python scripts/updateVersionName.py ${{ inputs.development_version_name }}
+
+      - name: Commit and Push Changes
+        run: |
+          git add .
+          git commit -m "Update version to ${{ inputs.development_version_name }}"
+          git push origin update_version_to${{ inputs.development_version_name }}
+
+      - name: create pull request
+        run: gh pr create -B develop -H update_version_to${{ inputs.development_version_name }} --title 'Merge update_version_to${{ inputs.development_version_name }} into develop' --body 'Created by Github action'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
