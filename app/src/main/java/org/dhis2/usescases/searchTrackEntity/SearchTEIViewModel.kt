@@ -430,7 +430,10 @@ class SearchTEIViewModel(
         viewModelScope.launch(dispatchers.io()) {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
-                uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
+                uiState = uiState.copy(
+                    clearSearchEnabled = queryData.isNotEmpty(),
+                    searchedItems = queryData.toMap(),
+                )
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
@@ -544,7 +547,6 @@ class SearchTEIViewModel(
     fun onDataLoaded(
         programResultCount: Int,
         globalResultCount: Int? = null,
-        isLandscape: Boolean = false,
         onlineErrorCode: D2ErrorCode? = null,
     ) {
         val canDisplayResults = canDisplayResult(
@@ -565,7 +567,7 @@ class SearchTEIViewModel(
                 hasGlobalResults,
             )
         } else if (displayFrontPageList()) {
-            handleDisplayInListResult(hasProgramResults, isLandscape)
+            handleDisplayInListResult(hasProgramResults)
         } else {
             handleInitWithoutData()
         }
@@ -573,7 +575,7 @@ class SearchTEIViewModel(
         SearchIdlingResourceSingleton.decrement()
     }
 
-    private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
+    private fun handleDisplayInListResult(hasProgramResults: Boolean) {
         val result = when {
             !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
                 listOf(
@@ -838,7 +840,10 @@ class SearchTEIViewModel(
             )
 
             searching = queryData.isNotEmpty()
-            uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
+            uiState = uiState.copy(
+                clearSearchEnabled = queryData.isNotEmpty(),
+                searchedItems = queryData.toMap(),
+            )
 
             val searchParametersModel = SearchParametersModel(
                 selectedProgram = searchRepository.getProgram(initialProgramUid),

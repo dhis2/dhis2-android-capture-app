@@ -184,7 +184,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
                     val queryData = remember(viewModel.uiState) {
-                        viewModel.queryData
+                        viewModel.uiState.searchedItems
                     }
 
                     FullSearchButtonAndWorkingList(
@@ -339,7 +339,6 @@ class SearchTEList : FragmentGlobalAbstract() {
             } else {
                 null
             },
-            isLandscape = isLandscape(),
             onlineErrorCode = liveAdapter.snapshot().items.lastOrNull()?.onlineErrorCode,
         )
     }
@@ -348,7 +347,6 @@ class SearchTEList : FragmentGlobalAbstract() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
             globalResultCount = globalAdapter.itemCount,
-            isLandscape = isLandscape(),
         )
     }
 
