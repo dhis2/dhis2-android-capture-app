@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.databinding.ActivityEventScheduledBinding
@@ -21,7 +20,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventIn
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
@@ -235,23 +233,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 .setPossitiveListener { selectedDate -> presenter.setDueDate(selectedDate) }
                 .show(supportFragmentManager, PeriodDialog::class.java.simpleName)
         }
-    }
-
-    override fun openInitialActivity() {
-        val bundle = EventInitialActivity.getBundle(
-            program.uid(),
-            event.uid(),
-            EventCreationType.DEFAULT.name,
-            presenter.getEventTei(),
-            stage.periodType(),
-            presenter.getEnrollment()?.organisationUnit(),
-            stage.uid(),
-            event.enrollment(),
-            stage.standardInterval() ?: 0,
-            presenter.getEnrollment()?.status(),
-        )
-        startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
-        finish()
     }
 
     override fun openFormActivity() {

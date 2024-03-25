@@ -69,30 +69,6 @@ class EnrollmentPresenterImplTest {
     }
 
     @Test
-    fun `Open initial when needsCatCombo is false and needsCoordinates is false`() {
-        checkCatCombo(true, FeatureType.NONE)
-        assert(!presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is true and needsCoordinates is false`() {
-        checkCatCombo(false, FeatureType.NONE)
-        assert(presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is false and needsCoordinates is true`() {
-        checkCatCombo(true, FeatureType.POINT)
-        assert(presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is true and needsCoordinates is true`() {
-        checkCatCombo(false, FeatureType.POINT)
-        assert(presenter.openInitial(""))
-    }
-
-    @Test
     fun `Check updateEnrollmentStatus where write access is granted`() {
         whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
             .access(

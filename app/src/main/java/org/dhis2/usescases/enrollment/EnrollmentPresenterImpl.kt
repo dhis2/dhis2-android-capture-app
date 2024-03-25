@@ -19,7 +19,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -186,19 +185,6 @@ class EnrollmentPresenterImpl(
 
     fun backIsClicked() {
         backButtonProcessor.onNext(true)
-    }
-
-    fun openInitial(eventUid: String): Boolean {
-        val catComboUid = getProgram()?.categoryComboUid()
-        val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-        val needsCatCombo = programRepository.blockingGet()?.categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid)
-                .blockingGet()?.isDefault == false
-        val needsCoordinates =
-            stage?.featureType() != null && stage.featureType() != FeatureType.NONE
-
-        return needsCatCombo || needsCoordinates
     }
 
     fun getEnrollment(): Enrollment? {
