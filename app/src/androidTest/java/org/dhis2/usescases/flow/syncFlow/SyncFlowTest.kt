@@ -166,7 +166,9 @@ class SyncFlowTest : BaseTest() {
             clickOnDataSetToSync(0)
             clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
+            composeTestRule.waitForIdle()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
+            composeTestRule.waitForIdle()
             checkSyncWasSuccessfully() //sync failed
         }
         cleanLocalDatabase()
