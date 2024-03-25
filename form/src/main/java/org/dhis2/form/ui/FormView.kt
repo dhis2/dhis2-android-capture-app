@@ -295,7 +295,6 @@ class FormView : Fragment() {
         )
     }
 
-    private lateinit var alertDialogView: View
     private lateinit var dialogDelegate: DialogDelegate
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
@@ -970,10 +969,6 @@ class FormView : Fragment() {
                 ),
             )
         }.show(this@FormView.childFragmentManager)
-    }
-
-    private fun negativeOrZero(value: String): Int {
-        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
     }
 
     fun onBackPressed() {
