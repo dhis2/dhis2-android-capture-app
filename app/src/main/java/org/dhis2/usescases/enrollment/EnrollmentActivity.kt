@@ -199,7 +199,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 EventCaptureActivity.getActivityBundle(
                     eventUid,
                     presenter.getProgram()?.uid() ?: "",
-                    EventMode.CHECK,
+                    EventMode.NEW,
                 ),
             )
             eventCreationIntent.putExtra(
