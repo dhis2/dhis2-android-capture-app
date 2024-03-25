@@ -15,7 +15,6 @@ fun generateFieldUiModel(
 
     return FieldUiModelImpl(
         uid = uid,
-        layoutId = 1,
         value = value,
         focused = false,
         error = null,

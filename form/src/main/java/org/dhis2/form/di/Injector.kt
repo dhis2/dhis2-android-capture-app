@@ -32,7 +32,6 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
-import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
@@ -170,7 +169,6 @@ object Injector {
         context: Context,
     ): FieldViewModelFactory = FieldViewModelFactoryImpl(
         uiStyleProvider = provideUiStyleProvider(context),
-        layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
         displayNameProvider = provideDisplayNameProvider(context),
         uiEventTypesProvider = provideUiEventTypesProvider(),
@@ -184,8 +182,6 @@ object Injector {
     private fun provideUiEventTypesProvider() = UiEventTypesProviderImpl()
 
     private fun provideHintProvider(context: Context) = HintProviderImpl(context)
-
-    private fun provideLayoutProvider() = LayoutProviderImpl()
 
     private fun provideUiStyleProvider(
         context: Context,

@@ -13,8 +13,6 @@ interface FieldUiModel {
 
     val uid: String
 
-    val layoutId: Int
-
     val value: String?
 
     val focused: Boolean

@@ -68,8 +68,6 @@ class EventTest : BaseTest() {
         val completion = 92
         val email = "mail@mail.com"
 
-        enableComposeForms()
-
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {

@@ -12,7 +12,6 @@ import java.io.File
 
 data class FieldUiModelImpl(
     override val uid: String,
-    override val layoutId: Int,
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,
@@ -166,7 +165,6 @@ data class FieldUiModelImpl(
         item as FieldUiModelImpl
 
         if (uid != item.uid) return false
-        if (layoutId != item.layoutId) return false
         if (value != item.value) return false
         if (focused != item.focused) return false
         if (error != item.error) return false

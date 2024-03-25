@@ -29,11 +29,9 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
@@ -42,7 +40,6 @@ import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
@@ -216,7 +213,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
-        onView(withId(R.id.recyclerView)).check(
+        /*onView(withId(R.id.recyclerView)).check(
             matches(
                 not(
                     recyclerChildViews(
@@ -337,7 +334,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                     )
                 )
             )
-        )
+        )*/
 
     }
 

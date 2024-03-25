@@ -18,7 +18,6 @@ import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
-import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
@@ -89,7 +88,6 @@ class EventDetailsModule(
                     LongTextUiColorFactoryImpl(context, colorUtils),
                     true,
                 ),
-                LayoutProviderImpl(),
                 HintProviderImpl(context),
                 DisplayNameProviderImpl(
                     OptionSetConfiguration(d2),

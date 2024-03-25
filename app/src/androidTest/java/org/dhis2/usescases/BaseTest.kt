@@ -18,7 +18,6 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
@@ -75,7 +74,6 @@ open class BaseTest {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
             mockWebServerRobot = providesMockWebserverRobot(context)
-            disableComposeForms()
         }
     }
 
@@ -166,16 +164,6 @@ open class BaseTest {
 
     fun cleanLocalDatabase() {
         (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
-    }
-
-    private fun disableComposeForms() {
-        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
-    }
-
-
-    fun enableComposeForms() {
-        preferencesRobot.saveValue("SET_FROM_DEVELOPMENT", true)
-        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, true)
     }
 
     companion object {

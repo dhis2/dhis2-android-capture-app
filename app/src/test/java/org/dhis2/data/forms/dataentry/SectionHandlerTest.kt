@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry
 
-import org.dhis2.form.ui.SectionHandler
 import org.junit.Assert.assertTrue
 import org.junit.Test
 

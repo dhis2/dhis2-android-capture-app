@@ -19,8 +19,8 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -35,7 +35,6 @@ import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
-import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
@@ -211,7 +210,6 @@ public class SearchTEModule {
                         new LongTextUiColorFactoryImpl(moduleContext, colorUtils),
                         false
                 ),
-                new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),

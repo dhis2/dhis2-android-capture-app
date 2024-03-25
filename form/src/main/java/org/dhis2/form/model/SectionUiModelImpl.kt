@@ -14,7 +14,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class SectionUiModelImpl(
     override val uid: String,
-    override val layoutId: Int,
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,

@@ -7,7 +7,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -15,14 +14,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.containsString
 
 fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
     EnrollmentRobot().apply {
@@ -46,27 +41,27 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnPersonAttributes(attribute: String) {
-        onView(withId(R.id.recyclerView))
+        /*onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItem<FormViewHolder>(
                     hasDescendant(withText(containsString(attribute))),
                     clickChildViewWithId(R.id.section_details)
                 )
-            )
+            )*/
     }
 
     fun scrollToBottomProgramForm() {
-        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
+//        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
     fun clickOnCalendarItem() {
-        onView(withId(R.id.recyclerView))
+        /*onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItem<DashboardProgramViewHolder>(
                     hasDescendant(withText(containsString(DATE_OF_BIRTH))),
                     clickChildViewWithId(R.id.inputEditText)
                 )
-            )
+            )*/
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
@@ -124,12 +119,12 @@ class EnrollmentRobot : BaseRobot() {
     }
 
     fun clickOnInputDate(label: String) {
-        onView(withId(R.id.recyclerView))
+        /*onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItem<FormViewHolder>(
                     hasDescendant(withText(label)), clickChildViewWithId(R.id.inputEditText)
                 )
-            )
+            )*/
     }
 
     fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {

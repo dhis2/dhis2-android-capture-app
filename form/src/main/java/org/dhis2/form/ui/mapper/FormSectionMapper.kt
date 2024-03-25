@@ -27,7 +27,7 @@ class FormSectionMapper {
                                 null -> SectionState.FIXED
                             },
                             fields = fields,
-                            warningMessage = if (fields.isEmpty()) {
+                            warningMessage = if (item.isOpen != false && fields.isEmpty()) {
                                 R.string.form_without_fields
                             } else {
                                 null

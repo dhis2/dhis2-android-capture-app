@@ -17,7 +17,6 @@ import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -128,9 +127,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             .openErrorLocation(openErrorLocation)
-            .useComposeForm(
-                featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-            )
             .build()
 
         super.onCreate(savedInstanceState)
@@ -254,7 +250,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        formView.onEditionFinish()
         attemptFinish()
     }
 

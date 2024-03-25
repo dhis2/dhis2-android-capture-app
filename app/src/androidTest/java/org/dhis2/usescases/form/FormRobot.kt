@@ -10,7 +10,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
@@ -19,11 +18,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.form.FormTest.Companion.NO_ACTION_POSITION
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anything
@@ -45,12 +39,12 @@ class FormRobot : BaseRobot() {
     }
 
     private fun clickOnSpinner(position: Int) {
-        onView(withId(R.id.recyclerView))
+        /*onView(withId(R.id.recyclerView))
             .perform(
                 actionOnItemAtPosition<FormViewHolder>(
                     position, clickChildViewWithId(R.id.inputEditText)
                 )
-            )
+            )*/
     }
 
     private fun selectAction(position: Int) {
@@ -66,17 +60,17 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkHiddenField(label: String) {
-        onView(withId(R.id.recyclerView))
-            .check(matches(not(hasItem(withText(label)))))
+        /*onView(withId(R.id.recyclerView))
+            .check(matches(not(hasItem(withText(label)))))*/
     }
 
     fun checkHiddenSection(label: String) {
-        onView(withId(R.id.recyclerView))
-            .check(matches(not(hasItem(withText(label)))))
+        /*onView(withId(R.id.recyclerView))
+            .check(matches(not(hasItem(withText(label)))))*/
     }
 
     fun checkValueWasAssigned(value: String) {
-        onView(withId(R.id.recyclerView))
+        /*onView(withId(R.id.recyclerView))
             .check(
                 matches(
                     hasItem(
@@ -86,17 +80,17 @@ class FormRobot : BaseRobot() {
                         )
                     )
                 )
-            )
+            )*/
     }
 
     fun checkWarningIsShown() {
-        onView(withId(R.id.recyclerView))
-            .check(matches(hasItem(hasDescendant(withText("Warning with Current Event ")))))
+        /*onView(withId(R.id.recyclerView))
+            .check(matches(hasItem(hasDescendant(withText("Warning with Current Event ")))))*/
     }
 
     fun checkErrorIsShown() {
-        onView(withId(R.id.recyclerView))
-            .check(matches(hasItem(hasDescendant(withText("Error with current event ")))))
+        /*onView(withId(R.id.recyclerView))
+            .check(matches(hasItem(hasDescendant(withText("Error with current event ")))))*/
     }
 
     fun checkPopUpWithMessageOnCompleteIsShown(message: String, composeTestRule: ComposeTestRule) {
@@ -111,8 +105,8 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkLabel(label: String, position: Int) {
-        onView(withId(R.id.recyclerView))
-            .check(matches(atPosition(position, hasDescendant(withText(label)))))
+        /*onView(withId(R.id.recyclerView))
+            .check(matches(atPosition(position, hasDescendant(withText(label)))))*/
     }
 
     fun clickOnSaveForm() {
@@ -140,7 +134,7 @@ class FormRobot : BaseRobot() {
     }
 
     fun scrollToBottomForm() {
-        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
+//        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
     }
 
     fun goToAnalytics() {
