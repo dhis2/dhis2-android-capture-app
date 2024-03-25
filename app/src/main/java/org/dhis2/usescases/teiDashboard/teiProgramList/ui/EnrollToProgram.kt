@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +26,7 @@ import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
@@ -56,20 +55,15 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
             fontSize = 14.sp,
         )
         Button(
+            text = stringResource(id = R.string.enroll).uppercase(),
             modifier = Modifier
                 .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
                 .height(36.dp)
                 .weight(1.2f, true)
                 .padding(end = 16.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.DarkGray,
-                contentColor = Color.White,
-            ),
             enabled = !programViewModel.isDownloading(),
             onClick = onEnrollClickListener,
-        ) {
-            Text(text = stringResource(id = R.string.enroll).uppercase())
-        }
+        )
     }
 }
 

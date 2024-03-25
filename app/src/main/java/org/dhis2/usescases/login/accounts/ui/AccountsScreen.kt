@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,9 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +31,8 @@ import org.dhis2.R
 import org.dhis2.bindings.buildInfo
 import org.dhis2.usescases.login.accounts.AccountModel
 import org.dhis2.usescases.login.ui.LoginTopBar
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @ExperimentalMaterialApi
 @Composable
@@ -78,27 +75,12 @@ fun AccountsScreen(
                 }
                 Column(Modifier.padding(16.dp)) {
                     Button(
+                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
                         modifier = Modifier
                             .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(id = R.color.colorPrimary),
-                            contentColor = Color.White,
-                        ),
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = 5.dp,
-                            pressedElevation = 15.dp,
-                            disabledElevation = 0.dp,
-                        ),
+                        style = ButtonStyle.ELEVATED,
                         onClick = { onAddAccountClicked() },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
-                            fontFamily = FontFamily(
-                                Font(R.font.rubik_regular, FontWeight.Medium),
-                            ),
-                        )
-                    }
+                    )
                 }
             }
         }

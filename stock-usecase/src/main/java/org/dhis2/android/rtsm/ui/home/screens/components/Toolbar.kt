@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -34,6 +33,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -117,12 +117,13 @@ fun Toolbar(
                 onClick = {
                     launchBottomSheet.invoke()
                 },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back),
-                )
-            }
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back),
+                    )
+                },
+            )
         },
         actions = {
             Row(
@@ -133,13 +134,14 @@ fun Toolbar(
                     onClick = {
                         syncAction(scope, scaffoldState)
                     },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_sync),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.white),
-                    )
-                }
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_sync),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.white),
+                        )
+                    },
+                )
 
                 IconButton(
                     onClick = {
@@ -150,13 +152,14 @@ fun Toolbar(
                         }
                         keyboardController?.hide()
                     },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_filter),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.white),
-                    )
-                }
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_filter),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.white),
+                        )
+                    },
+                )
             }
         },
         backgroundColor = themeColor,

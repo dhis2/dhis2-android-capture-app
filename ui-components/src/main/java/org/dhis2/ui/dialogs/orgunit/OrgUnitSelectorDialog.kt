@@ -50,10 +50,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
-import org.dhis2.ui.buttons.Dhis2Button
-import org.dhis2.ui.buttons.Dhis2TextButton
-import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.ui.theme.defaultFontFamily
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @Composable
 fun OrgUnitSelectorDialog(
@@ -77,7 +76,7 @@ fun OrgUnitSelectorDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = spacedBy(8.dp),
             ) {
@@ -85,20 +84,11 @@ fun OrgUnitSelectorDialog(
                     modifier = Modifier.weight(1f),
                     onValueChangeListener = actions.onSearch,
                 )
-                Dhis2TextButton(
+                Button(
                     modifier = Modifier.testTag(CLEAR_TEST_TAG),
-                    model = ButtonUiModel(
-                        text = stringResource(id = R.string.action_clear_all),
-                        onClick = actions.onClearClick,
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(
-                                id = R.drawable.ic_tree_node_clear,
-                            ),
-                            contentDescription = "",
-                        )
-                    },
+                    text = stringResource(id = R.string.action_clear_all),
+                    onClick = actions.onClearClick,
+                    style = ButtonStyle.TEXT,
                 )
             }
             Divider()
@@ -128,21 +118,20 @@ fun OrgUnitSelectorDialog(
                         horizontal = 16.dp,
                     ),
                 horizontalArrangement = spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Dhis2TextButton(
+                Button(
                     modifier = Modifier.testTag(CANCEL_TEST_TAG),
-                    model = ButtonUiModel(
-                        text = stringResource(id = R.string.action_cancel),
-                        onClick = actions.onCancelClick,
-                    ),
+                    text = stringResource(id = R.string.action_cancel),
+                    style = ButtonStyle.TEXT,
+                    onClick = actions.onCancelClick,
                 )
-                Dhis2Button(
+                Button(
                     modifier = Modifier.testTag(DONE_TEST_TAG),
-                    model = ButtonUiModel(
-                        text = stringResource(id = R.string.action_done),
-                        onClick = actions.onDoneClick,
-                    ),
-                    leadingIcon = {
+                    text = stringResource(id = R.string.action_done),
+                    onClick = actions.onDoneClick,
+                    style = ButtonStyle.FILLED,
+                    icon = {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = "",

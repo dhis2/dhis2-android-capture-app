@@ -14,14 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -46,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.utils.dashedBorder
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import kotlin.math.roundToInt
 
 @ExperimentalComposeUiApi
@@ -107,15 +104,13 @@ fun SignatureDialogUi(title: String, onSave: (Bitmap) -> Unit, onCancel: () -> U
                         onClick = {
                             drawing.value = null
                         },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                        ),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = stringResource(R.string.clear),
-                        )
-                    }
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.clear),
+                            )
+                        },
+                    )
                 }
             }
         }
@@ -123,22 +118,17 @@ fun SignatureDialogUi(title: String, onSave: (Bitmap) -> Unit, onCancel: () -> U
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
         ) {
-            TextButton(
-                onClick = onCancel,
-            ) {
-                Text(text = stringResource(R.string.cancel))
-            }
             Button(
+                text = stringResource(R.string.cancel),
+                onClick = onCancel,
+            )
+            Button(
+                text = stringResource(R.string.save),
                 onClick = {
                     capturing = true
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
                 enabled = isSigned,
-            ) {
-                Text(text = stringResource(R.string.save))
-            }
+            )
         }
     }
 
