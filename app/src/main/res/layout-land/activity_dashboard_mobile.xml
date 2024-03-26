@@ -6,10 +6,6 @@
     <data>
 
         <variable
-            name="title"
-            type="String" />
-
-        <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
     </data>
@@ -37,21 +33,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text='@{title}'
-                android:textColor="?colorAccent"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
-                app:layout_constraintStart_toEndOf="@id/backArrow"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="TEI NAME" />
 
             <ImageView
                 android:id="@+id/syncButton"

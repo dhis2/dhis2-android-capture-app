@@ -395,11 +395,11 @@ class TeiDashboardMobileActivity :
                         binding.relationshipMapIcon.visibility = View.GONE
                     }
                     if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
-                        binding.toolbarTitle.visibility = View.GONE
+                        binding.toolbarTitle?.visibility = View.GONE
                         binding.editButton?.visibility = View.VISIBLE
                         binding.syncButton.visibility = View.GONE
                     } else {
-                        binding.toolbarTitle.visibility = View.VISIBLE
+                        binding.toolbarTitle?.visibility = View.VISIBLE
                         binding.editButton?.visibility = View.GONE
                         binding.syncButton.visibility = View.VISIBLE
                     }
