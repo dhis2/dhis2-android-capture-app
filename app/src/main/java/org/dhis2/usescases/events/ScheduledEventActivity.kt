@@ -50,15 +50,15 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (
-                (applicationContext as App).userComponent()!!.plus(
-                    ScheduledEventModule(
-                        intent.extras!!.getString(
-                            EXTRA_EVENT_UID,
-                        )!!,
-                        this,
-                    ),
-                )
-                ).inject(this)
+            (applicationContext as App).userComponent()!!.plus(
+                ScheduledEventModule(
+                    intent.extras!!.getString(
+                        EXTRA_EVENT_UID,
+                    )!!,
+                    this,
+                ),
+            )
+            ).inject(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_scheduled)
         binding.presenter = presenter
@@ -239,7 +239,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         val bundle = EventCaptureActivity.getActivityBundle(
             event.uid(),
             program.uid(),
-            EventMode.NEW,
+            EventMode.SCHEDULE,
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

@@ -72,7 +72,10 @@ class EventRepository(
 
     override fun firstSectionToOpen(): String? {
         return when (eventMode) {
-            EventMode.NEW -> super.firstSectionToOpen()
+            EventMode.NEW,
+            EventMode.SCHEDULE,
+            -> super.firstSectionToOpen()
+
             EventMode.CHECK -> firstSectionToOpenForEvent()
         }
     }

@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
@@ -201,10 +200,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                     presenter.getProgram()?.uid() ?: "",
                     EventMode.NEW,
                 ),
-            )
-            eventCreationIntent.putExtra(
-                Constants.TRACKED_ENTITY_INSTANCE,
-                presenter.getEnrollment()!!.trackedEntityInstance(),
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }

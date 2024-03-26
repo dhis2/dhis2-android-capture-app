@@ -49,7 +49,6 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
 ) {
-    private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var hasShownIncidentDateEditionWarning = false
@@ -167,6 +166,7 @@ class EnrollmentPresenterImpl(
                         ),
                 )
             }
+
             EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }
@@ -177,10 +177,6 @@ class EnrollmentPresenterImpl(
                 view.showDateEditionWarning()
             }
         }
-        if (finishing) {
-            view.performSaveClick()
-        }
-        finishing = false
     }
 
     fun backIsClicked() {
@@ -209,8 +205,6 @@ class EnrollmentPresenterImpl(
             false
         }
     }
-
-    fun hasAccess() = getProgram()?.access()?.data()?.write() ?: false
 
     fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)
@@ -243,13 +237,6 @@ class EnrollmentPresenterImpl(
             view.displayTeiPicture(picturePath)
         }
     }
-
-    fun setFinishing() {
-        finishing = true
-    }
-
-    fun getEventStage(eventUid: String) =
-        enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
 
     fun showOrHideSaveButton() {
         val teiUid = teiRepository.blockingGet()?.uid() ?: ""
