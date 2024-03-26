@@ -184,7 +184,6 @@ class SearchTEList : FragmentGlobalAbstract() {
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
                     val queryData = remember(viewModel.uiState) {
-                        viewModel.getFriendlyQueryData()
                         viewModel.uiState.searchedItems
                     }
 

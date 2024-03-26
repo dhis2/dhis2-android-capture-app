@@ -14,6 +14,8 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
+import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
@@ -628,6 +630,103 @@ class SearchTEIViewModelTest {
             assertTrue(it == null)
         }
         verify(repository).setCurrentTheme(null)
+    }
+
+    @Test
+    fun `should return user-friendly names on search parameters fields`() {
+        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        val expectedMap = mapOf(
+            "uid1" to "Friendly OrgUnit Name",
+            "uid2" to "Male",
+            "uid3" to "21/2/2024",
+            "uid4" to "21/2/2024 01:00",
+            "uid5" to "Boolean: false",
+            "uid6" to "Yes Only",
+            "uid7" to "Text value",
+        )
+
+        val formattedMap = viewModel.getFriendlyQueryData()
+
+        assertTrue(expectedMap == formattedMap)
+    }
+
+    private fun getFieldUIModels(): List<FieldUiModel> {
+        return listOf(
+            FieldUiModelImpl(
+                uid = "uid1",
+                layoutId = 1,
+                label = "Org Unit",
+                value = "orgUnitUid",
+                displayName = "Friendly OrgUnit Name",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.ORGANISATION_UNIT,
+            ),
+            FieldUiModelImpl(
+                uid = "uid2",
+                layoutId = 2,
+                label = "Gender",
+                value = "M",
+                displayName = "Male",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.MULTI_TEXT,
+            ),
+            FieldUiModelImpl(
+                uid = "uid3",
+                layoutId = 3,
+                label = "Date",
+                value = "2024-02-21",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.DATE,
+            ),
+            FieldUiModelImpl(
+                uid = "uid4",
+                layoutId = 4,
+                label = "Date and Time",
+                value = "2024-02-21T01:00",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.DATETIME,
+            ),
+            FieldUiModelImpl(
+                uid = "uid5",
+                layoutId = 5,
+                label = "Boolean",
+                value = "false",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.BOOLEAN,
+            ),
+            FieldUiModelImpl(
+                uid = "uid6",
+                layoutId = 6,
+                label = "Yes Only",
+                value = "true",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.TRUE_ONLY,
+            ),
+            FieldUiModelImpl(
+                uid = "uid7",
+                layoutId = 7,
+                label = "Text",
+                value = "Text value",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.TEXT,
+            ),
+            FieldUiModelImpl(
+                uid = "uid8",
+                layoutId = 8,
+                label = "Other field",
+                value = null,
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.TEXT,
+            ),
+        )
     }
 
     private fun testingProgram(

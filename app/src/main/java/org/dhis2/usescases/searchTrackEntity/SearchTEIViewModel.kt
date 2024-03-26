@@ -92,7 +92,6 @@ class SearchTEIViewModel(
     val teTypeName: LiveData<String> = _teTypeName
 
     var uiState by mutableStateOf(SearchParametersUiState())
-        private set
 
     private var fetchJob: Job? = null
 
@@ -434,7 +433,7 @@ class SearchTEIViewModel(
                 searching = queryData.isNotEmpty()
                 uiState = uiState.copy(
                     clearSearchEnabled = queryData.isNotEmpty(),
-                    searchedItems = queryData.toMap(),
+                    searchedItems = getFriendlyQueryData(),
                 )
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
@@ -844,7 +843,7 @@ class SearchTEIViewModel(
             searching = queryData.isNotEmpty()
             uiState = uiState.copy(
                 clearSearchEnabled = queryData.isNotEmpty(),
-                searchedItems = queryData.toMap(),
+                searchedItems = getFriendlyQueryData(),
             )
 
             val searchParametersModel = SearchParametersModel(
@@ -923,7 +922,7 @@ class SearchTEIViewModel(
                             if (it.isNotEmpty()) {
                                 val date = DateUtils.databaseDateFormatNoSeconds().parse(it)
                                 date?.let {
-                                    map[item.uid] = DateUtils.dateTimeFormat().format(date)
+                                    map[item.uid] = DateUtils.uiDateTimeFormat().format(date)
                                 }
                             }
                         }
@@ -939,7 +938,7 @@ class SearchTEIViewModel(
                         }
                     }
                     else -> {
-                        item.uid to (item.value ?: "")
+                        map[item.uid] = (item.value ?: "")
                     }
                 }
             }
