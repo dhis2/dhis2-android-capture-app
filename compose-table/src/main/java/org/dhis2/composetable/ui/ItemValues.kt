@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import org.dhis2.composetable.model.TableCell
+import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 
 @Composable
@@ -18,7 +19,7 @@ fun ItemValues(
     maxLines: Int,
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
-    headerExtraSize: Int,
+    tableHeaderModel: TableHeader,
     options: List<String>,
     headerLabel: String,
 ) {
@@ -41,7 +42,12 @@ fun ItemValues(
                         tableId = tableId,
                         cell = cellValue,
                         maxLines = maxLines,
-                        headerExtraSize = headerExtraSize,
+                        headerExtraSize = TableTheme.dimensions.extraSize(
+                            tableId,
+                            tableHeaderModel.tableMaxColumns(),
+                            tableHeaderModel.hasTotals,
+                            columnIndex,
+                        ),
                         options = options,
                         headerLabel = headerLabel,
                     )
