@@ -20,19 +20,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
+import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.model.EnrollmentRecords
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.FormView
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -69,6 +78,9 @@ class TeiDashboardMobileActivity :
     @Inject
     lateinit var presenter: TeiDashboardContracts.Presenter
 
+    var featureConfig: FeatureConfigRepository? = null
+        @Inject set
+
     @Inject
     lateinit var filterManager: FilterManager
 
@@ -100,6 +112,8 @@ class TeiDashboardMobileActivity :
 
     private var elevation = 0f
     private var restartingActivity = false
+
+    private lateinit var formView: FormView
 
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -189,6 +203,7 @@ class TeiDashboardMobileActivity :
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
+        setFormViewForLandScape()
         setNavigationBar()
         setEditButton()
         dashboardViewModel.showStatusErrorMessages.observe(this) {
@@ -199,6 +214,47 @@ class TeiDashboardMobileActivity :
                 is DashboardEnrollmentModel -> setData(it)
                 is DashboardTEIModel -> setDataWithOutProgram(it)
             }
+        }
+    }
+
+    private fun setFormViewForLandScape() {
+        if (isLandscape() && enrollmentUid != null) {
+            val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
+            formView = FormView.Builder()
+                    .locationProvider(locationProvider)
+                    .onItemChangeListener {
+                        // Do nothing
+                    }
+                    .onLoadingListener { loading ->
+                        if (loading) {
+                            showLoadingProgress(true)
+                        } else {
+                            showLoadingProgress(false)
+                        }
+                    }
+                    .onFinishDataEntry {
+                        dashboardViewModel.updateDashboard()
+                    }
+                    .resultDialogUiProvider(
+                            EnrollmentResultDialogUiProvider(
+                                    ResourceManager(
+                                            this.context,
+                                            ColorUtils(),
+                                    ),
+                            ),
+                    )
+                    .factory(supportFragmentManager)
+                    .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW))
+                    .useComposeForm(
+                            featureConfig?.isFeatureEnable(Feature.COMPOSE_FORMS) ?: false,
+                    )
+                    .build()
+
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.tei_form_view, formView)
+                    .commitAllowingStateLoss()
+
+            saveButton.setOnClickListener { formView.onSaveClick() }
         }
     }
 
