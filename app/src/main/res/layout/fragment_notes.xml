@@ -9,9 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/notesContainer"
-        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_front_home_backdrop_bg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/no_permission_layout"
@@ -62,8 +62,8 @@
                 android:id="@+id/notes_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingBottom="50dp"
                 android:clipToPadding="false"
+                android:paddingBottom="50dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_note" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
