@@ -45,6 +45,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String eventUid,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
+                                    boolean displayDataEntryScreen,
                                     boolean openErrorSection,
                                     EventMode eventMode
 
@@ -55,7 +56,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
         this.shouldOpenErrorSection = openErrorSection;
         this.eventMode = eventMode;
         pages = new ArrayList<>();
-        pages.add(EventPageType.DATA_ENTRY);
+
+        if (displayDataEntryScreen){
+            pages.add(EventPageType.DATA_ENTRY);
+        }
 
         if (displayAnalyticScreen) {
             pages.add(EventPageType.ANALYTICS);
