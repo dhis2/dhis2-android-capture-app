@@ -9,7 +9,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setAccess(access: Boolean?)
 
     fun renderStatus(status: EnrollmentStatus)
-    fun showStatusOptions(currentStatus: EnrollmentStatus)
 
     fun setSaveButtonVisible(visible: Boolean)
 
