@@ -49,6 +49,7 @@ import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
+import org.dhis2.utils.isPortrait
 import javax.inject.Inject
 
 class EventCaptureActivity :
@@ -116,7 +117,7 @@ class EventCaptureActivity :
                 intent.getStringExtra(Constants.EVENT_UID),
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
-                isLandscape(),
+                isPortrait(),
                 intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
                 eventMode,
         )
