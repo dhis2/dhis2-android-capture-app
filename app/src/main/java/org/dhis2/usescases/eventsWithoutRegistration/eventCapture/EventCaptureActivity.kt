@@ -48,7 +48,6 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
-import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import javax.inject.Inject
 
@@ -117,7 +116,7 @@ class EventCaptureActivity :
                 intent.getStringExtra(Constants.EVENT_UID),
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
-                isPortrait(),
+                pageConfigurator!!.displayDataEntry(),
                 intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
                 eventMode,
         )

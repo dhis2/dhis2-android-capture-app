@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.isPortrait
 
 class EventPageConfigurator(
     private val eventCaptureRepository: EventCaptureContract.EventCaptureRepository,
@@ -10,7 +11,7 @@ class EventPageConfigurator(
     }
 
     override fun displayDataEntry(): Boolean {
-        return true
+        return isPortrait()
     }
 
     override fun displayAnalytics(): Boolean {
