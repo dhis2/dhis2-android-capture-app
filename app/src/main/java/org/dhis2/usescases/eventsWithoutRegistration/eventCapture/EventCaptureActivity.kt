@@ -239,25 +239,28 @@ class EventCaptureActivity :
             emptyMandatoryFields: Map<String, String>,
             eventCompletionDialog: EventCompletionDialog,
     ) {
-        if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
-            val dialog = BottomSheetDialog(
-                    bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                    onMainButtonClicked = {
-                        setAction(eventCompletionDialog.mainButtonAction)
-                    },
-                    onSecondaryButtonClicked = {
-                        eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                    },
-                    content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                        { bottomSheetDialog ->
-                            ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                                bottomSheetDialog.dismiss()
-                            }
+        val dialog = BottomSheetDialog(
+                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
+                onMainButtonClicked = {
+                    setAction(eventCompletionDialog.mainButtonAction)
+                },
+                onSecondaryButtonClicked = {
+                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
+                },
+                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
+                    { bottomSheetDialog ->
+                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
+                            bottomSheetDialog.dismiss()
                         }
-                    } else {
-                        null
-                    },
-            )
+                    }
+                } else {
+                    null
+                },
+        )
+        if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
+            dialog.show(supportFragmentManager, SHOW_OPTIONS)
+        }
+        if (this.isLandscape()) {
             dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }
