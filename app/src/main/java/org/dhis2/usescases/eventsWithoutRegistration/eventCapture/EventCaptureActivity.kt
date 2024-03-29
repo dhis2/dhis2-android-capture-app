@@ -48,6 +48,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
+import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import javax.inject.Inject
 
@@ -88,6 +89,7 @@ class EventCaptureActivity :
                 EventCaptureModule(
                         this,
                         eventUid,
+                        this.isPortrait()
                 ),
         )
         eventCaptureComponent!!.inject(this)
@@ -109,19 +111,22 @@ class EventCaptureActivity :
     }
 
     private fun setUpViewPagerAdapter() {
-        binding.eventViewPager.isUserInputEnabled = false
+        val eventViewPager = when {
+            this.isLandscape() -> binding.eventViewLandPager
+            else -> binding.eventViewPager
+        }
+        eventViewPager?.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
                 this,
                 intent.getStringExtra(Constants.PROGRAM_UID),
                 intent.getStringExtra(Constants.EVENT_UID),
                 pageConfigurator!!.displayAnalytics(),
                 pageConfigurator!!.displayRelationships(),
-                pageConfigurator!!.displayDataEntry(),
                 intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
                 eventMode,
         )
-        binding.eventViewPager.adapter = adapter
-        binding.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+        eventViewPager?.adapter = adapter
+        eventViewPager?.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (position == 0 && eventMode !== EventMode.NEW) {
@@ -139,7 +144,10 @@ class EventCaptureActivity :
     private fun setUpNavigationBar() {
         binding.navigationBar.pageConfiguration(pageConfigurator!!)
         binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-            binding.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+            when {
+                this.isLandscape() ->  binding.eventViewLandPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+                else -> binding.eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+            }
             true
         }
     }
@@ -212,7 +220,11 @@ class EventCaptureActivity :
     }
 
     private fun isFormScreen(): Boolean {
-        return adapter?.isFormScreenShown(binding.eventViewPager.currentItem) == true
+        return if (this.isPortrait()) {
+            adapter?.isFormScreenShown(binding.eventViewPager?.currentItem) == true
+        } else {
+            true;
+        }
     }
 
     override fun updatePercentage(primaryValue: Float) {
