@@ -11,6 +11,7 @@ import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -57,6 +58,7 @@ class EventCaptureActivity :
         EventCaptureContract.View,
         MapButtonObservable,
         EventDetailsComponentProvider {
+    private var eventViewPager: ViewPager2? = null
     private lateinit var binding: ActivityEventCaptureBinding
 
     @JvmField
@@ -97,6 +99,10 @@ class EventCaptureActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
         binding.presenter = presenter
+        eventViewPager = when {
+            this.isLandscape() -> binding.eventViewLandPager
+            else -> binding.eventViewPager
+        }
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter()
         setUpNavigationBar()
@@ -111,10 +117,6 @@ class EventCaptureActivity :
     }
 
     private fun setUpViewPagerAdapter() {
-        val eventViewPager = when {
-            this.isLandscape() -> binding.eventViewLandPager
-            else -> binding.eventViewPager
-        }
         eventViewPager?.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
                 this,
@@ -142,10 +144,6 @@ class EventCaptureActivity :
     }
 
     private fun setUpNavigationBar() {
-        val eventViewPager = when {
-            this.isLandscape() -> binding.eventViewLandPager
-            else -> binding.eventViewPager
-        }
         binding.navigationBar.pageConfiguration(pageConfigurator!!)
         eventViewPager?.registerOnPageChangeCallback(
                 object : OnPageChangeCallback() {
