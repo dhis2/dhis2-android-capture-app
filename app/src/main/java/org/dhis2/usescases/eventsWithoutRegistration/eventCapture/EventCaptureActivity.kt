@@ -11,6 +11,7 @@ import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -40,6 +41,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
@@ -60,6 +62,7 @@ class EventCaptureActivity :
         MapButtonObservable,
         EventDetailsComponentProvider {
     private var eventViewPager: ViewPager2? = null
+    private lateinit var dashboardViewModel: DashboardViewModel
     private lateinit var binding: ActivityEventCaptureBinding
 
     @JvmField
@@ -96,6 +99,11 @@ class EventCaptureActivity :
                 ),
         )
         eventCaptureComponent!!.inject(this)
+        if (this.isLandscape()) {
+            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+            dashboardViewModel =
+                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
+        }
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
