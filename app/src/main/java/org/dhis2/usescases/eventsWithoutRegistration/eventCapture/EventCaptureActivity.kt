@@ -142,12 +142,21 @@ class EventCaptureActivity :
     }
 
     private fun setUpNavigationBar() {
+        val eventViewPager = when {
+            this.isLandscape() -> binding.eventViewLandPager
+            else -> binding.eventViewPager
+        }
         binding.navigationBar.pageConfiguration(pageConfigurator!!)
+        eventViewPager?.registerOnPageChangeCallback(
+                object : OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        binding.navigationBar.selectItemAt(position)
+                    }
+                },
+        )
         binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-            when {
-                this.isLandscape() ->  binding.eventViewLandPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
-                else -> binding.eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
-            }
+           eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             true
         }
     }
