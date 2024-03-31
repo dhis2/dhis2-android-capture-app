@@ -44,6 +44,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
@@ -105,11 +106,6 @@ class EventCaptureActivity :
                 ),
         )
         eventCaptureComponent!!.inject(this)
-        if (this.isLandscape()) {
-            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
-            dashboardViewModel =
-                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
-        }
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
@@ -121,7 +117,7 @@ class EventCaptureActivity :
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter()
         setUpNavigationBar()
-        setUpEventCaptureFormLandscape(eventUid ?: "")
+        setUpLandscapeViews(eventUid ?: "")
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -175,11 +171,15 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpEventCaptureFormLandscape(eventUid: String) {
+    private fun setUpLandscapeViews(eventUid: String) {
         if (this.isLandscape()) {
+            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+            dashboardViewModel =
+                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
             supportFragmentManager.beginTransaction()
                     .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false, eventMode))
                     .commit()
+            supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
         }
     }
 
@@ -551,7 +551,8 @@ class EventCaptureActivity :
         private const val EVENT_SYNC = "EVENT_SYNC"
 
         @JvmStatic
-        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String? = "", enrollmentUid: String? = ""): Bundle {
+        @JvmOverloads
+        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String? = null, enrollmentUid: String? = null): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
             bundle.putString(Constants.PROGRAM_UID, programUid)
