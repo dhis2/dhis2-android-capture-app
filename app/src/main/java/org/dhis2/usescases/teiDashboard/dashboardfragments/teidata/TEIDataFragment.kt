@@ -49,7 +49,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardTEIModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
@@ -99,7 +98,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
-    private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
+    private val dashboardActivity: TEIDataActivityContract by lazy { context as TEIDataActivityContract }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -221,14 +220,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                     emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
                     programsCallback = {
-                        startActivity(
-                            TeiDashboardMobileActivity.intent(
-                                dashboardActivity.context,
-                                dashboardActivity.teiUid,
-                                null,
-                                null,
-                            ),
-                        )
+                        val intent = dashboardActivity.getTeiDashboardMobileActivityIntent()
+                        intent?.let {
+                            startActivity(it)
+                        }
                     },
                 )
             }
@@ -463,15 +458,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
-        dashboardActivity.startActivity(
-            TeiDashboardMobileActivity.intent(
-                activity,
-                teiUid,
-                programUid,
-                enrollmentUid,
-            ),
-        )
-        dashboardActivity.finish()
+        dashboardActivity.restoreAdapter(programUid, teiUid, enrollmentUid)
+        dashboardActivity.finishActivity()
     }
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
@@ -580,9 +568,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun showProgramRuleErrorMessage() {
-        dashboardActivity.runOnUiThread {
-            showDescription(getString(R.string.error_applying_rule_effects))
-        }
+        dashboardActivity.executeOnUIThread()
     }
 
     override fun updateEnrollment(update: Boolean) {

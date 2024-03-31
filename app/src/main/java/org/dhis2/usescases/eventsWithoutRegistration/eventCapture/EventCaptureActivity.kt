@@ -43,6 +43,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
@@ -60,9 +61,8 @@ class EventCaptureActivity :
         ActivityGlobalAbstract(),
         EventCaptureContract.View,
         MapButtonObservable,
-        EventDetailsComponentProvider {
-    private var eventViewPager: ViewPager2? = null
-    private lateinit var dashboardViewModel: DashboardViewModel
+        EventDetailsComponentProvider,
+        TEIDataActivityContract {
     private lateinit var binding: ActivityEventCaptureBinding
 
     @JvmField
@@ -86,11 +86,17 @@ class EventCaptureActivity :
     var eventCaptureComponent: EventCaptureComponent? = null
     var programUid: String? = null
     var eventUid: String? = null
+    private var teiUid: String? = null
+    private var enrollmentUid: String? = null
     private val relationshipMapButton: LiveData<Boolean> = MutableLiveData(false)
     private var onEditionListener: OnEditionListener? = null
     private var adapter: EventCapturePagerAdapter? = null
+    private var eventViewPager: ViewPager2? = null
+    private lateinit var dashboardViewModel: DashboardViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
+        teiUid = intent.getStringExtra(Constants.TEI_UID)
+        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         eventCaptureComponent = this.app().userComponent()!!.plus(
                 EventCaptureModule(
                         this,
@@ -119,10 +125,10 @@ class EventCaptureActivity :
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
-        binding.syncButton.setOnClickListener { showSyncDialog() }
+        binding.syncButton.setOnClickListener { showSyncDialog(EVENT_SYNC) }
 
         if (intent.shouldLaunchSyncDialog()) {
-            showSyncDialog()
+            showSyncDialog(EVENT_SYNC)
         }
     }
 
@@ -494,30 +500,64 @@ class EventCaptureActivity :
         return eventCaptureComponent!!.plus(module)
     }
 
-    private fun showSyncDialog() {
-        SyncStatusDialog.Builder()
-                .withContext(this)
-                .withSyncContext(SyncContext.Event(eventUid!!))
-                .onNoConnectionListener {
-                    val contextView = findViewById<View>(R.id.navigationBar)
-                    Snackbar.make(
-                            contextView,
-                            R.string.sync_offline_check_connection,
-                            Snackbar.LENGTH_SHORT,
-                    ).show()
-                }
-                .show("EVENT_SYNC")
+    private fun showSyncDialog(syncType: String) {
+        val syncContext = when (syncType) {
+            TEI_SYNC -> enrollmentUid?.let { SyncContext.Enrollment(it) }
+            EVENT_SYNC -> SyncContext.Event(eventUid!!)
+            else -> null
+        }
+
+        syncContext?.let {
+            SyncStatusDialog.Builder()
+                    .withContext(this)
+                    .withSyncContext(it)
+                    .onNoConnectionListener {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                    .show(syncType)
+        }
+    }
+
+    override fun openSyncDialog() {
+        showSyncDialog(TEI_SYNC)
+    }
+
+    override fun finishActivity() {
+        finish()
+    }
+
+    override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
+        // we do not restore adapter in events
+    }
+
+    override fun executeOnUIThread() {
+        activity.runOnUiThread {
+            showDescription(getString(R.string.error_applying_rule_effects))
+        }
+    }
+
+    override fun getTeiDashboardMobileActivityIntent(): Intent? {
+        return null
     }
 
     companion object {
         private const val SHOW_OPTIONS = "SHOW_OPTIONS"
+        private const val TEI_SYNC = "SYNC_TEI"
+        private const val EVENT_SYNC = "EVENT_SYNC"
 
         @JvmStatic
-        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode): Bundle {
+        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String? = "", enrollmentUid: String? = ""): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
             bundle.putString(Constants.PROGRAM_UID, programUid)
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
+            teiUid?.let { bundle.putString(Constants.TEI_UID, it) }
+            enrollmentUid?.let { bundle.putString(Constants.ENROLLMENT_UID, it) }
             return bundle
         }
 
