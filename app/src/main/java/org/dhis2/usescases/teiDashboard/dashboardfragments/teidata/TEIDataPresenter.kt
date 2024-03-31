@@ -137,7 +137,7 @@ class TEIDataPresenter(
                             .observeOn(schedulerProvider.ui())
                             .subscribe(
                                     { events ->
-                                        git.postValue(events)
+                                        _events.postValue(events)
                                         _totalTimeLineEvents.postValue(events.firstOrNull()?.eventCount
                                                 ?: 0)
                                         decrement()
