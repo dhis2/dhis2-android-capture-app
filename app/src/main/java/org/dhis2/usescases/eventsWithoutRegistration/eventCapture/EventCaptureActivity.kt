@@ -32,6 +32,7 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
@@ -106,6 +107,7 @@ class EventCaptureActivity :
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter()
         setUpNavigationBar()
+        setUpEventCaptureFormLandscape(eventUid ?: "")
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -154,8 +156,16 @@ class EventCaptureActivity :
                 },
         )
         binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-           eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
+            eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
             true
+        }
+    }
+
+    private fun setUpEventCaptureFormLandscape(eventUid: String) {
+        if (this.isLandscape()) {
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false, eventMode))
+                    .commit()
         }
     }
 
@@ -230,7 +240,7 @@ class EventCaptureActivity :
         return if (this.isPortrait()) {
             adapter?.isFormScreenShown(binding.eventViewPager?.currentItem) == true
         } else {
-            true;
+            true
         }
     }
 
