@@ -49,6 +49,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardTEIModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventAdapter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
@@ -472,10 +473,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             updateEnrollment(true)
         }
 
-    override fun openEventCapture(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
-            updateEnrollment(true)
+    override fun openEventCapture(intent: Intent) {
+        if (dashboardActivity is TeiDashboardMobileActivity) {
+            contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+                updateEnrollment(true)
+            }
         }
+        if (dashboardActivity is EventCaptureActivity ) {
+            val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+            dashboardViewModel.updateSelectedEventUid(selectedEventUid)
+        }
+    }
 
     override fun goToEventInitial(
         eventCreationType: EventCreationType,

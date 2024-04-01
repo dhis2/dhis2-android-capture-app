@@ -99,14 +99,7 @@ class EventCaptureActivity :
         teiUid = intent.getStringExtra(Constants.TEI_UID)
         enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
-        eventCaptureComponent = this.app().userComponent()!!.plus(
-                EventCaptureModule(
-                        this,
-                        eventUid,
-                        this.isPortrait()
-                ),
-        )
-        eventCaptureComponent!!.inject(this)
+        setUpEventCaptureComponent(eventUid)
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
@@ -118,7 +111,13 @@ class EventCaptureActivity :
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
         setUpViewPagerAdapter()
         setUpNavigationBar()
-        setUpLandscapeViews(eventUid ?: "")
+        setUpEventCaptureFormLandscape(eventUid ?: "")
+        if (this.isLandscape()) {
+            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+            dashboardViewModel =
+                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
+            supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
+        }
         showProgress()
         presenter!!.initNoteCounter()
         presenter!!.init()
@@ -172,15 +171,36 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpLandscapeViews(eventUid: String) {
+    private fun setUpEventCaptureFormLandscape(eventUid: String) {
         if (this.isLandscape()) {
-            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
-            dashboardViewModel =
-                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
             supportFragmentManager.beginTransaction()
                     .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false, eventMode))
                     .commit()
-            supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
+        }
+    }
+
+    private fun setUpEventCaptureComponent(eventUid: String?) {
+        eventCaptureComponent = app().userComponent()!!.plus(
+                EventCaptureModule(
+                        this,
+                        eventUid,
+                        this.isPortrait()
+                ),
+        )
+        eventCaptureComponent!!.inject(this)
+    }
+
+
+    private fun updateLandscapeViewsOnEventChange(newEventUid: String) {
+        if (newEventUid != this.eventUid) {
+            this.eventUid = newEventUid
+            setUpEventCaptureComponent(newEventUid)
+            setUpViewPagerAdapter()
+            setUpNavigationBar()
+            setUpEventCaptureFormLandscape(eventUid ?: "")
+            showProgress()
+            presenter!!.initNoteCounter()
+            presenter!!.init()
         }
     }
 
@@ -200,6 +220,9 @@ class EventCaptureActivity :
     override fun onResume() {
         super.onResume()
         presenter!!.refreshTabCounters()
+        with(dashboardViewModel) {
+            selectedEventUid().observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
+        }
     }
 
     override fun onDestroy() {
