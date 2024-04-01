@@ -98,6 +98,7 @@ class EventCaptureActivity :
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         teiUid = intent.getStringExtra(Constants.TEI_UID)
         enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
+        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         eventCaptureComponent = this.app().userComponent()!!.plus(
                 EventCaptureModule(
                         this,
