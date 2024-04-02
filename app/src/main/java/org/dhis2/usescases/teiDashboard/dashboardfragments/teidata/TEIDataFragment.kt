@@ -99,6 +99,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
+    private var showAllEnrollment = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         with(requireArguments()) {
@@ -137,6 +139,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
                 noEnrollmentSelected.observe(viewLifecycleOwner) { noEnrollmentSelected ->
                     if (noEnrollmentSelected) {
+                        showAllEnrollment = true
                         showLegacyCard(dashboardModel.value as DashboardTEIModel)
                     } else {
                         showDetailCard()
@@ -292,7 +295,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun onResume() {
         super.onResume()
         presenter.init()
-        dashboardViewModel.updateDashboard()
+        if (!showAllEnrollment) {
+            dashboardViewModel.updateDashboard()
+        }
     }
 
     override fun onPause() {
