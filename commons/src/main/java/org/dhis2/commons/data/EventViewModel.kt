@@ -26,6 +26,7 @@ data class EventViewModel(
     val nameCategoryOptionCombo: String?,
     val metadataIconData: MetadataIconData,
 ) {
+    var isClicked: Boolean = false
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen
     }

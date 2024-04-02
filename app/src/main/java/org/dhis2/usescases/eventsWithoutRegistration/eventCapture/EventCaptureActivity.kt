@@ -100,6 +100,9 @@ class EventCaptureActivity :
         enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         setUpEventCaptureComponent(eventUid)
+        val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+        dashboardViewModel =
+                ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
@@ -112,11 +115,9 @@ class EventCaptureActivity :
         setUpViewPagerAdapter()
         setUpNavigationBar()
         setUpEventCaptureFormLandscape(eventUid ?: "")
-        if (this.isLandscape()) {
-            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
-            dashboardViewModel =
-                    ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
+        if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
             supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
+            dashboardViewModel.updateSelectedEventUid(eventUid)
         }
         showProgress()
         presenter!!.initNoteCounter()
@@ -202,6 +203,11 @@ class EventCaptureActivity :
             presenter!!.initNoteCounter()
             presenter!!.init()
         }
+    }
+
+
+    fun areTeiUidAndEnrollmentUidNotNull(): Boolean {
+        return teiUid != null && enrollmentUid != null
     }
 
     fun openDetails() {
