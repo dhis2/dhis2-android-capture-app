@@ -13,6 +13,7 @@ import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
@@ -32,7 +33,7 @@ class EventCaptureFormPresenter(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+    fun handleDataIntegrityResult(result: DataIntegrityCheckResult, eventMode: EventMode? = null) {
         when (result) {
             is FieldsWithErrorResult -> activityPresenter.attemptFinish(
                 result.canComplete,
@@ -56,6 +57,7 @@ class EventCaptureFormPresenter(
                 result.errorFields,
                 result.mandatoryFields,
                 result.warningFields,
+                eventMode,
             )
 
             is SuccessfulResult -> activityPresenter.attemptFinish(

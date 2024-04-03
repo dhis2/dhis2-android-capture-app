@@ -8,6 +8,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
@@ -119,13 +120,9 @@ class EventIntegrationTest {
             onCompleteMessage = null,
             allowDiscard = false,
         )
-        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult, EventMode.CHECK)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mandatoryFields,
-            expectedDialog,
-        )
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 
     @Test
@@ -166,11 +163,7 @@ class EventIntegrationTest {
         )
         eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mapOf(),
-            expectedDialog,
-        )
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 
     @Test
@@ -211,10 +204,6 @@ class EventIntegrationTest {
         )
         eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mapOf(),
-            expectedDialog,
-        )
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 }

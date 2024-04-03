@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.extensions.toDate
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
@@ -33,9 +34,9 @@ import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.io.File
 
@@ -974,13 +975,33 @@ class FormValueStoreTest {
     }
 
     @Test
-    fun `should clear event details category option combo`() {
+    fun `should not save value when clear event details category option combo`() {
         val uid = "categoryComboUid"
 
         val result = deValueStore.save("EVENT_CATEGORY_COMBO_UID-$uid", null, null)
 
-        verify(eventRepository).setAttributeOptionComboUid(isNull())
+        verifyNoInteractions(eventRepository)
+        assertEquals(result.valueStoreResult, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+    }
+
+    @Test
+    fun `should save event details report date`() {
+        val uid = EventRepository.EVENT_REPORT_DATE_UID
+        val dateValue = "2023-01-01'T'00:00:00"
+        val result = deValueStore.save(uid, dateValue, null)
+
+        verify(eventRepository).setEventDate(dateValue.toDate())
         assertEquals(result.valueStoreResult, VALUE_CHANGED)
+    }
+
+    @Test
+    fun `should not save value when clear event details report date`() {
+        val uid = EventRepository.EVENT_REPORT_DATE_UID
+
+        val result = deValueStore.save(uid, null, null)
+
+        verifyNoInteractions(eventRepository)
+        assertEquals(result.valueStoreResult, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
     private fun mockGetCategoryOptionComboUid(

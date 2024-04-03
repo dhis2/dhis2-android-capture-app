@@ -57,9 +57,8 @@ class EventCaptureActivity :
     EventDetailsComponentProvider {
     private lateinit var binding: ActivityEventCaptureBinding
 
-    @JvmField
     @Inject
-    var presenter: EventCaptureContract.Presenter? = null
+    override lateinit var presenter: EventCaptureContract.Presenter
 
     @JvmField
     @Inject
@@ -98,8 +97,8 @@ class EventCaptureActivity :
         setUpViewPagerAdapter()
         setUpNavigationBar()
         showProgress()
-        presenter!!.initNoteCounter()
-        presenter!!.init()
+        presenter.initNoteCounter()
+        presenter.init()
         binding.syncButton.setOnClickListener { showSyncDialog() }
 
         if (intent.shouldLaunchSyncDialog()) {
@@ -157,11 +156,11 @@ class EventCaptureActivity :
 
     override fun onResume() {
         super.onResume()
-        presenter!!.refreshTabCounters()
+        presenter.refreshTabCounters()
     }
 
     override fun onDestroy() {
-        presenter!!.onDettach()
+        presenter.onDettach()
         super.onDestroy()
     }
 
@@ -199,11 +198,11 @@ class EventCaptureActivity :
                 {
                     /*Unused*/
                 },
-                { presenter!!.deleteEvent() },
+                { presenter.deleteEvent() },
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else if (isFormScreen()) {
-            presenter?.emitAction(EventCaptureAction.ON_BACK)
+            presenter.emitAction(EventCaptureAction.ON_BACK)
         } else {
             finishDataEntry()
         }
@@ -215,16 +214,12 @@ class EventCaptureActivity :
 
     override fun updatePercentage(primaryValue: Float) {
         binding.completion.setCompletionPercentage(primaryValue)
-        if (!presenter!!.completionPercentageVisibility) {
+        if (!presenter.getCompletionPercentageVisibility()) {
             binding.completion.visibility = View.GONE
         }
     }
 
-    override fun showCompleteActions(
-        canComplete: Boolean,
-        emptyMandatoryFields: Map<String, String>,
-        eventCompletionDialog: EventCompletionDialog,
-    ) {
+    override fun showCompleteActions(eventCompletionDialog: EventCompletionDialog) {
         if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
             val dialog = BottomSheetDialog(
                 bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
@@ -255,8 +250,8 @@ class EventCaptureActivity :
 
     override fun attemptToSkip() {
         instance
-            .setAccessDataWrite(presenter!!.canWrite())
-            .setIsExpired(presenter!!.hasExpired())
+            .setAccessDataWrite(presenter.canWrite())
+            .setIsExpired(presenter.hasExpired())
             .setSkip(true)
             .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
             .show(supportFragmentManager, SHOW_OPTIONS)
@@ -264,8 +259,8 @@ class EventCaptureActivity :
 
     override fun attemptToReschedule() {
         instance
-            .setAccessDataWrite(presenter!!.canWrite())
-            .setIsExpired(presenter!!.hasExpired())
+            .setAccessDataWrite(presenter.canWrite())
+            .setIsExpired(presenter.hasExpired())
             .setReschedule(true)
             .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
             .show(supportFragmentManager, SHOW_OPTIONS)
@@ -275,12 +270,12 @@ class EventCaptureActivity :
         when (actionType) {
             FormBottomDialog.ActionType.COMPLETE -> {
                 isEventCompleted = true
-                presenter!!.completeEvent(false)
+                presenter.completeEvent(false)
             }
 
-            FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
+            FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter.completeEvent(true)
             FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
-            FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
+            FormBottomDialog.ActionType.SKIP -> presenter.skipEvent()
             FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
             }
 
@@ -325,15 +320,11 @@ class EventCaptureActivity :
         binding.programStageName.text = stageName
     }
 
-    override fun getPresenter(): EventCaptureContract.Presenter {
-        return presenter!!
-    }
-
     override fun showMoreOptions(view: View) {
         AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
             .onMenuInflated { popupMenu: PopupMenu ->
                 popupMenu.menu.findItem(R.id.menu_delete).isVisible =
-                    presenter!!.canWrite() && presenter!!.isEnrollmentOpen
+                    presenter.canWrite() && presenter.isEnrollmentOpen()
                 popupMenu.menu.findItem(R.id.menu_share).isVisible = false
             }
             .onMenuItemClicked { itemId: Int? ->
@@ -358,7 +349,7 @@ class EventCaptureActivity :
     }
 
     private fun confirmDeleteEvent() {
-        presenter?.programStage().let {
+        presenter.programStage().let {
             CustomDialog(
                 this,
                 resourceManager.formatWithEventLabel(
@@ -375,7 +366,7 @@ class EventCaptureActivity :
                 object : DialogClickListener {
                     override fun onPositive() {
                         analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
-                        presenter!!.deleteEvent()
+                        presenter.deleteEvent()
                     }
 
                     override fun onNegative() {
@@ -392,7 +383,7 @@ class EventCaptureActivity :
             .setMessage(
                 resourceManager.formatWithEventLabel(
                     R.string.event_label_date_in_future_message,
-                    programStageUid = presenter?.programStage(),
+                    programStageUid = presenter.programStage(),
                 ),
             )
             .setPositiveButton(

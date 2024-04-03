@@ -63,14 +63,18 @@ class FormValueStore(
     ): Flowable<StoreResult> {
         return when (uid) {
             EVENT_REPORT_DATE_UID -> {
-                eventRepository?.setEventDate(value?.toDate())
-
-                Flowable.just(
+                val storeResult = value?.toDate()?.let {
+                    eventRepository?.setEventDate(it)
                     StoreResult(
                         EVENT_REPORT_DATE_UID,
                         ValueStoreResult.VALUE_CHANGED,
-                    ),
+                    )
+                } ?: StoreResult(
+                    EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                 )
+
+                Flowable.just(storeResult)
             }
 
             EVENT_ORG_UNIT_UID -> {
@@ -126,14 +130,18 @@ class FormValueStore(
             }
         }
 
-        eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
-
-        return Flowable.just(
+        val storeResult = categoryOptionComboUid?.let {
+            eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
             StoreResult(
                 EVENT_CATEGORY_COMBO_UID,
                 ValueStoreResult.VALUE_CHANGED,
-            ),
+            )
+        } ?: StoreResult(
+            EVENT_CATEGORY_COMBO_UID,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
+
+        return Flowable.just(storeResult)
     }
 
     private fun storeEventCoordinateAttribute(

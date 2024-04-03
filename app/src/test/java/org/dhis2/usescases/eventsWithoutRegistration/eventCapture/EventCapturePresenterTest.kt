@@ -7,6 +7,7 @@ import io.reactivex.Single
 import org.dhis2.bindings.canSkipErrorFix
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -88,7 +89,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is not open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn false
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(!result)
     }
 
@@ -96,7 +97,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn true
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(result)
     }
 
@@ -213,7 +214,7 @@ class EventCapturePresenterTest {
     fun `Should show completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn true
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(result)
     }
 
@@ -221,7 +222,7 @@ class EventCapturePresenterTest {
     fun `Should hide completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn false
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(!result)
     }
 
@@ -340,11 +341,7 @@ class EventCapturePresenterTest {
             warningFields = emptyList(),
         )
 
-        verify(view).showCompleteActions(
-            any(),
-            any(),
-            any(),
-        )
+        verify(view).showCompleteActions(any())
         verify(view).showNavigationBar()
     }
 
@@ -365,6 +362,8 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
             hasErrorFields = false,
             hasEmptyMandatoryFields = false,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -374,6 +373,8 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
             hasErrorFields = true,
             hasEmptyMandatoryFields = false,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -383,6 +384,41 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
             hasErrorFields = false,
             hasEmptyMandatoryFields = true,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
+        )
+        assertTrue(canSkipErrorFix)
+    }
+
+    @Test
+    fun `Should allow skip error if validation strategy is ON_COMPLETE and has event mandatory when check event`() {
+        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
+            hasErrorFields = false,
+            hasEmptyMandatoryFields = true,
+            hasEmptyEventCreationMandatoryFields = true,
+            eventMode = EventMode.CHECK,
+        )
+        assertTrue(canSkipErrorFix)
+    }
+
+    @Test
+    fun `Should not allow skip error if validation strategy is ON_COMPLETE and has event mandatory when new event`() {
+        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
+            hasErrorFields = false,
+            hasEmptyMandatoryFields = true,
+            hasEmptyEventCreationMandatoryFields = true,
+            eventMode = EventMode.NEW,
+        )
+        assertTrue(!canSkipErrorFix)
+    }
+
+    @Test
+    fun `Should allow skip error if validation strategy is ON_COMPLETE and not has event mandatory when new event`() {
+        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
+            hasErrorFields = true,
+            hasEmptyMandatoryFields = true,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.NEW,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -392,6 +428,8 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
             hasErrorFields = false,
             hasEmptyMandatoryFields = false,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
         )
         assertTrue(canSkipErrorFix)
     }
@@ -401,6 +439,8 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
             hasErrorFields = true,
             hasEmptyMandatoryFields = false,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
         )
         assertTrue(!canSkipErrorFix)
     }
@@ -410,6 +450,8 @@ class EventCapturePresenterTest {
         val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
             hasErrorFields = false,
             hasEmptyMandatoryFields = true,
+            hasEmptyEventCreationMandatoryFields = false,
+            eventMode = EventMode.CHECK,
         )
         assertTrue(!canSkipErrorFix)
     }

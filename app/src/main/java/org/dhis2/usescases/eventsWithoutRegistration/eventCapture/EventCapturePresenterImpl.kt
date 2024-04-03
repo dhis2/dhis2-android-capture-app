@@ -12,6 +12,8 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.form.data.EventRepository
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
@@ -109,6 +111,7 @@ class EventCapturePresenterImpl(
         errorFields: List<FieldWithIssue>,
         emptyMandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
+        eventMode: EventMode?,
     ) {
         val eventStatus = eventStatus
         if (eventStatus != EventStatus.ACTIVE) {
@@ -118,6 +121,11 @@ class EventCapturePresenterImpl(
             val canSkipErrorFix = validationStrategy.canSkipErrorFix(
                 hasErrorFields = errorFields.isNotEmpty(),
                 hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
+                hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
+                    containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
+                        containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
+                },
+                eventMode = eventMode,
             )
             val eventCompletionDialog = configureEventCompletionDialog.invoke(
                 errorFields,
@@ -127,11 +135,7 @@ class EventCapturePresenterImpl(
                 onCompleteMessage,
                 canSkipErrorFix,
             )
-            view.showCompleteActions(
-                canComplete && eventCaptureRepository.isEnrollmentOpen,
-                emptyMandatoryFields,
-                eventCompletionDialog,
-            )
+            view.showCompleteActions(eventCompletionDialog)
         }
         view.showNavigationBar()
     }
