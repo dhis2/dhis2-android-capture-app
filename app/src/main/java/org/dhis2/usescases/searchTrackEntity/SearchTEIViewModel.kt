@@ -901,13 +901,13 @@ class SearchTEIViewModel(
 
     fun getFriendlyQueryData(): Map<String, String> {
         val map = mutableMapOf<String, String>()
-        uiState.items.filter { it.value != null }
+        uiState.items.filter { !it.value.isNullOrEmpty() }
             .forEach { item ->
                 when (item.valueType) {
                     ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
                         map[item.uid] = (item.displayName ?: "")
                     }
-                    ValueType.DATE -> {
+                    ValueType.DATE, ValueType.AGE -> {
                         item.value?.let {
                             if (it.isNotEmpty()) {
                                 val date = DateUtils.oldUiDateFormat().parse(it)
@@ -936,6 +936,9 @@ class SearchTEIViewModel(
                                 map[item.uid] = item.label
                             }
                         }
+                    }
+                    ValueType.PERCENTAGE -> {
+                        map[item.uid] = "${item.value}%"
                     }
                     else -> {
                         map[item.uid] = (item.value ?: "")

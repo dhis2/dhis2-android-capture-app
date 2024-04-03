@@ -643,6 +643,7 @@ class SearchTEIViewModelTest {
             "uid5" to "Boolean: false",
             "uid6" to "Yes Only",
             "uid7" to "Text value",
+            "uid9" to "18%",
         )
 
         val formattedMap = viewModel.getFriendlyQueryData()
@@ -725,6 +726,15 @@ class SearchTEIViewModelTest {
                 autocompleteList = emptyList(),
                 optionSetConfiguration = null,
                 valueType = ValueType.TEXT,
+            ),
+            FieldUiModelImpl(
+                uid = "uid9",
+                layoutId = 9,
+                label = "Percentage",
+                value = "18",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.PERCENTAGE,
             ),
         )
     }
