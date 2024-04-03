@@ -41,6 +41,7 @@ class EventCaptureFormPresenter(
                 result.fieldUidErrorList,
                 result.mandatoryFields,
                 result.warningFields,
+                eventMode,
             )
 
             is FieldsWithWarningResult -> activityPresenter.attemptFinish(
@@ -49,6 +50,7 @@ class EventCaptureFormPresenter(
                 emptyList(),
                 emptyMap(),
                 result.fieldUidWarningList,
+                eventMode,
             )
 
             is MissingMandatoryResult -> activityPresenter.attemptFinish(

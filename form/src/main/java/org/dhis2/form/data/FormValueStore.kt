@@ -78,23 +78,18 @@ class FormValueStore(
             }
 
             EVENT_ORG_UNIT_UID -> {
-                try {
-                    eventRepository?.setOrganisationUnitUid(value)
+                val storeResult = value?.takeIf { it.isNotEmpty() }?.let {
+                    eventRepository?.setOrganisationUnitUid(it)
+                    StoreResult(
+                        EVENT_ORG_UNIT_UID,
+                        ValueStoreResult.VALUE_CHANGED,
+                    )
+                } ?: StoreResult(
+                    EVENT_ORG_UNIT_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
 
-                    Flowable.just(
-                        StoreResult(
-                            EVENT_ORG_UNIT_UID,
-                            ValueStoreResult.VALUE_CHANGED,
-                        ),
-                    )
-                } catch (e: Exception) {
-                    Flowable.just(
-                        StoreResult(
-                            EVENT_ORG_UNIT_UID,
-                            ValueStoreResult.ERROR_UPDATING_VALUE,
-                        ),
-                    )
-                }
+                Flowable.just(storeResult)
             }
 
             EVENT_COORDINATE_UID -> {

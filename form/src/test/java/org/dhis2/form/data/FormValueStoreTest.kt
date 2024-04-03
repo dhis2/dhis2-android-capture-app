@@ -1004,6 +1004,16 @@ class FormValueStoreTest {
         assertEquals(result.valueStoreResult, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
+    @Test
+    fun `should not save value when clear event details org unit`() {
+        val uid = EventRepository.EVENT_ORG_UNIT_UID
+
+        val result = deValueStore.save(uid, null, null)
+
+        verifyNoInteractions(eventRepository)
+        assertEquals(result.valueStoreResult, ValueStoreResult.VALUE_HAS_NOT_CHANGED)
+    }
+
     private fun mockGetCategoryOptionComboUid(
         categoryComboUid: String,
         categoryOptionsUids: List<String>,

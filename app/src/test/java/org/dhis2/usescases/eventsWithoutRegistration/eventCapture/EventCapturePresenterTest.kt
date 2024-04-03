@@ -4,10 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.bindings.canSkipErrorFix
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -355,105 +353,6 @@ class EventCapturePresenterTest {
         verify(view).updateNoteBadge(0)
         presenter.initNoteCounter()
         verify(view).updateNoteBadge(1)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has error`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has mandatory`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has event mandatory when check event`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-            hasEmptyEventCreationMandatoryFields = true,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if validation strategy is ON_COMPLETE and has event mandatory when new event`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-            hasEmptyEventCreationMandatoryFields = true,
-            eventMode = EventMode.NEW,
-        )
-        assertTrue(!canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and not has event mandatory when new event`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = true,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.NEW,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_INSERT if no errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if validation strategy is ON_INSERT if has errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(!canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if ON_INSERT and has mandatory fields`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-            hasEmptyEventCreationMandatoryFields = false,
-            eventMode = EventMode.CHECK,
-        )
-        assertTrue(!canSkipErrorFix)
     }
 
     private fun initializeMocks() {
