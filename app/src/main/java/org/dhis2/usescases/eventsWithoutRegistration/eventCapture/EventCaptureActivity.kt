@@ -93,16 +93,13 @@ class EventCaptureActivity :
     private var onEditionListener: OnEditionListener? = null
     private var adapter: EventCapturePagerAdapter? = null
     private var eventViewPager: ViewPager2? = null
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private var dashboardViewModel: DashboardViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         teiUid = intent.getStringExtra(Constants.TEI_UID)
         enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         setUpEventCaptureComponent(eventUid)
-        val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
-        dashboardViewModel =
-                ViewModelProvider(this, viewModelFactory!!)[DashboardViewModel::class.java]
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
@@ -116,8 +113,13 @@ class EventCaptureActivity :
         setUpNavigationBar()
         setUpEventCaptureFormLandscape(eventUid ?: "")
         if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
+            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+            viewModelFactory.let {
+                dashboardViewModel =
+                        ViewModelProvider(this, it!!)[DashboardViewModel::class.java]
+            }
             supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
-            dashboardViewModel.updateSelectedEventUid(eventUid)
+            dashboardViewModel!!.updateSelectedEventUid(eventUid)
         }
         showProgress()
         presenter!!.initNoteCounter()
@@ -227,7 +229,7 @@ class EventCaptureActivity :
         super.onResume()
         presenter!!.refreshTabCounters()
         with(dashboardViewModel) {
-            selectedEventUid().observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
+            this?.selectedEventUid()?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
         }
     }
 
