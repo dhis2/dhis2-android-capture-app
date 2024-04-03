@@ -165,7 +165,6 @@ class EventAdapter(
                                         currentList[previousSelectedPosition].isClicked = false
                                         notifyItemChanged(previousSelectedPosition)
                                     }
-                                    println("***DEBUG_POS: $previousSelectedPosition")
                                     previousSelectedPosition = position
                                     getItem(position).isClicked = true
                                     notifyItemChanged(position)
