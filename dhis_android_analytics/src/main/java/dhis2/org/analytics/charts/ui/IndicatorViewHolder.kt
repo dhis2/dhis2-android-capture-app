@@ -16,13 +16,13 @@ import dhis2.org.databinding.ItemIndicatorBinding
 import org.dhis2.commons.dialogs.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.IndicatorInput
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class IndicatorViewHolder(
     val binding: ItemIndicatorBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(programIndicatorModel: IndicatorModel) {
-        binding.indicatorModel = programIndicatorModel
         binding.composeView.setContent {
             Column(
                 Modifier
@@ -41,7 +41,11 @@ class IndicatorViewHolder(
             ) {
                 IndicatorInput(
                     title = programIndicatorModel.label(),
-                    indicatorColor = if (programIndicatorModel.color == null) Color(programIndicatorModel.color()) else Color(R.color.gray_e7e),
+                    indicatorColor = if (!programIndicatorModel.color.isNullOrEmpty()) {
+                        Color(programIndicatorModel.color())
+                    } else {
+                        SurfaceColor.Container
+                    },
                     content = programIndicatorModel.value ?: "",
                     modifier = Modifier.then(
                         if (programIndicatorModel.programIndicator?.description() != null) {
@@ -61,11 +65,11 @@ class IndicatorViewHolder(
     }
 
     private fun showDescription(programIndicatorModel: ProgramIndicator?) {
-        programIndicatorModel.let {
+        programIndicatorModel?.let {
             CustomDialog(
                 itemView.context,
-                programIndicatorModel?.displayName()!!,
-                programIndicatorModel?.displayDescription()!!,
+                it.displayName() ?: "",
+                it.displayDescription() ?: "",
                 itemView.context.getString(R.string.action_accept),
                 null,
                 CustomDialog.DESCRIPTION_DIALOG,

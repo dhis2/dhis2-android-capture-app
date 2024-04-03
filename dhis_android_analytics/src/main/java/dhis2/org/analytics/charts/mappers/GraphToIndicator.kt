@@ -16,6 +16,7 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import org.hisp.dhis.mobile.ui.designsystem.component.IndicatorInput
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class GraphToIndicator {
     fun map(context: Context, graph: Graph): View {
@@ -42,7 +43,7 @@ class GraphToIndicator {
                                 indicatorColor = if (coordinate?.legendValue?.color != null) {
                                     Color(coordinate.legendValue.color)
                                 } else {
-                                    Color(R.color.gray_e7e)
+                                    SurfaceColor.Container
                                 },
                             )
 
