@@ -14,7 +14,8 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 
 fun indicatorsRobot(
     composeTestRule: ComposeTestRule,
-    indicatorsRobot: IndicatorsRobot.() -> Unit) {
+    indicatorsRobot: IndicatorsRobot.() -> Unit
+) {
     IndicatorsRobot(composeTestRule).apply {
         indicatorsRobot()
     }
@@ -25,52 +26,16 @@ class IndicatorsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkDetails(yellowFeverIndicator: String, weightIndicator: String) {
         composeTestRule.onNodeWithText(yellowFeverIndicator).assertIsDisplayed()
         composeTestRule.onNodeWithText(weightIndicator).assertIsDisplayed()
-        /*onView(withId(R.id.indicators_recycler)).check(
+    }
+
+    fun checkGraphIsRendered(chartName: String) {
+        onView(withId(R.id.indicators_recycler)).check(
             matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(
-                        2,
-                        hasDescendant(
-                            allOf(
-                                withText(yellowFeverIndicator),
-                                hasSibling(
-                                    allOf(
-                                        withId(R.id.indicator_name),
-                                        withText("Measles + Yellow fever doses")
-                                    )
-                                )
-                            )
-                        )
-                    )
+                atPosition(
+                    1,
+                    hasDescendant(withText(chartName))
                 )
             )
         )
-
-        onView(withId(R.id.indicators_recycler)).check(
-            matches(
-                allOf(
-                    isDisplayed(), isNotEmpty(),
-                    atPosition(
-                        1,
-                        hasDescendant(
-                            allOf(
-                                withText(weightIndicator),
-                                hasSibling(
-                                    allOf(
-                                        withId(R.id.indicator_name),
-                                        withText("Average weight (g)")
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )*/
-    }
-
-    fun checkGraphIsRendered(chartName:String){
-        onView(withId(R.id.indicators_recycler)).check(matches(atPosition(1, hasDescendant(withText(chartName)))))
     }
 }
