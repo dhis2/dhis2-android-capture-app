@@ -158,16 +158,17 @@ class EventAdapter(
                                                         event.uid(),
                                                         event.status()!!,
                                                 )
+
+                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                                                    currentList[previousSelectedPosition].isClicked = false
+                                                    notifyItemChanged(previousSelectedPosition)
+                                                }
+                                                previousSelectedPosition = position
+                                                getItem(position).isClicked = true
+                                                notifyItemChanged(position)
                                             }
                                         }
                                     }
-                                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                        currentList[previousSelectedPosition].isClicked = false
-                                        notifyItemChanged(previousSelectedPosition)
-                                    }
-                                    previousSelectedPosition = position
-                                    getItem(position).isClicked = true
-                                    notifyItemChanged(position)
                                 },
                         )
 

@@ -487,7 +487,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
         if (dashboardActivity is EventCaptureActivity) {
             val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
-            println("****:DEBUG_SKIPPED EVENTS: selectedEventUid: $selectedEventUid")
             dashboardViewModel.updateSelectedEventUid(selectedEventUid)
         }
     }
