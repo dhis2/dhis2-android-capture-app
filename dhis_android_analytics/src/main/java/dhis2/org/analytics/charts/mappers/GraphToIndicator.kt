@@ -3,10 +3,8 @@ package dhis2.org.analytics.charts.mappers
 import android.content.Context
 import android.view.View
 import android.widget.TextView
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -34,7 +32,9 @@ class GraphToIndicator {
                     graph.series
                 }
                 DHIS2Theme {
-                    Column {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
                         series.forEach {
                             val coordinate = it.coordinates.lastOrNull()
                             IndicatorInput(
@@ -46,8 +46,6 @@ class GraphToIndicator {
                                     SurfaceColor.Container
                                 },
                             )
-
-                            Spacer(modifier = Modifier.size(16.dp))
                         }
                     }
                 }
