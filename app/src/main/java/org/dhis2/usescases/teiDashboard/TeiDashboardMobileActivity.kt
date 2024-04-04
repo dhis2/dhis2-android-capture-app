@@ -797,10 +797,12 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    override fun getTeiDashboardMobileActivityIntent(): Intent {
-        val intent = Intent(context, TeiDashboardMobileActivity::class.java)
-        intent.putExtra(TEI_UID, teiUid)
-        return intent
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun activityTeiUid(): String? {
+        return teiUid
     }
 
     companion object {

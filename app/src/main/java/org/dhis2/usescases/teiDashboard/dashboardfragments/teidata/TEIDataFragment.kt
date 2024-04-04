@@ -221,10 +221,14 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                         phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
                         emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
                         programsCallback = {
-                            val intent = dashboardActivity.getTeiDashboardMobileActivityIntent()
-                            intent?.let {
-                                startActivity(it)
-                            }
+                           startActivity(
+                                   TeiDashboardMobileActivity.intent(
+                                           dashboardActivity.getContext(),
+                                           dashboardActivity.activityTeiUid(),
+                                           null,
+                                           null,
+                                   ),
+                           )
                         },
                 )
             }
@@ -483,6 +487,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
         if (dashboardActivity is EventCaptureActivity) {
             val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+            println("****:DEBUG_SKIPPED EVENTS: selectedEventUid: $selectedEventUid")
             dashboardViewModel.updateSelectedEventUid(selectedEventUid)
         }
     }

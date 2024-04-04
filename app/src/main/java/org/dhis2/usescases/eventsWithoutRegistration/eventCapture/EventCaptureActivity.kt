@@ -200,7 +200,7 @@ class EventCaptureActivity :
             setUpEventCaptureComponent(newEventUid)
             setUpViewPagerAdapter()
             setUpNavigationBar()
-            setUpEventCaptureFormLandscape(eventUid ?: "")
+            setUpEventCaptureFormLandscape(newEventUid)
             showProgress()
             presenter!!.initNoteCounter()
             presenter!!.init()
@@ -573,9 +573,14 @@ class EventCaptureActivity :
         }
     }
 
-    override fun getTeiDashboardMobileActivityIntent(): Intent? {
-        return null
+    override fun getContext(): Context {
+        return this
     }
+
+    override fun activityTeiUid(): String? {
+        return teiUid
+    }
+
 
     companion object {
         private const val SHOW_OPTIONS = "SHOW_OPTIONS"
