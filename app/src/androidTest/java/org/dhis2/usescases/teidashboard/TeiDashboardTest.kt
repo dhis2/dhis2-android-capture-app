@@ -219,7 +219,7 @@ class TeiDashboardTest : BaseTest() {
             goToAnalytics()
         }
 
-        indicatorsRobot {
+        indicatorsRobot(composeTestRule) {
             checkDetails("0", "4817")
         }
     }
@@ -302,7 +302,7 @@ class TeiDashboardTest : BaseTest() {
             goToAnalytics()
         }
 
-        indicatorsRobot {
+        indicatorsRobot(composeTestRule) {
             checkGraphIsRendered(chartName)
         }
 
