@@ -44,6 +44,7 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -235,6 +236,7 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
             ),
             onClick = { onGoBack() },
             colorStyle = ColorStyle.DEFAULT,
+            style = ButtonStyle.FILLED,
         )
     }
 }

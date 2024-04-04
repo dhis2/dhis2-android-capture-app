@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -151,12 +152,12 @@ fun BottomSheetDialogUi(
             Divider()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                        style = ButtonStyle.ELEVATED,
                         onClick = { onSecondaryButtonClicked() },
                         text = it,
                         enabled = bottomSheetDialogUiModel.secondaryButton != null,
@@ -166,6 +167,7 @@ fun BottomSheetDialogUi(
                 (bottomSheetDialogUiModel.mainButton?.textLabel ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(MAIN_BUTTON_TAG),
+                        style = ButtonStyle.ELEVATED,
                         onClick = { onMainButtonClicked() },
                         text = it,
                     )

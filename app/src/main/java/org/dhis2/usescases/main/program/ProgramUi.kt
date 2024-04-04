@@ -74,6 +74,7 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
@@ -358,9 +359,10 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
         },
         confirmButton = {
             Button(
-                modifier = Modifier.padding(bottom = 8.dp, end = 16.dp),
+                modifier = Modifier.padding(bottom = 16.dp, end = 16.dp),
                 text = stringResource(id = R.string.action_close).uppercase(),
                 onClick = { onDismiss() },
+                style = ButtonStyle.TEXT,
             )
         },
     )

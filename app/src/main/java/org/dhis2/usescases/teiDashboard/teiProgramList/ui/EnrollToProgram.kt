@@ -27,6 +27,7 @@ import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
@@ -63,6 +64,7 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
                 .padding(end = 16.dp),
             enabled = !programViewModel.isDownloading(),
             onClick = onEnrollClickListener,
+            style = ButtonStyle.FILLED
         )
     }
 }

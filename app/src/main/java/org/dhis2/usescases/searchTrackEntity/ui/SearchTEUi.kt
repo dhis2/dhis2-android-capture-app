@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -341,22 +344,41 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
-            text = buttonText,
             onClick = onSearchOutsideClick,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
-                    contentDescription = "",
-                    tint = Color(
-                        ColorUtils().getPrimaryColor(
-                            LocalContext.current,
-                            ColorType.PRIMARY,
-                        ),
+            border = BorderStroke(
+                1.dp,
+                Color(
+                    ColorUtils().getPrimaryColor(
+                        LocalContext.current,
+                        ColorType.PRIMARY,
                     ),
-                )
-            },
-            style = ButtonStyle.OUTLINED,
-        )
+                ),
+            ),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.white),
+            ),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "",
+                tint = Color(
+                    ColorUtils().getPrimaryColor(
+                        LocalContext.current,
+                        ColorType.PRIMARY,
+                    ),
+                ),
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = buttonText,
+                color = Color(
+                    ColorUtils().getPrimaryColor(
+                        LocalContext.current,
+                        ColorType.PRIMARY,
+                    ),
+                ),
+            )
+        }
     }
 }
 
