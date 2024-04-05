@@ -120,7 +120,7 @@ class SyncGranularWorker(
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setAutoCancel(false)
-            .setProgress(100, progress, false)
+            .setProgress(100, progress, true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         setForegroundAsync(
             ForegroundInfo(
