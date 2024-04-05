@@ -335,6 +335,8 @@ class ProgramEventDetailActivity :
                             programStageUid = it,
                         )
                     }
+                } else {
+                    binding.addEventButton.isEnabled = true
                 }
             }
             .build()
