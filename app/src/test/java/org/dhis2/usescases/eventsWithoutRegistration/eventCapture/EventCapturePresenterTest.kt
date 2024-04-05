@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.bindings.canSkipErrorFix
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
@@ -88,7 +87,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is not open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn false
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(!result)
     }
 
@@ -96,7 +95,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn true
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(result)
     }
 
@@ -213,7 +212,7 @@ class EventCapturePresenterTest {
     fun `Should show completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn true
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(result)
     }
 
@@ -221,7 +220,7 @@ class EventCapturePresenterTest {
     fun `Should hide completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn false
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(!result)
     }
 
@@ -340,11 +339,7 @@ class EventCapturePresenterTest {
             warningFields = emptyList(),
         )
 
-        verify(view).showCompleteActions(
-            any(),
-            any(),
-            any(),
-        )
+        verify(view).showCompleteActions(any())
         verify(view).showNavigationBar()
     }
 
@@ -358,60 +353,6 @@ class EventCapturePresenterTest {
         verify(view).updateNoteBadge(0)
         presenter.initNoteCounter()
         verify(view).updateNoteBadge(1)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has error`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has mandatory`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_INSERT if no errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if validation strategy is ON_INSERT if has errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(!canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if ON_INSERT and has mandatory fields`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-        )
-        assertTrue(!canSkipErrorFix)
     }
 
     private fun initializeMocks() {
