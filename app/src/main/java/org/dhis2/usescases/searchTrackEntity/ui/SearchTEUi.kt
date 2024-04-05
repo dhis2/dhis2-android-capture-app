@@ -137,7 +137,7 @@ fun AddNewButton(
         onClick = onClick,
         icon = {
             Icon(
-                painter = painterResource(id = R.drawable.ic_search),
+                painter = painterResource(id = R.drawable.ic_add_primary),
                 contentDescription = "",
                 tint = Color(
                     ColorUtils().getPrimaryColor(
@@ -147,7 +147,7 @@ fun AddNewButton(
                 ),
             )
         },
-        style = ButtonStyle.ELEVATED,
+        style = ButtonStyle.OUTLINED,
     )
 }
 

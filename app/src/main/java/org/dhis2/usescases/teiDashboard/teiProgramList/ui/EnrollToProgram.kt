@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,40 +33,51 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
 fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .height(86.dp)
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(horizontal = 21.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        MetadataIcon(
+    Column {
+        Row(
             modifier = Modifier
-                .width(56.dp)
-                .height(56.dp)
-                .alpha(0.5f),
-            metadataIconData = programViewModel.metadataIconData,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            modifier = Modifier
-                .weight(2f, true)
-                .padding(end = 12.dp),
-            text = programViewModel.title,
-            fontSize = 14.sp,
-        )
-        Button(
-            text = stringResource(id = R.string.enroll).uppercase(),
-            modifier = Modifier
-                .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
-                .height(36.dp)
-                .weight(1.2f, true)
-                .padding(end = 16.dp),
-            enabled = !programViewModel.isDownloading(),
-            onClick = onEnrollClickListener,
-            style = ButtonStyle.FILLED
-        )
+                .height(86.dp)
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
+                //.padding(horizontal = 21.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MetadataIcon(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(56.dp)
+                    .alpha(0.5f),
+                metadataIconData = programViewModel.metadataIconData,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                modifier = Modifier
+                    .weight(2f, true)
+                    .padding(end = 12.dp),
+                text = programViewModel.title,
+                fontSize = 14.sp,
+            )
+        }
+        Row(
+            modifier = Modifier.padding(bottom = 21.dp)
+        ) {
+            Spacer(modifier = Modifier.width(72.dp))
+
+            Button(
+                text = stringResource(id = R.string.enroll).uppercase(),
+                modifier = Modifier
+                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
+                    .height(36.dp)
+                    //.ali
+
+                    //.weight(1.2f, true)
+                    .padding(end = 16.dp),
+                enabled = !programViewModel.isDownloading(),
+                onClick = onEnrollClickListener,
+                style = ButtonStyle.FILLED
+            )
+        }
     }
 }
 
