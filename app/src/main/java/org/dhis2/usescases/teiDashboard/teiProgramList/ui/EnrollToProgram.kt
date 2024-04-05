@@ -40,7 +40,6 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
                 .fillMaxWidth()
                 .background(color = Color.White)
                 .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
-                //.padding(horizontal = 21.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             MetadataIcon(
@@ -60,7 +59,7 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
             )
         }
         Row(
-            modifier = Modifier.padding(bottom = 21.dp)
+            modifier = Modifier.padding(bottom = 21.dp),
         ) {
             Spacer(modifier = Modifier.width(72.dp))
 
@@ -69,13 +68,10 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
                 modifier = Modifier
                     .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
                     .height(36.dp)
-                    //.ali
-
-                    //.weight(1.2f, true)
                     .padding(end = 16.dp),
                 enabled = !programViewModel.isDownloading(),
                 onClick = onEnrollClickListener,
-                style = ButtonStyle.FILLED
+                style = ButtonStyle.FILLED,
             )
         }
     }
