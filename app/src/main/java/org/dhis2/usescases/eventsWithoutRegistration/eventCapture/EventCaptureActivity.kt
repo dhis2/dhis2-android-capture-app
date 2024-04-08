@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -24,6 +25,7 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
@@ -42,6 +44,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
@@ -208,7 +211,7 @@ class EventCaptureActivity :
     }
 
 
-    fun areTeiUidAndEnrollmentUidNotNull(): Boolean {
+    private fun areTeiUidAndEnrollmentUidNotNull(): Boolean {
         return teiUid != null && enrollmentUid != null
     }
 
@@ -543,6 +546,13 @@ class EventCaptureActivity :
             SyncStatusDialog.Builder()
                     .withContext(this)
                     .withSyncContext(it)
+                    .onDismissListener(object : OnDismissListener {
+                        override fun onDismiss(hasChanged: Boolean) {
+                               if (hasChanged && syncType == TEI_SYNC) {
+                                   dashboardViewModel?.updateDashboard()
+                                }
+                        }
+                    })
                     .onNoConnectionListener {
                         val contextView = findViewById<View>(R.id.navigationBar)
                         Snackbar.make(
