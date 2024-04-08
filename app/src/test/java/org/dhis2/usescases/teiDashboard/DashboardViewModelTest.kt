@@ -121,6 +121,7 @@ class DashboardViewModelTest {
                 StatusChangeResultCode.CHANGED,
             )
             updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
+            testingDispatcher.scheduler.advanceUntilIdle()
             verify(repository).updateEnrollmentStatus("enrollmentUid", EnrollmentStatus.COMPLETED)
             assertTrue(showStatusBar.value == EnrollmentStatus.COMPLETED)
             assertTrue(syncNeeded.value)
@@ -139,6 +140,7 @@ class DashboardViewModelTest {
                 StatusChangeResultCode.FAILED,
             )
             updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
+            testingDispatcher.scheduler.advanceUntilIdle()
             assertTrue(showStatusErrorMessages.value == StatusChangeResultCode.FAILED)
         }
     }
