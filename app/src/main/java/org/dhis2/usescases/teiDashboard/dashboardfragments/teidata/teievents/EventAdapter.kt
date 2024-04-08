@@ -31,6 +31,8 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
+import org.dhis2.utils.isLandscape
+import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -159,13 +161,15 @@ class EventAdapter(
                                                         event.status()!!,
                                                 )
 
-                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                    currentList[previousSelectedPosition].isClicked = false
-                                                    notifyItemChanged(previousSelectedPosition)
+                                                if (isLandscape()) {
+                                                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                                                        currentList[previousSelectedPosition].isClicked = false
+                                                        notifyItemChanged(previousSelectedPosition)
+                                                    }
+                                                    previousSelectedPosition = position
+                                                    getItem(position).isClicked = true
+                                                    notifyItemChanged(position)
                                                 }
-                                                previousSelectedPosition = position
-                                                getItem(position).isClicked = true
-                                                notifyItemChanged(position)
                                             }
                                         }
                                     }
