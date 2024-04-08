@@ -11,7 +11,6 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.general.AbstractActivityContracts
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
@@ -29,7 +28,6 @@ class TEIDataContracts {
         fun openEventCapture(intent: Intent)
         fun observeStageSelection(
             currentProgram: Program,
-            currentEnrollment: Enrollment,
         ): Flowable<StageSection>
 
         fun showSyncDialog(eventUid: String, enrollmentUid: String)

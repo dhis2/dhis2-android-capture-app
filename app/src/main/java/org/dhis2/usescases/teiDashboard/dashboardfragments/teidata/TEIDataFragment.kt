@@ -60,7 +60,6 @@ import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -329,7 +328,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun observeStageSelection(
         currentProgram: Program,
-        currentEnrollment: Enrollment,
     ): Flowable<StageSection> {
         if (eventAdapter == null) {
             eventAdapter = EventAdapter(
