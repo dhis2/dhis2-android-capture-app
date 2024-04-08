@@ -32,7 +32,6 @@ import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.utils.isLandscape
-import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
