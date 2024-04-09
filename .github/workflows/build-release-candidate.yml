@@ -33,7 +33,7 @@ jobs:
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
-        fileName: 'keystore/dhis_keystore.jks'
+        fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
     - name: build prod
       run: ./gradlew app:assembleDhisRelease
@@ -42,7 +42,7 @@ jobs:
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        SIGNING_KEYSTORE_PATH: 'keystore/dhis_keystore.jks'
+        SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
     - name: Read version name from file
       working-directory: ./gradle
