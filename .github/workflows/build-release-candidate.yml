@@ -36,9 +36,21 @@ jobs:
         fileName: 'keystore/dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
     - name: build prod
-      run: ./gradlew app:assembleRelease
+      run: ./gradlew app:assembleDhisRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        
+    - name: Read version name from file
+      working-directory: ./gradle
+      id: read-version
+      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+
+    # Upload Artifact Build
+    - name: Upload Android artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.repository_name }} - Android APK
+        path: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk
