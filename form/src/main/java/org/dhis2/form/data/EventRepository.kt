@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
@@ -19,6 +20,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.Category
@@ -36,6 +38,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Date
 
 class EventRepository(
@@ -58,6 +61,12 @@ class EventRepository(
             .programStages()
             .uid(event?.programStage())
             .blockingGet()
+    }
+
+    private val defaultStyleColor by lazy {
+        programStage?.program()?.uid()?.let {
+            d2.program(it)?.style()?.color()?.toColor()
+        } ?: SurfaceColor.Primary
     }
 
     override fun firstSectionToOpen(): String? {
@@ -558,7 +567,7 @@ class EventRepository(
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
 
                 val metadataIconMap =
-                    options.associate { it.uid() to metadataIconProvider(it.style()) }
+                    options.associate { it.uid() to metadataIconProvider(it.style(), defaultStyleColor) }
 
                 OptionSetConfiguration.OptionConfigData(
                     options = options,

@@ -11,10 +11,14 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.icon.Icon
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
 class MetadataIconProvider(private val d2: D2) {
-    operator fun invoke(style: ObjectStyle) = style.icon()?.let {
+
+    operator fun invoke(style: ObjectStyle) = invoke(style, SurfaceColor.Primary)
+
+    operator fun invoke(style: ObjectStyle, defaultColor: Color?) = style.icon()?.let {
         d2.iconModule().icons().key(it).blockingGet()
     }.let { icon ->
         val imageCardData = when {
@@ -29,7 +33,7 @@ class MetadataIconProvider(private val d2: D2) {
                     uid = "",
                     label = "",
                     iconRes = FILE_NOT_LOADED,
-                    iconTint = style.color()?.toColor() ?: Color.Unspecified,
+                    iconTint = style.color()?.toColor() ?: defaultColor ?: Color.Unspecified,
                 )
             }
 
@@ -42,7 +46,7 @@ class MetadataIconProvider(private val d2: D2) {
         }
         MetadataIconData(
             imageCardData = imageCardData,
-            color = style.color()?.toColor() ?: Color.Unspecified,
+            color = style.color()?.toColor() ?: defaultColor ?: Color.Unspecified,
         )
     }
 
