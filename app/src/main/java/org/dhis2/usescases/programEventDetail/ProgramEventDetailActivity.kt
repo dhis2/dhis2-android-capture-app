@@ -318,8 +318,7 @@ class ProgramEventDetailActivity :
     }
 
     override fun selectOrgUnitForNewEvent() {
-        binding.addEventButton.isEnabled = false
-
+        enableAddEventButton(false)
         OUTreeFragment.Builder()
             .showAsDialog()
             .singleSelection()
@@ -336,11 +335,15 @@ class ProgramEventDetailActivity :
                         )
                     }
                 } else {
-                    binding.addEventButton.isEnabled = true
+                    enableAddEventButton(true)
                 }
             }
             .build()
             .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+    }
+
+    private fun enableAddEventButton(enable: Boolean) {
+        binding.addEventButton.isEnabled = enable
     }
 
     override fun setWritePermission(canWrite: Boolean) {
