@@ -35,6 +35,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release"){
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            storeFile = file(System.getenv("SIGNING_KEYSTORE_PATH"))
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+        }
+    }
+
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests {
@@ -143,6 +152,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
             buildConfigField("int", "MATOMO_ID", "1")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
