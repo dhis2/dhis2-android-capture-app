@@ -147,7 +147,7 @@ fun AddNewButton(
                 ),
             )
         },
-        style = ButtonStyle.OUTLINED,
+        style = ButtonStyle.TONAL,
     )
 }
 
