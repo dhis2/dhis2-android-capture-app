@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
@@ -33,6 +34,7 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import timber.log.Timber
 
@@ -90,7 +92,6 @@ class SearchTEIViewModel(
     val teTypeName: LiveData<String> = _teTypeName
 
     var uiState by mutableStateOf(SearchParametersUiState())
-        private set
 
     private var fetchJob: Job? = null
 
@@ -432,7 +433,7 @@ class SearchTEIViewModel(
                 searching = queryData.isNotEmpty()
                 uiState = uiState.copy(
                     clearSearchEnabled = queryData.isNotEmpty(),
-                    searchedItems = queryData.toMap(),
+                    searchedItems = getFriendlyQueryData(),
                 )
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
@@ -842,7 +843,7 @@ class SearchTEIViewModel(
             searching = queryData.isNotEmpty()
             uiState = uiState.copy(
                 clearSearchEnabled = queryData.isNotEmpty(),
-                searchedItems = queryData.toMap(),
+                searchedItems = getFriendlyQueryData(),
             )
 
             val searchParametersModel = SearchParametersModel(
@@ -896,5 +897,54 @@ class SearchTEIViewModel(
             }
         }
         uiState = uiState.copy(items = updatedItems)
+    }
+
+    fun getFriendlyQueryData(): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+        uiState.items.filter { !it.value.isNullOrEmpty() }
+            .forEach { item ->
+                when (item.valueType) {
+                    ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
+                        map[item.uid] = (item.displayName ?: "")
+                    }
+                    ValueType.DATE, ValueType.AGE -> {
+                        item.value?.let {
+                            if (it.isNotEmpty()) {
+                                val date = DateUtils.oldUiDateFormat().parse(it)
+                                date?.let {
+                                    map[item.uid] = DateUtils.uiDateFormat().format(date)
+                                }
+                            }
+                        }
+                    }
+                    ValueType.DATETIME -> {
+                        item.value?.let {
+                            if (it.isNotEmpty()) {
+                                val date = DateUtils.databaseDateFormatNoSeconds().parse(it)
+                                date?.let {
+                                    map[item.uid] = DateUtils.uiDateTimeFormat().format(date)
+                                }
+                            }
+                        }
+                    }
+                    ValueType.BOOLEAN -> {
+                        map[item.uid] = "${item.label}: ${item.value}"
+                    }
+                    ValueType.TRUE_ONLY -> {
+                        item.value?.let {
+                            if (it == "true") {
+                                map[item.uid] = item.label
+                            }
+                        }
+                    }
+                    ValueType.PERCENTAGE -> {
+                        map[item.uid] = "${item.value}%"
+                    }
+                    else -> {
+                        map[item.uid] = (item.value ?: "")
+                    }
+                }
+            }
+        return map
     }
 }

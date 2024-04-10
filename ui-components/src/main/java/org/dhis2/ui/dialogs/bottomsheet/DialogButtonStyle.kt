@@ -31,7 +31,7 @@ sealed class DialogButtonStyle(
         colorResource = colorPrimary,
     )
 
-    class CompleteButton : DialogButtonStyle(
+    data object CompleteButton : DialogButtonStyle(
         textResource = R.string.complete,
         colorResource = Color.White,
         iconResource = R.drawable.ic_event_status_complete,

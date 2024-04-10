@@ -7,17 +7,19 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
-import org.dhis2.bindings.canSkipErrorFix
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.form.data.EventRepository
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
 import org.hisp.dhis.android.core.common.Unit
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.util.Date
@@ -109,15 +111,21 @@ class EventCapturePresenterImpl(
         errorFields: List<FieldWithIssue>,
         emptyMandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
+        eventMode: EventMode?,
     ) {
         val eventStatus = eventStatus
         if (eventStatus != EventStatus.ACTIVE) {
             setUpActionByStatus(eventStatus)
         } else {
-            val validationStrategy = eventCaptureRepository.validationStrategy()
-            val canSkipErrorFix = validationStrategy.canSkipErrorFix(
+            val canSkipErrorFix = canSkipErrorFix(
                 hasErrorFields = errorFields.isNotEmpty(),
                 hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
+                hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
+                    containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
+                        containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
+                },
+                eventMode = eventMode,
+                validationStrategy = eventCaptureRepository.validationStrategy(),
             )
             val eventCompletionDialog = configureEventCompletionDialog.invoke(
                 errorFields,
@@ -127,13 +135,25 @@ class EventCapturePresenterImpl(
                 onCompleteMessage,
                 canSkipErrorFix,
             )
-            view.showCompleteActions(
-                canComplete && eventCaptureRepository.isEnrollmentOpen,
-                emptyMandatoryFields,
-                eventCompletionDialog,
-            )
+            view.showCompleteActions(eventCompletionDialog)
         }
         view.showNavigationBar()
+    }
+
+    private fun canSkipErrorFix(
+        hasErrorFields: Boolean,
+        hasEmptyMandatoryFields: Boolean,
+        hasEmptyEventCreationMandatoryFields: Boolean,
+        eventMode: EventMode?,
+        validationStrategy: ValidationStrategy,
+    ): Boolean {
+        return when (validationStrategy) {
+            ValidationStrategy.ON_COMPLETE -> when (eventMode) {
+                EventMode.NEW -> !hasEmptyEventCreationMandatoryFields
+                else -> true
+            }
+            ValidationStrategy.ON_UPDATE_AND_INSERT -> !hasErrorFields && !hasEmptyMandatoryFields
+        }
     }
 
     private fun setUpActionByStatus(eventStatus: EventStatus) {
