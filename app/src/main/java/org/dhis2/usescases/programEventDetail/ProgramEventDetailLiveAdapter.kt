@@ -3,8 +3,10 @@ package org.dhis2.usescases.programEventDetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
@@ -70,14 +72,17 @@ class ProgramEventDetailLiveAdapter(
                         }
                     },
                 )
-                Box(
+                Column(
                     modifier = Modifier
                         .padding(
                             start = Spacing.Spacing8,
                             end = Spacing.Spacing8,
-                            bottom = Spacing.Spacing8,
+                            bottom = Spacing.Spacing4,
                         ),
                 ) {
+                    if (position == 0) {
+                        Spacer(modifier = Modifier.size(Spacing.Spacing8))
+                    }
                     ListCard(
                         modifier = Modifier.testTag("EVENT_ITEM"),
                         listAvatar = card.avatar,
