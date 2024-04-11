@@ -130,20 +130,21 @@ class DashboardViewModel(
     fun updateEnrollmentStatus(
         status: EnrollmentStatus,
     ) {
-        if (dashboardModel.value is DashboardEnrollmentModel) {
-            val result = repository.updateEnrollmentStatus(
-                (dashboardModel.value as DashboardEnrollmentModel).currentEnrollment.uid(),
-                status,
-            ).blockingFirst()
+        viewModelScope.launch(dispatcher.io()) {
+            if (dashboardModel.value is DashboardEnrollmentModel) {
+                val result = repository.updateEnrollmentStatus(
+                    (dashboardModel.value as DashboardEnrollmentModel).currentEnrollment.uid(),
+                    status,
+                ).blockingFirst()
 
-            if (result == StatusChangeResultCode.CHANGED) {
-                _showStatusBar.value = status
-                _syncNeeded.value = true
-                _state.value = State.TO_UPDATE
-                updateDashboard()
-                updateEnrollment.value = true
-            } else {
-                showStatusErrorMessages.value = result
+                if (result == StatusChangeResultCode.CHANGED) {
+                    _showStatusBar.value = status
+                    _syncNeeded.value = true
+                    _state.value = State.TO_UPDATE
+                    updateEnrollment.postValue(true)
+                } else {
+                    showStatusErrorMessages.postValue(result)
+                }
             }
         }
     }

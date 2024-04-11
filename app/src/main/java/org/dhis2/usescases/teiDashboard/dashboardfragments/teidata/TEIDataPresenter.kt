@@ -87,14 +87,10 @@ class TEIDataPresenter(
     private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
     val events: LiveData<List<EventViewModel>> = _events
 
-    private val _totalTimeLineEvents: MutableLiveData<Int> = MutableLiveData()
-    val totalTimeLineEvents: LiveData<Int> = _totalTimeLineEvents
-
     fun init() {
         programUid?.let {
             val program = d2.program(it) ?: throw NullPointerException()
-            val enrollment = d2.enrollment(enrollmentUid) ?: throw NullPointerException()
-            val sectionFlowable = view.observeStageSelection(program, enrollment)
+            val sectionFlowable = view.observeStageSelection(program)
                 .startWith(StageSection("", false, false))
                 .map { (stageUid, showOptions, showAllEvents) ->
                     currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
@@ -126,14 +122,13 @@ class TEIDataPresenter(
                                 events,
                                 calcResult,
                             )
-                        }
+                        }.subscribeOn(schedulerProvider.io())
                     }
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { events ->
                             _events.postValue(events)
-                            _totalTimeLineEvents.postValue(events.firstOrNull()?.eventCount ?: 0)
                             decrement()
                         },
                         Timber.Forest::d,
@@ -145,17 +140,20 @@ class TEIDataPresenter(
             _shouldDisplayEventCreationButton.value = false
         }
 
-        updateCreateEventButtonVisibility(dashboardRepository.getGrouping())
+        updateCreateEventButtonVisibility()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun updateCreateEventButtonVisibility(isGrouping: Boolean) {
-        val enrollment = d2.enrollment(enrollmentUid)
-        val showButton =
-            enrollment != null &&
-                !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
-                canAddNewEvents()
-        _shouldDisplayEventCreationButton.value = showButton
+    fun updateCreateEventButtonVisibility() {
+        CoroutineScope(dispatcher.io()).launch {
+            val isGrouping = dashboardRepository.getGrouping()
+            val enrollment = d2.enrollment(enrollmentUid)
+            val showButton =
+                enrollment != null &&
+                    !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
+                    canAddNewEvents()
+            _shouldDisplayEventCreationButton.postValue(showButton)
+        }
     }
 
     private fun applyEffects(
@@ -360,7 +358,7 @@ class TEIDataPresenter(
     fun onGroupingChanged(shouldGroupBool: Boolean) {
         programUid?.let {
             groupingProcessor.onNext(shouldGroupBool)
-            updateCreateEventButtonVisibility(shouldGroupBool)
+            updateCreateEventButtonVisibility()
         }
     }
 
@@ -423,16 +421,6 @@ class TEIDataPresenter(
                             event.type == EventViewModelType.EVENT
                     } == true
             }.sortedBy { stage -> stage.sortOrder() }
-
-    fun isEventEditable(eventUid: String): Boolean {
-        return teiDataRepository.isEventEditable(eventUid)
-    }
-
-    fun displayOrganisationUnit(): Boolean {
-        return programUid?.let {
-            teiDataRepository.displayOrganisationUnit(it)
-        } ?: false
-    }
 
     fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {

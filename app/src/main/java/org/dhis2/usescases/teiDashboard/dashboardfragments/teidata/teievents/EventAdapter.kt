@@ -132,10 +132,8 @@ class EventAdapter(
                         }
                         val card = cardMapper.map(
                             event = it,
-                            editable = it.event?.uid()
-                                ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
-                            displayOrgUnit = it.event?.program()
-                                ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
+                            editable = it.editable,
+                            displayOrgUnit = it.displayOrgUnit,
                             onCardClick = {
                                 it.event?.let { event ->
                                     when (event.status()) {

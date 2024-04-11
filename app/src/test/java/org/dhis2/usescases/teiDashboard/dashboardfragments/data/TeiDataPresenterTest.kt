@@ -199,7 +199,7 @@ class TeiDataPresenterTest {
         }
         whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
         whenever(d2.canCreateEventInEnrollment(enrollmentUid, emptyList())) doReturn false
-        teiDataPresenter.updateCreateEventButtonVisibility(false)
+        teiDataPresenter.updateCreateEventButtonVisibility()
         assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
     }
 
@@ -210,7 +210,7 @@ class TeiDataPresenterTest {
         }
         whenever(d2.enrollment(enrollmentUid)) doReturn mockedEnrollment
         whenever(d2.canCreateEventInEnrollment(enrollmentUid, emptyList())) doReturn true
-        teiDataPresenter.updateCreateEventButtonVisibility(false)
+        teiDataPresenter.updateCreateEventButtonVisibility()
         assertTrue(teiDataPresenter.shouldDisplayEventCreationButton.value == false)
     }
 

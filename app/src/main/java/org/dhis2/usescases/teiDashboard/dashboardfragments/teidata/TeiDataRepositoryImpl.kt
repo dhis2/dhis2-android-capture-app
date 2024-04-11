@@ -306,10 +306,10 @@ class TeiDataRepositoryImpl(
                                 .uid(event.organisationUnit()).blockingGet()?.displayName()
                                 ?: "",
                             catComboName = getCatOptionComboName(event.attributeOptionCombo()),
-                            dataElementValues = getEventValues(event.uid(), programStage?.uid()),
+                            dataElementValues = getEventValues(event.uid(), programStage.uid()),
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
-                                programStage?.periodType() ?: PeriodType.Daily,
+                                programStage.periodType() ?: PeriodType.Daily,
                                 event.eventDate() ?: event.dueDate()!!,
                                 Locale.getDefault(),
                             ),
@@ -319,6 +319,10 @@ class TeiDataRepositoryImpl(
                                 programStage.style(),
                                 program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
                             ),
+                            editable = isEventEditable(event.uid()),
+                            displayOrgUnit = programUid?.let {
+                                displayOrganisationUnit(it)
+                            } ?: false,
                         ),
                     )
                 }
