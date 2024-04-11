@@ -35,7 +35,6 @@ import org.dhis2.R
 import org.dhis2.bindings.buildInfo
 import org.dhis2.usescases.login.accounts.AccountModel
 import org.dhis2.usescases.login.ui.LoginTopBar
-import org.hisp.dhis.mobile.ui.designsystem.component.Button
 
 @ExperimentalMaterialApi
 @Composable
