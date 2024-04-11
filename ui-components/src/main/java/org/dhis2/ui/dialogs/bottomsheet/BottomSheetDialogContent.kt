@@ -48,6 +48,7 @@ import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.theme.textSubtitle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 
 @Composable
 fun BottomSheetDialogUi(
@@ -158,6 +159,7 @@ fun BottomSheetDialogUi(
                 (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
+                        style = ButtonStyle.TEXT,
                         onClick = { onSecondaryButtonClicked() },
                         text = it,
                         enabled = bottomSheetDialogUiModel.secondaryButton != null,
@@ -167,7 +169,7 @@ fun BottomSheetDialogUi(
                 (bottomSheetDialogUiModel.mainButton?.textLabel ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(MAIN_BUTTON_TAG),
-                        style = ButtonStyle.ELEVATED,
+                        style = ButtonStyle.FILLED,
                         onClick = { onMainButtonClicked() },
                         text = it,
                     )
