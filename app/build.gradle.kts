@@ -39,7 +39,9 @@ android {
         create("release"){
             keyAlias = System.getenv("SIGNING_KEY_ALIAS")
             keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
-            storeFile = file(System.getenv("SIGNING_KEYSTORE_PATH"))
+            System.getenv("SIGNING_KEYSTORE_PATH")?.let {path->
+                storeFile = file(path)
+            }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
         }
     }
