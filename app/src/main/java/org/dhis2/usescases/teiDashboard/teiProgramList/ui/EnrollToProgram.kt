@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,7 +37,7 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
     Column {
         Row(
             modifier = Modifier
-                .height(86.dp)
+                .fillMaxHeight()
                 .fillMaxWidth()
                 .background(color = Color.White)
                 .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
@@ -59,19 +60,18 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
             )
         }
         Row(
-            modifier = Modifier.padding(bottom = 21.dp),
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth(),
         ) {
-            Spacer(modifier = Modifier.width(72.dp))
+            Spacer(modifier = Modifier.width(68.dp).height(0.dp))
 
             Button(
-                text = stringResource(id = R.string.enroll).uppercase(),
-                modifier = Modifier
-                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
-                    .height(36.dp)
-                    .padding(end = 16.dp),
+                text = stringResource(id = R.string.enroll),
+                modifier = Modifier.fillMaxWidth()
+                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) },
                 enabled = !programViewModel.isDownloading(),
                 onClick = onEnrollClickListener,
-                style = ButtonStyle.FILLED,
+                style = ButtonStyle.TONAL,
             )
         }
     }
