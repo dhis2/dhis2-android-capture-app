@@ -48,7 +48,6 @@ import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.theme.textSubtitle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 
 @Composable
 fun BottomSheetDialogUi(
