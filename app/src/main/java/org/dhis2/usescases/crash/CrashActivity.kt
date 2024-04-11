@@ -217,7 +217,7 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
             )
         }
         Button(
-            text = stringResource(id = R.string.customactivityoncrash_error_activity_error_details_copy).uppercase(),
+            text = stringResource(id = R.string.customactivityoncrash_error_activity_error_details_copy),
             onClick = { onCopy(stackTrace) },
         )
     }
