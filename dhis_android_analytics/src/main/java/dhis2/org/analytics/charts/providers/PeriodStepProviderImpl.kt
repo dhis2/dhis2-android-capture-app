@@ -1,6 +1,12 @@
 package dhis2.org.analytics.charts.providers
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.apache.commons.text.WordUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
@@ -13,33 +19,53 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
+import kotlin.coroutines.CoroutineContext
 
-class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
+class PeriodStepProviderImpl(
+    val d2: D2,
+    val dispatcherProvider: DispatcherProvider,
+) :
+    PeriodStepProvider, CoroutineScope {
+
+    private var job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = job + dispatcherProvider.io()
+
     override fun periodStep(periodType: PeriodType?): Long {
         val currentDate = Date()
-        val initialPeriodDate = getPeriodForPeriodTypeAndDate(
-            periodType ?: PeriodType.Daily,
-            currentDate,
-            -1,
-        ).startDate()?.time ?: 0L
-        val currentPeriodDate = getPeriodForPeriodTypeAndDate(
-            periodType ?: PeriodType.Daily,
-            currentDate,
-            0,
-        ).startDate()?.time ?: 0L
-        return currentPeriodDate - initialPeriodDate
+        val result = async(dispatcherProvider.io()) {
+            val initialPeriodDate =
+                getPeriodForPeriodTypeAndDate(
+                    periodType ?: PeriodType.Daily,
+                    currentDate,
+                    -1,
+                ).startDate()?.time ?: 0L
+
+            val currentPeriodDate =
+                getPeriodForPeriodTypeAndDate(
+                    periodType ?: PeriodType.Daily,
+                    currentDate,
+                    0,
+                ).startDate()?.time ?: 0L
+
+            initialPeriodDate - currentPeriodDate
+        }
+
+        return runBlocking { result.await() }
     }
 
-    private fun getPeriodForPeriodTypeAndDate(
+    private suspend fun getPeriodForPeriodTypeAndDate(
         periodType: PeriodType,
         currentDate: Date,
         offset: Int,
     ): Period {
-        return d2.periodModule().periodHelper().blockingGetPeriodForPeriodTypeAndDate(
-            periodType,
-            currentDate,
-            offset,
-        )
+        return withContext(dispatcherProvider.io()) {
+            d2.periodModule().periodHelper().blockingGetPeriodForPeriodTypeAndDate(
+                periodType,
+                currentDate,
+                offset,
+            )
+        }
     }
 
     override fun periodUIString(locale: Locale, period: Period): String {
@@ -65,15 +91,18 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                     ).format(period.endDate()!!),
                 )
             }
+
             PeriodType.BiWeekly -> {
                 formattedDate = ""
             }
+
             PeriodType.Monthly ->
                 formattedDate =
                     SimpleDateFormat(
                         MONTHLY_FORMAT_EXPRESSION,
                         locale,
                     ).format(period.startDate()!!)
+
             PeriodType.BiMonthly,
             PeriodType.Quarterly,
             PeriodType.SixMonthly,
@@ -91,12 +120,14 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                     locale,
                 ).format(period.endDate()!!),
             )
+
             PeriodType.Yearly ->
                 formattedDate =
                     SimpleDateFormat(
                         YEARLY_FORMAT_EXPRESSION,
                         locale,
                     ).format(period.startDate()!!)
+
             else ->
                 formattedDate =
                     SimpleDateFormat(
@@ -124,6 +155,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).days
+
             PeriodType.Weekly,
             PeriodType.WeeklyWednesday,
             PeriodType.WeeklyThursday,
@@ -133,22 +165,27 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).weeks
+
             PeriodType.BiWeekly -> Weeks.weeksBetween(
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).weeks / 2
+
             PeriodType.Monthly -> Months.monthsBetween(
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).months
+
             PeriodType.BiMonthly -> Months.monthsBetween(
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).months / 2
+
             PeriodType.Quarterly -> Months.monthsBetween(
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).months / 3
+
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,
@@ -157,6 +194,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                     DateTime(initialPeriod.startDate()),
                     DateTime(currentPeriod.startDate()),
                 ).months / 6
+
             PeriodType.Yearly,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
@@ -166,6 +204,7 @@ class PeriodStepProviderImpl(val d2: D2) : PeriodStepProvider {
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).years
+
             null -> 0
         }
     }
