@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -44,7 +43,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
