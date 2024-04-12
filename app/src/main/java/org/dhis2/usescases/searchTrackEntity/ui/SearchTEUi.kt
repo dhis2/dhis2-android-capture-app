@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -27,6 +28,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -55,15 +57,15 @@ import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.hisp.dhis.mobile.ui.designsystem.component.Button
-import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun SearchResultUi(searchResult: SearchResult, onSearchOutsideClick: () -> Unit) {
@@ -108,21 +110,30 @@ fun SearchButton(
         R.string.search_add_new_te_type
     }
 
-    Button(
-        text = stringResource(id = textId, teTypeName.lowercase()),
+    OutlinedButton(
         modifier = Modifier
             .requiredHeight(56.dp)
             .then(modifier),
         onClick = onClick,
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search),
-                contentDescription = "",
-                tint = SurfaceColor.Primary,
-            )
-        },
-        style = ButtonStyle.OUTLINED,
-    )
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = SurfaceColor.Primary,
+        ),
+        border = BorderStroke(1.dp, SurfaceColor.Primary),
+        shape = RoundedCornerShape(Spacing.Spacing16),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+
+        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
+
+        Text(
+            text = stringResource(id = textId, teTypeName.lowercase()),
+            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+        )
+    }
 }
 
 @Composable
@@ -132,23 +143,33 @@ fun AddNewButton(
     onClick: () -> Unit,
 ) {
     Button(
-        text = stringResource(id = R.string.add_te_type, teTypeName.lowercase()),
-        modifier = modifier,
         onClick = onClick,
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_add_primary),
-                contentDescription = "",
-                tint = Color(
-                    ColorUtils().getPrimaryColor(
-                        LocalContext.current,
-                        ColorType.PRIMARY,
-                    ),
-                ),
-            )
-        },
-        style = ButtonStyle.TONAL,
-    )
+        modifier = Modifier
+            .requiredHeight(44.dp)
+            .then(modifier),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = SurfaceColor.PrimaryContainer,
+            contentColor = TextColor.OnPrimaryContainer,
+        ),
+        shape = RoundedCornerShape(Spacing.Spacing16),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+        ),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add_primary),
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+
+        Spacer(modifier = Modifier.requiredWidth(Spacing.Spacing8))
+
+        Text(
+            text = stringResource(id = R.string.add_te_type, teTypeName.lowercase()),
+            style = getTextStyle(style = DHIS2TextStyle.LABEL_LARGE),
+            color = SurfaceColor.Primary,
+        )
+    }
 }
 
 @Composable
