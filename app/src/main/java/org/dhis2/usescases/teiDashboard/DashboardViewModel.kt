@@ -172,7 +172,6 @@ class DashboardViewModel(
         }
     }
 
-
     fun selectedEventUid(): LiveData<String> {
         return selectedEventUid
     }

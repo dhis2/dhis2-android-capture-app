@@ -43,31 +43,31 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
-        val presenter: TEIDataPresenter,
-        val program: Program,
-        val colorUtils: ColorUtils,
-        private val cardMapper: TEIEventCardMapper,
-        private val initialSelectedEventUid: String? = null,
+    val presenter: TEIDataPresenter,
+    val program: Program,
+    val colorUtils: ColorUtils,
+    private val cardMapper: TEIEventCardMapper,
+    private val initialSelectedEventUid: String? = null,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
-        object : DiffUtil.ItemCallback<EventViewModel>() {
-            override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                val oldItemId = if (oldItem.type == EVENT) {
-                    oldItem.event!!.uid()
-                } else {
-                    oldItem.stage!!.uid()
-                }
-                val newItemId = if (newItem.type == EVENT) {
-                    newItem.event!!.uid()
-                } else {
-                    newItem.stage!!.uid()
-                }
-                return oldItemId == newItemId
+    object : DiffUtil.ItemCallback<EventViewModel>() {
+        override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            val oldItemId = if (oldItem.type == EVENT) {
+                oldItem.event!!.uid()
+            } else {
+                oldItem.stage!!.uid()
             }
+            val newItemId = if (newItem.type == EVENT) {
+                newItem.event!!.uid()
+            } else {
+                newItem.stage!!.uid()
+            }
+            return oldItemId == newItemId
+        }
 
-            override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-                return oldItem == newItem
-            }
-        },
+        override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
+            return oldItem == newItem
+        }
+    },
 ) {
 
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
@@ -82,39 +82,39 @@ class EventAdapter(
         return when (EventViewModelType.entries[viewType]) {
             STAGE -> {
                 StageViewHolder(
-                        ComposeView(parent.context),
-                        stageSelector,
-                        presenter,
-                        colorUtils,
+                    ComposeView(parent.context),
+                    stageSelector,
+                    presenter,
+                    colorUtils,
                 )
             }
 
             EVENT -> {
                 val binding = DataBindingUtil.inflate<ItemEventBinding>(
-                        LayoutInflater.from(parent.context),
-                        R.layout.item_event,
-                        parent,
-                        false,
+                    LayoutInflater.from(parent.context),
+                    R.layout.item_event,
+                    parent,
+                    false,
                 )
                 EventViewHolder(
-                        binding,
-                        program,
-                        colorUtils,
-                        { presenter.onSyncDialogClick(it) },
-                        { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
-                        { eventUid, _, eventStatus, _ ->
-                            presenter.onEventSelected(
-                                    eventUid,
-                                    eventStatus,
-                            )
-                        },
+                    binding,
+                    program,
+                    colorUtils,
+                    { presenter.onSyncDialogClick(it) },
+                    { eventUid, sharedView -> presenter.onScheduleSelected(eventUid, sharedView) },
+                    { eventUid, _, eventStatus, _ ->
+                        presenter.onEventSelected(
+                            eventUid,
+                            eventStatus,
+                        )
+                    },
                 )
             }
 
             TOGGLE_BUTTON -> {
                 ToggleStageEventsButtonHolder(
-                        ComposeView(parent.context),
-                        stageSelector,
+                    ComposeView(parent.context),
+                    stageSelector,
                 )
             }
         }
@@ -139,40 +139,40 @@ class EventAdapter(
                             Spacing.Spacing4
                         }
                         val card = cardMapper.map(
-                                event = it,
-                                editable = it.event?.uid()
-                                        ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
-                                displayOrgUnit = it.event?.program()
-                                        ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
-                                onCardClick = {
-                                    it.event?.let { event ->
-                                        when (event.status()) {
-                                            EventStatus.SCHEDULE, EventStatus.OVERDUE, EventStatus.SKIPPED -> {
-                                                presenter.onScheduleSelected(
-                                                        event.uid(),
-                                                        composeView,
-                                                )
-                                            }
+                            event = it,
+                            editable = it.event?.uid()
+                                ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
+                            displayOrgUnit = it.event?.program()
+                                ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
+                            onCardClick = {
+                                it.event?.let { event ->
+                                    when (event.status()) {
+                                        EventStatus.SCHEDULE, EventStatus.OVERDUE, EventStatus.SKIPPED -> {
+                                            presenter.onScheduleSelected(
+                                                event.uid(),
+                                                composeView,
+                                            )
+                                        }
 
-                                            else -> {
-                                                presenter.onEventSelected(
-                                                        event.uid(),
-                                                        event.status()!!,
-                                                )
+                                        else -> {
+                                            presenter.onEventSelected(
+                                                event.uid(),
+                                                event.status()!!,
+                                            )
 
-                                                if (isLandscape()) {
-                                                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                        currentList[previousSelectedPosition].isClicked = false
-                                                        notifyItemChanged(previousSelectedPosition)
-                                                    }
-                                                    previousSelectedPosition = position
-                                                    getItem(position).isClicked = true
-                                                    notifyItemChanged(position)
+                                            if (isLandscape()) {
+                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                                                    currentList[previousSelectedPosition].isClicked = false
+                                                    notifyItemChanged(previousSelectedPosition)
                                                 }
+                                                previousSelectedPosition = position
+                                                getItem(position).isClicked = true
+                                                notifyItemChanged(position)
                                             }
                                         }
                                     }
-                                },
+                                }
+                            },
                         )
 
                         if (it.event?.uid() == initialSelectedEventUid && previousSelectedPosition == RecyclerView.NO_POSITION) {
@@ -180,40 +180,39 @@ class EventAdapter(
                             previousSelectedPosition = position
                         }
                         Box(
-                                modifier = Modifier
-                                        .padding(
-                                                start = leftSpacing,
-                                                end = Spacing.Spacing16,
-                                                bottom = bottomSpacing,
-                                        ),
+                            modifier = Modifier
+                                .padding(
+                                    start = leftSpacing,
+                                    end = Spacing.Spacing16,
+                                    bottom = bottomSpacing,
+                                ),
                         ) {
-
                             ListCard(
-                                    listAvatar = card.avatar,
-                                    title = ListCardTitleModel(
-                                            text = card.title,
-                                            style = LocalTextStyle.current.copy(
-                                                    fontSize = 14.sp,
-                                                    fontWeight = FontWeight(500),
-                                                    lineHeight = 20.sp,
-                                            ),
-                                            color = TextColor.OnSurface,
+                                listAvatar = card.avatar,
+                                title = ListCardTitleModel(
+                                    text = card.title,
+                                    style = LocalTextStyle.current.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight(500),
+                                        lineHeight = 20.sp,
                                     ),
-                                    description = ListCardDescriptionModel(
-                                            text = card.description,
-                                    ),
-                                    lastUpdated = card.lastUpdated,
-                                    additionalInfoList = card.additionalInfo,
-                                    actionButton = card.actionButton,
-                                    expandLabelText = card.expandLabelText,
-                                    shrinkLabelText = card.shrinkLabelText,
-                                    onCardClick = card.onCardCLick,
+                                    color = TextColor.OnSurface,
+                                ),
+                                description = ListCardDescriptionModel(
+                                    text = card.description,
+                                ),
+                                lastUpdated = card.lastUpdated,
+                                additionalInfoList = card.additionalInfo,
+                                actionButton = card.actionButton,
+                                expandLabelText = card.expandLabelText,
+                                shrinkLabelText = card.shrinkLabelText,
+                                onCardClick = card.onCardCLick,
                             )
                             if (it.isClicked) {
                                 Box(
-                                        modifier = Modifier
-                                                .matchParentSize()
-                                                .background(color = SurfaceColor.Primary.copy(alpha = 0.1f), shape = RoundedCornerShape(Radius.S)),
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(color = SurfaceColor.Primary.copy(alpha = 0.1f), shape = RoundedCornerShape(Radius.S)),
                                 )
                             }
                         }

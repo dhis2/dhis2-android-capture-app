@@ -62,24 +62,24 @@ import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
 class TEIDataPresenter(
-        private val view: TEIDataContracts.View,
-        private val d2: D2,
-        private val dashboardRepository: DashboardRepository,
-        private val teiDataRepository: TeiDataRepository,
-        private val ruleEngineHelper: RuleEngineHelper?,
-        private var programUid: String?,
-        private val teiUid: String,
-        private val enrollmentUid: String,
-        private val schedulerProvider: SchedulerProvider,
-        private val analyticsHelper: AnalyticsHelper,
-        private val valueStore: FormValueStore,
-        private val optionsRepository: OptionsRepository,
-        private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
-        private val eventCreationOptionsMapper: EventCreationOptionsMapper,
-        private val contractHandler: TeiDataContractHandler,
-        private val dispatcher: DispatcherProvider,
-        private val createEventUseCase: CreateEventUseCase,
-        private val d2ErrorUtils: D2ErrorUtils,
+    private val view: TEIDataContracts.View,
+    private val d2: D2,
+    private val dashboardRepository: DashboardRepository,
+    private val teiDataRepository: TeiDataRepository,
+    private val ruleEngineHelper: RuleEngineHelper?,
+    private var programUid: String?,
+    private val teiUid: String,
+    private val enrollmentUid: String,
+    private val schedulerProvider: SchedulerProvider,
+    private val analyticsHelper: AnalyticsHelper,
+    private val valueStore: FormValueStore,
+    private val optionsRepository: OptionsRepository,
+    private val getNewEventCreationTypeOptions: GetNewEventCreationTypeOptions,
+    private val eventCreationOptionsMapper: EventCreationOptionsMapper,
+    private val contractHandler: TeiDataContractHandler,
+    private val dispatcher: DispatcherProvider,
+    private val createEventUseCase: CreateEventUseCase,
+    private val d2ErrorUtils: D2ErrorUtils,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -100,64 +100,66 @@ class TEIDataPresenter(
             val program = d2.program(it) ?: throw NullPointerException()
             val enrollment = d2.enrollment(enrollmentUid) ?: throw NullPointerException()
             val sectionFlowable = view.observeStageSelection(program, enrollment)
-                    .startWith(StageSection("", false, false))
-                    .map { (stageUid, showOptions, showAllEvents) ->
-                        currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
-                        StageSection(currentStage, showOptions, showAllEvents)
-                    }
+                .startWith(StageSection("", false, false))
+                .map { (stageUid, showOptions, showAllEvents) ->
+                    currentStage = if (stageUid == currentStage && !showOptions) "" else stageUid
+                    StageSection(currentStage, showOptions, showAllEvents)
+                }
             val programHasGrouping = dashboardRepository.getGrouping()
             val groupingFlowable = groupingProcessor.startWith(programHasGrouping)
 
             compositeDisposable.add(
-                    Flowable.combineLatest<StageSection?, Boolean?, Pair<StageSection, Boolean>>(
-                            sectionFlowable,
-                            groupingFlowable,
-                            ::Pair,
-                    )
-                            .doOnNext { increment() }
-                            .switchMap { stageAndGrouping ->
-                                Flowable.zip(
-                                        teiDataRepository.getTEIEnrollmentEvents(
-                                                stageAndGrouping.first,
-                                                stageAndGrouping.second,
-                                        ).toFlowable(),
-                                        Flowable.fromCallable {
-                                            ruleEngineHelper?.refreshContext()
-                                            (ruleEngineHelper?.evaluate() ?: emptyList())
-                                                    .let { ruleEffects -> Result.success(ruleEffects) }
-                                        },
-                                ) { events, calcResult ->
-                                    applyEffects(
-                                            events,
-                                            calcResult,
-                                    )
-                                }
-                            }
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    { events ->
-                                        _events.postValue(events)
-                                        _totalTimeLineEvents.postValue(events.firstOrNull()?.eventCount
-                                                ?: 0)
-                                        decrement()
-                                    },
-                                    Timber.Forest::d,
-                            ),
+                Flowable.combineLatest<StageSection?, Boolean?, Pair<StageSection, Boolean>>(
+                    sectionFlowable,
+                    groupingFlowable,
+                    ::Pair,
+                )
+                    .doOnNext { increment() }
+                    .switchMap { stageAndGrouping ->
+                        Flowable.zip(
+                            teiDataRepository.getTEIEnrollmentEvents(
+                                stageAndGrouping.first,
+                                stageAndGrouping.second,
+                            ).toFlowable(),
+                            Flowable.fromCallable {
+                                ruleEngineHelper?.refreshContext()
+                                (ruleEngineHelper?.evaluate() ?: emptyList())
+                                    .let { ruleEffects -> Result.success(ruleEffects) }
+                            },
+                        ) { events, calcResult ->
+                            applyEffects(
+                                events,
+                                calcResult,
+                            )
+                        }
+                    }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { events ->
+                            _events.postValue(events)
+                            _totalTimeLineEvents.postValue(
+                                events.firstOrNull()?.eventCount
+                                    ?: 0,
+                            )
+                            decrement()
+                        },
+                        Timber.Forest::d,
+                    ),
             )
             compositeDisposable.add(
-                    Single.zip(
-                            teiDataRepository.getEnrollment(),
-                            teiDataRepository.getEnrollmentProgram(),
-                    ) { val0, val1 -> Pair(val0, val1) }
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe({ data ->
-                                view.setEnrollmentData(
-                                        data.second,
-                                        data.first,
-                                )
-                            }, Timber.Forest::e),
+                Single.zip(
+                    teiDataRepository.getEnrollment(),
+                    teiDataRepository.getEnrollmentProgram(),
+                ) { val0, val1 -> Pair(val0, val1) }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe({ data ->
+                        view.setEnrollmentData(
+                            data.second,
+                            data.first,
+                        )
+                    }, Timber.Forest::e),
             )
             getEventsWithoutCatCombo()
         } ?: run {
@@ -172,15 +174,15 @@ class TEIDataPresenter(
     fun updateCreateEventButtonVisibility(isGrouping: Boolean) {
         val enrollment = d2.enrollment(enrollmentUid)
         val showButton =
-                enrollment != null &&
-                        !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
-                        canAddNewEvents()
+            enrollment != null &&
+                !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
+                canAddNewEvents()
         _shouldDisplayEventCreationButton.value = showButton
     }
 
     private fun applyEffects(
-            events: List<EventViewModel>,
-            calcResult: Result<RuleEffect>,
+        events: List<EventViewModel>,
+        calcResult: Result<RuleEffect>,
     ): List<EventViewModel> {
         Timber.d("APPLYING EFFECTS")
         if (calcResult.error() != null) {
@@ -189,13 +191,13 @@ class TEIDataPresenter(
             return emptyList()
         }
         val (_, _, _, _, _, _, stagesToHide1) = RulesUtilsProviderImpl(
-                d2,
-                optionsRepository,
+            d2,
+            optionsRepository,
         ).applyRuleEffects(
-                false,
-                HashMap(),
-                calcResult.items(),
-                valueStore,
+            false,
+            HashMap(),
+            calcResult.items(),
+            valueStore,
         )
         stagesToHide = stagesToHide1
         return events.mapNotNull {
@@ -206,13 +208,13 @@ class TEIDataPresenter(
     @VisibleForTesting
     fun getEventsWithoutCatCombo() {
         compositeDisposable.add(
-                teiDataRepository.eventsWithoutCatCombo()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view::displayCatComboOptionSelectorForEvents,
-                                Timber.Forest::e,
-                        ),
+            teiDataRepository.eventsWithoutCatCombo()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    view::displayCatComboOptionSelectorForEvents,
+                    Timber.Forest::e,
+                ),
         )
     }
 
@@ -222,60 +224,60 @@ class TEIDataPresenter(
 
     fun areEventsCompleted() {
         compositeDisposable.add(
-                dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
-                        .flatMap { events ->
-                            if (events.isEmpty()) {
-                                dashboardRepository.getTEIEnrollmentEvents(
-                                        programUid,
-                                        teiUid,
-                                )
-                            } else {
-                                Observable.just(events)
-                            }
-                        }
-                        .map { events ->
-                            Observable.fromIterable(events)
-                                    .all { event -> event.status() == EventStatus.COMPLETED }
-                        }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe(
-                                view.areEventsCompleted(),
-                                Timber.Forest::d,
-                        ),
+            dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
+                .flatMap { events ->
+                    if (events.isEmpty()) {
+                        dashboardRepository.getTEIEnrollmentEvents(
+                            programUid,
+                            teiUid,
+                        )
+                    } else {
+                        Observable.just(events)
+                    }
+                }
+                .map { events ->
+                    Observable.fromIterable(events)
+                        .all { event -> event.status() == EventStatus.COMPLETED }
+                }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    view.areEventsCompleted(),
+                    Timber.Forest::d,
+                ),
         )
     }
 
     fun displayGenerateEvent(eventUid: String?) {
         compositeDisposable.add(
-                dashboardRepository.displayGenerateEvent(eventUid)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .subscribe({ programStage ->
-                            if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
-                                view.displayScheduleEvent()
-                            } else if (programStage.remindCompleted() == true) {
-                                view.showDialogCloseProgram()
-                            }
-                        }, Timber.Forest::d),
+            dashboardRepository.displayGenerateEvent(eventUid)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe({ programStage ->
+                    if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
+                        view.displayScheduleEvent()
+                    } else if (programStage.remindCompleted() == true) {
+                        view.showDialogCloseProgram()
+                    }
+                }, Timber.Forest::d),
         )
     }
 
     fun completeEnrollment() {
         val hasWriteAccessInProgram =
-                programUid?.let { d2.program(it)?.access()?.data()?.write() } == true
+            programUid?.let { d2.program(it)?.access()?.data()?.write() } == true
 
         if (hasWriteAccessInProgram) {
             compositeDisposable.add(
-                    Completable.fromCallable {
-                        dashboardRepository.completeEnrollment(enrollmentUid).blockingFirst()
-                    }
-                            .subscribeOn(schedulerProvider.computation())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    {},
-                                    Timber.Forest::d,
-                            ),
+                Completable.fromCallable {
+                    dashboardRepository.completeEnrollment(enrollmentUid).blockingFirst()
+                }
+                    .subscribeOn(schedulerProvider.computation())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        {},
+                        Timber.Forest::d,
+                    ),
             )
         } else {
             view.displayMessage(null)
@@ -284,16 +286,16 @@ class TEIDataPresenter(
 
     fun onFollowUp(dashboardProgramModel: DashboardProgramModel) {
         val followup =
-                dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
+            dashboardRepository.setFollowUp(dashboardProgramModel.currentEnrollment.uid())
         analyticsHelper.setEvent(ACTIVE_FOLLOW_UP, java.lang.Boolean.toString(followup), FOLLOW_UP)
         view.showToast(
-                if (followup) {
-                    view.context.getString(R.string.follow_up_enabled)
-                } else {
-                    view.context.getString(
-                            R.string.follow_up_disabled,
-                    )
-                },
+            if (followup) {
+                view.context.getString(R.string.follow_up_enabled)
+            } else {
+                view.context.getString(
+                    R.string.follow_up_disabled,
+                )
+            },
         )
         view.switchFollowUp(followup)
     }
@@ -303,20 +305,20 @@ class TEIDataPresenter(
     }
 
     private fun createEventInEnrollment(
-            eventCreationType: EventCreationType,
-            scheduleIntervalDays: Int = 0,
+        eventCreationType: EventCreationType,
+        scheduleIntervalDays: Int = 0,
     ) {
         analyticsHelper.setEvent(TYPE_EVENT_TEI, eventCreationType.name, CREATE_EVENT_TEI)
         val bundle = Bundle()
         bundle.putString(
-                Constants.PROGRAM_UID,
-                programUid,
+            Constants.PROGRAM_UID,
+            programUid,
         )
         bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid)
         teiDataRepository.getEnrollment().blockingGet()?.organisationUnit()
-                ?.takeIf { enrollmentOrgUnitInCaptureScope(it) }?.let {
-                    bundle.putString(Constants.ORG_UNIT, it)
-                }
+            ?.takeIf { enrollmentOrgUnitInCaptureScope(it) }?.let {
+                bundle.putString(Constants.ORG_UNIT, it)
+            }
 
         bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
         bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
@@ -333,9 +335,9 @@ class TEIDataPresenter(
             val intent = getIntent(view.context, uid)
             val options = sharedView?.let { it1 ->
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        view.abstractActivity,
-                        it1,
-                        "shared_view",
+                    view.abstractActivity,
+                    it1,
+                    "shared_view",
                 )
             } ?: ActivityOptionsCompat.makeBasic()
             view.openEventDetails(intent, options)
@@ -346,31 +348,31 @@ class TEIDataPresenter(
         if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
             val intent = Intent(view.context, EventCaptureActivity::class.java)
             intent.putExtras(
-                    getActivityBundle(
-                            eventUid = uid,
-                            programUid = programUid ?: throw IllegalStateException(),
-                            eventMode = EventMode.CHECK,
-                            teiUid = teiUid,
-                            enrollmentUid = enrollmentUid,
-                    ),
+                getActivityBundle(
+                    eventUid = uid,
+                    programUid = programUid ?: throw IllegalStateException(),
+                    eventMode = EventMode.CHECK,
+                    teiUid = teiUid,
+                    enrollmentUid = enrollmentUid,
+                ),
             )
             view.openEventCapture(intent)
         } else {
             val event = d2.event(uid)
             val intent = Intent(view.context, EventInitialActivity::class.java)
             intent.putExtras(
-                    EventInitialActivity.getBundle(
-                            programUid,
-                            uid,
-                            EventCreationType.DEFAULT.name,
-                            teiUid,
-                            null,
-                            event?.organisationUnit(),
-                            event?.programStage(),
-                            enrollmentUid,
-                            0,
-                            teiDataRepository.getEnrollment().blockingGet()?.status(),
-                    ),
+                EventInitialActivity.getBundle(
+                    programUid,
+                    uid,
+                    EventCreationType.DEFAULT.name,
+                    teiUid,
+                    null,
+                    event?.organisationUnit(),
+                    event?.programStage(),
+                    enrollmentUid,
+                    0,
+                    teiDataRepository.getEnrollment().blockingGet()?.status(),
+                ),
             )
             view.openEventInitial(intent)
         }
@@ -408,9 +410,9 @@ class TEIDataPresenter(
 
     fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
         return !d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq(enrollmentOrgUnit)
-                .blockingIsEmpty()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .byUid().eq(enrollmentOrgUnit)
+            .blockingIsEmpty()
     }
 
     private fun canAddNewEvents(): Boolean {
@@ -451,16 +453,16 @@ class TEIDataPresenter(
     }
 
     fun filterAvailableStages(programStages: List<ProgramStage>): List<ProgramStage> =
-            programStages
-                    .filter { it.access().data().write() }
-                    .filter { !stagesToHide.contains(it.uid()) }
-                    .filter { stage ->
-                        stage.repeatable() == true ||
-                                events.value?.none { event ->
-                                    event.stage?.uid() == stage.uid() &&
-                                            event.type == EventViewModelType.EVENT
-                                } == true
-                    }.sortedBy { stage -> stage.sortOrder() }
+        programStages
+            .filter { it.access().data().write() }
+            .filter { !stagesToHide.contains(it.uid()) }
+            .filter { stage ->
+                stage.repeatable() == true ||
+                    events.value?.none { event ->
+                        event.stage?.uid() == stage.uid() &&
+                            event.type == EventViewModelType.EVENT
+                    } == true
+            }.sortedBy { stage -> stage.sortOrder() }
 
     fun isEventEditable(eventUid: String): Boolean {
         return teiDataRepository.isEventEditable(eventUid)
@@ -476,21 +478,21 @@ class TEIDataPresenter(
         CoroutineScope(dispatcher.io()).launch {
             programUid?.let {
                 createEventUseCase(
-                        programUid = it,
-                        orgUnitUid = orgUnitUid,
-                        programStageUid = programStageUid,
-                        enrollmentUid = enrollmentUid,
+                    programUid = it,
+                    orgUnitUid = orgUnitUid,
+                    programStageUid = programStageUid,
+                    enrollmentUid = enrollmentUid,
                 ).fold(
-                        onSuccess = { eventUid ->
-                            view.goToEventDetails(
-                                    eventUid = eventUid,
-                                    eventMode = EventMode.NEW,
-                                    programUid = it,
-                            )
-                        },
-                        onFailure = { d2Error ->
-                            view.displayMessage(d2ErrorUtils.getErrorMessage(d2Error))
-                        },
+                    onSuccess = { eventUid ->
+                        view.goToEventDetails(
+                            eventUid = eventUid,
+                            eventMode = EventMode.NEW,
+                            programUid = it,
+                        )
+                    },
+                    onFailure = { d2Error ->
+                        view.displayMessage(d2ErrorUtils.getErrorMessage(d2Error))
+                    },
                 )
             }
         }
