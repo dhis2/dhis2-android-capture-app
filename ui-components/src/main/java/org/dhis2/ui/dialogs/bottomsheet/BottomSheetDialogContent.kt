@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -158,9 +161,18 @@ fun BottomSheetDialogUi(
                 (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
                     Button(
                         modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                        style = ButtonStyle.TEXT,
+                        shape = RoundedCornerShape(
+                            bottomSheetDialogUiModel.secondaryRoundedCornersSizeDp().dp,
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            disabledContainerColor = Color.White,
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            bottomSheetDialogUiModel.secondaryElevationDp().dp,
+                        ),
                         onClick = { onSecondaryButtonClicked() },
-                        text = it,
+                        content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
                         enabled = bottomSheetDialogUiModel.secondaryButton != null,
                     )
                 }
@@ -175,6 +187,27 @@ fun BottomSheetDialogUi(
                 }
             }
         }
+    }
+}
+
+private fun provideButtonContent(
+    buttonStyle: DialogButtonStyle?,
+): @Composable (RowScope.() -> Unit) = {
+    buttonStyle?.let { style ->
+        style.iconResource?.let { icon ->
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = "",
+                tint = style.colorResource ?: Color.Unspecified,
+                modifier = Modifier.padding(end = 8.dp),
+            )
+        }
+        Text(
+            text = style.textLabel ?: stringResource(id = style.textResource)
+                .lowercase()
+                .replaceFirstChar { it.uppercase() },
+            color = style.colorResource ?: Color.Unspecified,
+        )
     }
 }
 
