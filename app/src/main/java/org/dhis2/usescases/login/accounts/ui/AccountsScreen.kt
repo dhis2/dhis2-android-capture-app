@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -76,7 +77,7 @@ fun AccountsScreen(
                     }
                 }
                 Column(Modifier.padding(16.dp)) {
-                    androidx.compose.material.Button(
+                    Button(
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
