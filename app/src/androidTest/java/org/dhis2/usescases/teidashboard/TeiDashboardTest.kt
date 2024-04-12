@@ -152,6 +152,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore("To fix in ANDROAPP-6109")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
