@@ -87,16 +87,20 @@ fun Date?.toOverdueOrScheduledUiText(
             isOverdue,
         )
     }
+    val currentDay = with(DateUtils.getInstance()) {
+        setCurrentDate(currentDate)
+        calendar.time
+    }
 
     if (this == null) return ""
     val isOverdue: Boolean
 
-    val period = if (this.time > currentDate.time) {
+    val period = if (this.time > currentDay.time) {
         isOverdue = false
-        Interval(currentDate.time, this.time)
+        Interval(currentDay.time, this.time)
     } else {
         isOverdue = true
-        Interval(this.time, currentDate.time)
+        Interval(this.time, currentDay.time)
     }.toPeriod(PeriodType.yearMonthDayTime())
 
     return when {
@@ -121,10 +125,10 @@ fun Date?.toOverdueOrScheduledUiText(
         }
 
         period.days in 1..89 -> {
-            val intervalDays = if (this.time > currentDate.time) {
-                Interval(currentDate.time, this.time)
+            val intervalDays = if (this.time > currentDay.time) {
+                Interval(currentDay.time, this.time)
             } else {
-                Interval(this.time, currentDate.time)
+                Interval(this.time, currentDay.time)
             }.toDuration().toStandardDays().days
 
             getOverdueDaysString(intervalDays, isOverdue)
