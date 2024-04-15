@@ -258,7 +258,7 @@ class TeiDataPresenterTest {
         ) doReturn listOf(
             OrganisationUnit.builder()
                 .uid(orgUnitUid)
-                .build()
+                .build(),
         )
 
         whenever(
@@ -290,7 +290,7 @@ class TeiDataPresenterTest {
                 .build(),
             OrganisationUnit.builder()
                 .uid(orgUnitUid2)
-                .build()
+                .build(),
         )
 
         teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)

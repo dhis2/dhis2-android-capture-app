@@ -80,7 +80,7 @@ class TEIDataModule(
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
-            ouTreeRepository
+            ouTreeRepository,
         )
     }
 
