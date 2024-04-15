@@ -7,6 +7,9 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
+import org.dhis2.commons.orgunitselector.OUTreeRepository
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.D2ErrorUtils
@@ -56,6 +59,7 @@ class TEIDataModule(
         dispatcherProvider: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
         d2ErrorUtils: D2ErrorUtils,
+        ouTreeRepository: OUTreeRepository,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -76,6 +80,7 @@ class TEIDataModule(
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
+            ouTreeRepository
         )
     }
 
@@ -184,4 +189,12 @@ class TEIDataModule(
 
     @Provides
     fun provideDateUtils() = DateUtils.getInstance()
+
+    @Provides
+    @PerFragment
+    fun providesOURepository(
+        d2: D2,
+    ): OUTreeRepository {
+        return OUTreeRepository(OURepositoryConfiguration(d2, OrgUnitSelectorScope.ProgramCaptureScope(programUid!!)))
+    }
 }

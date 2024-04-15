@@ -13,6 +13,7 @@ import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
+import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -79,6 +80,7 @@ class TeiDataPresenterTest {
     }
     private val createEventUseCase: CreateEventUseCase = mock()
     private val d2ErrorUtils: D2ErrorUtils = mock()
+    private val ouTreeRepository: OUTreeRepository = mock()
 
     @Before
     fun setUp() {
@@ -101,6 +103,7 @@ class TeiDataPresenterTest {
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
+            ouTreeRepository,
         )
     }
 
@@ -242,6 +245,58 @@ class TeiDataPresenterTest {
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
         verify(view).showDialogCloseProgram()
+    }
+
+    @Test
+    fun `Should not show ORG unit selector dialog when org count is 1`() = runBlocking {
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val eventUid = "eventUid"
+
+        whenever(
+            ouTreeRepository.orgUnits(),
+        ) doReturn listOf(
+            OrganisationUnit.builder()
+                .uid(orgUnitUid)
+                .build()
+        )
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (Result.success(eventUid))
+
+        teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
+
+        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should show ORG unit selector dialog when org count is greater than 1`() = runBlocking {
+        val orgUnitUid1 = "orgUnitUid 1"
+        val orgUnitUid2 = "orgUnitUid 2"
+        val programStageUid = "programStageUid"
+
+        whenever(
+            ouTreeRepository.orgUnits(),
+        ) doReturn listOf(
+            OrganisationUnit.builder()
+                .uid(orgUnitUid1)
+                .build(),
+            OrganisationUnit.builder()
+                .uid(orgUnitUid2)
+                .build()
+        )
+
+        teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
+
+        verify(view).displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+        verifyNoMoreInteractions(view)
     }
 
     @Test

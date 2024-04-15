@@ -23,6 +23,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -75,6 +76,7 @@ class TEIDataPresenter(
     private val dispatcher: DispatcherProvider,
     private val createEventUseCase: CreateEventUseCase,
     private val d2ErrorUtils: D2ErrorUtils,
+    private val ouTreeRepository: OUTreeRepository,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -385,7 +387,7 @@ class TEIDataPresenter(
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
-                    view.displayOrgUnitSelectorForNewEvent(program, stage.uid())
+                    checkOrgUnitCount(program, stage.uid())
                 }
 
                 else -> view.goToEventInitial(eventCreationType, stage)
@@ -421,6 +423,17 @@ class TEIDataPresenter(
                             event.type == EventViewModelType.EVENT
                     } == true
             }.sortedBy { stage -> stage.sortOrder() }
+
+    fun checkOrgUnitCount(programUid: String, programStageUid: String) {
+        CoroutineScope(dispatcher.io()).launch {
+            val orgUnits = ouTreeRepository.orgUnits()
+            if (orgUnits.count() == 1) {
+                onOrgUnitForNewEventSelected(orgUnits.first().uid(), programStageUid)
+            } else {
+                view.displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+            }
+        }
+    }
 
     fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {
