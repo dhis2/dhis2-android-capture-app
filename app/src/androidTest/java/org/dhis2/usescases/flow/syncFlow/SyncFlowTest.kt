@@ -144,6 +144,7 @@ class SyncFlowTest : BaseTest() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
+            composeTestRule.waitForIdle()
             clickOnDataSetAtPosition(0)
         }
 
@@ -169,6 +170,7 @@ class SyncFlowTest : BaseTest() {
             composeTestRule.waitForIdle()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             composeTestRule.waitForIdle()
+            waitToDebounce(3000)
             checkSyncWasSuccessfully() //sync failed
         }
         cleanLocalDatabase()
