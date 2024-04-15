@@ -80,10 +80,10 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     public int getDynamicTabIndex(@IntegerRes int tabClicked) {
         EventPageType pageType = switch (tabClicked) {
-            default -> null;
             case R.id.navigation_analytics -> EventPageType.ANALYTICS;
             case R.id.navigation_relationships -> EventPageType.RELATIONSHIPS;
             case R.id.navigation_notes -> EventPageType.NOTES;
+            default -> null;
         };
 
         if (pageType != null) {
@@ -109,13 +109,6 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
 
     private Fragment createFragmentForPage(EventPageType pageType) {
         switch (pageType) {
-            default -> {
-                return EventCaptureFormFragment.newInstance(
-                        eventUid,
-                        shouldOpenErrorSection,
-                        eventMode
-                );
-            }
             case ANALYTICS -> {
                 Fragment indicatorFragment = new IndicatorsFragment();
                 Bundle arguments = new Bundle();
@@ -136,6 +129,13 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
             }
             case NOTES -> {
                 return NotesFragment.newEventInstance(programUid, eventUid);
+            }
+            default -> {
+                return EventCaptureFormFragment.newInstance(
+                        eventUid,
+                        shouldOpenErrorSection,
+                        eventMode
+                );
             }
         }
 
