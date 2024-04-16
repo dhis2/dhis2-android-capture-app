@@ -30,7 +30,7 @@
     <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230</string>
+    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230;</string>
     <string name="metadata_sync_error">Không thể hoàn thành đồng bộ siêu dữ liệu</string>
     <string name="data_sync_in_progress">Đang đồng bộ dữ liệu&#3230;</string>
     <string name="data_sync_error">Không thể hoàn thành đồng bộ dữ liệu</string>
