@@ -683,7 +683,6 @@
     <string name="download_tei_error">El %s seleccionado no puede ser descargado.</string>
     <string name="completed_by">Completado por %s: %s</string>
     <string name="updated_time">Actualizado: %s</string>
-    <string name="action_done">¡Listo!</string>
     <string name="validation_internal_error_datasets">No hemos podido verificar la calidad de los datos. Contacte con su administrador</string>
     <string name="are_you_sure">¿Está seguro?</string>
     <string name="reopen_question">¿Quiere reabrir este set de datos?</string>

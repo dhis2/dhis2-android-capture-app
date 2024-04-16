@@ -677,7 +677,6 @@
     <string name="download_tei_error">%s đã chọn không thể tải xuống</string>
     <string name="completed_by">Đã hoàn tất được %s: %s</string>
     <string name="updated_time">Đã cập nhật: %s</string>
-    <string name="action_done">Hoàn thành!</string>
     <string name="validation_internal_error_datasets">Chúng tôi không thể kiểm tra chất lượng dữ liệu. Hãy liên hệ quản lý của bạn.</string>
     <string name="are_you_sure">Bạn có chắc chắn không?</string>
     <string name="reopen_question">Bạn có muốn mở-lại biểu nhập này không?</string>

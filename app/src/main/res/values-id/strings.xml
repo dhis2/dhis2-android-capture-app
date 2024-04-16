@@ -780,7 +780,6 @@
     <string name="download_tei_error">%s yang dipilih tidak dapat diunduh.</string>
     <string name="completed_by">Diselesaikan oleh %s: %s</string>
     <string name="updated_time">Diperbarui: %s</string>
-    <string name="action_done">Selesai!</string>
     <string name="validation_internal_error_datasets">Kami tidak dapat memeriksa kualitas data. Hubungi administrator Anda</string>
     <string name="are_you_sure">Anda yakin?</string>
     <string name="reopen_question">Apakah Anda ingin membuka kembali data set?</string>

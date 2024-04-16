@@ -685,7 +685,6 @@
     <string name="download_tei_error">Vybraný %s nelze stáhnout.</string>
     <string name="completed_by">Dokončeno %s : %s</string>
     <string name="updated_time">Aktualizováno: %s</string>
-    <string name="action_done">Hotovo!</string>
     <string name="validation_internal_error_datasets">Nemohli jsme zkontrolovat kvalitu dat. Kontaktujte svého správce</string>
     <string name="are_you_sure">Jste si jist?</string>
     <string name="reopen_question">Chcete znovu otevřít soubor dat?</string>

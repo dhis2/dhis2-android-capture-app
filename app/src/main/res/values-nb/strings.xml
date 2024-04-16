@@ -669,7 +669,6 @@
     <string name="download_tei_error">Den valgte %s kunne ikke lastes ned</string>
     <string name="completed_by">Fullført av %s: %s</string>
     <string name="updated_time">Oppdatert: %s</string>
-    <string name="action_done">Fullført!</string>
     <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
