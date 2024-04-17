@@ -8,6 +8,7 @@ import org.dhis2.commons.bindings.dataSetInstanceSummaries
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.bindings.stockUseCase
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.usescases.main.program.toAppConfig
 import org.hisp.dhis.android.core.D2
@@ -20,6 +21,7 @@ import org.hisp.dhis.android.core.user.User
 class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
+    private val featureConfig: FeatureConfigRepository,
 ) : HomeRepository {
     override fun user(): Single<User?> {
         return d2.userModule().user().get()
