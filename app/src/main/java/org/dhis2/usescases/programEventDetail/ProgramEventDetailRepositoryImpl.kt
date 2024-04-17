@@ -143,7 +143,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     }
 
     override fun programHasAnalytics(): Boolean {
-        return charts != null && charts.getVisualizationGroups(programUid).isNotEmpty()
+        return charts?.getVisualizationGroups(programUid)?.isNotEmpty() == true
     }
 
     override fun isEventEditable(eventUid: String): Boolean {
