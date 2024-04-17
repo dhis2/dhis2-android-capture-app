@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.commons.bindings.dataSet
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.user.User
 
 class HomeRepositoryImpl(
     private val d2: D2,
+    private val charts: Charts,
 ) : HomeRepository {
     override fun user(): Single<User?> {
         return d2.userModule().user().get()
@@ -47,11 +49,7 @@ class HomeRepositoryImpl(
     }
 
     override fun hasHomeAnalytics(): Boolean {
-        val homeVisualizations = d2.settingModule().analyticsSetting()
-            .visualizationsSettings()
-            .blockingGet().home()
-
-        return !homeVisualizations.isNullOrEmpty()
+        return charts.getVisualizationGroups(null).isNotEmpty()
     }
 
     override fun getServerVersion(): Single<SystemInfo?> {

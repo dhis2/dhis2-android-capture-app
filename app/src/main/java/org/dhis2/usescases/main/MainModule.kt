@@ -2,6 +2,7 @@ package org.dhis2.usescases.main
 
 import dagger.Module
 import dagger.Provides
+import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
@@ -65,8 +66,8 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun provideHomeRepository(d2: D2): HomeRepository {
-        return HomeRepositoryImpl(d2)
+    fun provideHomeRepository(d2: D2, charts: Charts): HomeRepository {
+        return HomeRepositoryImpl(d2, charts)
     }
 
     @Provides
