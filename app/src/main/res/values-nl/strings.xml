@@ -686,7 +686,6 @@
     <string name="download_tei_error">De geselecteerde %s kon niet worden gedownload.</string>
     <string name="completed_by">Aangevuld door %s: %s</string>
     <string name="updated_time">Bijgewerkt: %s</string>
-    <string name="action_done">Klaar!</string>
     <string name="validation_internal_error_datasets">We konden de gegevenskwaliteit niet controleren. Neem contact op met uw beheerder</string>
     <string name="are_you_sure">Weet je het zeker?</string>
     <string name="reopen_question">Wilt u de dataset opnieuw openen?</string>

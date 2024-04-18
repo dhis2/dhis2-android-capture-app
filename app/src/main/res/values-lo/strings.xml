@@ -643,7 +643,6 @@
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="event_data">ຂໍ້ມູນ</string>
-    <string name="action_done">ສຳເລັດແລ້ວ!</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="reopen_question">ທ່ານຕ້ອງການເປີດຊຸດຂໍ້ມູນຄືນໃໝ່ບໍ?</string>
     <string name="group_events_by_stage">ຈັດກຸ່ມເຫດການຕາມຂັ້ນຕອນ</string>
