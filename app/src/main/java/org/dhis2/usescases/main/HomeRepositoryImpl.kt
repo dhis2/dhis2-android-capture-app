@@ -51,7 +51,7 @@ class HomeRepositoryImpl(
     }
 
     override fun hasHomeAnalytics(): Boolean {
-        return charts?.getHomeVisualizations(null)?.isNotEmpty() == true
+        return charts?.getVisualizationGroups(null)?.isNotEmpty() == true
     }
 
     override fun getServerVersion(): Single<SystemInfo?> {
