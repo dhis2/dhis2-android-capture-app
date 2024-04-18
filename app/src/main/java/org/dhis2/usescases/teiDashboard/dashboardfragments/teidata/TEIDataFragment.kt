@@ -99,11 +99,12 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
     private var showAllEnrollment = false
+    private var programUid: String? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         with(requireArguments()) {
-            val programUid = getString("PROGRAM_UID")
+            programUid = getString("PROGRAM_UID")
             val teiUid = getString("TEI_UID")
                 ?: throw NullPointerException("A TEI uid is required to launch fragment")
             val enrollmentUid = getString("ENROLLMENT_UID") ?: ""
@@ -268,6 +269,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             !dashboardModel?.teiHeader.isNullOrEmpty() -> {
                 dashboardModel?.teiHeader
             }
+
             else -> {
                 String.format(
                     "%s %s",
@@ -398,7 +400,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 R.string.event_label_completed,
                 programStageFromEvent?.uid(),
             ),
-            getString(R.string.complete_enrollment_message),
+            resourceManager.formatWithEnrollmentLabel(
+                programUid = programUid,
+                stringResource = R.string.complete_enrollment_message_V2,
+                quantity = 1,
+            ),
             getString(R.string.button_ok),
             getString(R.string.cancel),
             RC_EVENTS_COMPLETED,
