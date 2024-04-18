@@ -56,7 +56,7 @@ fun List<Enrollment>.hasFollowUp(): Boolean {
 
 fun List<Program>.getEnrollmentIconsData(
     currentProgram: String?,
-    metadataIconData: MetadataIconData,
+    provideMetadataIconData: (String) -> MetadataIconData,
 ): List<EnrollmentIconData> {
     val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
 
@@ -64,10 +64,14 @@ fun List<Program>.getEnrollmentIconsData(
     this.filter { it.uid() != currentProgram }
         .forEachIndexed { index, program ->
             if (filteredList.size <= 4) {
-                enrollmentIconDataList.add(EnrollmentIconData(0, 0, true, 0, metadataIconData))
+                enrollmentIconDataList.add(
+                    EnrollmentIconData(0, 0, true, 0, provideMetadataIconData(program.uid())),
+                )
             } else {
                 if (index in 0..2) {
-                    enrollmentIconDataList.add(EnrollmentIconData(0, 0, true, 0, metadataIconData))
+                    enrollmentIconDataList.add(
+                        EnrollmentIconData(0, 0, true, 0, provideMetadataIconData(program.uid())),
+                    )
                 }
                 if (index == 3) {
                     enrollmentIconDataList.add(
@@ -76,7 +80,7 @@ fun List<Program>.getEnrollmentIconsData(
                             0,
                             false,
                             getRemainingEnrollmentsForTei(filteredList.size),
-                            metadataIconData,
+                            provideMetadataIconData(program.uid()),
                         ),
                     )
                 }
