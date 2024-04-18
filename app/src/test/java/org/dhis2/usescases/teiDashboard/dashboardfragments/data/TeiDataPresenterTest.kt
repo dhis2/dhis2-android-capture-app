@@ -13,7 +13,6 @@ import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
-import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -80,7 +79,6 @@ class TeiDataPresenterTest {
     }
     private val createEventUseCase: CreateEventUseCase = mock()
     private val d2ErrorUtils: D2ErrorUtils = mock()
-    private val ouTreeRepository: OUTreeRepository = mock()
 
     @Before
     fun setUp() {
@@ -103,7 +101,6 @@ class TeiDataPresenterTest {
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
-            ouTreeRepository,
         )
     }
 
@@ -138,6 +135,15 @@ class TeiDataPresenterTest {
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .byUid().eq("orgUnitUid")
                 .blockingIsEmpty(),
+        ) doReturn returnValue
+    }
+
+    private fun mockTEIOrgUnitInCaptureScope(returnValue: List<OrganisationUnit>) {
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byProgramUids(listOf(programUid))
+                .blockingGet(),
         ) doReturn returnValue
     }
 
@@ -253,14 +259,11 @@ class TeiDataPresenterTest {
         val programStageUid = "programStageUid"
         val eventUid = "eventUid"
 
-        whenever(
-            ouTreeRepository.orgUnits(),
-        ) doReturn listOf(
-            OrganisationUnit.builder()
-                .uid(orgUnitUid)
-                .build(),
-        )
+        val orgUnit = OrganisationUnit.builder()
+            .uid(orgUnitUid)
+            .build()
 
+        mockTEIOrgUnitInCaptureScope(listOf(orgUnit))
         whenever(
             createEventUseCase.invoke(
                 programUid,
@@ -282,16 +285,15 @@ class TeiDataPresenterTest {
         val orgUnitUid2 = "orgUnitUid 2"
         val programStageUid = "programStageUid"
 
-        whenever(
-            ouTreeRepository.orgUnits(),
-        ) doReturn listOf(
-            OrganisationUnit.builder()
-                .uid(orgUnitUid1)
-                .build(),
-            OrganisationUnit.builder()
-                .uid(orgUnitUid2)
-                .build(),
-        )
+        val orgUnit1 = OrganisationUnit.builder()
+            .uid(orgUnitUid1)
+            .build()
+
+        val orgUnit2 = OrganisationUnit.builder()
+            .uid(orgUnitUid2)
+            .build()
+
+        mockTEIOrgUnitInCaptureScope(listOf(orgUnit1, orgUnit2))
 
         teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
 
