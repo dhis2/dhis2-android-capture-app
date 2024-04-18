@@ -352,8 +352,6 @@ class TEIDataPresenter(
                     eventUid = uid,
                     programUid = programUid ?: throw IllegalStateException(),
                     eventMode = EventMode.CHECK,
-                    teiUid = teiUid,
-                    enrollmentUid = enrollmentUid,
                 ),
             )
             view.openEventCapture(intent)

@@ -102,6 +102,12 @@ public class EventCaptureContract {
         void emitAction(@NotNull EventCaptureAction onBack);
 
         String programStage();
+
+        @Nullable
+        String getTeiUid();
+
+        @Nullable
+        String getEnrollmentUid();
     }
 
     public interface EventCaptureRepository {
@@ -149,6 +155,12 @@ public class EventCaptureContract {
         boolean hasRelationships();
 
         ValidationStrategy validationStrategy();
+
+        @Nullable
+        String getTeiUid();
+
+        @Nullable
+        String getEnrollmentUid();
     }
 
 }

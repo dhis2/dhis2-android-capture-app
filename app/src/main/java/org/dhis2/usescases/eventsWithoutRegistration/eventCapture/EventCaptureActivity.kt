@@ -97,10 +97,10 @@ class EventCaptureActivity :
     private var dashboardViewModel: DashboardViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
-        teiUid = intent.getStringExtra(Constants.TEI_UID)
-        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         setUpEventCaptureComponent(eventUid)
+        teiUid = presenter!!.teiUid
+        enrollmentUid = presenter!!.enrollmentUid
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
@@ -208,7 +208,6 @@ class EventCaptureActivity :
     }
 
     private fun areTeiUidAndEnrollmentUidNotNull(): Boolean {
-        println("*****DEBUG: TEIUID: $teiUid, ENROLLMENTUID: $enrollmentUid")
         return teiUid != null && enrollmentUid != null
     }
 
@@ -594,14 +593,11 @@ class EventCaptureActivity :
         private const val EVENT_SYNC = "EVENT_SYNC"
 
         @JvmStatic
-        @JvmOverloads
-        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode, teiUid: String? = null, enrollmentUid: String? = null): Bundle {
+        fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode): Bundle {
             val bundle = Bundle()
             bundle.putString(Constants.EVENT_UID, eventUid)
             bundle.putString(Constants.PROGRAM_UID, programUid)
             bundle.putSerializable(Constants.EVENT_MODE, eventMode)
-            teiUid?.let { bundle.putString(Constants.TEI_UID, it) }
-            enrollmentUid?.let { bundle.putString(Constants.ENROLLMENT_UID, it) }
             return bundle
         }
 
