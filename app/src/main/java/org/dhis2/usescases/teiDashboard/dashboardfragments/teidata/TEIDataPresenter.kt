@@ -23,7 +23,6 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.orgunitselector.OUTreeRepository
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -52,6 +51,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -76,7 +76,6 @@ class TEIDataPresenter(
     private val dispatcher: DispatcherProvider,
     private val createEventUseCase: CreateEventUseCase,
     private val d2ErrorUtils: D2ErrorUtils,
-    private val ouTreeRepository: OUTreeRepository,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -369,10 +368,19 @@ class TEIDataPresenter(
     }
 
     fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
-        return !d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+        return !getOrganisationUnitCollectionRepository()
             .byUid().eq(enrollmentOrgUnit)
             .blockingIsEmpty()
+    }
+
+    private fun getOrgListForProgram(programUid: String) =
+        getOrganisationUnitCollectionRepository()
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+    private fun getOrganisationUnitCollectionRepository(): OrganisationUnitCollectionRepository {
+        return d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
     }
 
     private fun canAddNewEvents(): Boolean {
@@ -426,7 +434,7 @@ class TEIDataPresenter(
 
     fun checkOrgUnitCount(programUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {
-            val orgUnits = ouTreeRepository.orgUnits()
+            val orgUnits = getOrgListForProgram(programUid)
             if (orgUnits.count() == 1) {
                 onOrgUnitForNewEventSelected(orgUnits.first().uid(), programStageUid)
             } else {
