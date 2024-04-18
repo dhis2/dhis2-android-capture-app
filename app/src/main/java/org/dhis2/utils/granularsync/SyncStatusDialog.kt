@@ -97,10 +97,10 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        viewModel.observeWorkInfo().observe(this) { workInfo ->
-            if (workInfo.isNotEmpty()) {
-                viewModel.manageWorkInfo(workInfo[0])
-                syncProcessListener(workInfo[0])
+        viewModel.observeWorkInfo().observe(this) { workInfoList ->
+            workInfoList.firstOrNull()?.let {
+                viewModel.manageWorkInfo(it)
+                syncProcessListener(it)
             }
         }
 
