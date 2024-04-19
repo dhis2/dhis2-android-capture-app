@@ -198,6 +198,9 @@ class FilterManagerTest {
             eventStatusList = listOf(),
             eventDateList = listOf("date"),
             assignedToMe = listOf(),
+            filters = mapOf(),
+            stageUid = "stageUid",
+            dataValues = mapOf(),
         )
         filterManager.setWorkingListScope(workingListScope)
 
