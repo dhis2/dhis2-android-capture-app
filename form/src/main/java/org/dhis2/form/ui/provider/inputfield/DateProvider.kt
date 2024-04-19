@@ -1,7 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,7 +10,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import org.apache.commons.lang3.time.DateUtils.parseDate
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -30,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @Composable
 fun ProvideInputDate(
@@ -47,33 +46,21 @@ fun ProvideInputDate(
     val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     val yearIntRange = getYearRange(fieldUiModel)
     val selectableDates = getSelectableDates(fieldUiModel)
-    var textFieldValue = TextFieldValue
 
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-    val timeFormat = SimpleDateFormat("HH:mm")
-    val dateTimeFormat = SimpleDateFormat()
-
-    /*var value by remember(fieldUiModel.value) {
+    var value by remember(fieldUiModel.value) {
         mutableStateOf(
             if (fieldUiModel.value != null) {
-                TextFieldValue(formatStoredDateToUi(fieldUiModel.value!!, fieldUiModel.valueType), textSelection)
+                TextFieldValue(formatStoredDateToUI(fieldUiModel.value!!, fieldUiModel.valueType), textSelection)
             } else {
                 TextFieldValue()
             },
         )
-    }*/
-
-    var date = remember {mutableStateOf(Date())}
-
-    LaunchedEffect(fieldUiModel) {
-        date = mutableStateOf(formatUiDateToStored(fieldUiModel.value!!, fieldUiModel.valueType))
     }
-
 
     InputDateTime(
         InputDateTimeModel(
             title = fieldUiModel.label,
-            inputTextFieldValue = formatStoredDateToUi(date.value, fieldUiModel.valueType),
+            inputTextFieldValue = value,
             actionType = actionType,
             state = fieldUiModel.inputState(),
             legendData = fieldUiModel.legend(),
@@ -82,12 +69,11 @@ fun ProvideInputDate(
             visualTransformation = visualTransformation,
             onNextClicked = onNextClicked,
             onValueChanged = {
-                date.value = it?.let { it1 -> formatUiDateToStored(it1.text, fieldUiModel.valueType) }
-                    ?: Date()
+                value = it?.let { it1 -> formatValueWithTimeZone(it1, fieldUiModel.valueType) } ?: TextFieldValue()
                 intentHandler.invoke(
                     FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
-                        value = it?.text,
+                        value = formatUIDateToStored(value.text, fieldUiModel.valueType),
                         valueType = fieldUiModel.valueType,
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                     ),
@@ -97,9 +83,7 @@ fun ProvideInputDate(
             yearRange = yearIntRange,
             inputStyle = inputStyle,
         ),
-        modifier = modifier.semantics { contentDescription =
-            formatStoredDateToUi(date.value, fieldUiModel.valueType)?.text.toString()
-        },
+        modifier = modifier.semantics { contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType) },
     )
 }
 
@@ -120,6 +104,24 @@ private fun getSelectableDates(uiModel: FieldUiModel): SelectableDates {
     }
 }
 
+private fun formatValueWithTimeZone(fieldValue: TextFieldValue, fieldType: ValueType?): TextFieldValue {
+    val value: TextFieldValue
+    if (fieldType == ValueType.DATE) {
+        var date = fieldValue.text
+        var day = fieldValue.text.substring(0, 2).toInt()
+        val timeZone = TimeZone.getDefault()
+
+        if ((timeZone.rawOffset / (1000 * 60 * 60)) < 0) {
+            day += 1
+            date = date.replaceRange(0, 2, String.format("%02d", day))
+
+        }
+        value = TextFieldValue(date)
+    } else {
+        value = fieldValue
+    }
+    return value
+}
 private fun getYearRange(uiModel: FieldUiModel): IntRange {
     return if (uiModel.selectableDates == null) {
         if (uiModel.allowFutureDates == true) {
@@ -137,58 +139,99 @@ private fun getYearRange(uiModel: FieldUiModel): IntRange {
         )
     }
 }
-
-private fun formatUiDateToStored(inputDateString: String, valueType: ValueType?): Date {
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-    val timeFormat = SimpleDateFormat("HH:mm")
-    val dateTimeFormat = SimpleDateFormat()
+private fun formatStoredDateToUI(inputDateString: String, valueType: ValueType?): String {
     return when (valueType) {
-        ValueType.DATE -> {
-            return try {
-                dateFormat.parse(inputDateString)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Date()
+        ValueType.DATETIME -> {
+            val components = inputDateString.split("T")
+            if (components.size != 2) {
+                return inputDateString
             }
+
+            val date = components[0].split("-")
+            if (date.size != 3) {
+                return inputDateString
+            }
+
+            val year = date[0]
+            val month = date[1]
+            val day = date[2]
+
+            val time = components[1].split(":")
+            if (components.size != 2) {
+                return inputDateString
+            }
+
+            val hours = time[0]
+            val minutes = time[1]
+
+            "$day$month$year$hours$minutes"
         }
 
         ValueType.TIME -> {
-            return try {
-                timeFormat.parse(inputDateString)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Date()
+            val components = inputDateString.split(":")
+            if (components.size != 2) {
+                return inputDateString
             }
+
+            val hours = components[0]
+            val minutes = components[1]
+
+            "$hours$minutes"
         }
 
         else -> {
-            return try {
-                dateTimeFormat.parse(inputDateString)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Date()
-            }        }
+            val components = inputDateString.split("-")
+            if (components.size != 3) {
+                return inputDateString
+            }
+
+            val year = components[0]
+            val month = components[1]
+            val day = components[2]
+
+            "$day$month$year"
+        }
     }
 }
 
-private fun formatStoredDateToUi(inputDate: Date?/*inputDateString: String?*/, valueType: ValueType?): TextFieldValue? {
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy")
-    val timeFormat = SimpleDateFormat("HH:mm")
-    val dateTimeFormat = SimpleDateFormat()
+private fun formatUIDateToStored(inputDateString: String?, valueType: ValueType?): String? {
     return when (valueType) {
-        ValueType.DATE -> {
-            TextFieldValue(dateFormat.format(inputDate))
+        ValueType.DATETIME -> {
+            if (inputDateString?.length != 12) {
+                inputDateString
+            } else {
+                val minutes = inputDateString.substring(10, 12)
+                val hours = inputDateString.substring(8, 10)
+                val year = inputDateString.substring(4, 8)
+                val month = inputDateString.substring(2, 4)
+                val day = inputDateString.substring(0, 2)
+
+                "$year-$month-$day" + "T$hours:$minutes"
+            }
         }
 
         ValueType.TIME -> {
-            TextFieldValue(timeFormat.format(inputDate))
+            if (inputDateString?.length != 4) {
+                inputDateString
+            } else {
+                val minutes = inputDateString.substring(2, 4)
+                val hours = inputDateString.substring(0, 2)
+
+                "$hours:$minutes"
+            }
         }
 
         else -> {
-           TextFieldValue(dateTimeFormat.format(inputDate))
+            if (inputDateString?.length != 8) {
+                inputDateString
+            } else {
+                val year = inputDateString.substring(4, 8)
+                val month = inputDateString.substring(2, 4)
+                val day = inputDateString.substring(0, 2)
+
+                "$year-$month-$day"
+            }
         }
-
-
     }
 }
 
