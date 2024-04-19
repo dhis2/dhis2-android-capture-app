@@ -155,7 +155,7 @@
     <string name="no_options">No options available</string>
 
     <!--TEI Enrollment list-->
-    <string name="enrollment_list">Enrollment List</string>
+    <string name="enrollment_list">Enrollment list</string>
     <string name="active_programs">Active programs</string>
     <string name="to_enroll_programs">Programs to enroll</string>
     <string name="enroll">Enroll</string>
@@ -397,6 +397,7 @@
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
     <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
+    <string name="complete_enrollment_message_V2">Would you like to complete the %s as well?</string>
     <string name="check_event">Check</string>
 
     <string name="menu_home">Home</string>
