@@ -118,7 +118,7 @@ class EventCaptureActivity :
 
             viewModelFactory?.let {
                 dashboardViewModel =
-                        ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+                    ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
                 supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
                 dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
