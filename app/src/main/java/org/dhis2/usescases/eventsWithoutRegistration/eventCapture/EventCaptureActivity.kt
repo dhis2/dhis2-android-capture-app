@@ -115,9 +115,10 @@ class EventCaptureActivity :
         setUpEventCaptureFormLandscape(eventUid ?: "")
         if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
             val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
-            if (viewModelFactory != null) {
-                    dashboardViewModel =
-                            ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+
+            viewModelFactory?.let {
+                dashboardViewModel =
+                        ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
                 supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
                 dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
