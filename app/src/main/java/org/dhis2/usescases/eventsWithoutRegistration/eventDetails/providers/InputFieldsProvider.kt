@@ -50,6 +50,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformatio
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.TimeZone
 
 @Composable
 fun ProvideInputDate(
@@ -84,7 +85,7 @@ fun ProvideInputDate(
                 state = state,
                 visualTransformation = DateTransformation(),
                 onValueChanged = {
-                    value = it ?: TextFieldValue()
+                    value = it?.let { it1 -> formatValueWithTimeZone(it1) } ?: TextFieldValue()
                     state = getInputShellStateBasedOnValue(it?.text)
                     it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
                 },
@@ -101,6 +102,21 @@ fun ProvideInputDate(
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
         )
     }
+}
+
+private fun formatValueWithTimeZone(fieldValue: TextFieldValue): TextFieldValue {
+    val value: TextFieldValue
+    var date = fieldValue.text
+    var day = fieldValue.text.substring(0, 2).toInt()
+    val timeZone = TimeZone.getDefault()
+
+    if ((timeZone.rawOffset / (1000 * 60 * 60)) < 0) {
+        day += 1
+        date = date.replaceRange(0, 2, String.format("%02d", day))
+    }
+    value = TextFieldValue(date)
+
+    return value
 }
 
 fun isValidDateFormat(dateString: String): Boolean {
