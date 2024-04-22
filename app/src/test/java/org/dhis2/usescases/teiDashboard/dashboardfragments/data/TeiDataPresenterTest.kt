@@ -106,45 +106,12 @@ class TeiDataPresenterTest {
 
     @Test
     fun `Should return false if orgUnit does not belong to the capture scope`() {
-        mockEnrollmentOrgUnitInCaptureScope(false)
+        whenever(
+            teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")
+        ) doReturn false
         assertTrue(
-            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
+            !teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
         )
-    }
-
-    private fun mockEnrollmentOrgUnitInCaptureScope(returnValue: Boolean) {
-        whenever(
-            d2.organisationUnitModule().organisationUnits(),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid(),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq("orgUnitUid"),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq("orgUnitUid")
-                .blockingIsEmpty(),
-        ) doReturn returnValue
-    }
-
-    private fun mockTEIOrgUnitInCaptureScope(returnValue: List<OrganisationUnit>) {
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byProgramUids(listOf(programUid))
-                .blockingGet(),
-        ) doReturn returnValue
     }
 
     @Test
@@ -196,7 +163,7 @@ class TeiDataPresenterTest {
             on { organisationUnit() } doReturn "orgUnitUid"
         }
         whenever(teiDataRepository.getEnrollment()) doReturn Single.just(mockedEnrollment)
-        mockEnrollmentOrgUnitInCaptureScope(false)
+        whenever(teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")) doReturn false
         teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
         contractLiveData.value = Unit
     }
@@ -263,7 +230,10 @@ class TeiDataPresenterTest {
             .uid(orgUnitUid)
             .build()
 
-        mockTEIOrgUnitInCaptureScope(listOf(orgUnit))
+        whenever(
+            teiDataRepository.programOrgListInCaptureScope(programUid)
+        ) doReturn listOf(orgUnit)
+
         whenever(
             createEventUseCase.invoke(
                 programUid,
@@ -293,7 +263,9 @@ class TeiDataPresenterTest {
             .uid(orgUnitUid2)
             .build()
 
-        mockTEIOrgUnitInCaptureScope(listOf(orgUnit1, orgUnit2))
+        whenever(
+            teiDataRepository.programOrgListInCaptureScope(programUid)
+        ) doReturn listOf(orgUnit1, orgUnit2)
 
         teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
 

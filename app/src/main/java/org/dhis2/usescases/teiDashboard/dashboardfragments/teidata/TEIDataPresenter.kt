@@ -50,8 +50,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -367,21 +365,8 @@ class TEIDataPresenter(
         view.showSyncDialog(eventUid, enrollmentUid)
     }
 
-    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
-        return !getOrganisationUnitCollectionRepository()
-            .byUid().eq(enrollmentOrgUnit)
-            .blockingIsEmpty()
-    }
-
-    private fun getOrgListForProgram(programUid: String) =
-        getOrganisationUnitCollectionRepository()
-            .byProgramUids(listOf(programUid))
-            .blockingGet()
-
-    private fun getOrganisationUnitCollectionRepository(): OrganisationUnitCollectionRepository {
-        return d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-    }
+    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String) =
+        teiDataRepository.enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit)
 
     private fun canAddNewEvents(): Boolean {
         return d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
@@ -434,7 +419,7 @@ class TEIDataPresenter(
 
     fun checkOrgUnitCount(programUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {
-            val orgUnits = getOrgListForProgram(programUid)
+            val orgUnits = teiDataRepository.programOrgListInCaptureScope(programUid)
             if (orgUnits.count() == 1) {
                 onOrgUnitForNewEventSelected(orgUnits.first().uid(), programStageUid)
             } else {

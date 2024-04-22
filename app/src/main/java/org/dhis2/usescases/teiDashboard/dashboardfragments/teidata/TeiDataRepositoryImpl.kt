@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -442,5 +443,22 @@ class TeiDataRepositoryImpl(
         return d2.organisationUnitModule().organisationUnits()
             .byProgramUids(listOf(programUid))
             .blockingGet().size > 1
+    }
+
+    override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
+        return !getOrgUnitCollectionRepositoryByCaptureScope()
+            .byUid().eq(enrollmentOrgUnit)
+            .blockingIsEmpty()
+    }
+
+    override fun programOrgListInCaptureScope(programUid: String) =
+        getOrgUnitCollectionRepositoryByCaptureScope()
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+    private fun getOrgUnitCollectionRepositoryByCaptureScope(
+    ): OrganisationUnitCollectionRepository {
+        return d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
     }
 }
