@@ -107,7 +107,7 @@ class TeiDataPresenterTest {
     @Test
     fun `Should return false if orgUnit does not belong to the capture scope`() {
         whenever(
-            teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")
+            teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
         ) doReturn false
         assertTrue(
             !teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
@@ -231,7 +231,7 @@ class TeiDataPresenterTest {
             .build()
 
         whenever(
-            teiDataRepository.programOrgListInCaptureScope(programUid)
+            teiDataRepository.programOrgListInCaptureScope(programUid),
         ) doReturn listOf(orgUnit)
 
         whenever(
@@ -264,7 +264,7 @@ class TeiDataPresenterTest {
             .build()
 
         whenever(
-            teiDataRepository.programOrgListInCaptureScope(programUid)
+            teiDataRepository.programOrgListInCaptureScope(programUid),
         ) doReturn listOf(orgUnit1, orgUnit2)
 
         teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
