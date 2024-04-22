@@ -671,7 +671,6 @@
     <string name="download_tei_error">Танланган %s  юкланмади.</string>
     <string name="completed_by">%s  томонидан бажарилган: %s</string>
     <string name="updated_time">Янгиланган: %s</string>
-    <string name="action_done">Бажарилди!</string>
     <string name="validation_internal_error_datasets">Маълумотлар сифатини текшириб бўлмади. Администраторингизга мурожаат қилинг</string>
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="reopen_question">Маълумотлар тўпламини қайта очиб кўрмоқчимисиз?</string>

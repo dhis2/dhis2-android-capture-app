@@ -689,7 +689,6 @@
     <string name="download_tei_error">تعذر تنزيل %s المحددة</string>
     <string name="completed_by">تم الإكمال من قبل %s:%s</string>
     <string name="updated_time">تم التحديث: %s</string>
-    <string name="action_done">تم الإنتهاء!</string>
     <string name="validation_internal_error_datasets">لم نتمكن من التحقق من جودة البيانات. تواصل مع مديرك</string>
     <string name="are_you_sure">هل أنت متأكد؟</string>
     <string name="reopen_question">هل تريد إعادة فتح حزمة البيانات؟</string>
