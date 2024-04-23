@@ -3,8 +3,10 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -29,12 +31,15 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
+import org.dhis2.utils.isLandscape
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
@@ -42,6 +47,7 @@ class EventAdapter(
     val program: Program,
     val colorUtils: ColorUtils,
     private val cardMapper: TEIEventCardMapper,
+    private val initialSelectedEventUid: String? = null,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
@@ -65,6 +71,8 @@ class EventAdapter(
 ) {
 
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
+
+    private var previousSelectedPosition: Int = RecyclerView.NO_POSITION
 
     fun stageSelector(): Flowable<StageSection> {
         return stageSelector
@@ -151,11 +159,26 @@ class EventAdapter(
                                                 event.uid(),
                                                 event.status()!!,
                                             )
+
+                                            if (isLandscape()) {
+                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                                                    currentList[previousSelectedPosition].isClicked = false
+                                                    notifyItemChanged(previousSelectedPosition)
+                                                }
+                                                previousSelectedPosition = position
+                                                getItem(position).isClicked = true
+                                                notifyItemChanged(position)
+                                            }
                                         }
                                     }
                                 }
                             },
                         )
+
+                        if (it.event?.uid() == initialSelectedEventUid && previousSelectedPosition == RecyclerView.NO_POSITION) {
+                            it.isClicked = true
+                            previousSelectedPosition = position
+                        }
                         Box(
                             modifier = Modifier
                                 .padding(
@@ -185,6 +208,13 @@ class EventAdapter(
                                 shrinkLabelText = card.shrinkLabelText,
                                 onCardClick = card.onCardCLick,
                             )
+                            if (it.isClicked) {
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(color = SurfaceColor.Primary.copy(alpha = 0.1f), shape = RoundedCornerShape(Radius.S)),
+                                )
+                            }
                         }
                     }
 

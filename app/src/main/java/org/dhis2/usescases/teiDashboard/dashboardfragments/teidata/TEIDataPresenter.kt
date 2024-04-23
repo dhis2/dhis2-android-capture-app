@@ -138,7 +138,10 @@ class TEIDataPresenter(
                     .subscribe(
                         { events ->
                             _events.postValue(events)
-                            _totalTimeLineEvents.postValue(events.firstOrNull()?.eventCount ?: 0)
+                            _totalTimeLineEvents.postValue(
+                                events.firstOrNull()?.eventCount
+                                    ?: 0,
+                            )
                             decrement()
                         },
                         Timber.Forest::d,

@@ -115,7 +115,7 @@
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
 

@@ -20,19 +20,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
+import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.model.EnrollmentRecords
+import org.dhis2.form.ui.FormView
+import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -43,6 +51,7 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.Companion.NO_POSITION
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.DashboardPageType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
@@ -63,11 +72,15 @@ import javax.inject.Inject
 class TeiDashboardMobileActivity :
     ActivityGlobalAbstract(),
     TeiDashboardContracts.View,
-    MapButtonObservable {
+    MapButtonObservable,
+    TEIDataActivityContract {
     private var currentOrientation = -1
 
     @Inject
     lateinit var presenter: TeiDashboardContracts.Presenter
+
+    var featureConfig: FeatureConfigRepository? = null
+        @Inject set
 
     @Inject
     lateinit var filterManager: FilterManager
@@ -100,6 +113,8 @@ class TeiDashboardMobileActivity :
 
     private var elevation = 0f
     private var restartingActivity = false
+
+    private lateinit var formView: FormView
 
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -189,6 +204,7 @@ class TeiDashboardMobileActivity :
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
+        setFormViewForLandScape()
         setNavigationBar()
         setEditButton()
         dashboardViewModel.showStatusErrorMessages.observe(this) {
@@ -199,6 +215,47 @@ class TeiDashboardMobileActivity :
                 is DashboardEnrollmentModel -> setData(it)
                 is DashboardTEIModel -> setDataWithOutProgram(it)
             }
+        }
+    }
+
+    private fun setFormViewForLandScape() {
+        if (isLandscape() && enrollmentUid != null) {
+            val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
+            formView = FormView.Builder()
+                .locationProvider(locationProvider)
+                .onItemChangeListener {
+                    // Do nothing
+                }
+                .onLoadingListener { loading ->
+                    if (loading) {
+                        showLoadingProgress(true)
+                    } else {
+                        showLoadingProgress(false)
+                    }
+                }
+                .onFinishDataEntry {
+                    dashboardViewModel.updateDashboard()
+                }
+                .resultDialogUiProvider(
+                    EnrollmentResultDialogUiProvider(
+                        ResourceManager(
+                            this.context,
+                            ColorUtils(),
+                        ),
+                    ),
+                )
+                .factory(supportFragmentManager)
+                .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW))
+                .useComposeForm(
+                    featureConfig?.isFeatureEnable(Feature.COMPOSE_FORMS) ?: false,
+                )
+                .build()
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.tei_form_view, formView)
+                .commitAllowingStateLoss()
+
+            saveButton.setOnClickListener { formView.onSaveClick() }
         }
     }
 
@@ -272,7 +329,7 @@ class TeiDashboardMobileActivity :
         super.onDestroy()
     }
 
-    fun openSyncDialog() {
+    override fun openSyncDialog() {
         enrollmentUid?.let { enrollmentUid ->
             SyncStatusDialog.Builder()
                 .withContext(this, null)
@@ -339,12 +396,12 @@ class TeiDashboardMobileActivity :
                         binding.relationshipMapIcon.visibility = View.GONE
                     }
                     if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
-                        binding.toolbarTitle.visibility = View.GONE
-                        binding.editButton.visibility = View.VISIBLE
+                        binding.toolbarTitle?.visibility = View.GONE
+                        binding.editButton?.visibility = View.VISIBLE
                         binding.syncButton.visibility = View.GONE
                     } else {
-                        binding.toolbarTitle.visibility = View.VISIBLE
-                        binding.editButton.visibility = View.GONE
+                        binding.toolbarTitle?.visibility = View.VISIBLE
+                        binding.editButton?.visibility = View.GONE
                         binding.syncButton.visibility = View.VISIBLE
                     }
                     binding.navigationBar.selectItemAt(position)
@@ -717,6 +774,35 @@ class TeiDashboardMobileActivity :
         val intent = Intent(context, QrActivity::class.java)
         intent.putExtra(TEI_UID, teiUid)
         startActivity(intent)
+    }
+
+    override fun finishActivity() {
+        finish()
+    }
+
+    override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
+        startActivity(
+            intent(
+                this,
+                teiUid,
+                programUid,
+                enrollmentUid,
+            ),
+        )
+    }
+
+    override fun executeOnUIThread() {
+        activity.runOnUiThread {
+            showDescription(getString(R.string.error_applying_rule_effects))
+        }
+    }
+
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun activityTeiUid(): String? {
+        return teiUid
     }
 
     companion object {

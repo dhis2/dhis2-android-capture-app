@@ -99,7 +99,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
-    private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
+    private val dashboardActivity: TEIDataActivityContract by lazy { context as TEIDataActivityContract }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -223,8 +223,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     programsCallback = {
                         startActivity(
                             TeiDashboardMobileActivity.intent(
-                                dashboardActivity.context,
-                                dashboardActivity.teiUid,
+                                dashboardActivity.getContext(),
+                                dashboardActivity.activityTeiUid(),
                                 null,
                                 null,
                             ),
@@ -268,6 +268,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             !dashboardModel?.teiHeader.isNullOrEmpty() -> {
                 dashboardModel?.teiHeader
             }
+
             else -> {
                 String.format(
                     "%s %s",
@@ -344,6 +345,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 currentProgram,
                 colorUtils,
                 cardMapper,
+                initialSelectedEventUid = dashboardViewModel.selectedEventUid().value,
             )
             binding.teiRecycler.adapter = eventAdapter
         }
@@ -463,15 +465,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
-        dashboardActivity.startActivity(
-            TeiDashboardMobileActivity.intent(
-                activity,
-                teiUid,
-                programUid,
-                enrollmentUid,
-            ),
-        )
-        dashboardActivity.finish()
+        dashboardActivity.restoreAdapter(programUid, teiUid, enrollmentUid)
+        dashboardActivity.finishActivity()
     }
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
@@ -484,10 +479,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             updateEnrollment(true)
         }
 
-    override fun openEventCapture(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
-            updateEnrollment(true)
+    override fun openEventCapture(intent: Intent) {
+        if (dashboardActivity is TeiDashboardMobileActivity) {
+            contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+                updateEnrollment(true)
+            }
         }
+        if (dashboardActivity is EventCaptureActivity) {
+            val selectedEventUid = intent.getStringExtra(Constants.EVENT_UID)
+            dashboardViewModel.updateSelectedEventUid(selectedEventUid)
+        }
+    }
 
     override fun goToEventInitial(
         eventCreationType: EventCreationType,
@@ -580,9 +582,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun showProgramRuleErrorMessage() {
-        dashboardActivity.runOnUiThread {
-            showDescription(getString(R.string.error_applying_rule_effects))
-        }
+        dashboardActivity.executeOnUIThread()
     }
 
     override fun updateEnrollment(update: Boolean) {
