@@ -649,7 +649,6 @@
     <string name="download_tei_error">Tanlangan %s  yuklanmadi.</string>
     <string name="completed_by">%s tomonidan bajarilgan: %s</string>
     <string name="updated_time">Yangilangan: %s</string>
-    <string name="action_done">Bajarildi!</string>
     <string name="validation_internal_error_datasets">Maʼlumotlar sifatini tekshirib boʼlmadi. Аdministratoringizga murojaat qiling</string>
     <string name="are_you_sure">Ishonchinigiz komilmi?</string>
     <string name="reopen_question">Maʼlumotlar toʼplamini qayta ochib koʼrmoqchimisiz?</string>
