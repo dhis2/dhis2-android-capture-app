@@ -810,21 +810,25 @@ class SearchTEIViewModel(
         }
 
         is FormIntent.OnFocus -> {
-            val updatedItems = uiState.items.map {
-                if (it.focused && it.uid != formIntent.uid) {
-                    val validation = it.value?.let { value -> it.valueType?.validator?.validate(value) }
+            val updatedItems = uiState.items.map { field ->
+                if (field.focused && field.uid != formIntent.uid) {
+                    val validation = field.value?.takeIf {
+                        field.valueType in listOf(
+                            ValueType.DATE, ValueType.DATETIME, ValueType.AGE, ValueType.TIME,
+                        )
+                    }?.let { value -> field.valueType?.validator?.validate(value) }
 
-                    (it as FieldUiModelImpl).copy(
+                    (field as FieldUiModelImpl).copy(
                         focused = false,
                         error = when (validation) {
                             is Result.Failure -> resourceManager.getString(R.string.formatting_error)
                             else -> null
                         },
                     )
-                } else if (it.uid == formIntent.uid) {
-                    (it as FieldUiModelImpl).copy(focused = true)
+                } else if (field.uid == formIntent.uid) {
+                    (field as FieldUiModelImpl).copy(focused = true)
                 } else {
-                    it
+                    field
                 }
             }
             uiState = uiState.copy(items = updatedItems)
