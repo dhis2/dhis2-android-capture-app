@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
 @Composable
 fun ProvideInputDate(
@@ -69,7 +68,7 @@ fun ProvideInputDate(
             visualTransformation = visualTransformation,
             onNextClicked = onNextClicked,
             onValueChanged = {
-                value = it?.let { it1 -> formatValueWithTimeZone(it1, fieldUiModel.valueType) } ?: TextFieldValue()
+                value = it ?: TextFieldValue()
                 intentHandler.invoke(
                     FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
@@ -104,24 +103,6 @@ private fun getSelectableDates(uiModel: FieldUiModel): SelectableDates {
     }
 }
 
-private fun formatValueWithTimeZone(fieldValue: TextFieldValue, fieldType: ValueType?): TextFieldValue {
-    val value: TextFieldValue
-    if (fieldType == ValueType.DATE) {
-        var date = fieldValue.text
-        var day = fieldValue.text.substring(0, 2).toInt()
-        val timeZone = TimeZone.getDefault()
-
-        if ((timeZone.rawOffset / (1000 * 60 * 60)) < 0) {
-            day += 1
-            date = date.replaceRange(0, 2, String.format("%02d", day))
-
-        }
-        value = TextFieldValue(date)
-    } else {
-        value = fieldValue
-    }
-    return value
-}
 private fun getYearRange(uiModel: FieldUiModel): IntRange {
     return if (uiModel.selectableDates == null) {
         if (uiModel.allowFutureDates == true) {
