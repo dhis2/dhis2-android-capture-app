@@ -38,6 +38,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import timber.log.Timber
+import java.text.ParseException
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
@@ -923,20 +924,28 @@ class SearchTEIViewModel(
                     ValueType.DATE, ValueType.AGE -> {
                         item.value?.let {
                             if (it.isNotEmpty()) {
-                                val date = DateUtils.oldUiDateFormat().parse(it)
-                                date?.let {
-                                    map[item.uid] = DateUtils.uiDateFormat().format(date)
+                                val date = try {
+                                    DateUtils.oldUiDateFormat().parse(it)
+                                } catch (e: ParseException) {
+                                    null
                                 }
+                                map[item.uid] = date?.let {
+                                    DateUtils.uiDateFormat().format(date)
+                                } ?: it
                             }
                         }
                     }
                     ValueType.DATETIME -> {
                         item.value?.let {
                             if (it.isNotEmpty()) {
-                                val date = DateUtils.databaseDateFormatNoSeconds().parse(it)
-                                date?.let {
-                                    map[item.uid] = DateUtils.uiDateTimeFormat().format(date)
+                                val date = try {
+                                    DateUtils.databaseDateFormatNoSeconds().parse(it)
+                                } catch (e: ParseException) {
+                                    null
                                 }
+                                map[item.uid] = date?.let {
+                                    DateUtils.uiDateTimeFormat().format(date)
+                                } ?: it
                             }
                         }
                     }

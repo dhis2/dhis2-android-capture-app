@@ -287,9 +287,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                             if (dataValue.contains("_os_"))
                                 dataValue = dataValue.split("_os_")[1];
 
-                            boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
-
-                            if (!isGenerated) {
+                            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet();
+                            boolean isGenerated = attribute.generated();
+                            boolean hasValidValue = attribute.valueType().getValidator().validate(dataValue).getSucceeded();
+                            if (!isGenerated && hasValidValue) {
                                 valueStore.overrideProgram(programUid);
                                 valueStore.save(key, dataValue).blockingFirst();
                             }

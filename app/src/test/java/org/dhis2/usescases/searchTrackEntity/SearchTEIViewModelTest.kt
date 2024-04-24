@@ -651,6 +651,32 @@ class SearchTEIViewModelTest {
         assertTrue(expectedMap == formattedMap)
     }
 
+    @Test
+    fun `should return test`() {
+        viewModel.uiState = viewModel.uiState.copy(items = getMalformedDateFieldUIModels())
+        val expectedMap = mapOf(
+            "uid1" to "04",
+        )
+
+        val formattedMap = viewModel.getFriendlyQueryData()
+
+        assertTrue(expectedMap == formattedMap)
+    }
+
+    private fun getMalformedDateFieldUIModels(): List<FieldUiModel> {
+        return listOf(
+            FieldUiModelImpl(
+                uid = "uid1",
+                layoutId = 3,
+                label = "Date",
+                value = "04",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.DATE,
+            ),
+        )
+    }
+
     private fun getFieldUIModels(): List<FieldUiModel> {
         return listOf(
             FieldUiModelImpl(
