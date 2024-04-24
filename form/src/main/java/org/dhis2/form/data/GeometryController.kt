@@ -16,17 +16,17 @@ class GeometryController(private val geometryParser: GeometryParser) {
         return when (featureType) {
             FeatureType.POINT -> {
                 GeometryHelper.createPointGeometry(
-                    geometryParser.parsePoint(coordinates)
+                    geometryParser.parsePoint(coordinates),
                 )
             }
             FeatureType.POLYGON -> {
                 GeometryHelper.createPolygonGeometry(
-                    geometryParser.parsePolygon(coordinates)
+                    geometryParser.parsePolygon(coordinates),
                 )
             }
             else -> {
                 GeometryHelper.createMultiPolygonGeometry(
-                    geometryParser.parseMultipolygon(coordinates)
+                    geometryParser.parseMultipolygon(coordinates),
                 )
             }
         }
@@ -35,7 +35,7 @@ class GeometryController(private val geometryParser: GeometryParser) {
     fun getCoordinatesCallback(
         updateCoordinates: (value: String?) -> Unit,
         currentLocation: (fieldUid: String) -> Unit,
-        mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit
+        mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit,
     ): FieldUiModel.Callback {
         return object : FieldUiModel.Callback {
 
@@ -54,7 +54,7 @@ class GeometryController(private val geometryParser: GeometryParser) {
                     is RecyclerViewUiEvents.RequestLocationByMap -> mapRequest(
                         uiEvent.uid,
                         uiEvent.featureType.name,
-                        uiEvent.value
+                        uiEvent.value,
                     )
                     else -> {
                     }

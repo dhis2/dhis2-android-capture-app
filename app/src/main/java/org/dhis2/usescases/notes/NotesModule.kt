@@ -38,21 +38,21 @@ class NotesModule(
     private val view: NotesView,
     private val programUid: String,
     private val uid: String,
-    private val noteType: NoteType
+    private val noteType: NoteType,
 ) {
 
     @Provides
     @PerFragment
     internal fun providesPresenter(
         notesRepository: NotesRepository,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
     ): NotesPresenter {
         return NotesPresenter(
             view,
             notesRepository,
             uid,
             noteType,
-            schedulerProvider
+            schedulerProvider,
         )
     }
 

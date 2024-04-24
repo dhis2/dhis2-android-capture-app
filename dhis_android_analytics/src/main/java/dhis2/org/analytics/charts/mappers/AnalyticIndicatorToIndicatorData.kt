@@ -7,7 +7,7 @@ class AnalyticIndicatorToIndicatorData {
     fun map(analyticsIndicator: AnalyticsTeiIndicator): IndicatorData {
         return IndicatorData(
             analyticsIndicator.programStage()!!,
-            analyticsIndicator.indicator()
+            analyticsIndicator.indicator(),
         )
     }
 }

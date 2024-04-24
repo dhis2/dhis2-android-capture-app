@@ -5,19 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import javax.inject.Inject
 import org.dhis2.R
 import org.dhis2.commons.Constants
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentDataSetListBinding
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
+import org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper.DatasetCardMapper
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.ActionObserver
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import javax.inject.Inject
 
 class DataSetListFragment : FragmentGlobalAbstract() {
 
@@ -28,23 +29,27 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     var adapter: DataSetListAdapter? = null
 
     private lateinit var activity: DataSetDetailActivity
+
     @Inject
     lateinit var viewModelFactory: DataSetListViewModelFactory
+
+    @Inject
+    lateinit var datasetCardMapper: DatasetCardMapper
 
     private val viewModel: DataSetListViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         activity = requireActivity() as DataSetDetailActivity
         activity.dataSetDetailComponent.plus(DataSetListModule()).inject(this)
-        adapter = DataSetListAdapter(viewModel)
+        adapter = DataSetListAdapter(viewModel, datasetCardMapper)
 
         with(viewModel) {
-            datasets.observe(viewLifecycleOwner, { setData(it) })
-            canWrite.observe(viewLifecycleOwner, { setWritePermission(it) })
+            datasets.observe(viewLifecycleOwner) { setData(it) }
+            canWrite.observe(viewLifecycleOwner) { setWritePermission(it) }
             selectedDataset.observe(viewLifecycleOwner, ActionObserver { startDataSet(it) })
             selectedSync.observe(viewLifecycleOwner, ActionObserver { showSyncDialog(it) })
         }
@@ -89,6 +94,7 @@ class DataSetListFragment : FragmentGlobalAbstract() {
             else -> View.GONE
         }
     }
+
     private fun startNewDataSet() {
         binding.addDatasetButton.isEnabled = false
         val bundle = Bundle()
@@ -111,20 +117,22 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     }
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(ConflictType.DATA_VALUES)
-            .setUid(dataSetUid)
-            .setOrgUnit(dataSet.orgUnitUid())
-            .setAttributeOptionCombo(dataSet.catOptionComboUid())
-            .setPeriodId(dataSet.periodId())
-            .onDismissListener(object : OnDismissListener {
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(
+                SyncContext.DataSetInstance(
+                    dataSetUid = dataSetUid,
+                    periodId = dataSet.periodId(),
+                    orgUnitUid = dataSet.orgUnitUid(),
+                    attributeOptionComboUid = dataSet.catOptionComboUid(),
+                ),
+            ).onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) {
                         viewModel.updateData()
                     }
                 }
-            }).build()
-        dialog.show(activity.supportFragmentManager, FRAGMENT_TAG)
+            }).show(FRAGMENT_TAG)
     }
 
     companion object {

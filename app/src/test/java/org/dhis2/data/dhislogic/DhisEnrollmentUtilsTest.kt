@@ -1,7 +1,5 @@
 package org.dhis2.data.dhislogic
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -12,6 +10,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 
 class DhisEnrollmentUtilsTest {
 
@@ -28,7 +28,7 @@ class DhisEnrollmentUtilsTest {
         val result = dhisEnrollmentUtils.isEventEnrollmentOpen(
             Event.builder()
                 .uid("eventUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }
@@ -38,7 +38,7 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(anyString())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .status(EnrollmentStatus.CANCELLED)
@@ -47,7 +47,7 @@ class DhisEnrollmentUtilsTest {
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertFalse(result)
     }
@@ -57,13 +57,13 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid(anyString())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn null
         val result = dhisEnrollmentUtils.isEventEnrollmentOpen(
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }
@@ -73,7 +73,7 @@ class DhisEnrollmentUtilsTest {
         whenever(
             d2.enrollmentModule().enrollments()
                 .uid("enrollmentUid")
-                .blockingGet()
+                .blockingGet(),
         ) doReturn Enrollment.builder()
             .uid("enrollmentUid")
             .status(EnrollmentStatus.ACTIVE)
@@ -82,7 +82,7 @@ class DhisEnrollmentUtilsTest {
             Event.builder()
                 .uid("eventUid")
                 .enrollment("enrollmentUid")
-                .build()
+                .build(),
         )
         assertTrue(result)
     }

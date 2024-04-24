@@ -9,12 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.login.LoginPresenter" />
-
-        <variable
-            name="loginModel"
             type="org.dhis2.usescases.login.LoginViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,7 +120,7 @@
                             android:layout_height="50dp"
                             android:imeOptions="actionNext"
                             android:inputType="textUri"
-                            android:onTextChanged="@{loginModel::onServerChanged}"
+                            android:onTextChanged="@{presenter::onServerChanged}"
                             android:padding="5dp"
                             android:text="@string/login_https"
                             android:textColor="@color/text_black_333"
@@ -182,7 +177,7 @@
                             android:layout_height="match_parent"
                             android:imeOptions="actionNext"
                             android:inputType="textPersonName"
-                            android:onTextChanged="@{loginModel::onUserChanged}"
+                            android:onTextChanged="@{presenter::onUserChanged}"
                             android:textColor="@color/text_black_333"
                             android:textSize="17sp" />
 
@@ -238,7 +233,7 @@
                             android:layout_height="match_parent"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
-                            android:onTextChanged="@{loginModel::onPassChanged}"
+                            android:onTextChanged="@{presenter::onPassChanged}"
                             android:textColor="@color/text_black_333"
                             android:textSize="17sp" />
 
@@ -297,7 +292,7 @@
                     style="@style/LoginButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="@{()-> presenter.onButtonClick()}"
+                    android:onClick="@{()-> presenter.onLoginButtonClick()}"
                     android:text="@string/log_in_button"
                     app:layout_constraintTop_toTopOf="parent"/>
 

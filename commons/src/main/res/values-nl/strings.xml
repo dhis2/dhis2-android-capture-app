@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Gebeurtenis</string>
+    <string name="no_data">Geen gegevens</string>
+    <string name="feature_configuration">Functieconfiguratie</string>
+    <string name="change_calendar_view">Agendaweergave wijzigen</string>
+    <string name="clear">duidelijk</string>
+    <string name="action_accept">Aanvaarden</string>
+    <string name="next">Volgende</string>
+    <string name="cancel">Annuleren</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
+    <string name="clear_all">duidelijke selectie</string>
+    <string name="navigation_list_view">Lijstweergave</string>
+    <string name="navigation_table_view">Tabel weergave</string>
+    <string name="navigation_map_view">Kaartweergave</string>
+    <string name="navigation_analytics">Analyse</string>
+    <string name="navigation_tasks">Taken</string>
+    <string name="navigation_programs">Programma\'s</string>
+    <string name="navigation_events">Gebeurtenissen</string>
+    <string name="navigation_relationships">Relaties</string>
+    <string name="navigation_notes">Notities</string>
+    <string name="navigation_data_entry">Gegevensinvoer</string>
+    <string name="navigation_tei_data">Details</string>
+    <string name="event_overview">Details</string>
+    <string name="select_option">Selecteer optie</string>
+    <string name="search">Zoek</string>
+    <string name="jira_issue_sent">Probleem verzonden</string>
+    <string name="jira_issue_sent_error">Fout bij verzenden</string>
+    <string name="events">evenementen</string>
+    <string name="data_sets">Gegevensreeksen</string>
+    <string name="tei">TEI</string>
+    <string name="info">Info</string>
+    <string name="done">Klaar</string>
+
+    <!-- Filters -->
+    <string name="filters_active">Filters van toepassing</string>
+    <string name="filters_disabled">Geen filters toegepast</string>
+    <string name="filters_title_period">Periode</string>
+    <string name="filters_title_org_unit">Org. Eenheid</string>
+    <string name="filters_title_sorting">Sorteren</string>
+    <string name="filters_title_status">status</string>
+    <string name="filters_title_state">Synchroniseren</string>
+    <string name="filters_title_assigned">Toegewezen aan mij</string>
+    <string name="filters_title_date">Datum</string>
+    <string name="filters_title_event_date">Evenement datum</string>
+    <string name="enrollment_date">Inschrijvingsdatum</string>
+    <string name="filters_title_event_status">Gebeurtenisstatus</string>
+    <string name="filters_title_enrollment_status">Inschrijving Status</string>
+    <string name="filter_follow_up_label">Gevolgd %s</string>
+
+    <!-- State -->
+    <string name="state_synced">Synchroniseren</string>
+    <string name="state_to_post">Versturen</string>
+    <string name="state_to_update">Updaten</string>
+    <string name="state_to_delete">Verwijderen</string>
+    <string name="state_error">Fout</string>
+    <string name="state_warning">Waarschuwing</string>
+    <string name="state_uploading">Uploaden</string>
+    <string name="state_relationship">Relatie</string>
+    <string name="sent_by_sms">Per sms verzonden</string>
+    <string name="sync_by_sms">Gesynchroniseerd via sms</string>
+
+    <!-- Status -->
+    <string name="filter_event_status_open">Open</string>
+    <string name="filter_event_status_schedule">Schema</string>
+    <string name="filter_event_status_overdue">Verlopen</string>
+    <string name="filter_event_status_visited">Bezocht</string>
+    <string name="filter_event_status_completed">Voltooid</string>
+    <string name="filter_event_status_skipped">Overgeslaten</string>
+    <string name="active">Actief</string>
+    <string name="cancelled">Geannuleerd</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">Compleet</string>
+    <string name="enrollment_status_cancelled">Geannuleerd</string>
+    <string name="record_marked_for_deletion">Dit record is gemarkeerd voor verwijdering. Je hebt er geen toegang toe.</string>
+
+    <!-- Periods -->
+    <string name="filter_period_today">Vandaag</string>
+    <string name="filter_period_yesterday">Gisteren</string>
+    <string name="filter_period_tomorrow">Morgen</string>
+    <string name="filter_period_this_week">Deze week</string>
+    <string name="filter_period_last_week">Laatste week</string>
+    <string name="filter_perdior_next_week">Volgende week</string>
+    <string name="filter_period_this_month">Deze maand</string>
+    <string name="filter_period_last_month">Laatste maand</string>
+    <string name="filter_period_next_month">Volgende maand</string>
+    <string name="filter_period_form_to">Van - naar</string>
+    <string name="filter_period_other">Anders</string>
+    <string name="filter_period_any">Altijd</string>
+    <string name="working_list_default_label">Werklijst %s</string>
+    <string name="filter_period_last_n_days">Laatste %d dagen</string>
+    <string name="filter_period_this_year">Dit jaar</string>
+    <string name="filter_period_this_bimonth">Deze twee maanden</string>
+    <string name="filter_period_last_bimonth">Laatste twee maanden</string>
+    <string name="filter_period_this_quarter">Dit kwartier</string>
+    <string name="filter_period_last_quarter">Laatste kwartier</string>
+    <string name="filter_period_six_months">Deze zes maanden</string>
+    <string name="filter_period_last_six_months">Afgelopen zes maanden</string>
+    <string name="filter_period_last_n_years">Laatste %d jaar</string>
+    <string name="filter_period_last_n_months">Laatste %d maanden</string>
+    <string name="filter_period__last_n_weeks">Laatste %d weken</string>
+    <string name="filter_period_weeks_this_year">Weken dit jaar</string>
+    <string name="filter_period_months_this_year">Maanden dit jaar</string>
+    <string name="filter_period_bimonths_this_year">Twee maanden dit jaar</string>
+    <string name="filter_period_quarters_this_year">Kwartieren dit jaar</string>
+    <string name="filter_period_months_last_year">Maanden vorig jaar</string>
+    <string name="filter_period_quarters_last_year">Kwartalen afgelopen jaren</string>
+    <string name="filter_period_last_year">Laatste jaar</string>
+    <string name="filter_period_this_biweek">Deze tweewekelijkse</string>
+    <string name="filter_period_last_biweek">Afgelopen twee weken</string>
+    <string name="filter_period_last_n_bimonths">Laatste %d twee maanden</string>
+    <string name="filter_period_last_n_quarters">Laatste %d kwartalen</string>
+    <string name="last_n_months">Laatste %d maanden</string>
+    <string name="filter_period_this_financial_year">Dit financieel jaar</string>
+    <string name="filter_period_last_financial_year">Laatste financieel jaar</string>
+    <string name="filter_period_last_n_financial_years">Laatste %d boekjaren</string>
+    <string name="filter_period_last_n_biweeks">Laatste %d twee weken</string>
+    <string name="period">Periode</string>
+    <string name="DAILY">Dagelijks</string>
+    <string name="WEEKLY">Wekelijks</string>
+    <string name="MONTHLY">Maandelijks</string>
+    <string name="YEARLY">Jaarlijks</string>
+
+    <!-- Sync -->
+    <string name="filter_sync_synced">Gesynchroniseerd</string>
+    <string name="filter_sync_not_synced">Niet gesynchroniseerd</string>
+    <string name="filter_sync_error">Synchronisatiefout</string>
+    <string name="filter_sync_sms">SMS gesynchroniseerd</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">nu</string>
+    <string name="interval_minute_ago">%d min. geleden</string>
+    <string name="interval_hour_ago">%d uur geleden</string>
+    <string name="interval_yesterday">Gisteren</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicatoren</string>
+    <string name="section_charts">Grafieken</string>
+    <string name="section_charts_indicators">Grafieken en indicatoren</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Ingeschreven in:</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Wachtwoord ontbreekt. Voer wachtwoord in alstublieft.</string>
+    <string name="login_error_null_username">Gebruikersnaam ontbreekt. Voer gebruikersnaam in.</string>
+    <string name="login_error_dhis_version">Deze server draait een andere versie dan 2.29. Werk uw serverversie bij of gebruik de testomgeving om verder te gaan.</string>
+    <string name="login_error_dhis_version_v2">Deze server draait een andere DHIS2-versie dan %s. Werk uw serverversie bij of neem contact op met uw beheerder.</string>
+    <string name="login_error_unsuccessful_response">Er is iets fout gegaan. Controleer of de server-URL, gebruikersnaam en wachtwoord juist zijn en probeer het opnieuw.</string>
+    <string name="login_error_error_response">Sorry! Er is iets misgegaan aan de serverzijde.</string>
+    <string name="login_error_no_dhis_instance">De opgegeven URL is geen DHIS2-server.</string>
+    <string name="login_error_bad_credentials">De gebruikersnaam of het wachtwoord is onjuist</string>
+    <string name="login_error_unknown_host">Onbekende server</string>
+    <string name="online_search_parsing_error">Fout bij het parseren van resultaten</string>
+    <string name="error_unexpected">Er ging iets onverwachts mis.</string>
+    <string name="error_too_manu_org_units">Uw gebruiker heeft meer dan één hoofdorganisatie-eenheid. Controleer uw configuratie of neem contact op met uw beheerder.</string>
+    <string name="error_max_tei_count_reached">Online resultaten overschrijden het maximum aantal trackerinstanties dat kan worden getoond. Verfijn uw zoekopdracht.</string>
+    <string name="error_many_requests">De server is op dit moment een beetje druk. Probeer het later nog eens.</string>
+    <string name="error_already_authenticated">De gebruiker is al ingelogd.</string>
+    <string name="error_already_executed">Het verzoek is al uitgevoerd.</string>
+    <string name="error_api_invalid_query">Serververzoek is ongeldig.</string>
+    <string name="error_app_name_not_set">De applicatienaam is niet ingesteld.</string>
+    <string name="error_app_version_not_set">De applicatieversie is niet ingesteld.</string>
+    <string name="error_access_keystore">Kan geen toegang krijgen tot de sleutelopslag van het apparaat.</string>
+    <string name="error_create_existing_error">Creatie afgebroken. Het object bestaat al.</string>
+    <string name="error_delete_non_existing_object">Verwijdering afgebroken. Het voorwerp bestaat niet.</string>
+    <string name="error_instance_keystore">Kan sleutelarchief niet instantiëren.</string>
+    <string name="error_reserve_value_on_server">We konden geen waarden voor deze plaat reserveren. Neem contact op met uw beheerder.</string>
+    <string name="error_export_login">Log in om de database te exporteren.</string>
+    <string name="error_export_encrypted">Het exporteren van een versleutelde database wordt niet ondersteund.</string>
+    <string name="error_import_exist">U importeert een reeds bestaande database.</string>
+    <string name="error_import_logout">Gelieve uit te loggen om een nieuwe database te importeren.</string>
+    <string name="error_import_version">De versie van de geïmporteerde database is hoger dan ondersteund.</string>
+    <string name="error_file_not_found">Het bestand is niet gevonden.</string>
+    <string name="error_file_resize">Er is een fout opgetreden bij het wijzigen van het formaat van de afbeelding.</string>
+    <string name="error_generate_coordinate">Het is niet mogelijk om coördinaten te genereren.</string>
+    <string name="error_job">Taakrapport niet beschikbaar.</string>
+    <string name="error_low_on_available_values">Mogelijk hebt u bijna geen beschikbare waarden meer.</string>
+    <string name="error_user_no_authenticated">Er is geen gebruiker geverifieerd.</string>
+    <string name="error_user_no_authenticated_offline">Er is geen gebruiker offline geverifieerd.</string>
+    <string name="error_no_values_left_on_server">Er zijn niet genoeg waarden om te reserveren op de server. Neem contact op met uw beheerder.</string>
+    <string name="error_different_offline_user">U probeert offline in te loggen met een andere gebruiker.</string>
+    <string name="error_invalid_geometry">De geometriewaarde is ongeldig.</string>
+    <string name="error_no_reserved_values">Er zijn geen gereserveerde waarden beschikbaar. Ga naar instellingen en vulwaarden als je een internetverbinding hebt.</string>
+    <string name="error_object_update">Het object kan niet worden bijgewerkt.</string>
+    <string name="error_object_insert">Het object kon niet worden ingevoegd.</string>
+    <string name="error_ownership_access">U heeft geen toegang.</string>
+    <string name="error_null_url">De server-URL ontbreekt. Voer de URL in.</string>
+    <string name="error_server_malformed">De server-URL is niet goed gevormd. Controleer het alstublieft.</string>
+    <string name="error_settings_app_not_supported">Deze versie van de Instellingen-webapp wordt niet ondersteund.</string>
+    <string name="error_settings_app_not_intalled">De Settings Web App is niet op de server geïnstalleerd.</string>
+    <string name="error_socket_timeout">De server nam te veel tijd om te reageren. We hebben het verzoek geannuleerd.</string>
+    <string name="error_relationship_updated">De relatie kan niet worden bijgewerkt.</string>
+    <string name="error_too_many_periods">Er zijn te veel periodes.</string>
+    <string name="error_url_not_found">We konden de URL niet vinden. Controleer het alstublieft.</string>
+    <string name="error_account_disabled">Uw gebruikersaccount is uitgeschakeld. Neem contact op met uw beheerder als dit een fout is.</string>
+    <string name="error_account_locked">Uw gebruikersaccount is vergrendeld. Neem contact op met uw beheerder als dit een fout is.</string>
+    <string name="error_set_value">De waarde kon niet worden ingesteld.</string>
+    <string name="error_value_reservation_time">Het verzoek om waarden te reserveren heeft te veel tijd gekost. Probeer het opnieuw.</string>
+    <string name="error_ssl">Er is een probleem met de servercertificaten. Neem contact op met uw beheerder.</string>
+    <string name="error_sms_not_supported">SMS wordt niet ondersteund.</string>
+    <string name="error_min_attributes">Er zijn niet genoeg attributen om de zoekopdracht uit te voeren. Verfijn uw zoekopdracht met meer attributen.</string>
+    <string name="error_org_unit_scope">Online zoeken is alleen beschikbaar voor uw organisatie-eenheden voor het zoeken van gebruikers.</string>
+    <string name="error_invalid_characters">Er zijn ongeldige tekens in de vraag. Vraag de beheerder om de serverconfiguratie te verifiëren (relaxedQueryChars,...).</string>
+    <string name="unsupported_field_description">Dit veld is niet beschikbaar voor mobiel vastleggen</string>
+    <string name="add_image">Voeg afbeelding toe</string>
+    <string name="action_ok">OK</string>
+    <string name="enable_location_message">De locatie van uw apparaat is losgekoppeld. Schakel het in om coördinaten vast te leggen</string>
+    <string name="keep_editing">Blijf bewerken</string>
+    <string name="not_now">Niet nu</string>
+    <string name="review">Beoordeling</string>
+    <string name="complete">Compleet</string>
+    <string name="default_table_header_label">Waarde</string>
+    <string name="discard_changes">Veranderingen ongedaan maken</string>
+    <string name="default_empty_dataset_section_label">Gegevens</string>
+    <string name="title_network_connection_unavailable">Netwerkverbinding niet beschikbaar</string>
+    <string name="msg_network_connection_maps">Voor het gebruik van maps is een internetverbinding vereist.</string>
+
+    </resources>

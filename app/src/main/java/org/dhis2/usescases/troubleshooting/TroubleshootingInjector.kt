@@ -21,12 +21,12 @@ class TroubleshootingModule(private val openLanguageSection: Boolean) {
     @Provides
     fun providesViewModelFactory(
         localeSelector: LocaleSelector,
-        repository: TroubleshootingRepository
+        repository: TroubleshootingRepository,
     ): TroubleshootingViewModelFactory {
         return TroubleshootingViewModelFactory(
             localeSelector,
             repository,
-            openLanguageSection
+            openLanguageSection,
         )
     }
 

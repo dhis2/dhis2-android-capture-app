@@ -233,31 +233,40 @@ public class FilterManager implements Serializable {
 //    endregion
 
     public void addEventStatus(boolean remove, EventStatus... status) {
+        boolean changed = true;
         for (EventStatus eventStatus : status) {
             if (remove)
                 eventStatusFilters.remove(eventStatus);
             else if (!eventStatusFilters.contains(eventStatus))
                 eventStatusFilters.add(eventStatus);
+            else {
+                changed = false;
+            }
         }
-        observableEventStatus.set(eventStatusFilters);
-        if (eventStatusFilters.contains(EventStatus.ACTIVE)) {
-            eventStatusFiltersApplied.set(eventStatusFilters.size() - 1);
-        } else {
-            eventStatusFiltersApplied.set(eventStatusFilters.size());
+        if (changed) {
+            observableEventStatus.set(eventStatusFilters);
+            if (eventStatusFilters.contains(EventStatus.ACTIVE)) {
+                eventStatusFiltersApplied.set(eventStatusFilters.size() - 1);
+            } else {
+                eventStatusFiltersApplied.set(eventStatusFilters.size());
+            }
+            publishData();
         }
-        publishData();
     }
 
     public void addEnrollmentStatus(boolean remove, EnrollmentStatus enrollmentStatus) {
+        boolean changed = true;
         if (remove) {
             enrollmentStatusFilters.remove(enrollmentStatus);
-        } else {
+        } else if (!enrollmentStatusFilters.contains(enrollmentStatus)){
             enrollmentStatusFilters.clear();
             enrollmentStatusFilters.add(enrollmentStatus);
             observableEnrollmentStatus.set(enrollmentStatus);
+        } else {
+            changed = false;
         }
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
-        if (!workingListActive())
+        if (!workingListActive() && changed)
             publishData();
     }
 
@@ -543,7 +552,7 @@ public class FilterManager implements Serializable {
 
     public void clearAllFilters() {
         eventStatusFilters.clear();
-        observableEventStatus.set(eventStatusFilters);
+        observableEventStatus.set(null);
         enrollmentStatusFilters.clear();
         observableEnrollmentStatus.set(null);
         catOptComboFilters.clear();
@@ -685,6 +694,7 @@ public class FilterManager implements Serializable {
         eventStatusFiltersApplied.set(scope.eventStatusCount());
         assignedToMeApplied.set(scope.assignCount());
 
+        publishData();
     }
 
     private int getTotalFilterCounterForWorkingList(WorkingListScope scope) {
@@ -693,9 +703,7 @@ public class FilterManager implements Serializable {
         int enrollmentStatusCount = scope.enrollmentStatusCount() != 0 ? 1 : 0;
         int eventStatusCount = scope.eventStatusCount() != 0 ? 1 : 0;
         int eventAssignedToMeCount = scope.assignCount() != 0 ? 1 : 0;
-        int total = eventDateCount + enrollmentDateCount + enrollmentStatusCount + eventStatusCount + eventAssignedToMeCount;
-        int workingListTotalFilters = total == 0 ? total : total + 1;
-        return workingListTotalFilters;
+        return eventDateCount + enrollmentDateCount + enrollmentStatusCount + eventStatusCount + eventAssignedToMeCount;
     }
 
     public ObservableField<WorkingListScope> observeWorkingListScope() {

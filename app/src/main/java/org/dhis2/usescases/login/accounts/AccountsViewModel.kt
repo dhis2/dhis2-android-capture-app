@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class AccountsViewModel(
-    val repository: AccountRepository
+    val repository: AccountRepository,
 ) : ViewModel() {
 
     private var _accounts = MutableLiveData<List<AccountModel>>()

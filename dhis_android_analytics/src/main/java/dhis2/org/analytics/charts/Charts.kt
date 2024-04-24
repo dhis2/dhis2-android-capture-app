@@ -4,6 +4,7 @@ import android.content.Context
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -27,7 +28,7 @@ interface Charts {
     fun setVisualizationOrgUnits(
         visualizationUid: String,
         orgUnits: List<OrganisationUnit>,
-        orgUnitFilterType: OrgUnitFilterType
+        orgUnitFilterType: OrgUnitFilterType,
     )
 
     interface Provider {
@@ -38,5 +39,6 @@ interface Charts {
         fun getContext(): Context
         fun getD2(): D2
         fun getFeatureConfigRepository(): FeatureConfigRepository
+        fun getColorUtils(): ColorUtils
     }
 }

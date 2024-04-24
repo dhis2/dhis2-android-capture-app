@@ -12,8 +12,8 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.ViewPortHandler
 import dhis2.org.R
-import kotlin.math.round
 import org.dhis2.commons.bindings.dp
+import kotlin.math.round
 
 @SuppressLint("ViewConstructor")
 class ChartMarker(
@@ -22,7 +22,7 @@ class ChartMarker(
     private val xAxis: XAxis,
     private val yAxis: YAxis,
     @LayoutRes layoutRes: Int = R.layout.chart_marker,
-    private val forceTopMarkerPlacement: Boolean = false
+    private val forceTopMarkerPlacement: Boolean = false,
 ) :
     MarkerView(context, layoutRes) {
     private enum class MarkerPlacement {

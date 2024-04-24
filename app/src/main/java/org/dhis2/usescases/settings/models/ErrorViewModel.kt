@@ -7,5 +7,5 @@ data class ErrorViewModel(
     val errorCode: String?,
     val errorDescription: String?,
     val errorComponent: String?,
-    var isSelected: Boolean = false
+    var isSelected: Boolean = false,
 )

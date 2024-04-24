@@ -1,19 +1,14 @@
 package org.dhis2.form.ui.event
 
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
+import java.util.Calendar
+import java.util.Date
 
 class DialogDelegate {
 
-    fun handleDateInput(
-        uid: String,
-        year: Int,
-        month: Int,
-        day: Int
-    ): FormIntent {
+    fun handleDateInput(uid: String, year: Int, month: Int, day: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             set(Calendar.YEAR, year)
@@ -30,16 +25,11 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = date,
-            valueType = ValueType.DATE
+            valueType = ValueType.DATE,
         )
     }
 
-    fun handleYearMonthDayInput(
-        uid: String,
-        year: Int,
-        month: Int,
-        day: Int
-    ): FormIntent {
+    fun handleYearMonthDayInput(uid: String, year: Int, month: Int, day: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val ageDate = with(currentCalendar) {
             add(Calendar.YEAR, year)
@@ -56,16 +46,11 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = date,
-            valueType = ValueType.DATE
+            valueType = ValueType.DATE,
         )
     }
 
-    fun handleTimeInput(
-        uid: String,
-        date: Date?,
-        hourOfDay: Int,
-        minutes: Int
-    ): FormIntent {
+    fun handleTimeInput(uid: String, date: Date?, hourOfDay: Int, minutes: Int): FormIntent {
         val currentCalendar = Calendar.getInstance()
         val dateTime = with(currentCalendar) {
             date?.let { time = it }
@@ -82,7 +67,7 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = dateValue,
-            valueType = date?.let { ValueType.DATETIME } ?: ValueType.TIME
+            valueType = date?.let { ValueType.DATETIME } ?: ValueType.TIME,
         )
     }
 
@@ -92,7 +77,7 @@ class DialogDelegate {
         date: Date?,
         year: Int,
         month: Int,
-        day: Int
+        day: Int,
     ): RecyclerViewUiEvents {
         val currentCalendar = Calendar.getInstance()
         val dateTime = with(currentCalendar) {

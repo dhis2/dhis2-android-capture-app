@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.scanner.ScannerActivity">
+
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:id="@+id/barcode_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:zxing_scanner_layout="@layout/barcode_scanner" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/flashlight_btn_switch"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/flashlight_left_margin"
+            android:layout_marginTop="@dimen/flashlight_top_margin"
+            app:icon="@drawable/ic_baseline_flash_off"
+            app:iconGravity="textTop"
+            app:iconTint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/barcode_scanner_btn_close"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/flashlight_top_margin"
+            android:layout_marginEnd="@dimen/close_scanner_right_margin"
+            app:icon="@drawable/ic_baseline_close"
+            app:iconGravity="textTop"
+            app:iconTint="@color/white" />
+    </RelativeLayout>
+</layout>

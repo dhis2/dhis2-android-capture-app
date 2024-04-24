@@ -3,11 +3,15 @@ package org.dhis2.commons.resources
 import android.content.Context
 import android.text.TextUtils
 import org.dhis2.commons.R
+import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 
-class D2ErrorUtils(private val context: Context) {
+class D2ErrorUtils(
+    private val context: Context,
+    private val networkUtils: NetworkUtils,
+) {
 
     fun getErrorMessage(throwable: Throwable): String? {
         return when {
@@ -26,7 +30,7 @@ class D2ErrorUtils(private val context: Context) {
             D2ErrorCode.INVALID_DHIS_VERSION ->
                 String.format(
                     context.getString(R.string.login_error_dhis_version_v2),
-                    TextUtils.join(", ", DHISVersion.allowedVersionsAsStr())
+                    TextUtils.join(", ", DHISVersion.allowedVersionsAsStr()),
                 )
             D2ErrorCode.API_UNSUCCESSFUL_RESPONSE ->
                 context.getString(R.string.login_error_unsuccessful_response)
@@ -142,6 +146,12 @@ class D2ErrorUtils(private val context: Context) {
                 context.getString(R.string.error_invalid_characters)
             D2ErrorCode.PROGRAM_ACCESS_CLOSED ->
                 TODO("Implement for ANDROAPP-657")
+            D2ErrorCode.SERVER_CONNECTION_ERROR ->
+                if (networkUtils.isOnline()) {
+                    context.getString(R.string.error_server_unavailable)
+                } else {
+                    context.getString(R.string.error_no_internet_connection)
+                }
         }
     }
 }

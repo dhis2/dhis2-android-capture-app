@@ -1,7 +1,7 @@
 package org.dhis2.utils;
 
-import org.dhis2.Bindings.StringExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.date.Period;

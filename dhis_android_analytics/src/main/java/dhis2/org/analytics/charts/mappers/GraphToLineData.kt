@@ -15,7 +15,7 @@ class GraphToLineData {
             graph.series.mapIndexed { index: Int, serie: SerieData ->
                 LineDataSet(
                     coordinateToEntryMapper.map(graph, serie.coordinates, serie.fieldName),
-                    serie.fieldName
+                    serie.fieldName,
                 ).apply {
                     val colorIndex = index % serieColors.size
                     val isHighlighted = serieToHighlight == null || label == serieToHighlight
@@ -26,7 +26,7 @@ class GraphToLineData {
                     color = serieColor
                     setCircleColor(serieColor)
                 }.withGlobalStyle()
-            }
+            },
         )
     }
 }

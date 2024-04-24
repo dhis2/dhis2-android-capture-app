@@ -50,7 +50,7 @@
 
 
         <TextView
-            android:id="@+id/message"
+            android:id="@+id/messageId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -83,7 +83,7 @@
             android:textSize="12sp"
             android:visibility="@{ TextUtils.isEmpty(negativeText) ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toStartOf="@id/possitive"
-            app:layout_constraintTop_toBottomOf="@id/message"
+            app:layout_constraintTop_toBottomOf="@id/messageId"
             tools:text="Cancel" />
 
         <Button
@@ -98,7 +98,7 @@
             android:textColor="@color/text_black_333"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/message"
+            app:layout_constraintTop_toBottomOf="@id/messageId"
             tools:text="Accept"
             tools:visibility="visible" />
 

@@ -10,6 +10,6 @@ interface UiEventFactory {
         value: String?,
         uiEventType: UiEventType? = null,
         renderingType: UiRenderType? = null,
-        fieldUiModel: FieldUiModel
+        fieldUiModel: FieldUiModel,
     ): RecyclerViewUiEvents?
 }

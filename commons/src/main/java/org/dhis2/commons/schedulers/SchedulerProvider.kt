@@ -16,13 +16,13 @@ interface SchedulerProvider {
 fun <T> Single<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onSuccess: (T) -> Unit? = {},
-    onError: (Throwable) -> Unit? = {}
+    onError: (Throwable) -> Unit? = {},
 ): Disposable {
     return subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onSuccess(it) },
-            { onError(it) }
+            { onError(it) },
         )
 }
 
@@ -30,14 +30,14 @@ fun <T> Observable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
     onError: (Throwable) -> Unit? = {},
-    onComplete: () -> Unit? = {}
+    onComplete: () -> Unit? = {},
 ): Disposable {
     return subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onNext(it) },
             { onError(it) },
-            { onComplete() }
+            { onComplete() },
         )
 }
 
@@ -45,13 +45,13 @@ fun <T> Flowable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
     onError: (Throwable) -> Unit? = { Timber.d(it) },
-    onComplete: () -> Unit? = {}
+    onComplete: () -> Unit? = {},
 ): Disposable {
     return subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onNext(it) },
             { onError(it) },
-            { onComplete() }
+            { onComplete() },
         )
 }

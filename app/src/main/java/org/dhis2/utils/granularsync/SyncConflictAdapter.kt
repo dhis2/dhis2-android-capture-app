@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.ref.WeakReference
 import org.dhis2.R
 import org.dhis2.databinding.ItemSyncConflictBinding
+import java.lang.ref.WeakReference
 
 class SyncConflictAdapter(
     private val conflicts: MutableList<StatusLogItem>,
-    private val showErrorLog: () -> Unit
+    private val showErrorLog: () -> Unit,
 ) : RecyclerView.Adapter<SyncConflictHolder>() {
 
     lateinit var recycler: WeakReference<RecyclerView>
@@ -25,7 +25,7 @@ class SyncConflictAdapter(
             LayoutInflater.from(parent.context),
             R.layout.item_sync_conflict,
             parent,
-            false
+            false,
         )
         return SyncConflictHolder(binding)
     }

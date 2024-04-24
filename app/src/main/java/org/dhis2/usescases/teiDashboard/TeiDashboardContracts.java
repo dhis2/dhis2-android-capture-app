@@ -24,10 +24,6 @@ public class TeiDashboardContracts {
 
         void updateNoteBadge(int numberOfNotes);
 
-        void setFiltersLayoutState();
-
-        void updateTotalFilters(Integer totalFilters);
-
         void hideTabsAndDisableSwipe();
 
         void showTabsAndEnableSwipe();
@@ -65,15 +61,11 @@ public class TeiDashboardContracts {
 
         Boolean getProgramGrouping();
 
-        void generalFiltersClick();
-
         void handleShowHideFilters(boolean showFilter);
 
         EnrollmentStatus getEnrollmentStatus(String enrollmentUid);
 
         void updateEnrollmentStatus(String enrollmentUid, EnrollmentStatus status);
-
-        void setTotalFilters();
 
         String getTEType();
 

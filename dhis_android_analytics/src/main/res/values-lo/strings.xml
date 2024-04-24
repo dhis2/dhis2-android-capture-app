@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="show_bar_graph">View as Bar</string>
+    <string name="show_line_graph">ເບິ່ງເປັນແຖວ</string>
+    <string name="show_table_graph">ເບິ່ງເປັນຕາຕະລາງ</string>
+    <string name="show_table_value">ເບິ່ງເປັນມູນຄ່າ</string>
     <string name="action_accept">ຍອມຮັບ</string>
     <string name="period">ຊ່ວງເວລາ</string>
     <string name="orgUnit">ຫົວໜ່ວຍອົງກອນ</string>
@@ -9,12 +12,28 @@
     <string name="today">ມື້ນີ້</string>
     <string name="other">ອື່ນໆ</string>
     <string name="yesterday">ມື້ວານນີ</string>
+    <string name="last3Days">3 ມື້ຜ່ານມາ</string>
+    <string name="last7Days">7 ມື້ຜ່ານມາ</string>
+    <string name="last14Days">14 ມື້ຜ່ານມາ</string>
+    <string name="last30Days">30 ມື້ຜ່ານມາ</string>
     <string name="thisweek">ອາທິດນີ້</string>
     <string name="lastweek">ອາທິດທີ່ແລ້ວ</string>
+    <string name="last4weeks">4 ອາທິດຜ່ານມາ</string>
+    <string name="last12weeks">12 ອາທິດທີ່ຜ່ານມາ</string>
     <string name="thismonth">ເດືອນນີ້</string>
+    <string name="lastmonth">ເດືອນຜ່ານມາ</string>
+    <string name="last3months">3 ເດືອນຜ່ານມາ</string>
+    <string name="last6months">6 ເດືອນຜ່ານມາ</string>
+    <string name="last12months">12 ເດືອນຜ່ານມາ</string>
+    <string name="thisquarter">ໄຕມາດນີ້</string>
+    <string name="thisyear">ປີນີ້</string>
+    <string name="lastyear">ປີຜ່ານມາ</string>
+    <string name="last5years">5 ປີຜ່ານມາ</string>
     <string name="weekly">ເປັນອາທິດ</string>
     <string name="monthly">ລາຍເດືອນ</string>
     <string name="yearly">ລາຍປີ</string>
     <string name="all">ທັງໝົດ</string>
+    <string name="selection">ການຄັດເລືອກ</string>
     <string name="reset">Reset</string>
+    <string name="pie_chart_no_data">ຂໍ້ມູນທັງໝົດເປັນສູນ</string>
     </resources>

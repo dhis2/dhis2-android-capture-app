@@ -58,5 +58,4 @@
     <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
     <string name="enrollmment_date">Registreringsdato</string>
     <string name="incident_date">Forekomstdato</string>
-
-</resources>
+    </resources>

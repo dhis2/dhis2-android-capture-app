@@ -15,9 +15,7 @@ class AccountsModule {
 
     @Provides
     @PerActivity
-    fun provideViewModelFactory(
-        accountRepository: AccountRepository
-    ): AccountsViewModelFactory {
+    fun provideViewModelFactory(accountRepository: AccountRepository): AccountsViewModelFactory {
         return AccountsViewModelFactory(accountRepository)
     }
 }

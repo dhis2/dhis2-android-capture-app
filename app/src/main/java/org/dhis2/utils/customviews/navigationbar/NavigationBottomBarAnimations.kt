@@ -24,7 +24,7 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
     private fun animateHideTranslation(
         animate: ViewPropertyAnimator,
         barHeight: Int,
-        endAction: () -> Unit
+        endAction: () -> Unit,
     ) {
         animate.translationY(barHeight.toFloat())
             .withEndAction { endAction() }
@@ -35,7 +35,7 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
 
     private fun animateShowTranslation(
         animate: ViewPropertyAnimator,
-        animationEndCallback: () -> Unit
+        animationEndCallback: () -> Unit,
     ) {
         animate.translationY(0f)
             .withEndAction(animationEndCallback)

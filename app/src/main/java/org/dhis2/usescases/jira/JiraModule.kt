@@ -14,7 +14,7 @@ class JiraModule {
     fun jiraViewModelFactory(
         preferenceProvider: PreferenceProvider,
         resourceManager: ResourceManager,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
     ): JiraViewModelFactory {
         return JiraViewModelFactory(preferenceProvider, resourceManager, schedulerProvider)
     }

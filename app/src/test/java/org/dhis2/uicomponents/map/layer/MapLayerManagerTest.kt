@@ -2,10 +2,9 @@ package org.dhis2.uicomponents.map.layer
 
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.layer.LayerType
+import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.types.HeatmapMapLayer
 import org.dhis2.maps.layer.types.RelationshipMapLayer
@@ -13,6 +12,9 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapLayerManagerTest {
 
@@ -22,14 +24,15 @@ class MapLayerManagerTest {
     private val mapStyle: org.dhis2.maps.model.MapStyle = mock()
     private val style: Style = mock()
     private val baseMapManager: BaseMapManager = mock()
+    private val colorUtils: ColorUtils = mock()
 
     @Before
     fun setup() {
-        mapLayerManager = org.dhis2.maps.layer.MapLayerManager(mapboxMap, baseMapManager)
+        mapLayerManager = MapLayerManager(mapboxMap, baseMapManager, colorUtils)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layer with sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
@@ -39,8 +42,8 @@ class MapLayerManagerTest {
         assert(mapLayerManager.mapLayers[sourceId] is TeiMapLayer)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layer without sourceId`() {
         whenever(mapboxMap.style) doReturn style
         mapLayerManager
@@ -51,8 +54,8 @@ class MapLayerManagerTest {
         assert(mapLayerManager.mapLayers[sourceId] is HeatmapMapLayer)
     }
 
-    @Test
     @Ignore
+    @Test
     fun `Should add layers with sourceIds`() {
         val otherSourceId = "otherSourceId"
         whenever(mapboxMap.style) doReturn style

@@ -1,14 +1,7 @@
 package org.dhis2.usecases.datasets.dataSetInitial
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import java.util.Date
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
@@ -21,6 +14,13 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
+import java.util.Date
 
 class DataSetInitialPresenterTest {
 
@@ -42,7 +42,7 @@ class DataSetInitialPresenterTest {
         "catCombo",
         PeriodType.Daily,
         mutableListOf(),
-        0
+        0,
     )
 
     @Test
@@ -63,7 +63,7 @@ class DataSetInitialPresenterTest {
     fun `Should not set OrgUnits when size is bigger than 1`() {
         val orgUnits = listOf(
             OrganisationUnit.builder().uid("orgUnitUid").build(),
-            OrganisationUnit.builder().uid("orgUnitUid2").build()
+            OrganisationUnit.builder().uid("orgUnitUid2").build(),
         )
         val dataSet = dummyDataSetInitial()
 
@@ -116,8 +116,8 @@ class DataSetInitialPresenterTest {
                 Date(),
                 Date(),
                 Date(),
-                Date()
-            )
+                Date(),
+            ),
         )
 
         whenever(repository.dataInputPeriod) doReturn Flowable.just(periods)
@@ -155,14 +155,14 @@ class DataSetInitialPresenterTest {
         whenever(
             repository.getCategoryOptionCombo(
                 view.selectedCatOptions,
-                catCombo
-            )
+                catCombo,
+            ),
         ) doReturn Flowable.just(catOptionCombo)
         whenever(
             repository.getPeriodId(
                 periodType,
-                view.selectedPeriod
-            )
+                view.selectedPeriod,
+            ),
         ) doReturn Flowable.just(periodId)
 
         presenter.init()

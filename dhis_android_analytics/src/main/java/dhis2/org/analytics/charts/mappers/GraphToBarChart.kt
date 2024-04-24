@@ -7,6 +7,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import dhis2.org.analytics.charts.bindings.datePattern
 import dhis2.org.analytics.charts.charts.ChartMarker
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.formatters.CategoryFormatter
@@ -30,14 +31,18 @@ class GraphToBarChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = if (graph.categories.isNotEmpty()) {
                     CategoryFormatter(graph.categories)
                 } else {
-                    DateLabelFormatter { graph.dateFromSteps(it) }
+                    DateLabelFormatter(
+                        datePattern = graph.eventPeriodType.datePattern(),
+                        dateFromValue = graph::dateFromSteps,
+                        localDateFromValue = graph::localDateFromSteps,
+                    )
                 }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
@@ -49,7 +54,7 @@ class GraphToBarChart {
                 enableGridDashedLine(
                     DEFAULT_GRID_LINE_LENGTH,
                     DEFAULT_GRID_SPACE_LENGTH,
-                    DEFAULT_GRIP_PHASE
+                    DEFAULT_GRIP_PHASE,
                 )
                 val minValue = getMinValue(graph)
                 val padding = ceil((graph.maxValue() - minValue) * 0.05f)
@@ -91,7 +96,7 @@ class GraphToBarChart {
                 viewPortHandler,
                 xAxis,
                 axisLeft,
-                forceTopMarkerPlacement = true
+                forceTopMarkerPlacement = true,
             )
 
             data = barData

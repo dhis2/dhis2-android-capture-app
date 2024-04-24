@@ -7,7 +7,7 @@ class SystemInfoD2Repository(private val d2: D2) : SystemInfoRepository {
         val d2SystemInfo = d2.systemInfoModule().systemInfo().blockingGet();
 
         return SystemInfo(
-            d2SystemInfo.serverDate()!!,
+            d2SystemInfo!!.serverDate()!!,
             d2SystemInfo.dateFormat()!!,
             d2SystemInfo.version()!!,
             d2SystemInfo.contextPath()!!,

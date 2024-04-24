@@ -56,5 +56,4 @@
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="enrollmment_date">报名日期</string>
     <string name="incident_date">事件日期</string>
-
-</resources>
+    </resources>

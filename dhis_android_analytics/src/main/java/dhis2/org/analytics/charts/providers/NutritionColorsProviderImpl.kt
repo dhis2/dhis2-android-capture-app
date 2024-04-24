@@ -10,7 +10,7 @@ class NutritionColorsProviderImpl : NutritionColorsProvider {
         Color.parseColor("#b9f6ca"),
         Color.parseColor("#ffff8d"),
         Color.parseColor("#ffd180"),
-        Color.parseColor("#ff8a80")
+        Color.parseColor("#ff8a80"),
     )
 
     override fun nutritionColors(): List<Int> {

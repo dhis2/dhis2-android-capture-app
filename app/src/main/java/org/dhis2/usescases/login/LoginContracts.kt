@@ -1,7 +1,8 @@
 package org.dhis2.usescases.login
 
 import androidx.annotation.UiThread
-import co.infinum.goldfinger.Goldfinger
+import org.dhis2.data.fingerprint.FingerPrintResult
+import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 
@@ -21,21 +22,17 @@ class LoginContracts {
         fun setAutocompleteAdapters()
 
         @UiThread
-        fun saveUsersData(isInitialSyncDone: Boolean)
+        fun saveUsersData(displayTrackingMessage: Boolean, isInitialSyncDone: Boolean)
 
         fun handleLogout()
 
         fun setLoginVisibility(isVisible: Boolean)
-
-        fun showLoginProgress(showLogin: Boolean)
 
         fun goToNextScreen()
 
         fun setUrl(url: String)
 
         fun setUser(user: String)
-
-        fun showCrashlyticsDialog()
 
         fun navigateToQRActivity()
 
@@ -49,14 +46,14 @@ class LoginContracts {
         fun openAccountRecovery()
 
         fun alreadyAuthenticated()
-        fun showCredentialsData(type: Goldfinger.Type, vararg args: String)
+        fun showCredentialsData(result: FingerPrintResult, vararg args: String)
         fun showEmptyCredentialsMessage()
         fun setTestingCredentials()
         fun getDefaultServerProtocol(): String
-        fun getPromptParams(): Goldfinger.PromptParams
         fun isNetworkAvailable(): Boolean
         fun openOpenIDActivity(it: IntentWithRequestCode?)
         fun openAccountsActivity()
         fun showNoConnectionDialog()
+        fun initLogin(): UserManager?
     }
 }
