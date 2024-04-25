@@ -443,4 +443,19 @@ class TeiDataRepositoryImpl(
             .byProgramUids(listOf(programUid))
             .blockingGet().size > 1
     }
+
+    override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
+        return !getOrgUnitCollectionRepositoryByCaptureScope()
+            .byUid().eq(enrollmentOrgUnit)
+            .blockingIsEmpty()
+    }
+
+    override fun programOrgListInCaptureScope(programUid: String) =
+        getOrgUnitCollectionRepositoryByCaptureScope()
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+    private fun getOrgUnitCollectionRepositoryByCaptureScope() =
+        d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
 }

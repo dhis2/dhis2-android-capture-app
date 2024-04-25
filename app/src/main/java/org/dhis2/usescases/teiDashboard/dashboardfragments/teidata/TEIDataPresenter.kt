@@ -50,7 +50,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
@@ -366,12 +365,8 @@ class TEIDataPresenter(
         view.showSyncDialog(eventUid, enrollmentUid)
     }
 
-    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
-        return !d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .byUid().eq(enrollmentOrgUnit)
-            .blockingIsEmpty()
-    }
+    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String) =
+        teiDataRepository.enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit)
 
     private fun canAddNewEvents(): Boolean {
         return d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
@@ -385,7 +380,7 @@ class TEIDataPresenter(
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
-                    view.displayOrgUnitSelectorForNewEvent(program, stage.uid())
+                    checkOrgUnitCount(program, stage.uid())
                 }
 
                 else -> view.goToEventInitial(eventCreationType, stage)
@@ -421,6 +416,17 @@ class TEIDataPresenter(
                             event.type == EventViewModelType.EVENT
                     } == true
             }.sortedBy { stage -> stage.sortOrder() }
+
+    fun checkOrgUnitCount(programUid: String, programStageUid: String) {
+        CoroutineScope(dispatcher.io()).launch {
+            val orgUnits = teiDataRepository.programOrgListInCaptureScope(programUid)
+            if (orgUnits.count() == 1) {
+                onOrgUnitForNewEventSelected(orgUnits.first().uid(), programStageUid)
+            } else {
+                view.displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+            }
+        }
+    }
 
     fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {

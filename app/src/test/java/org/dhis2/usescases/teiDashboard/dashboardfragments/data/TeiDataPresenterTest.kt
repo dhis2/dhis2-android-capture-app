@@ -106,36 +106,12 @@ class TeiDataPresenterTest {
 
     @Test
     fun `Should return false if orgUnit does not belong to the capture scope`() {
-        mockEnrollmentOrgUnitInCaptureScope(false)
+        whenever(
+            teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
+        ) doReturn false
         assertTrue(
-            teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
+            !teiDataPresenter.enrollmentOrgUnitInCaptureScope("orgUnitUid"),
         )
-    }
-
-    private fun mockEnrollmentOrgUnitInCaptureScope(returnValue: Boolean) {
-        whenever(
-            d2.organisationUnitModule().organisationUnits(),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid(),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq("orgUnitUid"),
-        ) doReturn mock()
-        whenever(
-            d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .byUid().eq("orgUnitUid")
-                .blockingIsEmpty(),
-        ) doReturn returnValue
     }
 
     @Test
@@ -187,7 +163,7 @@ class TeiDataPresenterTest {
             on { organisationUnit() } doReturn "orgUnitUid"
         }
         whenever(teiDataRepository.getEnrollment()) doReturn Single.just(mockedEnrollment)
-        mockEnrollmentOrgUnitInCaptureScope(false)
+        whenever(teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")) doReturn false
         teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
         contractLiveData.value = Unit
     }
@@ -242,6 +218,59 @@ class TeiDataPresenterTest {
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
         verify(view).showDialogCloseProgram()
+    }
+
+    @Test
+    fun `Should not show ORG unit selector dialog when org count is 1`() = runBlocking {
+        val orgUnitUid = "orgUnitUid"
+        val programStageUid = "programStageUid"
+        val eventUid = "eventUid"
+
+        val orgUnit = OrganisationUnit.builder()
+            .uid(orgUnitUid)
+            .build()
+
+        whenever(
+            teiDataRepository.programOrgListInCaptureScope(programUid),
+        ) doReturn listOf(orgUnit)
+
+        whenever(
+            createEventUseCase.invoke(
+                programUid,
+                orgUnitUid,
+                programStageUid,
+                enrollmentUid,
+            ),
+        ) doReturn (Result.success(eventUid))
+
+        teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
+
+        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `Should show ORG unit selector dialog when org count is greater than 1`() = runBlocking {
+        val orgUnitUid1 = "orgUnitUid 1"
+        val orgUnitUid2 = "orgUnitUid 2"
+        val programStageUid = "programStageUid"
+
+        val orgUnit1 = OrganisationUnit.builder()
+            .uid(orgUnitUid1)
+            .build()
+
+        val orgUnit2 = OrganisationUnit.builder()
+            .uid(orgUnitUid2)
+            .build()
+
+        whenever(
+            teiDataRepository.programOrgListInCaptureScope(programUid),
+        ) doReturn listOf(orgUnit1, orgUnit2)
+
+        teiDataPresenter.checkOrgUnitCount(programUid, programStageUid)
+
+        verify(view).displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
