@@ -89,6 +89,7 @@ pipeline {
                         test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
                         app_apk_path = "${env.WORKSPACE}/${app_apk}"
                         test_apk_path = "${env.WORKSPACE}/${test_apk}"
+                        buildTag = "${env.GIT_BRANCH}"
                     }
                     steps {
                         dir("${env.WORKSPACE}/scripts"){
