@@ -34,6 +34,7 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import timber.log.Timber
@@ -809,13 +810,25 @@ class SearchTEIViewModel(
         }
 
         is FormIntent.OnFocus -> {
-            val updatedItems = uiState.items.map {
-                if (it.focused && it.uid != formIntent.uid) {
-                    (it as FieldUiModelImpl).copy(focused = false)
-                } else if (it.uid == formIntent.uid) {
-                    (it as FieldUiModelImpl).copy(focused = true)
+            val updatedItems = uiState.items.map { field ->
+                if (field.focused && field.uid != formIntent.uid) {
+                    val validation = field.value?.takeIf {
+                        field.valueType in listOf(
+                            ValueType.DATE, ValueType.DATETIME, ValueType.AGE, ValueType.TIME,
+                        )
+                    }?.let { value -> field.valueType?.validator?.validate(value) }
+
+                    (field as FieldUiModelImpl).copy(
+                        focused = false,
+                        error = when (validation) {
+                            is Result.Failure -> resourceManager.getString(R.string.formatting_error)
+                            else -> null
+                        },
+                    )
+                } else if (field.uid == formIntent.uid) {
+                    (field as FieldUiModelImpl).copy(focused = true)
                 } else {
-                    it
+                    field
                 }
             }
             uiState = uiState.copy(items = updatedItems)
