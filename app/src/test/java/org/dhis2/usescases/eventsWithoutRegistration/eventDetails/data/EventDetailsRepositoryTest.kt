@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope.OrderByDirection.DESC
@@ -35,6 +36,7 @@ class EventDetailsRepositoryTest {
             EVENT_UID,
             PROGRAM_STAGE_UID,
             fieldViewModelFactory,
+            EventCreationType.ADDNEW,
         ) { d2Error -> "" }
 
         whenever(

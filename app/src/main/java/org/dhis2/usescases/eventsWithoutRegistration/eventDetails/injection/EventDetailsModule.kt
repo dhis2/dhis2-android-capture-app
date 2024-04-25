@@ -83,6 +83,7 @@ class EventDetailsModule(
             programUid = programUid,
             eventUid = eventUid,
             programStageUid = programStageUid,
+            eventCreationType = eventCreationType,
             fieldFactory = FieldViewModelFactoryImpl(
                 UiStyleProviderImpl(
                     FormUiModelColorFactoryImpl(context, colorUtils),
