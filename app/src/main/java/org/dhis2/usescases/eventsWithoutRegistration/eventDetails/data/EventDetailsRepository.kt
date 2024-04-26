@@ -167,10 +167,18 @@ class EventDetailsRepository(
     }
 
     fun getOrganisationUnits(): List<OrganisationUnit> {
-        return d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(getOrgUnitScope())
-            .byProgramUids(listOf(programUid))
-            .blockingGet()
+        val scope = getOrgUnitScope()
+        return when (scope) {
+            OrganisationUnit.Scope.SCOPE_DATA_CAPTURE ->
+                d2.organisationUnitModule().organisationUnits()
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(listOf(programUid))
+                    .blockingGet()
+            OrganisationUnit.Scope.SCOPE_TEI_SEARCH ->
+                d2.organisationUnitModule().organisationUnits()
+                    .byProgramUids(listOf(programUid))
+                    .blockingGet()
+        }
     }
 
     fun getGeometryModel(): FieldUiModel {
