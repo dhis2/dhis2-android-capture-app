@@ -61,6 +61,7 @@ class SchedulingViewModel(
             eventUid = null,
             programStageUid = programStage.value.uid(),
             fieldFactory = null,
+            eventCreationType = EventCreationType.SCHEDULE,
             onError = resourceManager::parseD2Error,
         )
         configureEventReportDate = ConfigureEventReportDate(
