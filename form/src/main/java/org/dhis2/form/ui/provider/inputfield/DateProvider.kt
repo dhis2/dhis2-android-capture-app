@@ -72,7 +72,7 @@ fun ProvideInputDate(
                 intentHandler.invoke(
                     FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(value.text, fieldUiModel.valueType),
+                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
                         valueType = fieldUiModel.valueType,
                         allowFutureDates = fieldUiModel.allowFutureDates ?: true,
                     ),
