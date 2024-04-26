@@ -32,7 +32,7 @@ class FormTest : BaseTest() {
     fun shouldApplyProgramRules() {
         prepareIntentAndLaunchEventActivity(ruleEvent)
 
-        formRobot {
+        formRobot(composeTestRule) {
             clickOnASpecificSection("Gamma Rules A")
         }
         applyHideField()
@@ -51,7 +51,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyHideField() {
-        formRobot {
+        formRobot(composeTestRule) {
             clickOnSelectOption(
                 firstSectionPosition,
                 HIDE_FIELD_POSITION
@@ -61,7 +61,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyHideSection() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -72,7 +72,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyShowWarning() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -83,7 +83,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyShowError() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -94,7 +94,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applySetMandatoryField() {
-        formRobot {
+        formRobot(composeTestRule) {
             val nonMandatoryLabel = "ZZ TEST NUMBER"
             val mandatoryLabel = "ZZ TEST NUMBER *"
             val position = 5
@@ -109,7 +109,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyHideOption() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -120,7 +120,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyHideOptionGroup() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -132,7 +132,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyShowOptionGroup() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -146,7 +146,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyAssignValue() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -157,7 +157,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyDisplayText() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -171,7 +171,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyDisplayKeyValue() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -185,7 +185,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyWarningOnComplete() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,
@@ -200,7 +200,7 @@ class FormTest : BaseTest() {
     }
 
     private fun applyErrorOnComplete() {
-        formRobot {
+        formRobot(composeTestRule) {
             resetToNoAction(firstSectionPosition)
             clickOnSelectOption(
                 firstSectionPosition,

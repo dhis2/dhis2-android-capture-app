@@ -306,10 +306,10 @@ class TeiDataRepositoryImpl(
                                 .uid(event.organisationUnit()).blockingGet()?.displayName()
                                 ?: "",
                             catComboName = getCatOptionComboName(event.attributeOptionCombo()),
-                            dataElementValues = getEventValues(event.uid(), programStage?.uid()),
+                            dataElementValues = getEventValues(event.uid(), programStage.uid()),
                             groupedByStage = false,
                             displayDate = periodUtils.getPeriodUIString(
-                                programStage?.periodType() ?: PeriodType.Daily,
+                                programStage.periodType() ?: PeriodType.Daily,
                                 event.eventDate() ?: event.dueDate()!!,
                                 Locale.getDefault(),
                             ),
@@ -319,6 +319,10 @@ class TeiDataRepositoryImpl(
                                 programStage.style(),
                                 program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
                             ),
+                            editable = isEventEditable(event.uid()),
+                            displayOrgUnit = programUid?.let {
+                                displayOrganisationUnit(it)
+                            } ?: false,
                         ),
                     )
                 }
@@ -439,4 +443,19 @@ class TeiDataRepositoryImpl(
             .byProgramUids(listOf(programUid))
             .blockingGet().size > 1
     }
+
+    override fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean {
+        return !getOrgUnitCollectionRepositoryByCaptureScope()
+            .byUid().eq(enrollmentOrgUnit)
+            .blockingIsEmpty()
+    }
+
+    override fun programOrgListInCaptureScope(programUid: String) =
+        getOrgUnitCollectionRepositoryByCaptureScope()
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+    private fun getOrgUnitCollectionRepositoryByCaptureScope() =
+        d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
 }

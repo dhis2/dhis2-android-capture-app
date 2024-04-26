@@ -100,7 +100,7 @@ class EventCaptureFormPresenter(
             EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE -> resourceManager.getString(R.string.event_date_not_in_orgunit_range) to false
             EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS -> resourceManager.getString(R.string.edition_no_catcombo_access) to false
             EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN -> resourceManager.formatWithEnrollmentLabel(
-                null,
+                d2.eventModule().events().uid(eventUid).blockingGet()?.program(),
                 R.string.edition_enrollment_is_no_open_V2,
                 1,
             ) to false

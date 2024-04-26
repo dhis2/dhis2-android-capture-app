@@ -30,7 +30,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData("uid_1", metadataIconData)
+        val result = programs.getEnrollmentIconsData("uid_1") { metadataIconData }
         assert(result.size == 3)
         result.forEach {
             assert(it.isIcon)
@@ -44,7 +44,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData("uid_1", metadataIconData)
+        val result = programs.getEnrollmentIconsData("uid_1") { metadataIconData }
         assert(result.size == 4)
         result.forEach {
             assert(it.isIcon)
@@ -58,7 +58,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData("uid_5", metadataIconData)
+        val result = programs.getEnrollmentIconsData("uid_5") { metadataIconData }
         assert(result.size == 4)
         result.forEachIndexed { index, item ->
             if (index in 0..result.size - 2) {
@@ -78,7 +78,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData(null, metadataIconData)
+        val result = programs.getEnrollmentIconsData(null) { metadataIconData }
         assert(result.size == 4)
         result.forEachIndexed { index, item ->
             if (index in 0..result.size - 2) {
@@ -98,7 +98,7 @@ class TEICardExtensionsTest {
             programs.add(createProgram("uid_$index"))
 
         mockEnrollmentIconsData()
-        val result = programs.getEnrollmentIconsData("uid_100", metadataIconData)
+        val result = programs.getEnrollmentIconsData("uid_100") { metadataIconData }
         assert(result.size == 4)
         assert(!result.last().isIcon)
         assert(result.last().remainingEnrollments == 99)
