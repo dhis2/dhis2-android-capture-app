@@ -239,7 +239,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                         detailsEnabled = details.enabled,
                         onDateClick = {},
                         onDateSelected = { dateValues ->
-                            viewModel.onDateSet(dateValues.year, dateValues.month - 1, dateValues.day)
+                            viewModel.onDateSet(
+                                dateValues.year,
+                                dateValues.month - 1,
+                                dateValues.day,
+                            )
                         },
                         onClear = { viewModel.onClearEventReportDate() },
                         required = true,
@@ -298,7 +302,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     )
                 }
             } else if (!catCombo.isDefault) {
-                ProvideEmptyCategorySelector(name = catCombo.displayName ?: getString(R.string.cat_combo), option = getString(R.string.no_options))
+                ProvideEmptyCategorySelector(
+                    name = catCombo.displayName ?: getString(R.string.cat_combo),
+                    option = getString(R.string.no_options),
+                )
             }
             ProvideCoordinates(
                 coordinates = coordinates,
@@ -339,7 +346,20 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             )
             .singleSelection()
             .orgUnitScope(
-                OrgUnitSelectorScope.ProgramCaptureScope(viewModel.eventOrgUnit.value.programUid!!),
+                when (getEventCreationType(requireArguments().getString(EVENT_CREATION_TYPE))) {
+                    EventCreationType.REFERAL ->
+                        OrgUnitSelectorScope.ProgramSearchScope(
+                            viewModel.eventOrgUnit.value.programUid!!,
+                        )
+
+                    EventCreationType.DEFAULT,
+                    EventCreationType.ADDNEW,
+                    EventCreationType.SCHEDULE,
+                    ->
+                        OrgUnitSelectorScope.ProgramCaptureScope(
+                            viewModel.eventOrgUnit.value.programUid!!,
+                        )
+                },
             )
             .onSelection { selectedOrgUnits ->
                 viewModel.setUpOrgUnit(selectedOrgUnit = selectedOrgUnits.firstOrNull()?.uid())
