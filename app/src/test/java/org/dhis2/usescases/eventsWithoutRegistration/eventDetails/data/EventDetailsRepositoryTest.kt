@@ -171,6 +171,18 @@ class EventDetailsRepositoryTest {
                 .byOrganisationUnitScope(any())
                 .byProgramUids(any()),
         ) doReturn mock()
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(any()),
+        ) doReturn mock()
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(any())
+                .blockingGet(),
+        ) doReturn listOf()
+
         whenever(
             d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(any())
@@ -194,7 +206,7 @@ class EventDetailsRepositoryTest {
         verify(
             d2.organisationUnitModule().organisationUnits(),
             times(1),
-        ).byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+        ).byProgramUids(listOf(PROGRAM_UID))
 
         verify(
             d2.organisationUnitModule().organisationUnits(),
