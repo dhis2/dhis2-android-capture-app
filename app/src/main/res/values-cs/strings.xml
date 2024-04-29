@@ -124,9 +124,6 @@
     <string name="latitude">Zeměpisná šířka</string>
     <string name="longitude">Zeměpisná délka</string>
     <string name="new_event">Nová událost</string>
-    <string name="failed_insert_event">Vložení nové události se nezdařilo</string>
-    <string name="event_created">Událost vytvořena</string>
-    <string name="event_updated">Událost aktualizována</string>
     <string name="one_time">Jednou</string>
     <string name="permanent">Trvale</string>
 
@@ -139,18 +136,13 @@
     <string name="datavalue_saved">Hodnota je uložena!</string>
     <string name="there_is_no_available_period">Nejsou k dispozici žádná období k výběru.</string>
     <!--Event Detail-->
-    <string name="event_date">Datum události</string>
     <string name="due_date">Poslední termín</string>
     <string name="cat_combo">Kombinace kategorií</string>
     <string name="date_default">DD/MM/RRRR</string>
     <string name="cancel">Zrušit</string>
     <string name="delete">Smazat</string>
-    <string name="delete_event">Smazat událost</string>
-    <string name="confirm_delete_event">Opravdu chcete tuto událost smazat?</string>
-    <string name="event_was_deleted">Událost byla úspěšně smazána</string>
     <string name="total">Celkem</string>
     <string name="most_recent_event_date">Datum poslední události</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Seznam zápisů</string>
     <string name="active_programs">Aktivní programy</string>
@@ -162,20 +154,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Prohlednout detaily</string>
     <string name="view_more">UKÁZAT VÍCE</string>
-    <string name="enrolling_ou">Zápis Org. J.:</string>
     <string name="follow_up">Následovat</string>
     <string name="follow_up_enabled">Sledování povoleno</string>
     <string name="follow_up_disabled">Sledování zakázáno</string>
     <string name="deactivate">Deaktivovat</string>
     <string name="program_not_allow_events">Tento program neumožňuje více událostí</string>
 
-    <!--DONE TASKS-->
     <string name="events">události</string>
     <string name="done_task">Úvodní strana</string>
     <string name="app_info">Info o aplikaci</string>
     <string name="log_out">Odhlášení</string>
     <string name="block_session">Blokovat relaci</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuta</string>
     <string name="fifteen_minute">15 minut</string>
@@ -249,18 +238,15 @@
     <string name="add_note">Přidat poznámku</string>
     <string name="revert">Vrátit zpět</string>
     <string name="activated">Aktivováno</string>
-    <string name="enroll_in">Zapsat do %s</string>
     <string name="missing_mandatory_fields_title">Chybí povinná pole</string>
     <string name="missing_mandatory_fields_text">Některá povinná pole chybí. Pokud se chcete vrátit zpět, budou všechny uložené informace odstraněny.</string>
     <string name="missing_mandatory_fields_text_not_delete">Některá povinná pole chybí. Pokud se chcete vrátit, vyplňte je prosím.</string>
     <string name="missing_mandatory_fields_events">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
     <string name="title_delete_go_back">Vaše data nejsou uložena</string>
     <string name="delete_go_back">Pokud se nyní vrátíte zpět, všechny zadané informace budou smazány.</string>
-    <string name="missing_mandatory_fields_events_2.0">Chybí některá povinná pole:\n%s\nMůžete se nyní vrátit, ale tuto událost nebude možné dokončit.</string>
     <string name="missing_mandatory_fields_go_back">Smazat a vrátit se zpět</string>
     <string name="error_fields">Některá pole obsahují chyby:\n%s\nProsím zkontrolujte je.</string>
     <string name="missing_mandatory_fields_finish">Některá povinná pole chybí. Zadávání a ukončení dat můžete dokončit, ale událost nelze dokončit.</string>
-    <string name="enrollment_coordinates">Souřadnice registrace</string>
     <string name="tei_coordinates">Souřadnice pro</string>
 
     <!--EVENT SUMMARY-->
@@ -318,7 +304,6 @@
     <string name="qr_error_id">Neplatný QR kód</string>
     <string name="qr_error_attr">Tento atribut nelze přidat</string>
     <string name="qr_error_enrollment">Tento zápis nelze přidat</string>
-    <string name="qr_error_event">Tuto událost nelze přidat</string>
 
     <string name="jira_report">Nahlásit problém do Jira</string>
     <string name="about">O nás</string>
@@ -465,17 +450,14 @@
     <string name="finish">Dokončit</string>
     <string name="error_fields_title">Pole s chybami</string>
     <string name="error_fields_events">Některá pole obsahují chyby. Nebyla uložena. Prosím, zkontrolujte je.</string>
-    <string name="event_reopened">Tuto událost lze nyní upravit</string>
     <string name="unique_warning">Hodnota by měla být jedinečná, byla nalezena koincidence. Nebylo uloženo. Prosím zkontrolujte to.</string>
     <string name="unique_coincidence_found">Byla nalezena koincidence v jedinečném poli. Pro uložení zápisu prosím zkontrolujte formulář.</string>
     <string name="please_wait">Prosím, čekejte</string>
     <string name="skip">Přeskočit</string>
     <string name="reschedule">Přeplánovat</string>
-    <string name="event_was_skipped">Událost byla označena jako přeskočená</string>
     <string name="no_intructions">O této obrazovce nejsou žádné informace</string>
     <string name="event_overdue">Vypršelo</string>
     <string name="unsupported_program_rule">Existuje jedno programové pravidlo, které není podporováno. Zkontrolujte dokumentaci</string>
-    <string name="delete_event_error">Tato událost ještě nebyla vytvořena</string>
     <string name="empty_description">Žádné informace pro toto pole</string>
     <string name="biometrics_dialog_title">Prázdné pověření</string>
     <string name="biometrics_first_use_text">Abyste se mohli přihlásit pomocí snímače otisků prstů, musíte nejprve použít výchozí způsob</string>
@@ -529,10 +511,8 @@
     <string name="relationship_without_enrollment">Záznam, ke kterému se pokoušíte získat přístup, nemá žádnou registraci. K hlavnímu panelu nemáte přístup.</string>
     <string name="formatting_error">Chyba formátování</string>
     <string name="dashboard_menu_delete_tei_v2">Smazat %s</string>
-    <string name="dashboard_menu_delete_enrollment">Smazat pouze zápis</string>
     <string name="delete_authority_error">Nemáte oprávnění tento záznam mazat</string>
     <string name="validation_url">Toto není platné URL</string>
-    <string name="uncomplete_authority_error">Nemáte oprávnění znovu otevřít tuto událost</string>
     <string name="adjusting_form">Úprava formuláře…</string>
 
     <string name="sms_receiver_number">Číslo příjemce</string>
@@ -624,7 +604,6 @@
     <string name="event_tei_limits_v2">Nastavení omezeno %s\nUdálosti: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Skrýt údaje o zápisu</string>
     <string name="enrollment_data_show">Zobrazit údaje o zápisu</string>
-    <string name="enrollment_data_section_label">Údaje o zápisu</string>
     <string name="sms_enabled">SMS modul povolen</string>
     <string name="sms_disabled">SMS modul deaktivován</string>
     <string name="sms_downloading_data">Stahování dat pro modul SMS. Prosím, čekejte</string>
@@ -634,7 +613,6 @@
     <string name="disable_pin_locked">Nezobrazovat znovu zamykací obrazovku</string>
     <string name="set_pin">Nastavit PIN</string>
     <string name="conflict">Konflikt</string>
-    <string name="event_date_in_future_message">Tato událost nemůže mít datum v budoucnu. Změňte to prosím.</string>
     <string name="change_event_date">Změnit datum</string>
     <string name="go_back">Zpět</string>
     <string name="data_sets">Datové sady</string>
@@ -648,7 +626,6 @@
     <string name="interval_hour_ago">před %d hodinami</string>
     <string name="interval_yesterday">Včera</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
-    <string name="program_selector">Programové zápisy</string>
     <string name="select_time">Vyberte čas</string>
     <string name="enter_letter">Zadejte písmeno</string>
     <string name="enter_unit_interval">Zadejte číslo od 0 do 1</string>
@@ -694,7 +671,6 @@
     <string name="complete_anyway">Přesto dokončit</string>
     <string name="fk_message">Chybí %s %s z %s %s</string>
     <string name="filters_title_event_status">Stav události</string>
-    <string name="filters_title_enrollment_status">Stav zápisu</string>
     <string name="enrollment_date">Datum zápisu</string>
     <string name="dataset_empty_list_can_create">Nejsou k dispozici žádná data. Kliknutím na „+“ přidáte nový záznam</string>
     <string name="dataset_emtpy_list_can_not_create">Nejsou k dispozici žádná data. Nemáte oprávnění k přidávání nových záznamů.</string>
@@ -747,7 +723,6 @@
     <string name="navigation_analytics">Analýza</string>
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
-    <string name="navigation_events">Události</string>
     <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
@@ -794,8 +769,6 @@
     <string name="from_gallery">Vybrat z galerie</string>
     <string name="data_set_quality_check_done">Hotovo!</string>
     <string name="break_glass_dialog_title">Tento program je chráněn</string>
-    <string name="break_glass_dialog_description">Musíte uvést důvod ke kontrole registrace v tomto chráněném programu. Veškerá aktivita bude zaznamenána.</string>
-    <string name="break_glass_reason">Důvod ke kontrole zápisu</string>
     <string name="break_glass_hint">Zde popište důvod</string>
     <string name="authenticating">Ověření</string>
     <string name="login_error_no_dhis_instance">Zadaná adresa URL serveru není instance dhis</string>
@@ -820,7 +793,6 @@
     <string name="edition_no_write_access">K úpravě těchto údajů nemáte oprávnění</string>
     <string name="event_date_not_in_orgunit_range">Tato data nelze upravovat, protože organizační jednotka je zavřená</string>
     <string name="edition_no_catcombo_access">K úpravě těchto údajů nemáte oprávnění</string>
-    <string name="edition_enrollment_is_no_open">Tato data nelze upravovat, protože zápis je dokončen nebo zrušen</string>
     <string name="edition_orgunit_capture_scope">Data z této organizační jednotky nemůžete upravovat</string>
     <string name="reload_list">Obnovit vyhledávání</string>
     <string name="error_tei_online_search_title">Online vyhledávání vrátilo následující zprávu:</string>
@@ -865,7 +837,6 @@
     <string name="account_disable_title">Účet zakázán</string>
     <string name="account_disable_message">Váš účet byl zakázán správcem.</string>
     <string name="search_unable_search_outside">Chcete-li vyhledávat mimo tento program, otevřete vyhledávací formulář a vyplňte jedno z následujících %s polí:</string>
-    <string name="enrollment_org_unit">Zápis Organizační jednotky</string>
     <string name="customactivityoncrash_error_activity_build_version">Verze sestavení: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Datum sestavení: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Aktuální datum: %s</string>

@@ -22,7 +22,7 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
     }
 
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
-        attribute.optionSet()?.let {
+        attribute.optionSet()?.takeIf { attribute.valueType() != ValueType.MULTI_TEXT }?.let {
             return checkOptionSetValue(d2, it.uid(), value()!!)
         } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!)
     } else {
@@ -45,7 +45,7 @@ fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
         if (dataElement == null) {
             return null
         } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
-            dataElement.optionSet()?.let {
+            dataElement.optionSet()?.takeIf { dataElement.valueType() != ValueType.MULTI_TEXT }?.let {
                 return checkOptionSetValue(d2, it.uid(), value()!!)
             } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
         } else {
@@ -191,14 +191,13 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 
 private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: String): Boolean {
     return when {
-        optionSetUid != null -> {
+        valueType != ValueType.MULTI_TEXT && optionSetUid != null -> {
             val optionByCodeExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
                 .byCode().eq(value).one().blockingExists()
             val optionByNameExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
                 .byDisplayName().eq(value).one().blockingExists()
             optionByCodeExist || optionByNameExist
         }
-
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {

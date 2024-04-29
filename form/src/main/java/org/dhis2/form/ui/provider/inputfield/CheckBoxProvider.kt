@@ -2,7 +2,6 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -13,26 +12,28 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 
 @Composable
 internal fun ProvideCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         CheckBoxData(
             uid = option.uid(),
             checked = fieldUiModel.displayName == option.displayName(),
             enabled = true,
-            textInput = option.displayName(),
+            textInput = option.displayName() ?: "",
         )
     } ?: emptyList()
 
     InputCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -41,7 +42,6 @@ internal fun ProvideCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -52,7 +52,6 @@ internal fun ProvideCheckBoxInput(
             )
         },
         onClearSelection = {
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -63,10 +62,10 @@ internal fun ProvideCheckBoxInput(
 @Composable
 internal fun ProvideYesNoCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
-    focusRequester: FocusRequester,
 ) {
     val data = listOf(
         CheckBoxData(
@@ -85,6 +84,7 @@ internal fun ProvideYesNoCheckBoxInput(
 
     InputCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         checkBoxData = data,
         orientation = fieldUiModel.orientation(),
@@ -93,7 +93,6 @@ internal fun ProvideYesNoCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
-            focusRequester.requestFocus()
             when (item.uid) {
                 "true" -> {
                     intentHandler(
@@ -119,7 +118,6 @@ internal fun ProvideYesNoCheckBoxInput(
             }
         },
         onClearSelection = {
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.ClearValue(fieldUiModel.uid),
             )
@@ -130,9 +128,9 @@ internal fun ProvideYesNoCheckBoxInput(
 @Composable
 internal fun ProvideYesOnlyCheckBoxInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
 ) {
     val cbData = CheckBoxData(
         uid = "",
@@ -143,13 +141,13 @@ internal fun ProvideYesOnlyCheckBoxInput(
 
     InputYesOnlyCheckBox(
         modifier = modifier,
+        inputStyle = inputStyle,
         checkBoxData = cbData,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onClick = {
-            focusRequester.requestFocus()
             if (!fieldUiModel.isAffirmativeChecked) {
                 intentHandler(
                     FormIntent.OnSave(

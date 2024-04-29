@@ -124,7 +124,7 @@ class MapLayerDialog(
                 is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
                     addCheckBox(
                         source,
-                        requireContext().getString(R.string.dialog_layer_enrollment_coordinates),
+                        requireContext().getString(R.string.dialog_layer_enrollment_coordinates_v2), // TODO:5894 programUid not available
                         MapLayerManager.ENROLLMENT_ICON_ID,
                     ),
                 )

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterManager
@@ -14,8 +15,11 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
@@ -28,6 +32,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
+import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -69,10 +74,14 @@ class ProgramEventDetailModule(
     fun provideViewModelFactory(
         d2: D2,
         eventDetailRepository: ProgramEventDetailRepository,
+        dispatcher: DispatcherProvider,
+        createEventUseCase: CreateEventUseCase,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
             MapStyleConfiguration(d2),
             eventDetailRepository,
+            dispatcher,
+            createEventUseCase,
         )
     }
 
@@ -112,6 +121,18 @@ class ProgramEventDetailModule(
     ): MapCoordinateFieldToFeature {
         return MapCoordinateFieldToFeature(mapGeometryToFeature)
     }
+
+    @Provides
+    @PerActivity
+    fun provideEventMapper(
+        d2: D2,
+        periodUtils: DhisPeriodUtils,
+        metadataIconProvider: MetadataIconProvider,
+    ) = ProgramEventMapper(
+        d2,
+        periodUtils,
+        metadataIconProvider,
+    )
 
     @Provides
     @PerActivity
@@ -172,4 +193,20 @@ class ProgramEventDetailModule(
     ): WorkingListViewModelFactory {
         return WorkingListViewModelFactory(programUid, filterRepository)
     }
+
+    @Provides
+    @PerActivity
+    fun provideCreateEventUseCase(
+        dispatcher: DispatcherProvider,
+        d2: D2,
+        dateUtils: DateUtils,
+    ) = CreateEventUseCase(
+        dispatcher = dispatcher,
+        d2 = d2,
+        dateUtils = dateUtils,
+    )
+
+    @Provides
+    @PerActivity
+    fun provideDateUtils() = DateUtils.getInstance()
 }

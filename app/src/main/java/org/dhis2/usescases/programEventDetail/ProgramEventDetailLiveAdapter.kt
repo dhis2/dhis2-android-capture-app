@@ -3,7 +3,13 @@ package org.dhis2.usescases.programEventDetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.testTag
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncDifferConfig
@@ -16,6 +22,8 @@ import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMappe
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 class ProgramEventDetailLiveAdapter(
     private val program: Program,
@@ -51,6 +59,9 @@ class ProgramEventDetailLiveAdapter(
                     event = it,
                     editable = it.event?.uid()
                         ?.let { eventViewModel.isEditable(it) } ?: true,
+                    displayOrgUnit = it.event?.program()
+                        ?.let { program -> eventViewModel.displayOrganisationUnit(program) }
+                        ?: true,
                     onSyncIconClick = {
                         eventViewModel.eventSyncClicked.value = it.event?.uid()
                     },
@@ -61,16 +72,29 @@ class ProgramEventDetailLiveAdapter(
                         }
                     },
                 )
-                ListCard(
-                    listAvatar = card.avatar,
-                    title = card.title,
-                    lastUpdated = card.lastUpdated,
-                    additionalInfoList = card.additionalInfo,
-                    actionButton = card.actionButton,
-                    expandLabelText = card.expandLabelText,
-                    shrinkLabelText = card.shrinkLabelText,
-                    onCardClick = card.onCardCLick,
-                )
+                Column(
+                    modifier = Modifier
+                        .padding(
+                            start = Spacing.Spacing8,
+                            end = Spacing.Spacing8,
+                            bottom = Spacing.Spacing4,
+                        ),
+                ) {
+                    if (position == 0) {
+                        Spacer(modifier = Modifier.size(Spacing.Spacing8))
+                    }
+                    ListCard(
+                        modifier = Modifier.testTag("EVENT_ITEM"),
+                        listAvatar = card.avatar,
+                        title = ListCardTitleModel(text = card.title),
+                        lastUpdated = card.lastUpdated,
+                        additionalInfoList = card.additionalInfo,
+                        actionButton = card.actionButton,
+                        expandLabelText = card.expandLabelText,
+                        shrinkLabelText = card.shrinkLabelText,
+                        onCardClick = card.onCardCLick,
+                    )
+                }
             }
 
             holder.bind(it, null) {

@@ -9,10 +9,20 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 interface IndicatorRepository {
     fun fetchData(): Flowable<List<AnalyticsModel>>
-    fun filterByPeriod(chartModel: ChartModel, selectedPeriods: List<RelativePeriod>) {}
+    fun filterByPeriod(
+        chartModel: ChartModel,
+        selectedPeriods: List<RelativePeriod>,
+        lineListingColumnId: Int?,
+    ) {
+    }
+
     fun filterByOrgUnit(
         chartModel: ChartModel,
         selectedOrgUnits: List<OrganisationUnit>,
         filterType: OrgUnitFilterType,
-    ) {}
+        lineListingColumnId: Int?,
+    ) {
+    }
+
+    fun filterLineListing(chartModel: ChartModel, value: String?) {}
 }

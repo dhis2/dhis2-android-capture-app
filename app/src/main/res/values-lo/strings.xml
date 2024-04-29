@@ -116,9 +116,6 @@
     <string name="latitude">ເສັ້ນຂະໜານ</string>
     <string name="longitude">ເສັ້ນແວງ</string>
     <string name="new_event">ກໍລະນີໃໝ່</string>
-    <string name="failed_insert_event">ການເພີ່ມກໍລະນີໃໝ່ເຂົ້າຫຼົມເຫວ</string>
-    <string name="event_created">ກໍລະນີທີ່ໄດ້ຖືກສ້າງຂື້ນ</string>
-    <string name="event_updated">ກໍລະນີທີ່ໄດ້ຖືກປັບປຸງ</string>
     <string name="one_time">ເທື່ອດຽວ</string>
     <string name="permanent">ຖາວອນ</string>
 
@@ -129,18 +126,13 @@
     <string name="datavalue_saved">ປະຫຍັດຄ່າ!</string>
     <string name="there_is_no_available_period">ບໍ່ມີໄລຍະເວລາທີຈະເລືອກ</string>
     <!--Event Detail-->
-    <string name="event_date">ວັນທີເຫດການ</string>
     <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     <string name="date_default">ວ/ດ/ປ</string>
     <string name="cancel">ຍົກເລີກ</string>
     <string name="delete">ລົບ</string>
-    <string name="delete_event">ລືບກໍລະນີອອກ</string>
-    <string name="confirm_delete_event">ທ່ານໝັ້ນໃຈບໍ ວ່າທ່ານຕ້ອງການລືບກໍລະນີນີ້ອອກ?</string>
-    <string name="event_was_deleted">ກໍລະນີນີ້ໄດ້ຖືກລືບອອກຮຽບຮ້ອຍແລ້ວ</string>
     <string name="total">ລວມ</string>
     <string name="most_recent_event_date">ວັນທີເຫດການຄັ້ງຫຼ້າສຸດ</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
     <string name="active_programs">ໂປຣແກຣທີ່ເປີດນໍາໃຊ້</string>
@@ -152,20 +144,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
-    <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="follow_up">ຕິດຕາມ</string>
     <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>
     <string name="follow_up_disabled">ການຕິດຕາມບໍ່ສາມາດນໍາໃຊ້ໄດ້</string>
     <string name="deactivate">ຢຸດນໍາໃຊ້</string>
     <string name="program_not_allow_events">ໂປຣແກຣມນີ້ບໍ່ອະນຸຍາດຕື່ມກໍລະນີເຂົ້າອີກ</string>
 
-    <!--DONE TASKS-->
     <string name="events">ເຫດການ</string>
     <string name="done_task">ໜ້າຫຼັກ</string>
     <string name="app_info">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມ</string>
     <string name="log_out">ອອກຈາກລະບົບ</string>
     <string name="block_session">ໄລຍະປີດການນໍາໃຊ້</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 ນາທີ</string>
     <string name="fifteen_minute">15 ນາທີ</string>
@@ -235,17 +224,14 @@
     <string name="add_note">ຂຽນບັນທຶກລົງ</string>
     <string name="revert">ກັບຄືນສູ່ສະພາບເດີມ</string>
     <string name="activated">ເປີດການນໍາໃຊ້ແລ້ວ</string>
-    <string name="enroll_in">ຂື້ນທະບຽນມີ %s</string>
     <string name="missing_mandatory_fields_title">ຫ້ອງປ້ອນຂໍ້ມູນທີ່ຈໍາເປັນ ບໍ່ເຫັນ</string>
     <string name="missing_mandatory_fields_text">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນດຽວນີ້, ຂໍ້ມູນທັງໝົດທີ່ໄດ້ບັນທຶກແລ້ວຈະຖືກລືບ</string>
     <string name="missing_mandatory_fields_events">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="title_delete_go_back">ຂໍ້ມູນຂອງທ່ານບໍ່ໄດ້ບັນທຶກ</string>
     <string name="delete_go_back">ຖ້າທ່ານກັບຄືນຕອນນີ້ ຂໍ້ມູນທີ່ປ້ອນທັ້ງໝົດຈະຖຶກລົບ</string>
-    <string name="missing_mandatory_fields_events_2.0">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. \n %s ດຽວນີ້ ທ່ານສາມາດກັບຄືນ, ແຕ່ຂໍ່ມູນຂອງເຫດການນີ້ຈະຍັງບໍ່ສາມາດບັນທຶກໄດ້</string>
     <string name="missing_mandatory_fields_go_back">ລືບຂໍ້ມູນ ແລະ ກັບຄືນ</string>
     <string name="error_fields">ບາງຊ່ອງມີຂໍ້ຜິດພາດ, %s ກະລຸນາກວດສອບ</string>
     <string name="missing_mandatory_fields_finish">ຊ່ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ທ່ານສາມາດປ້ອນຂໍ້ມູນ ແລະ ອອກໄດ້, ແຕ່ເຫດການຈະບໍ່ສາມາດເຮັດໃຫ້ສຳເລັດໄດ້</string>
-    <string name="enrollment_coordinates">ປະສານງານການລົງທະບຽນ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
 
     <!--EVENT SUMMARY-->
@@ -303,7 +289,6 @@
     <string name="qr_error_id">ລະຫັດ QR ບໍ່ຖືກ</string>
     <string name="qr_error_attr">ຄຸນລັກສະນະອັນນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
     <string name="qr_error_enrollment">ການຂື້ນທະບຽນນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
-    <string name="qr_error_event">ກໍລະນີນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
 
     <string name="jira_report">ລາຍງານບັນຫາໃຫ້ Jira</string>
     <string name="about">ກ່ຽວກັບ</string>
@@ -447,17 +432,14 @@
     <string name="finish">ສີ້ນສຸດ</string>
     <string name="error_fields_title">ຂໍ້ມູນມີຂໍ້ຜິດພາດ</string>
     <string name="error_fields_events">ບາງຊ່ອງຂໍ້ມູນມີຂໍ້ຜິດພາດ. ຍັງບໍໄດ້ບັນທຶກ ກະລຸນາກວດສອບ</string>
-    <string name="event_reopened">ເຫດການນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້</string>
     <string name="unique_warning">ຄ່າບໍໍຄວນຊ້ຳກັນ ບັງເອີນໄດ້ຖຶກພົບເຫັນ. ມັນບໍໄດ້ບັນທຶກ. ກະລຸນາກວດສອບ</string>
     <string name="unique_coincidence_found">ໄດ້ພົບເຫັນຊ່ອງປ້ອນຂໍ້ມູນທີ່ເປັນເອກະລັກ. ກະລຸນາກວດສອບແບບຟອມເພື່ອບັນທຶກການລົງທະບຽນ</string>
     <string name="please_wait">ກະລຸນາລໍຖ້າ</string>
     <string name="skip">ຂ້າມ</string>
     <string name="reschedule">ກຳນົດເວລາໃໝ່</string>
-    <string name="event_was_skipped">ເຫດການຖຶກໝາຍວ່າໄດ້ຂ້າມແລ້ວ</string>
     <string name="no_intructions">ບໍ່ມີຂໍ້ມູນສຳລັບໜ້າຈໍນີ້</string>
     <string name="event_overdue">ກາຍເວລາທີ່ກໍານົດ</string>
     <string name="unsupported_program_rule">ມີກົດລະບຽບຂອງສາຍງານໜື່ງຂໍ້ທີບໍໄດ້ຮອງຮັບ. ກະລຸນາກວດສອບເອກະສານ</string>
-    <string name="delete_event_error">ເຫດການນີ້ຍັງບໍ່ໄດ້ສ້າງ</string>
     <string name="empty_description">ບໍ່ມີຂໍ້ມູນສຳລັບຫ້ອງຂໍ້ມູນນີ້</string>
     <string name="biometrics_dialog_title">ຂໍ້ມູນປະຈຳຕົວຫວ່າງເປົ່າ</string>
     <string name="biometrics_first_use_text">ເພື່ອໃຫ້ສາມາດເຂົ້າສູ່ລະບົບໂດຍໃຊ້ເຄື່ອງສະແກນລາຍນິ້ວມື້ ທ່ານຕ້ອງໃຊ້ວິທີເລີ່ມຕົ້ນກ່ອນ</string>
@@ -509,10 +491,8 @@
     <string name="relationship_without_enrollment">ບັນທຶກທີ່ທ່ານພະຍາຍາມເຂົ້າບໍ່ມີການລົງທະບຽນ. ທ່ານບໍສາມາດເຂົ້າເຖີງໜ້າກະດານຂ່າວໄດ້</string>
     <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
     <string name="dashboard_menu_delete_tei_v2">ລົບ%s</string>
-    <string name="dashboard_menu_delete_enrollment">ລົບການລົງທະບຽນເທົ່ານັ້ນ</string>
     <string name="delete_authority_error">ທ່ານບໍສາມາດທີ່ຈະລົບບັນທຶກນີ້ໄດ້</string>
     <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
-    <string name="uncomplete_authority_error">ທ່ານບໍສາມາດເປິດເຫດການນີ້ຄືນໄດ້</string>
     <string name="adjusting_form">ກຳລັງປັບຟອມ...</string>
 
     <string name="sms_receiver_number">ຕົວເລກຜູ້ຮັບ</string>
@@ -600,7 +580,6 @@
     <string name="event_tei_limits_v2">ຈຳກັດການຕັ້ງຄ່າ%s\nເຫດການ:%s/%sTEI:%s/%s</string>
     <string name="enrollment_data_hide">ເຊື່ອງຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="enrollment_data_show">ສະແດງຂໍ້ມູນການລົງທະບຽນ</string>
-    <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
     <string name="sms_enabled">ເປິດໃຊ້ງານໂມດູນຂໍ້ຄວາມ</string>
     <string name="sms_disabled">ໂມດູນຂໍ້ຄວາມຖືກປິດໃຊ້ງານ</string>
     <string name="sms_downloading_data">ກຳລັງດາວໂຫຼດຂໍ້ມູນສຳລັບໂມດູນຂໍ້ຄວາມ. ກະ​ລຸ​ນາ​ລໍ​ຖ້າ</string>
@@ -610,7 +589,6 @@
     <string name="disable_pin_locked">ບໍ່ຕ້ອງສະແດງລັອກໜ້າຈໍອີກ</string>
     <string name="set_pin">ຕັ້ງລະຫັດຜ່ານ</string>
     <string name="conflict">ຂັດແຍ້ງ</string>
-    <string name="event_date_in_future_message">ເຫດການນີ້ບໍ່ສາມາດມີວັນທີໃນອະນາຄົດໄດ້. ກະລຸນາປ່ຽນ.</string>
     <string name="change_event_date">ປ່ຽນວັນທີ</string>
     <string name="go_back">ກັບຄືນ</string>
     <string name="data_sets">ແບບຟອມ</string>
@@ -622,7 +600,6 @@
     <string name="interval_minute_ago">%dນາທີທີ່ຜ່ານມາ</string>
     <string name="interval_hour_ago">%dຊົ່ວໂມງທີ່ຜ່ານມາ</string>
     <string name="interval_yesterday">ມື້ວານນີ</string>
-    <string name="program_selector">ການລົງທະບຽນໂປຣແກຣມ</string>
     <string name="select_time">ເລືອກເວລາ</string>
     <string name="enter_letter">ປ້ອນຕົວອັກສອນ</string>
     <string name="enter_unit_interval">ປ້ອນຕົວເລກຈາກ 0 ຫາ 1</string>
@@ -658,7 +635,6 @@
     <string name="formula">Formula</string>
     <string name="fk_message">ບໍ່ຄົບຖ້ວນ%s%sຈາກ%s%s</string>
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
-    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
     <string name="validation_rules_data_to_review">ຂໍ້ມູນທີ່ຕ້ອງທົບທວນ</string>
     <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
@@ -686,7 +662,6 @@
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
     <string name="navigation_analytics">ການວິເຄາະ</string>
     <string name="navigation_programs">ສາຍງານ</string>
-    <string name="navigation_events">ເຫດການ</string>
     <string name="navigation_relationships">ສາຍພົວພັນ</string>
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
@@ -717,7 +692,6 @@
     <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="data_set_quality_check_done">ສຳເລັດແລ້ວ!</string>
     <string name="break_glass_dialog_title">ໂປຣແກຣມນີ້ໄດ້ຮັບການຄຸ້ມຄອງ</string>
-    <string name="break_glass_reason">ເຫດຜົນໃນການກວດສອບການລົງທະບຽນ</string>
     <string name="break_glass_hint">ອະທິບາຍເຫດຜົນຢູ່ບ່ອນນີ້</string>
     <string name="login_error_bad_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
     <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>

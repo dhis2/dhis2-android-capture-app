@@ -25,6 +25,7 @@
     <string name="longitude">Longitude</string>
     <!--DataSet initial-->
     <string name="report_period">Período de relatório</string>
+    <!--Event Detail-->
     <string name="due_date">Data de vencimento</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Apagar</string>

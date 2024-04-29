@@ -4,6 +4,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 
 sealed class RecyclerViewUiEvents {
@@ -101,5 +102,13 @@ sealed class RecyclerViewUiEvents {
         val action: String,
         val value: String?,
         val uid: String,
+    ) : RecyclerViewUiEvents()
+
+    class SelectPeriod(
+        val uid: String,
+        val title: String,
+        val periodType: PeriodType,
+        val minDate: Date?,
+        val maxDate: Date?,
     ) : RecyclerViewUiEvents()
 }

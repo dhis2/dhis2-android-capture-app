@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Even</string>
     <string name="no_data">Tidak ada data</string>
     <string name="change_calendar_view">Ubah tampilan kalender</string>
     <string name="clear">Kosongkan</string>
@@ -16,7 +15,6 @@
     <string name="navigation_analytics">Analitik</string>
     <string name="navigation_tasks">Tugas</string>
     <string name="navigation_programs">Program-program</string>
-    <string name="navigation_events">Even</string>
     <string name="navigation_relationships">Hubungan</string>
     <string name="navigation_notes">Catatan</string>
     <string name="navigation_data_entry">Data entri</string>

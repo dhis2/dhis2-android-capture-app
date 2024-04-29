@@ -3,6 +3,11 @@ package org.dhis2.form.data
 import android.os.Build
 import android.text.TextUtils.isEmpty
 import io.reactivex.Single
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.dhis2.commons.rules.toRuleEngineInstant
+import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.bindings.toRuleDataValue
 import org.dhis2.form.bindings.toRuleList
@@ -62,7 +67,7 @@ class RulesRepository(private val d2: D2) {
                         .blockingGet()
                         ?.programStage()
                     it.filter { rule ->
-                        rule.programStage() == null || rule.programStage() == stage
+                        rule.programStage == null || rule.programStage == stage
                     }
                 } else {
                     it
@@ -119,43 +124,38 @@ class RulesRepository(private val d2: D2) {
                 getOtherEventList(eventToEvaluate).toFlowable()
                     .flatMapIterable { eventList -> eventList }
                     .map { event ->
-                        RuleEvent.builder()
-                            .event(event.uid())
-                            .programStage(event.programStage())
-                            .programStageName(
-                                d2.programModule().programStages().uid(event.programStage())
-                                    .blockingGet()!!.name(),
-                            )
-                            .status(
-                                if (event.status() == EventStatus.VISITED) {
-                                    RuleEvent.Status.ACTIVE
-                                } else {
-                                    RuleEvent.Status.valueOf(event.status()!!.name)
-                                },
-                            )
-                            .eventDate(event.eventDate())
-                            .dueDate(
-                                if (event.dueDate() != null) {
-                                    event.dueDate()
-                                } else {
-                                    event.eventDate()
-                                },
-                            )
-                            .organisationUnit(event.organisationUnit())
-                            .organisationUnitCode(
-                                d2.organisationUnitModule().organisationUnits().uid(
+                        RuleEvent(
+                            event = event.uid(),
+                            programStage = event.programStage()!!,
+                            programStageName = d2.programModule().programStages()
+                                .uid(event.programStage())
+                                .blockingGet()!!.name()!!,
+                            status = if (event.status() == EventStatus.VISITED) {
+                                RuleEvent.Status.ACTIVE
+                            } else {
+                                RuleEvent.Status.valueOf(event.status()!!.name)
+                            },
+                            eventDate = Instant.fromEpochMilliseconds(event.eventDate()!!.time),
+                            dueDate = event.dueDate()?.let {
+                                Instant.fromEpochMilliseconds(it.time)
+                                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                            },
+                            completedDate = event.completedDate()?.let {
+                                Instant.fromEpochMilliseconds(it.time)
+                                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                            },
+                            organisationUnit = event.organisationUnit()!!,
+                            organisationUnitCode = d2.organisationUnitModule().organisationUnits()
+                                .uid(
                                     event.organisationUnit(),
-                                ).blockingGet()!!.code(),
-                            )
-                            .dataValues(
-                                event.trackedEntityDataValues()?.toRuleDataValue(
-                                    event,
-                                    d2.dataElementModule().dataElements(),
-                                    d2.programModule().programRuleVariables(),
-                                    d2.optionModule().options(),
-                                ),
-                            )
-                            .build()
+                                ).blockingGet()?.code(),
+                            dataValues = event.trackedEntityDataValues()?.toRuleDataValue(
+                                event,
+                                d2.dataElementModule().dataElements(),
+                                d2.programModule().programRuleVariables(),
+                                d2.optionModule().options(),
+                            ) ?: emptyList(),
+                        )
                     }
                     .toList()
             }
@@ -218,37 +218,33 @@ class RulesRepository(private val d2: D2) {
             .get()
             .toFlowable().flatMapIterable { events -> events }
             .map { event ->
-                RuleEvent.builder()
-                    .event(event.uid())
-                    .programStage(event.programStage())
-                    .programStageName(
-                        d2.programModule().programStages().uid(event.programStage())
-                            .blockingGet()!!.name(),
-                    )
-                    .status(
-                        if (event.status() == EventStatus.VISITED) {
-                            RuleEvent.Status.ACTIVE
-                        } else {
-                            RuleEvent.Status.valueOf(event.status()!!.name)
-                        },
-                    )
-                    .eventDate(event.eventDate())
-                    .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
-                    .organisationUnit(event.organisationUnit())
-                    .organisationUnitCode(
-                        d2.organisationUnitModule()
-                            .organisationUnits().uid(event.organisationUnit())
-                            .blockingGet()!!.code(),
-                    )
-                    .dataValues(
-                        event.trackedEntityDataValues()?.toRuleDataValue(
-                            event,
-                            d2.dataElementModule().dataElements(),
-                            d2.programModule().programRuleVariables(),
-                            d2.optionModule().options(),
-                        ),
-                    )
-                    .build()
+                RuleEvent(
+                    event = event.uid(),
+                    programStage = event.programStage()!!,
+                    programStageName =
+                    d2.programModule().programStages().uid(event.programStage())
+                        .blockingGet()!!.name()!!,
+                    status =
+                    if (event.status() == EventStatus.VISITED) {
+                        RuleEvent.Status.ACTIVE
+                    } else {
+                        RuleEvent.Status.valueOf(event.status()!!.name)
+                    },
+                    eventDate = event.eventDate()!!.toRuleEngineInstant(),
+                    dueDate = event.dueDate()?.toRuleEngineLocalDate(),
+                    completedDate = event.completedDate()?.toRuleEngineLocalDate(),
+                    organisationUnit = event.organisationUnit()!!,
+                    organisationUnitCode = d2.organisationUnitModule()
+                        .organisationUnits().uid(event.organisationUnit())
+                        .blockingGet()?.code(),
+                    dataValues =
+                    event.trackedEntityDataValues()?.toRuleDataValue(
+                        event,
+                        d2.dataElementModule().dataElements(),
+                        d2.programModule().programRuleVariables(),
+                        d2.optionModule().options(),
+                    ) ?: emptyList(),
+                )
             }.toList()
     }
 
@@ -257,35 +253,35 @@ class RulesRepository(private val d2: D2) {
             .flatMap { event ->
                 val ouCode = d2.organisationUnitModule().organisationUnits()
                     .uid(event.organisationUnit())
-                    .blockingGet()!!.code()
+                    .blockingGet()?.code() ?: ""
                 val programName =
                     d2.programModule().programs().uid(event.program()).blockingGet()!!.name()
                 if (event.enrollment() == null) {
                     Single.just(
-                        RuleEnrollment.create(
+                        RuleEnrollment(
                             "",
-                            Calendar.getInstance().time,
-                            Calendar.getInstance().time,
+                            programName!!,
+                            Calendar.getInstance().time.toRuleEngineLocalDate(),
+                            Calendar.getInstance().time.toRuleEngineLocalDate(),
                             RuleEnrollment.Status.CANCELLED,
                             event.organisationUnit()!!,
                             ouCode,
                             ArrayList(),
-                            programName,
                         ),
                     )
                 } else {
                     d2.enrollmentModule().enrollments()
                         .uid(event.enrollment()).get()
                         .map { enrollment ->
-                            RuleEnrollment.create(
+                            RuleEnrollment(
                                 enrollment.uid(),
-                                enrollment.incidentDate() ?: Date(),
-                                enrollment.enrollmentDate()!!,
+                                programName!!,
+                                (enrollment.incidentDate() ?: Date()).toRuleEngineLocalDate(),
+                                enrollment.enrollmentDate()!!.toRuleEngineLocalDate(),
                                 RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
                                 event.organisationUnit()!!,
                                 ouCode,
                                 getAttributesValues(enrollment),
-                                programName,
                             )
                         }
                 }

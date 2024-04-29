@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Event</string>
     <string name="no_data">No data</string>
     <string name="feature_configuration">Feature Configuration</string>
     <string name="app_name" translatable="false">Commons</string>
@@ -18,7 +17,6 @@
     <string name="navigation_analytics">Analytics</string>
     <string name="navigation_tasks">Tasks</string>
     <string name="navigation_programs">Programs</string>
-    <string name="navigation_events">Events</string>
     <string name="navigation_relationships">Relationships</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
@@ -45,9 +43,8 @@
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
-    <string name="enrollment_date">Enrollment date</string>
     <string name="filters_title_event_status">Event status</string>
-    <string name="filters_title_enrollment_status">Enrollment status</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
 
     <!-- State -->
@@ -75,8 +72,6 @@
     <string name="enrollment_status_completed">Complete</string>
     <string name="enrollment_status_cancelled">Cancelled</string>
     <string name="record_marked_for_deletion">This record is marked for deletion. You can\'t access it.</string>
-
-    <string name="enrollment_org_unit">Enrollment Org Unit</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Today</string>
@@ -239,4 +234,65 @@
         <item quantity="one">%d year overdue</item>
         <item quantity="other">%d years overdue</item>
     </plurals>
+
+    <plurals name="schedule_days">
+        <item quantity="one">In %d day</item>
+        <item quantity="other">In %d days</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="one">In %d month</item>
+        <item quantity="other">In %d months</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="one">In %d year</item>
+        <item quantity="other">In %d years</item>
+    </plurals>
+
+    <string name="open_with">Open with</string>
+
+    <string name="file_downladed">File downladed successfully</string>
+
+
+    <!--Enrollment labels-->
+    <plurals name="enrollment">
+        <item quantity="many">enrollments</item>
+        <item quantity="other">enrollment</item>
+    </plurals>
+    <string name="dialog_layer_enrollment_coordinates_v2">Show %s coordinates</string>
+    <string name="enrollment_data_section_label_V2">%s data</string>
+    <string name="enrollment_coordinates_V2">%s coordinates</string>
+    <string name="enrollment_date_V2">%s date</string>
+    <string name="enrollment_status">%s status</string>
+    <string name="break_glass_dialog_description_V2">You must provide a reason to check for %s in this protected program. All activity will be logged.</string>
+    <string name="break_glass_reason_V2">Reason to check for %s</string>
+    <string name="edition_enrollment_is_no_open_V2">This data is not editable because the %s is completed or cancelled</string>
+    <string name="enrollment_completed_V2">%s completed</string>
+    <string name="enrollment_cancelled_V2">%s cancelled</string>
+    <string name="new_enrollment">New %s</string>
+    <string name="enrolling_ou">Enrolled in:</string> <!--TODO: Remove this once ANDROAPP-5901 has been merged. Also remove unused TEI card xmls-->
+    <string name="dashboard_menu_delete_enrollment_V2">Delete %s only</string>
+    <string name="program_selector_V2">Program %s</string>
+
+
+    <!-- Event -->
+    <plurals name="event_label">
+        <item quantity="one">event</item>
+        <item quantity="other">events</item>
+    </plurals>
+    <string name="event_label_completed">%s completed</string>
+    <string name="event_label_created">%s created</string>
+    <string name="new_event_label">New %s</string>
+    <string name="event_label_date">%s date</string>
+    <string name="delete_event_label">Delete %s</string>
+    <string name="event_label_was_deleted">%s deleted successfully</string>
+    <string name="delete_event_label_error">This %s has not been created yet</string>
+    <string name="event_label_was_skipped">The %s was marked as skipped</string>
+    <string name="confirm_delete_event_label">Are you sure that you want to delete this %s?</string>
+    <string name="event_label_updated">%s updated</string>
+    <string name="event_label_date_in_future_message">This %s can\'t have a date in the future. Please change it.</string>
+    <string name="failed_insert_event_label">Failed to insert new %s</string>
+    <string name="period_span_default_label" translatable="false">%s - %s</string>
+    <string name="week_period_span_default_label">Week %d %s to %s</string>
+    <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
+
 </resources>

@@ -9,19 +9,24 @@ import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.paging.PagedList
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.bindings.dp
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.resources.ColorUtils
@@ -35,7 +40,6 @@ import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButtonAndWorkingList
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.dhis2.utils.isLandscape
-import java.io.File
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -143,14 +147,6 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private fun configureList(scrollView: RecyclerView) {
         scrollView.apply {
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
-                val paddingTop = if (isLandscape()) {
-                    0.dp
-                } else {
-                    130.dp
-                }
-                setPaddingRelative(0.dp, paddingTop, 0.dp, 160.dp)
-            }
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -181,18 +177,30 @@ class SearchTEList : FragmentGlobalAbstract() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                if (LocalConfiguration.current.orientation ==
-                    Configuration.ORIENTATION_PORTRAIT
-                ) {
-                    val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
+                val teTypeName by viewModel.teTypeName.observeAsState()
+
+                if (!teTypeName.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
+                    val createButtonVisibility by viewModel
+                        .createButtonScrollVisibility.observeAsState(true)
+                    val queryData = remember(viewModel.uiState) {
+                        viewModel.uiState.searchedItems
+                    }
+
                     FullSearchButtonAndWorkingList(
+                        teTypeName = teTypeName!!,
                         modifier = Modifier,
-                        visible = !isScrollingDown,
+                        createButtonVisible = createButtonVisibility,
                         closeFilterVisibility = isFilterOpened,
                         isLandscape = isLandscape(),
-                        onClick = { viewModel.setSearchScreen() },
+                        queryData = queryData,
+                        onSearchClick = { viewModel.setSearchScreen() },
+                        onEnrollClick = { viewModel.onEnrollClick() },
                         onCloseFilters = { viewModel.onFiltersClick(isLandscape()) },
+                        onClearSearchQuery = {
+                            viewModel.clearQueryData()
+                            viewModel.clearFocus()
+                        },
                         workingListViewModel = workingListViewModel,
                     )
                 }
@@ -211,7 +219,12 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val createButtonVisibility by viewModel
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
-                updateLayoutParams<ConstraintLayout.LayoutParams> {
+                val teTypeName by viewModel.teTypeName.observeAsState()
+                val hasQueryData = remember(viewModel.uiState) {
+                    viewModel.queryData.isNotEmpty()
+                }
+
+                updateLayoutParams<CoordinatorLayout.LayoutParams> {
                     val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
                         56.dp
                     } else {
@@ -219,11 +232,14 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                     setMargins(0, 0, 0, bottomMargin)
                 }
-                if (createButtonVisibility && !filtersOpened) {
+
+                val orientation = LocalConfiguration.current.orientation
+                if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
                         onClick = viewModel::onEnrollClick,
+                        teTypeName = teTypeName!!,
                     )
                 }
             }
@@ -231,8 +247,13 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun displayImageDetail(imagePath: String) {
-        ImageDetailBottomDialog(null, File(imagePath))
-            .show(childFragmentManager, ImageDetailBottomDialog.TAG)
+        val intent = ImageDetailActivity.intent(
+            context = requireContext(),
+            title = null,
+            imagePath = imagePath,
+        )
+
+        startActivity(intent)
     }
 
     private fun observeNewData() {
@@ -245,30 +266,34 @@ class SearchTEList : FragmentGlobalAbstract() {
             initLoading(emptyList())
             it.firstOrNull()?.let { searchResult ->
                 if (searchResult.shouldClearProgramData()) {
-                    liveAdapter.clearList()
+                    liveAdapter.refresh()
                 }
                 if (searchResult.shouldClearGlobalData()) {
-                    globalAdapter.clearList()
+                    globalAdapter.refresh()
                 }
+                if (searchResult.type == SearchResult.SearchResultType.TOO_MANY_RESULTS) {
+                    listAdapter.removeAdapter(liveAdapter)
+                }
+                displayResult(it)
+                updateRecycler()
             }
-            displayResult(it)
-            updateRecycler()
-            recycler.post {
-                recycler.smoothScrollToPosition(0)
+        }
+
+        liveAdapter.addLoadStateListener { state ->
+            if (state.append == LoadState.Loading) {
+                displayResult(
+                    listOf(SearchResult(SearchResult.SearchResultType.LOADING)),
+                )
+            } else {
+                displayResult(null)
             }
         }
     }
 
     private fun updateRecycler() {
-        val paddingTop = if (workingListViewModel.workingListFilter.value != null) 130.dp else 80.dp
         recycler.setPaddingRelative(
             0,
-            when {
-                !isLandscape() && listAdapter.itemCount > 1 -> paddingTop
-                !isLandscape() && liveAdapter.itemCount == 0 &&
-                    resultAdapter.itemCount == 1 -> paddingTop
-                else -> 0.dp
-            },
+            0,
             0,
             when {
                 listAdapter.itemCount > 1 -> 160.dp
@@ -278,52 +303,31 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun restoreAdapters() {
+        if (!listAdapter.adapters.contains(liveAdapter)) {
+            listAdapter.addAdapter(1, liveAdapter)
+        }
         initLoading(null)
-        liveAdapter.clearList()
+        liveAdapter.refresh()
         if (!viewModel.filtersApplyOnGlobalSearch()) {
-            globalAdapter.clearList()
+            globalAdapter.refresh()
         } else if (globalAdapter.itemCount > 0) {
             initGlobalData()
         }
         displayResult(null)
     }
 
-    private val initResultCallback = object : PagedList.Callback() {
-        override fun onChanged(position: Int, count: Int) {
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            onInitDataLoaded()
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-        }
-    }
-
-    private val globalResultCallback = object : PagedList.Callback() {
-        override fun onChanged(position: Int, count: Int) {
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            onGlobalDataLoaded()
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-        }
-    }
-
     private fun initData() {
         displayLoadingData()
+
         viewModel.fetchListResults {
-            it?.takeIf { view != null }?.apply {
-                removeObservers(viewLifecycleOwner)
-                observe(viewLifecycleOwner) { results ->
-                    liveAdapter.submitList(results) {
+            lifecycleScope.launch {
+                it?.takeIf { view != null }?.collectLatest {
+                    liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
                     }
-                    results.addWeakCallback(results.snapshot(), initResultCallback)
-                }
-            } ?: onInitDataLoaded()
+                    liveAdapter.submitData(lifecycle, it)
+                } ?: onInitDataLoaded()
+            }
         }
     }
 
@@ -335,8 +339,7 @@ class SearchTEList : FragmentGlobalAbstract() {
             } else {
                 null
             },
-            isLandscape = isLandscape(),
-            onlineErrorCode = liveAdapter.currentList?.lastOrNull()?.onlineErrorCode,
+            onlineErrorCode = liveAdapter.snapshot().items.lastOrNull()?.onlineErrorCode,
         )
     }
 
@@ -344,19 +347,17 @@ class SearchTEList : FragmentGlobalAbstract() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
             globalResultCount = globalAdapter.itemCount,
-            isLandscape = isLandscape(),
         )
     }
 
     private fun initGlobalData() {
         displayLoadingData()
-        viewModel.fetchGlobalResults()?.let {
-            it.removeObservers(viewLifecycleOwner)
-            it.observe(viewLifecycleOwner) { results ->
-                globalAdapter.submitList(results) {
+        viewModel.viewModelScope.launch {
+            viewModel.fetchGlobalResults()?.collectLatest {
+                globalAdapter.addOnPagesUpdatedListener {
                     onGlobalDataLoaded()
                 }
-                results.addWeakCallback(results.snapshot(), globalResultCallback)
+                globalAdapter.submitData(it)
             }
         }
     }

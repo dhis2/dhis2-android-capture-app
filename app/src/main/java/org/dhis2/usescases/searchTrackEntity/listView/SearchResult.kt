@@ -20,7 +20,7 @@ data class SearchResult(
     }
 
     fun shouldClearProgramData() =
-        type == SearchResultType.TOO_MANY_RESULTS || type == SearchResultType.SEARCH_OR_CREATE
+        type == SearchResultType.SEARCH_OR_CREATE
 
     fun shouldClearGlobalData() = type == SearchResultType.SEARCH_OUTSIDE
 

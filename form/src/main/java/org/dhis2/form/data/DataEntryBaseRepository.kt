@@ -1,19 +1,21 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
+import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
 
 abstract class DataEntryBaseRepository(
-    private val d2: D2,
+    private val conf: FormBaseConfiguration,
     private val fieldFactory: FieldViewModelFactory,
 ) : DataEntryRepository {
 
     abstract val programUid: String?
+    override fun firstSectionToOpen(): String? {
+        return sectionUids().blockingFirst().firstOrNull()
+    }
 
     override fun updateSection(
         sectionToUpdate: FieldUiModel,
@@ -64,10 +66,7 @@ abstract class DataEntryBaseRepository(
     private fun optionsFromGroups(optionGroupUids: List<String>): List<String> {
         if (optionGroupUids.isEmpty()) return emptyList()
         val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = d2.optionModule().optionGroups()
-            .withOptions()
-            .byUid().`in`(optionGroupUids)
-            .blockingGet()
+        val optionGroups = conf.optionGroups(optionGroupUids)
         for (optionGroup in optionGroups) {
             for (option in optionGroup.options()!!) {
                 if (!optionsFromGroups.contains(option.uid())) {
@@ -76,6 +75,10 @@ abstract class DataEntryBaseRepository(
             }
         }
         return optionsFromGroups
+    }
+
+    override fun dateFormatConfiguration(): String? {
+        return conf.dateFormatConfiguration()
     }
 
     fun transformSection(
@@ -106,6 +109,6 @@ abstract class DataEntryBaseRepository(
     }
 
     override fun disableCollapsableSections(): Boolean? {
-        return programUid?.let { d2.disableCollapsableSectionsInProgram(programUid = it) }
+        return programUid?.let { conf.disableCollapsableSectionsInProgram(programUid = it) }
     }
 }

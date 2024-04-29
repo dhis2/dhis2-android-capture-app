@@ -5,6 +5,7 @@ import io.reactivex.parallel.ParallelFlowable
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
@@ -16,6 +17,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -23,10 +25,11 @@ internal class ProgramRepositoryImpl(
     private val dhisProgramUtils: DhisProgramUtils,
     private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
+    private val metadataIconProvider: MetadataIconProvider,
     private val schedulerProvider: SchedulerProvider,
 ) : ProgramRepository {
 
-    private val programViewModelMapper = ProgramViewModelMapper(resourceManager)
+    private val programViewModelMapper = ProgramViewModelMapper()
     private var lastSyncStatus: SyncStatusData? = null
     private var baseProgramCache: List<ProgramViewModel> = emptyList()
 
@@ -74,6 +77,7 @@ internal class ProgramRepositoryImpl(
                                 },
                                 resourceManager.defaultDataSetLabel(),
                                 filterPresenter.areFiltersActive(),
+                                metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
                             )
                         }
                 }
@@ -113,6 +117,7 @@ internal class ProgramRepositoryImpl(
                     state,
                     hasOverdue = false,
                     filtersAreActive = false,
+                    metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 ).copy(
                     stockConfig = if (d2.isStockProgram(program.uid())) {
                         d2.stockUseCase(program.uid())?.toAppConfig()
@@ -160,6 +165,7 @@ internal class ProgramRepositoryImpl(
                             D2ProgressSyncStatus.ERROR,
                             D2ProgressSyncStatus.PARTIAL_ERROR,
                             -> ProgramDownloadState.ERROR
+
                             null -> ProgramDownloadState.DOWNLOADED
                         }
 

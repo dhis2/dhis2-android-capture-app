@@ -117,9 +117,6 @@
     <string name="latitude">Breddegrad</string>
     <string name="longitude">Lengdegrad</string>
     <string name="new_event">Ny hendelse</string>
-    <string name="failed_insert_event">Kunne ikke sette inn ny hendelse</string>
-    <string name="event_created">Hendelse opprettet</string>
-    <string name="event_updated">Hendelse oppdatert</string>
     <string name="one_time">En gang</string>
     <string name="permanent">Permanent</string>
 
@@ -132,18 +129,13 @@
     <string name="datavalue_saved">Verdien er lagret!</string>
     <string name="there_is_no_available_period">Det er ingen tilgjengelige perioder å velge.</string>
     <!--Event Detail-->
-    <string name="event_date">Hendelsesdato</string>
     <string name="due_date">Forfallsdato</string>
     <string name="cat_combo">Kat kombo</string>
     <string name="date_default">DD/MM/ÅÅÅÅ</string>
     <string name="cancel">Avbryt</string>
     <string name="delete">Slett</string>
-    <string name="delete_event">Slett hendelse</string>
-    <string name="confirm_delete_event">Er du sikker på at du vil slette denne hendelsen?</string>
-    <string name="event_was_deleted">Hendelsen ble slettet.</string>
     <string name="total">Totalt</string>
     <string name="most_recent_event_date">Siste hendelsesdato</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Registreringsliste</string>
     <string name="active_programs">Aktive programmer</string>
@@ -155,20 +147,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VIS MER</string>
-    <string name="enrolling_ou">Registrerer OU:</string>
     <string name="follow_up">Oppfølging</string>
     <string name="follow_up_enabled">Oppfølging er aktivert</string>
     <string name="follow_up_disabled">Oppfølging er deaktivert</string>
     <string name="deactivate">Deaktiver</string>
     <string name="program_not_allow_events">Dette programmet tillater ikke flere hendelser</string>
 
-    <!--DONE TASKS-->
     <string name="events">hendelser</string>
     <string name="done_task">Hjem</string>
     <string name="app_info">App Info</string>
     <string name="log_out">Logg ut</string>
     <string name="block_session">Blokker sesjon</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minutt</string>
     <string name="fifteen_minute">15 minutt</string>
@@ -240,17 +229,14 @@
     <string name="add_note">Legg til notat</string>
     <string name="revert">Reverser</string>
     <string name="activated">Aktivert</string>
-    <string name="enroll_in">Registrer i %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriske felter mangler</string>
     <string name="missing_mandatory_fields_text">Noen obligatoriske felt mangler. Hvis du vil gå tilbake nå, all lagret informasjon vil bli slettet.</string>
     <string name="missing_mandatory_fields_text_not_delete">Noen obligatoriske felt mangler. Hvis du vil gå tilbake, vennligst fyll inn dem.</string>
     <string name="title_delete_go_back">Dine data er ikke lagret</string>
     <string name="delete_go_back">Hvis du går tilbake nå, vil all informasjon som har blitt lagt inn bli slettet.</string>
-    <string name="missing_mandatory_fields_events_2.0">Noen obligatoriske felt mangler:\n%s\nDu kan gå tilbake nå, men denne hendelsel vil ikke bli fullført.</string>
     <string name="missing_mandatory_fields_go_back">Slett og gå tilbake</string>
     <string name="error_fields">Noen felt har feil:\n%s\nVennligst, sjekk dem.</string>
     <string name="missing_mandatory_fields_finish">Noen obligatoriske felter mangler. Du kan fullføre dataregistrering og gå ut, men hendelsen kan ikke fullføres.</string>
-    <string name="enrollment_coordinates">Innmeldingskoordinater</string>
     <string name="tei_coordinates">Koordinater for</string>
 
     <!--EVENT SUMMARY-->
@@ -308,7 +294,6 @@
     <string name="qr_error_id">Ugyldig QR kode</string>
     <string name="qr_error_attr">Denne attributten kan ikke legges til</string>
     <string name="qr_error_enrollment">Denne registreringen kan ikke legges til</string>
-    <string name="qr_error_event">Denne hendelsen kan ikke legges til</string>
 
     <string name="jira_report">Rapporter et Jira problem</string>
     <string name="about">Om</string>
@@ -452,17 +437,14 @@
     <string name="finish">Fullfør</string>
     <string name="error_fields_title">Felt som inneholder feil</string>
     <string name="error_fields_events">Noen felter inneholder feil. De har ikke blitt lagret. Vennligt, sjekk dem.</string>
-    <string name="event_reopened">Denne hendelsen kan nå bli endret</string>
     <string name="unique_warning">Verdien skal være unik, et sammentreff ble funnet. Det har ikke blitt lagret. Vennligst sjekk det.</string>
     <string name="unique_coincidence_found">Et sammentreff i et unikt felt ble funnet. Vennligst sjekk skjema for å lagre registrering.</string>
     <string name="please_wait">Vennligst vent</string>
     <string name="skip">Hopp over</string>
     <string name="reschedule">Planlegg på nytt</string>
-    <string name="event_was_skipped">Denne hendelsen var merket som hoppet over.</string>
     <string name="no_intructions">Det er ingen informasjon for denne skjermen</string>
     <string name="event_overdue">Forfalt</string>
     <string name="unsupported_program_rule">Det er ingen programregel som ikke er støttet. Vennligst sjekk dokumentasjonen</string>
-    <string name="delete_event_error">Denne hendelsen har ikke blitt opprettet enda</string>
     <string name="empty_description">Ingen info for dette feltet</string>
     <string name="biometrics_dialog_title">Tomme opplysninger</string>
     <string name="biometrics_first_use_text">For å kunne logge inn ved bruk av fingerskanner må du først logge inn på standard måte</string>
@@ -513,10 +495,8 @@
     <string name="sync_setting">Synkroniseringsinnstillinger: %s</string>
     <string name="relationship_without_enrollment">Oppføringen du prøver å gå inn på har ingen registrering. Du kan ikke gå til dashbord.</string>
     <string name="formatting_error">Formateringsfeil</string>
-    <string name="dashboard_menu_delete_enrollment">Slett kun registrering</string>
     <string name="delete_authority_error">Du har ikke autoritet til å slette denne oppføringen</string>
     <string name="validation_url">Dette er ikke en gyldig URL</string>
-    <string name="uncomplete_authority_error">Du har ikke autoritet til å gjenåpne denne hendelsen</string>
     <string name="adjusting_form">Justerer fra...</string>
 
     <string name="sms_receiver_number">Mottakernummer</string>
@@ -608,7 +588,6 @@
     <string name="event_tei_limits_v2">Begrensede innstillinger : %s\nEvents: %s/%sTEI: %s/%s</string>
     <string name="enrollment_data_hide">Skjul registreringsdata</string>
     <string name="enrollment_data_show">Vis registreringsdata</string>
-    <string name="enrollment_data_section_label">Registreringsdata</string>
     <string name="sms_enabled">SMS modul er aktivert.</string>
     <string name="sms_disabled">SMS modul er deaktivert.</string>
     <string name="sms_downloading_data">Laster ned data for SMS modul. Vennligst vent</string>
@@ -618,7 +597,6 @@
     <string name="disable_pin_locked">Ikke vis igjen, lås skjerm</string>
     <string name="set_pin">Sett pin</string>
     <string name="conflict">Konflikt</string>
-    <string name="event_date_in_future_message">Denne hendelsen kan ikke ha en dato i fremtiden. Vennligst endre det.</string>
     <string name="change_event_date">Endre dato</string>
     <string name="go_back">Gå tilbake</string>
     <string name="data_sets">Datasett</string>
@@ -632,7 +610,6 @@
     <string name="interval_hour_ago">%dtimer siden</string>
     <string name="interval_yesterday">I går</string>
     <string name="enrollment_single_section_label">Attributter - %s</string>
-    <string name="program_selector">Programregistreringer</string>
     <string name="select_time">Velg klokkeslett</string>
     <string name="enter_letter">Skriv inn brev</string>
     <string name="enter_unit_interval">Angi nummer fra 0 til 1</string>
@@ -678,7 +655,6 @@
     <string name="complete_anyway">Fullfør likevel</string>
     <string name="fk_message">Mangler %s%sfra %s%s</string>
     <string name="filters_title_event_status">Hendelsesstatus</string>
-    <string name="filters_title_enrollment_status">Registreringsstatus</string>
     <string name="enrollment_date">Registreringsdato</string>
     <string name="dataset_empty_list_can_create">Det er ingen data. Klikk på \"+\" for å legge til en ny oppføring</string>
     <string name="dataset_emtpy_list_can_not_create">Det er ingen data. Du har ikke tillatelse til å legge til nye oppføringer.</string>
@@ -728,7 +704,6 @@
     <string name="navigation_analytics">Analyser</string>
     <string name="navigation_tasks">Oppgaver</string>
     <string name="navigation_programs">Programmer</string>
-    <string name="navigation_events">Hendelser</string>
     <string name="navigation_relationships">Relasjoner</string>
     <string name="navigation_notes">Notater</string>
     <string name="navigation_data_entry">Dataregistrering</string>

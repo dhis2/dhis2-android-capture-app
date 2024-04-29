@@ -80,6 +80,7 @@
                     android:text='@{""+totalFilters}'
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
+                    tools:ignore="SmallSp"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -160,8 +161,8 @@
                 android:id="@+id/filterRecyclerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingBottom="50dp"
                 android:clipToPadding="false"
+                android:paddingBottom="50dp"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@id/maxHeightFilterGuide"
@@ -175,12 +176,13 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/clearFilters"
+                style="?attr/floatingActionButtonSmallStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/clear_filters"
                 android:onClick="@{()->presenter.clearFilterClick()}"
-                style="?attr/floatingActionButtonSmallStyle"
                 app:backgroundTint="@color/white"
                 app:elevation="4dp"
                 app:fabSize="mini"
@@ -190,20 +192,14 @@
                 app:tint="?colorPrimary" />
 
             <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/minAttributeMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
-
-            <FrameLayout
-                android:id="@+id/formViewContainer"
+                android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/minAttributeMessage"
+                app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
                 tools:visibility="visible" />
 
             <FrameLayout
@@ -224,36 +220,6 @@
                 app:initialPage="@{navigationInitialPage}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:menu="@menu/navigation_search_menu" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/clearFilterSearchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:onClick="@{()->presenter.clearFilterClick()}"
-                style="?attr/floatingActionButtonSmallStyle"
-                app:backgroundTint="@color/white"
-                app:elevation="4dp"
-                app:fabSize="mini"
-                app:layout_constraintBottom_toTopOf="@id/searchButton"
-                app:layout_constraintEnd_toEndOf="@id/searchButton"
-                app:layout_constraintStart_toStartOf="@id/searchButton"
-                app:srcCompat="@drawable/ic_refresh"
-                app:tint="?colorPrimary" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/searchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:src="@drawable/ic_search"
-                app:backgroundTint="@color/white"
-                app:elevation="4dp"
-                app:fabSize="normal"
-                app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>

@@ -23,7 +23,7 @@ class GraphCoordinatesToEntry {
 
             Entry(
                 position,
-                graphPoint.fieldValue,
+                graphPoint.numericValue(),
                 serieLabel,
             )
         }
@@ -33,7 +33,7 @@ class GraphCoordinatesToEntry {
         return coordinates.map { graphPoint ->
             Entry(
                 graphPoint.position ?: 0f,
-                graphPoint.fieldValue,
+                graphPoint.numericValue(),
             )
         }
     }

@@ -43,7 +43,6 @@
     <string name="enter_long_text">أدخل نصًا طويلاً</string>
     <string name="enter_text">أدخل نصًا</string>
     <string name="due_date">تاريخ الاستحقاق</string>
-    <string name="event_date">تاريخ الحدث</string>
     <string name="mandatory_field">حقل الزامي</string>
     <string name="form_latitude_prefix">خط العرض:</string>
     <string name="form_longitude_prefix">خط الطول:</string>
@@ -82,12 +81,8 @@
     <string name="error_true_only_one_is_not_true">حرف غير صالح 1</string>
     <string name="data_values_save_error">لا يمكن حفظ DataValues باستخدام هذه المدخلات. استخدم المدخل الآخر.</string>
     <string name="leading_zero_error">غير مسموح بأرقام الصفر في البداية</string>
-    <string name="enrollment_data_section_label">بيانات التسجيل</string>
     <string name="enrollment_single_section_label">السمات - %s</string>
-    <string name="enrolling_ou">الوحدة التنظيمية المسجلة</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
-    <string name="enrollment_coordinates">إحداثيات التسجيل</string>
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>
-    <string name="enrollmment_date">تاريخ التسجيل</string>
     <string name="incident_date">تاريخ الحدوث</string>
     </resources>

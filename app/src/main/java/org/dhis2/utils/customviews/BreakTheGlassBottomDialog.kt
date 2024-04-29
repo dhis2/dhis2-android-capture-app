@@ -13,11 +13,22 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
+import javax.inject.Inject
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
+    private lateinit var programUid: String
+
+    @Inject
+    lateinit var resourceManager: ResourceManager
+
     val colorUtils: ColorUtils = ColorUtils()
+
+    fun setProgram(programUid: String) = apply {
+        this.programUid = programUid
+    }
 
     fun setPositiveButton(onClick: ((String) -> Unit)? = null) = apply {
         this.positiveOnclick = onClick
@@ -37,6 +48,16 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View? {
         return BreakTheGlassBottomDialogBindingImpl.inflate(inflater, container, false).apply {
+            message.text = resourceManager.formatWithEnrollmentLabel(
+                programUid,
+                R.string.break_glass_dialog_description_V2,
+                1,
+            )
+            label.text = resourceManager.formatWithEnrollmentLabel(
+                programUid,
+                R.string.break_glass_reason_V2,
+                1,
+            )
             positive.apply {
                 setOnClickListener {
                     positiveOnclick?.invoke(inputEditText.text.toString())

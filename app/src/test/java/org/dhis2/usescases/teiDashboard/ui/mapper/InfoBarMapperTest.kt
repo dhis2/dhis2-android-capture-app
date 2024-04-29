@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -33,8 +33,19 @@ class InfoBarMapperTest {
         whenever(resourceManager.getString(R.string.sync_warning)) doReturn "Sync warning"
         whenever(resourceManager.getString(R.string.sync_error)) doReturn "Sync Error"
         whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow up"
-        whenever(resourceManager.getString(R.string.enrollment_completed)) doReturn "Enrollment completed"
-        whenever(resourceManager.getString(R.string.enrollment_cancelled)) doReturn "Enrollment cancelled"
+        setPrograms().forEach {
+            whenever(
+                resourceManager.formatWithEnrollmentLabel(
+                    it.first.uid(), R.string.enrollment_completed_V2, 1,
+                ),
+            ) doReturn "Enrollment completed"
+            whenever(
+                resourceManager.formatWithEnrollmentLabel(
+                    it.first.uid(), R.string.enrollment_cancelled_V2, 1,
+                ),
+            ) doReturn "Enrollment cancelled"
+        }
+
         whenever(resourceManager.getString(R.string.sync)) doReturn "Sync"
         whenever(resourceManager.getString(R.string.sync_retry)) doReturn "Retry sync"
         whenever(resourceManager.getString(R.string.remove)) doReturn "remove"
@@ -88,25 +99,24 @@ class InfoBarMapperTest {
         state: State,
         status: EnrollmentStatus,
         followup: Boolean = false,
-    ): DashboardProgramModel {
+    ): DashboardEnrollmentModel {
         val attributeValues = listOf(
-            Pair.create(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair.create(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
         )
 
-        val model = DashboardProgramModel(
-            setTei(state),
+        val model = DashboardEnrollmentModel(
             setEnrollment(state, status, followup),
             emptyList<ProgramStage>(),
             emptyList<Event>(),
+            setTei(state),
             attributeValues,
             emptyList<TrackedEntityAttributeValue>(),
-            emptyList<OrganisationUnit>(),
             setPrograms(),
+            emptyList<OrganisationUnit>(),
+            null,
+            null,
         )
-
-        model.enrollmentState = state
-        model.currentEnrollmentStatus = status
 
         return model
     }
@@ -141,14 +151,20 @@ class InfoBarMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<Program>(
-        Program.builder()
-            .uid("Program1Uid")
-            .displayName("Program 1")
-            .build(),
-        Program.builder()
-            .uid("Program2Uid")
-            .displayName("Program 2")
-            .build(),
+    private fun setPrograms() = listOf<kotlin.Pair<Program, MetadataIconData>>(
+        Pair(
+            Program.builder()
+                .uid("Program1Uid")
+                .displayName("Program 1")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
+        Pair(
+            Program.builder()
+                .uid("Program2Uid")
+                .displayName("Program 2")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
     )
 }

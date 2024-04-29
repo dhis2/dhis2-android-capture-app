@@ -48,7 +48,6 @@ import dispatch.core.DispatcherProvider;
         ValidatorModule.class,
         CrashReportModule.class,
         LocationModule.class,
-        FilterModule.class,
         DispatcherModule.class,
         FeatureConfigModule.class,
         NetworkUtilsModule.class,

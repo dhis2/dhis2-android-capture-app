@@ -40,7 +40,6 @@
     <string name="enter_long_text">Legg inn lang tekst</string>
     <string name="enter_text">Legg inn tekst</string>
     <string name="due_date">Forfallsdato</string>
-    <string name="event_date">Hendelsesdato</string>
     <string name="complete">Fullfør</string>
     <string name="discard_changes">Forkast endringer</string>
     <string name="saved">Lagret!</string>
@@ -50,12 +49,8 @@
     <string name="copied_text">Kopiert</string>
     <string name="empty_description">Ingen info for dette feltet</string>
     <string name="warning_error_on_complete_title">Sjekk dette!</string>
-    <string name="enrollment_data_section_label">Registreringsdata</string>
     <string name="enrollment_single_section_label">Attributter - %s</string>
-    <string name="enrolling_ou">Registrerer OU:</string>
     <string name="tei_coordinates">Koordinater for</string>
-    <string name="enrollment_coordinates">Innmeldingskoordinater</string>
     <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
-    <string name="enrollmment_date">Registreringsdato</string>
     <string name="incident_date">Forekomstdato</string>
     </resources>

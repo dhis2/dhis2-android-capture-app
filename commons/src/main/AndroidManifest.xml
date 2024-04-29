@@ -16,6 +16,9 @@
             android:name="org.dhis2.commons.featureconfig.ui.FeatureConfigView"
             android:exported="false"/>
 
+        <activity android:name="org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

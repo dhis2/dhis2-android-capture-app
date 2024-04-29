@@ -1,7 +1,8 @@
 package org.dhis2.usescases.teidashboard
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
@@ -16,7 +17,10 @@ import org.junit.runner.RunWith
 class TeiDashboardTestNoComposable : BaseTest() {
 
     @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val ruleSearch = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
     @Ignore
     @Test
@@ -30,11 +34,11 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             goToRelationships()
         }
 
@@ -45,7 +49,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             waitToDebounce(500)
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(relationshipName, 0)
             typeAttributeAtPosition(relationshipLastName, 1)
@@ -69,7 +73,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
@@ -78,12 +82,12 @@ class TeiDashboardTestNoComposable : BaseTest() {
             //scrollToTEIandClick()
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             checkTEIsDelete(teiName, teiLastName)
         }
     }
@@ -98,7 +102,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
             typeAttributeAtPosition(teiName, firstNamePosition)
             typeAttributeAtPosition(teiLastName, lastNamePosition)
@@ -107,12 +111,12 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnTEI(teiName, teiLastName)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteEnrollment()
         }
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             checkTEIsDelete(teiName, teiLastName)
         }
     }

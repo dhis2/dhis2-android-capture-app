@@ -1,6 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
 
+import static org.dhis2.commons.Constants.EVENT_MODE;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.NonEditableReasonBlockKt.showNonEditableReasonMessage;
 import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
 
 import android.content.Context;
@@ -20,6 +22,7 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
+import org.dhis2.form.model.EventMode;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction;
@@ -45,11 +48,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private SectionSelectorFragmentBinding binding;
     private FormView formView;
 
-    public static EventCaptureFormFragment newInstance(String eventUid, Boolean openErrorSection) {
+    public static EventCaptureFormFragment newInstance(
+            String eventUid,
+            Boolean openErrorSection,
+            EventMode eventMode
+    ) {
         EventCaptureFormFragment fragment = new EventCaptureFormFragment();
         Bundle args = new Bundle();
         args.putString(Constants.EVENT_UID, eventUid);
         args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection);
+        args.putString(EVENT_MODE, eventMode.name());
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,6 +76,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        String eventUid = getArguments().getString(Constants.EVENT_UID, "");
+        EventMode eventMode = EventMode.valueOf(getArguments().getString(EVENT_MODE));
         formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {
@@ -87,11 +97,11 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     return Unit.INSTANCE;
                 })
                 .onDataIntegrityResult(result -> {
-                    presenter.handleDataIntegrityResult(result);
+                    presenter.handleDataIntegrityResult(result, eventMode);
                     return Unit.INSTANCE;
                 })
                 .factory(activity.getSupportFragmentManager())
-                .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
+                .setRecords(new EventRecords(eventUid, eventMode))
                 .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
                 .useComposeForm(
                         featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS)
@@ -176,5 +186,23 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void onReopen() {
         formView.reload();
+    }
+
+    @Override
+    public void showNonEditableMessage(@NonNull String reason, boolean canBeReOpened) {
+        showNonEditableReasonMessage(
+                binding.editableReasonContainer,
+                reason,
+                canBeReOpened,
+                () -> {
+                    presenter.reOpenEvent();
+                    return Unit.INSTANCE;
+                }
+        );
+    }
+
+    @Override
+    public void hideNonEditableMessage() {
+        binding.editableReasonContainer.removeAllViews();
     }
 }

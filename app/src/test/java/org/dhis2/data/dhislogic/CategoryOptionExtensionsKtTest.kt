@@ -1,5 +1,7 @@
 package org.dhis2.data.dhislogic
 
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess

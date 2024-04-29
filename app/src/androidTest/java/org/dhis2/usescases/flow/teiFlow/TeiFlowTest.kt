@@ -5,11 +5,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +18,7 @@ import java.util.Date
 
 
 @RunWith(AndroidJUnit4::class)
-class TeiFlowTest: BaseTest() {
+class TeiFlowTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
@@ -34,9 +34,8 @@ class TeiFlowTest: BaseTest() {
     private val currentDate = getCurrentDate()
 
     @Test
-    fun shouldEnrollToSameProgramAfterClosedIt() {
+    fun shouldEnrollToSameProgramAfterClosingIt() {
         val totalEventsPerEnrollment = 3
-        val pastProgramPosition = 4
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
@@ -44,12 +43,12 @@ class TeiFlowTest: BaseTest() {
         setDatePicker()
         prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        teiFlowRobot {
+        teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            closeEnrollmentAndCheckEvents(totalEventsPerEnrollment)
-            enrollToProgram(composeTestRule, ADULT_WOMAN_PROGRAM)
+            closeEnrollmentAndCheckEvents()
+            enrollToProgram(ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment, pastProgramPosition)
+            checkPastEventsAreClosed(totalEventsPerEnrollment)
         }
     }
 
@@ -80,7 +79,7 @@ class TeiFlowTest: BaseTest() {
         30
     )
 
-    private fun getCurrentDate() :String {
+    private fun getCurrentDate(): String {
         val sdf = SimpleDateFormat(DATE_FORMAT)
         val dateFormat = sdf.format(Date())
         return dateFormat.removePrefix("0")
@@ -105,5 +104,7 @@ class TeiFlowTest: BaseTest() {
         const val LASTNAME = "Stuart"
 
         const val DATE_FORMAT = "dd/M/yyyy"
+        const val DATE_PICKER_FORMAT = ", d MMMM"
+
     }
 }

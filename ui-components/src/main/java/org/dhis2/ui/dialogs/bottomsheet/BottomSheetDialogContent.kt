@@ -272,7 +272,7 @@ fun DialogPreview2() {
             title = "Saved",
             message = "Do you want to mark this form as complete?",
             iconResource = R.drawable.ic_saved_check,
-            mainButton = DialogButtonStyle.CompleteButton(),
+            mainButton = DialogButtonStyle.CompleteButton,
             secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now),
         ),
         onMainButtonClicked = {},

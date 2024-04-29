@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -48,29 +48,28 @@ class TEIDetailMapperTest {
         )
 
         assertEquals(result.title, model.teiHeader)
-        assertEquals(result.additionalInfo[0].value, model.attributes[0]?.val1()?.value())
-        assertEquals(result.additionalInfo[1].value, model.attributes[1]?.val1()?.value())
+        assertEquals(result.additionalInfo[0].value, model.trackedEntityAttributes[0].second.value())
+        assertEquals(result.additionalInfo[1].value, model.trackedEntityAttributes[1].second.value())
     }
 
-    private fun createFakeModel(): DashboardProgramModel {
+    private fun createFakeModel(): DashboardEnrollmentModel {
         val attributeValues = listOf(
-            Pair.create(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair.create(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
         )
 
-        val model = DashboardProgramModel(
-            setTei(),
+        val model = DashboardEnrollmentModel(
             setEnrollment(),
             emptyList<ProgramStage>(),
             emptyList<Event>(),
+            setTei(),
             attributeValues,
             emptyList<TrackedEntityAttributeValue>(),
-            emptyList<OrganisationUnit>(),
             setPrograms(),
+            emptyList<OrganisationUnit>(),
+            "header",
+            "avatarFilepath",
         )
-
-        model.teiHeader = "header"
-        model.avatarPath = "avatarFilepath"
 
         return model
     }
@@ -98,14 +97,20 @@ class TEIDetailMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<Program>(
-        Program.builder()
-            .uid("Program1Uid")
-            .displayName("Program 1")
-            .build(),
-        Program.builder()
-            .uid("Program2Uid")
-            .displayName("Program 2")
-            .build(),
+    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
+        Pair(
+            Program.builder()
+                .uid("Program1Uid")
+                .displayName("Program 1")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
+        Pair(
+            Program.builder()
+                .uid("Program2Uid")
+                .displayName("Program 2")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
     )
 }

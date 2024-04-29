@@ -10,7 +10,7 @@ fun Context.buildInfo(): String {
     return if (BuildConfig.BUILD_TYPE == "release") {
         "v${BuildConfig.VERSION_NAME}"
     } else {
-        "v${BuildConfig.VERSION_NAME} : ${BuildConfig.BUILD_DATE} : ${BuildConfig.GIT_SHA} "
+        "v${BuildConfig.VERSION_NAME} : ${BuildConfig.GIT_SHA} "
     }
 }
 

@@ -20,7 +20,7 @@ import org.dhis2.R
 import org.dhis2.bindings.hasFollowUp
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.date.toOverdueUiText
+import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.hisp.dhis.android.core.common.State
@@ -118,15 +118,24 @@ class TEICardMapper(
         attributeList.removeIf { it.value.isEmpty() || it.value == "-" }
 
         return attributeList.also { list ->
-            checkEnrolledIn(
-                list = list,
-                enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
-            )
+            if (searchTEIModel.displayOrgUnit) {
+                checkEnrolledIn(
+                    list = list,
+                    enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
+                )
+            }
+
             checkEnrolledPrograms(
                 list = list,
                 enrolledPrograms = searchTEIModel.programInfo,
             )
+            val programUid: String? = if (searchTEIModel.selectedEnrollment != null) {
+                searchTEIModel.selectedEnrollment.program().toString()
+            } else {
+                null
+            }
             checkEnrollmentStatus(
+                programUid = programUid,
                 list = list,
                 status = searchTEIModel.selectedEnrollment?.status(),
             )
@@ -172,35 +181,46 @@ class TEICardMapper(
     }
 
     private fun checkEnrollmentStatus(
+        programUid: String?,
         list: MutableList<AdditionalInfoItem>,
         status: EnrollmentStatus?,
     ) {
         val item = when (status) {
             EnrollmentStatus.COMPLETED -> {
+                val label = resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_completed_V2,
+                    1,
+                )
                 AdditionalInfoItem(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Check,
-                            contentDescription = resourceManager.getString(R.string.enrollment_completed),
+                            contentDescription = label,
                             tint = AdditionalInfoItemColor.SUCCESS.color,
                         )
                     },
-                    value = resourceManager.getString(R.string.enrollment_completed),
+                    value = label,
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.SUCCESS.color,
                 )
             }
 
             EnrollmentStatus.CANCELLED -> {
+                val label = resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_cancelled_V2,
+                    1,
+                )
                 AdditionalInfoItem(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Close,
-                            contentDescription = resourceManager.getString(R.string.enrollment_cancelled),
+                            contentDescription = label,
                             tint = AdditionalInfoItemColor.DISABLED.color,
                         )
                     },
-                    value = resourceManager.getString(R.string.enrollment_cancelled),
+                    value = label,
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.DISABLED.color,
                 )
@@ -282,7 +302,7 @@ class TEICardMapper(
         overdueDate: Date?,
     ) {
         if (hasOverdue) {
-            val text = overdueDate.toOverdueUiText(resourceManager)
+            val text = overdueDate.toOverdueOrScheduledUiText(resourceManager)
             list.add(
                 AdditionalInfoItem(
                     icon = {

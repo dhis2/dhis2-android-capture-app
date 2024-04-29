@@ -2,97 +2,92 @@ package org.dhis2.form.data
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
-import org.hisp.dhis.android.core.D2
+import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
+import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.imports.ImportStatus
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import timber.log.Timber
+import java.util.Date
 
 class EnrollmentRepository(
     private val fieldFactory: FieldViewModelFactory,
-    private val enrollmentUid: String,
-    private val d2: D2,
+    private val conf: EnrollmentConfiguration,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-) : DataEntryBaseRepository(d2, fieldFactory) {
-
-    private val enrollmentRepository: EnrollmentObjectRepository =
-        d2.enrollmentModule().enrollments().uid(enrollmentUid)
-
-    private val program by lazy {
-        d2.programModule().programs().uid(enrollmentRepository.blockingGet()?.program()).get()
-    }
+) : DataEntryBaseRepository(conf, fieldFactory) {
 
     override val programUid by lazy {
-        program.blockingGet()?.uid()
-    }
-
-    private fun canBeEdited(): Boolean {
-        val selectedProgram = d2.programModule().programs().uid(
-            d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()?.program(),
-        ).blockingGet()
-        val programAccess = selectedProgram?.access()?.data()?.write() == true
-        val teTypeAccess = d2.trackedEntityModule().trackedEntityTypes().uid(
-            selectedProgram?.trackedEntityType()?.uid(),
-        ).blockingGet()?.access()?.data()?.write() == true
-        return programAccess && teTypeAccess
+        conf.program()?.uid()
     }
 
     private val programSections by lazy {
-        d2.programModule().programSections().withAttributes()
-            .byProgramUid().eq(enrollmentRepository.blockingGet()?.program())
-            .blockingGet()
+        conf.sections()
+    }
+
+    private fun canBeEdited(): Boolean {
+        val selectedProgram = conf.program()
+        val programAccess = selectedProgram?.access()?.data()?.write() == true
+        val teTypeAccess = conf.trackedEntityType()?.access()?.data()?.write() == true
+        return programAccess && teTypeAccess
+    }
+    override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
+        return when (uid) {
+            ORG_UNIT_UID -> {
+                getEnrollmentData()
+            }
+            else -> {
+                emptyList()
+            }
+        }
     }
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)
-        sectionUids.addAll(programSections.map { it.uid() })
+        if (programSections.isEmpty()) {
+            sectionUids.add(SINGLE_SECTION_UID)
+        } else {
+            sectionUids.addAll(programSections.map { it.uid() })
+        }
         return Flowable.just(sectionUids)
     }
 
     override fun list(): Flowable<List<FieldUiModel>> {
-        return program
-            .flatMap { program ->
-                d2.programModule().programSections().byProgramUid().eq(program.uid())
-                    .withAttributes().get()
-                    .flatMap { programSections ->
-                        if (programSections.isEmpty()) {
-                            getFieldsForSingleSection()
-                                .map { singleSectionList ->
-                                    val list = getSingleSectionList()
-                                    list.addAll(singleSectionList)
-                                    list
-                                }
-                        } else {
-                            getFieldsForMultipleSections()
+        return Single.just(conf.sections())
+            .flatMap { programSections ->
+                if (programSections.isEmpty()) {
+                    getFieldsForSingleSection()
+                        .map { singleSectionList ->
+                            val list = getSingleSectionList()
+                            list.addAll(singleSectionList)
+                            list
                         }
-                    }.map { list ->
-                        val fields = getEnrollmentData(program)
-                        fields.addAll(list)
-                        fields.add(fieldFactory.createClosingSection())
-                        fields.toList()
-                    }
-            }.toFlowable()
+                } else {
+                    getFieldsForMultipleSections()
+                }
+            }.map { list ->
+                val fields = getEnrollmentData()
+                fields.addAll(list)
+                fields.add(fieldFactory.createClosingSection())
+                fields.toList()
+            }
+            .toFlowable()
     }
 
     override fun isEvent(): Boolean {
@@ -100,11 +95,7 @@ class EnrollmentRepository(
     }
 
     private fun getSingleSectionList(): MutableList<FieldUiModel> {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(enrollmentRepository.blockingGet()?.trackedEntityInstance())
-            .blockingGet()
-        val teiType = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(tei?.trackedEntityType()).blockingGet()
+        val teiType = conf.trackedEntityType()
         return mutableListOf(
             fieldFactory.createSingleSection(
                 String.format(
@@ -117,13 +108,7 @@ class EnrollmentRepository(
 
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {
         return Single.fromCallable {
-            val programAttributes =
-                d2.programModule().programTrackedEntityAttributes().withRenderType()
-                    .byProgram().eq(program.blockingGet()?.uid())
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                    .blockingGet()
-
-            programAttributes.map { programTrackedEntityAttribute ->
+            conf.programAttributes().map { programTrackedEntityAttribute ->
                 transform(programTrackedEntityAttribute)
             }
         }
@@ -137,12 +122,9 @@ class EnrollmentRepository(
                     transformSection(section.uid(), section.displayName(), section.description()),
                 )
                 section.attributes()?.forEachIndexed { _, attribute ->
-                    d2.programModule().programTrackedEntityAttributes().withRenderType()
-                        .byProgram().eq(program.blockingGet()?.uid())
-                        .byTrackedEntityAttribute().eq(attribute.uid())
-                        .one().blockingGet()?.let { programTrackedEntityAttribute ->
-                            fields.add(transform(programTrackedEntityAttribute, section.uid()))
-                        }
+                    conf.programAttribute(attribute.uid())?.let { programTrackedEntityAttribute ->
+                        fields.add(transform(programTrackedEntityAttribute, section.uid()))
+                    }
                 }
             }
             return@fromCallable fields
@@ -153,35 +135,28 @@ class EnrollmentRepository(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute,
         sectionUid: String? = SINGLE_SECTION_UID,
     ): FieldUiModel {
-        val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-            .uid(programTrackedEntityAttribute.trackedEntityAttribute()!!.uid())
-            .blockingGet()
-        val attrValueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .value(
-                attribute!!.uid(),
-                enrollmentRepository.blockingGet()!!.trackedEntityInstance()!!,
-            )
+        val attribute = programTrackedEntityAttribute.trackedEntityAttribute()?.uid()?.let {
+            conf.trackedEntityAttribute(it)
+        } ?: throw IllegalStateException(
+            "Attribute %s does not exist".format(
+                programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
+            ),
+        )
 
         val valueType = attribute.valueType()
-        var mandatory = programTrackedEntityAttribute.mandatory()!!
+        var mandatory = programTrackedEntityAttribute.mandatory() ?: false
         val optionSet = attribute.optionSet()?.uid()
-        val generated = attribute.generated()!!
+        val generated = attribute.generated() ?: false
 
-        val orgUnitUid = enrollmentRepository.blockingGet()!!.organisationUnit()
+        val orgUnitUid = conf.enrollment()
+            ?.organisationUnit()
 
-        var dataValue: String? = getAttributeValue(attrValueRepository)
+        var dataValue: String? = attribute.uid()
+            ?.let { conf.attributeValue(it) }
 
         var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {
-            val optionCount =
-                d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount()
-            optionSetConfig = OptionSetConfiguration.config(
-                optionCount,
-            ) {
-                d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                    .blockingGet()
-            }
+            optionSetConfig = conf.optionSetConfig(optionSet)
         }
 
         var (error, warning) = getConflictErrorsAndWarnings(attribute.uid(), dataValue)
@@ -192,14 +167,14 @@ class EnrollmentRepository(
             dataValue = result.first
             warning = result.second
             if (!dataValue.isNullOrEmpty()) {
-                attrValueRepository.blockingSet(dataValue)
+                conf.setValue(attribute.uid(), dataValue)
             }
         }
 
         if ((valueType == ValueType.ORGANISATION_UNIT || valueType?.isDate == true) &&
             !dataValue.isNullOrEmpty()
         ) {
-            dataValue = attrValueRepository.blockingGet()?.value()
+            dataValue = conf.getValue(attribute.uid())?.value()
         }
 
         var programSection: ProgramSection? = null
@@ -249,9 +224,7 @@ class EnrollmentRepository(
         var error: String? = null
         var warning: String? = null
 
-        val conflicts = d2.importModule().trackerImportConflicts()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .blockingGet()
+        val conflicts = conf.conflicts()
 
         val conflict = conflicts
             .find { it.trackedEntityAttribute() == attributeUid }
@@ -259,7 +232,9 @@ class EnrollmentRepository(
         when (conflict?.status()) {
             ImportStatus.WARNING -> warning = getError(conflict, dataValue)
             ImportStatus.ERROR -> error = getError(conflict, dataValue)
-            else -> {}
+            else -> {
+                // no-op
+            }
         }
 
         return Pair(error, warning)
@@ -270,14 +245,6 @@ class EnrollmentRepository(
     private fun getSectionRenderingType(programSection: ProgramSection?) =
         programSection?.renderType()?.mobile()?.type()
 
-    private fun getAttributeValue(
-        attrValueRepository: TrackedEntityAttributeValueObjectRepository,
-    ) = if (attrValueRepository.blockingExists()) {
-        attrValueRepository.blockingGet()?.userFriendlyValue(d2)
-    } else {
-        null
-    }
-
     private fun handleAutogeneratedValue(
         attr: TrackedEntityAttribute,
         orgUnitUid: String,
@@ -285,12 +252,11 @@ class EnrollmentRepository(
         var warning: String? = null
         var dataValue: String? = null
         try {
-            val teiUid = enrollmentRepository.blockingGet()!!.trackedEntityInstance()
+            val teiUid = conf.tei()
 
             if (teiUid != null) {
                 try {
-                    dataValue = d2.trackedEntityModule().reservedValueManager()
-                        .blockingGetValue(attr.uid(), orgUnitUid)
+                    dataValue = conf.fetchAutogeneratedValue(attr.uid(), orgUnitUid)
                 } catch (e: Exception) {
                     dataValue = null
                     warning = enrollmentFormLabelsProvider.provideReservedValueWarning()
@@ -298,8 +264,7 @@ class EnrollmentRepository(
 
                 if (attr.valueType() == ValueType.NUMBER) {
                     while (dataValue!!.startsWith("0")) {
-                        dataValue = d2.trackedEntityModule().reservedValueManager()
-                            .blockingGetValue(attr.uid(), orgUnitUid)
+                        dataValue = conf.fetchAutogeneratedValue(attr.uid(), orgUnitUid)
                     }
                 }
             }
@@ -311,47 +276,43 @@ class EnrollmentRepository(
         return Pair(dataValue, warning)
     }
 
-    private fun getEnrollmentData(program: Program): MutableList<FieldUiModel> {
+    private fun getEnrollmentData(): MutableList<FieldUiModel> {
         val enrollmentDataList = ArrayList<FieldUiModel>()
-        enrollmentDataList.add(getEnrollmentDataSection(program.description()))
+        enrollmentDataList.add(getEnrollmentDataSection(conf.program()?.displayName(), conf.program()?.description()))
 
         enrollmentDataList.add(
             getEnrollmentDateField(
-                program.enrollmentDateLabel()
-                    ?: enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(),
-                program.selectEnrollmentDatesInFuture(),
+                conf.program()?.enrollmentDateLabel()
+                    ?: enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(programUid!!),
+                conf.program()?.selectEnrollmentDatesInFuture(),
             ),
         )
-        if (program.displayIncidentDate()!!) {
+        if (conf.program()?.displayIncidentDate()!!) {
             enrollmentDataList.add(
                 getIncidentDateField(
-                    program.incidentDateLabel()
+                    conf.program()?.incidentDateLabel()
                         ?: enrollmentFormLabelsProvider.provideIncidentDateDefaultLabel(),
-                    program.selectIncidentDatesInFuture(),
+                    conf.program()?.selectIncidentDatesInFuture(),
                 ),
             )
         }
-        val programUids =
-            enrollmentRepository.blockingGet()?.program()?.let { listOf(it) } ?: emptyList()
-        val orgUnits = d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .byProgramUids(programUids).blockingCount()
+
+        val orgUnits = conf.captureOrgUnitsCount()
         enrollmentDataList.add(
             getOrgUnitField(enrollmentMode == EnrollmentMode.NEW && orgUnits > 1),
         )
 
-        val teiType =
-            d2.trackedEntityModule().trackedEntityTypes()
-                .uid(program.trackedEntityType()!!.uid())
-                .blockingGet()
+        val teiType = conf.trackedEntityType()
         if (teiType!!.featureType() != null && teiType.featureType() != FeatureType.NONE) {
             enrollmentDataList.add(getTeiCoordinatesField(teiType.featureType()))
         }
 
-        if (program.featureType() != null && program.featureType() != FeatureType.NONE) {
+        if (conf.program()?.featureType() != null && conf.program()
+                ?.featureType() != FeatureType.NONE
+        ) {
             enrollmentDataList.add(
                 getEnrollmentCoordinatesField(
-                    program.featureType(),
+                    conf.program()?.featureType(),
                 ),
             )
         }
@@ -359,12 +320,42 @@ class EnrollmentRepository(
         return enrollmentDataList
     }
 
-    private fun getEnrollmentDataSection(description: String?): FieldUiModel {
+    private fun getAllowedDatesForEnrollmentDate(): SelectableDates {
+        val selectedOrgUnit = conf.enrollment()?.organisationUnit()?.let { conf.orgUnit(it) }
+        var minDate: Date? = null
+        var maxDate: Date? = null
+        val sdf = DateUtils.uiLibraryFormat()
+
+        val selectedProgram = conf.program()
+        if (selectedOrgUnit?.openingDate() != null) minDate = selectedOrgUnit.openingDate()
+        when {
+            (selectedOrgUnit?.closedDate() == null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = Date(System.currentTimeMillis())
+            }
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
+                    selectedOrgUnit.closedDate()
+                } else {
+                    Date(System.currentTimeMillis())
+                }
+            }
+
+            (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.TRUE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
+                maxDate = selectedOrgUnit.closedDate()
+            }
+        }
+
+        val maxDateString = if (maxDate != null) sdf.format(maxDate) else DEFAULT_MAX_DATE
+        val minDateString = if (minDate != null) sdf.format(minDate) else DEFAULT_MIN_DATE
+        return SelectableDates(minDateString, maxDateString)
+    }
+
+    private fun getEnrollmentDataSection(displayName: String?, description: String?): FieldUiModel {
         return fieldFactory.createSection(
             ENROLLMENT_DATA_SECTION_UID,
-            enrollmentFormLabelsProvider.provideEnrollmentDataSectionLabel(),
+            displayName,
             description,
-            false,
+            true,
             0,
             0,
             SectionRenderingType.LISTING.name,
@@ -379,9 +370,9 @@ class EnrollmentRepository(
             ENROLLMENT_DATE_UID,
             enrollmentDateLabel,
             ValueType.DATE,
-            true, // check in constructor of dateviewmodel
+            true, // check in constructor of dateViewModel
             null,
-            when (val date = enrollmentRepository.blockingGet()!!.enrollmentDate()) {
+            when (val date = conf.enrollment()?.enrollmentDate()) {
                 null -> null
                 else -> DateUtils.oldUiDateFormat().format(date)
             },
@@ -395,6 +386,7 @@ class EnrollmentRepository(
             null,
             null,
             null,
+            selectableDates = getAllowedDatesForEnrollmentDate(),
         )
     }
 
@@ -408,7 +400,7 @@ class EnrollmentRepository(
             ValueType.DATE,
             true,
             null,
-            when (val date = enrollmentRepository.blockingGet()!!.incidentDate()) {
+            when (val date = conf.enrollment()?.incidentDate()) {
                 null -> null
                 else -> DateUtils.oldUiDateFormat().format(date)
             },
@@ -432,7 +424,7 @@ class EnrollmentRepository(
             ValueType.ORGANISATION_UNIT,
             true,
             null,
-            enrollmentRepository.blockingGet()?.organisationUnit(),
+            conf.enrollment()?.organisationUnit(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
             editable,
@@ -448,12 +440,8 @@ class EnrollmentRepository(
     }
 
     private fun getTeiCoordinatesField(featureType: FeatureType?): FieldUiModel {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(
-                enrollmentRepository.blockingGet()!!.trackedEntityInstance(),
-            ).blockingGet()
-        val teiType = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(tei?.trackedEntityType()).blockingGet()
+        val tei = conf.tei()
+        val teiType = conf.trackedEntityType()
         val teiCoordinatesLabel = enrollmentFormLabelsProvider.provideTeiCoordinatesLabel()
         return fieldFactory.create(
             TEI_COORDINATES_UID,
@@ -461,7 +449,7 @@ class EnrollmentRepository(
             ValueType.COORDINATE,
             false,
             null,
-            if (tei!!.geometry() != null) tei.geometry()!!.coordinates() else null,
+            tei?.geometry()?.coordinates(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
             canBeEdited(),
@@ -478,15 +466,11 @@ class EnrollmentRepository(
     private fun getEnrollmentCoordinatesField(featureType: FeatureType?): FieldUiModel {
         return fieldFactory.create(
             ENROLLMENT_COORDINATES_UID,
-            enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(),
+            enrollmentFormLabelsProvider.provideEnrollmentCoordinatesLabel(programUid!!),
             ValueType.COORDINATE,
             false,
             null,
-            if (enrollmentRepository.blockingGet()!!.geometry() != null) {
-                enrollmentRepository.blockingGet()!!.geometry()!!.coordinates()
-            } else {
-                null
-            },
+            conf.enrollment()?.geometry()?.coordinates(),
             ENROLLMENT_DATA_SECTION_UID,
             null,
             canBeEdited(),
@@ -501,41 +485,47 @@ class EnrollmentRepository(
     }
 
     fun hasEventsGeneratedByEnrollmentDate(): Boolean {
-        val enrollment = enrollmentRepository.blockingGet() ?: return false
-
-        val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byOpenAfterEnrollment().isTrue
-            .byReportDateToUse().eq("enrollmentDate")
-            .blockingGetUids()
-        val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byAutoGenerateEvent().isTrue
-            .byGeneratedByEnrollmentDate().isTrue
-            .blockingGetUids()
-        return !d2.eventModule().events()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
-            .blockingIsEmpty()
+        return conf.hasEventsGeneratedByEnrollmentDate()
     }
 
     fun hasEventsGeneratedByIncidentDate(): Boolean {
-        val enrollment = enrollmentRepository.blockingGet() ?: return false
+        return conf.hasEventsGeneratedByIncidentDate()
+    }
 
-        val stagesWithReportDateToUse = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byOpenAfterEnrollment().isTrue
-            .byReportDateToUse().eq("incidentDate")
-            .blockingGetUids()
-        val stagesWithGeneratedBy = d2.programModule().programStages()
-            .byProgramUid().eq(enrollment.program())
-            .byAutoGenerateEvent().isTrue
-            .byGeneratedByEnrollmentDate().isFalse
-            .blockingGetUids()
-        return !d2.eventModule().events()
-            .byEnrollmentUid().eq(enrollmentUid)
-            .byProgramStageUid().`in`(stagesWithReportDateToUse.union(stagesWithGeneratedBy))
-            .blockingIsEmpty()
+    override fun firstSectionToOpen(): String? {
+        return if (enrollmentMode == EnrollmentMode.CHECK && isEnrollmentDataCompleted()) {
+            sectionUids().blockingFirst().filterIndexed { index, _ -> index != 0 }.firstOrNull()
+        } else {
+            super.firstSectionToOpen()
+        }
+    }
+
+    private fun isEnrollmentDataCompleted(): Boolean {
+        val program = conf.program()
+        val enrollment = conf.enrollment()
+
+        val hasEnrollmentDate = enrollment?.enrollmentDate() != null
+        if (!hasEnrollmentDate) return false
+
+        if (program?.displayIncidentDate() == true) {
+            val hasIncidentDate = enrollment?.incidentDate() != null
+            if (!hasIncidentDate) return false
+        }
+
+        val hasOrganisationUnit = enrollment?.organisationUnit() != null
+        if (!hasOrganisationUnit) return false
+
+        if (conf.trackedEntityType()?.featureType() != FeatureType.NONE) {
+            val hasTeiCoordinates = conf.tei()?.geometry() != null
+            if (!hasTeiCoordinates) return false
+        }
+
+        if (program?.featureType() != FeatureType.NONE) {
+            val hasEnrollmentCoordinates = enrollment?.geometry() != null
+            if (!hasEnrollmentCoordinates) return false
+        }
+
+        return true
     }
 
     companion object {

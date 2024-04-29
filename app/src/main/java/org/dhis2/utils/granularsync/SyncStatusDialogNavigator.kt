@@ -12,6 +12,7 @@ import org.dhis2.commons.bindings.stockDistribution
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -19,7 +20,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.utils.EventMode
 
 const val LAUNCH_SYNC_DIALOG = "LAUNCH_SYNC_DIALOG"
 const val OPEN_ERROR_LOCATION = "OPEN_ERROR_LOCATION"
@@ -146,7 +146,6 @@ class SyncStatusDialogNavigator(
                 context,
                 eventSyncItem.eventUid,
                 eventSyncItem.programUid,
-                eventSyncItem.hasNullDataElementConflict,
                 EventMode.CHECK,
             )
             intent.openErrorLocation()

@@ -446,6 +446,7 @@ fun ProgramRuleConfigurationProgram(
             },
     ) {
         MetadataIcon(metadataIconData = metadataIconData)
+
         Text(
             modifier = Modifier
                 .weight(weight = 1f)

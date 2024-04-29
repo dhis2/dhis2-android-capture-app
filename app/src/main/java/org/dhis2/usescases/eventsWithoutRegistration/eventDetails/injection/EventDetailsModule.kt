@@ -6,12 +6,12 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.metadata.FileResourceConfiguration
@@ -61,7 +61,7 @@ class EventDetailsModule(
     fun provideEventDetailResourceProvider(
         resourceManager: ResourceManager,
     ): EventDetailResourcesProvider {
-        return EventDetailResourcesProvider(resourceManager)
+        return EventDetailResourcesProvider(programUid, programStageUid, resourceManager)
     }
 
     @Provides
@@ -75,19 +75,19 @@ class EventDetailsModule(
     fun provideEventDetailsRepository(
         d2: D2,
         resourceManager: ResourceManager,
-        networkUtils: NetworkUtils,
         colorUtils: ColorUtils,
+        periodUtils: DhisPeriodUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
             programUid = programUid,
             eventUid = eventUid,
             programStageUid = programStageUid,
+            eventCreationType = eventCreationType,
             fieldFactory = FieldViewModelFactoryImpl(
-                false,
                 UiStyleProviderImpl(
-                    FormUiModelColorFactoryImpl(context, true, colorUtils),
-                    LongTextUiColorFactoryImpl(context, true, colorUtils),
+                    FormUiModelColorFactoryImpl(context, colorUtils),
+                    LongTextUiColorFactoryImpl(context, colorUtils),
                     true,
                 ),
                 LayoutProviderImpl(),
@@ -96,6 +96,7 @@ class EventDetailsModule(
                     OptionSetConfiguration(d2),
                     OrgUnitConfiguration(d2),
                     FileResourceConfiguration(d2),
+                    periodUtils,
                 ),
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
@@ -116,6 +117,7 @@ class EventDetailsModule(
         geometryController: GeometryController,
         locationProvider: LocationProvider,
         eventDetailResourcesProvider: EventDetailResourcesProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -123,6 +125,7 @@ class EventDetailsModule(
                 resourcesProvider = resourcesProvider,
                 creationType = eventCreationType,
                 enrollmentStatus = enrollmentStatus,
+                metadataIconProvider = metadataIconProvider,
             ),
             ConfigureEventReportDate(
                 creationType = eventCreationType,

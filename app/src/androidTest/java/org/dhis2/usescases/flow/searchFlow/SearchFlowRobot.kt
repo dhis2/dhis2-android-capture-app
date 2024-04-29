@@ -2,7 +2,6 @@ package org.dhis2.usescases.flow.searchFlow
 
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
 
 fun searchFlowRobot(searchFlowRobot: SearchFlowRobot.() -> Unit) {
     SearchFlowRobot().apply {

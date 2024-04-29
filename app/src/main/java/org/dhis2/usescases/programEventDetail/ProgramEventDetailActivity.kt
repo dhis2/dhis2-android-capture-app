@@ -11,14 +11,17 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -26,18 +29,18 @@ import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
 import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
@@ -99,6 +102,7 @@ class ProgramEventDetailActivity :
                     programEventsViewModel.showList()
                     return@setOnNavigationItemSelectedListener true
                 }
+
                 R.id.navigation_map_view -> {
                     networkUtils.performIfOnline(
                         this,
@@ -113,11 +117,13 @@ class ProgramEventDetailActivity :
                     )
                     return@setOnNavigationItemSelectedListener true
                 }
+
                 R.id.navigation_analytics -> {
                     presenter.trackEventProgramAnalytics()
                     programEventsViewModel.showAnalytics()
                     return@setOnNavigationItemSelectedListener true
                 }
+
                 else -> return@setOnNavigationItemSelectedListener false
             }
         }
@@ -128,6 +134,19 @@ class ProgramEventDetailActivity :
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialogProgram()
+        }
+
+        programEventsViewModel.viewModelScope.launch {
+            programEventsViewModel.shouldNavigateToEventDetails.collectLatest { eventUid ->
+                analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
+                val intent = EventCaptureActivity.intent(
+                    context = context,
+                    eventUid = eventUid,
+                    programUid = programUid,
+                    eventMode = EventMode.NEW,
+                )
+                startActivity(intent)
+            }
         }
     }
 
@@ -195,7 +214,16 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show("EVENT_SYNC")
+            })
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show("EVENT_SYNC")
     }
 
     public override fun onPause() {
@@ -289,28 +317,33 @@ class ProgramEventDetailActivity :
         initSet.applyTo(binding.backdropLayout)
     }
 
-    override fun startNewEvent() {
-        analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
-        binding.addEventButton.isEnabled = false
-        val bundle = EventInitialActivity.getBundle(
-            programUid,
-            null,
-            EventCreationType.ADDNEW.name,
-            null,
-            null,
-            null,
-            presenter.stageUid,
-            null,
-            0,
-            null,
-        )
-        startActivity(
-            EventInitialActivity::class.java,
-            bundle,
-            false,
-            false,
-            null,
-        )
+    override fun selectOrgUnitForNewEvent() {
+        enableAddEventButton(false)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .singleSelection()
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+            )
+            .onSelection { selectedOrgUnits ->
+                if (selectedOrgUnits.isNotEmpty()) {
+                    presenter.stageUid?.let {
+                        programEventsViewModel.onOrgUnitForNewEventSelected(
+                            programUid = programUid,
+                            orgUnitUid = selectedOrgUnits.first().uid(),
+                            programStageUid = it,
+                        )
+                    }
+                } else {
+                    enableAddEventButton(true)
+                }
+            }
+            .build()
+            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+    }
+
+    private fun enableAddEventButton(enable: Boolean) {
+        binding.addEventButton.isEnabled = enable
     }
 
     override fun setWritePermission(canWrite: Boolean) {
@@ -376,7 +409,16 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show(FRAGMENT_TAG)
+            })
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.rootView)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show(FRAGMENT_TAG)
     }
 
     private fun showList() {

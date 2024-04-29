@@ -2,8 +2,6 @@ package org.dhis2.usescases.searchTrackEntity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.SearchTeiModel;
@@ -15,6 +13,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
@@ -29,18 +29,13 @@ public interface SearchRepository {
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
 
-    @NonNull
-    LiveData<PagedList<SearchTeiModel>> searchTrackedEntities(SearchParametersModel searchParametersModel, boolean isOnline);
-
     void clearFetchedList();
 
     @NonNull
     Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 
-    SearchTeiModel getTrackedEntityInfo(String teiUid, Program selectedProgram, SortingItem sortingItem);
-
     @NonNull
-    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, Date enrollmentDate, @Nullable String fromRelationshipUid);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
@@ -52,22 +47,31 @@ public interface SearchRepository {
 
     List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
 
-    EventViewModel getEventInfo(String enrollmentUid);
-
     Observable<D2Progress> downloadTei(String teiUid);
 
     TeiDownloadResult download(String teiUid, @Nullable String enrollmentUid, String reason);
 
+    SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem);
+
+    TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel);
+
     void setCurrentProgram(@Nullable String currentProgram);
+
     boolean programStagesHaveCoordinates(String programUid);
+
     boolean teTypeAttributesHaveCoordinates(String typeId);
+
     boolean programAttributesHaveCoordinates(String programUid);
+
     boolean eventsHaveCoordinates(String programUid);
 
     List<AnalyticsDhisVisualizationsGroup> getProgramVisualizationGroups(String programUid);
 
-    @Nullable Program getProgram(@Nullable String programUid);
-    @Nullable String currentProgram();
+    @Nullable
+    Program getProgram(@Nullable String programUid);
+
+    @Nullable
+    String currentProgram();
 
     @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
 

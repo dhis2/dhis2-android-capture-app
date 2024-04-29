@@ -5,13 +5,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.databinding.ItemDateBinding
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
-import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
 

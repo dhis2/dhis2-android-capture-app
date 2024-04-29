@@ -38,13 +38,14 @@ class EventCardMapper(
     fun map(
         event: EventViewModel,
         editable: Boolean,
+        displayOrgUnit: Boolean,
         onSyncIconClick: () -> Unit,
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
             title = event.displayDate ?: "",
             lastUpdated = event.lastUpdate.toDateSpan(context),
-            additionalInfo = getAdditionalInfoList(event, editable),
+            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
             actionButton = {
                 ProvideSyncButton(
                     state = event.event?.aggregatedSyncState(),
@@ -60,6 +61,7 @@ class EventCardMapper(
     private fun getAdditionalInfoList(
         event: EventViewModel,
         editable: Boolean,
+        displayOrgUnit: Boolean,
     ): List<AdditionalInfoItem> {
         val list = event.dataElementValues?.filter {
             !it.second.isNullOrEmpty()
@@ -70,10 +72,12 @@ class EventCardMapper(
             )
         }?.toMutableList() ?: mutableListOf()
 
-        checkRegisteredIn(
-            list = list,
-            orgUnit = event.orgUnitName,
-        )
+        if (displayOrgUnit) {
+            checkRegisteredIn(
+                list = list,
+                orgUnit = event.orgUnitName,
+            )
+        }
 
         checkCategoryCombination(
             list = list,

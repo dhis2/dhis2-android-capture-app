@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Evento</string>
     <string name="no_data">No hay datos</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="change_calendar_view">Cambiar vista</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Analíticas</string>
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>

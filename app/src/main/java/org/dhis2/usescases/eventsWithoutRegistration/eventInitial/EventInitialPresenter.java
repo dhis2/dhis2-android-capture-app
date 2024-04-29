@@ -144,7 +144,7 @@ public class EventInitialPresenter {
             eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
             view.showEventWasDeleted();
         } else
-            view.displayMessage(view.getContext().getString(R.string.delete_event_error));
+            view.showDeleteEventError();
     }
 
     public boolean isEnrollmentOpen() {

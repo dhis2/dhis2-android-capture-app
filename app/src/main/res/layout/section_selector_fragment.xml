@@ -17,15 +17,15 @@
             android:id="@+id/formViewContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/ic_front_home_backdrop_bg"
             android:clipToPadding="false"
-            android:background="@color/form_field_background"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <FrameLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <ProgressBar
@@ -53,6 +53,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_save"
             app:tint="?colorAccent" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/editableReasonContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

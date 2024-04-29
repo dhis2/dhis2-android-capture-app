@@ -1,20 +1,43 @@
 package dhis2.org.analytics.charts.providers
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import java.util.Date
 import java.util.GregorianCalendar
 
+@ExperimentalCoroutinesApi
 class PeriodStepProviderImplTest {
+    @Rule
+    @JvmField
+    var instantExecutorRule = InstantTaskExecutorRule()
+
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val periodStepProvider = PeriodStepProviderImpl(d2)
+    private val dispatchers: DispatcherProvider = mock {
+        on { io() } doReturn Dispatchers.IO
+    }
+    private val periodStepProvider = PeriodStepProviderImpl(d2, dispatchers)
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
 
     @Test
     fun `Should get correct period step`() {

@@ -97,10 +97,10 @@ class GraphTest {
 
     private fun mockedCoordinates(): List<GraphPoint> {
         return arrayListOf(
-            GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), fieldValue = 10f),
-            GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), fieldValue = 20f),
-            GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), fieldValue = 50f),
-            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = 30f),
+            GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(10f)),
+            GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(20f)),
+            GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(50f)),
+            GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(30f)),
         )
     }
 }

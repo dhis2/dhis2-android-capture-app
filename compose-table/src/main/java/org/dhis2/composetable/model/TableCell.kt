@@ -13,6 +13,7 @@ data class TableCell(
     val error: String? = null,
     val warning: String? = null,
     val legendColor: Int? = null,
+    val isMultiText: Boolean = false,
 ) {
 
     fun hasErrorOrWarning() = errorOrWarningMessage() != null

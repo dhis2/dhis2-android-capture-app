@@ -57,7 +57,7 @@ class FormViewModel(
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
-
+    var dateFormatConfig: String = "ddMMyyyy"
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
@@ -219,14 +219,6 @@ class FormViewModel(
                 )
             }
 
-            ActionType.ON_CLEAR -> {
-                repository.removeAllValues()
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_CHANGED,
-                )
-            }
-
             ActionType.ON_FINISH -> {
                 repository.setFocusedItem(action)
                 StoreResult(
@@ -358,12 +350,6 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
-            is FormIntent.OnClear -> createRowAction(
-                uid = "",
-                value = null,
-                actionType = ActionType.ON_CLEAR,
-            )
-
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> {
                 val error = checkFieldError(
@@ -412,6 +398,20 @@ class FormViewModel(
                     intent.valueType,
                     intent.value,
                     intent.fieldMask,
+                )
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    valueType = intent.valueType,
+                )
+            }
+
+            is FormIntent.OnQrCodeScanned -> {
+                val error = checkFieldError(
+                    intent.valueType,
+                    intent.value,
                 )
 
                 createRowAction(
@@ -724,6 +724,9 @@ class FormViewModel(
             val result = async {
                 repository.fetchFormItems(openErrorLocation)
             }
+            dateFormatConfig = async {
+                repository.getDateFormatConfiguration()
+            }.await()
             try {
                 _items.postValue(result.await())
             } catch (e: Exception) {

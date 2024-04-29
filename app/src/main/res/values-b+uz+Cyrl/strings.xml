@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">Нотўғри маълумот</string>
     <string name="error_unexpected_error">Кутилмаган хатолик</string>
     <string name="error_internal_server_error">Сервердаги ички хатолик</string>
-    <string name="yes">ҳа</string>
-    <string name="no">йўқ</string>
     <string name="no_value">қиймат йўқ</string>
     <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
     <string name="no_reserved_values_connection">Сақланган бошқа қийматлар йўқ. Уларни тўлдириш учун тармоққа уланинг.</string>
@@ -86,13 +84,6 @@
 
     <string name="event_open">Очиш</string>
     <string name="event_completed">Тадбир тугалланди</string>
-    <string name="event_skipped">Тадбир ўтказиб юборилди</string>
-    <string name="event_schedule">Тадбир режаси</string>
-    <string name="event_expired">Тадбир муддати тугаган</string>
-    <string name="event_editing_expired">Таҳрирлаш муддати тугаган</string>
-    <string name="event_accepted">Тадбир қабул қилинган</string>
-    <string name="event_approved">Тадбир тасдиқланди</string>
-    <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
     <string name="complete">Тўлиқ</string>
     <string name="finish_and_complete">Тайёр ва тўлиқ</string>
@@ -125,9 +116,6 @@
     <string name="latitude">Кенглик</string>
     <string name="longitude">Узунлик</string>
     <string name="new_event">Янги тадбир</string>
-    <string name="failed_insert_event">Янги тадбирни киритиш амалга ошмади</string>
-    <string name="event_created">Тадбир яратилди</string>
-    <string name="event_updated">Тадбир янгиланди</string>
     <string name="one_time">Бир марта</string>
     <string name="permanent">Доимий</string>
 
@@ -140,15 +128,11 @@
     <string name="datavalue_saved">Қиймат сақланди!</string>
     <string name="there_is_no_available_period">Танлаш учун яроқли давр мавжуд эмас</string>
     <!--Event Detail-->
-    <string name="event_date">Ҳодиса/Тадбир санаси</string>
     <string name="due_date">Муддати</string>
     <string name="cat_combo">Категория комбинацияси</string>
     <string name="date_default">КК/ОО/ЙЙЙЙ</string>
     <string name="cancel">Бекор қилиш</string>
     <string name="delete">Ўчириш</string>
-    <string name="delete_event">Тадбирни ўчиринг</string>
-    <string name="confirm_delete_event">Ҳақиқатдан ҳам ушбу ҳодиса/тадбирни ўчирмоқчимисиз?</string>
-    <string name="event_was_deleted">Тадбир муваффақиятли ўчирилди</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
 
@@ -164,7 +148,6 @@
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
     <string name="edit">ТАҲРИРЛАШ</string>
-    <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
     <string name="follow_up_disabled">Кузатув ўчирилган</string>

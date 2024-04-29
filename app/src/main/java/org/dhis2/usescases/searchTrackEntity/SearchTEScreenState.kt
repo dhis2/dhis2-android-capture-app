@@ -14,20 +14,9 @@ data class SearchList(
     val searchForm: SearchForm,
     val searchFilters: SearchFilters,
 ) : SearchTEScreenState(listType, previousSate) {
-    fun displaySearchButton(): Boolean {
-        return searchForm.isOpened
-    }
-
-    fun displayResetSearchButton(): Boolean {
-        return searchForm.isOpened && searchForm.queryHasData
-    }
 
     fun displayResetFiltersButton(): Boolean {
         return searchFilters.isOpened and searchFilters.hasActiveFilters
-    }
-
-    fun displayResetInLandscape(): Boolean {
-        return searchForm.queryHasData || displayResetFiltersButton()
     }
 }
 

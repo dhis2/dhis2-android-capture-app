@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.work.WorkInfo
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -32,6 +33,7 @@ import org.dhis2.bindings.showSMS
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.OnNoConnectionListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.ui.icons.SyncStateIcon
@@ -60,6 +62,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
 
     var syncStatusDialogNavigator: SyncStatusDialogNavigator? = null
 
+    var syncProcessListener: (WorkInfo) -> Unit = {}
+
     private var syncing: Boolean = false
 
     private var smsSenderHelper: SMSSenderHelper? = null
@@ -68,6 +72,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     lateinit var viewModelFactory: GranularSyncViewModelFactory
 
     private val viewModel: GranularSyncPresenter by viewModels { viewModelFactory }
+
+    var onNoConnectionListener: OnNoConnectionListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -91,6 +97,13 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        viewModel.observeWorkInfo().observe(this) { workInfoList ->
+            workInfoList.firstOrNull()?.let {
+                viewModel.manageWorkInfo(it)
+                syncProcessListener(it)
+            }
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -172,16 +185,20 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             networkUtils.isOnline() -> syncGranular()
             viewModel.canSendSMS() &&
                 viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+
+            !networkUtils.isOnline() &&
+                !viewModel.isSMSEnabled(context?.showSMS() == true) -> showSnackbar()
         }
+    }
+
+    private fun showSnackbar() {
+        dismiss()
+        onNoConnectionListener?.onNoConnection()
     }
 
     private fun syncGranular() {
         syncing = true
-        viewModel.initGranularSync().observe(
-            this,
-        ) { workInfo ->
-            viewModel.manageWorkInfo(workInfo[0])
-        }
+        viewModel.initGranularSync()
     }
 
     private fun syncSms() {
@@ -280,6 +297,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
                 )
                 syncing = true
             }
+
             SmsSendingService.State.STARTED,
             SmsSendingService.State.CONVERTED,
             SmsSendingService.State.SENDING,
@@ -288,6 +306,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             SmsSendingService.State.SENT,
             ->
                 syncing = true
+
             SmsSendingService.State.ITEM_NOT_READY,
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             SmsSendingService.State.WAITING_RESULT_TIMEOUT,
@@ -335,6 +354,8 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         private var navigator: SyncStatusDialogNavigator? = null
         private lateinit var syncContext: SyncContext
         private var dismissListener: OnDismissListener? = null
+        private var noConnectionListener: OnNoConnectionListener? = null
+        private var syncProcessStatusListener: (WorkInfo) -> Unit = {}
 
         fun withContext(
             context: FragmentActivity,
@@ -362,6 +383,11 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
+        fun withSyncProcessStatusListener(syncProcessStatusListener: (WorkInfo) -> Unit): Builder {
+            this.syncProcessStatusListener = syncProcessStatusListener
+            return this
+        }
+
         fun withSyncContext(syncContext: SyncContext): Builder {
             this.syncContext = syncContext
             return this
@@ -372,13 +398,20 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
             return this
         }
 
+        fun onNoConnectionListener(noConnectionListener: OnNoConnectionListener): Builder {
+            this.noConnectionListener = noConnectionListener
+            return this
+        }
+
         private fun build(): SyncStatusDialog {
             return SyncStatusDialog().apply {
                 arguments = Bundle().apply {
                     putParcelable(SYNC_CONTEXT, syncContext)
                 }
                 dismissListenerDialog = dismissListener
+                onNoConnectionListener = noConnectionListener
                 syncStatusDialogNavigator = navigator
+                syncProcessListener = syncProcessStatusListener
             }
         }
 

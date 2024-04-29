@@ -1,6 +1,7 @@
 package org.dhis2.composetable.ui
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
@@ -15,7 +16,7 @@ data class TableDimensions(
     val defaultCellWidth: Int = 160,
     val defaultCellHeight: Dp = 36.dp,
     val defaultRowHeaderWidth: Int = 275,
-    val defaultHeaderHeight: Int = 83,
+    val defaultHeaderHeight: Int = 36,
     val defaultLegendCornerSize: Dp = 2.dp,
     val defaultLegendBorderWidth: Dp = 8.dp,
     val defaultHeaderTextSize: TextUnit = 12.sp,
@@ -24,6 +25,7 @@ data class TableDimensions(
     val totalWidth: Int = 0,
     val cellVerticalPadding: Dp = 4.dp,
     val cellHorizontalPadding: Dp = 4.dp,
+    val headerCellPaddingValues: PaddingValues = PaddingValues(horizontal = 4.dp, vertical = 11.dp),
     val tableBottomPadding: Dp = 200.dp,
     val extraWidths: Map<String, Int> = emptyMap(),
     val rowHeaderWidths: Map<String, Int> = emptyMap(),
@@ -67,11 +69,11 @@ data class TableDimensions(
                 val minColumn = rowHeaderRatio * column
                 (minColumn..maxColumn).sumOf {
                     columnWidthWithTableExtra(tableId, it) +
-                        extraSize(tableId, totalColumns, hasTotal)
+                        extraSize(tableId, totalColumns, hasTotal, column)
                 }
             }
             else -> columnWidthWithTableExtra(tableId, column) +
-                extraSize(tableId, totalColumns, hasTotal)
+                extraSize(tableId, totalColumns, hasTotal, column)
         }
         return result
     }
@@ -82,11 +84,14 @@ data class TableDimensions(
         return fullWidth / headerRowColumns
     }
 
-    fun extraSize(tableId: String, totalColumns: Int, hasTotal: Boolean): Int {
+    fun extraSize(tableId: String, totalColumns: Int, hasTotal: Boolean, column: Int? = null): Int {
         val screenWidth = totalWidth
         val tableWidth = tableWidth(tableId, totalColumns, hasTotal)
+        val columnHasResizedValue = column?.let {
+            columnWidth[tableId]?.containsKey(it)
+        }
 
-        return if (tableWidth < screenWidth && columnWidth[tableId]?.isEmpty() != false) {
+        return if (tableWidth < screenWidth && columnHasResizedValue != true) {
             val totalColumnCount = 1.takeIf { hasTotal } ?: 0
             val columnsCount = totalColumns + totalColumnCount
             ((screenWidth - tableWidth) / columnsCount).also {
@@ -118,8 +123,11 @@ data class TableDimensions(
     }
 
     fun updateColumnWidth(tableId: String, column: Int, widthOffset: Float): TableDimensions {
-        val newWidth = (columnWidth[tableId]?.get(column) ?: defaultCellWidth) + widthOffset - 11 +
-            (currentExtraSize[tableId] ?: 0)
+        val newWidth = (
+            columnWidth[tableId]?.get(column)
+                ?: (defaultCellWidth + (currentExtraSize[tableId] ?: 0))
+            ) + widthOffset - 11
+
         val newMap = columnWidth.toMutableMap()
         val tableColumnMap = columnWidth[tableId]?.toMutableMap() ?: mutableMapOf()
         tableColumnMap[column] = newWidth.toInt()
@@ -167,7 +175,12 @@ data class TableDimensions(
         return desiredDimension.columnWidthWithTableExtra(
             tableId,
             columnIndex,
-        ) + extraSize(tableId, totalColumns, hasTotal) in minColumnWidth..maxColumnWidth
+        ) + extraSize(
+            tableId = tableId,
+            totalColumns = totalColumns,
+            hasTotal = hasTotal,
+            column = columnIndex,
+        ) in minColumnWidth..maxColumnWidth
     }
 
     fun canUpdateAllWidths(tableId: String, widthOffset: Float): Boolean {

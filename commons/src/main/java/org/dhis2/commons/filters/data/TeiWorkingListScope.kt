@@ -42,6 +42,9 @@ data class TeiWorkingListScope(
     val eventStatusList: List<String>?,
     val eventDateList: List<String>?,
     val assignedToMe: List<AssignedUserMode>?,
+    val filters: Map<String, String>?,
+    val stageUid: String?,
+    val dataValues: Map<String, String>?,
 ) : WorkingListScope() {
     override fun isAssignedActive(): Boolean = assignedToMe?.isNotEmpty() == true
     override fun isAssignedToMeActive(): Boolean =
@@ -109,6 +112,9 @@ fun TrackedEntityInstanceQueryRepositoryScope.mapToWorkingListScope(
         eventFilters().mapNotNull { it.eventDate() }
             .mapNotNull { resources.dateFilterPeriodToText(it) },
         eventFilters().mapNotNull { it.assignedUserMode() }.distinct(),
+        filter().associateBy({ it.key() }, { it.value() }),
+        programStage(),
+        dataValue().associateBy({ it.key() }, { it.value() }),
     )
 }
 
