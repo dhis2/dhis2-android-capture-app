@@ -134,9 +134,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             with(dashboardViewModel) {
                 eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
-                updateEnrollment.observe(viewLifecycleOwner) { update ->
-                    updateEnrollment(update)
-                }
                 noEnrollmentSelected.observe(viewLifecycleOwner) { noEnrollmentSelected ->
                     if (noEnrollmentSelected) {
                         showAllEnrollment = true
@@ -387,7 +384,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                             programStageUid,
                         ),
                     )
-                    presenter.fetchEvents(true)
+                    presenter.fetchEvents()
                 },
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
@@ -469,17 +466,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
         contractHandler.scheduleEvent(intent, options).observe(viewLifecycleOwner) {
-            updateEnrollment(true)
+            presenter.fetchEvents()
         }
 
     override fun openEventInitial(intent: Intent) =
         contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
-            updateEnrollment(true)
+            presenter.fetchEvents()
         }
 
     override fun openEventCapture(intent: Intent) =
         contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
-            updateEnrollment(true)
+            presenter.fetchEvents()
         }
 
     override fun goToEventInitial(
@@ -573,13 +570,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun showProgramRuleErrorMessage() {
         dashboardActivity.runOnUiThread {
             showDescription(getString(R.string.error_applying_rule_effects))
-        }
-    }
-
-    override fun updateEnrollment(update: Boolean) {
-        if (update) {
-            presenter.fetchEvents(update)
-            dashboardViewModel.updateDashboard()
         }
     }
 

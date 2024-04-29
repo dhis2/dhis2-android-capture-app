@@ -285,7 +285,7 @@ class TEIDataPresenter(
         val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
         intent.putExtras(bundle)
         contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
-            view.updateEnrollment(true)
+            fetchEvents()
         }
     }
 
@@ -395,10 +395,8 @@ class TEIDataPresenter(
         return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
     }
 
-    fun fetchEvents(updateEnrollment: Boolean) {
-        if (updateEnrollment) {
-            groupingProcessor.onNext(dashboardRepository.getGrouping())
-        }
+    fun fetchEvents() {
+        groupingProcessor.onNext(dashboardRepository.getGrouping())
     }
 
     fun getEnrollment(): Enrollment? {
