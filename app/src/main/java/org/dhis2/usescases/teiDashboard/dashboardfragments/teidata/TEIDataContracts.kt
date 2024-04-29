@@ -35,7 +35,6 @@ class TEIDataContracts {
 
         fun showProgramRuleErrorMessage()
         fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
-        fun updateEnrollment(update: Boolean)
         fun displayOrgUnitSelectorForNewEvent(programUid: String, programStageUid: String)
 
         fun goToEventDetails(
