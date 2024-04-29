@@ -652,7 +652,17 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `should return test`() {
+    fun `should clear uiState when clearing data`() {
+        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        performSearch()
+        viewModel.clearQueryData()
+        assert(viewModel.queryData.isEmpty())
+        assert(viewModel.uiState.items.all { it.value == null })
+        assert(viewModel.uiState.searchedItems.isEmpty())
+    }
+
+    @Test
+    fun `should return date without format`() {
         viewModel.uiState = viewModel.uiState.copy(items = getMalformedDateFieldUIModels())
         val expectedMap = mapOf(
             "uid1" to "04",

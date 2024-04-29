@@ -277,7 +277,11 @@ class SearchTEIViewModel(
         val updatedItems = uiState.items.map {
             (it as FieldUiModelImpl).copy(value = null, displayName = null)
         }
-        uiState = uiState.copy(items = updatedItems)
+        uiState = uiState.copy(
+            items = updatedItems,
+            searchedItems = mapOf(),
+        )
+        searching = false
     }
 
     private fun updateSearch() {
@@ -463,6 +467,8 @@ class SearchTEIViewModel(
                 )
                 uiState = uiState.copy(minAttributesMessage = message)
                 uiState.updateMinAttributeWarning(true)
+                setSearchScreen()
+                _refreshData.postValue(Unit)
             }
         }
     }
