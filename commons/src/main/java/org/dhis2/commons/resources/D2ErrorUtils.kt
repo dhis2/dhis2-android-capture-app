@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.systeminfo.DHISVersion
 
 class D2ErrorUtils(
     private val context: Context,
-    private val networkUtils: NetworkUtils
+    private val networkUtils: NetworkUtils,
 ) {
 
     fun getErrorMessage(throwable: Throwable): String? {
@@ -30,7 +30,7 @@ class D2ErrorUtils(
             D2ErrorCode.INVALID_DHIS_VERSION ->
                 String.format(
                     context.getString(R.string.login_error_dhis_version_v2),
-                    TextUtils.join(", ", DHISVersion.allowedVersionsAsStr())
+                    TextUtils.join(", ", DHISVersion.allowedVersionsAsStr()),
                 )
             D2ErrorCode.API_UNSUCCESSFUL_RESPONSE ->
                 context.getString(R.string.login_error_unsuccessful_response)

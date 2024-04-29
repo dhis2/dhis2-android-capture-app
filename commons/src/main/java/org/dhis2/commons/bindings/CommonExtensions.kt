@@ -17,8 +17,8 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import kotlin.math.pow
 import org.dhis2.commons.R
+import kotlin.math.pow
 
 @BindingAdapter("scrollingTextView")
 fun TextView.setScrollingTextView(canScroll: Boolean) {
@@ -103,7 +103,7 @@ fun View.clipWithRoundedCorners(curvedRadio: Int = 16.dp) {
                     0,
                     view.width,
                     view.height + curvedRadio,
-                    curvedRadio.toFloat()
+                    curvedRadio.toFloat(),
                 )
             }
         }
@@ -120,7 +120,7 @@ fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
                     0,
                     view.width,
                     view.height,
-                    curvedRadio.toFloat()
+                    curvedRadio.toFloat(),
                 )
             }
         }

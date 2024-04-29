@@ -16,7 +16,7 @@ class EventListPresenter(
     val filterManager: FilterManager,
     val eventRepository: ProgramEventDetailRepository,
     val preferences: PreferenceProvider,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
 ) {
 
     val disposable = CompositeDisposable()
@@ -31,8 +31,8 @@ class EventListPresenter(
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.setLiveData(it) },
-                    { Timber.e(it) }
-                )
+                    { Timber.e(it) },
+                ),
         )
 
         disposable.add(
@@ -49,7 +49,7 @@ class EventListPresenter(
         );
     }
 
-    fun program(): Program {
+    fun program(): Program? {
         return eventRepository.program().blockingGet()
     }
 

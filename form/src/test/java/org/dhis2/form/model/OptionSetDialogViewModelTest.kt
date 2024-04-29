@@ -57,13 +57,13 @@ class OptionSetDialogViewModelTest {
                 optionSetUid,
                 "",
                 emptyList(),
-                emptyList()
-            )
+                emptyList(),
+            ),
         ) doReturn mockedOptions
         viewModel = OptionSetDialogViewModel(
             searchOptionSetOption,
             field,
-            dispatchers
+            dispatchers,
         )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -87,7 +87,7 @@ class OptionSetDialogViewModelTest {
             optionSetUid,
             "test",
             emptyList(),
-            emptyList()
+            emptyList(),
         )
     }
 
@@ -97,7 +97,7 @@ class OptionSetDialogViewModelTest {
         whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
             options = emptyList(),
             optionsToHide = optionsToHide,
-            optionsToShow = emptyList()
+            optionsToShow = emptyList(),
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -106,7 +106,7 @@ class OptionSetDialogViewModelTest {
             optionSetUid,
             "test",
             emptyList(),
-            optionsToHide
+            optionsToHide,
         )
     }
 
@@ -116,7 +116,7 @@ class OptionSetDialogViewModelTest {
         whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
             options = emptyList(),
             optionsToHide = emptyList(),
-            optionsToShow = optionsToShow
+            optionsToShow = optionsToShow,
         )
         viewModel.onSearchingOption("test")
         assertTrue(viewModel.searchValue.value == "test")
@@ -125,7 +125,7 @@ class OptionSetDialogViewModelTest {
             optionSetUid,
             "test",
             optionsToShow,
-            emptyList()
+            emptyList(),
         )
     }
 
@@ -136,7 +136,7 @@ class OptionSetDialogViewModelTest {
         whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
             options = emptyList(),
             optionsToHide = optionsToHide,
-            optionsToShow = optionsToShow
+            optionsToShow = optionsToShow,
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -145,7 +145,7 @@ class OptionSetDialogViewModelTest {
             optionSetUid,
             "test",
             optionsToShow,
-            optionsToHide
+            optionsToHide,
         )
     }
 
@@ -156,7 +156,7 @@ class OptionSetDialogViewModelTest {
                     .uid("Option$index")
                     .displayName("name$index")
                     .code("code$index")
-                    .build()
+                    .build(),
             )
         }
     }

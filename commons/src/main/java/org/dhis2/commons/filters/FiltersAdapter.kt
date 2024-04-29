@@ -23,8 +23,8 @@ class FiltersAdapter :
                 LayoutInflater.from(parent.context),
                 Filters.values()[viewType].layoutId,
                 parent,
-                false
-            )
+                false,
+            ),
         )
     }
 

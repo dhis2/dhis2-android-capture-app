@@ -2,13 +2,14 @@ package org.dhis2.usescases.programEventDetail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 
 class ProgramEventDetailViewModel(
-    private val mapStyleConfig: MapStyleConfiguration
+    private val mapStyleConfig: MapStyleConfiguration,
+    val eventRepository: ProgramEventDetailRepository,
 ) : ViewModel() {
     private val progress = MutableLiveData(true)
     val writePermission = MutableLiveData(false)
@@ -21,7 +22,7 @@ class ProgramEventDetailViewModel(
     }
     private val _currentScreen = MutableLiveData(EventProgramScreen.LIST)
     val currentScreen: LiveData<EventProgramScreen>
-        get() = Transformations.distinctUntilChanged(_currentScreen)
+        get() = _currentScreen.distinctUntilChanged()
 
     private val _backdropActive = MutableLiveData<Boolean>()
     val backdropActive: LiveData<Boolean> get() = _backdropActive
@@ -54,5 +55,9 @@ class ProgramEventDetailViewModel(
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun isEditable(eventUid: String): Boolean {
+        return eventRepository.isEventEditable(eventUid)
     }
 }

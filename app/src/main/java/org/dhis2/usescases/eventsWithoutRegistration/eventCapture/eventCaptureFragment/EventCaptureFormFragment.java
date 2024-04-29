@@ -17,6 +17,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
@@ -35,6 +37,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Inject
     EventCaptureFormPresenter presenter;
+
+    @Inject
+    FeatureConfigRepository featureConfig;
 
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
@@ -90,6 +95,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .factory(activity.getSupportFragmentManager())
                 .setRecords(new EventRecords(getArguments().getString(Constants.EVENT_UID)))
                 .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
+                .useComposeForm(
+                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS)
+                )
                 .build();
         activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);

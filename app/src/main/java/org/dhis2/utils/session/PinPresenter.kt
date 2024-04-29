@@ -8,7 +8,7 @@ import timber.log.Timber
 class PinPresenter(
     val view: PinView,
     val preferenceProvider: PreferenceProvider,
-    val d2: D2
+    val d2: D2,
 ) {
 
     fun unlockSession(
@@ -16,12 +16,12 @@ class PinPresenter(
         attempts: Int,
         onPinCorrect: () -> Unit,
         onError: () -> Unit,
-        onTwoManyAttempts: () -> Unit
+        onTwoManyAttempts: () -> Unit,
     ) {
         val pinStored = d2.dataStoreModule()
             .localDataStore()
             .value(Preference.PIN)
-            .blockingGet().value()
+            .blockingGet()?.value()
         when {
             pinStored == pin -> {
                 preferenceProvider.setValue(Preference.SESSION_LOCKED, true)

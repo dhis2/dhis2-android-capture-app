@@ -1,10 +1,10 @@
 package org.dhis2.form.ui.event
 
-import java.util.Calendar
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
+import java.util.Calendar
+import java.util.Date
 
 class DialogDelegate {
 
@@ -25,7 +25,7 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = date,
-            valueType = ValueType.DATE
+            valueType = ValueType.DATE,
         )
     }
 
@@ -46,7 +46,7 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = date,
-            valueType = ValueType.DATE
+            valueType = ValueType.DATE,
         )
     }
 
@@ -67,7 +67,7 @@ class DialogDelegate {
         return FormIntent.OnSave(
             uid = uid,
             value = dateValue,
-            valueType = date?.let { ValueType.DATETIME } ?: ValueType.TIME
+            valueType = date?.let { ValueType.DATETIME } ?: ValueType.TIME,
         )
     }
 
@@ -77,7 +77,7 @@ class DialogDelegate {
         date: Date?,
         year: Int,
         month: Int,
-        day: Int
+        day: Int,
     ): RecyclerViewUiEvents {
         val currentCalendar = Calendar.getInstance()
         val dateTime = with(currentCalendar) {

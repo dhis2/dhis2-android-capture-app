@@ -8,5 +8,5 @@ data class EventCompletionDialog(
     val bottomSheetDialogUiModel: BottomSheetDialogUiModel,
     val mainButtonAction: FormBottomDialog.ActionType,
     val secondaryButtonAction: FormBottomDialog.ActionType?,
-    val fieldsWithIssues: List<FieldWithIssue>
+    val fieldsWithIssues: List<FieldWithIssue>,
 )

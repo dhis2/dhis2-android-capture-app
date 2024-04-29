@@ -44,7 +44,7 @@ sealed class SyncContext : Parcelable {
         val dataSetUid: String,
         val periodId: String,
         val orgUnitUid: String,
-        val attributeOptionComboUid: String
+        val attributeOptionComboUid: String,
     ) : SyncContext()
 
     fun conflictType() = when (this) {

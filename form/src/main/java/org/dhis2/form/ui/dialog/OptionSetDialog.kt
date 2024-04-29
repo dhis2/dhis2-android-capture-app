@@ -22,14 +22,14 @@ const val TAG = "OptionSetDialog"
 class OptionSetDialog(
     private val field: FieldUiModel,
     private val onClearValue: () -> Unit,
-    private val onSaveOptionValue: (optionCode: String?) -> Unit
+    private val onSaveOptionValue: (optionCode: String?) -> Unit,
 ) : DialogFragment() {
 
     val viewModel by viewModels<OptionSetDialogViewModel> {
         OptionSetDialogViewModelFactory(
             Injector.provideOptionSetDialog(),
             field,
-            Injector.provideDispatchers()
+            Injector.provideDispatchers(),
         )
     }
 
@@ -43,11 +43,11 @@ class OptionSetDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnDetachedFromWindow
+                ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
                 MdcTheme {
@@ -61,7 +61,7 @@ class OptionSetDialog(
                         onOptionClick = { optionCode ->
                             onSaveOptionValue(optionCode)
                             dismiss()
-                        }
+                        },
                     )
                 }
             }

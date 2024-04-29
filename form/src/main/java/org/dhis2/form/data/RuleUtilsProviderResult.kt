@@ -2,8 +2,8 @@ package org.dhis2.form.data
 
 import android.content.Context
 import androidx.annotation.StringRes
-import kotlin.text.Typography.bullet
 import org.dhis2.form.R
+import kotlin.text.Typography.bullet
 
 data class RuleUtilsProviderResult(
     val canComplete: Boolean,
@@ -16,7 +16,7 @@ data class RuleUtilsProviderResult(
     val configurationErrors: List<RulesUtilsProviderConfigurationError>,
     val optionsToHide: Map<String, List<String>>,
     val optionGroupsToHide: Map<String, List<String>>,
-    val optionGroupsToShow: Map<String, List<String>>
+    val optionGroupsToShow: Map<String, List<String>>,
 ) {
     fun errorMap(): Map<String, String> {
         val map: MutableMap<String, String> = mutableMapOf()
@@ -59,7 +59,7 @@ data class RulesUtilsProviderConfigurationError(
     val programRuleUid: String?,
     val actionType: ActionType = ActionType.NONE,
     val error: ConfigurationError,
-    val extraData: List<String>
+    val extraData: List<String>,
 )
 
 enum class ActionType {
@@ -68,7 +68,7 @@ enum class ActionType {
 
 enum class ConfigurationError(@StringRes val message: Int) {
     VALUE_TO_ASSIGN_NOT_IN_OPTION_SET(R.string.conf_error_value_to_assign_option_set),
-    CURRENT_VALUE_NOT_IN_OPTION_SET(R.string.conf_error_value_option_set)
+    CURRENT_VALUE_NOT_IN_OPTION_SET(R.string.conf_error_value_option_set),
 }
 
 fun List<RulesUtilsProviderConfigurationError>.toMessage(context: Context): String {

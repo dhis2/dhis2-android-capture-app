@@ -2,9 +2,9 @@ package org.dhis2.commons.reporting
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2Manager
 import timber.log.Timber
+import javax.inject.Inject
 
 const val DATA_STORE_CRASH_PERMISSION_KEY = "analytics_permission"
 
@@ -60,8 +60,8 @@ class CrashReportControllerImpl @Inject constructor() : CrashReportController {
         return (
             D2Manager.isD2Instantiated() &&
                 D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_CRASH_PERMISSION_KEY).blockingGet()?.value()
-                ?.toBoolean() == true
+                    .value(DATA_STORE_CRASH_PERMISSION_KEY).blockingGet()?.value()
+                    ?.toBoolean() == true
             ).also { granted ->
             if (!granted) {
                 Timber.d("Tracking is disabled")

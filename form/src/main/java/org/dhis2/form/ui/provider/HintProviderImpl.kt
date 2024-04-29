@@ -28,11 +28,13 @@ class HintProviderImpl(val context: Context) : HintProvider {
         ValueType.AGE,
         ValueType.IMAGE,
         ValueType.BOOLEAN,
-        ValueType.TRUE_ONLY -> context.getString(R.string.enter_value)
+        ValueType.TRUE_ONLY,
+        -> context.getString(R.string.enter_value)
         ValueType.TIME -> context.getString(R.string.select_time)
         ValueType.ORGANISATION_UNIT -> context.getString(R.string.choose_ou)
         ValueType.DATETIME,
-        ValueType.DATE -> context.getString(R.string.choose_date)
+        ValueType.DATE,
+        -> context.getString(R.string.choose_date)
         ValueType.REFERENCE -> ""
         ValueType.GEOJSON -> ""
         ValueType.MULTI_TEXT -> ""

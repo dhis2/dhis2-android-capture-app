@@ -13,7 +13,7 @@ class ScheduledEventModule(val eventUid: String, val view: ScheduledEventContrac
     @PerActivity
     internal fun providePresenter(
         d2: D2,
-        eventUtils: DhisEventUtils
+        eventUtils: DhisEventUtils,
     ): ScheduledEventContract.Presenter {
         return ScheduledEventPresenterImpl(view, d2, eventUid, eventUtils)
     }

@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.common.ValueType
 
 class EventFieldMapper(
     private val fieldFactory: FieldViewModelFactory,
-    private val mandatoryFieldWarning: String
+    private val mandatoryFieldWarning: String,
 ) {
 
     var totalFields: Int = 0
@@ -27,7 +27,7 @@ class EventFieldMapper(
         errors: MutableMap<String, String>,
         warnings: MutableMap<String, String>,
         emptyMandatoryFields: MutableMap<String, FieldUiModel>,
-        showErrors: Pair<Boolean, Boolean>
+        showErrors: Pair<Boolean, Boolean>,
     ): Pair<MutableList<EventSectionModel>, MutableList<FieldUiModel>> {
         clearAll()
         setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
@@ -52,7 +52,7 @@ class EventFieldMapper(
                         } != null
                     }.size +
                         emptyMandatoryFields
-                            .filter { it.value.programStageSection == section.uid }.size
+                            .filter { it.value.programStageSection == section.uid }.size,
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
@@ -61,7 +61,7 @@ class EventFieldMapper(
                         fields.firstOrNull { field ->
                             field.uid == error.key && field.programStageSection == section.uid
                         } != null
-                    }.size
+                    }.size,
                 ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
@@ -96,7 +96,7 @@ class EventFieldMapper(
         fields: List<FieldUiModel>,
         sectionList: List<FormSectionViewModel>,
         showMandatoryErrors: Boolean,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>
+        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
     ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
@@ -109,7 +109,7 @@ class EventFieldMapper(
                         field.setWarning(mandatoryFieldWarning)
                     } else {
                         field
-                    }
+                    },
                 )
 
                 if (fieldIsNotVisualOptionSet(field)) {
@@ -136,7 +136,7 @@ class EventFieldMapper(
         fields: List<FieldUiModel>,
         sectionList: List<FormSectionViewModel>,
         sectionModel: FormSectionViewModel,
-        section: String
+        section: String,
     ) {
         if (isValidMultiSection(sectionList, sectionModel)) {
             handleMultiSection(sectionModel, section)
@@ -147,14 +147,14 @@ class EventFieldMapper(
 
     private fun isValidMultiSection(
         sectionList: List<FormSectionViewModel>,
-        sectionModel: FormSectionViewModel
+        sectionModel: FormSectionViewModel,
     ): Boolean {
         return sectionList.isNotEmpty() && sectionModel.sectionUid()!!.isNotEmpty()
     }
 
     private fun isValidSingleSection(
         sectionList: List<FormSectionViewModel>,
-        sectionModel: FormSectionViewModel
+        sectionModel: FormSectionViewModel,
     ): Boolean {
         return sectionList.size == 1 && sectionModel.sectionUid()?.isEmpty() == true
     }
@@ -163,7 +163,7 @@ class EventFieldMapper(
         val fieldViewModels = mutableListOf<FieldUiModel>()
         if (fieldMap[sectionModel.sectionUid()] != null) {
             fieldViewModels.addAll(
-                fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>
+                fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>,
             )
         }
 
@@ -180,8 +180,8 @@ class EventFieldMapper(
                 sectionModel.label()!!,
                 sectionModel.sectionUid()!!,
                 cont,
-                finalFields.keys.size
-            )
+                finalFields.keys.size,
+            ),
         )
         val isOpen = sectionModel.sectionUid() == section
         if (fieldMap[sectionModel.sectionUid()]?.isNotEmpty() == true) {
@@ -193,8 +193,8 @@ class EventFieldMapper(
                     isOpen,
                     finalFields.keys.size,
                     cont,
-                    sectionModel.renderType()
-                )
+                    sectionModel.renderType(),
+                ),
             )
         }
         if (isOpen && fieldMap[sectionModel.sectionUid()] != null) {
@@ -204,7 +204,7 @@ class EventFieldMapper(
 
     private fun handleSingleSection(
         fields: List<FieldUiModel>,
-        sectionModel: FormSectionViewModel
+        sectionModel: FormSectionViewModel,
     ) {
         for (fieldViewModel in fields) {
             finalFields[fieldViewModel.uid] = !isEmpty(fieldViewModel.value)
@@ -217,8 +217,8 @@ class EventFieldMapper(
                 "NO_SECTION",
                 "no_section",
                 cont,
-                finalFields.keys.size
-            )
+                finalFields.keys.size,
+            ),
         )
         finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>)
     }
@@ -235,7 +235,8 @@ class EventFieldMapper(
     private fun isUnsupported(type: ValueType?): Boolean {
         return when (type) {
             ValueType.TRACKER_ASSOCIATE,
-            ValueType.USERNAME -> true
+            ValueType.USERNAME,
+            -> true
 
             else -> false
         }

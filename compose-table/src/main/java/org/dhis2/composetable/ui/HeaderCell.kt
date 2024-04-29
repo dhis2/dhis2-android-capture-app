@@ -26,9 +26,9 @@ import org.dhis2.composetable.ui.semantics.rowIndexHeader
 import org.dhis2.composetable.ui.semantics.tableIdColumnHeader
 
 @Composable
-fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
+fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(with(LocalDensity.current) { itemHeaderUiState.headerMeasures.width.toDp() })
             .fillMaxHeight()
             .background(itemHeaderUiState.cellStyle.backgroundColor())
@@ -42,7 +42,7 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
             .clickable {
                 itemHeaderUiState.onCellSelected(itemHeaderUiState.columnIndex)
             },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             modifier = Modifier
@@ -55,20 +55,20 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
             fontSize = TableTheme.dimensions.defaultHeaderTextSize,
             overflow = TextOverflow.Ellipsis,
             maxLines = 3,
-            softWrap = true
+            softWrap = true,
         )
         Divider(
             color = TableTheme.colors.primary,
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomCenter),
         )
         val isSelected = when (LocalTableSelection.current) {
             is TableSelection.AllCellSelection -> false
             else -> LocalTableSelection.current.isHeaderSelected(
                 selectedTableId = itemHeaderUiState.tableId ?: "",
                 columnIndex = itemHeaderUiState.columnIndex,
-                columnHeaderRowIndex = itemHeaderUiState.rowIndex
+                columnHeaderRowIndex = itemHeaderUiState.rowIndex,
             )
         }
         if (isSelected && itemHeaderUiState.isLastRow) {
@@ -80,10 +80,10 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState) {
                 onHeaderResize = { newValue ->
                     itemHeaderUiState.onHeaderResize(
                         itemHeaderUiState.columnIndex,
-                        newValue
+                        newValue,
                     )
                 },
-                onResizing = itemHeaderUiState.onResizing
+                onResizing = itemHeaderUiState.onResizing,
             )
         }
     }

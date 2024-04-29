@@ -98,5 +98,4 @@
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>
     <string name="enrollmment_date">Дата реєстрації</string>
     <string name="incident_date">Дата інциденту</string>
-
-</resources>
+    </resources>

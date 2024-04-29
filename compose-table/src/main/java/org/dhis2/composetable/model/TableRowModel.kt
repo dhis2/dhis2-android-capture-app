@@ -8,5 +8,5 @@ data class TableRowModel(
     val values: Map<Int, TableCell>,
     val isLastRow: Boolean = false,
     val maxLines: Int = 3,
-    val dropDownOptions: List<String>? = null
+    val dropDownOptions: List<String>? = null,
 )

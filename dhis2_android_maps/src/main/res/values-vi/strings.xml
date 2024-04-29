@@ -8,4 +8,4 @@
     <string name="dialog_layer_tei_coordinates">Hiển thị tọa độ đối tượng theo dõi</string>
     <string name="dialog_layer_enrollment_coordinates">Hiển thị tọa độ của đăng ký này</string>
     <string name="dialog_layer_heatmap">Hiển thị lớp bản đồ nhiệt độ</string>
-</resources>
+    </resources>

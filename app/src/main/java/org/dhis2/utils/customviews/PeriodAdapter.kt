@@ -4,9 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.databinding.ItemDateBinding
@@ -14,6 +11,9 @@ import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.ArrayList
+import java.util.Date
+import java.util.Locale
 
 private class PeriodAdapter(
     private val periodType: PeriodType,
@@ -22,7 +22,7 @@ private class PeriodAdapter(
     var withInputPeriod: Boolean,
     val organisationUnit: OrganisationUnit?,
     val inputPeriods: List<DateRangeInputPeriodModel>,
-    val periodUtils: DhisPeriodUtils
+    val periodUtils: DhisPeriodUtils,
 ) : RecyclerView.Adapter<DateViewHolder>() {
 
     companion object {
@@ -38,7 +38,7 @@ private class PeriodAdapter(
         lastDate = DateUtils.getInstance().getNextPeriod(
             periodType,
             organisationUnit?.closedDate() ?: DateUtils.getInstance().today,
-            openFuturePeriods - 1
+            openFuturePeriods - 1,
         )
         if (withInputPeriod) {
             setInputPeriod()
@@ -52,7 +52,7 @@ private class PeriodAdapter(
             LayoutInflater.from(parent.context),
             R.layout.item_date,
             parent,
-            false
+            false,
         )
         return DateViewHolder(binding)
     }
@@ -70,8 +70,8 @@ private class PeriodAdapter(
                 periodUtils.getPeriodUIString(
                     periodType,
                     datePeriods[position],
-                    Locale.getDefault()
-                )
+                    Locale.getDefault(),
+                ),
             )
             holder.itemView.setOnClickListener {
                 listener(datePeriods[holder.adapterPosition])

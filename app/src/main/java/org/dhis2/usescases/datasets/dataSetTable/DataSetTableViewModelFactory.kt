@@ -15,7 +15,7 @@ class DataSetTableViewModelFactory(
     private val analyticsHelper: AnalyticsHelper,
     private val updateProcessor: FlowableProcessor<Unit>,
     private val dispatcherProvider: DispatcherProvider,
-    private val openErrorSectionOnInit: Boolean
+    private val openErrorSectionOnInit: Boolean,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return DataSetTablePresenter(
@@ -25,7 +25,7 @@ class DataSetTableViewModelFactory(
             dispatcherProvider,
             analyticsHelper,
             updateProcessor,
-            openErrorSectionOnInit
+            openErrorSectionOnInit,
         ) as T
     }
 }

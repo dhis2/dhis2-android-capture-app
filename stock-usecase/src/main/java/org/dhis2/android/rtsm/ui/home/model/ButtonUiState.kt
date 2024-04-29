@@ -9,5 +9,5 @@ data class ButtonUiState(
     val color: Color = Color.White,
     val contentColor: Color = Color.White,
     val containerColor: Color = Color.Blue,
-    val visible: Boolean = false
+    val visible: Boolean = false,
 )

@@ -26,8 +26,8 @@ class MapStyleConfigurationTest {
                 subDomainPlaceHolder = "{s}",
                 subdomains = listOf("a", "b"),
                 imaginaryProviders = listOf(
-                    mockImaginaryProvider("© Maplibre")
-                )
+                    mockImaginaryProvider("© Maplibre"),
+                ),
             ),
             mockMapLayer(
                 displayName = "basemap 2",
@@ -36,9 +36,9 @@ class MapStyleConfigurationTest {
                 subdomains = null,
                 imaginaryProviders = listOf(
                     mockImaginaryProvider("© Maplibre"),
-                    mockImaginaryProvider("© Carto")
-                )
-            )
+                    mockImaginaryProvider("© Carto"),
+                ),
+            ),
         )
 
         mapStyleConfiguration.fetchMapStyles().let { result ->
@@ -57,7 +57,7 @@ class MapStyleConfigurationTest {
         imageUrl: String,
         subDomainPlaceHolder: String?,
         subdomains: List<String>?,
-        imaginaryProviders: List<MapLayerImageryProvider>
+        imaginaryProviders: List<MapLayerImageryProvider>,
     ) = MapLayer.builder()
         .displayName(displayName)
         .imageUrl(imageUrl)

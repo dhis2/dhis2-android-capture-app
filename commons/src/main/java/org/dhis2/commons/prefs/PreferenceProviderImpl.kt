@@ -4,13 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.util.Date
 import org.dhis2.commons.date.DateUtils
+import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
 
-open class PreferenceProviderImpl(private val context: Context) : PreferenceProvider {
+open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
@@ -75,7 +75,7 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
     override fun getSet(key: String, default: Set<String>): Set<String>? {
         return sharedPreferences.getStringSet(
             key,
-            default
+            default,
         )
     }
 
@@ -91,6 +91,10 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
         setValue(SECURE_USER_NAME, userName)
     }
 
+    override fun updateServerURL(serverUrl: String) {
+        sharedPreferences.edit().putString(SECURE_SERVER_URL, serverUrl).apply()
+    }
+
     override fun areCredentialsSet(): Boolean {
         return getBoolean(SECURE_CREDENTIALS, false)
     }
@@ -102,12 +106,6 @@ open class PreferenceProviderImpl(private val context: Context) : PreferenceProv
 
     override fun saveJiraCredentials(jiraAuth: String): String {
         return String.format("Basic %s", jiraAuth)
-    }
-
-    override fun saveJiraUser(jiraUser: String) {
-    }
-
-    override fun closeJiraSession() {
     }
 
     override fun clear() {

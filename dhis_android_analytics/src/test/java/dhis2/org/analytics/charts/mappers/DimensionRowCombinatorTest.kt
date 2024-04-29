@@ -17,23 +17,23 @@ class DimensionRowCombinatorTest {
         val finalList = mutableListOf<String>()
         dimensionRowCombinator.combineWithNextItem(
             gridAnalyticsResponse = testGridAnalyticsResponse(),
-            currentList = finalList
+            currentList = finalList,
         )
 
         assertTrue(
-            finalList.size == 12
+            finalList.size == 12,
         )
         assertTrue(
-            finalList[0] == "A - 1 - C"
+            finalList[0] == "A - 1 - C",
         )
         assertTrue(
-            finalList[5] == "A - 3 - D"
+            finalList[5] == "A - 3 - D",
         )
         assertTrue(
-            finalList[8] == "B - 2 - C"
+            finalList[8] == "B - 2 - C",
         )
         assertTrue(
-            finalList[11] == "B - 3 - D"
+            finalList[11] == "B - 3 - D",
         )
     }
 
@@ -43,11 +43,11 @@ class DimensionRowCombinatorTest {
         dimensionRowCombinator.combineWithNextItem(
             gridAnalyticsResponse = testGridAnalyticsResponse(emptyList()),
             currentList = finalList,
-            hasMoreRows = false
+            hasMoreRows = false,
         )
 
         assertTrue(
-            finalList.isEmpty()
+            finalList.isEmpty(),
         )
     }
 
@@ -62,30 +62,30 @@ class DimensionRowCombinatorTest {
                         row22.uid() to MetadataItem.CategoryOptionItem(row22),
                         row23.uid() to MetadataItem.CategoryOptionItem(row23),
                         row31.uid() to MetadataItem.CategoryOptionItem(row31),
-                        row32.uid() to MetadataItem.CategoryOptionItem(row32)
-                    )
+                        row32.uid() to MetadataItem.CategoryOptionItem(row32),
+                    ),
                 )
             },
             headers = GridHeader(
                 columns = GridAnalyticsResponseSamples.sample1.headers.columns,
-                rows = testingRows
-            )
+                rows = testingRows,
+            ),
         )
 
     private fun testingRows() = listOf(
         listOf(
             GridHeaderItem(row11.uid(), 6),
-            GridHeaderItem(row12.uid(), 6)
+            GridHeaderItem(row12.uid(), 6),
         ),
         listOf(
             GridHeaderItem(row21.uid(), 2),
             GridHeaderItem(row22.uid(), 2),
-            GridHeaderItem(row23.uid(), 2)
+            GridHeaderItem(row23.uid(), 2),
         ),
         listOf(
             GridHeaderItem(row31.uid(), 1),
-            GridHeaderItem(row32.uid(), 1)
-        )
+            GridHeaderItem(row32.uid(), 1),
+        ),
     )
 
     val row11 = CategoryOption.builder()

@@ -19,7 +19,7 @@ interface RelationshipView : AbstractActivityContracts.View {
     fun setFeatureCollection(
         currentTei: String?,
         relationshipsMapModels: List<org.dhis2.maps.model.RelationshipUiComponentModel>,
-        map: Pair<Map<String, FeatureCollection>, BoundingBox>
+        map: Pair<Map<String, FeatureCollection>, BoundingBox>,
     )
 
     fun openEventFor(eventUid: String, programUid: String)

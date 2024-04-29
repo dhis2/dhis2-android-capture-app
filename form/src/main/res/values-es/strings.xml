@@ -98,5 +98,4 @@
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
     <string name="enrollmment_date">Fecha de inscripción</string>
     <string name="incident_date">Fecha del incidente</string>
-
-</resources>
+    </resources>

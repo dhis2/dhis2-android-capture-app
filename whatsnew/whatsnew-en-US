@@ -1,9 +1,8 @@
-This is a Patch version that fixes:
-ANDROAPP-3106 [Bug]Error when searching with comma char in the values
-ANDROAPP-4322 Analytics legends don't show event's exact date
-ANDROAPP-4710 Mandatory Fields
-ANDROAPP-5253 Event status filter doesn't remove checkmarks after the reset
-ANDROAPP-5255 Loading bar never hides in overview screen
-ANDROAPP-5271 After finishing transaction, orgunit on the Dialog is not reset
+This is a patch version that fixes:
+- ANDROAPP-5749 Incorrect behavior when tapping on Next on sections that are too long
+- ANDROAPP-5885 Data set indicators don't update until the user moves to a different cell
+- ANDROAPP-5741 [Local Analytics] App crashes if charts are empty
+- ANDROAPP-5604	App crashes when one attempts to synchronise TEI and events imported via QR code
+- ANDROAPP-5872 Search in stock management is not updating the list
 
-You can find all details in Github (github.com/dhis2/dhis2-android-capture-app) releases
+You can find all the details on Jira and Github.

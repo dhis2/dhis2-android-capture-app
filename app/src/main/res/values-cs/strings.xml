@@ -93,14 +93,6 @@
     <string name="program_inactive">Program neaktivní</string>
 
     <string name="event_open">Otevřít</string>
-    <string name="event_completed">Událost dokončena</string>
-    <string name="event_skipped">Událost přeskočena</string>
-    <string name="event_schedule">Plánování Události</string>
-    <string name="event_expired">Událost vypršela</string>
-    <string name="event_editing_expired">Úpravy vypršely</string>
-    <string name="event_accepted">Událost přijata</string>
-    <string name="event_approved">Událost schválena</string>
-    <string name="event_inactive">Událost neaktivní</string>
     <string name="read_only">Pouze ke čtení</string>
     <string name="finish_and_complete">Hotovo a dokončit</string>
     <string name="completed">Dokončeno</string>
@@ -170,7 +162,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Prohlednout detaily</string>
     <string name="view_more">UKÁZAT VÍCE</string>
-    <string name="edit">UPRAVIT</string>
     <string name="enrolling_ou">Zápis Org. J.:</string>
     <string name="follow_up">Následovat</string>
     <string name="follow_up_enabled">Sledování povoleno</string>

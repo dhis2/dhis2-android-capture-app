@@ -1,9 +1,10 @@
 package org.dhis2.form.ui.event
 
-import java.util.Date
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
+import java.util.Date
 
 sealed class RecyclerViewUiEvents {
 
@@ -11,7 +12,7 @@ sealed class RecyclerViewUiEvents {
         val uid: String,
         val year: Int,
         val month: Int,
-        val day: Int
+        val day: Int,
     ) : RecyclerViewUiEvents()
 
     data class OpenCustomCalendar(
@@ -19,35 +20,35 @@ sealed class RecyclerViewUiEvents {
         val label: String,
         val date: Date?,
         val allowFutureDates: Boolean,
-        val isDateTime: Boolean? = false
+        val isDateTime: Boolean? = false,
     ) : RecyclerViewUiEvents()
 
     data class OpenTimePicker(
         val uid: String,
         val label: String,
         val date: Date?,
-        val isDateTime: Boolean? = false
+        val isDateTime: Boolean? = false,
     ) : RecyclerViewUiEvents()
 
     data class ShowDescriptionLabelDialog(
         val title: String,
-        val message: String?
+        val message: String?,
     ) : RecyclerViewUiEvents()
 
     data class RequestCurrentLocation(
-        val uid: String
+        val uid: String,
     ) : RecyclerViewUiEvents()
 
     data class RequestLocationByMap(
         val uid: String,
         val featureType: FeatureType,
-        val value: String?
+        val value: String?,
     ) : RecyclerViewUiEvents()
 
     data class ScanQRCode(
         val uid: String,
         val optionSet: String?,
-        val renderingType: UiRenderType?
+        val renderingType: UiRenderType?,
     ) : RecyclerViewUiEvents()
 
     data class DisplayQRCode(
@@ -55,48 +56,50 @@ sealed class RecyclerViewUiEvents {
         val optionSet: String?,
         val value: String,
         val renderingType: UiRenderType?,
-        val editable: Boolean
+        val editable: Boolean,
+        val label: String,
     ) : RecyclerViewUiEvents()
 
     data class OpenOrgUnitDialog(
         val uid: String,
         val label: String,
-        val value: String?
+        val value: String?,
+        val orgUnitSelectorScope: OrgUnitSelectorScope?,
     ) : RecyclerViewUiEvents()
 
     data class AddImage(
-        val uid: String
+        val uid: String,
     ) : RecyclerViewUiEvents()
 
     data class AddSignature(
         val uid: String,
-        val label: String
+        val label: String,
     ) : RecyclerViewUiEvents()
 
     data class ShowImage(
         val label: String,
-        val value: String
+        val value: String,
     ) : RecyclerViewUiEvents()
 
     data class CopyToClipboard(
-        val value: String?
+        val value: String?,
     ) : RecyclerViewUiEvents()
 
     data class OpenOptionSetDialog(
-        val field: FieldUiModel
+        val field: FieldUiModel,
     ) : RecyclerViewUiEvents()
 
     data class OpenFileSelector(
-        val field: FieldUiModel
+        val field: FieldUiModel,
     ) : RecyclerViewUiEvents()
 
     data class OpenFile(
-        val field: FieldUiModel
+        val field: FieldUiModel,
     ) : RecyclerViewUiEvents()
 
     data class OpenChooserIntent(
         val action: String,
         val value: String?,
-        val uid: String
+        val uid: String,
     ) : RecyclerViewUiEvents()
 }

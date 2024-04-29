@@ -18,10 +18,10 @@ class MapRelationshipsToFeatureCollection(
     private val mapLineToFeature: @NotNull MapLineRelationshipToFeature,
     private val mapPointToFeature: @NotNull MapPointToFeature,
     private val mapPolygonToFeature: MapPolygonToFeature,
-    private val bounds: @NotNull GetBoundingBox
+    private val bounds: @NotNull GetBoundingBox,
 ) {
     fun map(
-        relationships: List<RelationshipUiComponentModel>
+        relationships: List<RelationshipUiComponentModel>,
     ): Pair<Map<String, FeatureCollection>, BoundingBox> {
         val relationshipByName = relationships
             .groupBy { it.displayName!! }
@@ -58,10 +58,10 @@ class MapRelationshipsToFeatureCollection(
         return Pair<Map<String, FeatureCollection>, BoundingBox>(
             relationshipByName.mapValues {
                 FeatureCollection.fromFeatures(
-                    it.value
+                    it.value,
                 )
             },
-            bounds.getEnclosingBoundingBox(latLongList)
+            bounds.getEnclosingBoundingBox(latLongList),
         )
     }
 

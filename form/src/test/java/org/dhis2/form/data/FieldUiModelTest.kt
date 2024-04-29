@@ -23,7 +23,7 @@ class FieldUiModelTest {
         }
         assert(
             matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
-                ?.map { it.uid() } == listOf("3", "4", "5")
+                ?.map { it.uid() } == listOf("3", "4", "5"),
         )
     }
 
@@ -42,7 +42,7 @@ class FieldUiModelTest {
         }
         assert(
             matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
-                ?.map { it.uid() } == listOf("1", "2")
+                ?.map { it.uid() } == listOf("1", "2"),
         )
     }
 
@@ -56,18 +56,18 @@ class FieldUiModelTest {
             it.optionSetConfiguration = when (conf) {
                 is OptionSetConfiguration.BigOptionSet -> conf.copy(
                     optionsToHide = optionsToHide,
-                    optionsToShow = optionsInGroupToShow
+                    optionsToShow = optionsInGroupToShow,
                 )
                 is OptionSetConfiguration.DefaultOptionSet -> conf.copy(
                     optionsToHide = optionsToHide,
-                    optionsToShow = optionsInGroupToShow
+                    optionsToShow = optionsInGroupToShow,
                 )
                 null -> conf
             }
         }
         assert(
             matrixOptionSetModel.optionSetConfiguration?.optionsToDisplay()
-                ?.map { it.uid() } == listOf("3", "5")
+                ?.map { it.uid() } == listOf("3", "5"),
         )
     }
 
@@ -82,8 +82,9 @@ class FieldUiModelTest {
                 Option.builder().uid("2").build(),
                 Option.builder().uid("3").build(),
                 Option.builder().uid("4").build(),
-                Option.builder().uid("5").build()
+                Option.builder().uid("5").build(),
             )
-        }
+        },
+        autocompleteList = null,
     )
 }

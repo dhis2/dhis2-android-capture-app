@@ -2,10 +2,6 @@ package org.dhis2.android.rtsm.services.rules
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.Date
-import java.util.Objects
-import java.util.UUID
-import javax.inject.Inject
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
@@ -30,9 +26,13 @@ import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
 import org.hisp.dhis.rules.models.RuleVariable
 import timber.log.Timber
+import java.util.Date
+import java.util.Objects
+import java.util.UUID
+import javax.inject.Inject
 
 class RuleValidationHelperImpl @Inject constructor(
-    private val d2: D2
+    private val d2: D2,
 ) : RuleValidationHelper {
 
     override fun evaluate(
@@ -40,13 +40,13 @@ class RuleValidationHelperImpl @Inject constructor(
         program: String,
         transaction: Transaction,
         eventUid: String?,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ): Flowable<List<RuleEffect>> {
         return ruleEngine(entry.item.id, appConfig.program).flatMap { ruleEngine ->
-            val programStage = programStage(program)
+            val programStage = programStage(program) ?: return@flatMap Flowable.empty()
 
             Flowable.fromCallable(
-                prepareForDataEntry(ruleEngine, programStage, transaction, entry.date)
+                prepareForDataEntry(ruleEngine, programStage, transaction, entry.date),
             ).flatMap { prelimRuleEffects ->
                 val dataValues = mutableListOf<RuleDataValue>().apply {
                     addAll(
@@ -55,8 +55,8 @@ class RuleValidationHelperImpl @Inject constructor(
                             programStage.uid(),
                             transaction,
                             entry.date,
-                            appConfig
-                        )
+                            appConfig,
+                        ),
                     )
                 }
 
@@ -70,8 +70,8 @@ class RuleValidationHelperImpl @Inject constructor(
                                         entry.date,
                                         programStage.uid(),
                                         ruleAction.field(),
-                                        data
-                                    )
+                                        data,
+                                    ),
                                 )
                             }
                         }
@@ -87,9 +87,9 @@ class RuleValidationHelperImpl @Inject constructor(
                             transaction.facility.uid,
                             dataValues,
                             entry.date,
-                            null
-                        )
-                    )
+                            null,
+                        ),
+                    ),
                 )
             }
         }
@@ -103,9 +103,9 @@ class RuleValidationHelperImpl @Inject constructor(
         ruleEngine: RuleEngine,
         programStage: ProgramStage,
         transaction: Transaction,
-        eventDate: Date
+        eventDate: Date,
     ) = ruleEngine.evaluate(
-        createRuleEvent(programStage, transaction.facility.uid, listOf(), eventDate)
+        createRuleEvent(programStage, transaction.facility.uid, listOf(), eventDate),
     )
 
     private fun createRuleEvent(
@@ -113,12 +113,12 @@ class RuleValidationHelperImpl @Inject constructor(
         organisationUnit: String,
         dataValues: List<RuleDataValue>,
         period: Date,
-        eventUid: String? = null
+        eventUid: String? = null,
     ) = RuleEvent.create(
         eventUid ?: UUID.randomUUID().toString(), programStage.uid(),
         RuleEvent.Status.ACTIVE, period, period,
         organisationUnit, null, dataValues,
-        programStage.name() ?: "", period
+        programStage.name() ?: "", period,
     )
 
     private fun programStage(programUid: String) = d2.programModule().programStages()
@@ -133,7 +133,7 @@ class RuleValidationHelperImpl @Inject constructor(
                 it.toRuleVariableList(
                     d2.trackedEntityModule().trackedEntityAttributes(),
                     d2.dataElementModule().dataElements(),
-                    d2.optionModule().options()
+                    d2.optionModule().options(),
                 )
             }
     }
@@ -166,7 +166,7 @@ class RuleValidationHelperImpl @Inject constructor(
             ruleVariables(programUid),
             constants(),
             supplementaryData(),
-            enrollmentEvents
+            enrollmentEvents,
         ) { rules, variables, constants, supplData, events ->
             RuleEngineHelper.getRuleEngine(rules, variables, constants, supplData, events)
         }
@@ -212,14 +212,14 @@ class RuleValidationHelperImpl @Inject constructor(
                     .programStage(event.programStage())
                     .programStageName(
                         d2.programModule().programStages().uid(event.programStage())
-                            .blockingGet()!!.name()
+                            .blockingGet()!!.name(),
                     )
                     .status(
                         if (event.status() == EventStatus.VISITED) {
                             RuleEvent.Status.ACTIVE
                         } else {
                             RuleEvent.Status.valueOf(event.status()!!.name)
-                        }
+                        },
                     )
                     .eventDate(event.eventDate())
                     .dueDate(if (event.dueDate() != null) event.dueDate() else event.eventDate())
@@ -227,15 +227,15 @@ class RuleValidationHelperImpl @Inject constructor(
                     .organisationUnitCode(
                         d2.organisationUnitModule()
                             .organisationUnits().uid(event.organisationUnit())
-                            .blockingGet()!!.code()
+                            .blockingGet()!!.code(),
                     )
                     .dataValues(
                         event.trackedEntityDataValues()?.toRuleDataValue(
                             event,
                             d2.dataElementModule().dataElements(),
                             d2.programModule().programRuleVariables(),
-                            d2.optionModule().options()
-                        )
+                            d2.optionModule().options(),
+                        ),
                     )
                     .build()
             }.toList()
@@ -250,7 +250,7 @@ class RuleValidationHelperImpl @Inject constructor(
             .map {
                 if (eventUid != null) {
                     val programStage = d2.eventModule().events()
-                        .uid(eventUid).blockingGet().programStage()
+                        .uid(eventUid).blockingGet()?.programStage()
                     it.filter { rule ->
                         rule.programStage() == null || rule.programStage() == programStage
                     }
@@ -264,7 +264,7 @@ class RuleValidationHelperImpl @Inject constructor(
         programStage: String,
         transaction: Transaction,
         eventDate: Date,
-        appConfig: AppConfig
+        appConfig: AppConfig,
     ): List<RuleDataValue> {
         val values = mutableListOf<RuleDataValue>()
 
@@ -281,14 +281,14 @@ class RuleValidationHelperImpl @Inject constructor(
                         .options()
                         .uid(distributedTo.uid)
                         .blockingGet()
-                        .code()?.let { code ->
+                        ?.code()?.let { code ->
                             values.add(
                                 RuleDataValue.create(
                                     eventDate,
                                     programStage,
                                     appConfig.distributedTo,
-                                    code
-                                )
+                                    code,
+                                ),
                             )
                         }
                 }

@@ -33,23 +33,23 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Button(
             onClick = onReopenClickListener,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.section_warning_color)
+                backgroundColor = colorResource(id = R.color.section_warning_color),
             ),
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .height(40.dp)
-                .wrapContentWidth()
+                .wrapContentWidth(),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_lock_open_white),
                 contentDescription = "reopen",
-                tint = Color.White
+                tint = Color.White,
             )
             Spacer(modifier = Modifier.size(8.dp))
             Text(
@@ -57,8 +57,8 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
                 fontSize = 14.sp,
                 color = Color.White,
                 style = TextStyle.Default.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular))
-                )
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                ),
             )
         }
     }

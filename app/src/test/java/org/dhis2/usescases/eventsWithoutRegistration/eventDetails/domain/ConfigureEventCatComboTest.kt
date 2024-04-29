@@ -48,7 +48,7 @@ class ConfigureEventCatComboTest {
         // Given a default category combo
         whenever(categoryCombo.isDefault) doReturn true
         whenever(
-            repository.getCatOptionCombos(CATEGORY_COMBO_UID)
+            repository.getCatOptionCombos(CATEGORY_COMBO_UID),
         ) doReturn listOf(categoryOptionCombo)
 
         // When catCombo is invoked
@@ -68,7 +68,7 @@ class ConfigureEventCatComboTest {
         }
         val selectedCategoryOption = Pair(CATEGORY_UID, CATEGORY_OPTION_UID)
         whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID)
+            repository.getCatOption(CATEGORY_OPTION_UID),
         ) doReturn categoryOption
 
         // When catCombo is invoked
@@ -87,7 +87,7 @@ class ConfigureEventCatComboTest {
             on { uid() } doReturn CATEGORY_OPTION_UID
         }
         whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID)
+            repository.getCatOption(CATEGORY_OPTION_UID),
         ) doReturn categoryOption
 
         // When catCombo is invoked

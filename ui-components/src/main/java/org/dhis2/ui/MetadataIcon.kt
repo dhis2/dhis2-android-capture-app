@@ -38,8 +38,8 @@ fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconDa
         painter = painterResource(id = metadataIconData.iconResource),
         contentDescription = "",
         colorFilter = ColorFilter.tint(
-            metadataIconData.programColor.getAlphaContrastColor()
-        )
+            metadataIconData.programColor.getAlphaContrastColor(),
+        ),
     )
 }
 
@@ -49,20 +49,20 @@ fun SquareWithNumber(number: Int) {
         modifier = Modifier.size(25.dp)
             .clip(RoundedCornerShape(4.dp))
             .background("#f2f2f2".toColor()),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = "+$number",
             color = "#6f6f6f".toColor(),
             textAlign = TextAlign.Center,
-            fontFamily = FontFamily(Font(R.font.rubik_regular))
+            fontFamily = FontFamily(Font(R.font.rubik_regular)),
         )
     }
 }
 
 fun ComposeView.setUpMetadataIcon(
     metadataIconData: MetadataIconData,
-    handleDispose: Boolean = true
+    handleDispose: Boolean = true,
 ) {
     if (handleDispose) {
         handleComposeDispose()
@@ -76,14 +76,14 @@ fun ComposeView.setUpMetadataIcon(
 
 fun ComposeView.handleComposeDispose() {
     setViewCompositionStrategy(
-        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
     )
 }
 
 @Preview
 @Composable
 fun MetadataIconPreview(
-    @PreviewParameter(MetadataIconDataParamProvider::class) metadataIconData: MetadataIconData
+    @PreviewParameter(MetadataIconDataParamProvider::class) metadataIconData: MetadataIconData,
 ) {
     MetadataIcon(metadataIconData = metadataIconData)
 }
@@ -94,28 +94,28 @@ class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData>
         get() = sequenceOf(
             MetadataIconData(
                 programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_negative
+                iconResource = R.drawable.ic_home_negative,
             ),
             MetadataIconData(
                 programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_positive
+                iconResource = R.drawable.ic_home_positive,
             ),
             MetadataIconData(
                 programColor = programColorDark.toArgb(),
-                iconResource = R.drawable.ic_home_outline
+                iconResource = R.drawable.ic_home_outline,
             ),
             MetadataIconData(
                 programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_negative
+                iconResource = R.drawable.ic_home_negative,
             ),
             MetadataIconData(
                 programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_positive
+                iconResource = R.drawable.ic_home_positive,
             ),
             MetadataIconData(
                 programColor = programColorLight.toArgb(),
-                iconResource = R.drawable.ic_home_outline
-            )
+                iconResource = R.drawable.ic_home_outline,
+            ),
 
         )
 }

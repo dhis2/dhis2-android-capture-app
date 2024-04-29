@@ -7,7 +7,6 @@ import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.data.toAnalyticsChartType
 import dhis2.org.analytics.charts.providers.ChartCoordinatesProvider
 import dhis2.org.analytics.charts.providers.PeriodStepProvider
-import java.util.Locale
 import org.hisp.dhis.android.core.analytics.aggregated.Dimension
 import org.hisp.dhis.android.core.analytics.aggregated.GridAnalyticsResponse
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
@@ -15,10 +14,11 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.visualization.Visualization
 import org.hisp.dhis.android.core.visualization.VisualizationType
+import java.util.Locale
 
 class VisualizationToGraph(
     private val periodStepProvider: PeriodStepProvider,
-    private val chartCoordinatesProvider: ChartCoordinatesProvider
+    private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
     val dimensionalResponseToPieData by lazy { DimensionalResponseToPieData() }
     val dimensionRowCombinator by lazy { DimensionRowCombinator() }
@@ -28,7 +28,7 @@ class VisualizationToGraph(
             val series = when (visualization.chartType) {
                 ChartType.PIE_CHART -> dimensionalResponseToPieData.map(
                     visualization.dimensionResponse,
-                    Dimension.Data
+                    Dimension.Data,
                 )
                 else -> emptyList()
             }
@@ -41,7 +41,7 @@ class VisualizationToGraph(
                 periodStep = periodStepProvider.periodStep(PeriodType.Daily),
                 chartType = visualization.chartType,
                 categories = categories,
-                visualizationUid = null
+                visualizationUid = null,
             )
         }
     }
@@ -51,7 +51,7 @@ class VisualizationToGraph(
         visualization: Visualization,
         gridAnalyticsResponse: GridAnalyticsResponse,
         selectedRelativePeriod: RelativePeriod?,
-        selectedOrgUnits: List<String>?
+        selectedOrgUnits: List<String>?,
     ): Graph {
         val categories = getCategories(visualization.type(), gridAnalyticsResponse)
         val formattedCategory = formatCategories(categories, gridAnalyticsResponse.metadata)
@@ -66,7 +66,7 @@ class VisualizationToGraph(
             categories = formattedCategory,
             visualizationUid = visualization.uid(),
             periodToDisplaySelected = selectedRelativePeriod,
-            orgUnitsSelected = selectedOrgUnits ?: emptyList()
+            orgUnitsSelected = selectedOrgUnits ?: emptyList(),
         )
     }
 
@@ -75,7 +75,7 @@ class VisualizationToGraph(
         visualization: Visualization,
         selectedRelativePeriod: RelativePeriod?,
         selectedOrgUnits: List<String>?,
-        errorMessage: String
+        errorMessage: String,
     ): Graph {
         return Graph(
             title = customTitle ?: visualization.displayName() ?: "",
@@ -89,13 +89,13 @@ class VisualizationToGraph(
             periodToDisplaySelected = selectedRelativePeriod,
             orgUnitsSelected = selectedOrgUnits ?: emptyList(),
             hasError = true,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
         )
     }
 
     private fun getCategories(
         visualizationType: VisualizationType?,
-        gridAnalyticsResponse: GridAnalyticsResponse
+        gridAnalyticsResponse: GridAnalyticsResponse,
     ): List<String> {
         return when (visualizationType) {
             VisualizationType.PIE -> {
@@ -106,7 +106,7 @@ class VisualizationToGraph(
                 dimensionRowCombinator.combineWithNextItem(
                     gridAnalyticsResponse = gridAnalyticsResponse,
                     currentList = combCategories,
-                    hasMoreRows = gridAnalyticsResponse.headers.rows.isNotEmpty()
+                    hasMoreRows = gridAnalyticsResponse.headers.rows.isNotEmpty(),
                 )
                 combCategories
             }
@@ -115,13 +115,13 @@ class VisualizationToGraph(
 
     private fun formatCategories(
         categories: List<String>,
-        metadata: Map<String, MetadataItem>
+        metadata: Map<String, MetadataItem>,
     ): List<String> {
         return categories.map { category ->
             when (val metadataItem = metadata[category]) {
                 is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
                     Locale.getDefault(),
-                    metadataItem.item
+                    metadataItem.item,
                 )
                 else -> category
             }
@@ -130,7 +130,7 @@ class VisualizationToGraph(
 
     private fun getSeries(
         gridAnalyticsResponse: GridAnalyticsResponse,
-        categories: List<String>
+        categories: List<String>,
     ): List<SerieData> {
         val serieList = (gridAnalyticsResponse.values.first().indices).map { idx ->
             gridAnalyticsResponse.values.map { it[idx] }
@@ -141,7 +141,7 @@ class VisualizationToGraph(
                 when (val metadataItem = gridAnalyticsResponse.metadata[it]) {
                     is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
                         Locale.getDefault(),
-                        metadataItem.item
+                        metadataItem.item,
                     )
                     else -> gridAnalyticsResponse.metadata[it]?.displayName ?: ""
                 }
@@ -151,8 +151,8 @@ class VisualizationToGraph(
                 coordinates = chartCoordinatesProvider.visualizationCoordinates(
                     gridResponseValueList,
                     gridAnalyticsResponse.metadata,
-                    categories
-                )
+                    categories,
+                ),
             )
         }
     }

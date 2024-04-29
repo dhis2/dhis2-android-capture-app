@@ -7,13 +7,13 @@ import android.view.KeyEvent
 import androidx.databinding.DataBindingUtil
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import javax.inject.Inject
 
 class ScanActivity : ActivityGlobalAbstract() {
     private lateinit var binding: ActivityScanBinding
@@ -94,7 +94,7 @@ class ScanActivity : ActivityGlobalAbstract() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         capture.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }

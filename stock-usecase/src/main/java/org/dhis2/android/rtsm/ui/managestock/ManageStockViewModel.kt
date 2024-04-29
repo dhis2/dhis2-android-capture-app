@@ -3,15 +3,12 @@ package org.dhis2.android.rtsm.ui.managestock
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Collections
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +51,9 @@ import org.dhis2.composetable.model.ValidationResult
 import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import java.util.Collections
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
@@ -65,10 +65,10 @@ class ManageStockViewModel @Inject constructor(
     private val resources: ResourceManager,
     private val tableModelMapper: TableModelMapper,
     private val dispatcherProvider: DispatcherProvider,
-    val tableDimensionStore: StockTableDimensionStore
+    val tableDimensionStore: StockTableDimensionStore,
 ) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
-    speechRecognitionManager
+    speechRecognitionManager,
 ) {
     private val _config = MutableLiveData<AppConfig>()
     val config: LiveData<AppConfig> = _config
@@ -86,8 +86,8 @@ class ManageStockViewModel @Inject constructor(
 
     private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
         TableScreenState(
-            tables = emptyList()
-        )
+            tables = emptyList(),
+        ),
     )
     val screenState: LiveData<TableScreenState> = _screenState
 
@@ -141,7 +141,17 @@ class ManageStockViewModel @Inject constructor(
 
     fun refreshData() {
         viewModelScope.launch {
-            getStockItems().asFlow().collect { stockItems ->
+            val result = stockManagerRepository.search(
+                search.value ?: SearchParametersModel(
+                    null,
+                    null,
+                    transaction.value?.facility?.uid ?: "",
+                ),
+                transaction.value?.facility?.uid,
+                config.value!!,
+            ).items
+
+            result.asFlow().collect { stockItems ->
                 _stockItems.value = stockItems
                 populateTable()
             }
@@ -169,16 +179,9 @@ class ManageStockViewModel @Inject constructor(
             SearchParametersModel(
                 null,
                 null,
-                it
+                it,
             )
         }
-    }
-
-    private fun getStockItems() = Transformations.switchMap(search) { q ->
-        val result =
-            stockManagerRepository.search(q, transaction.value?.facility?.uid, config.value!!)
-
-        result.items
     }
 
     private fun configureRelays() {
@@ -195,12 +198,13 @@ class ManageStockViewModel @Inject constructor(
                                 SearchParametersModel(
                                     result,
                                     null,
-                                    it
+                                    it,
                                 )
                             }
+                        refreshData()
                     },
-                    { it.printStackTrace() }
-                )
+                    { it.printStackTrace() },
+                ),
         )
 
         disposable.add(
@@ -221,21 +225,22 @@ class ManageStockViewModel @Inject constructor(
                                 it,
                                 config.value?.program!!,
                                 transaction.value!!,
-                                config.value!!
-                            )
+                                config.value!!,
+                            ),
                         )
                     },
                     {
                         it.printStackTrace()
-                    }
-                )
+                    },
+                ),
         )
     }
 
     private fun populateTable() {
         val items = when (dataEntryUiState.value.step) {
             DataEntryStep.REVIEWING,
-            DataEntryStep.EDITING_REVIEWING ->
+            DataEntryStep.EDITING_REVIEWING,
+            ->
                 _stockItems.value?.filter {
                     itemsCache[it.id] != null
                 }
@@ -252,13 +257,13 @@ class ManageStockViewModel @Inject constructor(
         val tables = tableModelMapper.map(
             entries = entries,
             stockLabel = resources.getString(R.string.stock),
-            qtdLabel = provideQuantityLabel()
+            qtdLabel = provideQuantityLabel(),
         )
 
         _screenState.postValue(
             TableScreenState(
-                tables = tables
-            )
+                tables = tables,
+            ),
         )
 
         updateReviewButton()
@@ -277,7 +282,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config.value!!
+                config.value!!,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -288,8 +293,8 @@ class ManageStockViewModel @Inject constructor(
                                 snackBarUiState = SnackBarUiState(
                                     message = R.string.transaction_completed,
                                     color = R.color.success_color,
-                                    icon = R.drawable.success_icon
-                                )
+                                    icon = R.drawable.success_icon,
+                                ),
                             )
                         }
                         updateStep(DataEntryStep.COMPLETED)
@@ -298,8 +303,8 @@ class ManageStockViewModel @Inject constructor(
                     },
                     {
                         it.printStackTrace()
-                    }
-                )
+                    },
+                ),
         )
     }
 
@@ -318,12 +323,15 @@ class ManageStockViewModel @Inject constructor(
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
             currentValue = cell.value,
             keyboardInputType = KeyboardInputType.NumberPassword(),
-            error = stockEntry?.errorMessage
+            error = stockEntry?.errorMessage,
         )
     }
 
     fun onSaveValueChange(cell: TableCell) {
-        viewModelScope.launch(dispatcherProvider.io()) {
+        viewModelScope.launch(
+            dispatcherProvider.io(),
+            start = CoroutineStart.ATOMIC,
+        ) {
             saveValue(cell)
         }
     }
@@ -340,7 +348,7 @@ class ManageStockViewModel @Inject constructor(
                             item = stockItem,
                             qty = cell.value,
                             stockOnHand = stockItem.stockOnHand,
-                            errorMessage = result.message
+                            errorMessage = result.message,
                         )
                         populateTable()
                     }
@@ -358,7 +366,7 @@ class ManageStockViewModel @Inject constructor(
                                     }
                                     populateTable()
                                 }
-                            }
+                            },
                         )
                     }
                 }
@@ -369,7 +377,7 @@ class ManageStockViewModel @Inject constructor(
     private fun applyRuleEffectOnItem(
         ruleEffect: RuleEffect,
         stockItem: StockItem,
-        value: String?
+        value: String?,
     ) {
         if (ruleEffect.ruleAction() is RuleActionAssign &&
             (
@@ -390,7 +398,7 @@ class ManageStockViewModel @Inject constructor(
                 stockItem,
                 value,
                 stockOnHand,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
             )
         }
     }
@@ -404,7 +412,7 @@ class ManageStockViewModel @Inject constructor(
         item: @NotNull StockItem,
         position: @NotNull Int,
         qty: @NotNull String,
-        callback: OnQuantityValidated?
+        callback: OnQuantityValidated?,
     ) {
         entryRelay.accept(RowAction(StockEntry(item = item, qty = qty), position, callback))
     }
@@ -424,7 +432,7 @@ class ManageStockViewModel @Inject constructor(
             item = item,
             qty = qty,
             stockOnHand = stockOnHand,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
         )
         hasUnsavedData(true)
     }
@@ -477,7 +485,7 @@ class ManageStockViewModel @Inject constructor(
                     icon = R.drawable.proceed_icon,
                     contentColor = _themeColor.value,
                     containerColor = Color.White,
-                    visible = buttonVisibility
+                    visible = buttonVisibility,
                 )
             }
 
@@ -488,7 +496,7 @@ class ManageStockViewModel @Inject constructor(
                     icon = R.drawable.confirm_review,
                     contentColor = Color.White,
                     containerColor = _themeColor.value,
-                    visible = buttonVisibility
+                    visible = buttonVisibility,
                 )
             }
 
@@ -586,6 +594,6 @@ class ManageStockViewModel @Inject constructor(
     private fun refreshTableConfiguration() = TableConfigurationState(
         overwrittenTableWidth = tableDimensionStore.getTableWidth(),
         overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
-        overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null)
+        overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null),
     )
 }

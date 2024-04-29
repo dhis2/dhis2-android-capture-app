@@ -21,7 +21,7 @@ fun FAButton(
     expanded: Boolean = true,
     icon: @Composable
     () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     ExtendedFloatingActionButton(
         onClick = onClick,
@@ -30,7 +30,7 @@ fun FAButton(
         icon = icon,
         text = { Text(text = stringResource(text)) },
         contentColor = contentColor,
-        containerColor = containerColor
+        containerColor = containerColor,
     )
 }
 
@@ -46,9 +46,9 @@ fun ExtendedFAButtonPreview() {
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_home_positive),
-                contentDescription = null
+                contentDescription = null,
             )
-        }
+        },
     ) {
     }
 }

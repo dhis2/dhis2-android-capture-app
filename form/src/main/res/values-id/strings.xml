@@ -60,5 +60,4 @@
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
     <string name="enrollmment_date">Tanggal pendaftaran</string>
     <string name="incident_date">Tanggal insiden</string>
-
-</resources>
+    </resources>

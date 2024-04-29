@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import java.util.Date
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
@@ -14,6 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class ConfigureOrgUnitTest {
 
@@ -43,21 +43,21 @@ class ConfigureOrgUnitTest {
             repository = repository,
             preferencesProvider = preferenceProvider,
             programUid = PROGRAM_UID,
-            initialOrgUnitUid = null
+            initialOrgUnitUid = null,
         )
         // And there is date selected
         val selectedDate = Date()
         val dateString = DateUtils.databaseDateFormat().format(selectedDate)
 
         whenever(
-            preferenceProvider.getString(CURRENT_ORG_UNIT)
+            preferenceProvider.getString(CURRENT_ORG_UNIT),
         ) doReturn STORED_ORG_UNIT_UID
         // And the stored org unit is in the filtered list
         whenever(
             repository.getFilteredOrgUnits(
                 dateString,
-                null
-            )
+                null,
+            ),
         ) doReturn listOf()
 
         // When org unit is initialized
@@ -77,21 +77,21 @@ class ConfigureOrgUnitTest {
             repository = repository,
             preferencesProvider = preferenceProvider,
             programUid = PROGRAM_UID,
-            initialOrgUnitUid = null
+            initialOrgUnitUid = null,
         )
         // And there is date selected
         val selectedDate = Date()
         val dateString = DateUtils.databaseDateFormat().format(selectedDate)
 
         whenever(
-            preferenceProvider.getString(CURRENT_ORG_UNIT)
+            preferenceProvider.getString(CURRENT_ORG_UNIT),
         ) doReturn STORED_ORG_UNIT_UID
         // And the stored org unit is in the filtered list
         whenever(
             repository.getFilteredOrgUnits(
                 dateString,
-                null
-            )
+                null,
+            ),
         ) doReturn listOf()
 
         // When org unit is initialized
@@ -109,30 +109,30 @@ class ConfigureOrgUnitTest {
             repository = repository,
             preferencesProvider = preferenceProvider,
             programUid = PROGRAM_UID,
-            initialOrgUnitUid = null
+            initialOrgUnitUid = null,
         )
         // And there is date selected
         val selectedDate = Date()
         val dateString = DateUtils.databaseDateFormat().format(selectedDate)
         // And there is a stored org unit
         whenever(
-            preferenceProvider.contains(CURRENT_ORG_UNIT)
+            preferenceProvider.contains(CURRENT_ORG_UNIT),
         ) doReturn true
         whenever(
-            preferenceProvider.getString(CURRENT_ORG_UNIT)
+            preferenceProvider.getString(CURRENT_ORG_UNIT),
         ) doReturn STORED_ORG_UNIT_UID
         // And the stored org unit is in the filtered list
         whenever(
             repository.getFilteredOrgUnits(
                 dateString,
-                null
-            )
+                null,
+            ),
         ) doReturn listOf(
             storedOrgUnit,
             OrganisationUnit.builder()
                 .uid("orgUnitUid2")
                 .displayName("orgUnitUid2")
-                .build()
+                .build(),
         )
 
         // When org unit is initialized

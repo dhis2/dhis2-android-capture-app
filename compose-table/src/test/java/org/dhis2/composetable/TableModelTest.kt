@@ -21,49 +21,49 @@ class TableModelTest {
                     cells = listOf(
                         TableHeaderCell("1"),
                         TableHeaderCell("2"),
-                        TableHeaderCell("3")
-                    )
-                )
-            )
+                        TableHeaderCell("3"),
+                    ),
+                ),
+            ),
         ),
         tableRows = listOf(
             TableRowModel(
                 rowHeader = RowHeader(
                     id = "0",
                     title = "Row 1",
-                    row = 0
+                    row = 0,
                 ),
                 values = mapOf(
                     Pair(0, TableCell("00", 0, 0, "1")),
                     Pair(1, TableCell("01", 0, 1, "2")),
-                    Pair(2, TableCell("02", 0, 2, "3"))
-                )
+                    Pair(2, TableCell("02", 0, 2, "3")),
+                ),
             ),
             TableRowModel(
                 rowHeader = RowHeader(
                     id = "1",
                     title = "Row 2",
-                    row = 1
+                    row = 1,
                 ),
                 values = mapOf(
                     Pair(0, TableCell("10", 1, 0, "4")),
                     Pair(1, TableCell("11", 1, 1, "5", editable = false)),
-                    Pair(2, TableCell("12", 1, 2, "6"))
-                )
+                    Pair(2, TableCell("12", 1, 2, "6")),
+                ),
             ),
             TableRowModel(
                 rowHeader = RowHeader(
                     id = "2",
                     title = "Row 3",
-                    row = 2
+                    row = 2,
                 ),
                 values = mapOf(
                     Pair(0, TableCell("13", 2, 0, "7", error = "error")),
                     Pair(1, TableCell("14", 2, 1, "8")),
-                    Pair(2, TableCell("15", 2, 2, "9"))
-                )
-            )
-        )
+                    Pair(2, TableCell("15", 2, 2, "9")),
+                ),
+            ),
+        ),
     )
 
     private val emptyTableModel = TableModel(
@@ -72,25 +72,25 @@ class TableModelTest {
             rows = listOf(
                 TableHeaderRow(
                     cells = listOf(
-                        TableHeaderCell("1")
-                    )
-                )
-            )
+                        TableHeaderCell("1"),
+                    ),
+                ),
+            ),
         ),
         tableRows = listOf(
             TableRowModel(
                 rowHeader = RowHeader(
                     id = "0",
                     title = "Row 1",
-                    row = 0
+                    row = 0,
                 ),
                 values = mapOf(
                     Pair(0, TableCell("00", 0, 0, "")),
                     Pair(1, TableCell("01", 0, 1, "")),
-                    Pair(2, TableCell("02", 0, 2, ""))
-                )
-            )
-        )
+                    Pair(2, TableCell("02", 0, 2, "")),
+                ),
+            ),
+        ),
     )
 
     @Test

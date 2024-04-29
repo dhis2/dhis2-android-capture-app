@@ -7,14 +7,14 @@ import android.telephony.SmsManager
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentManager
-import java.util.LinkedList
-import java.util.Queue
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 import org.dhis2.R
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import java.util.LinkedList
+import java.util.Queue
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 class SMSSenderHelper(
     private val context: Context,
@@ -22,12 +22,12 @@ class SMSSenderHelper(
     private val fragmentManager: FragmentManager,
     private val smsNumberTo: String,
     smsMessage: String,
-    private var onStatusChanged: ((Status) -> Unit)? = null
+    private var onStatusChanged: ((Status) -> Unit)? = null,
 ) {
     enum class Status {
         ALL_SMS_SENT,
         SMS_NOT_MANUALLY_SENT,
-        RETURNED_TO_APP
+        RETURNED_TO_APP,
     }
 
     private val mWho = UUID.randomUUID().toString()
@@ -35,13 +35,13 @@ class SMSSenderHelper(
 
     private var smsQueue: Queue<String> = LinkedList<String>().apply {
         addAll(
-            SmsManager.getDefault().divideMessage(smsMessage)
+            SmsManager.getDefault().divideMessage(smsMessage),
         )
     }
 
     private val launcher = registry.register(
         generateActivityResultKey(),
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         onReturningFromSmsApp()
     }
@@ -66,7 +66,7 @@ class SMSSenderHelper(
                 subtitle = context.getString(R.string.sms_sync_is_sms_sent),
                 iconResource = R.drawable.ic_help,
                 mainButton = DialogButtonStyle.NeutralButton(R.string.no),
-                secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes)
+                secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes),
             ),
             onMainButtonClicked = {
                 cancel()
@@ -74,7 +74,7 @@ class SMSSenderHelper(
             },
             onSecondaryButtonClicked = {
                 pollSms()
-            }
+            },
         ).also {
             it.isCancelable = false
         }
@@ -90,7 +90,7 @@ class SMSSenderHelper(
         }
         return Intent.createChooser(
             intent,
-            context.getString(R.string.sms_sync_sms_app_chooser_title)
+            context.getString(R.string.sms_sync_sms_app_chooser_title),
         )
     }
 

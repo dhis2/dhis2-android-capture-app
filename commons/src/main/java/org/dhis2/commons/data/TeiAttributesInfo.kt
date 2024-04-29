@@ -3,7 +3,7 @@ package org.dhis2.commons.data
 data class TeiAttributesInfo(
     val attributes: List<String>,
     val profileImage: String,
-    val teTypeName: String
+    val teTypeName: String,
 ) {
     private val attrListNotEmpty = attributes.filter { it.isNotEmpty() }
 

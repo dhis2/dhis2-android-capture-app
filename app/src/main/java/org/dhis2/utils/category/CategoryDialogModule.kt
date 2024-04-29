@@ -27,9 +27,9 @@ package org.dhis2.utils.category
 
 import dagger.Module
 import dagger.Provides
-import java.util.Date
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
+import java.util.Date
 
 @Module
 class CategoryDialogModule(
@@ -37,7 +37,7 @@ class CategoryDialogModule(
     val uid: String,
     val type: CategoryDialog.Type,
     private val accessControl: Boolean,
-    private val dateControl: Date?
+    private val dateControl: Date?,
 ) {
 
     @Provides
@@ -45,7 +45,7 @@ class CategoryDialogModule(
         d2: D2,
         schedulerProvider: SchedulerProvider,
         catOptionMapper: CategoryOptionCategoryDialogItemMapper,
-        catOptComboMapper: CategoryOptionComboCategoryDialogItemMapper
+        catOptComboMapper: CategoryOptionComboCategoryDialogItemMapper,
     ): CategoryDialogPresenter {
         return CategoryDialogPresenter(
             view,
@@ -56,7 +56,7 @@ class CategoryDialogModule(
             dateControl,
             catOptionMapper,
             catOptComboMapper,
-            schedulerProvider
+            schedulerProvider,
         )
     }
 

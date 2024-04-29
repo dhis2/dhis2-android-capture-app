@@ -10,12 +10,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import androidx.core.content.FileProvider
-import java.io.File
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import org.dhis2.Bindings.newVersion
 import org.dhis2.BuildConfig
+import org.dhis2.bindings.newVersion
 import org.hisp.dhis.android.core.D2
+import java.io.File
 
 class VersionRepository(val d2: D2) {
 
@@ -37,7 +37,7 @@ class VersionRepository(val d2: D2) {
         val fileName = url?.substringAfterLast("/")
 
         val destination = "${Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_DOWNLOADS
+            Environment.DIRECTORY_DOWNLOADS,
         )}/$fileName"
 
         val apkFile = File(destination)
@@ -47,11 +47,11 @@ class VersionRepository(val d2: D2) {
         } else if (fileName?.endsWith("apk") == true) {
             val request = DownloadManager.Request(Uri.parse(url))
                 .setAllowedNetworkTypes(
-                    DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE
+                    DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE,
                 )
                 .setTitle(fileName)
                 .setNotificationVisibility(
-                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
                 )
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(false)
@@ -70,7 +70,7 @@ class VersionRepository(val d2: D2) {
                 onComplete,
                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                null
+                null,
             )
         } else {
             onDownloadCompleted(Uri.parse(url))

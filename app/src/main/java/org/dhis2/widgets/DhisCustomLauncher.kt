@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.text.TextUtils.isEmpty
 import android.widget.RemoteViews
-import org.dhis2.Bindings.app
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.usescases.splash.SplashActivity
 
 class DhisCustomLauncher : AppWidgetProvider() {
@@ -16,7 +16,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        appWidgetIds: IntArray,
     ) {
         val remoteViews = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
         val configIntent = Intent(context, SplashActivity::class.java)
@@ -45,7 +45,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
-            appWidgetId: Int
+            appWidgetId: Int,
         ) {
             var widgetImage = ""
             if (context.app().serverComponent != null) {

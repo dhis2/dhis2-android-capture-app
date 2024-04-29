@@ -9,13 +9,13 @@ import org.hisp.dhis.android.core.common.ValueType
 class DisplayNameProviderImpl(
     private val optionSetConfiguration: OptionSetConfiguration,
     private val orgUnitConfiguration: OrgUnitConfiguration,
-    private val fileResourceConfiguration: FileResourceConfiguration
+    private val fileResourceConfiguration: FileResourceConfiguration,
 ) : DisplayNameProvider {
 
     override fun provideDisplayName(
         valueType: ValueType?,
         value: String?,
-        optionSet: String?
+        optionSet: String?,
     ): String? {
         return value?.let {
             optionSet?.let { optionSetUid ->
@@ -41,19 +41,31 @@ class DisplayNameProviderImpl(
                 fileResourceConfiguration.getFilePath(value) ?: value
 
             ValueType.DATE ->
-                DateUtils.uiDateFormat().format(
-                    DateUtils.oldUiDateFormat().parse(value) ?: ""
-                )
+                if (value.length == 8) {
+                    DateUtils.uiDateFormat().format(
+                        DateUtils.oldUiDateFormat().parse(value) ?: "",
+                    )
+                } else {
+                    value
+                }
 
             ValueType.DATETIME ->
-                DateUtils.dateTimeFormat().format(
-                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: ""
-                )
+                if (value.length == 12) {
+                    DateUtils.dateTimeFormat().format(
+                        DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
+                    )
+                } else {
+                    value
+                }
 
             ValueType.TIME ->
-                DateUtils.timeFormat().format(
-                    DateUtils.timeFormat().parse(value) ?: ""
-                )
+                if (value.length == 4) {
+                    DateUtils.timeFormat().format(
+                        DateUtils.timeFormat().parse(value) ?: "",
+                    )
+                } else {
+                    value
+                }
 
             else -> value
         }

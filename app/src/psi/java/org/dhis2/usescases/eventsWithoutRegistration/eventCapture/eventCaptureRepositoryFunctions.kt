@@ -1,14 +1,14 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import org.dhis2.Bindings.valueByPropName
+import org.dhis2.commons.bindings.valueByPropName
 import org.hisp.dhis.android.core.D2
 import java.util.HashMap
 
 fun getProgramStageName(d2: D2, eventUid: String): String {
     val event = d2.eventModule().events().uid(eventUid).blockingGet()
-    val programStage = d2.programModule().programStages().uid(event.programStage()).blockingGet()
+    val programStage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
 
-    val attValue = getProgramStagePatternAttValue(d2, programStage.uid())
+    val attValue = getProgramStagePatternAttValue(d2, programStage?.uid() ?: "")
 
     return try {
         if (attValue.isNotBlank()) {

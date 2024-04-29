@@ -4,13 +4,14 @@ import android.content.Context
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.dhis2.Bindings.userFriendlyValue
 import org.dhis2.R
+import org.dhis2.commons.bindings.userFriendlyValue
 import org.dhis2.utils.JsonCheckResult
 import org.dhis2.utils.JsonChecker
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.attribute.Attribute
 import org.hisp.dhis.android.core.attribute.AttributeValue
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.legendset.Legend
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
@@ -22,6 +23,7 @@ class ValuesD2Repository(
     private val context: Context
 ) : ValuesRepository {
     val dataElements: List<DataElement> = d2.dataElementModule().dataElements().get().blockingGet()
+    val attributes: List<Attribute> = d2.attributeModule().attributes().get().blockingGet()
 
     override fun getByEvent(eventUid: String): List<Value> {
         val feedbackOrderAttributeCode = "FeedbackOrder"
@@ -40,12 +42,16 @@ class ValuesD2Repository(
             .map { teiValue ->
                 val dataElement =
                     dataElements.first { it.uid() == teiValue.dataElement() }
+
                 val assignedLegend =
                     getAssignedLegend(teiValue.value() ?: "", teiValue.dataElement()!!)
                 val deAttributeValues = getDataElementAttributeValues(teiValue.dataElement()!!)
 
                 val deFeedbackHelpRaw = deAttributeValues.firstOrNull {
-                    it.attribute().code() == feedbackTextAttributeCode
+                    val attribute =
+                        attributes.first { att ->  att.uid() == it.attribute().uid() }
+
+                    attribute.code() == feedbackTextAttributeCode
                 }
 
                 val deFeedbackHelp = parseFeedbackHelp(deFeedbackHelpRaw, dataElement.uid())
@@ -54,11 +60,17 @@ class ValuesD2Repository(
                     if (dataElement.displayFormName() == null) dataElement.displayName()!! else dataElement.displayFormName()!!
 
                 val deFeedbackOrder = deAttributeValues.firstOrNull {
-                    it.attribute().code() == feedbackOrderAttributeCode
+                    val attribute =
+                        attributes.first { att ->  att.uid() == it.attribute().uid() }
+
+                    attribute.code() == feedbackOrderAttributeCode
                 }
 
                 val dataElementMetadataRaw = deAttributeValues.firstOrNull {
-                    it.attribute().code() == hnqis2MetadataAttributeCode
+                    val attribute =
+                        attributes.first { att ->  att.uid() == it.attribute().uid() }
+
+                    attribute.code() == hnqis2MetadataAttributeCode
                 }
 
                 val critical = parseCriticalMetadata(dataElementMetadataRaw, dataElement.uid())
@@ -83,9 +95,9 @@ class ValuesD2Repository(
             .uid(teiValue.dataElement())
             .blockingGet()
 
-        dataElement.optionSet()?.let {
+        dataElement?.optionSet()?.let {
             return false
-        } ?: return dataElement.valueType()!!.isNumeric
+        } ?: return dataElement!!.valueType()!!.isNumeric
     }
 
     private fun parseFeedbackHelp(feedbackHelpRaw: AttributeValue?, dataElement: String): String? {
@@ -196,7 +208,7 @@ class ValuesD2Repository(
                         val attribute = attributes.first { it.uid() == cursor.getString(0) }
                         attributesValues.add(
                             AttributeValue.builder()
-                                .attribute(attribute)
+                                .attribute( ObjectWithUid.create(attribute.uid()) )
                                 .value(cursor.getString(1)).build()
                         )
                     }

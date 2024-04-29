@@ -5,7 +5,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.event.EventNonEditableReason
 
 class EventDetailResourcesProvider(
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
 

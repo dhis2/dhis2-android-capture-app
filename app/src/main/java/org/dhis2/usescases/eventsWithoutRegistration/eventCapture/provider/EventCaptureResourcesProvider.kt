@@ -4,7 +4,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 
 class EventCaptureResourcesProvider(
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
 
 ) {
     fun provideRedAlertIcon() = R.drawable.ic_error_outline

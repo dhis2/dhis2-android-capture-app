@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -49,14 +51,14 @@ fun DataSetTableScreen(
     onCellClick: (
         tableId: String,
         TableCell,
-        updateCellValue: (TableCell) -> Unit
+        updateCellValue: (TableCell) -> Unit,
     ) -> TextInputModel?,
     onEdition: (editing: Boolean) -> Unit,
     onSaveValue: (TableCell) -> Unit,
-    bottomContent: @Composable (() -> Unit)? = null
+    bottomContent: @Composable (() -> Unit)? = null,
 ) {
     val bottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
     )
 
     var currentCell by remember { mutableStateOf<TableCell?>(null) }
@@ -119,10 +121,10 @@ fun DataSetTableScreen(
             }
         }
     }
-
+    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            !bottomSheetState.bottomSheetState.isAnimationRunning
+            bottomSheetState.bottomSheetState.progress == 1f,
     ) {
         collapseBottomSheet(finish = true)
     }
@@ -163,7 +165,7 @@ fun DataSetTableScreen(
                     updatingCell = currentCell
                     onCellClick(
                         tableSelection.tableId,
-                        tableCell
+                        tableCell,
                     ) { updateCellValue(it) }?.let { inputModel ->
                         currentCell = tableCell
                         currentInputType =
@@ -176,12 +178,12 @@ fun DataSetTableScreen(
                 override fun onOptionSelected(cell: TableCell, code: String, label: String) {
                     currentCell = cell.copy(
                         value = label,
-                        error = null
+                        error = null,
                     ).also {
                         onSaveValue(cell.copy(value = code))
                     }
                 }
-            }
+            },
         )
     }
 
@@ -196,7 +198,7 @@ fun DataSetTableScreen(
                             currentInputType = textInputModel
                             currentCell = currentCell?.copy(
                                 value = textInputModel.currentValue,
-                                error = null
+                                error = null,
                             )
                         }
 
@@ -219,14 +221,14 @@ fun DataSetTableScreen(
                                         }
                                         currentTable.getNextCell(
                                             cellSelection = cellSelected,
-                                            successValidation = result is ValidationResult.Success
+                                            successValidation = result is ValidationResult.Success,
                                         )?.let { (tableCell, nextCell) ->
                                             if (nextCell != cellSelected) {
                                                 updatingCell = currentCell
                                                 tableSelection = nextCell
                                                 onCellClick(
                                                     tableSelection.tableId,
-                                                    tableCell
+                                                    tableCell,
                                                 ) { updateCellValue(it) }?.let { inputModel ->
                                                     currentCell = tableCell
                                                     currentInputType = inputModel
@@ -245,25 +247,26 @@ fun DataSetTableScreen(
             TextInput(
                 textInputModel = currentInputType,
                 textInputInteractions = textInputInteractions,
-                focusRequester = focusRequester
+                focusRequester = focusRequester,
             )
         },
         sheetPeekHeight = 0.dp,
         sheetShape = RoundedCornerShape(
             topStart = 16.dp,
-            topEnd = 16.dp
-        )
+            topEnd = 16.dp,
+        ),
     ) {
         AnimatedVisibility(
             visible = tableScreenState.tables.isEmpty(),
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .background(Color.White),
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
@@ -272,11 +275,11 @@ fun DataSetTableScreen(
             LocalTableSelection provides tableSelection,
             LocalCurrentCellValue provides { currentCell?.value },
             LocalUpdatingCell provides updatingCell,
-            LocalInteraction provides iter
+            LocalInteraction provides iter,
         ) {
             DataTable(
                 tableList = tableScreenState.tables,
-                bottomContent = bottomContent
+                bottomContent = bottomContent,
             )
         }
         displayDescription?.let {
@@ -287,7 +290,7 @@ fun DataSetTableScreen(
                 },
                 onPrimaryButtonClick = {
                     displayDescription = null
-                }
+                },
             )
         }
     }

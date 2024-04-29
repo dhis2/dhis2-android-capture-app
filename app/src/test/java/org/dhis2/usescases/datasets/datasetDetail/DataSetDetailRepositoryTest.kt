@@ -58,31 +58,31 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.userModule()
-                .authorities().byName()
+                .authorities().byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule()
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -102,27 +102,27 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn true
 
         val testObserver = repository.canWriteAny().test()
@@ -142,32 +142,32 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingCount()
+                .byOrganisationUnitScope(any()).blockingCount(),
         ) doReturn 0
         whenever(
             d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -187,36 +187,36 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingCount()
+                .byOrganisationUnitScope(any()).blockingCount(),
         ) doReturn 1
         whenever(
             d2.userModule()
-                .authorities().byName()
+                .authorities().byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule()
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -243,7 +243,7 @@ class DataSetDetailRepositoryTest {
         .build()
 
     private fun dummyCategoryOptionsCombos(
-        canWrite: Boolean = true
+        canWrite: Boolean = true,
     ): MutableList<CategoryOptionCombo> {
         val categoryOptionCombo: MutableList<CategoryOptionCombo> = mutableListOf()
         for (i in 1..3)
@@ -253,7 +253,7 @@ class DataSetDetailRepositoryTest {
                     .categoryCombo(ObjectWithUid.create("categoryCombo"))
                     .uid("categoryOptionCombo_$i")
                     .categoryOptions(dummyCategoryOptions(canWrite))
-                    .build()
+                    .build(),
             )
         return categoryOptionCombo
     }
@@ -266,7 +266,7 @@ class DataSetDetailRepositoryTest {
                     .builder()
                     .uid("categoryOption_$i")
                     .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-                    .build()
+                    .build(),
             )
         return categoryOptions
     }

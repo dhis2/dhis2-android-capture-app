@@ -1,18 +1,14 @@
 package org.dhis2.usescases.datasets
 
-import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.utils.customviews.DateViewHolder
-import org.hamcrest.CoreMatchers.allOf
 
 
 fun dataSetInitialRobot(dataSetInitialRobot: DataSetInitialRobot.() -> Unit) {

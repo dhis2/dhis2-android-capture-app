@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_feedback"
         android:title="@string/dashboard_feedback" />
     <item
+        android:id="@+id/markForFollowUp"
+        android:icon="@drawable/ic_flag"
+        android:title="@string/mark_follow_up" />
+    <item
         android:id="@+id/deleteTei"
         android:icon="@drawable/ic_delete"
         android:title="@string/dashboard_menu_delete_tei_v2" />

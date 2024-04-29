@@ -17,16 +17,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.StringWriter
-import javax.inject.Inject
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
-import org.dhis2.Bindings.app
-import org.dhis2.Bindings.buildInfo
-import org.dhis2.Bindings.onRightDrawableClicked
+import org.dhis2.bindings.buildInfo
 import org.dhis2.R
+import org.dhis2.bindings.app
+import org.dhis2.bindings.onRightDrawableClicked
 import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
@@ -59,6 +55,10 @@ import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.StringWriter
+import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
@@ -94,7 +94,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             skipSync: Boolean = false,
             accountsCount: Int = -1,
             isDeletion: Boolean = false,
-            logOutReason: OpenIdSession.LogOutReason? = null
+            logOutReason: OpenIdSession.LogOutReason? = null,
         ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
@@ -104,7 +104,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
                     OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
                         EXTRA_ACCOUNT_DISABLED,
-                        true
+                        true,
                     )
                     null -> {
                         // Nothing to do in this case
@@ -116,7 +116,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         fun accountIntentResult(
             serverUrl: String?,
             userName: String?,
-            wasAccountClicked: Boolean
+            wasAccountClicked: Boolean,
         ): Intent = Intent().apply {
             serverUrl?.let { putExtra(RESULT_ACCOUNT_SERVER, serverUrl) }
             userName?.let { putExtra(RESULT_ACCOUNT_USERNAME, userName) }
@@ -131,8 +131,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             LoginModule(
                 view = this,
                 viewModelStoreOwner = this,
-                userManager = app().serverComponent?.userManager()
-            )
+                userManager = app().serverComponent?.userManager(),
+            ),
         )
 
         loginComponent.inject(this)
@@ -155,7 +155,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         presenter.isDataComplete.observe(this) { this.setLoginVisibility(it) }
 
         presenter.isTestingEnvironment.observe(
-            this
+            this,
         ) { testingEnvironment ->
             binding.root.closeKeyboard()
             binding.serverUrlEdit.setText(testingEnvironment.val0())
@@ -212,8 +212,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() &&
-            HttpUrl.parse(urlString) != null
+            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
@@ -237,7 +236,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
             testingCredentials = Gson().fromJson(
                 writer.toString(),
-                object : TypeToken<List<TestingCredential>>() {}.type
+                object : TypeToken<List<TestingCredential>>() {}.type,
             )
             presenter.setTestingCredentials(testingCredentials)
         }
@@ -283,7 +282,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun renderError(throwable: Throwable) {
         showInfoDialog(
             getString(R.string.login_error),
-            resourceManager.parseD2Error(throwable)
+            resourceManager.parseD2Error(throwable),
         )
     }
 
@@ -299,7 +298,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (showLogin) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             )
             binding.credentialLayout.visibility = View.GONE
             binding.progressLayout.visibility = View.VISIBLE
@@ -322,7 +321,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 clickableWord = getString(R.string.improve_app_msg_clickable_word),
                 iconResource = R.drawable.ic_line_chart,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no)
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no),
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
@@ -335,7 +334,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             },
             onMessageClick = {
                 navigateToPrivacyPolicy()
-            }
+            },
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
@@ -350,7 +349,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
                 binding.unlock.visibility = View.GONE
                 binding.logout.visibility = View.GONE
-            }
+            },
         )
             .show(supportFragmentManager, PIN_DIALOG_TAG)
     }
@@ -425,6 +424,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         } */
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isPinScreenVisible) {
             binding.pinLayout.root.visibility = View.GONE
@@ -435,13 +435,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 presenter.handleAuthResponseData(
                     binding.serverUrlEdit.text.toString(),
                     data,
-                    requestCode
+                    requestCode,
                 )
             }
         }
@@ -454,7 +455,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private val requestQRScanner = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         if (it.resultCode == RESULT_OK) {
             qrUrl = it.data?.getStringExtra(EXTRA_DATA)
@@ -463,14 +464,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private val requestAccount = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             val wasAccountClicked = result.data?.extras?.getBoolean(RESULT_ACCOUNT_CLICKED) ?: false
             setAccount(
                 result.data?.extras?.getString(RESULT_ACCOUNT_SERVER) ?: getDefaultServerProtocol(),
                 result.data?.extras?.getString(RESULT_ACCOUNT_USERNAME),
-                wasAccountClicked
+                wasAccountClicked,
             )
         }
         if (result.resultCode == RESULT_CANCELED) {
@@ -529,7 +530,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     override fun showEmptyCredentialsMessage() {
         showInfoDialog(
             getString(R.string.biometrics_dialog_title),
-            getString(R.string.biometrics_first_use_text)
+            getString(R.string.biometrics_first_use_text),
         )
     }
 
@@ -593,7 +594,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.action_accept),
             null,
             SESSION_DIALOG_RQ,
-            null
+            null,
         )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
@@ -607,7 +608,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.action_accept),
             null,
             SESSION_DIALOG_RQ,
-            null
+            null,
         )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
@@ -621,7 +622,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             getString(R.string.action_ok),
             null,
             CustomDialog.NO_RQ_CODE,
-            null
+            null,
         )
         dialog.show()
     }

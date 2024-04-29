@@ -19,10 +19,12 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.ExtensionsKt;
-import org.dhis2.Bindings.ViewExtensionsKt;
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
+import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
@@ -83,6 +85,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Inject
     ThemeManager themeManager;
+
+    @Inject
+    FeatureConfigRepository featureConfig;
 
     private static final String INITIAL_PAGE = "initialPage";
 
@@ -416,7 +421,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 showList();
             }
             binding.navigationBar.setOnConfigurationFinishListener(() -> {
-                binding.navigationBar.show();
+                if (viewModel.searchOrFilterIsOpen()) {
+                    binding.navigationBar.hide();
+                } else {
+                    binding.navigationBar.show();
+                }
                 return Unit.INSTANCE;
             });
             binding.navigationBar.pageConfiguration(pageConfigurator);

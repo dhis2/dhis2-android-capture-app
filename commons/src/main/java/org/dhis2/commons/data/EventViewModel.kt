@@ -1,8 +1,8 @@
 package org.dhis2.commons.data
 
-import java.util.Date
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Date
 
 data class EventViewModel(
     val type: EventViewModelType,
@@ -19,7 +19,8 @@ data class EventViewModel(
     var valueListIsOpen: Boolean = false,
     val showTopShadow: Boolean = false,
     val showBottomShadow: Boolean = false,
-    val displayDate: String?
+    val displayDate: String?,
+    val nameCategoryOptionCombo: String?,
 ) {
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen

@@ -1,0 +1,32 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">ໜ້າຫຼັກ</string>
+    <string name="title_activity_review">ທົບທວນຄືນ</string>
+    <string name="action_settings">ຕັ້ງຄ່າ</string>
+
+    <string name="discard">ຍົົກເລິກ</string>
+    <string name="username">ຊື່ຜູ້ໃຊ້</string>
+    <string name="password">ລະຫັດຜ່ານ</string>
+    <string name="review">ທົບທວນຄືນ</string>
+
+    <string name="delete">ລົບ</string>
+    <string name="ok">​ຕົກ​ລົງ</string>
+    <string name="cancel">ຍົກເລີກ</string>
+    <string name="from">ຈາກ</string>
+    <string name="language">ພາສາ</string>
+    <string name="prompt_email">ອີເມວ</string>
+    <string name="prompt_password">ລະຫັດຜ່ານ</string>
+    <string name="content_desc_search">ຄົ້ນຫາ</string>
+    <string name="confirm_transaction_label">ຢືນຢັນ</string>
+    <string name="invalid_quantity">ບໍ່ຖືກຕ້ອງ</string>
+    <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
+    <string name="error_already_authenticated">ຜູ້ໃຊ້ໄດ້ເຂົ້າສູ່ລະບົບແລ້ວ.</string>
+    <string name="error_already_executed">ການຮ້ອງຂໍໄດ້ດຳເນີນການແລ້ວ</string>
+    <string name="done_task">ໜ້າຫຼັກ</string>
+    <string name="back">​ກັບ​ຄືນ</string>
+    <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
+    <string name="action_sync">ສົ່ງ</string>
+    <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="count">ນັບ</string>
+    <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
+    <string name="invalid_possitive_zero">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າບວກ ຫຼື ສູນເທົ່ານັ້ນ</string>
+    </resources>

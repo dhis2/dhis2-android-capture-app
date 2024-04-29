@@ -8,6 +8,7 @@ import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.notifications.domain.NotificationRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.BaseD2Progress
@@ -40,6 +41,7 @@ class SyncPresenterTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
+    private val notificationRepository: NotificationRepository = mock()
 
     @Before
     fun setUp() {
@@ -49,7 +51,8 @@ class SyncPresenterTest {
             workManagerController,
             analyticsHelper,
             syncStatusController,
-            syncRepository
+            syncRepository,
+            notificationRepository
         )
     }
 
@@ -58,7 +61,7 @@ class SyncPresenterTest {
         val mockedProgramSettings = mockedProgramSettings(
             100,
             200,
-            LimitScope.GLOBAL
+            LimitScope.GLOBAL,
         )
 
         whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
@@ -73,7 +76,7 @@ class SyncPresenterTest {
         val mockedProgramSettings = mockedProgramSettings(
             100,
             200,
-            LimitScope.PER_OU_AND_PROGRAM
+            LimitScope.PER_OU_AND_PROGRAM,
         )
 
         whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
@@ -88,7 +91,7 @@ class SyncPresenterTest {
         val mockedProgramSettings = mockedProgramSettings(
             100,
             200,
-            LimitScope.PER_PROGRAM
+            LimitScope.PER_PROGRAM,
         )
 
         whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
@@ -103,7 +106,7 @@ class SyncPresenterTest {
         val mockedProgramSettings = mockedProgramSettings(
             100,
             200,
-            LimitScope.PER_ORG_UNIT
+            LimitScope.PER_ORG_UNIT,
         )
 
         whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
@@ -116,19 +119,19 @@ class SyncPresenterTest {
     @Test
     fun `Should configure secondary tracker if configuration exists`() {
         whenever(
-            d2.metadataModule().download()
+            d2.metadataModule().download(),
         ) doReturn Observable.fromArray(
-            BaseD2Progress.empty(2)
+            BaseD2Progress.empty(2),
         )
         whenever(
-            d2.settingModule().generalSetting().blockingGet()
+            d2.settingModule().generalSetting().blockingGet(),
         ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .matomoID(11111)
             .matomoURL("MatomoURL")
             .build()
         whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         ) doReturn Completable.complete()
         presenter.syncMetadata { }
 
@@ -138,17 +141,17 @@ class SyncPresenterTest {
     @Test
     fun `Should not configure secondary tracker if matomo settings is missing`() {
         whenever(
-            d2.metadataModule().download()
+            d2.metadataModule().download(),
         ) doReturn Observable.fromArray(
-            BaseD2Progress.empty(2)
+            BaseD2Progress.empty(2),
         )
         whenever(
-            d2.settingModule().generalSetting().blockingGet()
+            d2.settingModule().generalSetting().blockingGet(),
         ) doReturn GeneralSettings.builder()
             .encryptDB(false)
             .build()
         whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         )doReturn Completable.complete()
         presenter.syncMetadata { }
 
@@ -158,18 +161,18 @@ class SyncPresenterTest {
     @Test
     fun `Should not configure secondary tracker if no configuration exists`() {
         whenever(
-            d2.metadataModule().download()
+            d2.metadataModule().download(),
         ) doReturn Observable.fromArray(
-            BaseD2Progress.empty(2)
+            BaseD2Progress.empty(2),
         )
         whenever(
-            d2.settingModule().generalSetting().blockingGet()
+            d2.settingModule().generalSetting().blockingGet(),
         ) doReturn null
         whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         )doReturn Completable.complete()
         whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         )doReturn Completable.complete()
         presenter.syncMetadata { }
 
@@ -179,15 +182,15 @@ class SyncPresenterTest {
     @Test
     fun `Should clear secondary tracker`() {
         whenever(
-            d2.metadataModule().download()
+            d2.metadataModule().download(),
         ) doReturn Observable.fromArray(
-            BaseD2Progress.empty(2)
+            BaseD2Progress.empty(2),
         )
         whenever(
-            d2.settingModule().generalSetting().blockingGet()
+            d2.settingModule().generalSetting().blockingGet(),
         ) doReturn null
         whenever(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata()
+            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         )doReturn Completable.complete()
         presenter.syncMetadata { }
 
@@ -198,13 +201,13 @@ class SyncPresenterTest {
     @Test
     fun `Should return successfully SYNC if tei enrollment and events are ok`() {
         whenever(
-            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP)),
         ) doReturn emptyList()
         whenever(
             syncRepository.getEventsFromEnrollmentByNotInSyncState(
                 "uid",
-                listOf(State.SYNCED)
-            )
+                listOf(State.SYNCED),
+            ),
         ) doReturn emptyList()
 
         val syncResult = presenter.checkSyncTEIStatus("uid")
@@ -215,16 +218,16 @@ class SyncPresenterTest {
     @Test
     fun `Should return an incomplete sync if there are tei with TO_POST or TO_UPDATE syncState`() {
         whenever(
-            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP)),
         ) doReturn listOf(TrackedEntityInstance.builder().uid("uid").build())
         whenever(
             syncRepository.getEventsFromEnrollmentByNotInSyncState(
                 "uid",
-                listOf(State.SYNCED)
-            )
+                listOf(State.SYNCED),
+            ),
         ) doReturn emptyList()
         whenever(
-            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE))
+            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE)),
         ) doReturn listOf(TrackedEntityInstance.builder().uid("uid").build())
 
         val syncResult = presenter.checkSyncTEIStatus("uid")
@@ -235,16 +238,16 @@ class SyncPresenterTest {
     @Test
     fun `Should return an ERROR sync if there are events of a tei without the SYNC syncState`() {
         whenever(
-            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP))
+            syncRepository.getTeiByNotInStates("uid", listOf(State.SYNCED, State.RELATIONSHIP)),
         ) doReturn emptyList()
         whenever(
             syncRepository.getEventsFromEnrollmentByNotInSyncState(
                 "uid",
-                listOf(State.SYNCED)
-            )
+                listOf(State.SYNCED),
+            ),
         ) doReturn listOf(Event.builder().uid("event").enrollment("uid").build())
         whenever(
-            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE))
+            syncRepository.getTeiByInStates("uid", listOf(State.TO_POST, State.TO_UPDATE)),
         ) doReturn emptyList()
 
         val syncResult = presenter.checkSyncTEIStatus("uid")
@@ -255,7 +258,7 @@ class SyncPresenterTest {
     private fun mockedProgramSettings(
         teiToDownload: Int,
         eventToDownload: Int,
-        limitScope: LimitScope
+        limitScope: LimitScope,
     ): ProgramSettings {
         return ProgramSettings.builder()
             .globalSettings(
@@ -263,7 +266,7 @@ class SyncPresenterTest {
                     .eventsDownload(eventToDownload)
                     .teiDownload(teiToDownload)
                     .settingDownload(limitScope)
-                    .build()
+                    .build(),
             )
             .specificSettings(
                 mutableMapOf(
@@ -272,9 +275,9 @@ class SyncPresenterTest {
                         ProgramSetting.builder()
                             .eventsDownload(200)
                             .teiDownload(300)
-                            .build()
-                    )
-                )
+                            .build(),
+                    ),
+                ),
             )
             .build()
     }

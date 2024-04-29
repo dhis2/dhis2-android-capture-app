@@ -3,7 +3,7 @@ package org.dhis2.commons.orgunitselector
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
 class OUTreeRepository(
-    private val orgUnitRepositoryConfiguration: OURepositoryConfiguration
+    private val orgUnitRepositoryConfiguration: OURepositoryConfiguration,
 ) {
     private var availableOrgUnits: List<OrganisationUnit> = emptyList()
 
@@ -26,7 +26,7 @@ class OUTreeRepository(
     fun countSelectedChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
         return orgUnitRepositoryConfiguration.countChildren(
             parentOrgUnitUid,
-            selectedOrgUnits
+            selectedOrgUnits,
         )
     }
     private fun List<OrganisationUnit>.withParents(): List<OrganisationUnit> {

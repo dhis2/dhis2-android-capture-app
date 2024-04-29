@@ -17,11 +17,11 @@ class UiEventFactoryImplTest {
         val event = uiEventFactory?.generateEvent(
             value = "2021-09-27",
             uiEventType = UiEventType.DATE_TIME,
-            fieldUiModel = provideFieldUiModel()
+            fieldUiModel = provideFieldUiModel(),
         )
         assertThat(
             "Event is OpenCustomCalendar",
-            event is RecyclerViewUiEvents.OpenCustomCalendar
+            event is RecyclerViewUiEvents.OpenCustomCalendar,
         )
     }
 
@@ -32,11 +32,11 @@ class UiEventFactoryImplTest {
         val event = uiEventFactory?.generateEvent(
             value = "2021-09-27T10:20",
             uiEventType = UiEventType.DATE_TIME,
-            fieldUiModel = provideFieldUiModel()
+            fieldUiModel = provideFieldUiModel(),
         )
         assertThat(
             "Event is OpenCustomCalendar",
-            event is RecyclerViewUiEvents.OpenCustomCalendar
+            event is RecyclerViewUiEvents.OpenCustomCalendar,
         )
     }
 
@@ -47,11 +47,11 @@ class UiEventFactoryImplTest {
         val event = uiEventFactory?.generateEvent(
             value = "10:20",
             uiEventType = UiEventType.DATE_TIME,
-            fieldUiModel = provideFieldUiModel()
+            fieldUiModel = provideFieldUiModel(),
         )
         assertThat(
             "Event is OpenTimePicker",
-            event is RecyclerViewUiEvents.OpenTimePicker
+            event is RecyclerViewUiEvents.OpenTimePicker,
         )
     }
 
@@ -61,7 +61,7 @@ class UiEventFactoryImplTest {
         description = "description",
         valueType = valueType,
         true,
-        null
+        null,
     )
 
     private fun provideFieldUiModel() = FieldUiModelImpl(
@@ -69,6 +69,7 @@ class UiEventFactoryImplTest {
         label = "label",
         layoutId = 1,
         valueType = ValueType.TEXT,
-        optionSetConfiguration = null
+        optionSetConfiguration = null,
+        autocompleteList = null,
     )
 }

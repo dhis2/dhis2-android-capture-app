@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
-import java.time.Instant
-import java.util.Date
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Assert
 import org.junit.Test
+import java.time.Instant
+import java.util.Date
 
 class OrganisationUnitExtensionsTest {
 
@@ -14,14 +14,14 @@ class OrganisationUnitExtensionsTest {
             orgUnit(null, null).inDateRange(null) &&
                 orgUnit(Date(), Date()).inDateRange(null) &&
                 orgUnit(Date(), null).inDateRange(null) &&
-                orgUnit(null, Date()).inDateRange(null)
+                orgUnit(null, Date()).inDateRange(null),
         )
     }
 
     @Test
     fun `Should return true if date not null and option does not have start and end dates`() {
         Assert.assertTrue(
-            orgUnit(null, null).inDateRange(Date())
+            orgUnit(null, null).inDateRange(Date()),
         )
     }
 
@@ -30,7 +30,7 @@ class OrganisationUnitExtensionsTest {
         val date = Date.from(Instant.parse("2020-01-02T00:00:00.00Z"))
         val startDate = Date.from(Instant.parse("2020-01-01T00:00:00.00Z"))
         Assert.assertTrue(
-            orgUnit(startDate, null).inDateRange(date)
+            orgUnit(startDate, null).inDateRange(date),
         )
     }
 
@@ -39,7 +39,7 @@ class OrganisationUnitExtensionsTest {
         val date = Date.from(Instant.parse("2020-01-02T00:00:00.00Z"))
         val endDate = Date.from(Instant.parse("2020-01-03T00:00:00.00Z"))
         Assert.assertTrue(
-            orgUnit(null, endDate).inDateRange(date)
+            orgUnit(null, endDate).inDateRange(date),
         )
     }
 
@@ -49,7 +49,7 @@ class OrganisationUnitExtensionsTest {
         val startDate = Date.from(Instant.parse("2020-01-01T00:00:00.00Z"))
         val endDate = Date.from(Instant.parse("2020-01-03T00:00:00.00Z"))
         Assert.assertTrue(
-            orgUnit(startDate, endDate).inDateRange(date)
+            orgUnit(startDate, endDate).inDateRange(date),
         )
     }
 

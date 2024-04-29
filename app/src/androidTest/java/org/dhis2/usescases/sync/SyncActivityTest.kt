@@ -73,6 +73,7 @@ class SyncActivityTest : BaseTest() {
             Data.EMPTY,
             arrayListOf(Constants.META_NOW),
             Data.EMPTY,
+            0,
             0
         )
     }
@@ -84,6 +85,7 @@ class SyncActivityTest : BaseTest() {
             Data.EMPTY,
             arrayListOf(Constants.DATA_NOW),
             Data.EMPTY,
+            0,
             0
         )
     }

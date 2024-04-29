@@ -9,7 +9,7 @@ class GraphCoordinatesToPieEntry {
             PieEntry(
                 graphPoint.fieldValue,
                 graphPoint.legend,
-                graphPoint.legend
+                graphPoint.legend,
             )
         }
     }

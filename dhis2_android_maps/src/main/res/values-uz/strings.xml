@@ -2,10 +2,17 @@
 <resources>
     <string name="select_location">Жойни танланг</string>
     <string name="map_layers">Харита қаватлари</string>
+    <string name="dialog_layer_base_map_osm_light">OSM манба</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Батафсил</string>
+    <string name="dialog_layer_base_map_bing_road">Йўл</string>
+    <string name="dialog_layer_base_map_bing_dark">Тўқ рангли мўйқалам</string>
+    <string name="dialog_layer_base_map_bing_aerial">Гибрид кўриниш</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Қатлам белгилари</string>
     <string name="action_apply">Мурожаат қилиш</string>
     <string name="dialog_layer_satellite">Суньий йўлдош кўринишини кўрсатиш</string>
     <string name="dialog_layer_event">Ҳодиса/тадбирларни кўрсатиш</string>
     <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
     <string name="dialog_layer_enrollment_coordinates">Қайд этилганлар координаталарини кўрсатиш</string>
     <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>
+    <string name="map_attributionErrorNoBrowser">Қурилмада Веб браузер ўрнатилмаган, веб саҳифани очишнинг иложи йўқ.</string>
 </resources>

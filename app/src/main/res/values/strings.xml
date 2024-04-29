@@ -94,14 +94,14 @@
     <string name="program_inactive">Program inactive</string>
 
     <string name="event_open">Open</string>
-    <string name="event_completed">Event Completed</string>
-    <string name="event_skipped">Event Skipped</string>
-    <string name="event_schedule">Event Schedule</string>
-    <string name="event_expired">Event Expired</string>
-    <string name="event_editing_expired">Editing Expired</string>
-    <string name="event_accepted">Event Accepted</string>
-    <string name="event_approved">Event Approved</string>
-    <string name="event_inactive">Event Inactive</string>
+    <string name="event_completed">Event completed</string>
+    <string name="event_skipped">Event skipped</string>
+    <string name="event_schedule">Event schedule</string>
+    <string name="event_expired">Event expired</string>
+    <string name="event_editing_expired">Editing expired</string>
+    <string name="event_accepted">Event accepted</string>
+    <string name="event_approved">Event approved</string>
+    <string name="event_inactive">Event inactive</string>
     <string name="read_only">Read only</string>
     <string name="finish_and_complete">Finish and complete</string>
     <string name="completed">Completed</string>
@@ -160,6 +160,7 @@
     <string name="event_was_deleted">Event deleted successfully</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Most recent event date</string>
+    <string name="no_options">No options available</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
@@ -172,7 +173,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">See Details</string>
     <string name="view_more">VIEW MORE</string>
-    <string name="edit">EDIT</string>
+    <string name="edit">Edit</string>
     <string name="enrolling_ou">Enrolling OU:</string>
     <string name="follow_up">Follow up</string>
     <string name="follow_up_enabled">Follow up enabled</string>
@@ -957,4 +958,25 @@
     <string name="dashboard_menu_delete_person">Delete Person</string>
     <string name="permission_notification_denied">Notification permission is denied.</string>
     <string name="permission_notification_granted">Notification permission granted.</string>
+    <string name="not_synced">Not synced</string>
+    <string name="sync_retry">Retry sync</string>
+    <string name="enrollment_completed">Enrollment completed</string>
+    <string name="enrollment_cancelled">Enrollment cancelled</string>
+    <string name="marked_follow_up">Marked for follow-up</string>
+    <string name="overdue">Overdue %s</string>
+    <string name="registered_in">Registered in:</string>
+    <string name="view_only">View only</string>
+    <string name="scheduled">Scheduled: %</string>
+    <string name="skipped">Skipped</string>
+    <string name="programs">Programs:</string>
+    <string name="sync_successful">Sync successful</string>
+    <string name="sync_warning">Sync warning</string>
+    <string name="sync_error">Sync Error</string>
+    <string name="mark_follow_up">Mark for follow-up</string>
+    <string name="remove">Remove</string>
+    <string name="coordinates">Coordinates</string>
+
+    <!--EyeSeeTea-->
+    <string name="change_server_url">Change server URL</string>
+    <string name="change_server_url_warning">Please confirm that metadata in the new server is equal to this one. Sync errors could occur in case server is not totally synced with current one. Are you sure?</string>
 </resources>

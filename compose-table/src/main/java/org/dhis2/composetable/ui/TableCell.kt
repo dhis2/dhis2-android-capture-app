@@ -57,7 +57,7 @@ fun TableCell(
     cell: TableCell,
     maxLines: Int,
     headerExtraSize: Int,
-    options: List<String>
+    options: List<String>,
 ) {
     val localInteraction = LocalInteraction.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -82,7 +82,7 @@ fun TableCell(
     val isParentSelected = TableTheme.tableSelection.isCellParentSelected(
         selectedTableId = tableId,
         columnIndex = cell.column ?: -1,
-        rowIndex = cell.row ?: -1
+        rowIndex = cell.row ?: -1,
     )
     val colors = TableTheme.colors
 
@@ -95,7 +95,7 @@ fun TableCell(
                 hasError = cell.error != null,
                 hasWarning = cell.warning != null,
                 isEditable = cell.editable,
-                legendColor = cell.legendColor
+                legendColor = cell.legendColor,
             )
         }
     }
@@ -108,7 +108,7 @@ fun TableCell(
                 dimensions
                     .columnWidthWithTableExtra(
                         tableId,
-                        cell.column
+                        cell.column,
                     )
                     .plus(headerExtraSize)
                     .toDp()
@@ -130,7 +130,7 @@ fun TableCell(
             }
             .cellBorder(
                 borderColor = style.mainColor(),
-                backgroundColor = style.backgroundColor()
+                backgroundColor = style.backgroundColor(),
             )
             .bringIntoViewRequester(bringIntoViewRequester)
             .focusable()
@@ -145,14 +145,14 @@ fun TableCell(
                                 tableId = tableId,
                                 columnIndex = cell.column ?: -1,
                                 rowIndex = cell.row ?: -1,
-                                globalIndex = 0
-                            )
+                                globalIndex = 0,
+                            ),
                         )
                         localInteraction.onClick(cell)
                     }
                 }
             },
-        legendColor = cell.legendColor?.let { Color(it) }
+        legendColor = cell.legendColor?.let { Color(it) },
     ) {
         Text(
             modifier = Modifier
@@ -161,7 +161,7 @@ fun TableCell(
                 .fillMaxWidth()
                 .padding(
                     horizontal = TableTheme.dimensions.cellHorizontalPadding,
-                    vertical = TableTheme.dimensions.cellVerticalPadding
+                    vertical = TableTheme.dimensions.cellVerticalPadding,
                 ),
             text = cellValue ?: "",
             maxLines = maxLines,
@@ -172,9 +172,9 @@ fun TableCell(
                 color = LocalTableColors.current.cellTextColor(
                     hasError = cell.error != null,
                     hasWarning = cell.warning != null,
-                    isEditable = cell.editable
-                )
-            )
+                    isEditable = cell.editable,
+                ),
+            ),
         )
         if (options.isNotEmpty()) {
             DropDownOptions(
@@ -188,12 +188,12 @@ fun TableCell(
                             tableId = tableId,
                             columnIndex = cell.column ?: -1,
                             rowIndex = cell.row ?: -1,
-                            globalIndex = 0
-                        )
+                            globalIndex = 0,
+                        ),
                     )
                     localInteraction.onOptionSelected(cell, code, label)
                     cellValue = label
-                }
+                },
             )
         }
 
@@ -207,12 +207,12 @@ fun TableCell(
                     .size(6.dp)
                     .align(
                         alignment = mandatoryIconAlignment(
-                            cellValue?.isNotEmpty() == true
-                        )
+                            cellValue?.isNotEmpty() == true,
+                        ),
                     ),
                 tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue?.isNotEmpty() == true
-                )
+                    cellValue?.isNotEmpty() == true,
+                ),
             )
         }
         if (cell.hasErrorOrWarning()) {
@@ -225,7 +225,7 @@ fun TableCell(
                     TableTheme.colors.errorColor
                 } else {
                     TableTheme.colors.warningColor
-                }
+                },
             )
         }
     }
@@ -238,7 +238,7 @@ fun TableCell(
                 dimensions.defaultCellWidth * 2f,
                 with(localDensity) {
                     dimensions.defaultCellHeight.toPx() * 3
-                }
+                },
             )
             coroutineScope.launch {
                 bringIntoViewRequester.bringIntoView(marginCoordinates)

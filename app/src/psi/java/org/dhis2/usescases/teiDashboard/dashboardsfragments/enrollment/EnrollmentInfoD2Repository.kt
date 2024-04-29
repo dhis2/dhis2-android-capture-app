@@ -9,13 +9,13 @@ class EnrollmentInfoD2Repository(private val d2: D2) : EnrollmentInfoRepository 
             d2.enrollmentModule().enrollments().byUid().eq(enrollmentUid).one().blockingGet()
 
         val program =
-            d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet()
+            d2.programModule().programs().byUid().eq(enrollment?.program()).one().blockingGet()
 
         return EnrollmentInfo(
-            enrollment.uid()!!,
+            enrollment?.uid()!!,
             enrollment.program()!!,
             enrollment.enrollmentDate()!!,
-            program.displayName()!!
+            program?.displayName()!!
         )
     }
 }

@@ -2,7 +2,6 @@ package org.dhis2.usescases.about
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.UUID
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.user.UserRepository
 import org.hisp.dhis.android.core.D2
@@ -16,6 +15,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class AboutPresenterTest {
 
@@ -31,7 +31,7 @@ class AboutPresenterTest {
             aboutView,
             d2,
             providesPresenterFactory,
-            userRepository
+            userRepository,
         )
     }
 

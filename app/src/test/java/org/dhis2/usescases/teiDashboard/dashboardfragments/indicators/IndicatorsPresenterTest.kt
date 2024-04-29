@@ -31,7 +31,7 @@ class IndicatorsPresenterTest {
     @Test
     fun `Should get indicators`() {
         whenever(
-            indicatorRepository.fetchData()
+            indicatorRepository.fetchData(),
         ) doReturn Flowable.just(analyticsModels())
 
         presenter.init()
@@ -62,7 +62,7 @@ class IndicatorsPresenterTest {
             "indicator_value",
             "#ffffff",
             LOCATION_INDICATOR_WIDGET,
-            "Info"
-        )
+            "Info",
+        ),
     )
 }

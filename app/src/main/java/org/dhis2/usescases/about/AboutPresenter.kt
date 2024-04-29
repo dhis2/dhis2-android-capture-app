@@ -11,7 +11,7 @@ class AboutPresenter(
     private val view: AboutView,
     private val d2: D2,
     private val provider: SchedulerProvider,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     var disposable = CompositeDisposable()
     fun init() {
@@ -19,7 +19,7 @@ class AboutPresenter(
             Flowable.zip(
                 userRepository.credentials(),
                 d2.systemInfoModule().systemInfo().get().toFlowable()
-                    .map { it.contextPath() ?: "" }
+                    .map { it.contextPath() ?: "" },
             ) { fields, result -> Pair(fields, result) }.cacheWithInitialCapacity(1)
                 .subscribeOn(provider.io())
                 .observeOn(provider.ui())
@@ -27,10 +27,10 @@ class AboutPresenter(
                     { aboutData ->
                         view.renderUserCredentials(aboutData.first)
                         view.renderServerUrl(aboutData.second)
-                    }
+                    },
                 ) { t: Throwable? ->
                     Timber.e(t)
-                }
+                },
         )
     }
 

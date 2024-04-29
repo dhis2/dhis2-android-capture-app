@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.atMost
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -23,8 +22,8 @@ import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.DEFAULT_URL
+import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -39,10 +38,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -78,7 +77,7 @@ class LoginViewModelTest {
             analyticsHelper,
             crashReportController,
             network,
-            userManager
+            userManager,
         )
     }
     private fun instantiateLoginViewModelWithNullUserManager() {
@@ -90,7 +89,7 @@ class LoginViewModelTest {
             analyticsHelper,
             crashReportController,
             network,
-            null
+            null,
         )
     }
 
@@ -121,7 +120,7 @@ class LoginViewModelTest {
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
         whenever(view.getDefaultServerProtocol()) doReturn protocol
         whenever(
-            preferenceProvider.getString(SECURE_SERVER_URL, protocol)
+            preferenceProvider.getString(SECURE_SERVER_URL, protocol),
         ) doReturn serverUrl
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn userName
         instantiateLoginViewModel()
@@ -138,7 +137,7 @@ class LoginViewModelTest {
         whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
         whenever(view.getDefaultServerProtocol()) doReturn protocol
         whenever(
-            preferenceProvider.getString(SECURE_SERVER_URL, protocol)
+            preferenceProvider.getString(SECURE_SERVER_URL, protocol),
         ) doReturn null
         whenever(preferenceProvider.getString(SECURE_USER_NAME, "")) doReturn null
         instantiateLoginViewModel()
@@ -177,8 +176,8 @@ class LoginViewModelTest {
         whenever(
             preferenceProvider.getBoolean(
                 USER_ASKED_CRASHLYTICS,
-                false
-            )
+                false,
+            ),
         ) doReturn true
         whenever(view.initLogin()) doReturn userManager
         instantiateLoginViewModelWithNullUserManager()
@@ -202,18 +201,18 @@ class LoginViewModelTest {
         whenever(goldfinger.authenticate()) doReturn Observable.just(
             FingerPrintResult(
                 Type.SUCCESS,
-                "none"
-            )
+                "none",
+            ),
         )
         whenever(
             preferenceProvider.contains(
                 SECURE_SERVER_URL,
                 SECURE_USER_NAME,
-                SECURE_PASS
-            )
+                SECURE_PASS,
+            ),
         ) doReturn true
         whenever(
-            preferenceProvider.getString(SECURE_SERVER_URL)
+            preferenceProvider.getString(SECURE_SERVER_URL),
         ) doReturn "http://dhis2.org"
         whenever(preferenceProvider.getString(SECURE_USER_NAME)) doReturn "James"
         whenever(preferenceProvider.getString(SECURE_PASS)) doReturn "1234"
@@ -222,7 +221,7 @@ class LoginViewModelTest {
             FingerPrintResult(Type.SUCCESS, "none"),
             preferenceProvider.getString(SECURE_SERVER_URL)!!,
             preferenceProvider.getString(SECURE_USER_NAME)!!,
-            preferenceProvider.getString(SECURE_PASS)!!
+            preferenceProvider.getString(SECURE_PASS)!!,
         )
     }
 
@@ -231,15 +230,15 @@ class LoginViewModelTest {
         instantiateLoginViewModel()
         val result = FingerPrintResult(
             Type.ERROR,
-            "none"
+            "none",
         )
         whenever(goldfinger.authenticate()) doReturn Observable.just(result)
         whenever(
             preferenceProvider.contains(
                 SECURE_SERVER_URL,
                 SECURE_USER_NAME,
-                SECURE_PASS
-            )
+                SECURE_PASS,
+            ),
         ) doReturn true
         loginViewModel.onFingerprintClick()
         view.showCredentialsData(result, "none")
@@ -250,15 +249,15 @@ class LoginViewModelTest {
         instantiateLoginViewModel()
         val result = FingerPrintResult(
             Type.ERROR,
-            "none"
+            "none",
         )
         whenever(goldfinger.authenticate()) doReturn Observable.just(result)
         whenever(
             preferenceProvider.contains(
                 SECURE_SERVER_URL,
                 SECURE_USER_NAME,
-                SECURE_PASS
-            )
+                SECURE_PASS,
+            ),
         ) doReturn false
         loginViewModel.onFingerprintClick()
         verify(view).showEmptyCredentialsMessage()
@@ -268,7 +267,7 @@ class LoginViewModelTest {
     fun `Should display message when authenticate throws an error`() {
         instantiateLoginViewModel()
         whenever(
-            goldfinger.authenticate()
+            goldfinger.authenticate(),
         ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
         loginViewModel.onFingerprintClick()
         verify(view).displayMessage(LoginViewModel.AUTH_ERROR)
@@ -291,13 +290,6 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should stop reading fingerprint`() {
-        instantiateLoginViewModel()
-        loginViewModel.stopReadingFingerprint()
-        verify(goldfinger).cancel()
-    }
-
-    @Test
     fun `Should load testing servers and users`() {
         instantiateLoginViewModel()
         val urlSet = hashSetOf("url1", "url2", "url3")
@@ -305,7 +297,7 @@ class LoginViewModelTest {
         val testingCredentials = listOf(
             TestingCredential("testing_server_1", "testing_user1", "psw", ""),
             TestingCredential("testing_server_2", "testing_user2", "psw", ""),
-            TestingCredential("testing_server_3", "testing_user3", "psw", "")
+            TestingCredential("testing_server_3", "testing_user3", "psw", ""),
         )
         whenever(preferenceProvider.getSet(PREFS_URLS, emptySet())) doReturn urlSet
         whenever(preferenceProvider.getSet(PREFS_USERS, emptySet())) doReturn userSet
@@ -336,23 +328,23 @@ class LoginViewModelTest {
         val response = Response.success(
             User.builder()
                 .uid("userUid")
-                .build()
+                .build(),
         )
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.systemInfoModule()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet()) doReturn mock()
         whenever(
-            userManager.d2.systemInfoModule().systemInfo().blockingGet().version()
+            userManager.d2.systemInfoModule().systemInfo().blockingGet()?.version(),
         ) doReturn "1234"
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone"),
         ) doReturn mock()
         whenever(
             userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
-                .blockingExists()
+                .blockingExists(),
         ) doReturn false
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
@@ -377,8 +369,8 @@ class LoginViewModelTest {
         whenever(
             preferenceProvider.getBoolean(
                 USER_ASKED_CRASHLYTICS,
-                false
-            )
+                false,
+            ),
         ) doReturn true
         given(loginViewModel.onLoginButtonClick()).willThrow(throwable)
         verify(view).renderError(throwable)
@@ -408,7 +400,7 @@ class LoginViewModelTest {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
         if (isUserLoggedIn) {
             whenever(
-                userManager.d2.systemInfoModule().systemInfo().blockingGet()
+                userManager.d2.systemInfoModule().systemInfo().blockingGet(),
             ) doReturn SystemInfo.builder()
                 .contextPath("contextPath")
                 .build()

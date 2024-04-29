@@ -18,15 +18,15 @@ import org.hisp.dhis.android.core.program.ProgramStage
 interface ProgramEventDetailRepository {
     fun filteredProgramEvents(textFilter: TextFilter?): LiveData<PagedList<EventViewModel>>
     fun filteredEventsForMap(): Flowable<ProgramEventMapData>
-    fun program(): Single<Program>
+    fun program(): Single<Program?>
     fun getAccessDataWrite(): Boolean
-    fun hasAccessToAllCatOptions(): Single<Boolean>
     fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel>
     fun featureType(): Single<FeatureType>
-    fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo
+    fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo?
     fun workingLists(): Single<List<EventFilter>>
-    fun programStage(): Single<ProgramStage>
+    fun programStage(): Single<ProgramStage?>
     fun programHasCoordinates(): Boolean
     fun programHasAnalytics(): Boolean
+    fun isEventEditable(eventUid: String): Boolean
     fun textTypeDataElements(): Observable<List<DataElement>>
 }

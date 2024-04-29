@@ -70,19 +70,19 @@ class NFCManager internal constructor(private val context: Context) {
                 while (!auth)
                     if (mifareTag.authenticateSectorWithKeyA(
                             sector,
-                            KEY_MIFARE_APPLICATION_DIRECTORY
+                            KEY_MIFARE_APPLICATION_DIRECTORY,
                         )
                     ) {
                         auth = true
                     } else if (mifareTag.authenticateSectorWithKeyA(
                             sector,
-                            KEY_DEFAULT
+                            KEY_DEFAULT,
                         )
                     ) {
                         auth = true
                     } else if (mifareTag.authenticateSectorWithKeyA(
                             sector,
-                            KEY_NFC_FORUM
+                            KEY_NFC_FORUM,
                         )
                     ) {
                         auth = true
@@ -138,7 +138,7 @@ class NFCManager internal constructor(private val context: Context) {
                 when {
                     mifareTag.authenticateSectorWithKeyA(
                         sector,
-                        KEY_MIFARE_APPLICATION_DIRECTORY
+                        KEY_MIFARE_APPLICATION_DIRECTORY,
                     ) ->
                         auth = true
                     mifareTag.authenticateSectorWithKeyA(sector, KEY_DEFAULT) -> auth = true

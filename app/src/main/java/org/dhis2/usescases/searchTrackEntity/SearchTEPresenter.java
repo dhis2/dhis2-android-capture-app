@@ -90,6 +90,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final MatomoAnalyticsController matomoAnalyticsController;
     private final SyncStatusController syncStatusController;
 
+    private final ColorUtils colorUtils;
+
     public SearchTEPresenter(SearchTEContractsModule.View view,
                              D2 d2,
                              SearchRepository searchRepository,
@@ -102,7 +104,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              DisableHomeFiltersFromSettingsApp disableHomeFilters,
                              MatomoAnalyticsController matomoAnalyticsController,
                              SyncStatusController syncStatusController,
-                             ResourceManager resourceManager) {
+                             ResourceManager resourceManager,
+                             ColorUtils colorUtils) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -119,6 +122,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         currentProgram = BehaviorSubject.createDefault(initialProgram != null ? initialProgram : "");
         this.trackedEntityType = teTypeUid;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
+        this.colorUtils = colorUtils;
     }
 
     //-----------------------------------
@@ -507,7 +511,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         if (teiType.style() != null && teiType.style().icon() != null) {
             return
-                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.ic_default_icon);
+                    ObjectStyleUtils.getIconResource(view.getContext(), teiType.style().icon(), R.drawable.ic_default_icon, colorUtils);
         } else
             return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_icon);
     }
@@ -516,7 +520,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public Drawable getEnrollmentSymbolIcon() {
         if (selectedProgram != null) {
             if (selectedProgram.style() != null && selectedProgram.style().icon() != null) {
-                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_default_outline);
+                return ObjectStyleUtils.getIconResource(view.getContext(), selectedProgram.style().icon(), R.drawable.ic_default_outline, colorUtils);
             } else
                 return AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_default_outline);
         }
@@ -529,7 +533,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().withTrackedEntityTypeAttributes().uid(trackedEntityType).blockingGet();
 
         if (teiType.style() != null && teiType.style().color() != null) {
-            return ColorUtils.parseColor(Objects.requireNonNull(teiType.style().color()));
+            return colorUtils.parseColor(Objects.requireNonNull(teiType.style().color()));
         } else
             return -1;
     }
@@ -537,7 +541,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public int getEnrollmentColor() {
         if (selectedProgram != null && selectedProgram.style() != null && selectedProgram.style().color() != null)
-            return ColorUtils.parseColor(Objects.requireNonNull(selectedProgram.style().color()));
+            return colorUtils.parseColor(Objects.requireNonNull(selectedProgram.style().color()));
         else
             return -1;
     }
@@ -551,12 +555,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 int color;
                 Drawable icon;
                 if (stage.style() != null && stage.style().color() != null) {
-                    color = ColorUtils.parseColor(Objects.requireNonNull(stage.style().color()));
+                    color = colorUtils.parseColor(Objects.requireNonNull(stage.style().color()));
                 } else {
                     color = -1;
                 }
                 if (stage.style() != null && stage.style().icon() != null) {
-                    icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline);
+                    icon = ObjectStyleUtils.getIconResource(view.getContext(), stage.style().icon(), R.drawable.ic_clinical_f_outline, colorUtils);
                 } else {
                     icon = AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_clinical_f_outline);
                 }

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 
-import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.EventCreationType
@@ -13,18 +12,19 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import java.util.Date
 
 class ConfigureOrgUnit(
     private val creationType: EventCreationType,
     private val repository: EventDetailsRepository,
     private val preferencesProvider: PreferenceProvider,
     private val programUid: String,
-    private val initialOrgUnitUid: String?
+    private val initialOrgUnitUid: String?,
 ) {
 
     operator fun invoke(
         selectedDate: Date? = null,
-        selectedOrgUnit: String? = null
+        selectedOrgUnit: String? = null,
     ): Flow<EventOrgUnit> {
         return flowOf(
             EventOrgUnit(
@@ -33,8 +33,8 @@ class ConfigureOrgUnit(
                 fixed = isFixed(),
                 selectedOrgUnit = getSelectedOrgUnit(selectedDate, selectedOrgUnit),
                 orgUnits = getOrgUnitsByProgramId(),
-                programUid = programUid
-            )
+                programUid = programUid,
+            ),
         )
     }
 
@@ -62,7 +62,7 @@ class ConfigureOrgUnit(
 
     private fun getSelectedOrgUnit(
         selectedDate: Date?,
-        selectedOrgUnit: String?
+        selectedOrgUnit: String?,
     ): OrganisationUnit? {
         val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
             getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
@@ -85,7 +85,8 @@ class ConfigureOrgUnit(
         if (orgUnits.size == 1) {
             return when (creationType) {
                 ADDNEW,
-                DEFAULT -> orgUnits.firstOrNull()
+                DEFAULT,
+                -> orgUnits.firstOrNull()
                 else -> null
             }
         }
@@ -122,7 +123,7 @@ class ConfigureOrgUnit(
     private fun getCurrentOrgUnit() = if (preferencesProvider.contains(CURRENT_ORG_UNIT)) {
         preferencesProvider.getString(
             CURRENT_ORG_UNIT,
-            null
+            null,
         )
     } else {
         null

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings.models
 
-import java.util.Date
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -10,6 +9,7 @@ import org.hisp.dhis.android.core.maintenance.ForeignKeyViolation
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.Date
 
 class ErrorModelMapperTest {
     private lateinit var mapper: ErrorModelMapper
@@ -29,7 +29,7 @@ class ErrorModelMapperTest {
                 .created(createDate)
                 .errorDescription("Description")
                 .errorComponent(D2ErrorComponent.Database)
-                .build()
+                .build(),
         )
         result.apply {
             assertTrue(this.errorCode == "1")
@@ -49,7 +49,7 @@ class ErrorModelMapperTest {
                 .conflict("Conflict")
                 .displayDescription("Description")
                 .status(ImportStatus.ERROR)
-                .build()
+                .build(),
         )
         result.apply {
             assertTrue(this.errorCode == "1")
@@ -68,7 +68,7 @@ class ErrorModelMapperTest {
                 .created(createDate)
                 .conflict("Conflict")
                 .status(ImportStatus.ERROR)
-                .build()
+                .build(),
         )
         result.apply {
             assertTrue(this.errorCode == "1")
@@ -88,7 +88,7 @@ class ErrorModelMapperTest {
                 .notFoundValue("UIDB")
                 .fromObjectUid("UIDA")
                 .created(createDate)
-                .build()
+                .build(),
         )
         result.apply {
             assertTrue(this.errorCode == "FK")

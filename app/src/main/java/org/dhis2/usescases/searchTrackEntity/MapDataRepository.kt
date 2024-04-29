@@ -20,18 +20,18 @@ class MapDataRepository(
     private val mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection,
     private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
     private val eventToEventUiComponent: EventToEventUiComponent,
-    private val mapUtils: DhisMapUtils
+    private val mapUtils: DhisMapUtils,
 ) {
     fun getTrackerMapData(
         selectedProgram: Program?,
-        queryData: MutableMap<String, String>
+        queryData: MutableMap<String, String>,
     ): TrackerMapData {
         val teis = searchRepository.searchTeiForMap(
             SearchParametersModel(
                 selectedProgram,
-                queryData
+                queryData,
             ),
-            true
+            true,
         ).blockingFirst()
         val events = searchRepository.getEventsForMap(teis)
 
@@ -59,7 +59,7 @@ class MapDataRepository(
             teiFeatures = teiFeatureCollection.first,
             teiBoundingBox = teiFeatureCollection.second,
             eventModels = eventsUi.filter { it.event.geometry() != null }.toMutableList(),
-            dataElementFeaturess = coordinateFields
+            dataElementFeaturess = coordinateFields,
         )
     }
 
@@ -73,14 +73,14 @@ class MapDataRepository(
 
     private fun hasAttributeCoordinates(
         searchTeiModel: SearchTeiModel,
-        coordinateAttributes: List<CoordinateAttributeInfo>
+        coordinateAttributes: List<CoordinateAttributeInfo>,
     ): Boolean {
         return coordinateAttributes.find { it.tei.uid() == searchTeiModel.uid() } != null
     }
 
     private fun hasDataElementCoordinates(
         searchTeiModel: SearchTeiModel,
-        coordinateDataElements: List<CoordinateDataElementInfo>
+        coordinateDataElements: List<CoordinateDataElementInfo>,
     ): Boolean {
         return coordinateDataElements.find {
             it.enrollment?.uid() == searchTeiModel.selectedEnrollment.uid()

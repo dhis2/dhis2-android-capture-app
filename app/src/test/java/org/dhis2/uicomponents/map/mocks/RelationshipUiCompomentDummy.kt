@@ -22,16 +22,16 @@ object RelationshipUiCompomentDummy {
                 geometryFrom,
                 "",
                 -1,
-                ""
+                "",
             ),
             TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
                 -1,
-                ""
+                "",
             ),
-            RelationshipOwnerType.TEI
+            RelationshipOwnerType.TEI,
         )
     }
 
@@ -50,16 +50,16 @@ object RelationshipUiCompomentDummy {
                 geometryFrom,
                 "",
                 -1,
-                ""
+                "",
             ),
             TeiMap(
                 TEIUID_TO,
                 geometryTo,
                 "",
                 -1,
-                ""
+                "",
             ),
-            RelationshipOwnerType.TEI
+            RelationshipOwnerType.TEI,
         )
     }
 
@@ -75,7 +75,7 @@ object RelationshipUiCompomentDummy {
             false,
             TeiMap(TEIUID_FROM, geometryFrom, "", -1, ""),
             TeiMap(TEIUID_TO, geometryTo, "", -1, ""),
-            RelationshipOwnerType.TEI
+            RelationshipOwnerType.TEI,
         )
     }
 

@@ -33,7 +33,7 @@ class SearchTEIViewModel(
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
-    private val mapStyleConfig: MapStyleConfiguration
+    private val mapStyleConfig: MapStyleConfiguration,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -73,7 +73,7 @@ class SearchTEIViewModel(
     init {
         viewModelScope.launch(dispatchers.io()) {
             createButtonScrollVisibility.postValue(
-                searchRepository.canCreateInProgramWithoutSearch()
+                searchRepository.canCreateInProgramWithoutSearch(),
             )
             _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
         }
@@ -109,12 +109,12 @@ class SearchTEIViewModel(
                     ?.minAttributesRequiredToSearch()
                     ?: 1,
                 isForced = shouldOpenSearch,
-                isOpened = shouldOpenSearch
+                isOpened = shouldOpenSearch,
             ),
             searchFilters = SearchFilters(
                 hasActiveFilters = hasActiveFilters(),
-                isOpened = filterIsOpen()
-            )
+                isOpened = filterIsOpen(),
+            ),
         )
     }
 
@@ -138,18 +138,18 @@ class SearchTEIViewModel(
                     ?.minAttributesRequiredToSearch()
                     ?: 1,
                 isForced = false,
-                isOpened = false
+                isOpened = false,
             ),
             searchFilters = SearchFilters(
                 hasActiveFilters = hasActiveFilters(),
-                isOpened = filterIsOpen()
-            )
+                isOpened = filterIsOpen(),
+            ),
         )
     }
 
     fun setAnalyticsScreen() {
         _screenState.value = SearchAnalytics(
-            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE
+            previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
         )
     }
 
@@ -168,12 +168,12 @@ class SearchTEIViewModel(
                     ?.minAttributesRequiredToSearch()
                     ?: 1,
                 isForced = false,
-                isOpened = true
+                isOpened = true,
             ),
             searchFilters = SearchFilters(
                 hasActiveFilters = hasActiveFilters(),
-                isOpened = false
-            )
+                isOpened = false,
+            ),
         )
     }
 
@@ -220,8 +220,8 @@ class SearchTEIViewModel(
             _screenState.value =
                 currentSearchList.copy(
                     searchForm = currentSearchList.searchForm.copy(
-                        queryHasData = queryData.isNotEmpty()
-                    )
+                        queryHasData = queryData.isNotEmpty(),
+                    ),
                 )
         }
     }
@@ -241,9 +241,9 @@ class SearchTEIViewModel(
         return@withContext searchRepository.searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = searchRepository.getProgram(initialProgramUid),
-                queryData = queryData
+                queryData = queryData,
             ),
-            searching && networkUtils.isOnline()
+            searching && networkUtils.isOnline(),
         )
     }
 
@@ -251,9 +251,9 @@ class SearchTEIViewModel(
         return@withContext searchRepository.searchTrackedEntities(
             SearchParametersModel(
                 selectedProgram = searchRepository.getProgram(initialProgramUid),
-                queryData = queryData
+                queryData = queryData,
             ),
-            false
+            false,
         )
     }
 
@@ -262,9 +262,9 @@ class SearchTEIViewModel(
             searchRepository.searchTrackedEntities(
                 SearchParametersModel(
                     selectedProgram = null,
-                    queryData = queryData
+                    queryData = queryData,
                 ),
-                searching && networkUtils.isOnline()
+                searching && networkUtils.isOnline(),
             )
         } else {
             null
@@ -276,7 +276,7 @@ class SearchTEIViewModel(
             val result = async(context = dispatchers.io()) {
                 mapDataRepository.getTrackerMapData(
                     searchRepository.getProgram(initialProgramUid),
-                    queryData
+                    queryData,
                 )
             }
             try {
@@ -317,7 +317,7 @@ class SearchTEIViewModel(
                 onMinAttributes(
                     searchRepository.getProgram(initialProgramUid)
                         ?.minAttributesRequiredToSearch()
-                        ?: 0
+                        ?: 0,
                 )
             }
         }
@@ -363,7 +363,7 @@ class SearchTEIViewModel(
         _legacyInteraction.value = LegacyInteraction.OnAddRelationship(
             teiUid,
             relationshipTypeUid,
-            online
+            online,
         )
     }
 
@@ -382,7 +382,7 @@ class SearchTEIViewModel(
                     _legacyInteraction.value = LegacyInteraction.OnEnroll(
                         initialProgramUid,
                         downloadResult.teiUid,
-                        queryData
+                        queryData,
                     )
                 } else {
                     _downloadResult.postValue(downloadResult)
@@ -401,11 +401,11 @@ class SearchTEIViewModel(
         programResultCount: Int,
         globalResultCount: Int? = null,
         isLandscape: Boolean = false,
-        onlineErrorCode: D2ErrorCode? = null
+        onlineErrorCode: D2ErrorCode? = null,
     ) {
         val canDisplayResults = canDisplayResult(
             programResultCount,
-            onlineErrorCode == D2ErrorCode.MAX_TEI_COUNT_REACHED
+            onlineErrorCode == D2ErrorCode.MAX_TEI_COUNT_REACHED,
         )
         val hasProgramResults = programResultCount > 0
         val hasGlobalResults = globalResultCount?.let { it > 0 }
@@ -418,7 +418,7 @@ class SearchTEIViewModel(
             handleSearchResult(
                 canDisplayResults,
                 hasProgramResults,
-                hasGlobalResults
+                hasGlobalResults,
             )
         } else if (displayFrontPageList()) {
             handleDisplayInListResult(hasProgramResults, isLandscape)
@@ -435,8 +435,8 @@ class SearchTEIViewModel(
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OR_CREATE,
-                        searchRepository.getTrackedEntityType().displayName()
-                    )
+                        searchRepository.getTrackedEntityType().displayName(),
+                    ),
                 )
 
             else -> listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
@@ -452,7 +452,7 @@ class SearchTEIViewModel(
     private fun handleSearchResult(
         canDisplayResults: Boolean,
         hasProgramResults: Boolean,
-        hasGlobalResults: Boolean?
+        hasGlobalResults: Boolean?,
     ) {
         val result = when {
             !canDisplayResults -> {
@@ -465,9 +465,9 @@ class SearchTEIViewModel(
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
-                        searchRepository.getProgram(initialProgramUid)?.displayName()
+                        searchRepository.getProgram(initialProgramUid)?.displayName(),
 
-                    )
+                    ),
                 )
             }
 
@@ -481,9 +481,9 @@ class SearchTEIViewModel(
                             trackedEntityTypeAttributes =
                             searchRepository.trackedEntityTypeFields(),
                             trackedEntityTypeName =
-                            searchRepository.trackedEntityType.displayName()!!
-                        )
-                    )
+                            searchRepository.trackedEntityType.displayName()!!,
+                        ),
+                    ),
                 )
             }
 
@@ -503,15 +503,15 @@ class SearchTEIViewModel(
             true -> listOf(
                 SearchResult(
                     SearchResult.SearchResultType.SEARCH_OR_CREATE,
-                    searchRepository.trackedEntityType.displayName()
-                )
+                    searchRepository.trackedEntityType.displayName(),
+                ),
             )
 
             false -> listOf(
                 SearchResult(
                     SearchResult.SearchResultType.SEARCH,
-                    searchRepository.trackedEntityType.displayName()
-                )
+                    searchRepository.trackedEntityType.displayName(),
+                ),
             )
         }
         _dataResult.value = result
@@ -523,7 +523,7 @@ class SearchTEIViewModel(
         keyBoardIsOpen: Boolean,
         goBackCallback: () -> Unit,
         closeSearchOrFilterCallback: () -> Unit,
-        closeKeyboardCallback: () -> Unit
+        closeKeyboardCallback: () -> Unit,
     ) {
         val searchScreenIsForced = _screenState.value?.let {
             if (it is SearchList && it.searchForm.isForced) {
@@ -557,7 +557,7 @@ class SearchTEIViewModel(
     fun onProgramSelected(
         programIndex: Int,
         programs: List<ProgramSpinnerModel>,
-        onProgramChanged: (selectedProgramUid: String?) -> Unit
+        onProgramChanged: (selectedProgramUid: String?) -> Unit,
     ) {
         val selectedProgram = when {
             programIndex > 0 ->
@@ -593,12 +593,12 @@ class SearchTEIViewModel(
                         false
                     } else {
                         isLandscape
-                    }
+                    },
                 ),
                 searchFilters = SearchFilters(
                     hasActiveFilters = hasActiveFilters(),
-                    isOpened = filterFieldsVisible
-                )
+                    isOpened = filterFieldsVisible,
+                ),
             )
         }?.let {
             _screenState.value = it

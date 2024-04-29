@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
@@ -68,6 +69,12 @@ interface FieldUiModel {
     val isNegativeChecked: Boolean
 
     val isLoadingData: Boolean
+
+    val autocompleteList: List<String>?
+
+    val orgUnitSelectorScope: OrgUnitSelectorScope?
+
+    val url: String?
 
     fun setCallback(callback: Callback)
 

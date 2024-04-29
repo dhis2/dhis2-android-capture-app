@@ -54,7 +54,7 @@ class MapTeisToFeatureCollectionTest {
                 mapPolygonToFeature,
                 mapPolygonPointToFeature,
                 mapRelationshipToRelationshipMapModel,
-                mapRelationshipsToFeatureCollection
+                mapRelationshipsToFeatureCollection,
             )
     }
 
@@ -65,7 +65,7 @@ class MapTeisToFeatureCollectionTest {
 
         whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(
             featurePoint,
-            bounds
+            bounds,
         )
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
@@ -88,17 +88,17 @@ class MapTeisToFeatureCollectionTest {
             LineString.fromLngLats(
                 listOf(
                     Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE),
-                    Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT)
-                )
-            )
+                    Point.fromLngLat(POINT_LONGITUDE_ENROLLMENT, POINT_LATITUDE_ENROLLMENT),
+                ),
+            ),
         )
         val relationshipModels = listOf(RelationshipUiCompomentDummy.relationshipUiComponentModel())
         whenever(
-            mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships)
+            mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships),
         ) doReturn relationshipModels
         whenever(mapRelationshipsToFeatureCollection.map(relationshipModels)) doReturn Pair(
             mapOf(relationshipModels[0].displayName!! to FeatureCollection.fromFeature(feature)),
-            boundingBox.getEnclosingBoundingBox(listOf())
+            boundingBox.getEnclosingBoundingBox(listOf()),
         )
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
@@ -109,16 +109,16 @@ class MapTeisToFeatureCollectionTest {
             featureCollectionResults?.features()?.get(0)?.geometry() as LineString
         assertThat(
             relationshipFeatureCollection.coordinates()[0].longitude(),
-            `is`(POINT_LONGITUDE)
+            `is`(POINT_LONGITUDE),
         )
         assertThat(relationshipFeatureCollection.coordinates()[0].latitude(), `is`(POINT_LATITUDE))
         assertThat(
             relationshipFeatureCollection.coordinates()[1].longitude(),
-            `is`(POINT_LONGITUDE_ENROLLMENT)
+            `is`(POINT_LONGITUDE_ENROLLMENT),
         )
         assertThat(
             relationshipFeatureCollection.coordinates()[1].latitude(),
-            `is`(POINT_LATITUDE_ENROLLMENT)
+            `is`(POINT_LATITUDE_ENROLLMENT),
         )
     }
 
@@ -128,21 +128,21 @@ class MapTeisToFeatureCollectionTest {
         val enrollmentFeaturePoint = Feature.fromGeometry(
             Point.fromLngLat(
                 POINT_LONGITUDE_ENROLLMENT,
-                POINT_LATITUDE_ENROLLMENT
-            )
+                POINT_LATITUDE_ENROLLMENT,
+            ),
         )
         val teiFeaturePoint =
             Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE))
 
         whenever(mapPointToFeature.map(teiList[0].tei.geometry()!!, bounds)) doReturn Pair(
             teiFeaturePoint,
-            bounds
+            bounds,
         )
         whenever(
             mapPointToFeature.map(
                 teiList[0].selectedEnrollment.geometry()!!,
-                bounds
-            )
+                bounds,
+            ),
         ) doReturn Pair(enrollmentFeaturePoint, bounds)
 
         val result = mapTeisToFeatureCollection.map(teiList, true)
@@ -177,7 +177,7 @@ class MapTeisToFeatureCollectionTest {
 
         whenever(mapPolygonToFeature.map(any(), any())) doReturn Pair(
             teiFeaturePoint,
-            bounds
+            bounds,
         ) doReturn Pair(enrollmentFeaturePoint, bounds)
         whenever(mapPolygonPointToFeature.map(any())) doReturn enrollmentFeaturePoint
 
@@ -199,11 +199,11 @@ class MapTeisToFeatureCollectionTest {
             ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureTeiEnrollmentResult.coordinates()[0][0].longitude(),
-            `is`(POINT_LONGITUDE_ENROLLMENT)
+            `is`(POINT_LONGITUDE_ENROLLMENT),
         )
         assertThat(
             featureTeiEnrollmentResult.coordinates()[0][0].latitude(),
-            `is`(POINT_LATITUDE_ENROLLMENT)
+            `is`(POINT_LATITUDE_ENROLLMENT),
         )
         assertThat(uidTeiEnrollmentFeature, `is`(TEI_UID))
 
@@ -213,11 +213,11 @@ class MapTeisToFeatureCollectionTest {
             ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentFirstResult.coordinates()[0][0].longitude(),
-            `is`(POINT_LONGITUDE_ENROLLMENT)
+            `is`(POINT_LONGITUDE_ENROLLMENT),
         )
         assertThat(
             featureEnrollmentFirstResult.coordinates()[0][0].latitude(),
-            `is`(POINT_LATITUDE_ENROLLMENT)
+            `is`(POINT_LATITUDE_ENROLLMENT),
         )
         assertThat(featureEnrollmentFirstUid, `is`(TEI_UID))
 
@@ -227,11 +227,11 @@ class MapTeisToFeatureCollectionTest {
             ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentSecondResult.coordinates()[0][0].longitude(),
-            `is`(POINT_LONGITUDE_ENROLLMENT)
+            `is`(POINT_LONGITUDE_ENROLLMENT),
         )
         assertThat(
             featureEnrollmentSecondResult.coordinates()[0][0].latitude(),
-            `is`(POINT_LATITUDE_ENROLLMENT)
+            `is`(POINT_LATITUDE_ENROLLMENT),
         )
         assertThat(featureEnrollmentSecondUid, `is`(TEI_UID))
     }
@@ -278,7 +278,7 @@ class MapTeisToFeatureCollectionTest {
                 Geometry.builder()
                     .type(type)
                     .coordinates("[$POINT_LONGITUDE_ENROLLMENT, $POINT_LATITUDE_ENROLLMENT]")
-                    .build()
+                    .build(),
             )
             .build()
     }
@@ -287,7 +287,7 @@ class MapTeisToFeatureCollectionTest {
         return TrackedEntityInstance.builder().uid(TEI_UID)
             .geometry(
                 Geometry.builder().coordinates("[$POINT_LONGITUDE,$POINT_LATITUDE]")
-                    .type(type).build()
+                    .type(type).build(),
             ).build()
     }
 
