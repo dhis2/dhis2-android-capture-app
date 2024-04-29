@@ -3,11 +3,10 @@ package org.dhis2.usescases.events
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.data.dhislogic.DhisEventUtils
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -25,7 +24,6 @@ class ScheduledEventPresenterImpl(
     val view: ScheduledEventContract.View,
     val d2: D2,
     val eventUid: String,
-    val eventUtils: DhisEventUtils,
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
@@ -84,11 +82,7 @@ class ScheduledEventPresenterImpl(
     override fun setEventDate(date: Date) {
         d2.eventModule().events().uid(eventUid).setEventDate(date)
         d2.eventModule().events().uid(eventUid).setStatus(EventStatus.ACTIVE)
-        if (eventUtils.newEventNeedsExtraInfo(eventUid)) {
-            view.openInitialActivity()
-        } else {
-            view.openFormActivity()
-        }
+        view.openFormActivity()
     }
 
     override fun formatDateValues(date: InputDateValues): Date {

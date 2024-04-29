@@ -9,6 +9,8 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
@@ -20,10 +22,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.ArrayList
 
 class EventInitialRepositoryImplTest {
     private lateinit var repository: EventInitialRepositoryImpl
@@ -34,8 +36,27 @@ class EventInitialRepositoryImplTest {
     private val ruleEngineHelper: RuleEngineHelper = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
 
+    private val mockedStage: ProgramStage = mock {
+        on { program() } doReturn ObjectWithUid.create("programUid")
+    }
+
+    private val mockedProgram: Program = mock {
+        on { style() } doReturn ObjectStyle.builder().build()
+    }
+
     @Before
     fun setUp() {
+        whenever(
+            d2.programModule().programStages()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(mockedStage)
+        whenever(
+            d2.programModule().programs()
+                .uid(any())
+                .blockingGet(),
+        )doReturn mockedProgram
+
         repository = EventInitialRepositoryImpl(
             eventUid,
             stageUid,

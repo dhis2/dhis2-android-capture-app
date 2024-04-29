@@ -63,34 +63,33 @@ class FormValueStore(
     ): Flowable<StoreResult> {
         return when (uid) {
             EVENT_REPORT_DATE_UID -> {
-                eventRepository?.setEventDate(value?.toDate())
-
-                Flowable.just(
+                val storeResult = value?.toDate()?.let {
+                    eventRepository?.setEventDate(it)
                     StoreResult(
                         EVENT_REPORT_DATE_UID,
                         ValueStoreResult.VALUE_CHANGED,
-                    ),
+                    )
+                } ?: StoreResult(
+                    EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
                 )
+
+                Flowable.just(storeResult)
             }
 
             EVENT_ORG_UNIT_UID -> {
-                try {
-                    eventRepository?.setOrganisationUnitUid(value)
+                val storeResult = value?.takeIf { it.isNotEmpty() }?.let {
+                    eventRepository?.setOrganisationUnitUid(it)
+                    StoreResult(
+                        EVENT_ORG_UNIT_UID,
+                        ValueStoreResult.VALUE_CHANGED,
+                    )
+                } ?: StoreResult(
+                    EVENT_ORG_UNIT_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
 
-                    Flowable.just(
-                        StoreResult(
-                            EVENT_ORG_UNIT_UID,
-                            ValueStoreResult.VALUE_CHANGED,
-                        ),
-                    )
-                } catch (e: Exception) {
-                    Flowable.just(
-                        StoreResult(
-                            EVENT_ORG_UNIT_UID,
-                            ValueStoreResult.ERROR_UPDATING_VALUE,
-                        ),
-                    )
-                }
+                Flowable.just(storeResult)
             }
 
             EVENT_COORDINATE_UID -> {
@@ -126,14 +125,18 @@ class FormValueStore(
             }
         }
 
-        eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
-
-        return Flowable.just(
+        val storeResult = categoryOptionComboUid?.let {
+            eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
             StoreResult(
                 EVENT_CATEGORY_COMBO_UID,
                 ValueStoreResult.VALUE_CHANGED,
-            ),
+            )
+        } ?: StoreResult(
+            EVENT_CATEGORY_COMBO_UID,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
+
+        return Flowable.just(storeResult)
     }
 
     private fun storeEventCoordinateAttribute(
@@ -549,7 +552,7 @@ class FormValueStore(
                 .uid(optionGroupUid)
                 .blockingGet()
                 ?.options()
-                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet()?.code()!! }
+                ?.mapNotNull { d2.optionModule().options().uid(it.uid()).blockingGet()?.code() }
                 ?: arrayListOf()
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(

@@ -3,15 +3,15 @@ ndk = "21.4.7075529"
 sdk = "34"
 minSdk = "21"
 vCode = "130"
-vName = "2.10-DEV"
+vName = "3.0-RC1"
 kotlinCompilerExtensionVersion = "1.5.6"
 gradle = "8.2.2"
 kotlin = '1.9.21'
 hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
-designSystem = "0.2-20240314.101140-42"
-dhis2sdk = "1.10.0-20240318.115339-36"
+designSystem = "0.2-20240426.091900-58"
+dhis2sdk = "1.10.0-20240322.092247-38"
 ruleEngine = "3.0.0-20240119.134348-12"
 expressionParser = "1.1.0-20240219.115041-14"
 appcompat = "1.6.1"
@@ -230,7 +230,6 @@ dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" } #TODO: Remove alongside AutoValue
 [plugins]
-
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose", "androidx-material3", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-viewbinding", "androidx-compose-livedata", "google-material-themeadapter", "google-material3-themeadapter"]
@@ -240,7 +239,7 @@ uicomponents-androidtest = ["test-junit-ext", "test-espresso"]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
 analytics-api = ["github-charts"]
 analytics-kapt = ["dagger-compiler"]
-analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]
 form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore", "test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
 form-androidTest = ["test-espresso-idlingresource"]
 map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]

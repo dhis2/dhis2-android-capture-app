@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 
 import java.util.ArrayList;
 import java.util.Collections;

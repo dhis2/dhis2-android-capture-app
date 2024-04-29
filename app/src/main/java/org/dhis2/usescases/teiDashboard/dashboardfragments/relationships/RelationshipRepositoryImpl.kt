@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class RelationshipRepositoryImpl(
     private val d2: D2,
@@ -357,11 +358,11 @@ class RelationshipRepositoryImpl(
                 val event = d2.eventModule().events().uid(uid).blockingGet()
                 val program = d2.programModule().programs().uid(event?.program()).blockingGet()
                 if (program?.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                    metadataIconProvider.invoke(program.style())
+                    metadataIconProvider.invoke(program.style(), SurfaceColor.Primary)
                 } else {
                     val programStage =
                         d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-                    metadataIconProvider(programStage!!.style())
+                    metadataIconProvider(programStage!!.style(), SurfaceColor.Primary)
                 }
             }
             RelationshipOwnerType.TEI -> {
@@ -369,7 +370,7 @@ class RelationshipRepositoryImpl(
                     .uid(uid).blockingGet()
                 val teType = d2.trackedEntityModule().trackedEntityTypes()
                     .uid(tei?.trackedEntityType()).blockingGet()
-                return metadataIconProvider(teType!!.style())
+                return metadataIconProvider(teType!!.style(), SurfaceColor.Primary)
             }
         }
     }

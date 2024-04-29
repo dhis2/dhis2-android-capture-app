@@ -144,6 +144,7 @@ fun SearchParametersScreen(
                         message = message,
                         duration = SnackbarDuration.Short,
                     )
+                    uiState.updateMinAttributeWarning(false)
                 }
             }
         }

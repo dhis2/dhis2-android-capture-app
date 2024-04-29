@@ -14,6 +14,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -52,7 +53,7 @@ class ProgramStageSelectionPresenter(
                 programStages.map { programStage ->
                     ProgramStageData(
                         programStage,
-                        metadataIconProvider(programStage.style()),
+                        metadataIconProvider(programStage.style(), SurfaceColor.Primary),
                     )
                 }
             }

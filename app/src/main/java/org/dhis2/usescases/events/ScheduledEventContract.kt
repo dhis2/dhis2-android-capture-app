@@ -16,7 +16,6 @@ class ScheduledEventContract {
         fun setEvent(event: Event)
         fun setStage(programStage: ProgramStage, event: Event)
         fun setProgram(program: Program)
-        fun openInitialActivity()
         fun openFormActivity()
     }
 

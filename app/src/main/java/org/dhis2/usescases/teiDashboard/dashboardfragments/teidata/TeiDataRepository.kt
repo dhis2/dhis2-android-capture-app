@@ -24,4 +24,6 @@ interface TeiDataRepository {
     fun getTeiHeader(): String?
     fun isEventEditable(eventUid: String): Boolean
     fun displayOrganisationUnit(programUid: String): Boolean
+    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean
+    fun programOrgListInCaptureScope(programUid: String): List<OrganisationUnit>
 }

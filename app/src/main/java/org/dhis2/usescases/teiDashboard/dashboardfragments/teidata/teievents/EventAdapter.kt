@@ -31,6 +31,8 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
+import org.hisp.dhis.android.core.event.EventStatus
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.utils.isLandscape
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
@@ -132,7 +134,7 @@ class EventAdapter(
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing56 else Spacing.Spacing16
+                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
                         val bottomSpacing = if (it.showBottomShadow) {
                             Spacing.Spacing16
                         } else {
@@ -140,10 +142,8 @@ class EventAdapter(
                         }
                         val card = cardMapper.map(
                             event = it,
-                            editable = it.event?.uid()
-                                ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
-                            displayOrgUnit = it.event?.program()
-                                ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
+                            editable = it.editable,
+                            displayOrgUnit = it.displayOrgUnit,
                             onCardClick = {
                                 it.event?.let { event ->
                                     when (event.status()) {
@@ -159,26 +159,11 @@ class EventAdapter(
                                                 event.uid(),
                                                 event.status()!!,
                                             )
-
-                                            if (isLandscape()) {
-                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                    currentList[previousSelectedPosition].isClicked = false
-                                                    notifyItemChanged(previousSelectedPosition)
-                                                }
-                                                previousSelectedPosition = position
-                                                getItem(position).isClicked = true
-                                                notifyItemChanged(position)
-                                            }
                                         }
                                     }
                                 }
                             },
                         )
-
-                        if (it.event?.uid() == initialSelectedEventUid && previousSelectedPosition == RecyclerView.NO_POSITION) {
-                            it.isClicked = true
-                            previousSelectedPosition = position
-                        }
                         Box(
                             modifier = Modifier
                                 .padding(
@@ -208,13 +193,6 @@ class EventAdapter(
                                 shrinkLabelText = card.shrinkLabelText,
                                 onCardClick = card.onCardCLick,
                             )
-                            if (it.isClicked) {
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .background(color = SurfaceColor.Primary.copy(alpha = 0.1f), shape = RoundedCornerShape(Radius.S)),
-                                )
-                            }
                         }
                     }
 

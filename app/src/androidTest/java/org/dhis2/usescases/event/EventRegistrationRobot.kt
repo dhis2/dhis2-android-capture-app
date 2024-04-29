@@ -3,6 +3,7 @@ package org.dhis2.usescases.event
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -30,6 +31,7 @@ class EventRegistrationRobot : BaseRobot() {
 
     fun checkEventDataEntryIsOpened(completion: Int, email: String, composeTestRule: ComposeTestRule) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(completion)))
+        composeTestRule.onNodeWithText(email).performScrollTo()
         composeTestRule.onNodeWithText(email).assertIsDisplayed()
     }
 

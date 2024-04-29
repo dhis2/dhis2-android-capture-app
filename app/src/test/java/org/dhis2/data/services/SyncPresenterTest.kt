@@ -134,7 +134,7 @@ class SyncPresenterTest {
 
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
-                .byDomainType().eq(FileResourceDomainType.CUSTOM_ICON)
+                .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
         )doReturn Observable.just(BaseD2Progress.empty(1))
 
@@ -160,7 +160,7 @@ class SyncPresenterTest {
         )doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
-                .byDomainType().eq(FileResourceDomainType.CUSTOM_ICON)
+                .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
         )doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }
@@ -186,7 +186,7 @@ class SyncPresenterTest {
         )doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
-                .byDomainType().eq(FileResourceDomainType.CUSTOM_ICON)
+                .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
         )doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }
@@ -209,7 +209,7 @@ class SyncPresenterTest {
         )doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
-                .byDomainType().eq(FileResourceDomainType.CUSTOM_ICON)
+                .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
         )doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }

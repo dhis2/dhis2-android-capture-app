@@ -215,7 +215,7 @@ class SyncPresenterImpl(
         ).andThen(
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
-                    .byDomainType().eq(FileResourceDomainType.CUSTOM_ICON)
+                    .byDomainType().eq(FileResourceDomainType.ICON)
                     .download(),
             ),
         ).blockingAwait()

@@ -303,8 +303,10 @@ class MainPresenter(
     }
 
     fun onDataSuccess() {
-        userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
-            .blockingSet(TRUE)
+        launch(dispatcherProvider.io()) {
+            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+                .blockingSet(TRUE)
+        }
     }
 
     fun trackHomeAnalytics() {
