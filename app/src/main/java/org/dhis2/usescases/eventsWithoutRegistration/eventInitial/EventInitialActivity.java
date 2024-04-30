@@ -240,11 +240,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void setUpActivityTitle() {
         String activityTitle;
         if (eventCreationType == EventCreationType.REFERAL) {
-            activityTitle = program.displayName() + " - " + getString(R.string.referral);
+            activityTitle = getString(R.string.referral);
         } else {
-
             activityTitle = eventUid == null ?
-                    program.displayName() + " - " +
                     resourceManager.formatWithEventLabel(R.string.new_event_label, programStageUid, 1, false)
                     : program.displayName();
         }
