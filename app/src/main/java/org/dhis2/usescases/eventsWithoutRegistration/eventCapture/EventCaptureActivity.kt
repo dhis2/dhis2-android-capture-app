@@ -98,8 +98,8 @@ class EventCaptureActivity :
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         setUpEventCaptureComponent(eventUid)
-        teiUid = presenter!!.teiUid
-        enrollmentUid = presenter!!.enrollmentUid
+        teiUid = presenter.getTeiUid()
+        enrollmentUid = presenter.getEnrollmentUid()
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)

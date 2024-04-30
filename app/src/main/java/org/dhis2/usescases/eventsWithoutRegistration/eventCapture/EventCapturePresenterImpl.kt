@@ -302,9 +302,9 @@ class EventCapturePresenterImpl(
     override fun programStage(): String = eventCaptureRepository.programStage().blockingFirst()
 
     override fun getEnrollmentUid(): String? {
-        return eventCaptureRepository.enrollmentUid
+        return eventCaptureRepository.getEnrollmentUid()
     }
     override fun getTeiUid(): String? {
-        return eventCaptureRepository.teiUid
+        return eventCaptureRepository.getTeiUid()
     }
 }
