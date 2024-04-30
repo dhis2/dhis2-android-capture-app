@@ -13,6 +13,7 @@ import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
@@ -32,7 +33,7 @@ class EventCaptureFormPresenter(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+    fun handleDataIntegrityResult(result: DataIntegrityCheckResult, eventMode: EventMode? = null) {
         when (result) {
             is FieldsWithErrorResult -> activityPresenter.attemptFinish(
                 result.canComplete,
@@ -40,6 +41,7 @@ class EventCaptureFormPresenter(
                 result.fieldUidErrorList,
                 result.mandatoryFields,
                 result.warningFields,
+                eventMode,
             )
 
             is FieldsWithWarningResult -> activityPresenter.attemptFinish(
@@ -48,6 +50,7 @@ class EventCaptureFormPresenter(
                 emptyList(),
                 emptyMap(),
                 result.fieldUidWarningList,
+                eventMode,
             )
 
             is MissingMandatoryResult -> activityPresenter.attemptFinish(
@@ -56,6 +59,7 @@ class EventCaptureFormPresenter(
                 result.errorFields,
                 result.mandatoryFields,
                 result.warningFields,
+                eventMode,
             )
 
             is SuccessfulResult -> activityPresenter.attemptFinish(
@@ -96,7 +100,7 @@ class EventCaptureFormPresenter(
             EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE -> resourceManager.getString(R.string.event_date_not_in_orgunit_range) to false
             EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS -> resourceManager.getString(R.string.edition_no_catcombo_access) to false
             EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN -> resourceManager.formatWithEnrollmentLabel(
-                null,
+                d2.eventModule().events().uid(eventUid).blockingGet()?.program(),
                 R.string.edition_enrollment_is_no_open_V2,
                 1,
             ) to false

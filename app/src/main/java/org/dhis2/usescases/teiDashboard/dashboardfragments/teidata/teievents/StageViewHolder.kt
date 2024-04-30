@@ -27,6 +27,7 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
@@ -106,7 +107,7 @@ internal class StageViewHolder(
     ) {
         Avatar(
             metadataAvatar = {
-                MetadataIcon(metadataIconData = metadataIconData)
+                MetadataIcon(metadataIconData = metadataIconData, size = AvatarSize.Large)
             },
             style = AvatarStyle.METADATA,
         )

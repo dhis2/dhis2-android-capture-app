@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -90,14 +89,6 @@ fun Form(
                 items = sections,
                 key = { _, fieldUiModel -> fieldUiModel.uid },
             ) { _, section ->
-                val isSectionOpen = remember(section.state) {
-                    derivedStateOf { section.state == SectionState.OPEN }
-                }
-
-                LaunchIfTrue(isSectionOpen.value) {
-                    scrollState.animateScrollToItem(sections.indexOf(section))
-                    focusManager.moveFocusNext(focusNext)
-                }
 
                 val onNextSection: () -> Unit = {
                     getNextSection(section, sections)?.let {

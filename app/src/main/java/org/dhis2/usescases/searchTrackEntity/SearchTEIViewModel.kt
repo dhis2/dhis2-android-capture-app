@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
@@ -33,8 +34,11 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import timber.log.Timber
+import java.text.ParseException
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
@@ -90,7 +94,6 @@ class SearchTEIViewModel(
     val teTypeName: LiveData<String> = _teTypeName
 
     var uiState by mutableStateOf(SearchParametersUiState())
-        private set
 
     private var fetchJob: Job? = null
 
@@ -274,7 +277,11 @@ class SearchTEIViewModel(
         val updatedItems = uiState.items.map {
             (it as FieldUiModelImpl).copy(value = null, displayName = null)
         }
-        uiState = uiState.copy(items = updatedItems)
+        uiState = uiState.copy(
+            items = updatedItems,
+            searchedItems = mapOf(),
+        )
+        searching = false
     }
 
     private fun updateSearch() {
@@ -430,7 +437,10 @@ class SearchTEIViewModel(
         viewModelScope.launch(dispatchers.io()) {
             if (canPerformSearch()) {
                 searching = queryData.isNotEmpty()
-                uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
+                uiState = uiState.copy(
+                    clearSearchEnabled = queryData.isNotEmpty(),
+                    searchedItems = getFriendlyQueryData(),
+                )
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
@@ -457,6 +467,8 @@ class SearchTEIViewModel(
                 )
                 uiState = uiState.copy(minAttributesMessage = message)
                 uiState.updateMinAttributeWarning(true)
+                setSearchScreen()
+                _refreshData.postValue(Unit)
             }
         }
     }
@@ -544,7 +556,6 @@ class SearchTEIViewModel(
     fun onDataLoaded(
         programResultCount: Int,
         globalResultCount: Int? = null,
-        isLandscape: Boolean = false,
         onlineErrorCode: D2ErrorCode? = null,
     ) {
         val canDisplayResults = canDisplayResult(
@@ -565,7 +576,7 @@ class SearchTEIViewModel(
                 hasGlobalResults,
             )
         } else if (displayFrontPageList()) {
-            handleDisplayInListResult(hasProgramResults, isLandscape)
+            handleDisplayInListResult(hasProgramResults)
         } else {
             handleInitWithoutData()
         }
@@ -573,7 +584,7 @@ class SearchTEIViewModel(
         SearchIdlingResourceSingleton.decrement()
     }
 
-    private fun handleDisplayInListResult(hasProgramResults: Boolean, isLandscape: Boolean) {
+    private fun handleDisplayInListResult(hasProgramResults: Boolean) {
         val result = when {
             !hasProgramResults && searchRepository.canCreateInProgramWithoutSearch() ->
                 listOf(
@@ -806,13 +817,25 @@ class SearchTEIViewModel(
         }
 
         is FormIntent.OnFocus -> {
-            val updatedItems = uiState.items.map {
-                if (it.focused && it.uid != formIntent.uid) {
-                    (it as FieldUiModelImpl).copy(focused = false)
-                } else if (it.uid == formIntent.uid) {
-                    (it as FieldUiModelImpl).copy(focused = true)
+            val updatedItems = uiState.items.map { field ->
+                if (field.focused && field.uid != formIntent.uid) {
+                    val validation = field.value?.takeIf {
+                        field.valueType in listOf(
+                            ValueType.DATE, ValueType.DATETIME, ValueType.AGE, ValueType.TIME,
+                        )
+                    }?.let { value -> field.valueType?.validator?.validate(value) }
+
+                    (field as FieldUiModelImpl).copy(
+                        focused = false,
+                        error = when (validation) {
+                            is Result.Failure -> resourceManager.getString(R.string.formatting_error)
+                            else -> null
+                        },
+                    )
+                } else if (field.uid == formIntent.uid) {
+                    (field as FieldUiModelImpl).copy(focused = true)
                 } else {
-                    it
+                    field
                 }
             }
             uiState = uiState.copy(items = updatedItems)
@@ -838,7 +861,10 @@ class SearchTEIViewModel(
             )
 
             searching = queryData.isNotEmpty()
-            uiState = uiState.copy(clearSearchEnabled = queryData.isNotEmpty())
+            uiState = uiState.copy(
+                clearSearchEnabled = queryData.isNotEmpty(),
+                searchedItems = getFriendlyQueryData(),
+            )
 
             val searchParametersModel = SearchParametersModel(
                 selectedProgram = searchRepository.getProgram(initialProgramUid),
@@ -891,5 +917,62 @@ class SearchTEIViewModel(
             }
         }
         uiState = uiState.copy(items = updatedItems)
+    }
+
+    fun getFriendlyQueryData(): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+        uiState.items.filter { !it.value.isNullOrEmpty() }
+            .forEach { item ->
+                when (item.valueType) {
+                    ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
+                        map[item.uid] = (item.displayName ?: "")
+                    }
+                    ValueType.DATE, ValueType.AGE -> {
+                        item.value?.let {
+                            if (it.isNotEmpty()) {
+                                val date = try {
+                                    DateUtils.oldUiDateFormat().parse(it)
+                                } catch (e: ParseException) {
+                                    null
+                                }
+                                map[item.uid] = date?.let {
+                                    DateUtils.uiDateFormat().format(date)
+                                } ?: it
+                            }
+                        }
+                    }
+                    ValueType.DATETIME -> {
+                        item.value?.let {
+                            if (it.isNotEmpty()) {
+                                val date = try {
+                                    DateUtils.databaseDateFormatNoSeconds().parse(it)
+                                } catch (e: ParseException) {
+                                    null
+                                }
+                                map[item.uid] = date?.let {
+                                    DateUtils.uiDateTimeFormat().format(date)
+                                } ?: it
+                            }
+                        }
+                    }
+                    ValueType.BOOLEAN -> {
+                        map[item.uid] = "${item.label}: ${item.value}"
+                    }
+                    ValueType.TRUE_ONLY -> {
+                        item.value?.let {
+                            if (it == "true") {
+                                map[item.uid] = item.label
+                            }
+                        }
+                    }
+                    ValueType.PERCENTAGE -> {
+                        map[item.uid] = "${item.value}%"
+                    }
+                    else -> {
+                        map[item.uid] = (item.value ?: "")
+                    }
+                }
+            }
+        return map
     }
 }

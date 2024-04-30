@@ -1,16 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope.OrderByDirection.DESC
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
 
@@ -35,6 +40,7 @@ class EventDetailsRepositoryTest {
             EVENT_UID,
             PROGRAM_STAGE_UID,
             fieldViewModelFactory,
+            EventCreationType.ADDNEW,
         ) { d2Error -> "" }
 
         whenever(
@@ -152,6 +158,60 @@ class EventDetailsRepositoryTest {
         // When client is asking for getStageLastDate
         // Then gets the date of the active event
         assertEquals(repository.getStageLastDate(ENROLLMENT_UID), date)
+    }
+
+    @Test
+    fun `should use search scope in referral`() {
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(any()),
+        ) doReturn mock()
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(any())
+                .byProgramUids(any()),
+        ) doReturn mock()
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(any()),
+        ) doReturn mock()
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byProgramUids(any())
+                .blockingGet(),
+        ) doReturn listOf()
+
+        whenever(
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(any())
+                .byProgramUids(any())
+                .blockingGet(),
+        ) doReturn listOf()
+
+        EventCreationType.entries.forEach { eventCreationType ->
+            repository = EventDetailsRepository(
+                d2,
+                PROGRAM_UID,
+                EVENT_UID,
+                PROGRAM_STAGE_UID,
+                fieldViewModelFactory,
+                eventCreationType,
+            ) { d2Error -> "" }
+
+            repository.getOrganisationUnits()
+        }
+
+        verify(
+            d2.organisationUnitModule().organisationUnits(),
+            times(1),
+        ).byProgramUids(listOf(PROGRAM_UID))
+
+        verify(
+            d2.organisationUnitModule().organisationUnits(),
+            times(3),
+        ).byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
     }
 
     companion object {

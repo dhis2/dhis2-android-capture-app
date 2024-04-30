@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultRegistry
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
@@ -171,11 +172,16 @@ class TEIDataModule(
     fun provideCreateEventUseCase(
         dispatcherProvider: DispatcherProvider,
         d2: D2,
+        dateUtils: DateUtils,
     ) = CreateEventUseCase(
         dispatcher = dispatcherProvider,
         d2 = d2,
+        dateUtils = dateUtils,
     )
 
     @Provides
     fun provideD2ErrorUtils() = D2ErrorUtils(view.context, NetworkUtils(view.context))
+
+    @Provides
+    fun provideDateUtils() = DateUtils.getInstance()
 }

@@ -8,6 +8,7 @@ import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
@@ -114,6 +115,7 @@ class EventCaptureFormPresenterTest {
                 null,
                 false,
             ),
+            EventMode.NEW,
         )
         verify(activityPresenter).attemptFinish(
             false,
@@ -121,6 +123,7 @@ class EventCaptureFormPresenterTest {
             emptyList(),
             mapOf(Pair("field1", "section")),
             emptyList(),
+            EventMode.NEW,
         )
     }
 

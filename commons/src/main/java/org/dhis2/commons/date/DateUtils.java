@@ -36,6 +36,7 @@ public class DateUtils {
     public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
     public static final String UI_LIBRARY_FORMAT = "ddMMyyyy";
+    public static final String SIMPLE_DATE_TIME_FORMAT = "d/M/yyyy HH:mm";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -218,6 +219,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat twelveHourTimeFormat() {
         return new SimpleDateFormat(TIME_12H_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat uiDateTimeFormat() {
+        return new SimpleDateFormat(SIMPLE_DATE_TIME_FORMAT, Locale.US);
     }
 
 

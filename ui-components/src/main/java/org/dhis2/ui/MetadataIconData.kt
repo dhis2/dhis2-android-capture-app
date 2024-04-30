@@ -21,7 +21,7 @@ data class MetadataIconData(
             imageCardData = ImageCardData.IconCardData(
                 "",
                 "",
-                "ic_default_icon",
+                "",
                 Color.Unspecified,
             ),
             color = Color.Unspecified,

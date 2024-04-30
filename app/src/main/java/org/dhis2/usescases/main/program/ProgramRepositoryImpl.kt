@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -76,7 +77,7 @@ internal class ProgramRepositoryImpl(
                                 },
                                 resourceManager.defaultDataSetLabel(),
                                 filterPresenter.areFiltersActive(),
-                                metadataIconProvider(dataSet.style()),
+                                metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
                             )
                         }
                 }
@@ -116,7 +117,7 @@ internal class ProgramRepositoryImpl(
                     state,
                     hasOverdue = false,
                     filtersAreActive = false,
-                    metadataIconData = metadataIconProvider(program.style()),
+                    metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 ).copy(
                     stockConfig = if (d2.isStockProgram(program.uid())) {
                         d2.stockUseCase(program.uid())?.toAppConfig()

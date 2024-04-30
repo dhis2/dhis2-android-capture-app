@@ -8,6 +8,7 @@ import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -19,6 +20,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Date
 import java.util.Locale
 
@@ -33,6 +35,7 @@ class ProgramEventMapper(
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
 
         val eventDate = event.eventDate() ?: event.dueDate()
+        val program = d2.programModule().programs().uid(event.program()).blockingGet()
 
         return EventViewModel(
             EventViewModelType.EVENT,
@@ -59,6 +62,7 @@ class ProgramEventMapper(
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
             metadataIconData = metadataIconProvider(
                 programStage?.style() ?: ObjectStyle.builder().build(),
+                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
             ),
         )
     }

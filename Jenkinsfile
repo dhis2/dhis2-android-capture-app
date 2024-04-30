@@ -55,6 +55,7 @@ pipeline {
                             BROWSERSTACK = credentials('android-browserstack')
                             form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
                             form_apk_path = "${env.WORKSPACE}/${form_apk}"
+                            buildTag = "${env.GIT_BRANCH} - form"
                         }
                         steps {
                             dir("${env.WORKSPACE}/scripts"){
@@ -71,6 +72,7 @@ pipeline {
                         BROWSERSTACK = credentials('android-browserstack')
                         compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
                         compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
+                        buildTag = "${env.GIT_BRANCH} - table"
                     }
                     steps {
                         dir("${env.WORKSPACE}/scripts"){
@@ -89,6 +91,7 @@ pipeline {
                         test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
                         app_apk_path = "${env.WORKSPACE}/${app_apk}"
                         test_apk_path = "${env.WORKSPACE}/${test_apk}"
+                        buildTag = "${env.GIT_BRANCH}"
                     }
                     steps {
                         dir("${env.WORKSPACE}/scripts"){

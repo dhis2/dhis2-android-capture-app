@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
@@ -32,7 +31,6 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
@@ -194,34 +192,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (presenter.isEventScheduleOrSkipped(eventUid)) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)
-        } else if (presenter.openInitial(eventUid)) {
-            val bundle = EventInitialActivity.getBundle(
-                presenter.getProgram()?.uid(),
-                eventUid,
-                null,
-                presenter.getEnrollment()!!.trackedEntityInstance(),
-                null,
-                presenter.getEnrollment()!!.organisationUnit(),
-                presenter.getEventStage(eventUid),
-                presenter.getEnrollment()!!.uid(),
-                0,
-                presenter.getEnrollment()!!.status(),
-            )
-            val eventInitialIntent = Intent(abstracContext, EventInitialActivity::class.java)
-            eventInitialIntent.putExtras(bundle)
-            startActivityForResult(eventInitialIntent, RQ_EVENT)
         } else {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
                 EventCaptureActivity.getActivityBundle(
                     eventUid,
                     presenter.getProgram()?.uid() ?: "",
-                    EventMode.CHECK,
+                    EventMode.NEW,
                 ),
-            )
-            eventCreationIntent.putExtra(
-                Constants.TRACKED_ENTITY_INSTANCE,
-                presenter.getEnrollment()!!.trackedEntityInstance(),
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
         }
@@ -350,9 +328,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun renderStatus(status: EnrollmentStatus) {
         binding.enrollmentStatus = status
-    }
-
-    override fun showStatusOptions(currentStatus: EnrollmentStatus) {
     }
 
     /*endregion*/

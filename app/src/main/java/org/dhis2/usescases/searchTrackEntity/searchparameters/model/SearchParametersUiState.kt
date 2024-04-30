@@ -12,6 +12,7 @@ data class SearchParametersUiState(
     ),
     val searchEnabled: Boolean = false,
     val clearSearchEnabled: Boolean = false,
+    val searchedItems: Map<String, String> = mapOf(),
     private val _isOnBackPressed: MutableSharedFlow<Boolean> = MutableSharedFlow(
         replay = Int.MAX_VALUE,
     ),

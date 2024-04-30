@@ -21,7 +21,7 @@ fun MultiOptionSelector(
             val label = option.split("_")[1]
             CheckBoxData(
                 uid = code,
-                checked = cell.value?.contains(label) == true,
+                checked = cell.value?.split(", ")?.contains(label) == true,
                 enabled = cell.editable,
                 textInput = label,
             )
