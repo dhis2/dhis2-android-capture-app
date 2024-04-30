@@ -29,24 +29,21 @@ import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
 
 @Composable
-fun EnrollToProgram(
-    programViewModel: ProgramViewModel,
-    onEnrollClickListener: () -> Unit
-) {
+fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
     Row(
         modifier = Modifier
             .height(86.dp)
             .fillMaxWidth()
             .background(color = Color.White)
             .padding(horizontal = 21.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         MetadataIcon(
             modifier = Modifier
                 .width(56.dp)
                 .height(56.dp)
                 .alpha(0.5f),
-            metadataIconData = programViewModel.metadataIconData
+            metadataIconData = programViewModel.metadataIconData,
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -54,7 +51,7 @@ fun EnrollToProgram(
                 .weight(2f, true)
                 .padding(end = 12.dp),
             text = programViewModel.title,
-            fontSize = 14.sp
+            fontSize = 14.sp,
         )
         Button(
             modifier = Modifier
@@ -64,10 +61,10 @@ fun EnrollToProgram(
                 .padding(end = 16.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.DarkGray,
-                contentColor = Color.White
+                contentColor = Color.White,
             ),
             enabled = !programViewModel.isDownloading(),
-            onClick = onEnrollClickListener
+            onClick = onEnrollClickListener,
         ) {
             Text(text = stringResource(id = R.string.enroll).uppercase())
         }
@@ -91,7 +88,7 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramVi
     title = "A very long long long program title",
     metadataIconData = MetadataIconData(
         programColor = android.graphics.Color.parseColor("#00BCD4"),
-        iconResource = R.drawable.ic_positive_negative
+        iconResource = R.drawable.ic_positive_negative,
     ),
     count = 12,
     type = "type",
@@ -103,7 +100,8 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramVi
     state = State.SYNCED,
     hasOverdueEvent = true,
     false,
-    downloadState = downloadState
+    downloadState = downloadState,
+    stockConfig = null,
 )
 
 const val PROGRAM_TO_ENROLL = "PROGRAM_TO_ENROLL_%s"

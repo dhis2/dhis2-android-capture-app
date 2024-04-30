@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.settings.SystemSetting
 
 class ServerSettingsRepository(
     private val d2: D2,
-    private val systemStyleMapper: SystemStyleMapper
+    private val systemStyleMapper: SystemStyleMapper,
 ) {
 
     fun getTheme(): Single<Pair<String?, Int>> {

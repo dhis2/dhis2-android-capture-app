@@ -13,7 +13,11 @@ enum class UiRenderType {
     MATRIX,
     SEQUENCIAL,
     QR_CODE,
-    BAR_CODE;
+    BAR_CODE,
+    GS1_DATAMATRIX,
+    CANVAS,
+    TOGGLE,
+    ;
 
     fun isRadioButton() = this == VERTICAL_RADIOBUTTONS || this == HORIZONTAL_RADIOBUTTONS
     fun isCheckBox() = this == VERTICAL_CHECKBOXES || this == HORIZONTAL_CHECKBOXES

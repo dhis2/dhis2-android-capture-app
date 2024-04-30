@@ -1,7 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import kotlinx.coroutines.Dispatchers
-import org.dhis2.form.model.DispatcherProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 
 class SearchDispatchers : DispatcherProvider {
     override fun io() = Dispatchers.IO

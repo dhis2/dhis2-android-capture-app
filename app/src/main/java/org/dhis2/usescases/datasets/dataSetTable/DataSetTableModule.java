@@ -1,8 +1,12 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStore;
+
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
+import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -17,28 +21,51 @@ import kotlin.Unit;
 @Module
 public class DataSetTableModule {
 
+    private final ViewModelStore viewModelStore;
     private DataSetTableContract.View view;
     private final String dataSetUid;
     private final String periodId;
     private final String orgUnitUid;
     private final String catOptCombo;
 
-    DataSetTableModule(DataSetTableActivity view, String dataSetUid, String periodId, String orgUnitUid, String catOptCombo) {
+    private final boolean openErrorSectionOnInit;
+
+    DataSetTableModule(
+            DataSetTableActivity view,
+            String dataSetUid,
+            String periodId,
+            String orgUnitUid,
+            String catOptCombo,
+            boolean openErrorSectionOnInit) {
         this.view = view;
+        this.viewModelStore = view.getViewModelStore();
         this.dataSetUid = dataSetUid;
         this.periodId = periodId;
         this.orgUnitUid = orgUnitUid;
         this.catOptCombo = catOptCombo;
+        this.openErrorSectionOnInit = openErrorSectionOnInit;
     }
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(
+    DataSetTablePresenter providesPresenter(
             DataSetTableRepositoryImpl dataSetTableRepository,
-            SchedulerProvider schedulerProvider,
+            DhisPeriodUtils periodUtils,
             AnalyticsHelper analyticsHelper,
-            FlowableProcessor<Unit> updateProcessor) {
-        return new DataSetTablePresenter(view, dataSetTableRepository, schedulerProvider, analyticsHelper, updateProcessor);
+            FlowableProcessor<Unit> updateProcessor,
+            DispatcherProvider dispatcherProvider) {
+        return new ViewModelProvider(
+                viewModelStore,
+                new DataSetTableViewModelFactory(
+                        view,
+                        dataSetTableRepository,
+                        periodUtils,
+                        analyticsHelper,
+                        updateProcessor,
+                        dispatcherProvider,
+                        openErrorSectionOnInit
+                )
+        ).get(DataSetTablePresenter.class);
     }
 
     @Provides

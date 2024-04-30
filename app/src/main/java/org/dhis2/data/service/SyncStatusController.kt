@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class SyncStatusController {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
-    private val downloadStatus = MutableLiveData(SyncStatusData(false))
+    private val downloadStatus = MutableLiveData(SyncStatusData(isInitialSync = true))
 
     fun observeDownloadProcess(): LiveData<SyncStatusData> = downloadStatus
 
@@ -24,7 +24,7 @@ class SyncStatusController {
             it.putAll(programDownload)
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap),
         )
     }
 
@@ -32,7 +32,7 @@ class SyncStatusController {
         Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap)
+            SyncStatusData(false, false, progressStatusMap),
         )
     }
 
@@ -45,7 +45,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap),
         )
     }
 
@@ -59,7 +59,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap),
         )
     }
 
@@ -74,7 +74,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap)
+            SyncStatusData(true, false, progressStatusMap),
         )
     }
 
@@ -87,7 +87,7 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap)
+            SyncStatusData(false, false, progressStatusMap),
         )
     }
 
@@ -95,7 +95,11 @@ class SyncStatusController {
         Timber.tag("SYNC").d("INIT FILES")
 
         downloadStatus.postValue(
-            SyncStatusData(true, true, progressStatusMap)
+            SyncStatusData(true, true, progressStatusMap),
         )
+    }
+
+    fun restore() {
+        downloadStatus.postValue(SyncStatusData())
     }
 }

@@ -14,7 +14,7 @@ class AboutModule(val view: AboutView) {
     fun providesPresenter(
         d2: D2,
         provider: SchedulerProvider,
-        userRepository: UserRepository
+        userRepository: UserRepository,
     ): AboutPresenter {
         return AboutPresenter(view, d2, provider, userRepository)
     }

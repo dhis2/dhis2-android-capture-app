@@ -26,12 +26,12 @@ abstract class BaseIndicatorRepository(
     open val d2: D2,
     open val ruleEngineRepository: RuleEngineRepository,
     open val programUid: String,
-    open val resourceManager: ResourceManager
+    open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
 
     fun getIndicators(
         filter: Boolean = true,
-        indicatorValueCalculator: (String) -> String
+        indicatorValueCalculator: (String) -> String,
     ): Flowable<List<AnalyticsModel>> {
         return d2.programModule().programIndicators()
             .byDisplayInForm().isTrue
@@ -60,7 +60,7 @@ abstract class BaseIndicatorRepository(
                             it.val1(),
                             it.val2(),
                             LOCATION_INDICATOR_WIDGET,
-                            resourceManager.defaultIndicatorLabel()
+                            resourceManager.defaultIndicatorLabel(),
                         )
                     }
                     .toList()
@@ -75,7 +75,7 @@ abstract class BaseIndicatorRepository(
                     .byProgramRuleUid().`in`(it)
                     .byProgramRuleActionType().`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
-                        ProgramRuleActionType.DISPLAYTEXT
+                        ProgramRuleActionType.DISPLAYTEXT,
                     )
                     .get()
             }
@@ -112,7 +112,7 @@ abstract class BaseIndicatorRepository(
                         ruleEffect.data(),
                         "",
                         ruleAction.location(),
-                        resourceManager.defaultIndicatorLabel()
+                        resourceManager.defaultIndicatorLabel(),
                     )
 
                     indicators.add(indicator)
@@ -125,7 +125,7 @@ abstract class BaseIndicatorRepository(
                         ruleAction.content() + ruleEffect.data(),
                         "",
                         ruleAction.location(),
-                        resourceManager.defaultIndicatorLabel()
+                        resourceManager.defaultIndicatorLabel(),
                     )
 
                     indicators.add(indicator)
@@ -138,7 +138,7 @@ abstract class BaseIndicatorRepository(
 
     private fun getLegendColorForIndicator(
         indicator: ProgramIndicator,
-        value: String?
+        value: String?,
     ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
         var color: String
         try {
@@ -169,15 +169,15 @@ abstract class BaseIndicatorRepository(
             Trio.create<ProgramIndicator, String, String>(
                 indicator,
                 value,
-                color
-            )
+                color,
+            ),
         )
     }
 
     fun arrangeSections(
         indicators: List<AnalyticsModel>,
         ruleIndicators: List<AnalyticsModel>,
-        charts: List<AnalyticsModel> = emptyList()
+        charts: List<AnalyticsModel> = emptyList(),
     ): List<AnalyticsModel> {
         return mutableListOf<AnalyticsModel>().apply {
             val feedbackList = ruleIndicators.filter {
@@ -192,7 +192,7 @@ abstract class BaseIndicatorRepository(
                     ruleIndicators.filter {
                         it is IndicatorModel &&
                             it.location == LOCATION_INDICATOR_WIDGET
-                    }
+                    },
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
             if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {

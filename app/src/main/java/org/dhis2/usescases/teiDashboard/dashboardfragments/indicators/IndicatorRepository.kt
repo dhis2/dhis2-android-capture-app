@@ -13,6 +13,6 @@ interface IndicatorRepository {
     fun filterByOrgUnit(
         chartModel: ChartModel,
         selectedOrgUnits: List<OrganisationUnit>,
-        filterType: OrgUnitFilterType
+        filterType: OrgUnitFilterType,
     ) {}
 }

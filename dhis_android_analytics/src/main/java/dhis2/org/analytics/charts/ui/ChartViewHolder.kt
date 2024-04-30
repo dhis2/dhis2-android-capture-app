@@ -1,6 +1,7 @@
 package dhis2.org.analytics.charts.ui
 
 import android.view.Gravity
+import android.view.View.GONE
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
@@ -14,12 +15,12 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 
 class ChartViewHolder(
     val binding: ItemChartBinding,
-    val onChartTypeChanged: () -> Unit
+    val onChartTypeChanged: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.composeChart.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
@@ -36,14 +37,11 @@ class ChartViewHolder(
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(
-                    sender: Observable,
-                    propertyId: Int
-                ) {
+                override fun onPropertyChanged(sender: Observable, propertyId: Int) {
                     onChartTypeChanged()
                     loadChart(chart)
                 }
-            }
+            },
         )
         loadChart(chart)
     }
@@ -51,9 +49,10 @@ class ChartViewHolder(
     private fun loadChart(chart: ChartModel) {
         loadComposeChart(
             chart = chart,
-            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart()
+            visible = chart.observableChartType.get() == ChartType.TABLE && !chart.hideChart(),
         )
         if (chart.observableChartType.get() != ChartType.TABLE) {
+            binding.resetDimensions.visibility = GONE
             val chartView = chart.graph.toChartBuilder()
                 .withType(chart.observableChartType.get()!!)
                 .withGraphData(chart.graph)
@@ -73,6 +72,7 @@ class ChartViewHolder(
                     chart.graph.toChartBuilder()
                         .withType(chart.observableChartType.get()!!)
                         .withGraphData(chart.graph)
+                        .withResetDimensions(binding.resetDimensions)
                         .build().getComposeChart()
                 }
             }

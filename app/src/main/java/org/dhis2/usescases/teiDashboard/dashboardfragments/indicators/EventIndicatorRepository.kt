@@ -12,24 +12,26 @@ class EventIndicatorRepository(
     ruleEngineRepository: RuleEngineRepository,
     programUid: String,
     val eventUid: String,
-    resourceManager: ResourceManager
+    resourceManager: ResourceManager,
 ) : BaseIndicatorRepository(d2, ruleEngineRepository, programUid, resourceManager) {
 
     override fun fetchData(): Flowable<List<AnalyticsModel>> {
-        return Flowable.zip<List<AnalyticsModel>?,
+        return Flowable.zip<
             List<AnalyticsModel>?,
-            List<AnalyticsModel>>(
+            List<AnalyticsModel>?,
+            List<AnalyticsModel>,
+            >(
             getIndicators { indicatorUid ->
                 d2.programModule()
                     .programIndicatorEngine().getEventProgramIndicatorValue(
                         eventUid,
-                        indicatorUid
+                        indicatorUid,
                     )
             },
             getRulesIndicators(),
             BiFunction { indicators, ruleIndicators ->
                 arrangeSections(indicators, ruleIndicators)
-            }
+            },
         )
     }
 }

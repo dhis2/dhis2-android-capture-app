@@ -45,5 +45,7 @@ class Preference {
 
         const val DATE_PICKER = "DATE_PICKER"
         const val PREF_COMPLETED_EVENT = "COMPLETED_EVENT"
+
+        const val NOTIFICATIONS = "NOTIFICATIONS"
     }
 }

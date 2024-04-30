@@ -154,9 +154,26 @@
                     android:alpha="@{item.editable? 1f : 0.5f}"
                     android:enabled="@{item.editable}"
                     android:padding="10dp"
-                    android:visibility="@{item.style.descriptionIcon != null ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{() -> item.invokeUiEvent(UiEventType.EMAIL)}"
                     app:iconResource="@{item.style.descriptionIcon}"
                     app:icon_color="@{item.style}"
+                    app:iconIsClickable="@{item}"
+                    android:visibility="@{item.style.isActionIconClickable() ? View.VISIBLE : View.GONE}"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_form_email"
+                    tools:visibility="visible" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:alpha="@{item.editable? 1f : 0.5f}"
+                    android:enabled="@{item.editable}"
+                    android:onClick="@{() -> item.invokeUiEvent(UiEventType.EMAIL)}"
+                    app:iconResource="@{item.style.descriptionIcon}"
+                    app:icon_color="@{item.style}"
+                    android:visibility="@{item.style.isActionIconClickable() ? View.GONE : View.VISIBLE}"
                     tools:ignore="ContentDescription"
                     tools:src="@drawable/ic_form_email"
                     tools:visibility="visible" />
@@ -173,7 +190,8 @@
                 app:layout_constraintWidth_default="percent"
                 app:layout_constraintWidth_max="wrap"
                 app:layout_constraintWidth_percent="0.5"
-                app:legendBadge="@{item.legend}" />
+                app:legendBadge="@{item.legend}"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

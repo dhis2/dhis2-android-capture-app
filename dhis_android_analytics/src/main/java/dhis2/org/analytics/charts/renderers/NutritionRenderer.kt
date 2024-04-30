@@ -14,14 +14,14 @@ import dhis2.org.analytics.charts.formatters.NutritionFillFormatter
 class NutritionRenderer(
     chart: LineDataProvider,
     animator: ChartAnimator,
-    viewPortHandler: ViewPortHandler
+    viewPortHandler: ViewPortHandler,
 ) : LineChartRenderer(chart, animator, viewPortHandler) {
 
     override fun drawLinearFill(
         c: Canvas,
         dataSet: ILineDataSet,
         trans: Transformer,
-        bounds: XBounds
+        bounds: XBounds,
     ) {
         if (dataSet.fillFormatter is NutritionFillFormatter) {
             val filled = mGenerateFilledPathBuffer
@@ -61,7 +61,7 @@ class NutritionRenderer(
         dataSet: ILineDataSet,
         startIndex: Int,
         endIndex: Int,
-        outputPath: Path
+        outputPath: Path,
     ) {
         // Call the custom method to retrieve the dataset for other line
         val boundaryEntry = (dataSet.fillFormatter as NutritionFillFormatter).getFillLineBoundary()

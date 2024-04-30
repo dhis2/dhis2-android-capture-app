@@ -1,11 +1,6 @@
 package org.dhis2.usescases.datasets.dataSetInitial
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import java.util.Date
-import java.util.UUID
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
@@ -25,6 +20,11 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.util.Date
+import java.util.UUID
 
 class DataSetInitialRepositoryImplTest {
 
@@ -45,22 +45,22 @@ class DataSetInitialRepositoryImplTest {
             .build()
         val period = dummyPeriod()
         whenever(
-            d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
+            d2.periodModule().periodHelper(),
+        ) doReturn mock()
+
+        whenever(
             d2.periodModule().periodHelper()
+                .getPeriodForPeriodId(dataInputPeriod.period().uid()),
         ) doReturn mock()
 
         whenever(
             d2.periodModule().periodHelper()
                 .getPeriodForPeriodId(dataInputPeriod.period().uid())
-        ) doReturn mock()
-
-        whenever(
-            d2.periodModule().periodHelper()
-                .getPeriodForPeriodId(dataInputPeriod.period().uid())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn period
 
         val dateRangeInputPeriodModel = DateRangeInputPeriodModel.create(
@@ -69,7 +69,7 @@ class DataSetInitialRepositoryImplTest {
             dataInputPeriod.openingDate(),
             dataInputPeriod.closingDate(),
             period.startDate(),
-            period.endDate()
+            period.endDate(),
         )
         val testObserver = repository.dataInputPeriod.test()
 
@@ -85,14 +85,14 @@ class DataSetInitialRepositoryImplTest {
         val dataSet = dummyDataSet()
         val categoryCombo = dummyCategoryCombo()
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get()
+            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
             d2.categoryModule()
                 .categoryCombos().withCategories()
                 .uid(dataSet.categoryCombo()!!.uid())
-                .blockingGet()
+                .blockingGet(),
         ) doReturn categoryCombo
 
         val dataSetInitialModel = DataSetInitialModel.create(
@@ -102,7 +102,7 @@ class DataSetInitialRepositoryImplTest {
             categoryCombo.displayName()!!,
             dataSet.periodType()!!,
             categoryCombo.categories()!!,
-            dataSet.openFuturePeriods()
+            dataSet.openFuturePeriods(),
         )
         val testObserver = repository.dataSet().test()
 
@@ -120,7 +120,7 @@ class DataSetInitialRepositoryImplTest {
             d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(listOf(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-                .get()
+                .get(),
         ) doReturn Single.just(orgUnits)
 
         val testObserver = repository.orgUnits().test()
@@ -138,7 +138,7 @@ class DataSetInitialRepositoryImplTest {
         whenever(
             d2.categoryModule().categories()
                 .withCategoryOptions().uid(category.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(category)
 
         val testObserver = repository.catCombo(category.uid()).test()
@@ -158,7 +158,7 @@ class DataSetInitialRepositoryImplTest {
         whenever(
             d2.categoryModule().categories()
                 .withCategoryOptions().uid(category.uid())
-                .get()
+                .get(),
         ) doReturn Single.just(category)
 
         val testObserver = repository.catCombo(category.uid()).test()
@@ -176,7 +176,7 @@ class DataSetInitialRepositoryImplTest {
         val periodType = PeriodType.Monthly
         val period = dummyPeriod()
         whenever(
-            d2.periodModule().periodHelper().getPeriod(periodType, date)
+            d2.periodModule().periodHelper().getPeriod(periodType, date),
         ) doReturn period
 
         val testObserver = repository.getPeriodId(periodType, date).test()
@@ -187,60 +187,51 @@ class DataSetInitialRepositoryImplTest {
 
         testObserver.dispose()
     }
-    private fun dummyDataSet(): DataSet =
-        DataSet.builder()
-            .uid(UUID.randomUUID().toString())
-            .displayName("dataSet")
-            .periodType(PeriodType.Monthly)
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyDataSet(): DataSet = DataSet.builder()
+        .uid(UUID.randomUUID().toString())
+        .displayName("dataSet")
+        .periodType(PeriodType.Monthly)
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyDataInputPeriod(): DataInputPeriod =
-        DataInputPeriod.builder()
-            .period(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .openingDate(Date())
-            .closingDate(Date())
-            .build()
+    private fun dummyDataInputPeriod(): DataInputPeriod = DataInputPeriod.builder()
+        .period(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .openingDate(Date())
+        .closingDate(Date())
+        .build()
 
-    private fun dummyPeriod(): Period =
-        Period.builder()
-            .periodId(UUID.randomUUID().toString())
-            .build()
+    private fun dummyPeriod(): Period = Period.builder()
+        .periodId(UUID.randomUUID().toString())
+        .build()
 
-    private fun dummyCategoryOptionCombo(): CategoryOptionCombo =
-        CategoryOptionCombo.builder()
-            .uid(UUID.randomUUID().toString())
-            .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .build()
+    private fun dummyCategoryOptionCombo(): CategoryOptionCombo = CategoryOptionCombo.builder()
+        .uid(UUID.randomUUID().toString())
+        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
+        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+        .build()
 
-    private fun dummyCategoryCombo(): CategoryCombo =
-        CategoryCombo.builder()
-            .displayName("categoryCombo")
-            .uid(UUID.randomUUID().toString())
-            .categories(listOf(dummyCategory(), dummyCategory()))
-            .build()
+    private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()
+        .displayName("categoryCombo")
+        .uid(UUID.randomUUID().toString())
+        .categories(listOf(dummyCategory(), dummyCategory()))
+        .build()
 
-    private fun dummyOrganisationUnit(): OrganisationUnit =
-        OrganisationUnit.builder()
-            .uid(UUID.randomUUID().toString())
-            .build()
+    private fun dummyOrganisationUnit(): OrganisationUnit = OrganisationUnit.builder()
+        .uid(UUID.randomUUID().toString())
+        .build()
 
-    private fun dummyCategory(): Category =
-        Category.builder()
-            .uid(UUID.randomUUID().toString())
-            .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-            .build()
+    private fun dummyCategory(): Category = Category.builder()
+        .uid(UUID.randomUUID().toString())
+        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
+        .build()
 
-    private fun dummyCategoryOption(): CategoryOption =
-        CategoryOption.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(true, true, DataAccess.create(true, true)))
-            .build()
+    private fun dummyCategoryOption(): CategoryOption = CategoryOption.builder()
+        .uid(UUID.randomUUID().toString())
+        .access(Access.create(true, true, DataAccess.create(true, true)))
+        .build()
 
-    private fun dummyCategoryOptionNoAccess(): CategoryOption =
-        CategoryOption.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(Access.create(true, true, DataAccess.create(false, false)))
-            .build()
+    private fun dummyCategoryOptionNoAccess(): CategoryOption = CategoryOption.builder()
+        .uid(UUID.randomUUID().toString())
+        .access(Access.create(true, true, DataAccess.create(false, false)))
+        .build()
 }

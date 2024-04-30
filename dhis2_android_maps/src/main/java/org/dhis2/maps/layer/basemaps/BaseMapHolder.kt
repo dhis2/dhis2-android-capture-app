@@ -7,7 +7,7 @@ import org.dhis2.maps.databinding.BasemapItemBinding
 
 class BaseMapHolder(
     val binding: BasemapItemBinding,
-    private val onItemSelected: (stylePosition: Int) -> Unit
+    private val onItemSelected: (stylePosition: Int) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(baseMap: BaseMap) {
         binding.apply {

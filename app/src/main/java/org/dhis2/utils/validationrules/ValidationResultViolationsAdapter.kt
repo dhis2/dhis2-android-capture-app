@@ -6,7 +6,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class ValidationResultViolationsAdapter(
     fa: FragmentActivity,
-    private val violations: List<Violation>
+    private val violations: List<Violation>,
 ) : FragmentStateAdapter(fa) {
 
     override fun getItemCount() = violations.size

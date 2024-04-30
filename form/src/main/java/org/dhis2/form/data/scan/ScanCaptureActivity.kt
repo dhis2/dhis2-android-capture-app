@@ -47,7 +47,7 @@ class ScanCaptureActivity : Activity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String?>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         capture.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }

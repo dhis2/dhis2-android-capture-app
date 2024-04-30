@@ -11,13 +11,13 @@ class PercentageValueFormatter(val pieChart: PieChart) : PercentFormatter(pieCha
         val valueToShow = when {
             yValue > 9999999 -> yValue.toString().removeRange(
                 yValue.toString().length - 6,
-                yValue.toString().length
+                yValue.toString().length,
             ) + "M"
             yValue > 9999 ->
                 yValue.toString()
                     .removeRange(
                         yValue.toString().length - 3,
-                        yValue.toString().length
+                        yValue.toString().length,
                     ) + "k"
             else -> yValue.toString()
         }

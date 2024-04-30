@@ -8,12 +8,9 @@ import org.hisp.dhis.android.core.common.Geometry
 
 class MapGeometryToFeature(
     private val pointMapper: MapPointToFeature,
-    private val polygonMapper: MapPolygonToFeature
+    private val polygonMapper: MapPolygonToFeature,
 ) {
-    fun map(
-        geometry: Geometry,
-        propertyMap: Map<String, String>
-    ): Feature? {
+    fun map(geometry: Geometry, propertyMap: Map<String, String>): Feature? {
         return when {
             geometry.type() == FeatureType.POINT -> {
                 val point = pointMapper.map(geometry)

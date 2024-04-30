@@ -1,11 +1,5 @@
 package org.dhis2.usescases.reservedValues
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.processors.FlowableProcessor
@@ -22,6 +16,12 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.maintenance.D2ErrorComponent
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 class ReservedValuePresenterTest {
 
@@ -67,7 +67,7 @@ class ReservedValuePresenterTest {
     @Test
     fun `Should not catch exception random when error happens during download`() {
         whenever(
-            repository.refillReservedValues("attr")
+            repository.refillReservedValues("attr"),
         ) doReturn Observable.error(Throwable("random"))
 
         reservedValuePresenter.init()
@@ -83,19 +83,18 @@ class ReservedValuePresenterTest {
         verify(view).onBackClick()
     }
 
-    private fun dummyD2Progress(): Observable<D2Progress> =
-        Observable.just(
-            BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
-                .isComplete(false).build()
-        )
+    private fun dummyD2Progress(): Observable<D2Progress> = Observable.just(
+        BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
+            .isComplete(false).build(),
+    )
 
     private fun D2Error(): Observable<D2Progress> {
         return Observable.error(
             D2Error.builder().httpErrorCode(500)
                 .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
                 .errorComponent(
-                    D2ErrorComponent.Database
-                ).errorDescription("buug").build()
+                    D2ErrorComponent.Database,
+                ).errorDescription("buug").build(),
         )
     }
 
@@ -108,7 +107,7 @@ class ReservedValuePresenterTest {
                 "orgUnitName",
                 3,
                 "%d values left",
-                refillFlowable
+                refillFlowable,
             )
         return Single.just(mutableListOf(reservedValue))
     }

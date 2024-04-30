@@ -118,23 +118,21 @@ class FilterResources(val resourceManager: ResourceManager) {
             RelativePeriodToStringMapper(this).span()
                 .format(
                     dateFilterPeriod.startDate().toUiText(resourceManager.getWrapperContext()),
-                    dateFilterPeriod.endDate().toUiText(resourceManager.getWrapperContext())
+                    dateFilterPeriod.endDate().toUiText(resourceManager.getWrapperContext()),
                 )
         }
 
-    fun eventStatusToText(eventStatusList: List<EventStatus>) =
-        eventStatusList.map {
-            eventStatusToText(it)
-        }
+    fun eventStatusToText(eventStatusList: List<EventStatus>) = eventStatusList.map {
+        eventStatusToText(it)
+    }
 
-    fun eventStatusToText(eventStatus: EventStatus): String =
-        when (eventStatus) {
-            EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
-            EventStatus.COMPLETED ->
-                resourceManager.getString(R.string.filter_event_status_completed)
-            EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
-            EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
-            EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)
-            EventStatus.OVERDUE -> resourceManager.getString(R.string.filter_event_status_overdue)
-        }
+    fun eventStatusToText(eventStatus: EventStatus): String = when (eventStatus) {
+        EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
+        EventStatus.COMPLETED ->
+            resourceManager.getString(R.string.filter_event_status_completed)
+        EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
+        EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
+        EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)
+        EventStatus.OVERDUE -> resourceManager.getString(R.string.filter_event_status_overdue)
+    }
 }

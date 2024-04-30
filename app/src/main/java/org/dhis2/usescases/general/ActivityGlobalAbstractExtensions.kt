@@ -6,11 +6,7 @@ import org.dhis2.data.server.ServerComponent
 
 fun ActivityGlobalAbstract.wrappedContextForLanguage(
     serverComponent: ServerComponent?,
-    newBaseContext: Context
-): Context {
-    return if (serverComponent?.getD2()?.userModule()?.blockingIsLogged() == true) {
-        LocaleSelector(newBaseContext, serverComponent.getD2()).updateUiLanguage()
-    } else {
-        newBaseContext
-    }
-}
+    newBaseContext: Context,
+): Context = serverComponent?.getD2()?.let {
+    LocaleSelector(newBaseContext, it).updateUiLanguage()
+} ?: newBaseContext

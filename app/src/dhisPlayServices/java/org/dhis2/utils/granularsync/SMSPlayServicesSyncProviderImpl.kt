@@ -36,7 +36,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import io.reactivex.Single
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.sync.ConflictType
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
@@ -44,12 +44,8 @@ import timber.log.Timber
 
 class SMSPlayServicesSyncProviderImpl(
     override val d2: D2,
-    override val conflictType: ConflictType,
-    override val recordUid: String,
-    override val dvOrgUnit: String?,
-    override val dvAttrCombo: String?,
-    override val dvPeriodId: String?,
-    override val resourceManager: ResourceManager
+    override val syncContext: SyncContext,
+    override val resourceManager: ResourceManager,
 ) : SMSSyncProvider {
 
     private val confirmationMessage = MutableLiveData<Boolean?>(null)
@@ -79,13 +75,13 @@ class SMSPlayServicesSyncProviderImpl(
         context: Context,
         senderNumber: String,
         onSuccess: () -> Unit,
-        onFailure: () -> Unit
+        onFailure: () -> Unit,
     ) {
         context.registerReceiver(
             smsReceiver,
             IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
             SmsRetriever.SEND_PERMISSION,
-            null
+            null,
         )
         SmsRetriever.getClient(context).startSmsUserConsent(senderNumber).addOnCompleteListener {
             if (it.isSuccessful) {
@@ -107,22 +103,26 @@ class SMSPlayServicesSyncProviderImpl(
     }
 
     override fun convertSimpleEvent(): Single<ConvertTaskResult> {
-        return smsSender.compressSimpleEvent(recordUid)
+        return smsSender.compressSimpleEvent(syncContext.recordUid())
             .map { msg -> ConvertTaskResult.Message(msg) }
     }
 
     override fun convertTrackerEvent(): Single<ConvertTaskResult> {
-        return smsSender.compressTrackerEvent(recordUid)
+        return smsSender.compressTrackerEvent(syncContext.recordUid())
             .map { msg -> ConvertTaskResult.Message(msg) }
     }
 
     override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.compressEnrollment(recordUid).map { msg -> ConvertTaskResult.Message(msg) }
+        return smsSender.compressEnrollment(syncContext.recordUid()).map { msg ->
+            ConvertTaskResult.Message(msg)
+        }
     }
 
     override fun convertDataSet(): Single<ConvertTaskResult> {
-        return smsSender.compressDataSet(recordUid, dvOrgUnit, dvPeriodId, dvAttrCombo)
-            .map { msg -> ConvertTaskResult.Message(msg) }
+        return with(syncContext as SyncContext.DataSetInstance) {
+            smsSender.compressDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
+                .map { msg -> ConvertTaskResult.Message(msg) }
+        }
     }
 
     override fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
@@ -132,7 +132,7 @@ class SMSPlayServicesSyncProviderImpl(
             SmsSendingService.State.COUNT_NOT_ACCEPTED,
             null,
             0,
-            0
+            0,
         )
     }
 }

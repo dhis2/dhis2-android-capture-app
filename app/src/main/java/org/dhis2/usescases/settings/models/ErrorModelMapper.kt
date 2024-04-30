@@ -21,7 +21,7 @@ class ErrorModelMapper(private val fkMessage: String) {
             error.created(),
             error.httpErrorCode().toString(),
             error.errorDescription(),
-            error.errorComponent()?.name ?: ""
+            error.errorComponent()?.name ?: "",
         )
     }
 
@@ -36,7 +36,7 @@ class ErrorModelMapper(private val fkMessage: String) {
             conflict.created(),
             conflict.errorCode(),
             conflict.displayDescription() ?: conflict.conflict(),
-            conflict.status()?.name
+            conflict.status()?.name,
         )
     }
 
@@ -55,7 +55,7 @@ class ErrorModelMapper(private val fkMessage: String) {
             fKViolation.created(),
             FK,
             fkMessage.format(toTable, toUid, fromTable, fromUid),
-            ""
+            "",
         )
     }
 }

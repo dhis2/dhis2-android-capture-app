@@ -1,0 +1,115 @@
+<resources>
+    <dimen name="splash_screen_text_size">32sp</dimen>
+    <dimen name="splash_screen_text_top_margin">16dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_right_margin">8dp</dimen>
+    <dimen name="fab_bottom_margin">40dp</dimen>
+    <dimen name="fab_corner_radius">16dp</dimen>
+    <dimen name="fab_lr_padding">24dp</dimen>
+
+    <!-- Sign in -->
+    <dimen name="server_url_lr_margin">40dp</dimen>
+    <dimen name="sign_in_lr_margin">40dp</dimen>
+    <dimen name="server_container_padding">12dp</dimen>
+    <dimen name="server_url_padding">8dp</dimen>
+    <dimen name="sign_in_header_label_top_margin">48dp</dimen>
+    <dimen name="sign_in_header_label_bottom_margin">24dp</dimen>
+    <dimen name="username_top_margin">24dp</dimen>
+    <dimen name="password_top_margin">12dp</dimen>
+    <dimen name="sign_in_button_top_margin">32dp</dimen>
+    <dimen name="staff_members_label_top_margin">48dp</dimen>
+    <dimen name="oidc_button_top_margin">24dp</dimen>
+    <dimen name="contact_label_top_margin">64dp</dimen>
+    <dimen name="login_container_precent_width1">0.8</dimen>
+    <dimen name="login_line_border_width">50dp</dimen>
+    <dimen name="login_line_border_height">1dp</dimen>
+
+
+    <!-- Toolbar -->
+    <dimen name="toolbar_text_size">20sp</dimen>
+
+    <!-- Transaction buttons -->
+    <dimen name="transaction_button_text_size">12sp</dimen>
+    <dimen name="transaction_button_lr_padding">16dp</dimen>
+    <dimen name="transaction_button_tb_padding">24dp</dimen>
+    <dimen name="transaction_center_button_margin">8dp</dimen>
+    <dimen name="transaction_button_divider">16dp</dimen>
+    <dimen name="transaction_button_corner_radius">6dp</dimen>
+    <dimen name="transaction_button_highlight_width">4dp</dimen>
+    <dimen name="transaction_button_no_highlight_width">0dp</dimen>
+
+    <!-- Misc -->
+    <dimen name="icon_min_size">48dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="input_to_label_top_margin">4dp</dimen>
+
+    <!-- Container -->
+    <dimen name="content_area_lr_margin">8dp</dimen>
+    <dimen name="content_area_top_margin">16dp</dimen>
+    <dimen name="choices_top_margin">16dp</dimen>
+    <dimen name="choices_padding_top">16dp</dimen>
+    <dimen name="choices_padding_left">16dp</dimen>
+    <dimen name="choices_padding_bottom">16dp</dimen>
+    <dimen name="choices_padding_right">16dp</dimen>
+    <dimen name="recent_activity_top_margin">24dp</dimen>
+    <dimen name="recent_activity_list_top_margin">4dp</dimen>
+
+    <dimen name="select_facility_bottom_margin">16dp</dimen>
+    <dimen name="border_radius">4dp</dimen>
+
+    <!-- Stock entry table -->
+    <dimen name="search_box_top_margin">16dp</dimen>
+    <dimen name="stock_item_entry_left_margin">16dp</dimen>
+    <dimen name="stock_item_margin">8dp</dimen>
+    <dimen name="stock_item_margin_bottom">4dp</dimen>
+    <dimen name="stock_table_top_margin">8dp</dimen>
+    <dimen name="text_input_width">90dp</dimen>
+    <dimen name="text_input_corner_radius">4dp</dimen>
+
+    <dimen name="available_count_top_margin">16dp</dimen>
+    <dimen name="available_count_bottom_margin">8dp</dimen>
+
+    <dimen name="qty_guide_tb_padding">16dp</dimen>
+    <dimen name="qty_guide_lr_padding">24dp</dimen>
+    <dimen name="qty_guide_message_margin">4dp</dimen>
+    <dimen name="qty_guide_border_width">1dp</dimen>
+
+    <dimen name="recent_activity_margin">8dp</dimen>
+    <dimen name="recent_activity_list_margin_bottom">96dp</dimen>
+
+
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_64">64dp</dimen>
+
+    <dimen name="round_button_corner_radius">24dp</dimen>
+    <dimen name="scan_button_tb_padding">8dp</dimen>
+
+    <!-- Footer -->
+    <dimen name="last_sync_label_top_margin">8dp</dimen>
+    <dimen name="last_sync_label_bottom_margin">8dp</dimen>
+    <dimen name="last_sync_label_lr_margin">16dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="qty_field_padding">8dp</dimen>
+    <dimen name="facility_icon_padding">8dp</dimen>
+    <dimen name="trans_date_icon_padding">8dp</dimen>
+    <dimen name="distribution_icon_padding">14dp</dimen>
+
+    <!-- Scanner -->
+    <dimen name="flashlight_padding">16dp</dimen>
+    <dimen name="flashlight_left_margin">4dp</dimen>
+    <dimen name="flashlight_top_margin">0dp</dimen>
+    <dimen name="close_scanner_right_margin">4dp</dimen>
+    <dimen name="barcode_viewfinder_width">500dp</dimen>
+    <dimen name="barcode_viewfinder_height">200dp</dimen>
+    <dimen name="barcode_viewfinder_message_offset">350dp</dimen>
+
+    <dimen name="min_touch_target_size">48dp</dimen>
+</resources>

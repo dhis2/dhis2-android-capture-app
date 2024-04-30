@@ -10,21 +10,21 @@ import org.dhis2.databinding.ItemOptionBinding
 
 class CategoryDialogAdapter(private val clickListener: (CategoryDialogItem) -> Unit) :
     PagedListAdapter<CategoryDialogItem, CategoryDialogHolder>(object :
-            DiffUtil.ItemCallback<CategoryDialogItem>() {
-            override fun areItemsTheSame(
-                oldItem: CategoryDialogItem,
-                newItem: CategoryDialogItem
-            ): Boolean {
-                return oldItem === newItem
-            }
+        DiffUtil.ItemCallback<CategoryDialogItem>() {
+        override fun areItemsTheSame(
+            oldItem: CategoryDialogItem,
+            newItem: CategoryDialogItem,
+        ): Boolean {
+            return oldItem === newItem
+        }
 
-            override fun areContentsTheSame(
-                oldItem: CategoryDialogItem,
-                newItem: CategoryDialogItem
-            ): Boolean {
-                return oldItem == newItem
-            }
-        }) {
+        override fun areContentsTheSame(
+            oldItem: CategoryDialogItem,
+            newItem: CategoryDialogItem,
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): CategoryDialogHolder {
         val binding =
@@ -32,7 +32,7 @@ class CategoryDialogAdapter(private val clickListener: (CategoryDialogItem) -> U
                 LayoutInflater.from(viewGroup.context),
                 R.layout.item_option,
                 viewGroup,
-                false
+                false,
             )
         return CategoryDialogHolder(binding)
     }

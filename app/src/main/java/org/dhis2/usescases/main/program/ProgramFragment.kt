@@ -1,12 +1,12 @@
 package org.dhis2.usescases.main.program
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.TextUtils
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -17,38 +17,46 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import javax.inject.Inject
+import io.noties.markwon.Markwon
 import org.dhis2.App
-import org.dhis2.Bindings.Bindings
-import org.dhis2.Bindings.clipWithRoundedCorners
-import org.dhis2.Bindings.dp
 import org.dhis2.R
-import org.dhis2.commons.Constants
+import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
+import org.dhis2.android.rtsm.data.AppConfig
+import org.dhis2.android.rtsm.ui.home.HomeActivity
+import org.dhis2.bindings.Bindings
+import org.dhis2.bindings.clipWithRoundedCorners
+import org.dhis2.bindings.dp
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
-import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.OnDismissListener
+import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.notifications.domain.Notification
+import org.dhis2.usescases.notifications.presentation.NotificationsPresenter
+import org.dhis2.usescases.notifications.presentation.NotificationsView
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.main.navigateTo
+import org.dhis2.usescases.main.toHomeItemData
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.program.ProgramType
 import timber.log.Timber
+import javax.inject.Inject
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectionFinished {
+class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
+    NotificationsView {
 
     private lateinit var binding: FragmentProgramBinding
 
     @Inject
     lateinit var presenter: ProgramPresenter
+
+    @Inject
+    lateinit var notificationsPresenter: NotificationsPresenter
 
     @Inject
     lateinit var animation: ProgramAnimation
@@ -63,14 +71,14 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activity?.let {
-            (it.applicationContext as App).userComponent()?.plus(ProgramModule(this))?.inject(this)
+            (it.applicationContext as App).userComponent()?.plus(ProgramModule(this, this))?.inject(this)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false)
         ViewCompat.setTransitionName(binding.drawerLayout, "contenttest")
@@ -90,7 +98,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     private fun initList() {
         binding.programList.apply {
             setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
                 val items by presenter.programs().observeAsState(emptyList())
@@ -103,7 +111,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                     },
                     onGranularSyncClick = {
                         showSyncDialog(it)
-                    }
+                    },
                 )
             }
         }
@@ -113,13 +121,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
         super.onResume()
         presenter.init()
         animation.initBackdropCorners(
-            binding.drawerLayout.background.mutate() as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable,
         )
+
+        notificationsPresenter.refresh()
     }
 
     override fun onPause() {
         animation.reverseBackdropCorners(
-            binding.drawerLayout.background.mutate() as GradientDrawable
+            binding.drawerLayout.background.mutate() as GradientDrawable,
         )
         presenter.dispose()
         super.onPause()
@@ -134,21 +144,21 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     override fun showFilterProgress() {
         Bindings.setViewVisibility(
             binding.clearFilter,
-            FilterManager.getInstance().totalFilters > 0
+            FilterManager.getInstance().totalFilters > 0,
         )
     }
 
     override fun openOrgUnitTreeSelector() {
-        OUTreeFragment.newInstance(
-            true,
-            FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList()
-        ).apply {
-            selectionCallback = this@ProgramFragment
-        }.show(childFragmentManager, "OUTreeFragment")
-    }
-
-    override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
-        presenter.setOrgUnitFilters(selectedOrgUnits)
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList(),
+            )
+            .onSelection { selectedOrgUnits ->
+                presenter.setOrgUnitFilters(selectedOrgUnits)
+            }
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun setTutorial() {
@@ -160,16 +170,16 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                             val stepCondition = SparseBooleanArray()
                             stepCondition.put(
                                 7,
-                                presenter.programs().value?.size ?: 0 > 0
+                                presenter.programs().value?.size ?: 0 > 0,
                             )
                             HelpManager.getInstance().show(
                                 abstractActivity,
                                 HelpManager.TutorialName.PROGRAM_FRAGMENT,
-                                stepCondition
+                                stepCondition,
                             )
                         }
                     },
-                    500
+                    500,
                 )
             }
         } catch (e: Exception) {
@@ -190,65 +200,35 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
     }
 
     override fun navigateTo(program: ProgramViewModel) {
-        val bundle = Bundle()
-        val idTag = if (program.programType.isEmpty()) {
-            Constants.DATASET_UID
-        } else {
-            Constants.PROGRAM_UID
-        }
-
-        if (!TextUtils.isEmpty(program.type)) {
-            bundle.putString(Constants.TRACKED_ENTITY_UID, program.type)
-        }
-
         abstractActivity.analyticsHelper.setEvent(
             TYPE_PROGRAM_SELECTED,
-            if (program.programType.isNotEmpty()) {
-                program.programType
-            } else {
-                program.typeName
-            },
-            SELECT_PROGRAM
-        )
-        bundle.putString(idTag, program.uid)
-        bundle.putString(Constants.DATA_SET_NAME, program.title)
-        bundle.putString(
-            Constants.ACCESS_DATA,
-            program.accessDataWrite.toString()
+            program.programType.ifEmpty { program.typeName },
+            SELECT_PROGRAM,
         )
 
-        when (program.programType) {
-            ProgramType.WITH_REGISTRATION.name -> {
-                Intent(activity, SearchTEActivity::class.java).apply {
-                    putExtras(bundle)
-                    getActivityContent.launch(this)
-                }
-            }
-            ProgramType.WITHOUT_REGISTRATION.name -> {
-                Intent(activity, ProgramEventDetailActivity::class.java).apply {
-                    putExtras(ProgramEventDetailActivity.getBundle(program.uid))
-                    getActivityContent.launch(this)
-                }
-            }
-            else -> {
-                Intent(activity, DataSetDetailActivity::class.java).apply {
-                    putExtras(bundle)
-                    getActivityContent.launch(this)
-                }
-            }
+        getActivityContent.navigateTo(
+            requireContext(),
+            program.toHomeItemData(),
+        )
+    }
+
+    override fun navigateToStockManagement(config: AppConfig) {
+        Intent(activity, HomeActivity::class.java).apply {
+            putExtra(INTENT_EXTRA_APP_CONFIG, config)
+            getActivityContent.launch(this)
         }
     }
 
     override fun showSyncDialog(program: ProgramViewModel) {
-        val dialog = SyncStatusDialog.Builder()
-            .setConflictType(
-                if (program.programType.isNotEmpty()) {
-                    ConflictType.PROGRAM
-                } else {
-                    ConflictType.DATA_SET
-                }
+        SyncStatusDialog.Builder()
+            .withContext(this)
+            .withSyncContext(
+                when (program.programType) {
+                    "WITH_REGISTRATION" -> SyncContext.GlobalTrackerProgram(program.uid)
+                    "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
+                    else -> SyncContext.GlobalDataSet(program.uid)
+                },
             )
-            .setUid(program.uid)
             .onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
@@ -256,15 +236,31 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView, OnOrgUnitSelectio
                             presenter.updateProgramQueries()
                         }
                     }
-                })
-            .build()
-
-        dialog.show(abstractActivity.supportFragmentManager, FRAGMENT_TAG)
+                },
+            ).show(FRAGMENT_TAG)
     }
 
     fun sharedView() = binding.drawerLayout
 
     companion object {
         const val FRAGMENT_TAG = "SYNC"
+    }
+
+    override fun renderNotifications(notifications: List<Notification>) {
+        notifications.forEach(::showNotification)
+    }
+
+    private fun showNotification(notification: Notification) {
+        val markwon = Markwon.create(requireActivity())
+        val content = markwon.toMarkdown(notification.content)
+
+        AlertDialog.Builder(context, R.style.CustomDialog)
+            .setTitle("Notification")
+            .setMessage(content)
+            .setPositiveButton(getString(R.string.wipe_data_ok)) { dialog, _ ->
+                notificationsPresenter.markNotificationAsRead(notification)
+            }
+            .setCancelable(true)
+            .show()
     }
 }

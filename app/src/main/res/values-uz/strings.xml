@@ -12,8 +12,6 @@
     <string name="error_wrong_credentials">Нотўғри маълумот</string>
     <string name="error_unexpected_error">Кутилмаган хатолик</string>
     <string name="error_internal_server_error">Сервердаги ички хатолик</string>
-    <string name="yes">ҳа</string>
-    <string name="no">йўқ</string>
     <string name="no_value">қиймат йўқ</string>
     <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
     <string name="no_reserved_values_connection">Сақланган бошқа қийматлар йўқ. Уларни тўлдириш учун тармоққа уланинг.</string>
@@ -89,14 +87,6 @@
     <string name="program_inactive">Дастур нофаол</string>
 
     <string name="event_open">Очиш</string>
-    <string name="event_completed">Ҳодиса/Тадбир тугалланди</string>
-    <string name="event_skipped">Тадбир ўтказиб юборилди</string>
-    <string name="event_schedule">Тадбир режаси</string>
-    <string name="event_expired">Тадбир муддати тугаган</string>
-    <string name="event_editing_expired">Таҳрирлаш муддати тугаган</string>
-    <string name="event_accepted">Тадбир қабул қилинган</string>
-    <string name="event_approved">Тадбир тасдиқланди</string>
-    <string name="event_inactive">Тадбир нофаол</string>
     <string name="read_only">Фақат ўқиш учун</string>
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
@@ -166,7 +156,6 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
-    <string name="edit">ТАҲРИРЛАШ</string>
     <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
@@ -207,7 +196,6 @@
     <string name="settings_sms_module_title">СМС модуль:</string>
     <string name="settings_sms_receiver_number">СМС йўлак</string>
     <string name="settings_sms_result_sender_number">СМС натижаларини юборувчи</string>
-    <string name="settings_sms_result_timeout">СМС натижаларни юборишда вақтинча тўхташ</string>
     <string name="settings_sms_result_timeout_hint">сониялар</string>
     <string name="settings_sms_result_sender_hint">рақам</string>
     <string name="settings_sms_receiver_number_hint">рақам</string>
@@ -490,8 +478,6 @@
     <string name="org_unit_selection_warning">Камида битта ташкилий бўлим танланиши керак</string>
     <string name="send_user_name_title">аълумотларни юборинг</string>
     <string name="send_user_name_mesage">DHIS2 да фойдаланувчи идентификаторлари билан боғлиқ хатоликлар журналларини улашиш орқали ушбу дастурни яхшилашга ёрдам бериш.</string>
-    <string name="analytics_crash_name_message">Ушбу илова сизнинг фойдаланувчи идентификаторингиз билан боғлик  хатоликлар журналини юбориб туради, иш жараёни ва фойдаланувчи билан муносабатни яхшилаш мақсадида, ҳамда кузатилмайдиган статистикани ҳам юбориб туради.</string>
-    <string name="send_user_privacy_policy">Қўшимча маълумотга эга бўлиш учун бизнинг махфийлик сиёсатимиз билан танишиб чиқинг.</string>
     <string name="check_mandatory_field">Майдонларни белгилаш</string>
     <string name="error_no_network_during_sync">Конфигурацияни синхронлаштириш пайтида сизнинг интернет алоқангизда узилиш юз берди. Илтимос, кейинроқ қайта уриниб кўринг</string>
     <string name="action_agree">Розиман</string>
@@ -530,7 +516,7 @@
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
     <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
-    <string name="delete_authority_error">Ушбу ёзувни ўчириб ташлаш ҳуқуқига эга эмассиз</string>
+    <string name="delete_authority_error">Ҳуқуқингиз чегараланганлиги сабабни ушбу ёзувни ўчириб ташлолмайсиз</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
     <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
     <string name="adjusting_form">Шакл созланмоқда...</string>
@@ -688,7 +674,7 @@
     <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
     <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
-    <string name="dataset_completed">Тугалланган деб белгиланг</string>
+    <string name="dataset_completed">Тугалланган сифатида белгилансин</string>
     <string name="name">Исми</string>
     <string name="formula">Формула</string>
     <string name="complete_anyway">Барибир тўлдиринг</string>

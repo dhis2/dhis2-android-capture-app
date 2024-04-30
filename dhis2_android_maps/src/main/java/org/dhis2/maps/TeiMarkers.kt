@@ -18,7 +18,7 @@ object TeiMarkers {
         val canvasMarker = Bitmap.createBitmap(
             drawable.intrinsicWidth,
             drawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
+            Bitmap.Config.ARGB_8888,
         )
         val markerBitmap =
             Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
@@ -31,7 +31,7 @@ object TeiMarkers {
             bitmap,
             canvas.width / 2f - bitmap.width / 2f,
             2.dp.toFloat(),
-            null
+            null,
         )
         return markerBitmap
     }
@@ -51,13 +51,13 @@ object TeiMarkers {
             Bitmap.createBitmap(
                 1,
                 1,
-                Bitmap.Config.ARGB_8888
+                Bitmap.Config.ARGB_8888,
             ) // Single color bitmap will be created of 1x1 pixel
         } else {
             Bitmap.createBitmap(
                 drawable.intrinsicWidth,
                 drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
+                Bitmap.Config.ARGB_8888,
             )
         }
         val canvas = Canvas(bitmap)

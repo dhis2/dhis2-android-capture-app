@@ -32,7 +32,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
 
     fun update(
         featureCollectionMap: MutableMap<String, FeatureCollection>,
-        boundingBox: BoundingBox
+        boundingBox: BoundingBox,
     ) {
         this.featureCollection = featureCollectionMap[EVENTS]
         this.deFeatureCollection = featureCollectionMap.filter { it.key != EVENTS }
@@ -47,8 +47,8 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
             ICON_ID,
             AppCompatResources.getDrawable(
                 mapView.context,
-                R.drawable.map_marker
-            )!!
+                R.drawable.map_marker,
+            )!!,
         )
         setLayer()
         addDynamicIcons()
@@ -75,7 +75,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         deFeatureCollection.entries.forEach {
             style?.addImage(
                 "${DE_ICON_ID}_${it.key}",
-                getTintedDrawable(it.key)
+                getTintedDrawable(it.key),
             )
         }
     }
@@ -83,7 +83,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     private fun getTintedDrawable(sourceId: String): Drawable {
         val initialDrawable = AppCompatResources.getDrawable(
             mapView.context,
-            R.drawable.map_marker
+            R.drawable.map_marker,
         )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
         mapLayerManager.getNextAvailableColor(sourceId)?.let { color ->
@@ -96,14 +96,14 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
         mapLayerManager
             .updateLayers(
                 LayerType.FIELD_COORDINATE_LAYER,
-                deFeatureCollection.keys.toList()
+                deFeatureCollection.keys.toList(),
             )
     }
 
     override fun findFeature(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): Feature? {
         return if (source == EVENTS) {
             featureCollection?.features()?.firstOrNull {
@@ -119,7 +119,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
     override fun findFeatures(
         source: String,
         propertyName: String,
-        propertyValue: String
+        propertyValue: String,
     ): List<Feature>? {
         return mutableListOf<Feature>().apply {
             featureCollection?.features()?.filter {
@@ -147,7 +147,7 @@ class EventMapManager(mapView: MapView) : MapManager(mapView) {
             MapTeisToFeatureCollection.TEI_UID,
             MapTeisToFeatureCollection.ENROLLMENT_UID,
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT
+            MapEventToFeatureCollection.EVENT,
         )
         var featureToReturn: Feature? = null
         for (propertyLabel in mainProperties) {

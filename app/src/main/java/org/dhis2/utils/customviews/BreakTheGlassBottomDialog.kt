@@ -11,10 +11,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.R
+import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
+
+    val colorUtils: ColorUtils = ColorUtils()
 
     fun setPositiveButton(onClick: ((String) -> Unit)? = null) = apply {
         this.positiveOnclick = onClick
@@ -31,7 +34,7 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return BreakTheGlassBottomDialogBindingImpl.inflate(inflater, container, false).apply {
             positive.apply {
@@ -56,13 +59,13 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
             inputEditText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     val focusColor =
-                        ColorUtils.getPrimaryColor(context, ColorUtils.ColorType.PRIMARY)
+                        colorUtils.getPrimaryColor(requireContext(), ColorType.PRIMARY)
                     label.setTextColor(focusColor)
                     selectionView.setBackgroundColor(focusColor)
                 } else {
                     val unFocusColor = ContextCompat.getColor(
                         requireContext(),
-                        R.color.text_black_A63
+                        R.color.text_black_A63,
                     )
                     label.setTextColor(unFocusColor)
                     selectionView.setBackgroundColor(unFocusColor)
@@ -82,7 +85,7 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

@@ -7,16 +7,13 @@ import androidx.lifecycle.ViewModel
 import org.dhis2.form.model.UiRenderType
 
 class QRImageViewModel(
-    private val qrController: QRImageController
+    private val qrController: QRImageController,
 ) : ViewModel() {
 
     private val _qrBitmap = MutableLiveData<Result<Bitmap>>()
     val qrBitmap: LiveData<Result<Bitmap>> = _qrBitmap
 
-    fun renderQrBitmap(
-        value: String,
-        renderingType: UiRenderType
-    ) {
+    fun renderQrBitmap(value: String, renderingType: UiRenderType) {
         _qrBitmap.value = try {
             val bitmap = qrController.writeDataToImage(value, renderingType)
             Result.success(bitmap)
