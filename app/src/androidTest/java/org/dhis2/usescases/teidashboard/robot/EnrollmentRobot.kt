@@ -33,7 +33,7 @@ fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
 class EnrollmentRobot : BaseRobot() {
 
     fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
-        composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program))
+        composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
             .performClick()
     }
 

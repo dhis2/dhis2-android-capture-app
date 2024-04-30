@@ -80,6 +80,7 @@ class GranularSyncModule(
         periodUtils: DhisPeriodUtils,
         preferenceProvider: PreferenceProvider,
         resourceManager: ResourceManager,
+        dispatcherProvider: DispatcherProvider,
     ): GranularSyncRepository = GranularSyncRepository(
         d2,
         syncContext,
@@ -87,6 +88,7 @@ class GranularSyncModule(
         dhisProgramUtils,
         periodUtils,
         resourceManager,
+        dispatcherProvider,
     )
 
     @Provides
