@@ -137,8 +137,6 @@
     <string name="delete">Ўчириб ташлаш</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
     <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
     <string name="enroll">Рўйхатга киритиш</string>

@@ -143,8 +143,6 @@
     <string name="delete">Видалити</string>
     <string name="total">Підсумок</string>
     <string name="most_recent_event_date">Дата останнього випадку</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Список реєстрацій</string>
     <string name="active_programs">Активні програми</string>
     <string name="to_enroll_programs">Програми для реєстрації</string>
     <string name="enroll">Зареєструвати</string>

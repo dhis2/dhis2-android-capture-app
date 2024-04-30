@@ -129,8 +129,6 @@
     <string name="delete">Oʼchirib tashlash</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Qayd jurnali</string>
     <string name="active_programs">Faol dasturlar</string>
     <string name="to_enroll_programs">Roʼyxatga olish dasturlari</string>
     <string name="enroll">Roʼyxatga kiritish</string>
