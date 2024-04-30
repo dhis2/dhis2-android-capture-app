@@ -29,7 +29,11 @@ import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
-fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconData) {
+fun MetadataIcon(
+    modifier: Modifier = Modifier,
+    metadataIconData: MetadataIconData,
+    size: AvatarSize = AvatarSize.Normal,
+) {
     MetadataAvatar(
         icon = {
             if (metadataIconData.isFileLoaded()) {
@@ -44,7 +48,7 @@ fun MetadataIcon(modifier: Modifier = Modifier, metadataIconData: MetadataIconDa
             }
         },
         iconTint = metadataIconData.color,
-        size = AvatarSize.Normal,
+        size = size,
     )
 }
 

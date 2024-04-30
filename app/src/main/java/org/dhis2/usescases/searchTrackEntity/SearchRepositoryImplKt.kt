@@ -10,6 +10,7 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -19,6 +20,7 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class SearchRepositoryImplKt(
     private val searchRepositoryJava: SearchRepository,
@@ -107,6 +109,8 @@ class SearchRepositoryImplKt(
                 isSearchable || isUnique
             }
 
+        val program = d2.programModule().programs().uid(programUid).blockingGet()
+
         return searchableAttributes.mapNotNull { programAttribute ->
             d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(programAttribute.trackedEntityAttribute()!!.uid())
@@ -124,7 +128,12 @@ class SearchRepositoryImplKt(
                                 .blockingGet()
 
                             val metadataIconMap =
-                                options.associate { it.uid() to metadataIconProvider(it.style()) }
+                                options.associate {
+                                    it.uid() to metadataIconProvider(
+                                        it.style(),
+                                        program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                                    )
+                                }
 
                             OptionSetConfiguration.OptionConfigData(
                                 options = options,
@@ -168,7 +177,7 @@ class SearchRepositoryImplKt(
                                 .blockingGet()
 
                             val metadataIconMap =
-                                options.associate { it.uid() to metadataIconProvider(it.style()) }
+                                options.associate { it.uid() to metadataIconProvider(it.style(), SurfaceColor.Primary) }
 
                             OptionSetConfiguration.OptionConfigData(
                                 options = options,

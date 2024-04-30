@@ -240,7 +240,7 @@ fun FullSearchButtonAndWorkingList(
                     top = Spacing.Spacing16,
                     start = Spacing.Spacing16,
                     end = Spacing.Spacing16,
-                    bottom = Spacing.Spacing16,
+                    bottom = Spacing.Spacing0,
                 ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {

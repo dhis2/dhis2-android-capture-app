@@ -143,9 +143,9 @@ class OUTreeFragment private constructor() : DialogFragment() {
                             override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
                                 get() = presenter::onOpenChildren
                             override val onDoneClick: () -> Unit
-                                get() = this@OUTreeFragment::exitOuSelection
+                                get() = this@OUTreeFragment::confirmOuSelection
                             override val onCancelClick: () -> Unit
-                                get() = this@OUTreeFragment::dismiss
+                                get() = this@OUTreeFragment::cancelOuSelection
                             override val onClearClick: () -> Unit
                                 get() = presenter::clearAll
                         },
@@ -164,8 +164,17 @@ class OUTreeFragment private constructor() : DialogFragment() {
 
     private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
-    private fun exitOuSelection() {
+    private fun confirmOuSelection() {
         selectionCallback(presenter.getOrgUnits())
+        exitOuSelection()
+    }
+
+    private fun cancelOuSelection() {
+        selectionCallback(emptyList())
+        exitOuSelection()
+    }
+
+    private fun exitOuSelection() {
         if (showAsDialog()) {
             dismiss()
         } else {

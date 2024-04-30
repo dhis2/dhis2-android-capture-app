@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.databinding.ItemChartBinding
-import dhis2.org.databinding.ItemIndicatorBinding
 import dhis2.org.databinding.ItemSectionTittleBinding
 import org.hisp.dhis.android.core.common.RelativePeriod
 
@@ -52,10 +51,8 @@ class AnalyticsAdapter :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (AnalyticType.values()[viewType]) {
-            AnalyticType.INDICATOR -> IndicatorViewHolder(
-                ItemIndicatorBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-            )
+        return when (AnalyticType.entries[viewType]) {
+            AnalyticType.INDICATOR -> IndicatorViewHolder(parent)
 
             AnalyticType.CHART ->
                 ChartViewHolder(

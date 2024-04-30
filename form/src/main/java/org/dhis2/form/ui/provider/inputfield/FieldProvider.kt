@@ -109,7 +109,6 @@ fun FieldProvider(
             inputStyle = inputStyle,
             fieldUiModel = fieldUiModel,
             intentHandler = intentHandler,
-            focusRequester = focusRequester,
             context = context,
         )
 
@@ -260,7 +259,6 @@ fun ProvideByValueType(
                 fieldUiModel = fieldUiModel,
                 uiEventHandler = uiEventHandler,
                 intentHandler = intentHandler,
-                focusRequester = focusRequester,
             )
         }
 
@@ -320,7 +318,6 @@ fun ProvideByValueType(
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
                         resources = resources,
-                        focusRequester = focusRequester,
                     )
                 }
 
@@ -331,7 +328,6 @@ fun ProvideByValueType(
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
                         resources = resources,
-                        focusRequester = focusRequester,
                     )
                 }
             }
@@ -354,7 +350,6 @@ fun ProvideByValueType(
                         inputStyle = inputStyle,
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
-                        focusRequester = focusRequester,
                     )
                 }
             }
@@ -437,7 +432,6 @@ fun ProvideByValueType(
                         intentHandler = intentHandler,
                         uiEventHandler = uiEventHandler,
                         resources = resources,
-                        focusRequester = focusRequester,
                     )
                 }
             }
@@ -478,7 +472,6 @@ fun ProvideByOptionSet(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
     context: Context,
 ) {
     when (fieldUiModel.renderingType) {
@@ -490,7 +483,6 @@ fun ProvideByOptionSet(
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                focusRequester = focusRequester,
             )
         }
 
@@ -502,7 +494,6 @@ fun ProvideByOptionSet(
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                focusRequester = focusRequester,
             )
         }
 
@@ -1056,7 +1047,6 @@ private fun ProvideOrgUnitInput(
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
 ) {
     var inputFieldValue by remember(
         fieldUiModel,
@@ -1075,7 +1065,6 @@ private fun ProvideOrgUnitInput(
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             inputFieldValue = it
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -1085,7 +1074,6 @@ private fun ProvideOrgUnitInput(
             )
         },
         onOrgUnitActionCLicked = {
-            focusRequester.requestFocus()
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenOrgUnitDialog(
                     fieldUiModel.uid,

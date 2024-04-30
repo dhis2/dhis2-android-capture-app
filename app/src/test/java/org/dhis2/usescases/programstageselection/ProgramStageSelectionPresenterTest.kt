@@ -73,7 +73,7 @@ class ProgramStageSelectionPresenterTest {
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
     }
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn Dispatchers.Unconfined

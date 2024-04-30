@@ -146,7 +146,7 @@ class FilterTest : BaseTest() {
         eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
-        formRobot {
+        formRobot(composeTestRule) {
             clickOnSelectOption(1, 1)
             pressBack()
             pressBack()

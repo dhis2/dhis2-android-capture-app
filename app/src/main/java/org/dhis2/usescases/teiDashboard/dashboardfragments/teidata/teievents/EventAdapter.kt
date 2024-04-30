@@ -124,7 +124,7 @@ class EventAdapter(
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing56 else Spacing.Spacing16
+                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
                         val bottomSpacing = if (it.showBottomShadow) {
                             Spacing.Spacing16
                         } else {
@@ -132,10 +132,8 @@ class EventAdapter(
                         }
                         val card = cardMapper.map(
                             event = it,
-                            editable = it.event?.uid()
-                                ?.let { uid -> presenter.isEventEditable(uid) } ?: true,
-                            displayOrgUnit = it.event?.program()
-                                ?.let { _ -> presenter.displayOrganisationUnit() } ?: true,
+                            editable = it.editable,
+                            displayOrgUnit = it.displayOrgUnit,
                             onCardClick = {
                                 it.event?.let { event ->
                                     when (event.status()) {

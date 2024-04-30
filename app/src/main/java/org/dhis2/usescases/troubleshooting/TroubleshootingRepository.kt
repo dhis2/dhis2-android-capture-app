@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.lib.expression.Expression
 import org.hisp.dhis.lib.expression.spi.ExpressionData
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.rules.api.EnvironmentVariables.ENV_VARIABLES
 import org.hisp.dhis.rules.api.ItemValueType
 import org.hisp.dhis.rules.engine.RuleVariableValue
@@ -80,7 +81,7 @@ class TroubleshootingRepository(
             ProgramRuleValidation(
                 programUid = program.uid(),
                 programName = program.displayName() ?: program.uid(),
-                metadataIconData = metadataIconProvider(program.style()),
+                metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 validations = validationList,
             )
         }.sortedBy { it.programName }

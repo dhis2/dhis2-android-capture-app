@@ -81,17 +81,16 @@ abstract class BaseIndicatorRepository(
                     .get()
             }
             .flatMapPublisher { ruleAction ->
-                if (ruleAction.isEmpty()) {
-                    return@flatMapPublisher Flowable.just<List<AnalyticsModel>>(listOf())
+                return@flatMapPublisher if (ruleAction.isEmpty()) {
+                    Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
-                    return@flatMapPublisher Flowable.fromCallable {
+                    Flowable.fromCallable {
                         ruleEngineHelper?.refreshContext()
                         ruleEngineHelper?.evaluate().let { Result.success(it ?: emptyList()) }
+                    }.map { effects ->
+                        // Restart rule engine to take into account value changes
+                        applyRuleEffectForIndicators(effects)
                     }
-                        .map { effects ->
-                            // Restart rule engine to take into account value changes
-                            applyRuleEffectForIndicators(effects)
-                        }
                 }
             }
 
@@ -113,7 +112,7 @@ abstract class BaseIndicatorRepository(
                             .displayName((ruleAction).content())
                             .build(),
                         ruleEffect.data,
-                        "",
+                        null,
                         ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
@@ -126,7 +125,7 @@ abstract class BaseIndicatorRepository(
                             .displayName(resourceManager.defaultIndicatorLabel())
                             .build(),
                         "${ruleAction.content() ?: ""}${ruleEffect.data}",
-                        "",
+                        null,
                         ruleAction.values["location"] ?: default_location,
                         resourceManager.defaultIndicatorLabel(),
                     )
@@ -142,30 +141,32 @@ abstract class BaseIndicatorRepository(
     private fun getLegendColorForIndicator(
         indicator: ProgramIndicator,
         value: String?,
-    ): Observable<Trio<ProgramIndicator?, String?, String?>?>? {
-        var color: String
+    ): Observable<Trio<ProgramIndicator?, String?, String?>?> {
+        var color: String?
         try {
             color = if (value?.toFloat()?.isNaN() == true) {
-                ""
+                null
             } else {
                 indicator.legendSets()?.let {
+                    val uid = it.first().uid()
+                    val legendValue = value?.toDouble() ?: 0.0
                     if (it.isNotEmpty()) {
-                        val legends = d2.legendSetModule().legends().byStartValue()
-                            .smallerThan(value?.toDouble() ?: 0.0).byEndValue()
-                            .biggerThan(value?.toDouble() ?: 0.0)
-                            .byLegendSet().eq(it.first().uid()).blockingGet()
+                        val legends = d2.legendSetModule().legends()
+                            .byStartValue().smallerThan(legendValue)
+                            .byEndValue().biggerOrEqualTo(legendValue)
+                            .byLegendSet().eq(uid).blockingGet()
                         if (legends.isNotEmpty()) {
                             legends.first().color() ?: ""
                         } else {
-                            ""
+                            null
                         }
                     } else {
-                        ""
+                        null
                     }
-                } ?: ""
+                }
             }
         } catch (e: java.lang.Exception) {
-            color = ""
+            color = null
         }
 
         return Observable.just(
@@ -198,17 +199,24 @@ abstract class BaseIndicatorRepository(
                     },
                 )
             }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
-            if (indicatorList.isNotEmpty() && charts.isNotEmpty()) {
-                add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
-                add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
-                addAll(indicatorList)
-                addAll(charts)
-            } else if (indicatorList.isNotEmpty() && charts.isEmpty()) {
-                add(SectionTitle(resourceManager.sectionIndicators()))
-                addAll(indicatorList)
-            } else if (indicatorList.isEmpty() && charts.isNotEmpty()) {
-                add(SectionTitle(resourceManager.sectionCharts()))
-                addAll(charts)
+
+            when {
+                indicatorList.isNotEmpty() && charts.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionChartsAndIndicators()))
+                    add(SectionTitle(resourceManager.sectionIndicators(), SectionType.SUBSECTION))
+                    addAll(indicatorList)
+                    addAll(charts)
+                }
+
+                indicatorList.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionIndicators()))
+                    addAll(indicatorList)
+                }
+
+                charts.isNotEmpty() -> {
+                    add(SectionTitle(resourceManager.sectionCharts()))
+                    addAll(charts)
+                }
             }
         }
     }

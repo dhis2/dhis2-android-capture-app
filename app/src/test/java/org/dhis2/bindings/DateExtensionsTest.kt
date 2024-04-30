@@ -11,7 +11,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -175,7 +174,77 @@ class DateExtensionsTest {
         assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "3 years overdue")
     }
 
+    @Test
+    fun `Should return 'In 1 day', when the scheduled date is 1 day`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_days, 1, 1)) doReturn "In 1 days"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 1 days")
+    }
+
+    @Test
+    fun `Should return 'In 1 day', when the scheduled date is -x hours from current`() {
+        val currentDate = currentCalendar().apply {
+            set(Calendar.HOUR_OF_DAY, -2)
+        }.time
+        val date: Date? = currentCalendar().time
+        whenever(resourceManager.getPlural(R.plurals.schedule_days, 1, 1)) doReturn "In 1 days"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 1 days")
+    }
+
+    @Test
+    fun `Should return 'Today', when the scheduled date is same day with +x hours`() {
+        val currentDate = currentCalendar().apply {
+            set(Calendar.HOUR_OF_DAY, 2)
+        }.time
+        val date: Date? = currentCalendar().time
+        whenever(resourceManager.getString(R.string.overdue_today)) doReturn "Today"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "Today")
+    }
+
+    @Test
+    fun `Should return 'In x days', when the current date is -x days from the scheduled date and less than 90 days`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.DAY_OF_MONTH, 15)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_days, 15, 15)) doReturn "In 15 days"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 15 days")
+    }
+
+    @Test
+    fun `Should return 'In x months', when the current date is more than 3 months and less than 1 year from schedule`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.MONTH, 4)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_months, 4, 4)) doReturn "In 4 months"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 4 months")
+    }
+
+    @Test
+    fun `Should return 'In 1 year', when the scheduled date is in 1 year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.YEAR, 1)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_years, 1, 1)) doReturn "In 1 year"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 1 year")
+    }
+
+    @Test
+    fun `Should return 'In x years', when the scheduled date is in more than 1 year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.YEAR, 3)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_years, 3, 3)) doReturn "In 3 years"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 3 years")
+    }
+
     private fun currentCalendar() = Calendar.getInstance().apply {
-        time = Date.from(Instant.parse("2020-03-02T00:00:00.00Z"))
+        time = "2020-03-02T00:00:00.00Z".toDate()
     }
 }

@@ -97,7 +97,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                     return Unit.INSTANCE;
                 })
                 .onDataIntegrityResult(result -> {
-                    presenter.handleDataIntegrityResult(result);
+                    presenter.handleDataIntegrityResult(result, eventMode);
                     return Unit.INSTANCE;
                 })
                 .factory(activity.getSupportFragmentManager())

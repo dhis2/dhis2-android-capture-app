@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -149,7 +150,7 @@ class DataSetDetailFragment private constructor() : FragmentGlobalAbstract(), Da
     override fun setStyle(style: ObjectStyle?) {
         style?.let {
             binding.composeDataSetIcon.setUpMetadataIcon(
-                metadataIconProvider(style),
+                metadataIconProvider(style, SurfaceColor.Primary),
             )
         }
     }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="presenter"
             type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
@@ -61,44 +62,30 @@
                 android:id="@+id/programStageName"
                 style="@style/TextPrimary"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="12dp"
-                android:layout_marginTop="9dp"
+                android:gravity="center_vertical"
                 android:maxLines="1"
                 android:textColor="?colorAccent"
-                app:layout_constraintBottom_toTopOf="@+id/eventSecundaryInfo"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/syncButton"
                 app:layout_constraintStart_toEndOf="@id/buttonBack"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Program Stage Name" />
-
-            <TextView
-                android:id="@+id/eventSecundaryInfo"
-                style="@style/TextSecondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginBottom="9dp"
-                android:maxLines="1"
-                android:textColor="?colorAccent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
-                app:layout_constraintStart_toEndOf="@id/buttonBack"
-                app:layout_constraintTop_toBottomOf="@+id/programStageName"
-                tools:text="2018-01-07|Org Unit|Cat Option" />
 
             <ImageView
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/completion"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
                 app:tint="?colorOnPrimary"
                 tools:ignore="ContentDescription"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -114,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:padding="0dp"
-                app:layout_constraintTop_toBottomOf="@id/guideline"/>
+                app:layout_constraintTop_toBottomOf="@id/guideline" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View

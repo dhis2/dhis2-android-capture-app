@@ -131,6 +131,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         if (areTrackingPermissionGranted()) {
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
+                options.setAnrReportInDebug(true);
 
                 // Add a callback that will be used before the event is sent to Sentry.
                 // With this callback, you can modify the event or, when returning null, also discard the event.

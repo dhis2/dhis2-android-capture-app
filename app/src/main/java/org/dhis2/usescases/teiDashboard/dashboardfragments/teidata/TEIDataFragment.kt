@@ -12,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
-import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.map
@@ -61,7 +60,6 @@ import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -96,15 +94,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     private var eventAdapter: EventAdapter? = null
     private var dialog: CustomDialog? = null
     private var programStageFromEvent: ProgramStage? = null
-    private val followUp = ObservableBoolean(false)
     private var eventCatComboOptionSelector: EventCatComboOptionSelector? = null
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private val dashboardActivity: TeiDashboardMobileActivity by lazy { context as TeiDashboardMobileActivity }
 
+    private var showAllEnrollment = false
+    private var programUid: String? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         with(requireArguments()) {
-            val programUid = getString("PROGRAM_UID")
+            programUid = getString("PROGRAM_UID")
             val teiUid = getString("TEI_UID")
                 ?: throw NullPointerException("A TEI uid is required to launch fragment")
             val enrollmentUid = getString("ENROLLMENT_UID") ?: ""
@@ -139,6 +139,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
                 noEnrollmentSelected.observe(viewLifecycleOwner) { noEnrollmentSelected ->
                     if (noEnrollmentSelected) {
+                        showAllEnrollment = true
                         showLegacyCard(dashboardModel.value as DashboardTEIModel)
                     } else {
                         showDetailCard()
@@ -268,6 +269,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             !dashboardModel?.teiHeader.isNullOrEmpty() -> {
                 dashboardModel?.teiHeader
             }
+
             else -> {
                 String.format(
                     "%s %s",
@@ -294,22 +296,14 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        if (!showAllEnrollment) {
+            dashboardViewModel.updateDashboard()
+        }
     }
 
     override fun onPause() {
         presenter.onDettach()
         super.onPause()
-    }
-
-    override fun setEnrollmentData(program: Program?, enrollment: Enrollment?) {
-        enrollment?.let {
-            followUp.set(
-                when (enrollment.followUp()) {
-                    true -> true
-                    else -> false
-                },
-            )
-        }
     }
 
     private fun openChooser(value: String, action: String) {
@@ -336,7 +330,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun observeStageSelection(
         currentProgram: Program,
-        currentEnrollment: Enrollment,
     ): Flowable<StageSection> {
         if (eventAdapter == null) {
             eventAdapter = EventAdapter(
@@ -407,7 +400,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 R.string.event_label_completed,
                 programStageFromEvent?.uid(),
             ),
-            getString(R.string.complete_enrollment_message),
+            resourceManager.formatWithEnrollmentLabel(
+                programUid = programUid,
+                stringResource = R.string.complete_enrollment_message_V2,
+                quantity = 1,
+            ),
             getString(R.string.button_ok),
             getString(R.string.cancel),
             RC_EVENTS_COMPLETED,
@@ -453,10 +450,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return this.viewLifecycleOwner
     }
 
-    override fun switchFollowUp(followUp: Boolean) {
-        this.followUp.set(followUp)
-    }
-
     override fun displayGenerateEvent(eventUid: String) {
         presenter.displayGenerateEvent(eventUid)
         dashboardViewModel.updateEventUid(null)
@@ -475,17 +468,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
-        contractHandler.scheduleEvent(intent, options).observe(this.viewLifecycleOwner) {
+        contractHandler.scheduleEvent(intent, options).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventInitial(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
     override fun openEventCapture(intent: Intent) =
-        contractHandler.editEvent(intent).observe(this.viewLifecycleOwner) {
+        contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
             updateEnrollment(true)
         }
 
@@ -514,9 +507,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             bundle.putString(Constants.PROGRAM_STAGE_UID, programStage.uid())
             bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, programStage.standardInterval() ?: 0)
             intent.putExtras(bundle)
-            contractHandler.createEvent(intent).observe(this.viewLifecycleOwner) {
-                updateEnrollment(true)
-            }
+            contractHandler.createEvent(intent)
         }
     }
 
@@ -593,7 +584,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     companion object {
-        const val RC_GENERATE_EVENT = 1501
         const val RC_EVENTS_COMPLETED = 1601
         const val PREF_COMPLETED_EVENT = "COMPLETED_EVENT"
 

@@ -18,6 +18,7 @@ import org.dhis2.commons.data.RelationshipViewModel;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
@@ -78,6 +79,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollec
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper;
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -285,9 +287,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                             if (dataValue.contains("_os_"))
                                 dataValue = dataValue.split("_os_")[1];
 
-                            boolean isGenerated = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet().generated();
-
-                            if (!isGenerated) {
+                            TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet();
+                            boolean isGenerated = attribute.generated();
+                            boolean hasValidValue = attribute.valueType().getValidator().validate(dataValue).getSucceeded();
+                            if (!isGenerated && hasValidValue) {
                                 valueStore.overrideProgram(programUid);
                                 valueStore.save(key, dataValue).blockingFirst();
                             }
@@ -303,6 +306,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getToday());
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
@@ -655,7 +659,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                             0,
                             periodUtils.getPeriodUIString(cacheStages.get(event.programStage()).periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
                             null,
-                            metadataIconProvider.invoke(cacheStages.get(event.programStage()).style())
+                            metadataIconProvider.invoke(cacheStages.get(event.programStage()).style()),
+                            true,
+                            true
                     ));
         }
 

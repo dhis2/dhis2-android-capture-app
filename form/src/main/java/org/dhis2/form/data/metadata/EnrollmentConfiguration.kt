@@ -9,10 +9,12 @@ import org.dhis2.commons.bindings.teiAttribute
 import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class EnrollmentConfiguration(
     private val d2: D2,
@@ -28,6 +30,10 @@ class EnrollmentConfiguration(
 
     fun program() = enrollment()?.program()?.let {
         d2.program(it)
+    }
+
+    private val defaultStyleColor by lazy {
+        program()?.style()?.color()?.toColor() ?: SurfaceColor.Primary
     }
 
     fun tei() = enrollment()?.trackedEntityInstance()?.let { d2.tei(it) }
@@ -126,7 +132,7 @@ class EnrollmentConfiguration(
                         .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet()
 
-                    val metadataIconMap = options.associate { it.uid() to metadataIconProvider(it.style()) }
+                    val metadataIconMap = options.associate { it.uid() to metadataIconProvider(it.style(), defaultStyleColor) }
 
                     OptionSetConfiguration.OptionConfigData(
                         options = options,

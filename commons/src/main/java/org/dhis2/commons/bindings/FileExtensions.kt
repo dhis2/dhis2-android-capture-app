@@ -15,12 +15,6 @@ import org.apache.commons.io.FileUtils
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
-fun File.widthAndHeight(minimum: Int? = null): Pair<Int, Int> {
-    BitmapFactory.decodeFile(this.absolutePath).apply {
-        return resizeToMinimum(minimum, width, height)
-    }
-}
-
 fun resizeToMinimum(minimum: Int? = null, width: Int, height: Int): Pair<Int, Int> {
     val ratio = width.toFloat() / height.toFloat()
 
@@ -103,9 +97,10 @@ private fun getFilePath(context: Context, uri: Uri): String? {
                 if (id.startsWith("raw:")) {
                     return id.replaceFirst("raw:", "")
                 }
+                val splitIndex = if (split.size > 1) 1 else 0
                 copy = ContentUris.withAppendedId(
                     Uri.parse("content://downloads/public_downloads"),
-                    split[1].toLong(),
+                    split[splitIndex].toLong(),
                 )
             }
             isExternalStorageDocument(copy) -> {

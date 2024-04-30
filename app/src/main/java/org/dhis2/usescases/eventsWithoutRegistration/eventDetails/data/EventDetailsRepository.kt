@@ -3,11 +3,12 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data
 import io.reactivex.Observable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
@@ -36,6 +37,7 @@ class EventDetailsRepository(
     private val eventUid: String?,
     private val programStageUid: String?,
     private val fieldFactory: FieldViewModelFactory?,
+    private val eventCreationType: EventCreationType,
     private val onError: (Throwable) -> String?,
 ) {
 
@@ -148,8 +150,13 @@ class EventDetailsRepository(
         return d2.organisationUnitModule().organisationUnits()
             .byProgramUids(listOf(programUid))
             .byParentUid().eq(parentUid)
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+            .byOrganisationUnitScope(getOrgUnitScope())
             .blockingGet()
+    }
+
+    private fun getOrgUnitScope() = when (eventCreationType) {
+        EventCreationType.REFERAL -> OrganisationUnit.Scope.SCOPE_TEI_SEARCH
+        else -> OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
     }
 
     fun getOrganisationUnit(orgUnitUid: String): OrganisationUnit? {
@@ -160,10 +167,18 @@ class EventDetailsRepository(
     }
 
     fun getOrganisationUnits(): List<OrganisationUnit> {
-        return d2.organisationUnitModule().organisationUnits()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .byProgramUids(listOf(programUid))
-            .blockingGet()
+        val scope = getOrgUnitScope()
+        return when (scope) {
+            OrganisationUnit.Scope.SCOPE_DATA_CAPTURE ->
+                d2.organisationUnitModule().organisationUnits()
+                    .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                    .byProgramUids(listOf(programUid))
+                    .blockingGet()
+            OrganisationUnit.Scope.SCOPE_TEI_SEARCH ->
+                d2.organisationUnitModule().organisationUnits()
+                    .byProgramUids(listOf(programUid))
+                    .blockingGet()
+        }
     }
 
     fun getGeometryModel(): FieldUiModel {

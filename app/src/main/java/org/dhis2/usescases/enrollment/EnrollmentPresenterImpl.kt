@@ -19,7 +19,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -50,7 +49,6 @@ class EnrollmentPresenterImpl(
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
 ) {
-    private var finishing: Boolean = false
     private val disposable = CompositeDisposable()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     private var hasShownIncidentDateEditionWarning = false
@@ -168,6 +166,7 @@ class EnrollmentPresenterImpl(
                         ),
                 )
             }
+
             EnrollmentActivity.EnrollmentMode.CHECK -> view.setResultAndFinish()
         }
     }
@@ -178,27 +177,10 @@ class EnrollmentPresenterImpl(
                 view.showDateEditionWarning()
             }
         }
-        if (finishing) {
-            view.performSaveClick()
-        }
-        finishing = false
     }
 
     fun backIsClicked() {
         backButtonProcessor.onNext(true)
-    }
-
-    fun openInitial(eventUid: String): Boolean {
-        val catComboUid = getProgram()?.categoryComboUid()
-        val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-        val needsCatCombo = programRepository.blockingGet()?.categoryComboUid() != null &&
-            d2.categoryModule().categoryCombos().uid(catComboUid)
-                .blockingGet()?.isDefault == false
-        val needsCoordinates =
-            stage?.featureType() != null && stage.featureType() != FeatureType.NONE
-
-        return needsCatCombo || needsCoordinates
     }
 
     fun getEnrollment(): Enrollment? {
@@ -223,8 +205,6 @@ class EnrollmentPresenterImpl(
             false
         }
     }
-
-    fun hasAccess() = getProgram()?.access()?.data()?.write() ?: false
 
     fun saveEnrollmentGeometry(geometry: Geometry?) {
         enrollmentObjectRepository.setGeometry(geometry)
@@ -257,13 +237,6 @@ class EnrollmentPresenterImpl(
             view.displayTeiPicture(picturePath)
         }
     }
-
-    fun setFinishing() {
-        finishing = true
-    }
-
-    fun getEventStage(eventUid: String) =
-        enrollmentFormRepository.getProgramStageUidFromEvent(eventUid)
 
     fun showOrHideSaveButton() {
         val teiUid = teiRepository.blockingGet()?.uid() ?: ""

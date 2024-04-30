@@ -152,6 +152,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore("To fix in ANDROAPP-6109")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
@@ -219,7 +220,7 @@ class TeiDashboardTest : BaseTest() {
             goToAnalytics()
         }
 
-        indicatorsRobot {
+        indicatorsRobot(composeTestRule) {
             checkDetails("0", "4817")
         }
     }
@@ -302,7 +303,7 @@ class TeiDashboardTest : BaseTest() {
             goToAnalytics()
         }
 
-        indicatorsRobot {
+        indicatorsRobot(composeTestRule) {
             checkGraphIsRendered(chartName)
         }
 

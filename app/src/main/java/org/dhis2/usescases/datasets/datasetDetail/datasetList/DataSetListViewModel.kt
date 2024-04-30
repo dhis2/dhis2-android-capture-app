@@ -23,7 +23,7 @@ class DataSetListViewModel(
     schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
     val matomoAnalyticsController: MatomoAnalyticsController,
-    private val dispatcher: DispatcherProvider,
+    dispatcher: DispatcherProvider,
 
 ) : ViewModel() {
 
@@ -45,13 +45,12 @@ class DataSetListViewModel(
                 filterManager.asFlowable()
                     .startWith(filterManager)
                     .flatMap { filterManager: FilterManager ->
-
                         dataSetDetailRepository.dataSetGroups(
                             filterManager.orgUnitUidsFilters,
                             filterManager.periodFilters,
                             filterManager.stateFilters,
                             filterManager.catOptComboFilters,
-                        )
+                        ).subscribeOn(schedulerProvider.io())
                     }
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())

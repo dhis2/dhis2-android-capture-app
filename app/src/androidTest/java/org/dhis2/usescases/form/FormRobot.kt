@@ -2,9 +2,11 @@ package org.dhis2.usescases.form
 
 import android.app.Activity
 import android.view.MenuItem
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -32,13 +34,16 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 
 
-fun formRobot(formRobot: FormRobot.() -> Unit) {
-    FormRobot().apply {
+fun formRobot(
+    composeTestRule: ComposeTestRule,
+    formRobot: FormRobot.() -> Unit
+) {
+    FormRobot(composeTestRule).apply {
         formRobot()
     }
 }
 
-class FormRobot : BaseRobot() {
+class FormRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnASpecificSection(sectionLabel: String) {
         onView(withText(sectionLabel)).perform(click())
@@ -104,10 +109,8 @@ class FormRobot : BaseRobot() {
     }
 
     fun checkIndicatorIsDisplayed(name: String, value: String) {
-        onView(withId(R.id.indicator_name))
-            .check(matches(allOf(isDisplayed(), withText(name))))
-        onView(withId(R.id.indicator_value))
-            .check(matches(allOf(isDisplayed(), withText(value))))
+        composeTestRule.onNodeWithText(name).assertIsDisplayed()
+        composeTestRule.onNodeWithText(value).assertIsDisplayed()
     }
 
     fun checkLabel(label: String, position: Int) {

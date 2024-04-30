@@ -51,8 +51,8 @@ fun FieldUiModel.orientation() = when (renderingType) {
 }
 
 fun FieldUiModel.inputState() = when {
-    error != null -> InputShellState.ERROR
     !editable -> InputShellState.DISABLED
+    error != null -> InputShellState.ERROR
     focused -> InputShellState.FOCUSED
     else -> InputShellState.UNFOCUSED
 }
