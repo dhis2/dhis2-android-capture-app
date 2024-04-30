@@ -20,13 +20,12 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import syncFlowRobot
 import java.util.UUID
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 
 @RunWith(AndroidJUnit4::class)
 class SyncFlowTest : BaseTest() {
@@ -48,12 +47,15 @@ class SyncFlowTest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
+        setupMockServer()
         workInfoStatusLiveData =
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
 
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         val teiName = "Lars"
         val teiLastName = "Overland"
 
@@ -95,6 +97,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot(composeTestRule) {
@@ -118,6 +122,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldShowErrorWhenSyncEventFails() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot(composeTestRule) {
@@ -141,6 +147,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedDataSet() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
@@ -223,5 +231,6 @@ class SyncFlowTest : BaseTest() {
 
     companion object {
         const val LAB_MONITORING_EVENT_DATE = "28/6/2020"
+        const val API_PING_RESPONSE_OK = "mocks/systeminfo/ping.txt"
     }
 }
