@@ -120,13 +120,13 @@ class DashboardViewModelTest {
             whenever(repository.updateEnrollmentStatus(any(), any())) doReturn Observable.just(
                 StatusChangeResultCode.CHANGED,
             )
+            whenever(mockedEnrollmentModel.currentEnrollment) doReturn mockedCompletedEnrollment
             updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
             testingDispatcher.scheduler.advanceUntilIdle()
             verify(repository).updateEnrollmentStatus("enrollmentUid", EnrollmentStatus.COMPLETED)
             assertTrue(showStatusBar.value == EnrollmentStatus.COMPLETED)
             assertTrue(syncNeeded.value)
             assertTrue(state.value == State.TO_UPDATE)
-            assertTrue(updateEnrollment.value == true)
         }
     }
 
@@ -186,5 +186,11 @@ class DashboardViewModelTest {
         on { followUp() } doReturn true
         on { aggregatedSyncState() } doReturn State.SYNCED
         on { status() } doReturn EnrollmentStatus.ACTIVE
+    }
+
+    private val mockedCompletedEnrollment: Enrollment = mock {
+        on { uid() } doReturn "enrollmentUid"
+        on { aggregatedSyncState() } doReturn State.TO_UPDATE
+        on { status() } doReturn EnrollmentStatus.COMPLETED
     }
 }

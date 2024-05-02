@@ -8,8 +8,12 @@ import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import io.reactivex.Completable
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.SyncContext
@@ -23,14 +27,18 @@ import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetElement
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -56,6 +64,16 @@ class GranularSyncPresenterTest {
     private val smsSyncProvider: SMSSyncProvider = mock()
     private val context: Context = mock()
     private val syncContext: SyncContext = SyncContext.Global()
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `should return tracker program error state`() {
@@ -462,5 +480,45 @@ class GranularSyncPresenterTest {
 
         verify(workManager).syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         verify(workInfoObserver).onChanged(anyList())
+    }
+
+    @Test
+    fun shouldCheckAvailableConnection() = runBlocking {
+        whenever(repository.checkServerAvailability()) doReturn "pong"
+
+        val presenter = GranularSyncPresenter(
+            d2,
+            view,
+            repository,
+            trampolineSchedulerProvider,
+            testDispatcher,
+            SyncContext.Global(),
+            workManager,
+            smsSyncProvider,
+        )
+
+        presenter.checkServerAvailability()
+
+        assertTrue(presenter.serverAvailability.value!!)
+    }
+
+    @Test
+    fun shouldCheckUnavailableConnection() = runBlocking {
+        whenever(repository.checkServerAvailability()) doThrow RuntimeException()
+
+        val presenter = GranularSyncPresenter(
+            d2,
+            view,
+            repository,
+            trampolineSchedulerProvider,
+            testDispatcher,
+            SyncContext.Global(),
+            workManager,
+            smsSyncProvider,
+        )
+
+        presenter.checkServerAvailability()
+
+        assertFalse(presenter.serverAvailability.value!!)
     }
 }

@@ -28,6 +28,7 @@ fun MultiOptionSelector(
         },
         title = title,
         noResultsFoundString = stringResource(R.string.no_results_found),
+        searchToFindMoreString = stringResource(id = R.string.search_to_see_more),
         doneButtonText = stringResource(id = R.string.done),
         onItemsSelected = { checkBoxes ->
             val checkedCodes = checkBoxes

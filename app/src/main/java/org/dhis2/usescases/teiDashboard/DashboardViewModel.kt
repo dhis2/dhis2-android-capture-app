@@ -29,7 +29,6 @@ class DashboardViewModel(
 
     private val selectedEventUid = MutableLiveData<String>()
 
-    val updateEnrollment = MutableLiveData(false)
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
 
     private var _showFollowUpBar = MutableStateFlow(false)
@@ -143,7 +142,7 @@ class DashboardViewModel(
                     _showStatusBar.value = status
                     _syncNeeded.value = true
                     _state.value = State.TO_UPDATE
-                    updateEnrollment.postValue(true)
+                    fetchDashboardModel()
                 } else {
                     showStatusErrorMessages.postValue(result)
                 }

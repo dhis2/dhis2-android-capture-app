@@ -133,9 +133,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             with(dashboardViewModel) {
                 eventUid().observe(viewLifecycleOwner, ::displayGenerateEvent)
-                updateEnrollment.observe(viewLifecycleOwner) { update ->
-                    updateEnrollment(update)
-                }
                 noEnrollmentSelected.observe(viewLifecycleOwner) { noEnrollmentSelected ->
                     if (noEnrollmentSelected) {
                         showLegacyCard(dashboardModel.value as DashboardTEIModel)
@@ -383,7 +380,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                             programStageUid,
                         ),
                     )
-                    presenter.fetchEvents(true)
+                    presenter.fetchEvents()
                 },
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
@@ -458,18 +455,18 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun openEventDetails(intent: Intent, options: ActivityOptionsCompat) =
         contractHandler.scheduleEvent(intent, options).observe(viewLifecycleOwner) {
-            updateEnrollment(true)
+            presenter.fetchEvents()
         }
 
     override fun openEventInitial(intent: Intent) =
         contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
-            updateEnrollment(true)
+            presenter.fetchEvents()
         }
 
     override fun openEventCapture(intent: Intent) {
         if (dashboardActivity is TeiDashboardMobileActivity) {
             contractHandler.editEvent(intent).observe(viewLifecycleOwner) {
-                updateEnrollment(true)
+                presenter.fetchEvents()
             }
         }
         if (dashboardActivity is EventCaptureActivity) {
@@ -568,13 +565,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun showProgramRuleErrorMessage() {
         dashboardActivity.executeOnUIThread()
-    }
-
-    override fun updateEnrollment(update: Boolean) {
-        if (update) {
-            presenter.fetchEvents(update)
-            dashboardViewModel.updateDashboard()
-        }
     }
 
     companion object {

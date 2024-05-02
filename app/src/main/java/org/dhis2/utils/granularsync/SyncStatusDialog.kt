@@ -181,14 +181,18 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
     }
 
     private fun onSyncClick() {
-        when {
-            networkUtils.isOnline() -> syncGranular()
-            viewModel.canSendSMS() &&
-                viewModel.isSMSEnabled(context?.showSMS() == true) -> syncSms()
+        viewModel.serverAvailability.observe(viewLifecycleOwner) { isAvailable ->
+            val canSendSMS = viewModel.canSendSMS()
+            val isSMSEnabled = viewModel.isSMSEnabled(context?.showSMS() == true)
 
-            !networkUtils.isOnline() &&
-                !viewModel.isSMSEnabled(context?.showSMS() == true) -> showSnackbar()
+            when {
+                isAvailable -> syncGranular()
+                canSendSMS && isSMSEnabled -> syncSms()
+                else -> showSnackbar()
+            }
         }
+
+        viewModel.checkServerAvailability()
     }
 
     private fun showSnackbar() {
