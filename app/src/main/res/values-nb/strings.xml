@@ -136,8 +136,6 @@
     <string name="delete">Slett</string>
     <string name="total">Totalt</string>
     <string name="most_recent_event_date">Siste hendelsesdato</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Registreringsliste</string>
     <string name="active_programs">Aktive programmer</string>
     <string name="to_enroll_programs">Programmer å registrere</string>
     <string name="enroll">Registrere</string>

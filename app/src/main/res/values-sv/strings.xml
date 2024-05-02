@@ -96,8 +96,6 @@
     <string name="cancel">Avbryt</string>
     <string name="delete">Radera</string>
     <string name="total">Totalt</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Inskrivningslista</string>
     <string name="active_programs">Aktiva program</string>
     <string name="to_enroll_programs">Program för att registrera</string>
     <string name="enroll">Registrera</string>
