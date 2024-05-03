@@ -26,7 +26,10 @@ class EventListPresenter(
                 .map { eventRepository.filteredProgramEvents() }
                 .defaultSubscribe(
                     schedulerProvider,
-                    { view.setLiveData(it) },
+                    {
+                        view.setLiveData(it)
+                        EventListIdlingResourceSingleton.decrement()
+                    },
                     { Timber.e(it) },
                 ),
         )
