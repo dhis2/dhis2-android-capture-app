@@ -89,6 +89,9 @@ class GranularSyncPresenter(
         workerName = workerName()
     }
 
+    private val _serverAvailability = MutableLiveData<Boolean>()
+    val serverAvailability: LiveData<Boolean> = _serverAvailability
+
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
             val syncState = async {
@@ -421,6 +424,17 @@ class GranularSyncPresenter(
             WorkInfo.State.CANCELLED,
             -> {
                 loadSyncInfo()
+            }
+        }
+    }
+
+    fun checkServerAvailability() {
+        viewModelScope.launch {
+            try {
+                repository.checkServerAvailability()
+                _serverAvailability.value = true
+            } catch (error: RuntimeException) {
+                _serverAvailability.value = false
             }
         }
     }

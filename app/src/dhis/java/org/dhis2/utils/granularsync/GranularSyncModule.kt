@@ -60,17 +60,20 @@ class GranularSyncModule(
             view,
             repository,
             schedulerProvider,
-            object : DispatcherProvider {
-                override fun io() = Dispatchers.IO
-
-                override fun computation() = Dispatchers.Default
-
-                override fun ui() = Dispatchers.Main
-            },
+            provideDispatchers(),
             syncContext,
             workManagerController,
             smsSyncProvider,
         )
+    }
+
+    @Provides
+    fun provideDispatchers() = object : DispatcherProvider {
+        override fun io() = Dispatchers.IO
+
+        override fun computation() = Dispatchers.Default
+
+        override fun ui() = Dispatchers.Main
     }
 
     @Provides
@@ -87,6 +90,7 @@ class GranularSyncModule(
         dhisProgramUtils,
         periodUtils,
         resourceManager,
+        provideDispatchers(),
     )
 
     @Provides
