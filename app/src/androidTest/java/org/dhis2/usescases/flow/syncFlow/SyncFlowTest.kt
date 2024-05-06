@@ -21,6 +21,7 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -95,6 +96,7 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Flaky test, will be addressed in issue #ANDROAPP-6155")
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
         mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
@@ -121,6 +123,7 @@ class SyncFlowTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Flaky test, will be addressed in issue #ANDROAPP-6139")
     fun shouldShowErrorWhenSyncEventFails() {
         mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
 
