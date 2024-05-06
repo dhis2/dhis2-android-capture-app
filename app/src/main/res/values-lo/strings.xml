@@ -133,8 +133,6 @@
     <string name="delete">ລົບ</string>
     <string name="total">ລວມ</string>
     <string name="most_recent_event_date">ວັນທີເຫດການຄັ້ງຫຼ້າສຸດ</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">ລາຍລະອຽດການລົງທບຽນ</string>
     <string name="active_programs">ໂປຣແກຣທີ່ເປີດນໍາໃຊ້</string>
     <string name="to_enroll_programs">ໂປຣແກຣມເພື່ອລົງທະບຽນ</string>
     <string name="enroll">ຂື້ນທະບຽນ</string>

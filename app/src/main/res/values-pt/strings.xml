@@ -137,8 +137,6 @@
     <string name="delete">Apagar</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Data do evento mais recente</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
     <string name="to_enroll_programs">Programas para inscrição</string>
     <string name="enroll">Registrar</string>

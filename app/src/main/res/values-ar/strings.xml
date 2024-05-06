@@ -145,8 +145,6 @@
     <string name="delete">حذف</string>
     <string name="total">الإجمالي</string>
     <string name="most_recent_event_date">تاريخ أحدث حدث</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">قائمة التسجيل</string>
     <string name="active_programs">البرامج النشطة</string>
     <string name="to_enroll_programs">برامج للتسجيل</string>
     <string name="enroll">تسجيل</string>

@@ -137,8 +137,6 @@
     <string name="delete">hapus</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">hal yang paling terbaru</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Data pendaftaran</string>
     <string name="active_programs">Aktifkan program</string>
     <string name="to_enroll_programs">Program untuk didaftarkan</string>
     <string name="enroll">Daftar</string>
