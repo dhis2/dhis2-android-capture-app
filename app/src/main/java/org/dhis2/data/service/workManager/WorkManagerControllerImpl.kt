@@ -30,9 +30,7 @@ package org.dhis2.data.service.workManager
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
@@ -56,38 +54,10 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
         }
     }
 
-    override fun syncDataForWorkers(
-        metadataWorkerTag: String,
-        dataWorkerTag: String,
-        workName: String,
-    ) {
-        val workerOneBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
-        workerOneBuilder
-            .addTag(metadataWorkerTag)
-            .setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
-
-        val workerTwoBuilder = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
-        workerTwoBuilder
-            .addTag(dataWorkerTag)
-            .setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
-
-        workManager
-            .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerOneBuilder.build())
-            .then(workerTwoBuilder.build())
-            .enqueue()
-    }
-
     override fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String) {
         val workerOneBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
         workerOneBuilder
             .addTag(metadataWorkerTag)
-            .setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
 
         workManager
             .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerOneBuilder.build())
@@ -98,9 +68,6 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
         val workerTwoBuilder = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
         workerTwoBuilder
             .addTag(dataWorkerTag)
-            .setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
 
         workManager
             .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerTwoBuilder.build())
@@ -163,9 +130,6 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
 
         syncBuilder.apply {
             addTag(workerItem.workerName)
-            setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
             workerItem.delayInSeconds?.let {
                 setInitialDelay(it, TimeUnit.SECONDS)
             }
@@ -218,9 +182,6 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
 
         syncBuilder.apply {
             addTag(workerItem.workerName)
-            setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
-            )
             workerItem.data?.let {
                 setInputData(it)
             }

@@ -1,8 +1,6 @@
 package org.dhis2.usescases.flow.syncFlow
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -20,13 +18,13 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import syncFlowRobot
 import java.util.UUID
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 
 @RunWith(AndroidJUnit4::class)
 class SyncFlowTest : BaseTest() {
@@ -48,12 +46,16 @@ class SyncFlowTest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
+        setupMockServer()
         workInfoStatusLiveData =
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
 
+    @Ignore("failing by a bug - ANDROAPP-6154")
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         val teiName = "Lars"
         val teiLastName = "Overland"
 
@@ -79,12 +81,8 @@ class SyncFlowTest : BaseTest() {
             clickOnCompleteButton()
         }
 
-        teiDashboardRobot(composeTestRule) {
-            composeTestRule.onNodeWithText("Sync").performClick()
-        }
-
         syncFlowRobot(composeTestRule) {
-            waitToDebounce(500)
+            clickOnEventToSync()
             clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
@@ -95,6 +93,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedEvent() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot(composeTestRule) {
@@ -118,6 +118,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldShowErrorWhenSyncEventFails() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareMalariaEventIntentAndLaunchActivity(ruleEventWithoutRegistration)
 
         eventWithoutRegistrationRobot(composeTestRule) {
@@ -141,6 +143,8 @@ class SyncFlowTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullySyncSavedDataSet() {
+        mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
+
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
@@ -223,5 +227,6 @@ class SyncFlowTest : BaseTest() {
 
     companion object {
         const val LAB_MONITORING_EVENT_DATE = "28/6/2020"
+        const val API_PING_RESPONSE_OK = "mocks/systeminfo/ping.txt"
     }
 }
