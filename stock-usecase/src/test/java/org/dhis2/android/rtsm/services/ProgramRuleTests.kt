@@ -10,7 +10,9 @@ import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEnrollment
+import org.hisp.dhis.rules.models.RuleEnrollmentStatus
 import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.RuleEventStatus
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
 import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
@@ -124,7 +126,7 @@ class ProgramRuleTests {
             "test_program",
             Date().toRuleEngineLocalDate(),
             Date().toRuleEngineLocalDate(),
-            RuleEnrollment.Status.ACTIVE,
+            RuleEnrollmentStatus.ACTIVE,
             "test_ou",
             "test_ou_code",
             emptyList(),
@@ -134,7 +136,7 @@ class ProgramRuleTests {
             "test_event",
             "test_program_stage",
             "",
-            RuleEvent.Status.ACTIVE,
+            RuleEventStatus.ACTIVE,
             Date().toRuleEngineInstant(),
             Date().toRuleEngineLocalDate(),
             null,

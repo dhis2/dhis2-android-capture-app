@@ -24,7 +24,9 @@ import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEnrollment
+import org.hisp.dhis.rules.models.RuleEnrollmentStatus
 import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.RuleEventStatus
 import org.hisp.dhis.rules.models.RuleVariable
 import java.util.Calendar
 import java.util.Date
@@ -112,9 +114,9 @@ class RulesRepository(private val d2: D2) {
                                 .uid(event.programStage())
                                 .blockingGet()!!.name()!!,
                             status = if (event.status() == EventStatus.VISITED) {
-                                RuleEvent.Status.ACTIVE
+                                RuleEventStatus.ACTIVE
                             } else {
-                                RuleEvent.Status.valueOf(event.status()!!.name)
+                                RuleEventStatus.valueOf(event.status()!!.name)
                             },
                             eventDate = Instant.fromEpochMilliseconds(event.eventDate()!!.time),
                             dueDate = event.dueDate()?.let {
@@ -206,9 +208,9 @@ class RulesRepository(private val d2: D2) {
                         .blockingGet()!!.name()!!,
                     status =
                     if (event.status() == EventStatus.VISITED) {
-                        RuleEvent.Status.ACTIVE
+                        RuleEventStatus.ACTIVE
                     } else {
-                        RuleEvent.Status.valueOf(event.status()!!.name)
+                        RuleEventStatus.valueOf(event.status()!!.name)
                     },
                     eventDate = event.eventDate()!!.toRuleEngineInstant(),
                     dueDate = event.dueDate()?.toRuleEngineLocalDate(),
@@ -242,7 +244,7 @@ class RulesRepository(private val d2: D2) {
                 programName!!,
                 Calendar.getInstance().time.toRuleEngineLocalDate(),
                 Calendar.getInstance().time.toRuleEngineLocalDate(),
-                RuleEnrollment.Status.CANCELLED,
+                RuleEnrollmentStatus.CANCELLED,
                 event.organisationUnit()!!,
                 ouCode,
                 ArrayList(),
@@ -255,7 +257,7 @@ class RulesRepository(private val d2: D2) {
                 programName!!,
                 (enrollment.incidentDate() ?: Date()).toRuleEngineLocalDate(),
                 enrollment.enrollmentDate()!!.toRuleEngineLocalDate(),
-                RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
+                RuleEnrollmentStatus.valueOf(enrollment.status()!!.name),
                 event.organisationUnit()!!,
                 ouCode,
                 getAttributesValues(enrollment),
@@ -314,7 +316,7 @@ class RulesRepository(private val d2: D2) {
             programName = d2.program(enrollment.program()!!)?.name()!!,
             incidentDate = (enrollment.incidentDate() ?: Date()).toRuleEngineLocalDate(),
             enrollmentDate = (enrollment.enrollmentDate() ?: Date()).toRuleEngineLocalDate(),
-            status = RuleEnrollment.Status.valueOf(enrollment.status()!!.name),
+            status = RuleEnrollmentStatus.valueOf(enrollment.status()!!.name),
             organisationUnit = enrollment.organisationUnit()!!,
             organisationUnitCode = d2.organisationUnit(enrollment.organisationUnit()!!)
                 ?.code() ?: "",
@@ -328,7 +330,7 @@ class RulesRepository(private val d2: D2) {
             event = event.uid(),
             programStage = event.programStage()!!,
             programStageName = d2.programStage(event.programStage()!!)?.name()!!,
-            status = RuleEvent.Status.valueOf(event.status()!!.name),
+            status = RuleEventStatus.valueOf(event.status()!!.name),
             eventDate = event.eventDate()!!.toRuleEngineInstant(),
             dueDate = event.dueDate()?.toRuleEngineLocalDate(),
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
