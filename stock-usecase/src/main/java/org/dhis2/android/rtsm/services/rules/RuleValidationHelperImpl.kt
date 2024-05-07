@@ -27,6 +27,7 @@ import org.hisp.dhis.rules.api.RuleEngine
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
+import org.hisp.dhis.rules.models.RuleEventStatus
 import org.hisp.dhis.rules.models.RuleVariable
 import timber.log.Timber
 import java.util.Date
@@ -129,7 +130,7 @@ class RuleValidationHelperImpl @Inject constructor(
         eventUid ?: UUID.randomUUID().toString(),
         programStage.uid(),
         programStage.name()!!,
-        RuleEvent.Status.ACTIVE,
+        RuleEventStatus.ACTIVE,
         period.toRuleEngineInstant(),
         period.toRuleEngineLocalDate(),
         period.toRuleEngineLocalDate(),
@@ -230,9 +231,9 @@ class RuleValidationHelperImpl @Inject constructor(
                     d2.programModule().programStages().uid(event.programStage())
                         .blockingGet()!!.name()!!,
                     if (event.status() == EventStatus.VISITED) {
-                        RuleEvent.Status.ACTIVE
+                        RuleEventStatus.ACTIVE
                     } else {
-                        RuleEvent.Status.valueOf(event.status()!!.name)
+                        RuleEventStatus.valueOf(event.status()!!.name)
                     },
                     (event.eventDate() ?: Date()).toRuleEngineInstant(),
                     event.dueDate()?.toRuleEngineLocalDate(),
