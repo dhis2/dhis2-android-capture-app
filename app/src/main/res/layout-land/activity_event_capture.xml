@@ -14,6 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backdropLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorPrimary">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activityToolbar"
             android:layout_width="match_parent"
@@ -147,7 +153,8 @@
             android:id="@+id/layoutContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/white"
+            android:background="@drawable/ic_front_backdrop_bg"
+            android:clipToOutline="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activityToolbar"
@@ -246,5 +253,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
