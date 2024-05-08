@@ -63,11 +63,9 @@ dependencies {
     implementation(project(":dhis2-mobile-program-rules"))
     testImplementation(libs.bundles.form.test)
     androidTestImplementation(libs.test.compose.ui.test)
-    implementation(libs.androidx.activity.compose)
 
     debugImplementation(libs.androidx.compose.uitooling)
     debugImplementation(libs.test.ui.test.manifest)
-    implementation(libs.androidx.compose.preview)
 
     coreLibraryDesugaring(libs.desugar)
 }
