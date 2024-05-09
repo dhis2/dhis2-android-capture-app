@@ -182,7 +182,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            scrollToBottomForm()
+            enableComposeForms()
             clickOnFormFabButton()
             clickOnNotNow()
         }
