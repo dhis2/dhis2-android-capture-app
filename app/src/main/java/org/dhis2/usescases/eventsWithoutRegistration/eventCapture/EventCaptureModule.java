@@ -18,7 +18,6 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
 import org.dhis2.form.data.FileController;
 import org.dhis2.form.data.FormValueStore;
-import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.UniqueAttributeController;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
@@ -73,12 +72,6 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.EventCaptureRepository provideRepository(D2 d2) {
         return new EventCaptureRepositoryImpl(eventUid, d2);
-    }
-
-    @Provides
-    @PerActivity
-    RulesRepository rulesRepository(@NonNull D2 d2) {
-        return new RulesRepository(d2);
     }
 
     @Provides

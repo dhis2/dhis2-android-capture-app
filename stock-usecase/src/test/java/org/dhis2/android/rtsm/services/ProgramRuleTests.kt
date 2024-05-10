@@ -1,8 +1,6 @@
 package org.dhis2.android.rtsm.services
 
 import com.google.common.collect.Lists
-import org.dhis2.commons.rules.toRuleEngineInstant
-import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.api.RuleEngine
 import org.hisp.dhis.rules.api.RuleEngineContext

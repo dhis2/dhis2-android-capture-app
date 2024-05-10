@@ -1,6 +1,5 @@
 package org.dhis2.data.forms
 
-import org.dhis2.form.data.RulesRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitGroup
