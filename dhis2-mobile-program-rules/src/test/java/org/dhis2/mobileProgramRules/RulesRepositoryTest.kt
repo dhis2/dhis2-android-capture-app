@@ -1,9 +1,11 @@
-package org.dhis2.data.forms
+package org.dhis2.mobileProgramRules
 
+import kotlinx.coroutines.runBlocking
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitGroup
 import org.hisp.dhis.android.core.user.UserRole
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -30,24 +32,23 @@ class RulesRepositoryTest {
                 .blockingGet(),
         ) doReturn getTestOrgUnit()
         whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
-        val testObserver = repository.supplementaryData("org_unit_test")
-            .test()
-
-        testObserver.assertValueCount(1)
-        testObserver.assertValue { supplData ->
-
-            supplData.containsKey("USER")
-            supplData.containsKey("org_unit_group_test_code")
-            supplData.containsKey("org_unit_group_test")
-            supplData.getOrElse("USER") { arrayListOf() }
-                .contains("role1")
-            supplData.getOrElse("USER") { arrayListOf() }
-                .contains("role2")
-            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
-                .contains("org_unit_test")
-            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
-                .contains("org_unit_test")
+        val supplData = runBlocking {
+            repository.supplementaryData("org_unit_test")
         }
+        assertTrue(supplData.isNotEmpty())
+        assertTrue(supplData.containsKey("USER"))
+        assertTrue(supplData.containsKey("org_unit_group_test_code"))
+        assertTrue(supplData.containsKey("org_unit_group_test"))
+        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role1"))
+        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role2"))
+        assertTrue(
+            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
+                .contains("org_unit_test"),
+        )
+        assertTrue(
+            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
+                .contains("org_unit_test"),
+        )
     }
 
     @Test
@@ -59,24 +60,22 @@ class RulesRepositoryTest {
                 .blockingGet(),
         ) doReturn getTestOrgUnitWithNullCodeGroup()
         whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
-        val testObserver = repository.supplementaryData("org_unit_test")
-            .test()
-
-        testObserver.assertValueCount(1)
-        testObserver.assertValue { supplData ->
-
-            supplData.containsKey("USER")
-            !supplData.containsKey("org_unit_group_test_code")
-            supplData.containsKey("org_unit_group_test")
-            supplData.getOrElse("USER") { arrayListOf() }
-                .contains("role1")
-            supplData.getOrElse("USER") { arrayListOf() }
-                .contains("role2")
-            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
-                .contains("org_unit_test")
-            supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }
-                .isEmpty()
+        val supplData = runBlocking {
+            repository.supplementaryData("org_unit_test")
         }
+
+        assertTrue(supplData.isNotEmpty())
+
+        assertTrue(supplData.containsKey("USER"))
+        assertTrue(!supplData.containsKey("org_unit_group_test_code"))
+        assertTrue(supplData.containsKey("org_unit_group_test"))
+        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role1"))
+        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role2"))
+        assertTrue(
+            supplData.getOrElse("org_unit_group_test") { arrayListOf() }
+                .contains("org_unit_test"),
+        )
+        assertTrue(supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }.isEmpty())
     }
 
     private fun getTestUserRoles(): List<UserRole> {
