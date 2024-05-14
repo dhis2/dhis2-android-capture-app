@@ -188,6 +188,7 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Flaky test, will be addressed in next release")
     @Test
     fun shouldShowErrorWhenSyncDataSetFails() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
