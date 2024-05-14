@@ -82,14 +82,10 @@ dependencies {
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)
-    api(libs.androidx.liveDataKtx)
     api(libs.androidx.viewModelKtx)
-    api(libs.androidx.lifecycleExtensions)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
     api(libs.androidx.compose)
-    api(libs.androidx.compose.constraintlayout)
-    api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
 
@@ -110,7 +106,6 @@ dependencies {
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
-    api(libs.rx.binding)
     api(libs.rx.binding.compat)
     testApi(libs.test.junit)
     androidTestApi(libs.test.mockitoCore)

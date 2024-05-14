@@ -57,6 +57,5 @@ dependencies {
     implementation(libs.bundles.uicomponents.implementation)
     api(libs.bundles.uicomponents.api)
     debugApi(libs.bundles.uicomponents.debugapi)
-    testImplementation(libs.bundles.uicomponents.test)
     androidTestImplementation(libs.bundles.uicomponents.androidtest)
 }
