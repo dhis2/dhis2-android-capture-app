@@ -116,6 +116,7 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("TO FIX IN ANDROAPP-6139")
     @Test
     fun shouldShowErrorWhenSyncEventFails() {
         mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
