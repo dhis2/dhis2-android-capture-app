@@ -19,9 +19,9 @@ class ConfigureEventCatCombo(
         repository.catCombo().apply {
             val categories = getCategories(this?.categories())
             val categoryOptions = getCategoryOptions()
+            updateSelectedOptions(categoryOption, categories, categoryOptions)
             val catComboUid = getCatComboUid(this?.uid() ?: "", this?.isDefault ?: false)
             val catComboDisplayName = getCatComboDisplayName(this?.uid() ?: "")
-            updateSelectedOptions(categoryOption, categories, categoryOptions)
 
             return flowOf(
                 EventCatCombo(
