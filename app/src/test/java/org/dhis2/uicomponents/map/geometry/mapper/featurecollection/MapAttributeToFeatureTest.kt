@@ -2,11 +2,6 @@ package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doReturnConsecutively
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapAttributeToFeature
 import org.dhis2.maps.utils.CoordinateAttributeInfo
@@ -18,6 +13,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapAttributeToFeatureTest {
     private val mapCoordinateFieldToFeature: MapCoordinateFieldToFeature = mock()
@@ -37,7 +37,7 @@ class MapAttributeToFeatureTest {
     @Test
     fun `Should return map of feature collections`() {
         whenever(
-            mapCoordinateFieldToFeature.map(any<CoordinateAttributeInfo>())
+            mapCoordinateFieldToFeature.map(any<CoordinateAttributeInfo>()),
         ) doReturnConsecutively mockedFeatures()
         val result = attributeMapper.mapAttribute(mockedAttributeInfoList())
         assertTrue(result.isNotEmpty())
@@ -59,19 +59,19 @@ class MapAttributeToFeatureTest {
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
                 TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
                 TrackedEntityAttribute.builder().uid("attr2Uid")
                     .displayFormName("attr2Name").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("tei2Uid").build(),
                 TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build()
-            )
+                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+            ),
         )
     }
 
@@ -80,36 +80,36 @@ class MapAttributeToFeatureTest {
             Feature.fromGeometry(
                 Point.fromLngLat(
                     MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE
-                )
+                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE,
+                ),
             ).also {
                 it.addStringProperty(
                     MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE
+                    MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE,
                 )
             },
             Feature.fromGeometry(
                 Point.fromLngLat(
                     MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE
-                )
+                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                ),
             ).also {
                 it.addStringProperty(
                     MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE
+                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
                 )
             },
             Feature.fromGeometry(
                 Point.fromLngLat(
                     MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE
-                )
+                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                ),
             ).also {
                 it.addStringProperty(
                     MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE
+                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
                 )
-            }
+            },
         )
     }
 }

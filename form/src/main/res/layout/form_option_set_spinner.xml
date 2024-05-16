@@ -62,6 +62,7 @@
                 android:text="@{item.formattedLabel}"
                 android:enabled="@{item.editable}"
                 app:options="@{item}"
+                app:anchorView="@{inputEditText}"
                 app:label_text_color="@{item.style}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/descriptionLabel"

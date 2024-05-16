@@ -1,15 +1,15 @@
 package org.dhis2.usescases.settingsprogram
 
 import io.reactivex.disposables.CompositeDisposable
-import java.util.Locale
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
 import timber.log.Timber
+import java.util.Locale
 
 class SettingsProgramPresenter(
     private val d2: D2,
     private val view: ProgramSettingsView,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
 ) {
 
     val disposable = CompositeDisposable()
@@ -22,11 +22,11 @@ class SettingsProgramPresenter(
                 .map { programSetting ->
                     val style = d2.programModule().programs()
                         .uid(programSetting.uid()).blockingGet()
-                        .style()
+                        ?.style()
                     ProgramSettingsViewModel(
                         programSetting,
-                        style.icon(),
-                        style.color()
+                        style?.icon(),
+                        style?.color(),
                     )
                 }
                 .toList()
@@ -40,8 +40,8 @@ class SettingsProgramPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { data -> view.setData(data) },
-                    { error -> Timber.e(error) }
-                )
+                    { error -> Timber.e(error) },
+                ),
         )
     }
 

@@ -327,6 +327,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         ObjectStyle objectStyle = d2.dataElementModule().dataElements().uid(uid).blockingGet().style();
 
+        String url = dataElement.url();
+
         return fieldFactory.create(uid,
                 formName == null ? displayName : formName,
                 ValueType.valueOf(valueTypeName),
@@ -342,7 +344,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 objectStyle,
                 dataElement.fieldMask(),
                 optionSetConfig,
-                null);
+                null,
+                null,
+                null,
+                url);
     }
 
     private String searchValueDataElement(String dataElement, List<TrackedEntityDataValue> dataValues) {

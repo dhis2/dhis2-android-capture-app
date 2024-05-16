@@ -1,8 +1,5 @@
 package org.dhis2.maps.usecases
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayer
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
@@ -10,6 +7,9 @@ import org.hisp.dhis.android.core.map.layer.MapLayerPosition
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class MapStyleConfigurationTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -26,8 +26,8 @@ class MapStyleConfigurationTest {
                 subDomainPlaceHolder = "{s}",
                 subdomains = listOf("a", "b"),
                 imaginaryProviders = listOf(
-                    mockImaginaryProvider("© Maplibre")
-                )
+                    mockImaginaryProvider("© Maplibre"),
+                ),
             ),
             mockMapLayer(
                 displayName = "basemap 2",
@@ -36,9 +36,9 @@ class MapStyleConfigurationTest {
                 subdomains = null,
                 imaginaryProviders = listOf(
                     mockImaginaryProvider("© Maplibre"),
-                    mockImaginaryProvider("© Carto")
-                )
-            )
+                    mockImaginaryProvider("© Carto"),
+                ),
+            ),
         )
 
         mapStyleConfiguration.fetchMapStyles().let { result ->
@@ -57,7 +57,7 @@ class MapStyleConfigurationTest {
         imageUrl: String,
         subDomainPlaceHolder: String?,
         subdomains: List<String>?,
-        imaginaryProviders: List<MapLayerImageryProvider>
+        imaginaryProviders: List<MapLayerImageryProvider>,
     ) = MapLayer.builder()
         .displayName(displayName)
         .imageUrl(imageUrl)
@@ -70,9 +70,7 @@ class MapStyleConfigurationTest {
         .external(false)
         .build()
 
-    private fun mockImaginaryProvider(
-        attribution: String
-    ) = MapLayerImageryProvider.builder()
+    private fun mockImaginaryProvider(attribution: String) = MapLayerImageryProvider.builder()
         .attribution(attribution)
         .mapLayer("mapLayerId")
         .build()

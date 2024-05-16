@@ -19,4 +19,11 @@ public interface DataSetDetailRepository {
     CategoryOptionCombo getCatOptCombo(String selectedCatOptionCombo);
 
     boolean dataSetHasAnalytics();
+
+    boolean dataSetIsEditable(
+            String datasetUid,
+            String periodId,
+            String organisationUnitUid,
+            String attributeOptionComboUid
+    );
 }

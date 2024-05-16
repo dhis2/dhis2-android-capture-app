@@ -10,11 +10,11 @@ interface PreferenceProvider {
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String)
 
+    fun updateServerURL(serverUrl: String)
+
     fun areCredentialsSet(): Boolean
     fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean
     fun saveJiraCredentials(jiraAuth: String): String
-    fun saveJiraUser(jiraUser: String)
-    fun closeJiraSession()
     fun clear()
     fun setValue(key: String, value: Any? = null)
     fun removeValue(key: String)

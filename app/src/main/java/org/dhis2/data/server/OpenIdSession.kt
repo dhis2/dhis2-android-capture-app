@@ -17,19 +17,19 @@ const val EMPTY_CALLBACK =
 
 class OpenIdSession(
     val d2: D2,
-    val schedulerProvider: SchedulerProvider
+    val schedulerProvider: SchedulerProvider,
 ) : LifecycleObserver {
     private val disposable = CompositeDisposable()
     private var sessionCallback: (LogOutReason) -> Unit = { Timber.log(1, EMPTY_CALLBACK) }
 
     enum class LogOutReason {
         OPEN_ID,
-        DISABLED_ACCOUNT
+        DISABLED_ACCOUNT,
     }
 
     fun setSessionCallback(
         lifecycleOwner: LifecycleOwner,
-        sessionCallback: (LogOutReason) -> Unit = {}
+        sessionCallback: (LogOutReason) -> Unit = {},
     ) {
         lifecycleOwner.lifecycle.addObserver(this)
         this.sessionCallback = sessionCallback
@@ -43,12 +43,12 @@ class OpenIdSession(
                     .map { LogOutReason.OPEN_ID },
                 d2.userModule().accountManager().accountDeletionObservable()
                     .filter { it == AccountDeletionReason.ACCOUNT_DISABLED }
-                    .map { LogOutReason.DISABLED_ACCOUNT }
+                    .map { LogOutReason.DISABLED_ACCOUNT },
             ).defaultSubscribe(
                 schedulerProvider,
                 { sessionCallback(it) },
-                { Timber.e(it) }
-            )
+                { Timber.e(it) },
+            ),
         )
     }
 

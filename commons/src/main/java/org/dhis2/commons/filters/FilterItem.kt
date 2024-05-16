@@ -24,7 +24,7 @@ sealed class FilterItem(
     open val programType: ProgramType,
     open val sortingItem: ObservableField<SortingItem>,
     open val openFilter: ObservableField<Filters>,
-    open val filterLabel: String
+    open val filterLabel: String,
 ) {
     @DrawableRes
     abstract fun icon(): Int
@@ -82,7 +82,7 @@ data class PeriodFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.PERIOD, programType, sortingItem, openFilter, filterLabel) {
 
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
@@ -112,7 +112,7 @@ data class EnrollmentDateFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.ENROLLMENT_DATE, programType, sortingItem, openFilter, filterLabel) {
     fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
         if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected.get()) {
@@ -141,7 +141,7 @@ data class EnrollmentStatusFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.ENROLLMENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
 
     fun setEnrollmentStatus(addEnrollment: Boolean, enrollmentStatus: EnrollmentStatus) {
@@ -162,7 +162,7 @@ data class OrgUnitFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) :
     FilterItem(Filters.ORG_UNIT, programType, sortingItem, openFilter, filterLabel) {
     override fun icon(): Int {
@@ -174,7 +174,7 @@ data class SyncStateFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.SYNC_STATE, programType, sortingItem, openFilter, filterLabel) {
 
     private val syncedCheck = ObservableBoolean(false)
@@ -192,27 +192,31 @@ data class SyncStateFilter(
             notSyncedCheck.set(
                 it.contains(State.TO_POST) ||
                     it.contains(State.TO_UPDATE) ||
-                    it.contains(State.UPLOADING)
+                    it.contains(State.UPLOADING),
             )
             errorCheck.set(
                 it.contains(State.ERROR) ||
-                    it.contains(State.WARNING)
+                    it.contains(State.WARNING),
             )
             smsCheck.set(
                 it.contains(State.SENT_VIA_SMS) ||
-                    it.contains(State.SYNCED_VIA_SMS)
+                    it.contains(State.SYNCED_VIA_SMS),
             )
         }
         return when (state) {
             State.TO_POST,
             State.TO_UPDATE,
-            State.UPLOADING -> notSyncedCheck
+            State.UPLOADING,
+            -> notSyncedCheck
             State.RELATIONSHIP,
-            State.SYNCED -> syncedCheck
+            State.SYNCED,
+            -> syncedCheck
             State.ERROR,
-            State.WARNING -> errorCheck
+            State.WARNING,
+            -> errorCheck
             State.SENT_VIA_SMS,
-            State.SYNCED_VIA_SMS -> smsCheck
+            State.SYNCED_VIA_SMS,
+            -> smsCheck
         }
     }
 
@@ -227,7 +231,7 @@ data class CatOptionComboFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.CAT_OPT_COMB, programType, sortingItem, openFilter, filterLabel) {
     fun showSpinner(): Boolean {
         return catOptionCombos.size < 15
@@ -250,7 +254,7 @@ data class EventStatusFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) :
     FilterItem(Filters.EVENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
     fun setEventStatus(addStatus: Boolean, vararg eventStatus: EventStatus) {
@@ -270,7 +274,7 @@ data class AssignedFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.ASSIGNED_TO_ME, programType, sortingItem, openFilter, filterLabel) {
     fun activate(setActive: Boolean) {
         if (!FilterManager.getInstance().isFilterActiveForWorkingList(Filters.ASSIGNED_TO_ME)) {
@@ -292,12 +296,12 @@ data class WorkingListFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.WORKING_LIST, programType, sortingItem, openFilter, filterLabel) {
     fun onChecked(checkedId: Int) {
         openFilter.set(null)
         workingLists.forEach {
-            if (it.id() == checkedId && !it.isSelected()) {
+            if (it.id() == checkedId) {
                 it.select()
             } else {
                 it.deselect()
@@ -322,7 +326,7 @@ data class FollowUpFilter(
     override val programType: ProgramType,
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
-    override val filterLabel: String
+    override val filterLabel: String,
 ) : FilterItem(Filters.FOLLOW_UP, programType, sortingItem, openFilter, filterLabel) {
     fun activate(setActive: Boolean) {
         FilterManager.getInstance().setFollowUp(setActive)

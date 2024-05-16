@@ -1,13 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 class ConfigureEventCompletionDialogTest {
 
@@ -54,14 +54,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, NOT_SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, ERROR_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, ERROR_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 0)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 3)
+        assertEquals(resultDialog.fieldsWithIssues.size, 3)
     }
 
     @Test
@@ -76,14 +77,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = mandatoryFields,
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, MANDATORY_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, MANDATORY_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 2)
+        assertEquals(resultDialog.fieldsWithIssues.size, 2)
     }
 
     @Test
@@ -97,14 +99,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = warningFields,
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, WARNING_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, WARNING_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 1)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     @Test
@@ -116,14 +119,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = true,
-            onCompleteMessage = null
+            onCompleteMessage = null,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 0)
+        assertEquals(resultDialog.fieldsWithIssues.size, 0)
     }
 
     @Test
@@ -135,14 +139,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = true,
-            onCompleteMessage = WARNING_MESSAGE
+            onCompleteMessage = WARNING_MESSAGE,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 2)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     @Test
@@ -154,14 +159,15 @@ class ConfigureEventCompletionDialogTest {
             mandatoryFields = emptyMap(),
             warningFields = emptyList(),
             canComplete = false,
-            onCompleteMessage = ERROR_INFO
+            onCompleteMessage = ERROR_INFO,
+            canSkipErrorFix = true,
         )
 
         // Then Dialog should has Error info
         assertEquals(resultDialog.bottomSheetDialogUiModel.title, SAVED)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.subtitle, ON_COMPLETE_INFO)
+        assertEquals(resultDialog.bottomSheetDialogUiModel.message, ON_COMPLETE_INFO)
         assertEquals(resultDialog.bottomSheetDialogUiModel.iconResource, 0)
-        assertEquals(resultDialog.bottomSheetDialogUiModel.fieldsWithIssues.size, 1)
+        assertEquals(resultDialog.fieldsWithIssues.size, 1)
     }
 
     companion object {

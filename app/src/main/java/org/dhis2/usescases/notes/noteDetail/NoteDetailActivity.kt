@@ -7,18 +7,18 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableBoolean
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import javax.inject.Inject
-import org.dhis2.Bindings.app
-import org.dhis2.Bindings.initials
-import org.dhis2.Bindings.placeHolder
-import org.dhis2.Bindings.toDateSpan
 import org.dhis2.R
+import org.dhis2.bindings.app
+import org.dhis2.bindings.initials
+import org.dhis2.bindings.placeHolder
+import org.dhis2.bindings.toDateSpan
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
+import javax.inject.Inject
 
 class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {
 
@@ -99,6 +99,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         back()
     }

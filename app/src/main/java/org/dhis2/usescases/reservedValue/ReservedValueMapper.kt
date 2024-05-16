@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.trackedentity.ReservedValueSummary
 
 class ReservedValueMapper(
     private val refillProcessor: FlowableProcessor<String>,
-    private val leftValueLabel: String
+    private val leftValueLabel: String,
 ) {
     fun map(reservedValueSummaries: List<ReservedValueSummary>): List<ReservedValueModel> {
         return reservedValueSummaries.map {
@@ -16,7 +16,7 @@ class ReservedValueMapper(
                 it.organisationUnit()?.displayName(),
                 it.count(),
                 leftValueLabel,
-                refillProcessor
+                refillProcessor,
             )
         }
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Selecteer een locatie</string>
+    <string name="map_layers">Kaartlagen</string>
+    <string name="dialog_layer_base_map_osm_light">OSM Light</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Detailed</string>
+    <string name="dialog_layer_base_map_bing_road">Bing Road</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing Dark</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing Aerial</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Bing Aerial Labels</string>
+    <string name="action_apply">Toepassen</string>
+    <string name="dialog_layer_satellite">Satellietweergave tonen</string>
+    <string name="dialog_layer_event">Toon evenementen</string>
+    <string name="dialog_layer_tei_coordinates">Toon tei-coördinaten</string>
+    <string name="dialog_layer_enrollment_coordinates">Toon inschrijvingscoördinaten</string>
+    <string name="dialog_layer_heatmap">Warmtebeeld weergeven</string>
+</resources>

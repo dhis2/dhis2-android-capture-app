@@ -19,7 +19,7 @@ class SyncPresenter internal constructor(
     private val userManager: UserManager?,
     private val schedulerProvider: SchedulerProvider,
     private val workManagerController: WorkManagerController,
-    private val preferences: PreferenceProvider
+    private val preferences: PreferenceProvider,
 ) {
     private val disposable = CompositeDisposable()
 
@@ -68,8 +68,8 @@ class SyncPresenter internal constructor(
                         },
                         { t: Throwable? ->
                             Timber.e(t)
-                        }
-                    )
+                        },
+                    ),
             )
         }
     }
@@ -81,10 +81,10 @@ class SyncPresenter internal constructor(
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
-                        { view.goToLogin() }
+                        { view.goToLogin() },
                     ) { t: Throwable? ->
                         Timber.e(t)
-                    }
+                    },
             )
         }
     }

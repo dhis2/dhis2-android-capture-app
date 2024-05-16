@@ -58,5 +58,4 @@
     <string name="no_reserved_values">Saqlangan boshqa qiymatlar yoʼq. Tizim administratoriga murojaat qiling.</string>
     <string name="enrollmment_date">Qayd qilingan sana</string>
     <string name="incident_date">Hodisa sanasi</string>
-
-</resources>
+    </resources>

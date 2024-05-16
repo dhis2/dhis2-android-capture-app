@@ -1,9 +1,5 @@
 package org.dhis2.utils.category
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -13,6 +9,10 @@ import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class CategoryDialogPresenterTest {
     lateinit var presenter: CategoryDialogPresenter
@@ -33,14 +33,14 @@ class CategoryDialogPresenterTest {
             null,
             catOptMapper,
             catOptCombMapper,
-            schedulerProvider
+            schedulerProvider,
         )
 
         whenever(d2.categoryModule().categories().uid("uid").get()) doReturn Single.just(
             Category.builder()
                 .uid("uid")
                 .displayName("name")
-                .build()
+                .build(),
         )
 
         whenever(view.searchSource()) doReturn Observable.just("test")
@@ -60,16 +60,16 @@ class CategoryDialogPresenterTest {
             null,
             catOptMapper,
             catOptCombMapper,
-            schedulerProvider
+            schedulerProvider,
         )
 
         whenever(
-            d2.categoryModule().categoryCombos().uid("uid").get()
+            d2.categoryModule().categoryCombos().uid("uid").get(),
         ) doReturn Single.just(
             CategoryCombo.builder()
                 .uid("uid")
                 .displayName("name")
-                .build()
+                .build(),
         )
 
         whenever(view.searchSource()) doReturn Observable.just("test")

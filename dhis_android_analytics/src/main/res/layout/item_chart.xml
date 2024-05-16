@@ -59,11 +59,23 @@
                 android:onClick="@{(view)->chartModel.showFilters(view)}"
                 app:filter_visualization="@{chartModel}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+                app:layout_constraintEnd_toStartOf="@id/resetDimensions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_visualization_filter"
                 app:tint="?colorPrimary" />
 
+            <ImageButton
+                android:id="@+id/resetDimensions"
+                style="@style/ActionIconNoPadding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/chart_title"
+                app:layout_constraintEnd_toStartOf="@id/chartVisualizationButton"
+                app:layout_constraintTop_toTopOf="@id/chart_title"
+                app:srcCompat="@drawable/ic_restart_alt"
+                app:tint="@color/text_black_333"
+                android:visibility="gone"/>
 
             <ImageButton
                 android:id="@+id/chartVisualizationButton"
@@ -94,6 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleContainer" />

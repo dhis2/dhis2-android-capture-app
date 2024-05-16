@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ListError">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/error</item>
+    </style>
+
+    <style name="ListNormal">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/gray_400</item>
+    </style>
+
+    <style name="InfoBoxTextStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="SignInHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/label_text_color</item>
+    </style>
+
+    <style name="TextLabel">
+        <item name="android:textColor">@color/label_text_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingBottom">@dimen/dp_8</item>
+    </style>
+
+    <style name="SplashScreenLabel">
+        <item name="android:textSize">@dimen/splash_screen_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

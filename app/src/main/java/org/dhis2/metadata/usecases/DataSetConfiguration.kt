@@ -6,9 +6,9 @@ class DataSetConfiguration(private val d2: D2) {
 
     fun getDataSet(dataSetUid: String) = d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet()
 
-    fun getDataSetStyle(programUid: String) = getDataSet(programUid).style()
+    fun getDataSetStyle(programUid: String) = getDataSet(programUid)?.style()
 
-    fun getDataSetIcon(programUid: String) = getDataSetStyle(programUid).icon()
+    fun getDataSetIcon(programUid: String) = getDataSetStyle(programUid)?.icon()
 
-    fun getDataSetColor(programUid: String) = getDataSetStyle(programUid).color()
+    fun getDataSetColor(programUid: String) = getDataSetStyle(programUid)?.color()
 }

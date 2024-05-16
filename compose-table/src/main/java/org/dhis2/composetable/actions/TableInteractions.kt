@@ -8,6 +8,5 @@ interface TableInteractions {
     fun onSelectionChange(newTableSelection: TableSelection) = run { }
     fun onDecorationClick(dialogModel: TableDialogModel) = run { }
     fun onClick(tableCell: TableCell) = run { }
-    fun onRowHeaderSizeChanged(widthDpValue: Float) = run { }
     fun onOptionSelected(cell: TableCell, code: String, label: String) = run { }
 }

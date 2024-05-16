@@ -19,7 +19,7 @@ class AppMenuHelper private constructor(
     private val anchor: View,
     private val onMenuInflated: (PopupMenu) -> Unit,
     private val onMenuItemClicked: (Int) -> Boolean,
-    private val onException: ((Exception) -> Unit)? = {}
+    private val onException: ((Exception) -> Unit)? = {},
 ) {
 
     lateinit var popupMenu: PopupMenu
@@ -41,7 +41,7 @@ class AppMenuHelper private constructor(
                         Class.forName(menuPopupHelper.javaClass.name)
                     val setForceIcons = classPopupHelper.getMethod(
                         "setForceShowIcon",
-                        Boolean::class.javaPrimitiveType
+                        Boolean::class.javaPrimitiveType,
                     )
                     setForceIcons.invoke(menuPopupHelper, true)
                     break
@@ -87,7 +87,7 @@ class AppMenuHelper private constructor(
         var menu: Int = -1,
         var anchor: View? = null,
         var onMenuInflated: (PopupMenu) -> Unit = {},
-        var onMenuItemClicked: (Int) -> Boolean = { true }
+        var onMenuItemClicked: (Int) -> Boolean = { true },
     ) {
 
         fun menu(context: Context, @MenuRes menu: Int) = apply {
@@ -99,15 +99,11 @@ class AppMenuHelper private constructor(
             this.anchor = view
         }
 
-        fun onMenuInflated(
-            onMenuInflated: (PopupMenu) -> Unit
-        ) = apply {
+        fun onMenuInflated(onMenuInflated: (PopupMenu) -> Unit) = apply {
             this.onMenuInflated = onMenuInflated
         }
 
-        fun onMenuItemClicked(
-            onMenuItemClicked: (Int) -> Boolean
-        ) = apply {
+        fun onMenuItemClicked(onMenuItemClicked: (Int) -> Boolean) = apply {
             this.onMenuItemClicked = onMenuItemClicked
         }
 
@@ -116,7 +112,7 @@ class AppMenuHelper private constructor(
             menu,
             anchor!!,
             onMenuInflated,
-            onMenuItemClicked
+            onMenuItemClicked,
         )
     }
 }

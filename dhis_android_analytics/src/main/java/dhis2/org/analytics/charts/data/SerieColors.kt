@@ -42,14 +42,14 @@ class SerieColors {
             Color.parseColor("#1DE9B6"),
             Color.parseColor("#76FF03"),
             Color.parseColor("#FFEA00"),
-            Color.parseColor("#FF9100")
+            Color.parseColor("#FF9100"),
         )
 
         fun getSerieColor(colorIndex: Int, higlight: Boolean): Int {
             return if (higlight) {
                 getColors()[colorIndex]
             } else {
-                ColorUtils.withAlpha(getColors()[colorIndex], ColorUtils.ALPHA_20_PERCENT)
+                ColorUtils().withAlpha(getColors()[colorIndex], ColorUtils.ALPHA_20_PERCENT)
             }
         }
     }

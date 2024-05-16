@@ -96,6 +96,7 @@ class ProgramUiTest {
             state = State.SYNCED,
             hasOverdueEvent = true,
             false,
-            downloadState = ProgramDownloadState.NONE
+            downloadState = ProgramDownloadState.NONE,
+            stockConfig = null
         )
 }

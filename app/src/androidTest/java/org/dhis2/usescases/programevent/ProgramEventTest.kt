@@ -11,7 +11,6 @@ import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,7 +30,6 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Nondeterministic")
     fun shouldCreateNewEventAndCompleteIt() {
         val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity(atenatalCare)
@@ -124,7 +122,7 @@ class ProgramEventTest : BaseTest() {
         }
         eventRobot {
             clickOnDetails()
-            checkEventDetails(eventDate, eventOrgUnit)
+            checkEventDetails(eventDate, eventOrgUnit, composeTestRule)
         }
     }
 

@@ -14,22 +14,22 @@ class TableHeaderTest {
                 cells = listOf(
                     TableHeaderCell(value = "<18"),
                     TableHeaderCell(value = ">18 <65"),
-                    TableHeaderCell(value = ">65")
-                )
+                    TableHeaderCell(value = ">65"),
+                ),
             ),
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell(value = "Male"),
-                    TableHeaderCell(value = "Female")
-                )
+                    TableHeaderCell(value = "Female"),
+                ),
             ),
             TableHeaderRow(
                 cells = listOf(
                     TableHeaderCell(value = "Fixed"),
-                    TableHeaderCell(value = "Outreach")
-                )
-            )
-        )
+                    TableHeaderCell(value = "Outreach"),
+                ),
+            ),
+        ),
     )
 
     @Test

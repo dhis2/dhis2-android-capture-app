@@ -16,7 +16,7 @@ import org.dhis2.maps.layer.withTEIMarkerProperties
 
 class FieldMapLayer(
     var style: Style,
-    val sourceId: String
+    val sourceId: String,
 ) : MapLayer {
 
     private var POINT_LAYER_ID: String = "DE_POINT_LAYER_ID_$sourceId"
@@ -76,14 +76,14 @@ class FieldMapLayer(
 
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1.5f),
-            PropertyFactory.visibility(Property.VISIBLE)
+            PropertyFactory.visibility(Property.VISIBLE),
         )
     }
 
     private fun deselectCurrentPoint() {
         selectedPointLayer.setProperties(
             PropertyFactory.iconSize(1f),
-            PropertyFactory.visibility(Property.NONE)
+            PropertyFactory.visibility(Property.NONE),
         )
     }
 
@@ -100,7 +100,7 @@ class FieldMapLayer(
 
     override fun layerIdsToSearch(): Array<String> {
         return arrayOf(
-            POINT_LAYER_ID
+            POINT_LAYER_ID,
         )
     }
 }
