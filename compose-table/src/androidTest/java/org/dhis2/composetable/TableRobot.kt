@@ -1,12 +1,14 @@
 package org.dhis2.composetable
 
-import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
@@ -23,7 +25,11 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.pressBack
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import java.io.IOException
 import org.dhis2.composetable.actions.TableInteractions
+import org.dhis2.composetable.actions.TableResizeActions
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
 import org.dhis2.composetable.model.FakeTableModels
@@ -31,34 +37,38 @@ import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.ui.CELL_ERROR_UNDERLINE_TEST_TAG
-import org.dhis2.composetable.ui.CELL_TEST_TAG
-import org.dhis2.composetable.ui.CELL_VALUE_TEST_TAG
-import org.dhis2.composetable.ui.CellSelected
-import org.dhis2.composetable.ui.ColumnBackground
-import org.dhis2.composetable.ui.ColumnIndexHeader
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
-import org.dhis2.composetable.ui.HEADER_CELL
-import org.dhis2.composetable.ui.HasError
-import org.dhis2.composetable.ui.INFO_ICON
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_ICON_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_TEST_TAG
-import org.dhis2.composetable.ui.InfoIconId
-import org.dhis2.composetable.ui.IsBlocked
-import org.dhis2.composetable.ui.MANDATORY_ICON_TEST_TAG
+import org.dhis2.composetable.ui.LocalTableSelection
 import org.dhis2.composetable.ui.MainLabel
-import org.dhis2.composetable.ui.RowBackground
-import org.dhis2.composetable.ui.RowIndex
-import org.dhis2.composetable.ui.RowIndexHeader
 import org.dhis2.composetable.ui.SecondaryLabels
 import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableId
-import org.dhis2.composetable.ui.TableIdColumnHeader
+import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableSelection
+import org.dhis2.composetable.ui.TableTheme
+import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.dhis2.composetable.ui.semantics.CELL_ERROR_UNDERLINE_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CELL_VALUE_TEST_TAG
+import org.dhis2.composetable.ui.semantics.CellSelected
+import org.dhis2.composetable.ui.semantics.ColumnBackground
+import org.dhis2.composetable.ui.semantics.ColumnIndexHeader
+import org.dhis2.composetable.ui.semantics.HEADER_CELL
+import org.dhis2.composetable.ui.semantics.HasError
+import org.dhis2.composetable.ui.semantics.INFO_ICON
+import org.dhis2.composetable.ui.semantics.InfoIconId
+import org.dhis2.composetable.ui.semantics.IsBlocked
+import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
+import org.dhis2.composetable.ui.semantics.RowBackground
+import org.dhis2.composetable.ui.semantics.RowIndex
+import org.dhis2.composetable.ui.semantics.RowIndexHeader
+import org.dhis2.composetable.ui.semantics.TableId
+import org.dhis2.composetable.ui.semantics.TableIdColumnHeader
 import org.dhis2.composetable.utils.KeyboardHelper
 import org.junit.Assert
 
@@ -79,91 +89,112 @@ class TableRobot(
     val keyboardHelper = KeyboardHelper(composeTestRule, timeout = 3000L)
 
     fun initTable(
-        context: Context,
         fakeModelType: FakeModelType,
         tableColors: TableColors = TableColors(),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
-        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
+        var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
+            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
             var tableSelection by remember {
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
-
-            DataTable(
-                tableList = fakeModel,
-                tableColors = tableColors,
-                tableSelection = tableSelection,
-                tableInteractions = object : TableInteractions {
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = TableConfiguration(headerActionsEnabled = false),
+                tableResizeActions = object : TableResizeActions {}
+            ) {
+                val iteractions = object : TableInteractions {
                     override fun onSelectionChange(newTableSelection: TableSelection) {
                         tableSelection = newTableSelection
                     }
                 }
-            )
+                CompositionLocalProvider(
+                    LocalTableSelection provides tableSelection,
+                    LocalInteraction provides iteractions
+                ) {
+                    DataTable(
+                        tableList = fakeModel
+                    )
+                }
+            }
         }
         return fakeModel
     }
 
     fun initTableAppScreen(
-        context: Context,
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),
+        tableConfiguration: TableConfiguration = TableConfiguration(headerActionsEnabled = true),
         onSave: (TableCell) -> Unit = {}
     ): List<TableModel> {
-        val fakeModel = FakeTableModels(context).getMultiHeaderTables(fakeModelType)
-        val screenState = TableScreenState(fakeModel, false)
+        var fakeModel: List<TableModel> = emptyList()
         composeTestRule.setContent {
+            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
+            val screenState = TableScreenState(fakeModel)
+
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
-            DataSetTableScreen(
-                tableScreenState = model,
-                onCellClick = { tableId, cell, _ ->
-                    if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
-                        TextInputModel(
-                            id = cell.id ?: "",
-                            mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
-                                cell.id?.contains(it.rowHeader.id!!) == true
-                            }?.rowHeader?.title ?: "",
-                            secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
-                                it.cells[cell.column!! % it.cells.size].value
-                            } ?: emptyList(),
-                            currentValue = cell.value,
-                            keyboardInputType = KeyboardInputType.TextInput(),
-                            error = null
-                        )
-                    } else {
-                        null
-                    }
-                },
-                onEdition = {},
-                onCellValueChange = { tableCell ->
-                    val updatedData = fakeModel.map { tableModel ->
-                        val hasRowWithDataElement = tableModel.tableRows.find {
-                            tableCell.id?.contains(it.rowHeader.id.toString()) == true
-                        }
-                        if (hasRowWithDataElement != null) {
-                            tableModel.copy(
-                                overwrittenValues = mapOf(
-                                    Pair(tableCell.column!!, tableCell)
-                                )
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = tableConfiguration,
+                tableResizeActions = object : TableResizeActions {}
+            ) {
+                DataSetTableScreen(
+                    tableScreenState = model,
+                    onCellClick = { tableId, cell, _ ->
+                        if (tableAppScreenOptions.requiresTextInput(tableId, cell.row!!)) {
+                            TextInputModel(
+                                id = cell.id ?: "",
+                                mainLabel = fakeModel.find { it.id == tableId }?.tableRows?.find {
+                                    cell.id?.contains(it.rowHeader.id!!) == true
+                                }?.rowHeader?.title ?: "",
+                                secondaryLabels = fakeModel.find { it.id == tableId }?.tableHeaderModel?.rows?.map {
+                                    it.cells[cell.column!! % it.cells.size].value
+                                } ?: emptyList(),
+                                currentValue = cell.value,
+                                keyboardInputType = KeyboardInputType.TextInput(),
+                                error = null
                             )
                         } else {
-                            tableModel
+                            null
                         }
+                    },
+                    onEdition = {},
+                    onSaveValue = { tableCell ->
+                        onSaveTableCell = tableCell
+                        onSave(tableCell)
+                        val updatedData = updateValue(fakeModel, tableCell)
+                        model = TableScreenState(updatedData)
                     }
-                    model = TableScreenState(updatedData, false)
-                },
-                onSaveValue = { tableCell, selectNext ->
-                    onSaveTableCell = tableCell
-                    onSave(tableCell)
-                    model = TableScreenState(fakeModel, selectNext)
-                }
-            )
+                )
+            }
         }
         return fakeModel
     }
 
-    fun assertClickOnCellShouldOpenInputComponent(tableId: String,rowIndex: Int, columnIndex: Int) {
+    private fun updateValue(fakeModel: List<TableModel>, tableCell: TableCell): List<TableModel> {
+        return fakeModel.map { tableModel ->
+            val hasRowWithDataElement = tableModel.tableRows.find {
+                tableCell.id?.contains(it.rowHeader.id.toString()) == true
+            }
+            if (hasRowWithDataElement != null) {
+                tableModel.copy(
+                    overwrittenValues = mapOf(
+                        Pair(tableCell.column!!, tableCell)
+                    )
+                )
+            } else {
+                tableModel
+            }
+        }
+    }
+
+    fun assertClickOnCellShouldOpenInputComponent(
+        tableId: String,
+        rowIndex: Int,
+        columnIndex: Int
+    ) {
         clickOnCell(tableId, rowIndex, columnIndex)
         composeTestRule.waitForIdle()
         assertInputComponentIsDisplayed()
@@ -172,7 +203,15 @@ class TableRobot(
     fun assertClickOnEditOpensInputKeyboard() {
         clickOnEditionIcon()
         composeTestRule.waitForIdle()
-        assertKeyBoardVisibility(true)
+        val checkKeyboardCmd = "dumpsys input_method | grep mInputShown"
+        try {
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val keyboardOpened = device.executeShellCommand(checkKeyboardCmd)
+                .contains("mInputShown=true")
+            Assert.assertTrue(keyboardOpened)
+        } catch (e: IOException) {
+            throw RuntimeException("Keyboard check failed", e)
+        }
         assertInputIcon(R.drawable.ic_finish_edit_input)
     }
 
@@ -227,7 +266,6 @@ class TableRobot(
     fun clickOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
             .performScrollTo()
-        composeTestRule.onNodeWithTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex", true)
             .performClick()
     }
 
@@ -278,13 +316,19 @@ class TableRobot(
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
     }
 
+    fun clickOnBack() {
+        pressBack()
+    }
+
     fun assertInputComponentIsDisplayed() {
         composeTestRule.onNodeWithTag(INPUT_TEST_TAG).assertIsDisplayed()
     }
 
     fun assertInputIcon(@DrawableRes id: Int) {
-        composeTestRule.onNode(SemanticsMatcher.expectValue(DrawableId, id), true)
-            .assertIsDisplayed()
+        composeTestRule.waitUntil(5_000) {
+            composeTestRule.onAllNodes(SemanticsMatcher.expectValue(DrawableId, id), true)
+                .fetchSemanticsNodes().size == 1
+        }
     }
 
     fun assertIconIsVisible(@DrawableRes id: Int) {
@@ -338,7 +382,9 @@ class TableRobot(
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex"), true
-        ).assertIsDisplayed()
+        )
+            .performScrollTo()
+            .assertIsDisplayed()
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
                     and
@@ -399,6 +445,6 @@ class TableRobot(
     }
 
     fun hideKeyboard() {
-        keyboardHelper.hideKeyboardIfShown()
+        keyboardHelper.hideKeyboard()
     }
 }

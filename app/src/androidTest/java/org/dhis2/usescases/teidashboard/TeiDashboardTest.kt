@@ -7,7 +7,6 @@ import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -17,7 +16,6 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,9 +31,7 @@ class TeiDashboardTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-
     @Test
-    @Ignore("SDK related")
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
         setupCredentials()
 
@@ -93,7 +89,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
-            checkUnlockIconIsDisplay()
             checkAllEventsCompleted(1)
         }
     }
@@ -107,7 +102,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuDeactivate()
-            checkLockIconIsDisplay()
+            checkCancelledStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreInactive(1)
         }
@@ -122,13 +117,12 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnMenuMoreOptions()
             clickOnMenuComplete()
-            checkLockCompleteIconIsDisplay()
+            checkCompleteStateInfoBarIsDisplay(composeTestRule)
             checkCanNotAddEvent()
             checkAllEventsAreClosed(1)
         }
     }
 
-    @Ignore("Some QRs are not being generated")
     @Test
     fun shouldShowQRWhenClickOnShare() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -150,15 +144,16 @@ class TeiDashboardTest : BaseTest() {
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
-            clickOnReferralOption()
+            clickOnReferralOption(
+                composeTestRule,
+                context.getString(R.string.one_time)
+            )
             clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
             checkEventWasCreated(LAB_MONITORING)
         }
     }
 
     @Test
-    @Ignore("Nondeterministic")
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
@@ -169,8 +164,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnScheduleNew()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
-            checkEventCreatedToastIsShown()
-            checkEventWasCreated(LAB_MONITORING)
+            checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
         }
     }
 
@@ -228,7 +222,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky")
     @Test
     fun shouldShowIndicatorsDetailsWhenClickOnIndicatorsTab() {
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -243,7 +236,6 @@ class TeiDashboardTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Nondeterministic")
     fun shouldSuccessfullyCreateANewEvent() {
         prepareTeiToCreateANewEventAndLaunchActivity(rule)
 
@@ -337,52 +329,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Test
-    @Ignore
-    fun shouldDeleteTeiSuccessfully() {
-        val teiName = "Anthony"
-        val teiLastName = "Banks"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteTEI()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
-
-    @Test
-    @Ignore
-    fun shouldDeleteEnrollmentSuccessfully() {
-        val teiName = "Anna"
-        val teiLastName = "Jones"
-
-        setupCredentials()
-        prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
-
-        searchTeiRobot {
-            //     waitToDebounce(400)
-            clickOnTEI(teiName, teiLastName)
-        }
-
-        teiDashboardRobot {
-            clickOnMenuMoreOptions()
-            clickOnMenuDeleteEnrollment()
-        }
-
-        searchTeiRobot {
-            checkTEIsDelete(teiName, teiLastName)
-        }
-    }
 
     @Test
     fun shouldShowAnalytics() {
@@ -429,6 +375,7 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
+        const val LAB_MONITORING_SCHEDULE_DATE = "10/9/2019"
 
         const val API_TEI_1_RESPONSE_OK = "mocks/teilist/teilist_1.json"
         const val API_TEI_2_RESPONSE_OK = "mocks/teilist/teilist_2.json"

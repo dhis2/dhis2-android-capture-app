@@ -1,7 +1,5 @@
 package org.dhis2.utils.customviews
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -10,6 +8,8 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 
 class CategoryComboDIalogPresenterTest {
 
@@ -26,8 +26,8 @@ class CategoryComboDIalogPresenterTest {
         whenever(
             d2.categoryModule().categoryOptionCombos()
                 .byCategoryOptions(
-                    UidsHelper.getUidsList(getTestingOptions())
-                ).one().blockingGet()
+                    UidsHelper.getUidsList(getTestingOptions()),
+                ).one().blockingGet(),
         ) doReturn getTestingCatOptCombo()
 
         val actualCatOptCombo = presenter.getCatOptionCombo(getTestingOptions())
@@ -39,7 +39,7 @@ class CategoryComboDIalogPresenterTest {
         return CategoryOptionCombo.builder()
             .uid("categoryOptionComboUid")
             .categoryOptions(
-                getTestingOptions()
+                getTestingOptions(),
             )
             .build()
     }
@@ -47,7 +47,7 @@ class CategoryComboDIalogPresenterTest {
     private fun getTestingOptions(): List<CategoryOption> {
         return arrayListOf(
             CategoryOption.builder().uid("option1").name("option1").code("option1").build(),
-            CategoryOption.builder().uid("option2").name("option2").code("option2").build()
+            CategoryOption.builder().uid("option2").name("option2").code("option2").build(),
         )
     }
 }

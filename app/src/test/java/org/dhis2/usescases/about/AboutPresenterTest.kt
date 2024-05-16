@@ -1,22 +1,21 @@
 package org.dhis2.usescases.about
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.UUID
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.user.UserRepository
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
-import org.hisp.dhis.android.core.user.UserCredentials
+import org.hisp.dhis.android.core.user.User
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.UUID
 
 class AboutPresenterTest {
 
@@ -32,25 +31,24 @@ class AboutPresenterTest {
             aboutView,
             d2,
             providesPresenterFactory,
-            userRepository
+            userRepository,
         )
     }
 
     @Test
     fun `Should print user credentials in view`() {
-        val userCredentials = UserCredentials.builder()
+        val user = User.builder()
             .uid(UUID.randomUUID().toString())
-            .user(ObjectWithUid.create(UUID.randomUUID().toString()))
             .id(6654654)
             .username("demo@demo.es")
             .build()
-        whenever(userRepository.credentials()) doReturn Flowable.just(userCredentials)
+        whenever(userRepository.credentials()) doReturn Flowable.just(user)
         val userName = SystemInfo.builder()
             .contextPath("https://url.es").build()
         whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
 
         aboutPresenter.init()
-        verify(aboutView).renderUserCredentials(userCredentials)
+        verify(aboutView).renderUserCredentials(user)
         verify(aboutView).renderServerUrl(userName.contextPath())
     }
 

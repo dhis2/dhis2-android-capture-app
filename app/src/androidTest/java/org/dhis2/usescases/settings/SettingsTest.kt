@@ -99,6 +99,7 @@ class SettingsTest : BaseTest() {
         }
     }
 
+    @Ignore("Adding composeTestRule makes all tests in this file not execute")
     @Test
     fun shouldSuccessfullyDeleteLocalData() {
         startActivity()
@@ -117,8 +118,8 @@ class SettingsTest : BaseTest() {
         cleanLocalDatabase()
     }
 
-   @Test
-   @Ignore("SDK related")
+    @Ignore("SDK related")
+    @Test
     fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
         preferencesRobot.saveValueToSDKPreferences(KEY_GATEWAY, GATEWAY_NUMER)
         startActivity()

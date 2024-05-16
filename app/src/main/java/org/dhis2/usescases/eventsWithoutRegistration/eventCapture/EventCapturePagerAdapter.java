@@ -19,6 +19,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.Indicators
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
 import org.dhis2.commons.Constants;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,12 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
     private final List<EventPageType> pages;
     private EventCaptureFormFragment formFragment;
 
+    private final boolean shouldOpenErrorSection;
+
+    public boolean isFormScreenShown(@Nullable Integer currentItem) {
+        return currentItem!=null && pages.get(currentItem) == EventPageType.DATA_ENTRY;
+    }
+
     private enum EventPageType {
         DETAILS, DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
     }
@@ -41,12 +48,13 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                                     String eventUid,
                                     boolean displayAnalyticScreen,
                                     boolean displayRelationshipScreen,
+                                    boolean openErrorSection,
                                     boolean displayNotes
-
     ) {
         super(fragmentActivity);
         this.programUid = programUid;
         this.eventUid = eventUid;
+        this.shouldOpenErrorSection = openErrorSection;
         pages = new ArrayList<>();
         pages.add(EventPageType.DETAILS);
         pages.add(EventPageType.DATA_ENTRY);
@@ -98,7 +106,7 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
                 });
                 return eventDetailsFragment;
             case DATA_ENTRY:
-                formFragment = EventCaptureFormFragment.newInstance(eventUid);
+                formFragment = EventCaptureFormFragment.newInstance(eventUid, shouldOpenErrorSection);
                 return formFragment;
             case ANALYTICS:
                 Fragment indicatorFragment = new IndicatorsFragment();

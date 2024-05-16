@@ -23,7 +23,7 @@ class GraphToValue {
             orientation = LinearLayout.VERTICAL
             layoutParams = ViewGroup.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             )
             val series = if (graph.chartType == ChartType.NUTRITION) {
                 listOf(graph.series.last())
@@ -42,10 +42,10 @@ class GraphToValue {
                             singleValueLegend.setBackgroundColor(coordinate?.legendValue.color)
                         } else {
                             singleValueLegend.setBackgroundColor(
-                                (ContextCompat.getColor(context, R.color.gray_e7e))
+                                (ContextCompat.getColor(context, R.color.gray_e7e)),
                             )
                         }
-                    }.root
+                    }.root,
                 )
             }
         }

@@ -19,7 +19,7 @@ class EventFilterToWorkingListItemMapperTest {
     @Before
     fun setUp() {
         mapper = EventFilterToWorkingListItemMapper(
-            "defaultLabel"
+            "defaultLabel",
         )
     }
 
@@ -36,13 +36,13 @@ class EventFilterToWorkingListItemMapperTest {
                             DateFilterPeriod.builder()
                                 .type(DatePeriodType.RELATIVE)
                                 .period(RelativePeriod.LAST_3_DAYS)
-                                .build()
+                                .build(),
                         )
                         .eventStatus(EventStatus.ACTIVE)
                         .organisationUnit("orgUnitUid")
-                        .build()
+                        .build(),
                 )
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "filterUid")
@@ -54,7 +54,7 @@ class EventFilterToWorkingListItemMapperTest {
         val result = mapper.map(
             EventFilter.builder()
                 .uid("filterUid")
-                .build()
+                .build(),
         )
 
         assertTrue(result.uid == "filterUid")

@@ -331,15 +331,8 @@ class GetFeedback(
     private fun getEnrollmentEvents(): List<EventViewModel> {
         return teiDataRepository.getTEIEnrollmentEvents(
             null,
-            false,
-            mutableListOf(),
-            mutableListOf(),
-            mutableListOf(),
-            false,
-            mutableListOf(),
-            mutableListOf(),
-            null,
-            true
+            groupedByStage = false,
+            replaceProgramStageName = true,
         ).blockingGet()
     }
 }

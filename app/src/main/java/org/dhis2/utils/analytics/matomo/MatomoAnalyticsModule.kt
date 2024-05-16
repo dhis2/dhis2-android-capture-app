@@ -3,10 +3,10 @@ package org.dhis2.utils.analytics.matomo
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.matomo.sdk.Matomo
 import org.matomo.sdk.extra.DownloadTracker
+import javax.inject.Singleton
 
 @Module
 class MatomoAnalyticsModule {
@@ -15,16 +15,14 @@ class MatomoAnalyticsModule {
     @Singleton
     fun providesMatomoAnalyticsController(
         matomo: Matomo,
-        apkChecksum: DownloadTracker.Extra.ApkChecksum
+        apkChecksum: DownloadTracker.Extra.ApkChecksum,
     ): MatomoAnalyticsController {
         return MatomoAnalyticsControllerImpl(matomo, apkChecksum)
     }
 
     @Provides
     @Singleton
-    fun provideMatomo(
-        context: Context
-    ): Matomo {
+    fun provideMatomo(context: Context): Matomo {
         return Matomo.getInstance(context)
     }
 

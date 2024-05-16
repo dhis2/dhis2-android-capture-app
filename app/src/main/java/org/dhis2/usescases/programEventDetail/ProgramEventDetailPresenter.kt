@@ -28,19 +28,21 @@ class ProgramEventDetailPresenter(
     private val workingListMapper: EventFilterToWorkingListItemMapper,
     private val filterRepository: FilterRepository,
     private val disableHomFilters: DisableHomeFiltersFromSettingsApp,
-    private val matomoAnalyticsController: MatomoAnalyticsController
+    private val matomoAnalyticsController: MatomoAnalyticsController,
 ) {
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val program: Program
+    val program: Program?
         get() = eventRepository.program().blockingGet()
-    val featureType: FeatureType
+    val featureType: FeatureType?
         get() = eventRepository.featureType().blockingGet()
-    val stageUid: String
-        get() = eventRepository.programStage().blockingGet().uid()
+    val stageUid: String?
+        get() = eventRepository.programStage().blockingGet()?.uid()
 
     fun init() {
         compositeDisposable.add(
-            Observable.just(filterRepository.programFilters(program.uid()))
+            Observable.fromCallable {
+                program?.uid()?.let { filterRepository.programFilters(it) } ?: emptyList()
+            }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -51,8 +53,8 @@ class ProgramEventDetailPresenter(
                             view.setFilterItems(filters)
                         }
                     },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
             FilterManager.getInstance().catComboRequest
@@ -60,31 +62,26 @@ class ProgramEventDetailPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { catComboUid -> view.showCatOptComboDialog(catComboUid) },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
-            Single.zip(
-                Single.just(eventRepository.getAccessDataWrite()),
-                eventRepository.hasAccessToAllCatOptions()
-            ) { hasWritePermission, hasAccessToAllCatOptions ->
-                hasWritePermission && hasAccessToAllCatOptions
-            }
+            Single.just(eventRepository.getAccessDataWrite())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { aBoolean -> view.setWritePermission(aBoolean) },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
             eventRepository.program()
                 .observeOn(schedulerProvider.ui())
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
-                    { programModel -> view.setProgram(programModel) },
-                    { t -> Timber.e(t) }
-                )
+                    { programModel -> view.setProgram(programModel!!) },
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
             filterManager.ouTreeFlowable()
@@ -92,8 +89,8 @@ class ProgramEventDetailPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.openOrgUnitTreeSelector() },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
             filterManager.asFlowable().onBackpressureLatest()
@@ -102,8 +99,8 @@ class ProgramEventDetailPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { filterManager -> view.updateFilters(filterManager.totalFilters) },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
         compositeDisposable.add(
             filterManager.periodRequest
@@ -111,8 +108,8 @@ class ProgramEventDetailPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { (first): Pair<PeriodRequest, Filters> -> view.showPeriodRequest(first) },
-                    { t -> Timber.e(t) }
-                )
+                    { t -> Timber.e(t) },
+                ),
         )
     }
 
@@ -120,7 +117,7 @@ class ProgramEventDetailPresenter(
         matomoAnalyticsController.trackEvent(
             Categories.EVENT_LIST,
             Actions.SYNC_EVENT,
-            Labels.CLICK
+            Labels.CLICK,
         )
         view.showSyncDialog(uid)
     }
@@ -180,7 +177,7 @@ class ProgramEventDetailPresenter(
         matomoAnalyticsController.trackEvent(
             Categories.EVENT_LIST,
             Actions.OPEN_ANALYTICS,
-            Labels.CLICK
+            Labels.CLICK,
         )
     }
 
@@ -188,7 +185,7 @@ class ProgramEventDetailPresenter(
         matomoAnalyticsController.trackEvent(
             Categories.EVENT_LIST,
             Actions.MAP_VISUALIZATION,
-            Labels.CLICK
+            Labels.CLICK,
         )
     }
 }

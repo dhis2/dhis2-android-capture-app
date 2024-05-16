@@ -1,10 +1,10 @@
 package org.dhis2.data.dhislogic
 
-import java.util.Date
-import javax.inject.Inject
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
+import java.util.Date
+import javax.inject.Inject
 
 class DhisTrackedEntityInstanceUtils @Inject constructor(val d2: D2) {
 

@@ -16,7 +16,10 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 
-class DataEntryAdapter(private val searchStyle: Boolean) :
+class DataEntryAdapter(
+    private val searchStyle: Boolean,
+    private val collapsableSections: Boolean,
+) :
     ListAdapter<FieldUiModel, FormViewHolder>(DataEntryDiff()),
     FieldItemCallback {
 
@@ -51,15 +54,15 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
                 LayoutInflater.from(
                     ContextThemeWrapper(
                         parent.context,
-                        R.style.searchFormInputText
-                    )
+                        R.style.searchFormInputText,
+                    ),
                 )
             } else {
                 LayoutInflater.from(
                     ContextThemeWrapper(
                         parent.context,
-                        R.style.formInputText
-                    )
+                        R.style.formInputText,
+                    ),
                 )
             }
         val binding =
@@ -76,15 +79,16 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
 
     fun updateSectionData(position: Int, isHeader: Boolean) {
         (getItem(position) as SectionUiModelImpl?)!!.setShowBottomShadow(
-            !isHeader && position > 0 && getItem(
-                position - 1
-            ) !is SectionUiModelImpl
+            !collapsableSections &&
+                !isHeader && position > 0 && getItem(
+                    position - 1,
+                ) !is SectionUiModelImpl,
         )
         (getItem(position) as SectionUiModelImpl?)!!.setSectionNumber(getSectionNumber(position))
         (getItem(position) as SectionUiModelImpl?)!!.setLastSectionHeight(
             position > 0 && position == itemCount - 1 && getItem(
-                position - 1
-            ) !is SectionUiModelImpl
+                position - 1,
+            ) !is SectionUiModelImpl,
         )
     }
 
@@ -123,7 +127,7 @@ class DataEntryAdapter(private val searchStyle: Boolean) :
         val sectionPosition = sectionHandler.getSectionPositionFromVisiblePosition(
             visiblePos,
             isSection(visiblePos),
-            ArrayList(sectionPositions.values)
+            ArrayList(sectionPositions.values),
         )
         val model = if (sectionPosition != -1) {
             getItem(sectionPosition)

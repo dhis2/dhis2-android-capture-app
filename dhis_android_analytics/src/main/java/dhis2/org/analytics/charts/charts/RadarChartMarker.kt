@@ -17,7 +17,7 @@ class RadarChartMarker(
     context: Context,
     private val yAxis: YAxis,
     @LayoutRes layoutRes: Int = R.layout.chart_marker,
-    forceTopMarkerPlacement: Boolean = false
+    forceTopMarkerPlacement: Boolean = false,
 ) : MarkerView(context, layoutRes) {
     private enum class MarkerPlacement {
         TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT

@@ -4,10 +4,10 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
-import java.util.GregorianCalendar
 import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.GregorianCalendar
 
 class AnalyticsModelTest {
 
@@ -38,7 +38,7 @@ class AnalyticsModelTest {
     @Test
     fun `Pie chart should not display zero data message if error`() {
         val chartModel = ChartModel(
-            mockedPieChartWithZeroData().copy(hasError = true, errorMessage = "Has error")
+            mockedPieChartWithZeroData().copy(hasError = true, errorMessage = "Has error"),
         )
         assertTrue(!chartModel.pieChartDataIsZero())
     }
@@ -61,7 +61,7 @@ class AnalyticsModelTest {
         visualizationUid = "Visualization Uid",
         periodToDisplaySelected = null,
         orgUnitsSelected = emptyList(),
-        hasError = true
+        hasError = true,
     )
 
     private fun mockedPieChartWithZeroData() = Graph(
@@ -73,15 +73,17 @@ class AnalyticsModelTest {
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         0f,
-                        0f, null
+                        0f,
+                        null,
                     ),
                     GraphPoint(
                         GregorianCalendar(2021, 0, 1).time,
                         1f,
-                        0f, null
-                    )
-                )
-            )
+                        0f,
+                        null,
+                    ),
+                ),
+            ),
         ),
         periodToDisplayDefault = null,
         eventPeriodType = PeriodType.Monthly,
@@ -91,7 +93,7 @@ class AnalyticsModelTest {
         visualizationUid = "Visualization Uid",
         periodToDisplaySelected = null,
         orgUnitsSelected = emptyList(),
-        hasError = false
+        hasError = false,
     )
 
     private fun mockedChartModelWithEmptyData() = Graph(
@@ -99,8 +101,8 @@ class AnalyticsModelTest {
         series = listOf(
             SerieData(
                 "serie",
-                emptyList()
-            )
+                emptyList(),
+            ),
         ),
         periodToDisplayDefault = null,
         eventPeriodType = PeriodType.Monthly,
@@ -110,7 +112,7 @@ class AnalyticsModelTest {
         visualizationUid = "Visualization Uid",
         periodToDisplaySelected = null,
         orgUnitsSelected = emptyList(),
-        hasError = false
+        hasError = false,
     )
 
     private fun mockedChartModelWithEmptyDataForFilters() = Graph(
@@ -118,8 +120,8 @@ class AnalyticsModelTest {
         series = listOf(
             SerieData(
                 "serie",
-                emptyList()
-            )
+                emptyList(),
+            ),
         ),
         periodToDisplayDefault = null,
         eventPeriodType = PeriodType.Monthly,
@@ -129,6 +131,6 @@ class AnalyticsModelTest {
         visualizationUid = "Visualization Uid",
         periodToDisplaySelected = null,
         orgUnitsSelected = listOf("selectedOUUid"),
-        hasError = false
+        hasError = false,
     )
 }

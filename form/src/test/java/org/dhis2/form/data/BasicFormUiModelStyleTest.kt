@@ -1,8 +1,5 @@
 package org.dhis2.form.data
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.dhis2.form.ui.style.BasicFormUiModelStyle
 import org.dhis2.form.ui.style.FormUiColorFactory
 import org.dhis2.form.ui.style.FormUiColorType
@@ -11,6 +8,9 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class BasicFormUiModelStyleTest {
 
@@ -20,17 +20,17 @@ class BasicFormUiModelStyleTest {
 
     @Before
     fun setUp() {
-        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType)
+        basicFormUiModelStyle = BasicFormUiModelStyle(colorFactory, valueType, true)
     }
 
-    @Test
     @Ignore
+    @Test
     fun shouldGetColorsFromStyle() {
         val mapOfColors = mapOf(
             FormUiColorType.PRIMARY to 1,
             FormUiColorType.TEXT_PRIMARY to 2,
             FormUiColorType.WARNING to 3,
-            FormUiColorType.ERROR to 4
+            FormUiColorType.ERROR to 4,
         )
         whenever(colorFactory.getBasicColors()) doReturn mapOfColors
 

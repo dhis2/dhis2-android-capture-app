@@ -8,4 +8,4 @@
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas tei</string>
     <string name="dialog_layer_enrollment_coordinates">Mostrar coordenadas de inscrição</string>
     <string name="dialog_layer_heatmap">Mostrar camada do mapa de calor</string>
-</resources>
+    </resources>

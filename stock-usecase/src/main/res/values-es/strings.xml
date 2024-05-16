@@ -1,0 +1,68 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Inicio</string>
+    <string name="title_activity_review">Revisar</string>
+    <string name="action_settings">Configuración</string>
+
+    <string name="discard">Descartar</string>
+    <string name="sign_in">Iniciar sesión</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="password">Contraseña</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Proceder</string>
+    <string name="review">Revisar</string>
+
+    <string name="delete">Eliminar</string>
+    <string name="ok">Correcto</string>
+    <string name="cancel">Cancelar</string>
+    <string name="from">De</string>
+    <string name="language">Idioma</string>
+    <string name="logout">Cerrar sesión</string>
+
+
+    <string name="prompt_email">Correo-e</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="content_desc_search">Buscar</string>
+    <string name="content_desc_remove">Quitar elemento</string>
+    <string name="confirm_transaction_label">Confirmar</string>
+    <string name="invalid_quantity">No válido</string>
+    <string name="speech_network_error">Error de red</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
+    <string name="login_error_unknown_host">Servidor desconocido</string>
+    <string name="online_search_parsing_error">Error al obtener los resultados</string>
+    <string name="error_many_requests">El servidor se encuentra ocupado en estos momentos. Por favor inténtelo más tarde.</string>
+    <string name="error_already_authenticated">Este usuario ya ha iniciado sesión.</string>
+    <string name="error_already_executed">La petición ya ha sido evaluada.</string>
+    <string name="error_api_invalid_query">La petición al servidor no es válida.</string>
+    <string name="error_create_existing_error">No se puede crear un objeto que ya existe.</string>
+    <string name="error_export_login">Inicie sesión para exportar la base de datos.</string>
+    <string name="error_export_encrypted">Exportar una base de datos encriptada no está soportado.</string>
+    <string name="error_import_exist">Está intentando importar una base de datos que ya existe.</string>
+    <string name="error_import_logout">Por favor cierre sesión antes de importar una nueva base de datos.</string>
+    <string name="error_import_version">La versión de la base de datos importada es mayor que la soportada.</string>
+    <string name="error_user_no_authenticated">No hay una sesión iniciada.</string>
+    <string name="error_user_no_authenticated_offline">No hay una sesión offline iniciada.</string>
+    <string name="error_different_offline_user">Estás intentando iniciar sesión offline con un usuario diferente.</string>
+    <string name="error_object_update">No se ha podido actualizar.</string>
+    <string name="error_object_insert">No se ha podido crear.</string>
+    <string name="error_null_url">Falta la URL del servidor. Ingrese la URL.</string>
+    <string name="error_server_malformed">La URL del servidor está mal. Por favor revísela.</string>
+    <string name="error_settings_app_not_supported">Esta versión de Settings Web App no está soportada.</string>
+    <string name="error_settings_app_not_intalled">La Settings Web App no está instalada en el servidor.</string>
+    <string name="error_socket_timeout">El servidor ha tardado mucho en responder. Se ha cancelado la petición.</string>
+    <string name="error_url_not_found">No pudimos encontrar la URL. Por favor revísela.</string>
+    <string name="error_account_disabled">Su cuenta de usuario ha sido desactivada. Si esto es un error, contacte con su administrador.</string>
+    <string name="error_account_locked">Su cuenta de usuario ha sido bloqueada. Si es un error, contacte con su administrador.</string>
+    <string name="error_set_value">No se ha podido cambiar el valor.</string>
+    <string name="error_ssl">Hay un problema con los certificados del servidor. Por favor contacte con su administrador.</string>
+    <string name="done_task">Inicio</string>
+    <string name="back">Atrás</string>
+    <string name="no_conflicts_message">Este programa no tiene conflictos</string>
+    <string name="action_sync">Enviar</string>
+    <string name="not_saved">No guardado</string>
+    <string name="count">Conteo</string>
+    <string name="formatting_error">Error de formato</string>
+    <string name="invalid_possitive_zero">Solo se permiten números positivos o cero</string>
+    <string name="leading_zero_error">No se permiten números con ceros a la izquierda</string>
+</resources>

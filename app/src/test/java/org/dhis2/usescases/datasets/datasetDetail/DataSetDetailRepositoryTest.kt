@@ -1,9 +1,5 @@
 package org.dhis2.usescases.datasets.datasetDetail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
@@ -16,15 +12,15 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataset.DataSet
-import org.hisp.dhis.android.core.dataset.DataSetInstance
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.Period
-import org.hisp.dhis.android.core.period.PeriodType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class DataSetDetailRepositoryTest {
 
@@ -62,31 +58,31 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.userModule()
-                .authorities().byName()
+                .authorities().byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule()
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -106,27 +102,27 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn true
 
         val testObserver = repository.canWriteAny().test()
@@ -146,32 +142,32 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingCount()
+                .byOrganisationUnitScope(any()).blockingCount(),
         ) doReturn 0
         whenever(
             d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -191,36 +187,36 @@ class DataSetDetailRepositoryTest {
 
         whenever(d2.dataSetModule().dataSets().uid(dataSetUid).get()) doReturn Single.just(dataSet)
         whenever(
-            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid()
+            d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryComboUid(),
+        ) doReturn mock()
+        whenever(
+            d2.categoryModule()
+                .categoryOptionCombos().withCategoryOptions()
+                .byCategoryComboUid().eq("categoryCombo"),
         ) doReturn mock()
         whenever(
             d2.categoryModule()
                 .categoryOptionCombos().withCategoryOptions()
                 .byCategoryComboUid().eq("categoryCombo")
-        ) doReturn mock()
-        whenever(
-            d2.categoryModule()
-                .categoryOptionCombos().withCategoryOptions()
-                .byCategoryComboUid().eq("categoryCombo")
-                .get()
+                .get(),
         ) doReturn Single.just(categoryOptionCombos)
         whenever(
             d2.organisationUnitModule()
                 .organisationUnits().byDataSetUids(listOf(dataSetUid))
-                .byOrganisationUnitScope(any()).blockingCount()
+                .byOrganisationUnitScope(any()).blockingCount(),
         ) doReturn 1
         whenever(
             d2.userModule()
-                .authorities().byName()
+                .authorities().byName(),
+        ) doReturn mock()
+        whenever(
+            d2.userModule()
+                .authorities().byName().eq(AUTH_DATAVALUE_ADD),
         ) doReturn mock()
         whenever(
             d2.userModule()
                 .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-        ) doReturn mock()
-        whenever(
-            d2.userModule()
-                .authorities().byName().eq(AUTH_DATAVALUE_ADD)
-                .blockingIsEmpty()
+                .blockingIsEmpty(),
         ) doReturn false
 
         val testObserver = repository.canWriteAny().test()
@@ -233,23 +229,21 @@ class DataSetDetailRepositoryTest {
         }
     }
 
-    private fun dummyDataSet(canWrite: Boolean = true) =
-        DataSet.builder()
-            .uid(dataSetUid)
-            .displayName("DataSet")
-            .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
-            .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-            .build()
+    private fun dummyDataSet(canWrite: Boolean = true) = DataSet.builder()
+        .uid(dataSetUid)
+        .displayName("DataSet")
+        .categoryCombo(ObjectWithUid.fromIdentifiable(dummyCategoryCombo()))
+        .access(Access.create(true, true, DataAccess.create(true, canWrite)))
+        .build()
 
-    private fun dummyCategoryCombo(isDefault: Boolean = false) =
-        CategoryCombo.builder()
-            .uid("categoryCombo")
-            .categoryOptionCombos(dummyCategoryOptionsCombos())
-            .isDefault(isDefault)
-            .build()
+    private fun dummyCategoryCombo(isDefault: Boolean = false) = CategoryCombo.builder()
+        .uid("categoryCombo")
+        .categoryOptionCombos(dummyCategoryOptionsCombos())
+        .isDefault(isDefault)
+        .build()
 
     private fun dummyCategoryOptionsCombos(
-        canWrite: Boolean = true
+        canWrite: Boolean = true,
     ): MutableList<CategoryOptionCombo> {
         val categoryOptionCombo: MutableList<CategoryOptionCombo> = mutableListOf()
         for (i in 1..3)
@@ -259,7 +253,7 @@ class DataSetDetailRepositoryTest {
                     .categoryCombo(ObjectWithUid.create("categoryCombo"))
                     .uid("categoryOptionCombo_$i")
                     .categoryOptions(dummyCategoryOptions(canWrite))
-                    .build()
+                    .build(),
             )
         return categoryOptionCombo
     }
@@ -272,27 +266,8 @@ class DataSetDetailRepositoryTest {
                     .builder()
                     .uid("categoryOption_$i")
                     .access(Access.create(true, true, DataAccess.create(true, canWrite)))
-                    .build()
+                    .build(),
             )
         return categoryOptions
     }
-
-    private fun dummyDataSetInstance() =
-        DataSetInstance.builder()
-            .dataSetUid(dataSetUid)
-            .dataSetDisplayName("dataSetName")
-            .organisationUnitUid("orgUnit")
-            .attributeOptionComboUid("attrOptionCombo")
-            .period("period")
-            .organisationUnitDisplayName("orgUnitName")
-            .attributeOptionComboDisplayName("attrOptionComboName")
-            .valueCount(1)
-            .completed(true)
-            .periodType(PeriodType.Daily)
-            .build()
-
-    private fun dummyPeriod() = Period.builder().periodId("periodId").build()
-
-    private fun dummyOrgUnits() =
-        mutableListOf(OrganisationUnit.builder().uid("orgUnit").build())
 }

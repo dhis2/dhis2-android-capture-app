@@ -6,16 +6,15 @@ import dagger.Provides
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.form.model.DispatcherProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 
@@ -27,7 +26,7 @@ class DataValueModule(
     private val periodId: String,
     private val attributeOptionComboUid: String,
     private val view: DataValueContract.View,
-    private val activityContext: Context
+    private val activityContext: Context,
 ) {
 
     @Provides
@@ -41,26 +40,25 @@ class DataValueModule(
     internal fun providesPresenter(
         repository: DataValueRepository,
         valueStore: ValueStore,
+        tableDimensionStore: TableDimensionStore,
         schedulerProvider: SchedulerProvider,
         tableDataToTableModelMapper: TableDataToTableModelMapper,
-        dispatcherProvider: DispatcherProvider
+        dispatcherProvider: DispatcherProvider,
     ): DataValuePresenter {
         return DataValuePresenter(
             view,
             repository,
             valueStore,
+            tableDimensionStore,
             schedulerProvider,
             tableDataToTableModelMapper,
-            dispatcherProvider
+            dispatcherProvider,
         )
     }
 
     @Provides
     @PerFragment
-    internal fun DataValueRepository(
-        d2: D2,
-        preferenceProvider: PreferenceProvider
-    ): DataValueRepository {
+    internal fun DataValueRepository(d2: D2): DataValueRepository {
         return DataValueRepository(
             d2,
             dataSetUid,
@@ -68,9 +66,16 @@ class DataValueModule(
             orgUnitUid,
             periodId,
             attributeOptionComboUid,
-            preferenceProvider
         )
     }
+
+    @Provides
+    @PerFragment
+    internal fun TableDimensionStore(d2: D2) = TableDimensionStore(
+        d2,
+        dataSetUid,
+        sectionUid,
+    )
 
     @Provides
     @PerFragment
@@ -85,7 +90,7 @@ class DataValueModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         searchRepository: SearchTEIRepository,
-        resourceManager: ResourceManager
+        resourceManager: ResourceManager,
     ): ValueStore {
         return ValueStoreImpl(
             d2,
@@ -96,7 +101,7 @@ class DataValueModule(
             networkUtils,
             searchRepository,
             FieldErrorMessageProvider(activityContext),
-            resourceManager
+            resourceManager,
         )
     }
 
@@ -104,7 +109,7 @@ class DataValueModule(
     @PerFragment
     fun provideTableDataToTableModelMapper(
         resourceManager: ResourceManager,
-        repository: DataValueRepository
+        repository: DataValueRepository,
     ): TableDataToTableModelMapper {
         return TableDataToTableModelMapper(MapFieldValueToUser(resourceManager, repository))
     }

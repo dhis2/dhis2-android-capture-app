@@ -16,15 +16,15 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
-import javax.inject.Inject
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
-import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 import org.dhis2.databinding.DialogOptionSetBinding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.hisp.dhis.android.core.option.Option
+import javax.inject.Inject
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel as TableSpinnerViewModel
 
 class OptionSetDialog : DialogFragment(), OptionSetView {
 
@@ -55,7 +55,7 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false)
 
@@ -72,7 +72,7 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
             OptionSetOnClickListener {
                 listener?.onSelectOption(it)
                 this.dismiss()
-            }
+            },
         )
 
         binding.recycler.adapter = adapter
@@ -96,7 +96,7 @@ class OptionSetDialog : DialogFragment(), OptionSetView {
             this,
             Observer {
                 adapter?.submitList(it)
-            }
+            },
         )
     }
 

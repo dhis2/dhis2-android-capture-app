@@ -258,6 +258,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="@{()->presenter.clearFilterClick()}"
+                    style="?attr/floatingActionButtonSmallStyle"
                     app:backgroundTint="@color/white"
                     app:fabSize="mini"
                     app:layout_constraintEnd_toEndOf="parent"

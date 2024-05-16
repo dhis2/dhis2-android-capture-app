@@ -7,14 +7,12 @@ enum class SearchTEExtra(val key: String) {
     TEI_UID("TRACKED_ENTITY_UID"),
     PROGRAM_UID("PROGRAM_UID"),
     QUERY_ATTR("QUERY_DATA_ATTR"),
-    QUERY_VALUES("QUERY_DATA_VALUES")
+    QUERY_VALUES("QUERY_DATA_VALUES"),
 }
 
-fun SearchTEActivity.teiUidExtra() =
-    intent.getStringExtra(SearchTEExtra.TEI_UID.key)
+fun SearchTEActivity.teiUidExtra() = intent.getStringExtra(SearchTEExtra.TEI_UID.key)
 
-fun SearchTEActivity.programUidExtra() =
-    intent.getStringExtra(SearchTEExtra.PROGRAM_UID.key)
+fun SearchTEActivity.programUidExtra() = intent.getStringExtra(SearchTEExtra.PROGRAM_UID.key)
 
 fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, String> {
     return when {

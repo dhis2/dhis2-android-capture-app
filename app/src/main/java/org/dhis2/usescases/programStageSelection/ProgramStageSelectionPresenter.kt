@@ -4,19 +4,19 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import java.util.ArrayList
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.ArrayList
 
 class ProgramStageSelectionPresenter(
     private val view: ProgramStageSelectionView,
     private val programStageSelectionRepository: ProgramStageSelectionRepository,
     private val ruleUtils: RulesUtilsProvider,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
 ) {
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -35,9 +35,9 @@ class ProgramStageSelectionPresenter(
             BiFunction { stageModels: List<ProgramStage>, calcResult: Result<RuleEffect> ->
                 applyEffects(
                     stageModels,
-                    calcResult
+                    calcResult,
                 )
-            }
+            },
         )
         compositeDisposable.add(
             stageModelsFlowable
@@ -45,7 +45,7 @@ class ProgramStageSelectionPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(this::handleProgramStages) { t: Throwable? ->
                     Timber.e(t)
-                }
+                },
         )
     }
 
@@ -54,7 +54,7 @@ class ProgramStageSelectionPresenter(
             1 -> view.setResult(
                 programStageUid = programStages.first().uid(),
                 repeatable = programStages.first().repeatable() == true,
-                periodType = programStages.first().periodType()
+                periodType = programStages.first().periodType(),
             )
             else -> view.setData(programStages)
         }
@@ -63,7 +63,7 @@ class ProgramStageSelectionPresenter(
     @VisibleForTesting
     fun applyEffects(
         stageModels: List<ProgramStage>,
-        calcResult: Result<RuleEffect>
+        calcResult: Result<RuleEffect>,
     ): List<ProgramStage> {
         if (calcResult.error() != null) {
             Timber.e(calcResult.error())
@@ -87,7 +87,7 @@ class ProgramStageSelectionPresenter(
             view.setResult(
                 programStage.uid(),
                 programStage.repeatable() == true,
-                programStage.periodType()
+                programStage.periodType(),
             )
         } else {
             view.displayMessage(null)
@@ -95,6 +95,6 @@ class ProgramStageSelectionPresenter(
     }
 
     fun getStandardInterval(programStageUid: String): Int {
-        return programStageSelectionRepository.getStage(programStageUid).standardInterval() ?: 0
+        return programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
     }
 }

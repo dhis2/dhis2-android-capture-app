@@ -29,13 +29,13 @@ class ValidationResultViolationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_validation_result_violation,
             container,
-            false
+            false,
         )
 
         binding.apply {
@@ -60,7 +60,7 @@ class ValidationResultViolationFragment : Fragment() {
                 ItemDataReviewBinding.inflate(layoutInflater).apply {
                     dataPosition.text = data.formattedDataLabel()
                     dataValue.text = data.value
-                }.root
+                }.root,
             )
         }
 

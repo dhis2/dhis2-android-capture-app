@@ -7,5 +7,5 @@ data class SMSSettingsViewModel(
     val responseTimeout: Int,
     val isGatewayNumberEditable: Boolean,
     val isResponseNumberEditable: Boolean,
-    val waitingForResponse: Boolean
+    val waitingForResponse: Boolean,
 )

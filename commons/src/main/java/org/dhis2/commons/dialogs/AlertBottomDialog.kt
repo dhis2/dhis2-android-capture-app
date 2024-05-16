@@ -57,7 +57,7 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.alert_bottom_dialog, container, false)
         binding.setTitle(title)
@@ -108,7 +108,7 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
 
             val bottomSheet =
                 dialog.findViewById<FrameLayout>(
-                    com.google.android.material.R.id.design_bottom_sheet
+                    com.google.android.material.R.id.design_bottom_sheet,
                 )
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.event.Event
 
 class MapEventToFeatureCollection(
     private val mapGeometryToFeature: MapGeometryToFeature,
-    private val bounds: GetBoundingBox
+    private val bounds: GetBoundingBox,
 ) {
     fun map(eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
         val features = eventList.filter { it.geometry() != null }.mapNotNull {
@@ -19,14 +19,14 @@ class MapEventToFeatureCollection(
                 it.geometry()!!,
                 mapOf(
                     PROPERTY_FEATURE_SOURCE to FeatureSource.EVENT.name,
-                    EVENT to it.uid()
-                )
+                    EVENT to it.uid(),
+                ),
             )
         }
 
         return Pair<FeatureCollection, BoundingBox>(
             FeatureCollection.fromFeatures(features),
-            bounds.getEnclosingBoundingBox(features.getLatLngPointList())
+            bounds.getEnclosingBoundingBox(features.getLatLngPointList()),
         )
     }
 

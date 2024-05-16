@@ -1,19 +1,16 @@
 package org.dhis2.usescases.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
-import java.io.File
-import java.util.Date
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterRepository
@@ -25,9 +22,11 @@ import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMB
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
@@ -40,7 +39,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
+import java.io.File
+import java.util.Date
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainPresenterTest {
 
     private lateinit var presenter: MainPresenter
@@ -56,12 +64,21 @@ class MainPresenterTest {
     private val deleteUserData: DeleteUserData = mock()
     private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val versionRepository: VersionRepository = mock()
+    private val testingDispatcher = UnconfinedTestDispatcher()
+    private val dispatcherProvider: DispatcherProvider = mock {
+        on { io() } doReturn testingDispatcher
+        on { ui() } doReturn testingDispatcher
+    }
+
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
+        whenever(versionRepository.newAppVersion) doReturn MutableSharedFlow()
         presenter =
             MainPresenter(
                 view,
@@ -75,7 +92,9 @@ class MainPresenterTest {
                 userManager,
                 deleteUserData,
                 syncIsPerfomedInteractor,
-                syncStatusController
+                syncStatusController,
+                versionRepository,
+                dispatcherProvider,
             )
     }
 
@@ -123,12 +142,16 @@ class MainPresenterTest {
         whenever(repository.logOut()) doReturn Completable.complete()
 
         whenever(repository.accountsCount()) doReturn 1
+        whenever(userManager.d2) doReturn mock()
+        whenever(userManager.d2.dataStoreModule()) doReturn mock()
+        whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
+        whenever(userManager.d2.dataStoreModule().localDataStore().value(PIN)) doReturn mock()
 
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
-        verify(preferences).setValue(PIN, null)
+        verify(userManager.d2.dataStoreModule().localDataStore().value(PIN)).blockingDeleteIfExist()
         verify(view).goToLogin(1, false)
     }
 
@@ -230,7 +253,7 @@ class MainPresenterTest {
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager().getAccounts()) doReturn listOf(
             firstRandomUserAccount,
-            secondRandomUserAccount
+            secondRandomUserAccount,
         )
         whenever(repository.accountsCount()) doReturn 2
 

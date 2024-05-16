@@ -29,7 +29,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/filterSwitch"
-            style="@style/Widget.AppCompat.CompoundButton.Switch"
+            style="@style/Widget.App.Switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -38,9 +38,7 @@
             android:onCheckedChanged="@{(switch, checked)->filterItem.activate(checked)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:thumbTint="@drawable/selector_material_thumb"
-            app:useMaterialThemeColors="false" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

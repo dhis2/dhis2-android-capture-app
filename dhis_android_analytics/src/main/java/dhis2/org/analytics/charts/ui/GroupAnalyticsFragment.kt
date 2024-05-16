@@ -16,14 +16,12 @@ import dhis2.org.analytics.charts.extensions.isNotCurrent
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.databinding.AnalyticsGroupBinding
 import dhis2.org.databinding.AnalyticsItemBinding
-import javax.inject.Inject
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.bindings.scrollToPosition
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OnOrgUnitSelectionFinished
 import org.hisp.dhis.android.core.common.RelativePeriod
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import javax.inject.Inject
 
 const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
@@ -94,7 +92,7 @@ class GroupAnalyticsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         postponeEnterTransition()
 
@@ -131,7 +129,7 @@ class GroupAnalyticsFragment : Fragment() {
                         else -> groupViewModel.filterByOrgUnit(
                             chartModel,
                             emptyList(),
-                            orgUnitFilterType
+                            orgUnitFilterType,
                         )
                     }
                 }
@@ -149,7 +147,7 @@ class GroupAnalyticsFragment : Fragment() {
     private fun showAlertDialogCurrentPeriod(
         chartModel: ChartModel,
         relativePeriod: RelativePeriod?,
-        current: RelativePeriod?
+        current: RelativePeriod?,
     ) {
         val periodList = mutableListOf<RelativePeriod>()
         AlertBottomDialog.instance
@@ -168,20 +166,20 @@ class GroupAnalyticsFragment : Fragment() {
     }
 
     private fun showOUTreeSelector(chartModel: ChartModel) {
-        val ouTreeFragment =
-            OUTreeFragment.newInstance(
-                true,
-                chartModel.graph.orgUnitsSelected.toMutableList()
+        OUTreeFragment.Builder()
+            .showAsDialog()
+            .withPreselectedOrgUnits(
+                chartModel.graph.orgUnitsSelected.toMutableList(),
             )
-        ouTreeFragment.selectionCallback = object : OnOrgUnitSelectionFinished {
-            override fun onSelectionFinished(selectedOrgUnits: List<OrganisationUnit>) {
+            .onSelection { selectedOrgUnits ->
                 groupViewModel.filterByOrgUnit(
-                    chartModel, selectedOrgUnits,
-                    OrgUnitFilterType.SELECTION
+                    chartModel,
+                    selectedOrgUnits,
+                    OrgUnitFilterType.SELECTION,
                 )
             }
-        }
-        ouTreeFragment.show(childFragmentManager, "OUTreeFragment")
+            .build()
+            .show(childFragmentManager, "OUTreeFragment")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -230,7 +228,8 @@ class GroupAnalyticsFragment : Fragment() {
             binding?.analyticChipGroup?.addView(
                 AnalyticsItemBinding.inflate(
                     layoutInflater,
-                    binding?.analyticChipGroup, false
+                    binding?.analyticChipGroup,
+                    false,
                 ).apply {
                     chip.id = idChip
                     chip.text = analyticGroup.name
@@ -244,7 +243,7 @@ class GroupAnalyticsFragment : Fragment() {
                             groupViewModel.fetchAnalytics(buttonView.tag as String)
                         }
                     }
-                }.root
+                }.root,
             )
             idChip++
         }

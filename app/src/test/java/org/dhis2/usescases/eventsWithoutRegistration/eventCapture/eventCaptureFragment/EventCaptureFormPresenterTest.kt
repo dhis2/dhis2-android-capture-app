@@ -1,22 +1,22 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
-import org.dhis2.commons.data.FieldWithIssue
-import org.dhis2.commons.data.IssueType
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class EventCaptureFormPresenterTest {
     private lateinit var presenter: EventCaptureFormPresenter
@@ -37,8 +37,8 @@ class EventCaptureFormPresenterTest {
                 "Uid",
                 "field1",
                 IssueType.ERROR,
-                "message"
-            )
+                "message",
+            ),
         )
         presenter.handleDataIntegrityResult(
             FieldsWithErrorResult(
@@ -47,15 +47,15 @@ class EventCaptureFormPresenterTest {
                 emptyList(),
                 false,
                 null,
-                false
-            )
+                false,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             false,
             null,
             errorFields,
             emptyMap(),
-            emptyList()
+            emptyList(),
         )
     }
 
@@ -66,22 +66,22 @@ class EventCaptureFormPresenterTest {
                 "Uid",
                 "field1",
                 IssueType.WARNING,
-                "message"
-            )
+                "message",
+            ),
         )
         presenter.handleDataIntegrityResult(
             FieldsWithWarningResult(
                 warningFields,
                 true,
-                null
-            )
+                null,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             true,
             null,
             emptyList(),
             emptyMap(),
-            warningFields
+            warningFields,
         )
     }
 
@@ -94,22 +94,22 @@ class EventCaptureFormPresenterTest {
                 emptyList(),
                 false,
                 null,
-                false
-            )
+                false,
+            ),
         )
         verify(activityPresenter).attemptFinish(
             false,
             null,
             emptyList(),
             mapOf(Pair("field1", "section")),
-            emptyList()
+            emptyList(),
         )
     }
 
     @Test
     fun `Should try to finish  successfully`() {
         presenter.handleDataIntegrityResult(
-            SuccessfulResult(null, true, null)
+            SuccessfulResult(null, true, null),
         )
         verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
     }
@@ -120,7 +120,7 @@ class EventCaptureFormPresenterTest {
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
         whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
-            editableStatus
+            editableStatus,
         )
 
         presenter.showOrHideSaveButton()
@@ -135,7 +135,7 @@ class EventCaptureFormPresenterTest {
         whenever(d2.eventModule()) doReturn mock()
         whenever(d2.eventModule().eventService()) doReturn mock()
         whenever(d2.eventModule().eventService().getEditableStatus(eventUid)) doReturn Single.just(
-            editableStatus
+            editableStatus,
         )
 
         presenter.showOrHideSaveButton()

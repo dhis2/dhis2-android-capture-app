@@ -8,22 +8,19 @@ import com.google.zxing.datamatrix.DataMatrixWriter
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.QRCodeWriter
 import org.dhis2.form.model.UiRenderType
-import org.hisp.dhis.rules.gs1.GS1Elements
+import org.hisp.dhis.lib.expression.math.GS1Elements
 
 class QRImageControllerImpl(
     private val qrImageSize: Int = 500,
     private val darkColor: Int = Color.BLACK,
-    private val lightColor: Int = Color.WHITE
+    private val lightColor: Int = Color.WHITE,
 ) : QRImageController {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getWriterFromRendering(
-        value: String,
-        renderingType: UiRenderType
-    ) = when {
+    fun getWriterFromRendering(value: String, renderingType: UiRenderType) = when {
         value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element) -> Pair(
             DataMatrixWriter(),
-            BarcodeFormat.DATA_MATRIX
+            BarcodeFormat.DATA_MATRIX,
         )
         renderingType == UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
         renderingType == UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
@@ -34,10 +31,7 @@ class QRImageControllerImpl(
         value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
             .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
-    override fun writeDataToImage(
-        value: String,
-        renderingType: UiRenderType
-    ): Bitmap {
+    override fun writeDataToImage(value: String, renderingType: UiRenderType): Bitmap {
         val (writer, format) = getWriterFromRendering(value, renderingType)
 
         val content = formattedContent(value)
@@ -53,7 +47,7 @@ class QRImageControllerImpl(
                 bitMap.setPixel(
                     i,
                     j,
-                    if (bitMatrix.get(i, j)) darkColor else lightColor
+                    if (bitMatrix.get(i, j)) darkColor else lightColor,
                 )
             }
         }

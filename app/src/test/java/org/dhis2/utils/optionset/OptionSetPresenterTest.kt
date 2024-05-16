@@ -26,15 +26,8 @@
 package org.dhis2.utils.optionset
 
 import androidx.paging.ItemKeyedDataSource
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
-import java.util.concurrent.TimeUnit
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -47,6 +40,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.concurrent.TimeUnit
 
 class OptionSetPresenterTest {
 
@@ -66,10 +66,10 @@ class OptionSetPresenterTest {
         whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet")) doReturn mock()
         whenever(d2.optionModule().optionGroups().withOptions().uid("optionGroup")) doReturn mock()
         whenever(
-            d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet()
+            d2.optionModule().optionGroups().withOptions().uid("optionGroup").blockingGet(),
         ) doReturn mockOptionGroupList()
         whenever(
-            d2.optionModule().options().byOptionSetUid().eq("optionSet").dataSource
+            d2.optionModule().options().byOptionSetUid().eq("optionSet").dataSource,
         ) doReturn dataSource
 
         whenever(view.searchSource()) doReturn Observable.just("" as CharSequence)
@@ -86,7 +86,7 @@ class OptionSetPresenterTest {
     fun `Should return the number of options available`() {
         whenever(d2.optionModule().options().byOptionSetUid().eq("optionSet")) doReturn mock()
         whenever(
-            d2.optionModule().options().byOptionSetUid().eq("optionSet").blockingCount()
+            d2.optionModule().options().byOptionSetUid().eq("optionSet").blockingCount(),
         ) doReturn 5
 
         val count = presenter.getCount("optionSet")
@@ -115,7 +115,7 @@ class OptionSetPresenterTest {
             ObjectWithUid.create("option2"),
             ObjectWithUid.create("option3"),
             ObjectWithUid.create("option4"),
-            ObjectWithUid.create("option5")
+            ObjectWithUid.create("option5"),
         )
     }
 
@@ -127,7 +127,8 @@ class OptionSetPresenterTest {
             optionSet = "optionSet",
             programStageSection = null,
             valueType = ValueType.TEXT,
-            optionSetConfiguration = null
+            optionSetConfiguration = null,
+            autocompleteList = null,
         )
     }
 

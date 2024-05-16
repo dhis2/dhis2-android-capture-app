@@ -2,6 +2,7 @@
 
 package org.dhis2.utils.analytics
 
+const val DATA_STORE_ANALYTICS_PERMISSION_KEY = "analytics_permission"
 const val USER_PROPERTY_SERVER = "serverUrl"
 const val USER_PROPERTY_NAME = "userName"
 

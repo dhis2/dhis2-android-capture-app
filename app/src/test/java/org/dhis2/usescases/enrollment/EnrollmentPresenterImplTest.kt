@@ -1,15 +1,11 @@
 package org.dhis2.usescases.enrollment
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.EnrollmentRepository
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
@@ -32,6 +28,11 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepos
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class EnrollmentPresenterImplTest {
 
@@ -47,6 +48,7 @@ class EnrollmentPresenterImplTest {
     private val analyticsHelper: AnalyticsHelper = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val eventCollectionRepository: EventCollectionRepository = mock()
+    private val teiAttributesProvider: TeiAttributesProvider = mock()
 
     @Before
     fun setUp() {
@@ -61,7 +63,8 @@ class EnrollmentPresenterImplTest {
             enrollmentFormRepository,
             analyticsHelper,
             matomoAnalyticsController,
-            eventCollectionRepository
+            eventCollectionRepository,
+            teiAttributesProvider,
         )
     }
 
@@ -96,8 +99,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(true)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
         verify(enrollmentRepository).setStatus(EnrollmentStatus.ACTIVE)
@@ -111,8 +114,8 @@ class EnrollmentPresenterImplTest {
                 Access.builder()
                     .data(
                         DataAccess.builder().write(false)
-                            .build()
-                    ).build()
+                            .build(),
+                    ).build(),
             ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
@@ -172,7 +175,7 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.WRITE_ACCESS
 
         presenter.showOrHideSaveButton()
@@ -195,7 +198,7 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
             d2.enrollmentModule().enrollmentService()
-                .blockingGetEnrollmentAccess(tei.uid(), program.uid())
+                .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.NO_ACCESS
 
         presenter.showOrHideSaveButton()
@@ -244,14 +247,14 @@ class EnrollmentPresenterImplTest {
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("")) doReturn mock()
         whenever(
-            d2.programModule().programStages().uid("").blockingGet()
+            d2.programModule().programStages().uid("").blockingGet(),
         ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
 
         whenever(d2.categoryModule()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
         whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet()
+            d2.categoryModule().categoryCombos().uid("").blockingGet(),
         ) doReturn CategoryCombo.builder()
             .isDefault(catCombo)
             .uid("")

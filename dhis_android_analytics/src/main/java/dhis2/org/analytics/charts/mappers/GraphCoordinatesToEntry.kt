@@ -1,28 +1,30 @@
 package dhis2.org.analytics.charts.mappers
 
 import com.github.mikephil.charting.data.Entry
+import dhis2.org.analytics.charts.bindings.DateToPosition
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphPoint
+import java.time.YearMonth
 
 class GraphCoordinatesToEntry {
-    fun map(
-        graph: Graph,
-        coordinates: List<GraphPoint>,
-        serieLabel: String
-    ): List<Entry> {
-        return coordinates.mapIndexed { index, graphPoint ->
 
-            val entryIndex = graphPoint.position
-                ?: if (index == 0) {
-                    0f
-                } else {
-                    graph.numberOfStepsToDate(graphPoint.eventDate)
-                }
+    private val dateToPosition = DateToPosition()
+    fun map(graph: Graph, coordinates: List<GraphPoint>, serieLabel: String): List<Entry> {
+        var minMonth: YearMonth? = null
+        return coordinates.mapIndexed { _, graphPoint ->
+
+            val position = graphPoint.position ?: dateToPosition(
+                graphPoint.eventDate,
+                graph.eventPeriodType,
+                minMonth,
+            ) { newValue ->
+                minMonth = newValue
+            }
 
             Entry(
-                entryIndex,
+                position,
                 graphPoint.fieldValue,
-                serieLabel
+                serieLabel,
             )
         }
     }
@@ -31,7 +33,7 @@ class GraphCoordinatesToEntry {
         return coordinates.map { graphPoint ->
             Entry(
                 graphPoint.position ?: 0f,
-                graphPoint.fieldValue
+                graphPoint.fieldValue,
             )
         }
     }

@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.SearchOptionSetOption
 import org.hisp.dhis.android.core.option.Option
 
 class OptionSetDialogViewModel(
     private val searchOptionSetOption: SearchOptionSetOption,
     val field: FieldUiModel,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
 ) : ViewModel() {
     val options: MutableLiveData<List<Option>> = MutableLiveData(emptyList())
     val searchValue: MutableLiveData<String> = MutableLiveData("")
@@ -37,7 +38,7 @@ class OptionSetDialogViewModel(
                 field.optionSet,
                 textToSearch,
                 field.optionSetConfiguration?.optionsToShow ?: emptyList(),
-                field.optionSetConfiguration?.optionsToHide ?: emptyList()
+                field.optionSetConfiguration?.optionsToHide ?: emptyList(),
             )
         }
     }
@@ -46,7 +47,7 @@ class OptionSetDialogViewModel(
 class OptionSetDialogViewModelFactory(
     private val searchOptionSetOption: SearchOptionSetOption,
     private val field: FieldUiModel,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
 
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
