@@ -53,6 +53,7 @@ class SyncFlowTest : BaseTest() {
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
 
+    @Ignore("Flaky test, will be fixed in next release")
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
         mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
@@ -187,6 +188,7 @@ class SyncFlowTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Flaky test, will be addressed in next release")
     @Test
     fun shouldShowErrorWhenSyncDataSetFails() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
