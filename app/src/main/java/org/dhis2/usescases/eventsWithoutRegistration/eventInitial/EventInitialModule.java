@@ -11,12 +11,10 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.data.forms.EventRepository;
-import org.dhis2.data.forms.FormRepository;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
@@ -116,12 +114,6 @@ public class EventInitialModule {
                 new LegendValueProviderImpl(d2, resourceManager),
                 new AutoCompleteProviderImpl(new PreferenceProviderImpl(context))
         );
-    }
-
-    @Provides
-    FormRepository formRepository(@NonNull RulesRepository rulesRepository,
-                                  @NonNull D2 d2) {
-        return new EventRepository(rulesRepository, eventUid, d2);
     }
 
     @Provides

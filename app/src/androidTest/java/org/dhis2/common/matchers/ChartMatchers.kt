@@ -28,7 +28,7 @@ class ChartMatchers {
                         ChartType.LINE_CHART -> view is LineChart
                         ChartType.BAR_CHART -> view is BarChart
                         ChartType.TABLE, ChartType.LINE_LISTING -> view is ComposeView
-                        ChartType.SINGLE_VALUE -> view.findViewById<View>(R.id.singleValueTitle) != null
+                        ChartType.SINGLE_VALUE -> view is ComposeView
                         ChartType.NUTRITION -> view is LineChart
                         ChartType.RADAR -> view is RadarChart
                         ChartType.PIE_CHART -> view is PieChart

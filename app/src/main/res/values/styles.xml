@@ -1,7 +1,4 @@
 <resources>
-    <style name="ErrorActivityTheme" parent="AppTheme">
-        <item name="colorAccent">@color/text_black_4d4d4d</item>
-    </style>
 
     <style name="DhisTabLayout" parent="Base.Widget.Design.TabLayout">
         <item name="tabIndicatorColor">?attr/colorAccent</item>
@@ -65,13 +62,6 @@
         <item name="android:textColor">@color/openid_text_color_selector</item>
     </style>
 
-    <style name="dhisInputTextColorPrimary" parent="TextAppearance.AppCompat">
-        <item name="android:textColorHint">?colorPrimary</item>
-        <item name="colorAccent">?colorPrimary</item>
-        <item name="colorControlNormal">?colorPrimary</item>
-        <item name="colorControlActivated">?colorPrimary</item>
-    </style>
-
     <style name="dataInputTextAccent" parent="TextAppearance.AppCompat">
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -79,35 +69,10 @@
     </style>
 
 
-    <style name="dataInputText" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="checkBox" parent="Base.Theme.AppCompat">
-        <item name="colorAccent">?colorPrimary</item>
-        <item name="android:colorAccent">?colorPrimary</item>
-        <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
-    </style>
-
     <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
         <item name="colorAccent">@color/colorPrimary_00b</item>
         <item name="android:textColorSecondary">@color/colorGreyDefault
         </item> <!-- for check state -->
-    </style>
-
-    <style name="FullWidthButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?colorAccent</item>
-        <item name="android:background">@drawable/full_width_button_bg</item>
-    </style>
-
-    <style name="HalfWidthButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:textColor">?colorAccent</item>
-        <item name="android:background">@drawable/full_width_button_bg</item>
     </style>
 
     <style name="TextButton">
@@ -115,12 +80,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?colorPrimary</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
-    </style>
-
-    <style name="TextView.InputLabel" parent="TextAppearance.AppCompat.Caption">
-        <item name="android:textColor">?android:textColorHint</item>
-        <item name="android:paddingLeft">4dp</item>
-        <item name="android:paddingRight">4dp</item>
     </style>
 
     <style name="ButtonRoundedGrey" parent="Base.TextAppearance.AppCompat.Button">
@@ -144,12 +103,6 @@
         <item name="android:textAlignment">textStart</item>
     </style>
 
-    <style name="EventTabStyle">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?colorAccent</item>
-        <item name="textAllCaps">false</item>
-    </style>
-
     <style name="BottomDialogItem" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -158,36 +111,6 @@
         <item name="android:textColor">@drawable/text_enabled_selector</item>
         <item name="drawableStartCompat">@drawable/ic_unchecked_circle</item>
         <item name="android:drawablePadding">20dp</item>
-    </style>
-
-    <style name="NoFullScreenEditText" parent="Widget.AppCompat.AutoCompleteTextView">
-        <item name="android:imeOptions">actionNext|flagNoFullscreen</item>
-    </style>
-
-    <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:background">#00000000</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-    </style>
-
-    <style name="PrimaryOulineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="colorAccent">?colorAccent</item>
-    </style>
-
-    <style name="radioPrimary">
-        <item name="colorAccent">?colorPrimaryLight</item>
-    </style>
-
-    <style name="primaryCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="buttonTint">?colorPrimary</item>
-    </style>
-
-    <style name="dhisSwitch">
-        <!-- colorPrimary is used for the default action bar background -->
-        <item name="colorPrimary">?colorPrimary</item>
     </style>
 
     <style name="ErrorText" parent="TextAppearance.AppCompat">
