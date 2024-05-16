@@ -213,7 +213,7 @@ fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
     eventCatComboUiModel: EventCatComboUiModel,
 ) {
-    var selectedItem by remember {
+    var selectedItem by remember(eventCatComboUiModel.eventCatCombo.selectedCategoryOptions) {
         mutableStateOf(
             eventCatComboUiModel.eventCatCombo.selectedCategoryOptions[eventCatComboUiModel.category.uid]?.displayName()
                 ?: eventCatComboUiModel.eventCatCombo.categoryOptions?.get(eventCatComboUiModel.category.uid)?.displayName(),
