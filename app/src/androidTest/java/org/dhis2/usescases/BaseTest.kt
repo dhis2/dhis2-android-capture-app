@@ -169,12 +169,13 @@ open class BaseTest {
     }
 
     private fun disableComposeForms() {
+        preferencesRobot.saveValue(SET_FROM_TESTING, true)
         preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
     }
 
 
     fun enableComposeForms() {
-        preferencesRobot.saveValue("SET_FROM_DEVELOPMENT", true)
+        preferencesRobot.saveValue(SET_FROM_TESTING, true)
         preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, true)
     }
 
@@ -184,5 +185,6 @@ open class BaseTest {
         val disableAnimationsTestRule = DisableAnimations()
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
         const val API = "api"
+        const val SET_FROM_TESTING = "SET_FROM_TESTING"
     }
 }
