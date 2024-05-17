@@ -15,7 +15,6 @@ import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
@@ -114,11 +113,6 @@ public class EventInitialModule {
                 new LegendValueProviderImpl(d2, resourceManager),
                 new AutoCompleteProviderImpl(new PreferenceProviderImpl(context))
         );
-    }
-
-    @Provides
-    RulesRepository rulesRepository(@NonNull D2 d2) {
-        return new RulesRepository(d2);
     }
 
     @Provides

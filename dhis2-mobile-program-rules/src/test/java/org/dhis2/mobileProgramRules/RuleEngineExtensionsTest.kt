@@ -1,10 +1,5 @@
-package org.dhis2.bindings
+package org.dhis2.mobileProgramRules
 
-import org.dhis2.form.bindings.toRuleActionList
-import org.dhis2.form.bindings.toRuleAttributeValue
-import org.dhis2.form.bindings.toRuleDataValue
-import org.dhis2.form.bindings.toRuleEngineObject
-import org.dhis2.form.bindings.toRuleVariable
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -14,7 +9,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleAction
-import org.hisp.dhis.android.core.program.ProgramRuleActionType.SHOWERROR
 import org.hisp.dhis.android.core.program.ProgramRuleVariable
 import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType
@@ -32,7 +26,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
 
-class RuleExtensionsTest {
+class RuleEngineExtensionsTest {
 
     private val dataElementRepository: DataElementCollectionRepository = Mockito.mock(
         DataElementCollectionRepository::class.java,
@@ -372,16 +366,6 @@ class RuleExtensionsTest {
             .build()
         val ruleEngineAction = ruleAction.toRuleEngineObject()
         assertTrue(ruleEngineAction.type == "unsupported")
-    }
-
-    @Test
-    fun `Should parse program rule error`() {
-        val programRuleAction = ProgramRuleAction.builder()
-            .uid("uid")
-            .programRuleActionType(SHOWERROR)
-            .build()
-        val ruleActionList = listOf<ProgramRuleAction>(programRuleAction).toRuleActionList()
-        assertTrue(ruleActionList.first().type == "error")
     }
 
     @Test
