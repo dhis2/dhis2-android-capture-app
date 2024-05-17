@@ -1,0 +1,44 @@
+name: Deploy to Github
+
+env:
+  main_project_module: app
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag_name:
+        description: 'tag'
+        required: true
+        type: string
+      is_patch:
+        description: 'Is the new version a patch'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "patch_release"
+        uses: ncipollo/release-action@v1
+        if: ${{ inputs.is_patch }}
+        with:
+          generateReleaseNotes: true
+          name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
+          tag: ${{ inputs.release_tag_name }}
+#          artifacts: ",,"
+
+      - name: "new_release"
+        if: !${{ inputs.is_patch }}
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
+          tag: ${{ inputs.release_tag_name }}
+#          artifacts: ",,"
