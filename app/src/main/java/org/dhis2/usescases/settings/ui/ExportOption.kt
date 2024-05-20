@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,13 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
@@ -48,6 +46,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
 fun ExportOption(
@@ -95,15 +94,15 @@ fun ExportOption(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
+                    .height(Spacing.Spacing72)
                     .padding(
-                        start = 72.dp,
-                        top = 16.dp,
-                        end = 16.dp,
-                        bottom = 16.dp,
+                        start = Spacing.Spacing48,
+                        top = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                        bottom = Spacing.Spacing16,
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16),
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
@@ -124,7 +123,7 @@ fun ExportOption(
                     text = stringResource(id = R.string.download),
                     icon = {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_file_download),
+                            imageVector = Icons.Filled.Download,
                             contentDescription = "Download",
                             tint = MaterialTheme.colors.primary,
                         )
@@ -161,10 +160,10 @@ fun ExportOption(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(16.dp),
+                    .height(Spacing.Spacing72)
+                    .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16),
             ) {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
             }
