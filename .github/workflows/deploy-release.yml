@@ -1,13 +1,8 @@
-# This is a basic workflow that is manually triggered
-
 name: Deploy Release
 
 env:
-  # The name of the main module repository
   main_project_module: app
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   workflow_dispatch:
     inputs:
@@ -51,7 +46,7 @@ jobs:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
     - name: Build release apk
-      run: ./gradlew app:assembleDhisRelease app:assembleDebug
+      run: ./gradlew app:assembleDhisRelease app:assembleDhisDebug
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
