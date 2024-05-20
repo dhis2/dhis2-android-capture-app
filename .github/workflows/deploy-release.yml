@@ -25,7 +25,7 @@ on:
         default: false
   
 jobs:
-  build_apk:
+  Build-Apk:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -54,36 +54,45 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
-    - name: Read version name from file
-      working-directory: ./gradle
-      id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+  Deploy-To-Play-Store:
+    runs-on: ubuntu-latest
+    needs: [Build-Apk]
+    steps:
+      - name: Read version name from file
+        working-directory: ./gradle
+        id: read-version
+        run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+        if: ${{ inputs.google_play_release }}
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.dhis2
+          releaseFile: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk
+          track: alpha
+          whatsNewDirectory: /whatsnew
+  Deploy-To-Github:
+    runs-on: ubuntu-latest
+    needs: [Build-Apk]
+    steps:
+      - name: Read version name from file
+        working-directory: ./gradle
+        id: read-version
+        run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+        if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
+      - name: Github Patch Release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
+          tag: ${{ inputs.release_tag_name }}
+          artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
 
-    # Deploy to Alpha in Play Store
-      if: ${{ inputs.google_play_release }}
-    - name: Upload to Play Store
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        packageName: com.dhis2
-        releaseFile: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk
-        track: alpha
-        whatsNewDirectory: /whatsnew
-
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
-    - name: Github Patch Release
-      uses: ncipollo/release-action@v1
-      with:
-        generateReleaseNotes: true
-        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
-        tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
-
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
-    - name: Github New Release
-      uses: ncipollo/release-action@v1
-      with:
-        generateReleaseNotes: true
-        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
-        tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
+        if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
+      - name: Github New Release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
+          tag: ${{ inputs.release_tag_name }}
+          artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
