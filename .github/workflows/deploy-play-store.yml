@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Deploy to PLay Store
+name: Deploy Release
 
 env:
   # The name of the main module repository
@@ -10,41 +10,48 @@ env:
 # or API.
 on:
   workflow_dispatch:
+    inputs:
+      github_release:
+        description: 'enable github release'
+        required: true
+        type: boolean
+      google_play_release:
+        description: 'enable google play release'
+        required: true
+        type: boolean
+      release_tag_name:
+        description: 'tag'
+        required: true
+        type: string
+      is_patch:
+        description: 'Is the new version a patch'
+        required: true
+        type: boolean
+        default: false
   
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
+  build_apk:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Runs a single command using the runners shell
     - uses: actions/checkout@v3
-
-    # Set Repository Name As Env Variable
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
-
     - name: Set Up JDK
       uses: actions/setup-java@v3
       with:
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '17'
         cache: 'gradle'
-
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
-      
     - name: Decode Keystore
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
-    - name: build prod
-      run: ./gradlew app:assembleDhisRelease
+    - name: Build release apk
+      run: ./gradlew app:assembleDhisRelease app:assembleDebug
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -58,6 +65,7 @@ jobs:
       run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
 
     # Deploy to Alpha in Play Store
+      if: ${{ inputs.google_play_release }}
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1
       with:
@@ -66,3 +74,21 @@ jobs:
         releaseFile: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk
         track: alpha
         whatsNewDirectory: /whatsnew
+
+      if: ${{ inputs.github_release && inputs.is_patch }}
+    - name: Github Patch Release
+      uses: ncipollo/release-action@v1
+      with:
+        generateReleaseNotes: true
+        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
+        tag: ${{ inputs.release_tag_name }}
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
+
+      if: !${{ inputs.github_release && inputs.is_patch }}
+    - name: Github New Release
+      uses: ncipollo/release-action@v1
+      with:
+        generateReleaseNotes: true
+        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
+        tag: ${{ inputs.release_tag_name }}
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
