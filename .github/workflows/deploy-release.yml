@@ -55,6 +55,7 @@ jobs:
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
   Deploy-To-Play-Store:
+    if: ${{ inputs.google_play_release }}
     runs-on: ubuntu-latest
     needs: [Build-Apk]
     steps:
@@ -62,7 +63,6 @@ jobs:
         working-directory: ./gradle
         id: read-version
         run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
-        if: ${{ inputs.google_play_release }}
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
@@ -85,7 +85,7 @@ jobs:
         with:
           generateReleaseNotes: true
           name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
-          tag: ${{ inputs.release_tag_name }}
+#          tag: ${{ inputs.release_tag_name }}
           artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
 
         if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
@@ -94,5 +94,5 @@ jobs:
         with:
           generateReleaseNotes: true
           name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
-          tag: ${{ inputs.release_tag_name }}
+#          tag: ${{ inputs.release_tag_name }}
           artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
