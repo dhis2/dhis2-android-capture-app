@@ -202,8 +202,8 @@ class EventCaptureActivity :
             setUpNavigationBar()
             setUpEventCaptureFormLandscape(newEventUid)
             showProgress()
-            presenter!!.initNoteCounter()
-            presenter!!.init()
+            presenter.initNoteCounter()
+            presenter.init()
         }
     }
 
