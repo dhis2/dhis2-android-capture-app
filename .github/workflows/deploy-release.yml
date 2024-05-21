@@ -31,6 +31,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+    - name: Read version name from file
+      working-directory: ./gradle
+      id: read-version
+      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
     - name: Set Up JDK
       uses: actions/setup-java@v3
       with:
@@ -53,11 +57,6 @@ jobs:
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
-
-    - name: Read version name from file
-      working-directory: ./gradle
-      id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
 
       if: ${{ inputs.google_play_release }}
     - name: Upload to Play Store
