@@ -58,8 +58,8 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
-      if: ${{ inputs.google_play_release }}
     - name: Upload to Play Store
+      if: ${{ inputs.google_play_release }}
       uses: r0adkll/upload-google-play@v1
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
@@ -69,8 +69,8 @@ jobs:
         whatsNewDirectory: /whatsnew
 
 
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
     - name: Github Patch Release
+      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
@@ -80,8 +80,8 @@ jobs:
         tag: ${{ inputs.release_tag_name }}
         artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
 
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
     - name: Github New Release
+      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
