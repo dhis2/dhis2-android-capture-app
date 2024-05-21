@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.GeometryController
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -141,7 +142,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpEventDetails() {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventDetails(
                 selectedDate = eventDate.value.currentDate,
@@ -154,13 +155,13 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
                 .flowOn(Dispatchers.IO)
@@ -168,7 +169,7 @@ class EventDetailsViewModel(
                     _eventDate.value = it
                     setUpEventDetails()
                     setUpOrgUnit(selectedDate = it.currentDate)
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
@@ -195,14 +196,14 @@ class EventDetailsViewModel(
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventCatCombo.value = it
                     setUpEventDetails()
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
@@ -213,7 +214,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpCoordinates(value: String? = "") {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCoordinates(value)
                 .flowOn(Dispatchers.IO)
@@ -233,20 +234,20 @@ class EventDetailsViewModel(
                     )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         if (isChecked) {
             configureEventTemp(status).apply {
                 _eventTemp.value = this
                 setUpEventDetails()
             }
         }
-        EventDetailIdlingResourceSingleton.decrement()
+        EventIdlingResourceSingleton.decrement()
     }
 
     fun getSelectableDates(eventDate: EventDate): SelectableDates {
