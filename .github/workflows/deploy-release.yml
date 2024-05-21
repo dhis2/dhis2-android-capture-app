@@ -59,7 +59,7 @@ jobs:
       id: read-version
       run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
 
-      if: ${{ inputs.google_play_release }
+      if: ${{ inputs.google_play_release }}
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1
       with:
