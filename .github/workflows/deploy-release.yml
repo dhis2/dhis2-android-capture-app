@@ -50,7 +50,7 @@ jobs:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
     - name: Build release apk
-      run: ./gradlew app:assembleDhisRelease app:assembleDhisDebug
+      run: ./gradlew app:assembleDhisRelease app:assembleDhisDebug app:assembleDhisPlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
