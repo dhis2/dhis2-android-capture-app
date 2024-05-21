@@ -59,6 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Build-Apk]
     steps:
+      - uses: actions/checkout@v3
       - name: Read version name from file
         working-directory: ./gradle
         id: read-version
@@ -75,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Build-Apk]
     steps:
+      - uses: actions/checkout@v3
       - name: Read version name from file
         working-directory: ./gradle
         id: read-version
@@ -83,6 +85,8 @@ jobs:
       - name: Github Patch Release
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
+          draft: true
           generateReleaseNotes: true
           name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
           tag: ${{ inputs.release_tag_name }}
@@ -92,6 +96,8 @@ jobs:
       - name: Github New Release
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
+          draft: true
           generateReleaseNotes: true
           name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
           tag: ${{ inputs.release_tag_name }}
