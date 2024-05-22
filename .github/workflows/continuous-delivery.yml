@@ -5,15 +5,13 @@ env:
   main_project_module: app
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
       - develop
       - release/*
       - ANDROAPP-*
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 jobs:
   deployment_job:
@@ -23,6 +21,7 @@ jobs:
 
       # Set Current Date As Env Variable
       - name: Set current date as env variable
+        id: date
         run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       # Set Repository Name As Env Variable
@@ -52,5 +51,5 @@ jobs:
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.repository_name }} - Android APK ${{ env.current_date }} ${{ steps.date.outputs.date }}
+          name: ${{ env.repository_name }} - Android APK ${{ env.current_date }} - ${{ steps.date.outputs.date }}
           path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
