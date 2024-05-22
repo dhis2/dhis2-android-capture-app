@@ -404,10 +404,10 @@ class TeiDashboardMobileActivity :
         if (this.isLandscape()) {
             if (binding.teiTablePager?.adapter == null) {
                 setViewpagerAdapter()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
+                    .commitAllowingStateLoss()
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
-                .commitAllowingStateLoss()
         } else {
             if (binding.teiPager?.adapter == null) {
                 setViewpagerAdapter()
