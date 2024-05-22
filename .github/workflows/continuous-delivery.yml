@@ -3,8 +3,6 @@ name: Continuous Delivery
 env:
 
   main_project_module: app
-  current_date: ${{ github.event.inputs.date_today }}
-  current_branch: ${{ github.ref }}
 
 on:
   push:
@@ -13,7 +11,6 @@ on:
       - develop
       - release/*
       - ANDROAPP-*
-
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -55,5 +52,5 @@ jobs:
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.repository_name }} - Android APK ${{ env.current_date }} Branch - ${{ env.current_branch }}
+          name: ${{ env.repository_name }} - Android APK ${{ env.current_date }} ${{ steps.date.outputs.date }}
           path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
