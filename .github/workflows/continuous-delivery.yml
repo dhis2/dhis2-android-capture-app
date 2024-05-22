@@ -1,4 +1,4 @@
-name: Continuous change name test
+name: Continuous delivery
 
 env:
 
@@ -11,7 +11,7 @@ on:
       - main
       - develop
       - release/*
-      - ANDROAPP-*
+      - ANDROAPP-6165-CI-Migrate-ReadyForTestingAPK-job-from-Bitrise-to-GIthub-Actions
 
 jobs:
   deployment_job:
