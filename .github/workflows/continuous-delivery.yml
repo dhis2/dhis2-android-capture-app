@@ -22,7 +22,7 @@ jobs:
       # Set Current Date
       - name: Set current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
       # Set Repository Name As Env Variable
       - name: Set repository name as env variable
