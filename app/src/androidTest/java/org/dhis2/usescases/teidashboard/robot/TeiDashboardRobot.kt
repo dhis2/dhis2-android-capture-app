@@ -12,7 +12,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -395,7 +397,15 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnTimelineEvents() {
-        onView(withText(R.string.show_events_timeline)).perform(click())
+        try {
+            onView(withText(R.string.show_events_timeline)).perform(click())
+        }catch (e: NoMatchingViewException){
+            checkIfGroupedEventsIsVisible()
+        }
+    }
+
+    private fun checkIfGroupedEventsIsVisible(){
+        onView(withText(R.string.group_events_by_stage)).check(matches(isDisplayed()))
     }
 
     fun checkEventWasScheduled(eventName: String, position: Int) {
