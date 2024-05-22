@@ -64,7 +64,7 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
-        releaseFile: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk
+        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk
         track: alpha
         whatsNewDirectory: /whatsnew
 
