@@ -22,7 +22,9 @@ jobs:
       # Set Current Date As Env Variable
       - name: Set current date as env variable
         id: date
-        run: echo "name=date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+        run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
+
       # Set Repository Name As Env Variable
       - name: Set repository name as env variable
         run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
