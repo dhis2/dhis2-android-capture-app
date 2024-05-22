@@ -66,7 +66,7 @@ jobs:
         packageName: com.dhis2
         releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk
         track: alpha
-        whatsNewDirectory: /whatsnew
+        whatsNewDirectory: whatsnew
 
 
     - name: Github Patch Release
