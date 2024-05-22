@@ -106,6 +106,7 @@
     <string name="completed">Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="re_open">re-open</string>
+    <string name="re_open_form">Re-open form</string>
     <string name="activate">Activate</string>
     <string name="active">Active</string>
 
@@ -716,7 +717,7 @@
     <string name="download_tei_error">The selected %s could not be downloaded.</string>
     <string name="completed_by">Completed by %s: %s</string>
     <string name="updated_time">Updated: %s</string>
-    <string name="action_done">Done!</string>
+    <string name="action_done">Done</string>
     <string name="validation_internal_error_datasets">We could not check data quality. Contact your administrator</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reopen_question">Do you want to re-open the data set?</string>

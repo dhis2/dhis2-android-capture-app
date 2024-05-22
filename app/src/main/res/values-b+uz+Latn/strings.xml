@@ -129,8 +129,6 @@
     <string name="delete">Oʼchirib tashlash</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Qayd jurnali</string>
     <string name="active_programs">Faol dasturlar</string>
     <string name="to_enroll_programs">Roʼyxatga olish dasturlari</string>
     <string name="enroll">Roʼyxatga kiritish</string>
@@ -649,7 +647,6 @@
     <string name="download_tei_error">Tanlangan %s  yuklanmadi.</string>
     <string name="completed_by">%s tomonidan bajarilgan: %s</string>
     <string name="updated_time">Yangilangan: %s</string>
-    <string name="action_done">Bajarildi!</string>
     <string name="validation_internal_error_datasets">Maʼlumotlar sifatini tekshirib boʼlmadi. Аdministratoringizga murojaat qiling</string>
     <string name="are_you_sure">Ishonchinigiz komilmi?</string>
     <string name="reopen_question">Maʼlumotlar toʼplamini qayta ochib koʼrmoqchimisiz?</string>

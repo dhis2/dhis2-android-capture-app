@@ -143,8 +143,6 @@
     <string name="delete">Видалити</string>
     <string name="total">Підсумок</string>
     <string name="most_recent_event_date">Дата останнього випадку</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Список реєстрацій</string>
     <string name="active_programs">Активні програми</string>
     <string name="to_enroll_programs">Програми для реєстрації</string>
     <string name="enroll">Зареєструвати</string>
@@ -685,7 +683,6 @@
     <string name="download_tei_error">Не вдалося завантажити вибраний %s.</string>
     <string name="completed_by">Виконано з %s: %s</string>
     <string name="updated_time">Оновлено: %s</string>
-    <string name="action_done">Готово!</string>
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>

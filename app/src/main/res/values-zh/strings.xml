@@ -140,8 +140,6 @@
     <string name="delete">删除</string>
     <string name="total">总共</string>
     <string name="most_recent_event_date">最近事件日期</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
     <string name="to_enroll_programs">注册的项目</string>
     <string name="enroll">注册</string>
@@ -679,7 +677,6 @@
     <string name="download_tei_error">选择的%s不能下载</string>
     <string name="completed_by">%s完成：%s</string>
     <string name="updated_time">已更新：%s</string>
-    <string name="action_done">完成！</string>
     <string name="validation_internal_error_datasets">不能检查质量，联系管理员</string>
     <string name="are_you_sure">你确信？</string>
     <string name="reopen_question">你要重新打开数据集？</string>

@@ -87,6 +87,7 @@ dependencies {
 
     implementation(project(":commons"))
     implementation(project(":compose-table"))
+    implementation(project(":dhis2-mobile-program-rules"))
 
     implementation(libs.bundles.stock.implementation)
     coreLibraryDesugaring(libs.bundles.stock.core)
@@ -94,7 +95,6 @@ dependencies {
     debugImplementation(libs.bundles.stock.debugImplementation)
     releaseImplementation(libs.bundles.stock.releaseImplementation)
     testImplementation(libs.bundles.stock.test)
-    androidTestImplementation(libs.bundles.stock.androidTest)
 
     debugImplementation(libs.analytics.flipper.network) {
         exclude("com.squareup.okhttp3")

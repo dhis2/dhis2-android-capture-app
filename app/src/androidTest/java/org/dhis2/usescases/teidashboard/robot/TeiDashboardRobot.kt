@@ -199,6 +199,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         var qrLenght = 1
 
         while (qrLenght < 8) {
+            waitForView(withId(R.id.next))
             onView(withId(R.id.next)).perform(click())
             qrLenght++
         }

@@ -65,7 +65,6 @@ dependencies {
         exclude("com.mapbox.mapboxsdk", "mapbox-android-sdk")
     }
 
-    androidTestImplementation(libs.bundles.map.androidTest)
     testImplementation(libs.bundles.map.test)
     coreLibraryDesugaring(libs.desugar)
 }

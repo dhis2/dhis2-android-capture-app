@@ -19,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -60,6 +59,7 @@ import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.composetable.actions.TableResizeActions
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -161,12 +161,13 @@ fun MainContent(
                             manageStockViewModel.onSearchQueryChanged("")
                             closeButtonVisibility = 0f
                         },
-                    ) {
-                        Icon(
-                            painter = closeResource,
-                            contentDescription = "",
-                        )
-                    }
+                        icon = {
+                            Icon(
+                                painter = closeResource,
+                                contentDescription = "",
+                            )
+                        },
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -194,13 +195,14 @@ fun MainContent(
                     .alignBy(FirstBaseline)
                     .align(alignment = Alignment.CenterVertically),
                 enabled = isFrontLayerDisabled != true,
-            ) {
-                Icon(
-                    painter = qrcodeResource,
-                    contentDescription = "",
-                    tint = themeColor,
-                )
-            }
+                icon = {
+                    Icon(
+                        painter = qrcodeResource,
+                        contentDescription = "",
+                        tint = themeColor,
+                    )
+                },
+            )
 
             AnimatedVisibility(visible = tableResizeActions != null) {
                 IconButton(
@@ -211,13 +213,14 @@ fun MainContent(
                         .weight(weightValue)
                         .alignBy(FirstBaseline)
                         .align(alignment = Alignment.CenterVertically),
-                ) {
-                    Icon(
-                        painter = resetResize,
-                        contentDescription = "",
-                        tint = themeColor,
-                    )
-                }
+                    icon = {
+                        Icon(
+                            painter = resetResize,
+                            contentDescription = "",
+                            tint = themeColor,
+                        )
+                    },
+                )
             }
 
             AnimatedVisibility(
@@ -231,13 +234,14 @@ fun MainContent(
                         .weight(weightValueArrow, weightValueArrowStatus)
                         .alignBy(FirstBaseline)
                         .align(alignment = Alignment.CenterVertically),
-                ) {
-                    Icon(
-                        resource,
-                        contentDescription = null,
-                        tint = themeColor,
-                    )
-                }
+                    icon = {
+                        Icon(
+                            resource,
+                            contentDescription = null,
+                            tint = themeColor,
+                        )
+                    },
+                )
             }
             closeButtonVisibility = when (search) {
                 "" -> 0f

@@ -27,6 +27,8 @@ class DashboardViewModel(
 
     private val eventUid = MutableLiveData<String>()
 
+    private val selectedEventUid = MutableLiveData<String>()
+
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
 
     private var _showFollowUpBar = MutableStateFlow(false)
@@ -167,6 +169,16 @@ class DashboardViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             }
+        }
+    }
+
+    fun selectedEventUid(): LiveData<String> {
+        return selectedEventUid
+    }
+
+    fun updateSelectedEventUid(uid: String?) {
+        if (selectedEventUid.value != uid) {
+            this.selectedEventUid.value = uid
         }
     }
 }

@@ -99,8 +99,6 @@
     <string name="date_default">ថ្ងៃថ្ងៃ/ខែខែ/ឆ្នាំឆ្នាំឆ្នាំឆ្នាំ</string>
     <string name="cancel">បោះបង់</string>
     <string name="delete">​លុប​</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
     <string name="to_enroll_programs">កម្មវិធីចុះឈ្មោះ</string>
     <string name="enroll">ចុះឈ្មោះ</string>

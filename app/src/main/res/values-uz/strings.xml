@@ -137,8 +137,6 @@
     <string name="delete">Ўчириб ташлаш</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
     <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
     <string name="enroll">Рўйхатга киритиш</string>
@@ -671,7 +669,6 @@
     <string name="download_tei_error">Танланган %s  юкланмади.</string>
     <string name="completed_by">%s  томонидан бажарилган: %s</string>
     <string name="updated_time">Янгиланган: %s</string>
-    <string name="action_done">Бажарилди!</string>
     <string name="validation_internal_error_datasets">Маълумотлар сифатини текшириб бўлмади. Администраторингизга мурожаат қилинг</string>
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="reopen_question">Маълумотлар тўпламини қайта очиб кўрмоқчимисиз?</string>

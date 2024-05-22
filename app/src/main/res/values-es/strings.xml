@@ -142,8 +142,6 @@
     <string name="delete">Borrar</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Fecha de evento más reciente</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Listado de admisiones</string>
     <string name="active_programs">Programas activos</string>
     <string name="to_enroll_programs">Programas disponibles para inscripción</string>
     <string name="enroll">Admitir</string>
@@ -683,7 +681,6 @@
     <string name="download_tei_error">El %s seleccionado no puede ser descargado.</string>
     <string name="completed_by">Completado por %s: %s</string>
     <string name="updated_time">Actualizado: %s</string>
-    <string name="action_done">¡Listo!</string>
     <string name="validation_internal_error_datasets">No hemos podido verificar la calidad de los datos. Contacte con su administrador</string>
     <string name="are_you_sure">¿Está seguro?</string>
     <string name="reopen_question">¿Quiere reabrir este set de datos?</string>
