@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Continuous change name test
 
 env:
 
@@ -22,7 +22,7 @@ jobs:
       # Set Current Date As Env Variable
       - name: Set current date as env variable
         id: date
-        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       # Set Repository Name As Env Variable
       - name: Set repository name as env variable
