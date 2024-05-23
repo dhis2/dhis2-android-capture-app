@@ -6,7 +6,6 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
