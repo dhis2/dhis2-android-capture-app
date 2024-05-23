@@ -146,12 +146,13 @@ class FilterTest : BaseTest() {
         eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
-        formRobot(composeTestRule) {
+        // Commented because FormRobot class wah eliminated as FormTest was also eliminated
+        /*formRobot(composeTestRule) {
             clickOnSelectOption(1, 1)
             pressBack()
             pressBack()
             pressBack()
-        }
+        }*/
         homeRobot {
             openFilters()
         }
