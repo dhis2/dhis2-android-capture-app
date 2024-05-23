@@ -1,9 +1,5 @@
-Android Capture App for DHIS 2 (v3.0)
 <table>
-<tr> 
-<td> 
-<img src="https://s3-eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/android-chrome-384x384.png" width="800"> 
-</td> 
+<tr>
 <td>
 The new <strong>DHIS2 Android App</strong> allows offline data capture across all DHIS2 data models. Data and metadata are automatically synchronized whenever there is internet access, always keeping the most relevant data for the logged user in the device.
 The app is compatible and we support <strong>41</strong>, <strong>40</strong>, <strong>2.39</strong>.
@@ -96,6 +92,8 @@ Android Local Analytics are built using local data, and wil, update instantly as
 [**Improve app navigation performance for high number of TEIs:**](https://dhis2.atlassian.net/jira/polaris/projects/ROADMAP/ideas/view/4066207?selectedIssue=ROADMAP-208) ****Implementations are more and more demanding in terms of offline need of individual records. This version of the app has been reviewed to optimize performance when there are big numbers of TEIs downloaded locally. ****
 
 **Documentation link: NA**
+
+You can find in Jira details on the [new features](https://dhis2.atlassian.net/issues/?filter=10640) and [bugs fixed](https://dhis2.atlassian.net/issues/?filter=10641) in this version.
 
 Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed information of the features included in the App and how to configure DHIS2 to use it.
 
