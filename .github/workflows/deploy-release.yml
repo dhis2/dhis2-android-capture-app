@@ -64,7 +64,7 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
-        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk
+        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
         track: alpha
         whatsNewDirectory: whatsnew
 
@@ -78,7 +78,7 @@ jobs:
         generateReleaseNotes: true
         name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
         tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
 
     - name: Github New Release
       if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
@@ -89,4 +89,4 @@ jobs:
         bodyFile: "RELEASE.md"
         name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
         tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-dhisPlayServices-release.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-dhis-debug.apk
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

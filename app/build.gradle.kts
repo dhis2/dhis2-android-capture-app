@@ -1,3 +1,5 @@
+import com.android.build.api.variant.impl.VariantOutputImpl
+import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,10 +38,10 @@ android {
     }
 
     signingConfigs {
-        create("release"){
+        create("release") {
             keyAlias = System.getenv("SIGNING_KEY_ALIAS")
             keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
-            System.getenv("SIGNING_KEYSTORE_PATH")?.let {path->
+            System.getenv("SIGNING_KEYSTORE_PATH")?.let { path ->
                 storeFile = file(path)
             }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
@@ -226,6 +228,25 @@ android {
     lint {
         abortOnError = false
         checkReleaseBuilds = false
+    }
+
+    androidComponents {
+        onVariants { variant ->
+            val buildType = variant.buildType
+            val flavorName = variant.flavorName
+            variant.outputs.forEach { output ->
+                if (output is VariantOutputImpl) {
+                    val suffix = when {
+                        buildType == "debug" && flavorName == "dhis" -> "-training"
+                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
+                        else -> ""
+                    }
+
+                    output.outputFileName = "dhis2-v${libs.versions.vName.get()}$suffix.apk"
+                }
+            }
+
+        }
     }
 }
 
