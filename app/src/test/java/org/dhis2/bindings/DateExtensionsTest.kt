@@ -205,6 +205,16 @@ class DateExtensionsTest {
     }
 
     @Test
+    fun `Should return 'In x days', when the scheduled date is same day but more than 3 month and same year`() {
+        val currentDate = currentCalendar().time
+        val date: Date? = currentCalendar().apply {
+            add(Calendar.MONTH, 1)
+        }.time
+        whenever(resourceManager.getPlural(R.plurals.schedule_days, 30, 30)) doReturn "In 30 days"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 30 days")
+    }
+
+    @Test
     fun `Should return 'In x days', when the current date is -x days from the scheduled date and less than 90 days`() {
         val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {

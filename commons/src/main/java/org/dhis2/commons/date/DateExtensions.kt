@@ -124,7 +124,7 @@ fun Date?.toOverdueOrScheduledUiText(
             )
         }
 
-        period.days in 1..89 -> {
+        period.days in 0..89 && period.months in 1..3 -> {
             val intervalDays = if (this.time > currentDay.time) {
                 Interval(currentDay.time, this.time)
             } else {
