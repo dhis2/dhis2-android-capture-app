@@ -115,7 +115,7 @@ class EventCapturePresenterImpl(
     ) {
         when (eventStatus) {
             EventStatus.ACTIVE, EventStatus.COMPLETED -> {
-                val canSkipErrorFix = canSkipErrorFix(
+                var canSkipErrorFix = canSkipErrorFix(
                     hasErrorFields = errorFields.isNotEmpty(),
                     hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
                     hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
@@ -125,6 +125,7 @@ class EventCapturePresenterImpl(
                     eventMode = eventMode,
                     validationStrategy = eventCaptureRepository.validationStrategy(),
                 )
+                if (eventStatus == EventStatus.COMPLETED) canSkipErrorFix = false
                 val eventCompletionDialog = configureEventCompletionDialog.invoke(
                     errorFields,
                     emptyMandatoryFields,
