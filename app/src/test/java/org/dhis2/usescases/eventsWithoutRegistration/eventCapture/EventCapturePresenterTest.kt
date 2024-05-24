@@ -258,7 +258,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, true),
+            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false),
         ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
         whenever(eventRepository.isEventEditable(any())) doReturn true
@@ -281,7 +281,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, true),
+            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false),
         ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
         whenever(eventRepository.isEventEditable(any())) doReturn true
