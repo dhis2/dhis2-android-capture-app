@@ -8,7 +8,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -101,10 +101,10 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickOnEventReportDate() {
+    fun clickOnEventDueDate() {
         composeTestRule.onNode(
             hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON") and hasAnySibling(
-                hasText("Report date")
+                hasText("Due date")
             )
         ).assertIsDisplayed().performClick()
 
@@ -118,7 +118,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun typeOnDateParameter(dateValue: String) {
         composeTestRule.apply {
             onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performClick()
-            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)
+            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextReplacement(dateValue)
         }
     }
 

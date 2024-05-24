@@ -273,7 +273,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuProgramEnrollments()
         }
 
-        enrollmentRobot {
+        enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
             clickOnPersonAttributes(personAttribute)

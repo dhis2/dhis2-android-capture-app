@@ -39,6 +39,7 @@ class TeiFlowTest : BaseTest() {
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
+        enableComposeForms()
         setupCredentials()
         setDatePicker()
         prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
@@ -104,7 +105,5 @@ class TeiFlowTest : BaseTest() {
         const val LASTNAME = "Stuart"
 
         const val DATE_FORMAT = "dd/M/yyyy"
-        const val DATE_PICKER_FORMAT = ", d MMMM"
-
     }
 }
