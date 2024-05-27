@@ -1,13 +1,17 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -15,22 +19,21 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.containsString
 
-fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
-    EnrollmentRobot().apply {
+fun enrollmentRobot(
+    composeTestRule: ComposeTestRule,
+    enrollmentRobot: EnrollmentRobot.() -> Unit
+) {
+    EnrollmentRobot(composeTestRule).apply {
         enrollmentRobot()
     }
 }
 
-class EnrollmentRobot : BaseRobot() {
+class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
         composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
@@ -43,30 +46,6 @@ class EnrollmentRobot : BaseRobot() {
 
     fun clickOnSaveEnrollment() {
         onView(withId(R.id.save)).perform(click())
-    }
-
-    fun clickOnPersonAttributes(attribute: String) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<FormViewHolder>(
-                    hasDescendant(withText(containsString(attribute))),
-                    clickChildViewWithId(R.id.section_details)
-                )
-            )
-    }
-
-    fun scrollToBottomProgramForm() {
-        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
-    }
-
-    fun clickOnCalendarItem() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<DashboardProgramViewHolder>(
-                    hasDescendant(withText(containsString(DATE_OF_BIRTH))),
-                    clickChildViewWithId(R.id.inputEditText)
-                )
-            )
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
@@ -123,28 +102,27 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
-    fun clickOnInputDate(label: String) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<FormViewHolder>(
-                    hasDescendant(withText(label)), clickChildViewWithId(R.id.inputEditText)
-                )
-            )
+    fun openFormSection(personAttribute: String) {
+        composeTestRule.onNodeWithText(personAttribute).performClick()
     }
 
-    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.datePicker)).perform(
-            PickerActions.setDate(
-                year,
-                monthOfYear,
-                dayOfMonth
+    fun typeOnInputDateField(dateValue: String, title: String) {
+        composeTestRule.apply {
+            val node = onNode(
+                hasTestTag(
+                    "INPUT_DATE_TIME_TEXT_FIELD"
+                ) and hasAnySibling(
+                    hasText(title)
+                ),
+                useUnmergedTree = true,
             )
-        )
+            node.performTextClearance()
+            node.performTextInput(dateValue)
+        }
     }
 
     companion object {
         const val ACTIVE_PROGRAMS = "Active programs"
         const val PAST_PROGRAMS = "Past programs"
-        const val DATE_OF_BIRTH = "Date of birth"
     }
 }

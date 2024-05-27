@@ -7,14 +7,12 @@ import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.intent.FormIntent.OnFocus
 import org.dhis2.form.ui.intent.FormIntent.OnSection
-import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class SectionUiModelImpl(
     override val uid: String,
-    override val layoutId: Int,
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,
@@ -23,7 +21,6 @@ data class SectionUiModelImpl(
     override val mandatory: Boolean = false,
     override val label: String,
     override val programStageSection: String? = null,
-    override val style: FormUiModelStyle? = null,
     override val hint: String? = null,
     override val description: String? = null,
     override val valueType: ValueType? = null,
@@ -144,18 +141,6 @@ data class SectionUiModelImpl(
     override fun invokeIntent(intent: FormIntent) {
         callback?.intent(intent)
     }
-
-    override val textColor: Int?
-        get() = style?.textColor(error, warning)
-
-    override val backGroundColor: Pair<Array<Int>, Int?>?
-        get() =
-            valueType?.let {
-                style?.backgroundColor(it, error, warning)
-            }
-
-    override val hasImage: Boolean
-        get() = false
 
     override val isAffirmativeChecked: Boolean
         get() = false

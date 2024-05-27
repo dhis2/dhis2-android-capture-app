@@ -67,7 +67,6 @@ class UiEventFactoryImplTest {
     private fun provideFieldUiModel() = FieldUiModelImpl(
         uid = "uid",
         label = "label",
-        layoutId = 1,
         valueType = ValueType.TEXT,
         optionSetConfiguration = null,
         autocompleteList = null,

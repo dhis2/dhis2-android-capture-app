@@ -275,7 +275,6 @@ fun SearchFormPreview() {
             items = listOf(
                 FieldUiModelImpl(
                     uid = "uid1",
-                    layoutId = 1,
                     label = "Label 1",
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,
@@ -283,7 +282,6 @@ fun SearchFormPreview() {
                 ),
                 FieldUiModelImpl(
                     uid = "uid2",
-                    layoutId = 2,
                     label = "Label 2",
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,

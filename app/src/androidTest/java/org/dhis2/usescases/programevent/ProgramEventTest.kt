@@ -11,7 +11,6 @@ import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -28,12 +27,6 @@ class ProgramEventTest : BaseTest() {
 
     override fun getPermissionsToBeAccepted(): Array<String> {
         return arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    @Before
-    override fun setUp() {
-        super.setUp()
-        enableComposeForms()
     }
 
     @Test

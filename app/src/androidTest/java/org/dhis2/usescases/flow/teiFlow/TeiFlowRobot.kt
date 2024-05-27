@@ -37,12 +37,15 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             clickOnEnroll()
         }
 
-        enrollmentRobot {
-            clickOnInputDate("Date of enrollment *")
-            selectSpecificDate(enrollmentDate.year, enrollmentDate.month, enrollmentDate.day)
-            clickOnAcceptInDatePicker()
-            clickOnInputDate("LMP Date *")
-            clickOnAcceptInDatePicker()
+        enrollmentRobot(composeTestRule) {
+            typeOnInputDateField(
+                "${enrollmentDate.day}0${enrollmentDate.month}${enrollmentDate.year}",
+                "Date of enrollment *"
+            )
+            typeOnInputDateField(
+                "${enrollmentDate.day}0${enrollmentDate.month}${enrollmentDate.year}",
+                "LMP Date *"
+            )
             clickOnSaveEnrollment()
         }
     }
@@ -53,10 +56,9 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             clickOnMenuProgramEnrollments()
         }
 
-        enrollmentRobot {
+        enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, program)
             clickOnAcceptInDatePicker()
-            scrollToBottomProgramForm()
             clickOnSaveEnrollment()
         }
     }
@@ -67,7 +69,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             clickOnMenuProgramEnrollments()
         }
 
-        enrollmentRobot {
+        enrollmentRobot(composeTestRule) {
             waitToDebounce(1000)
             checkActiveAndPastEnrollmentDetails(enrollmentDetails)
         }
@@ -76,7 +78,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkPastEventsAreClosed(
         programPosition: Int
     ) {
-        enrollmentRobot {
+        enrollmentRobot(composeTestRule) {
             clickOnEnrolledProgram(programPosition)
         }
 

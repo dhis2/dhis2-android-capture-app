@@ -1,5 +1,12 @@
 package org.dhis2.data.service;
 
+import static org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO;
+import static org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO;
+import static org.dhis2.commons.Constants.CONFLICT_TYPE;
+import static org.dhis2.commons.Constants.ORG_UNIT;
+import static org.dhis2.commons.Constants.PERIOD_ID;
+import static org.dhis2.commons.Constants.UID;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -7,8 +14,8 @@ import androidx.work.Data;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.sync.ConflictType;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,13 +27,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import timber.log.Timber;
-
-import static org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO;
-import static org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO;
-import static org.dhis2.commons.Constants.CONFLICT_TYPE;
-import static org.dhis2.commons.Constants.ORG_UNIT;
-import static org.dhis2.commons.Constants.PERIOD_ID;
-import static org.dhis2.commons.Constants.UID;
 
 public class SyncGranularRxWorker extends RxWorker {
 

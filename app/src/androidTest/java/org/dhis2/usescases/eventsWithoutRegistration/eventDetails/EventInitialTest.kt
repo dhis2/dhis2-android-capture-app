@@ -7,16 +7,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -44,15 +45,13 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.ui.MetadataIconData
-import org.mockito.kotlin.any
 
-@ExperimentalCoroutinesApi
+
 class EventInitialTest {
 
     @get:Rule

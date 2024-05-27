@@ -423,13 +423,11 @@ class ProgramRulesTest {
     private fun provideItemList() = listOf(
         SectionUiModelImpl(
             uid = "section1",
-            layoutId = 1,
             label = "section1",
             selectedField = ObservableField(""),
         ),
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 2,
             value = "value01",
             label = "field1",
             valueType = ValueType.TEXT,
@@ -439,7 +437,6 @@ class ProgramRulesTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 3,
             value = "value02",
             label = "field2",
             valueType = ValueType.TEXT,
@@ -449,7 +446,6 @@ class ProgramRulesTest {
         ),
         FieldUiModelImpl(
             uid = "uid003",
-            layoutId = 4,
             value = "value03",
             label = "field3",
             valueType = ValueType.TEXT,
@@ -459,13 +455,11 @@ class ProgramRulesTest {
         ),
         SectionUiModelImpl(
             uid = "section2",
-            layoutId = 5,
             label = "section2",
             selectedField = ObservableField(""),
         ),
         FieldUiModelImpl(
             uid = "uid004",
-            layoutId = 6,
             value = "value04",
             label = "field4",
             valueType = ValueType.TEXT,
@@ -475,7 +469,6 @@ class ProgramRulesTest {
         ),
         FieldUiModelImpl(
             uid = "uid005",
-            layoutId = 7,
             value = "value05",
             label = "field5",
             valueType = ValueType.TEXT,
@@ -485,7 +478,6 @@ class ProgramRulesTest {
         ),
         FieldUiModelImpl(
             uid = "uid006",
-            layoutId = 8,
             value = "value06",
             label = "field6",
             valueType = ValueType.MULTI_TEXT,
@@ -501,7 +493,6 @@ class ProgramRulesTest {
         ),
         FieldUiModelImpl(
             uid = "uid007",
-            layoutId = 9,
             value = "value07",
             label = "field7",
             valueType = ValueType.MULTI_TEXT,

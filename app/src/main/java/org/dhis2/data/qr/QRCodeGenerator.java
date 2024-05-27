@@ -1,5 +1,14 @@
 package org.dhis2.data.qr;
 
+import static org.dhis2.data.qr.QRjson.ATTR_JSON;
+import static org.dhis2.data.qr.QRjson.DATA_JSON;
+import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
+import static org.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
+import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
+import static org.dhis2.data.qr.QRjson.EVENT_JSON;
+import static org.dhis2.data.qr.QRjson.TEI_JSON;
+import static java.util.zip.Deflater.BEST_COMPRESSION;
+
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -12,8 +21,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.usescases.qrCodes.QrViewModel;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Coordinates;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -43,15 +52,6 @@ import java.util.zip.Inflater;
 
 import io.reactivex.Observable;
 import timber.log.Timber;
-
-import static java.util.zip.Deflater.BEST_COMPRESSION;
-import static org.dhis2.data.qr.QRjson.ATTR_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON;
-import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
-import static org.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
-import static org.dhis2.data.qr.QRjson.EVENTS_JSON;
-import static org.dhis2.data.qr.QRjson.EVENT_JSON;
-import static org.dhis2.data.qr.QRjson.TEI_JSON;
 
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.
