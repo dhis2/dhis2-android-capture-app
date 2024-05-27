@@ -205,7 +205,7 @@ class DateExtensionsTest {
     }
 
     @Test
-    fun `Should return 'In x days', when the scheduled date is same day but more than 3 month and same year`() {
+    fun `Should return 'In x days', when the scheduled date is same day but different month and same year`() {
         val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
             add(Calendar.MONTH, 1)

@@ -104,6 +104,9 @@ fun Date?.toOverdueOrScheduledUiText(
     }.toPeriod(PeriodType.yearMonthDayTime())
 
     return when {
+        period.days == 0 && period.months == 0 && period.years == 0 -> {
+            resourceManager.getString(R.string.overdue_today)
+        }
         period.years >= 1 -> {
             getString(
                 resourceManager,
@@ -113,7 +116,6 @@ fun Date?.toOverdueOrScheduledUiText(
                 isOverdue,
             )
         }
-
         period.months >= 3 && period.years < 1 -> {
             getString(
                 resourceManager,
@@ -123,8 +125,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 isOverdue,
             )
         }
-
-        period.days in 0..89 && period.months in 1..3 -> {
+        period.days in 0..89 && period.months in 0..2 -> {
             val intervalDays = if (this.time > currentDay.time) {
                 Interval(currentDay.time, this.time)
             } else {
@@ -133,8 +134,6 @@ fun Date?.toOverdueOrScheduledUiText(
 
             getOverdueDaysString(intervalDays, isOverdue)
         }
-
-        period.days == 0 -> resourceManager.getString(R.string.overdue_today)
         else -> {
             getOverdueDaysString(period.days, isOverdue)
         }
