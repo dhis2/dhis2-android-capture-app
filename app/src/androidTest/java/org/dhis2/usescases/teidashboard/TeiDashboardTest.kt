@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dhis2.org.analytics.charts.data.ChartType
@@ -226,6 +227,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @SuppressLint("IgnoreWithoutReason")
     @Ignore
     @Test
     fun shouldOpenEventEditAndSaveSuccessfully() {
