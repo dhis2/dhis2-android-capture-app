@@ -57,7 +57,7 @@ class TeiFlowTest : BaseTest() {
         EnrollmentListUIModel(
             ADULT_WOMAN_PROGRAM,
             ORG_UNIT,
-            "30/6/2017",
+            currentDate,
             currentDate
         )
 
