@@ -12,7 +12,6 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -65,30 +64,6 @@ class DashboardRepositoryImpl(
 
     override fun getEnrollment(): Observable<Enrollment> {
         return d2.enrollmentModule().enrollments().uid(enrollmentUid).get().map { it }
-            .toObservable()
-    }
-
-    override fun getTEIEnrollmentEvents(
-        programUid: String?,
-        teiUid: String,
-    ): Observable<List<Event>> {
-        return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
-            .byDeleted().isFalse
-            .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
-            .get().toFlowable().flatMapIterable { events: List<Event>? -> events }.distinct()
-            .map { event: Event ->
-                var event = event
-                if (java.lang.Boolean.FALSE
-                    == d2.programModule().programs().uid(programUid).blockingGet()!!
-                        .ignoreOverdueEvents()
-                ) if (event.status() == EventStatus.SCHEDULE &&
-                    event.dueDate()!!
-                        .before(DateUtils.getInstance().today)
-                ) {
-                    event = updateState(event, EventStatus.OVERDUE)
-                }
-                event
-            }.toList()
             .toObservable()
     }
 
@@ -388,7 +363,6 @@ class DashboardRepositoryImpl(
             DashboardEnrollmentModel(
                 getEnrollment().blockingFirst(),
                 getProgramStages(programUid).blockingFirst(),
-                getTEIEnrollmentEvents(programUid, teiUid).blockingFirst(),
                 getTrackedEntityInstance(teiUid).blockingFirst(),
                 getAttributesMap(programUid, teiUid).blockingFirst(),
                 getTEIAttributeValues(programUid, teiUid).blockingFirst(),
