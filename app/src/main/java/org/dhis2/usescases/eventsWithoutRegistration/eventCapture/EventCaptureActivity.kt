@@ -35,7 +35,6 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -90,7 +89,6 @@ class EventCaptureActivity :
     private var teiUid: String? = null
     private var enrollmentUid: String? = null
     private val relationshipMapButton: LiveData<Boolean> = MutableLiveData(false)
-    private var onEditionListener: OnEditionListener? = null
     private var adapter: EventCapturePagerAdapter? = null
     private var eventViewPager: ViewPager2? = null
     private var dashboardViewModel: DashboardViewModel? = null
@@ -243,9 +241,6 @@ class EventCaptureActivity :
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (onEditionListener != null) {
-            onEditionListener!!.onEditionListener()
-        }
         finishEditMode()
     }
 
@@ -503,10 +498,6 @@ class EventCaptureActivity :
 
     override fun onRelationshipMapLoaded() {
         // there are no relationships on events
-    }
-
-    fun setFormEditionListener(onEditionListener: OnEditionListener?) {
-        this.onEditionListener = onEditionListener
     }
 
     override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {
