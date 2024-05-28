@@ -320,7 +320,6 @@ class ProgramEventDetailActivity :
     override fun selectOrgUnitForNewEvent() {
         enableAddEventButton(false)
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),
@@ -373,7 +372,6 @@ class ProgramEventDetailActivity :
 
     override fun openOrgUnitTreeSelector() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
             .onSelection { selectedOrgUnits ->
                 presenter.setOrgUnitFilters(selectedOrgUnits)

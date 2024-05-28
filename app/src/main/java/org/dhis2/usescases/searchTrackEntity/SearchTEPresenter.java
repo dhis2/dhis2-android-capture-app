@@ -297,7 +297,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
                                 new OUTreeFragment.Builder()
-                                        .showAsDialog()
                                         .singleSelection()
                                         .onSelection(selectedOrgUnits -> {
                                             if (!selectedOrgUnits.isEmpty())

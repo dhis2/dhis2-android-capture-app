@@ -879,7 +879,6 @@ class FormView : Fragment() {
 
     private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 uiEvent.value?.let { listOf(it) } ?: emptyList(),
             )

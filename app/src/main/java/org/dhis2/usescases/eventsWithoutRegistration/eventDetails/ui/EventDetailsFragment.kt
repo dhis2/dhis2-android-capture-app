@@ -338,7 +338,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showOrgUnitDialog() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 viewModel.eventOrgUnit.value.selectedOrgUnit
                     ?.let { listOf(it.uid()) }
