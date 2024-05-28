@@ -493,8 +493,6 @@ class FormView : Fragment() {
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
             is RecyclerViewUiEvents.OpenCustomCalendar -> showCustomCalendar(uiEvent)
-            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> {}
-
             is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent,
