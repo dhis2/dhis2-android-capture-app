@@ -97,7 +97,6 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         enrollmentUid: String?,
     ) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),

@@ -134,7 +134,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun openOrgUnitTreeSelector() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 FilterManager.getInstance().orgUnitFilters.map { it.uid() }.toMutableList(),
             )
