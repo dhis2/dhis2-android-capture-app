@@ -20,9 +20,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -31,8 +28,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -72,17 +67,16 @@ fun Form(
             }
         }
     }
-    val focusNext = remember { mutableStateOf(false) }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Color.White,
                 shape = RoundedCornerShape(
-                    topStart = 16.dp,
-                    topEnd = 16.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp,
+                    topStart = Spacing.Spacing16,
+                    topEnd = Spacing.Spacing16,
+                    bottomStart = Spacing.Spacing0,
+                    bottomEnd = Spacing.Spacing0,
                 ),
             )
             .clickable(
@@ -92,7 +86,7 @@ fun Form(
                 indication = null,
                 onClick = { focusManager.clearFocus() },
             ),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing16),
         state = scrollState,
     ) {
         if (sections.isNotEmpty()) {
@@ -144,7 +138,6 @@ fun Form(
                                     resources = resources,
                                     focusManager = focusManager,
                                     onNextClicked = {
-                                        focusNext.value = (index == section.fields.size - 1)
                                         manageOnNextEvent(focusManager, index, section, onNextSection)
                                     },
                                 )
@@ -230,22 +223,6 @@ fun NoFieldsWarning(resources: ResourceManager) {
                 .clip(shape = RoundedCornerShape(Radius.Full))
                 .background(SurfaceColor.WarningContainer),
         )
-    }
-}
-
-private fun FocusManager.moveFocusNext(focusNext: MutableState<Boolean>) {
-    if (focusNext.value) {
-        this.moveFocus(FocusDirection.Next)
-        focusNext.value = false
-    }
-}
-
-@Composable
-private fun LaunchIfTrue(key: Boolean, block: suspend CoroutineScope.() -> Unit) {
-    LaunchedEffect(key) {
-        if (key) {
-            block()
-        }
     }
 }
 
