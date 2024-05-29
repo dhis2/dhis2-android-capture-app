@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.lib.expression.Expression
+import org.hisp.dhis.lib.expression.ExpressionMode
 import org.hisp.dhis.lib.expression.spi.ExpressionData
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.rules.api.EnvironmentVariables.ENV_VARIABLES
@@ -40,7 +41,7 @@ class TroubleshootingRepository(
                 rule.condition,
                 valueMap,
                 null,
-                Expression.Mode.RULE_ENGINE_CONDITION,
+                ExpressionMode.RULE_ENGINE_CONDITION,
             )
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
@@ -164,7 +165,7 @@ class TroubleshootingRepository(
         condition: String,
         valueMap: Map<String, RuleVariableValue>,
         ruleActionType: String? = null,
-        mode: Expression.Mode,
+        mode: ExpressionMode,
     ): String {
         if (condition.isEmpty()) {
             return if (ruleActionType != null) {
@@ -230,7 +231,7 @@ class TroubleshootingRepository(
                     ruleAction.data ?: "",
                     valueMap,
                     ruleAction.ruleActionType(),
-                    Expression.Mode.RULE_ENGINE_ACTION,
+                    ExpressionMode.RULE_ENGINE_ACTION,
                 )
             actionConditionResult.ifEmpty {
                 null

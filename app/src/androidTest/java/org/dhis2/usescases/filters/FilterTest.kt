@@ -6,7 +6,6 @@ import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
-import org.dhis2.usescases.form.formRobot
 import org.dhis2.usescases.main.AVOID_SYNC
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
@@ -146,12 +145,13 @@ class FilterTest : BaseTest() {
         eventWithoutRegistrationRobot(composeTestRule) {
             clickOnEventAtPosition(0)
         }
-        formRobot(composeTestRule) {
+        // Commented because FormRobot class wah eliminated as FormTest was also eliminated
+        /*formRobot(composeTestRule) {
             clickOnSelectOption(1, 1)
             pressBack()
             pressBack()
             pressBack()
-        }
+        }*/
         homeRobot {
             openFilters()
         }
