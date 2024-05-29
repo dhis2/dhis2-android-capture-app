@@ -15,7 +15,6 @@ import org.dhis2.usescases.searchte.SearchTETest
 import org.dhis2.usescases.settings.SettingsTest
 import org.dhis2.usescases.sync.SyncActivityTest
 import org.dhis2.usescases.teidashboard.TeiDashboardTest
-import org.dhis2.usescases.teidashboard.TeiDashboardTestNoComposable
 import org.dhis2.usescases.teidashboard.dialogs.scheduling.SchedulingDialogUiTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -37,7 +36,6 @@ import org.junit.runners.Suite
     SettingsTest::class,
     SyncActivityTest::class,
     TeiDashboardTest::class,
-    TeiDashboardTestNoComposable::class,
     SchedulingDialogUiTest::class,
 )
 class UseCaseTestsSuite
