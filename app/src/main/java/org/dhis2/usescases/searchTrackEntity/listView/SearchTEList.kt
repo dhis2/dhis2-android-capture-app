@@ -165,6 +165,11 @@ class SearchTEList : FragmentGlobalAbstract() {
                     }
                 }
             })
+            lifecycleScope.launch {
+                liveAdapter.loadStateFlow.collectLatest {
+                    scrollToPosition(0)
+                }
+            }
         }.also {
             recycler = it
         }
