@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class DateExtensionsTest {
 
@@ -208,10 +209,10 @@ class DateExtensionsTest {
     fun `Should return 'In x days', when the scheduled date is same day but different month and same year`() {
         val currentDate = currentCalendar().time
         val date: Date? = currentCalendar().apply {
-            add(Calendar.MONTH, 1)
+            add(Calendar.MONTH, 2)
         }.time
-        whenever(resourceManager.getPlural(R.plurals.schedule_days, 30, 30)) doReturn "In 30 days"
-        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 30 days")
+        whenever(resourceManager.getPlural(R.plurals.schedule_days, 61, 61)) doReturn "In 61 days"
+        assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 61 days")
     }
 
     @Test
@@ -254,7 +255,10 @@ class DateExtensionsTest {
         assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 3 years")
     }
 
-    private fun currentCalendar() = Calendar.getInstance().apply {
-        time = "2020-03-02T00:00:00.00Z".toDate()
+    private fun currentCalendar() : Calendar {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            time = "2020-03-02T00:00:00.00Z".toDate()
+        }
     }
 }
