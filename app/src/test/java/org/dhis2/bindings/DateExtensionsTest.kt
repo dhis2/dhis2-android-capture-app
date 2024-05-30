@@ -255,7 +255,7 @@ class DateExtensionsTest {
         assert(date.toOverdueOrScheduledUiText(resourceManager, currentDate) == "In 3 years")
     }
 
-    private fun currentCalendar() : Calendar {
+    private fun currentCalendar(): Calendar {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         return Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
             time = "2020-03-02T00:00:00.00Z".toDate()
