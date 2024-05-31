@@ -7,8 +7,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextClearance
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -108,16 +107,14 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun typeOnInputDateField(dateValue: String, title: String) {
         composeTestRule.apply {
-            val node = onNode(
+            onNode(
                 hasTestTag(
                     "INPUT_DATE_TIME_TEXT_FIELD"
                 ) and hasAnySibling(
                     hasText(title)
                 ),
                 useUnmergedTree = true,
-            )
-            node.performTextClearance()
-            node.performTextInput(dateValue)
+            ).performTextReplacement(dateValue)
         }
     }
 
