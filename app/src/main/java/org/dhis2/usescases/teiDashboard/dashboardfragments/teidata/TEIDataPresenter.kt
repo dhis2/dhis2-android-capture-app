@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
@@ -195,32 +194,6 @@ class TEIDataPresenter(
 
     fun changeCatOption(eventUid: String?, catOptionComboUid: String?) {
         dashboardRepository.saveCatOption(eventUid, catOptionComboUid)
-    }
-
-    fun areEventsCompleted() {
-        compositeDisposable.add(
-            dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
-                .flatMap { events ->
-                    if (events.isEmpty()) {
-                        dashboardRepository.getTEIEnrollmentEvents(
-                            programUid,
-                            teiUid,
-                        )
-                    } else {
-                        Observable.just(events)
-                    }
-                }
-                .map { events ->
-                    Observable.fromIterable(events)
-                        .all { event -> event.status() == EventStatus.COMPLETED }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view.areEventsCompleted(),
-                    Timber.Forest::d,
-                ),
-        )
     }
 
     fun displayGenerateEvent(eventUid: String?) {
