@@ -97,10 +97,14 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         }
 
         return TableModel(
-            id = "indicators",
+            id = INDICATORS_TABLE_ID,
             title = mapFieldValueToUser.resources.getString(R.string.dashboard_indicators),
             tableHeaderModel = tableHeader,
             tableRows = tableRows,
         )
+    }
+
+    companion object {
+        const val INDICATORS_TABLE_ID = "indicators"
     }
 }

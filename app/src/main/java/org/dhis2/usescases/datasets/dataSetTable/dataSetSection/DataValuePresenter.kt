@@ -25,6 +25,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_HAS_NOT_CHANGED
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTableModelMapper.Companion.INDICATORS_TABLE_ID
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -109,10 +110,12 @@ class DataValuePresenter(
         val updatedTableModel = mapper(tableData)
 
         val updatedTables = screenState.value.tables.map { tableModel ->
-            if (tableModel.id == catComboUid) {
-                updatedTableModel.copy(overwrittenValues = tableModel.overwrittenValues)
-            } else {
-                indicatorTables() ?: tableModel
+            when (tableModel.id) {
+                catComboUid -> updatedTableModel.copy(
+                    overwrittenValues = tableModel.overwrittenValues,
+                )
+                INDICATORS_TABLE_ID -> indicatorTables() ?: tableModel
+                else -> tableModel
             }
         }
 
