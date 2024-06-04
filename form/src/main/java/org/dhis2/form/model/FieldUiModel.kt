@@ -5,7 +5,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
@@ -76,19 +75,9 @@ interface FieldUiModel {
 
     fun onItemClick()
 
-    fun onNext()
-
-    fun onTextChange(value: CharSequence?)
-
-    fun onDescriptionClick()
-
     fun onClear()
 
     fun onSave(value: String?)
-
-    fun onSaveBoolean(boolean: Boolean)
-
-    fun onSaveOption(option: Option)
 
     fun invokeUiEvent(uiEventType: UiEventType)
 

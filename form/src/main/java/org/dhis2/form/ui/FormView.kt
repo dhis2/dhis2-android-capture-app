@@ -13,8 +13,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -112,20 +110,6 @@ class FormView : Fragment() {
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
-
-    val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            // Not needed
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            viewModel.items.value?.find { it.focused }?.onTextChange(p0)
-        }
-
-        override fun afterTextChanged(p0: Editable?) {
-            // Not needed
-        }
-    }
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->

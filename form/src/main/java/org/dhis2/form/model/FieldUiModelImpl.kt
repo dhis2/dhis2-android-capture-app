@@ -1,11 +1,9 @@
 package org.dhis2.form.model
 
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class FieldUiModelImpl(
@@ -51,27 +49,6 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnFocus(uid, value))
     }
 
-    override fun onNext() {
-        callback?.intent(FormIntent.OnNext(uid, value))
-    }
-
-    override fun onTextChange(value: CharSequence?) {
-        val text = when {
-            value?.isEmpty() == true -> null
-            else -> value?.toString()
-        }
-        callback?.intent(FormIntent.OnTextChange(uid, text, valueType))
-    }
-
-    override fun onDescriptionClick() {
-        callback?.recyclerViewUiEvents(
-            RecyclerViewUiEvents.ShowDescriptionLabelDialog(
-                label,
-                description,
-            ),
-        )
-    }
-
     override fun onClear() {
         onItemClick()
         callback?.intent(FormIntent.ClearValue(uid))
@@ -80,23 +57,6 @@ data class FieldUiModelImpl(
     override fun onSave(value: String?) {
         onItemClick()
         callback?.intent(FormIntent.OnSave(uid, value, valueType))
-    }
-
-    override fun onSaveBoolean(boolean: Boolean) {
-        onItemClick()
-        val result = when {
-            value == null || value != boolean.toString() -> boolean.toString()
-            else -> null
-        }
-        callback?.intent(FormIntent.OnSave(uid, result, valueType))
-    }
-
-    override fun onSaveOption(option: Option) {
-        val nextValue = when (displayName) {
-            option.displayName() -> null
-            else -> option.code()
-        }
-        callback?.intent(FormIntent.OnSave(uid, nextValue, valueType))
     }
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
@@ -125,7 +85,8 @@ data class FieldUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
-    override fun setSelectableDates(selectableDates: SelectableDates?) = this.copy(selectableDates = selectableDates)
+    override fun setSelectableDates(selectableDates: SelectableDates?) =
+        this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
