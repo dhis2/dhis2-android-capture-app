@@ -5,6 +5,7 @@ import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -110,9 +111,13 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     }
 
-    fun selectSpecificDate(date: String) {
+    fun selectSpecificDate(currentDate: String, date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
-        composeTestRule.onNode(hasText(date, true)).performClick()
+        composeTestRule.onNodeWithContentDescription(
+            "Switch to text input mode",
+            useUnmergedTree = true,
+        ).performClick()
+        composeTestRule.onNodeWithText(currentDate).performTextReplacement(date)
     }
 
     fun typeOnDateParameter(dateValue: String) {

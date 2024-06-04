@@ -103,7 +103,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
         eventRobot(composeTestRule) {
             clickOnEventDueDate()
-            selectSpecificDate(getPreviousDate().substring(0, 2))
+            selectSpecificDate(getCurrentDatePickerDate(), getPreviousDate())
             acceptUpdateEventDate()
         }
     }
@@ -115,9 +115,15 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     private fun getPreviousDate(): String {
-        val sdf = SimpleDateFormat("ddMMYYYY")
+        val sdf = SimpleDateFormat("MMddYYYY")
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -1)
+        return sdf.format(calendar.time)
+    }
+
+    private fun getCurrentDatePickerDate(): String {
+        val sdf = SimpleDateFormat("MM/dd/YYYY")
+        val calendar = Calendar.getInstance()
         return sdf.format(calendar.time)
     }
 }
