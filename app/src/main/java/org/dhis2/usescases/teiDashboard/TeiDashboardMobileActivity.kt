@@ -317,6 +317,7 @@ class TeiDashboardMobileActivity :
             restoreAdapter(programUid)
         }
         presenter.refreshTabCounters()
+        dashboardViewModel.updateDashboard()
     }
 
     override fun onPause() {
