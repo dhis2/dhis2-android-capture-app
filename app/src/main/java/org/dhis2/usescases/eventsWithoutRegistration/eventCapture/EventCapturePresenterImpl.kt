@@ -133,6 +133,7 @@ class EventCapturePresenterImpl(
                     canComplete,
                     onCompleteMessage,
                     canSkipErrorFix,
+                    eventStatus,
                 )
 
                 if (eventStatus == EventStatus.COMPLETED && eventCompletionDialog.fieldsWithIssues.isEmpty()) {

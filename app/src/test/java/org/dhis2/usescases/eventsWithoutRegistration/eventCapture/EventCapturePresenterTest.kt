@@ -258,7 +258,10 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false),
+            configureEventCompletionDialog.invoke(
+                emptyList(), emptyMap(), emptyList(), true, null, false,
+                EventStatus.COMPLETED,
+            ),
         ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
         whenever(eventRepository.isEventEditable(any())) doReturn true
@@ -281,7 +284,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false),
+            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false, EventStatus.COMPLETED),
         ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
         whenever(eventRepository.isEventEditable(any())) doReturn true
@@ -338,7 +341,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
         ) doReturn eventCompletionDialog
         whenever(
             eventRepository.isEnrollmentOpen,
@@ -368,7 +371,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog = EventCompletionDialog(mock(), mock(), null, listOf(FieldWithIssue("uid", "fieldName", mock(), "message")))
         whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
         ) doReturn eventCompletionDialog
         whenever(
             eventRepository.isEnrollmentOpen,
@@ -398,7 +401,7 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
         ) doReturn eventCompletionDialog
         whenever(
             eventRepository.isEnrollmentOpen,
