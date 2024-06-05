@@ -171,10 +171,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         val dialItems = presenter.newEventOptionsByTimeline()
         binding.dialFabLayout.addDialItems(dialItems) { clickedId: Int? ->
             when (clickedId) {
-                // Eyeseetea customization: remove Referral and Schedule options
-                //REFERAL_ID -> createEvent(EventCreationType.REFERAL, 0)
+                REFERAL_ID -> createEvent(EventCreationType.REFERAL, 0)
                 ADD_NEW_ID -> createEvent(EventCreationType.ADDNEW, 0)
-                //SCHEDULE_ID -> createEvent(EventCreationType.SCHEDULE, 0)
+                SCHEDULE_ID -> createEvent(EventCreationType.SCHEDULE, 0)
                 else -> {}
             }
         }
