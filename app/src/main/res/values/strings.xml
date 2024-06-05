@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -971,4 +971,9 @@
     <string name="database_export_downloaded">Database downloaded</string>
     <string name="importing_database">Importing database</string>
     <string name="re_open_to_edit">Re-open form to edit</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="sync">Sync</string>
+    <string name="show_fields">Show fields</string>
+    <string name="hide_fields">Hide fields</string>
 </resources>
