@@ -90,7 +90,6 @@
     <string name="enrollment_cancelled_V2">%s cancelado</string>
     <string name="new_enrollment">Nuevo %s</string>
     <string name="enrolling_ou">Registrado en:</string>
-    <string name="enrolling_ou">R</string>
     <string name="dashboard_menu_delete_enrollment_V2">Eliminar solo %s</string>
     <string name="program_selector_V2">%s del programa</string>
     <string name="event_label_completed">%s completado</string>
