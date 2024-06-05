@@ -196,7 +196,7 @@ android {
             applicationId = "org.samaritan.platform"
             dimension = "default"
             versionCode = libs.versions.vCode.get().toInt()
-            versionName = "2.9.1-spIP-fork-2"
+            versionName = libs.versions.vName.get()
         }
     }
 
