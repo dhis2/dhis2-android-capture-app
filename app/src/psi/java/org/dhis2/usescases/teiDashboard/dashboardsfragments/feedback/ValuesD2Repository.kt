@@ -208,7 +208,7 @@ class ValuesD2Repository(
                         val attribute = attributes.first { it.uid() == cursor.getString(0) }
                         attributesValues.add(
                             AttributeValue.builder()
-                                .attribute( ObjectWithUid.create(attribute.code()) )
+                                .attribute( ObjectWithUid.create(attribute.uid()) )
                                 .value(cursor.getString(1)).build()
                         )
                     }
