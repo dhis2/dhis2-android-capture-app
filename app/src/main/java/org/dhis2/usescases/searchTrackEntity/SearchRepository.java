@@ -25,7 +25,9 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import kotlin.Deprecated;
 
+@Deprecated(message = "Use SearchRepositoryKt instead")
 public interface SearchRepository {
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
