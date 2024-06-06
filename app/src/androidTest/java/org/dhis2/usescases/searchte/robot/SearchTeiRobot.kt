@@ -164,6 +164,15 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.createButton)).perform(click())
     }
 
+    fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        composeTestRule.onNode(
+            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                    and hasText(additionalText),
+            useUnmergedTree = true,
+        ).assertIsDisplayed()
+    }
+
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
         AdditionalInfoItem(
             key = "Last name",

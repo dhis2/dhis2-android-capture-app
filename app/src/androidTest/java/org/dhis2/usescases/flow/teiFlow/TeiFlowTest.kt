@@ -53,7 +53,7 @@ class TeiFlowTest : BaseTest() {
         EnrollmentListUIModel(
             ADULT_WOMAN_PROGRAM,
             ORG_UNIT,
-            "30/6/2017",
+            currentDate,
             currentDate
         )
 
@@ -106,7 +106,5 @@ class TeiFlowTest : BaseTest() {
         const val LASTNAME = "Stuart"
 
         const val DATE_FORMAT = "dd/M/yyyy"
-        const val DATE_PICKER_FORMAT = ", d MMMM"
-
     }
 }

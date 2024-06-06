@@ -2,14 +2,17 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -68,18 +71,25 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.possitive)).perform(click())
     }
 
-    fun clickOnEventReportDate() {
+    fun clickOnEventDueDate() {
         composeTestRule.onNode(
             hasTestTag("INPUT_DATE_TIME_ACTION_BUTTON") and hasAnySibling(
-                hasText("Report date")
+                hasText("Due date")
             )
         ).assertIsDisplayed().performClick()
 
     }
 
-    fun selectSpecificDate(date: String) {
+    fun selectSpecificDate(currentDate: String, date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
-        composeTestRule.onNode(hasText(date, true)).performClick()
+        composeTestRule.onNodeWithContentDescription(
+            label = "text",
+            substring = true,
+            useUnmergedTree = true,
+        ).performClick()
+        composeTestRule.onNode(
+            hasText(currentDate) and hasAnyAncestor(isDialog())
+        ).performTextReplacement(date)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -87,7 +97,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_DATE_TIME_TEXT_FIELD"),2000)
         composeTestRule.apply {
             onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performClick()
-            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)
+            onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextReplacement(dateValue)
         }
     }
 

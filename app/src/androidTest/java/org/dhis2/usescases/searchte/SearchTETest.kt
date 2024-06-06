@@ -1,8 +1,6 @@
 package org.dhis2.usescases.searchte
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.test.espresso.IdlingRegistry
@@ -19,9 +17,7 @@ import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.commons.resources.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
-import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.flow.teiFlow.TeiFlowTest.Companion.DATE_FORMAT
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
@@ -36,7 +32,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
@@ -173,12 +168,10 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    @Ignore("Test is successful locally but not in browserstack")
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
         val registerTeiDetails = createRegisterTEI()
-        val overdueDate = getCurrentDate()
         val dateFormat =
             SimpleDateFormat(SIMPLE_DATE_FORMAT, java.util.Locale.getDefault()).format(Date())
         val scheduledEventTitle = context.getString(R.string.scheduled_for)
@@ -189,9 +182,7 @@ class SearchTETest : BaseTest() {
 
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            changeDueDate(scheduledEventTitle, overdueDate)
-            pressBack()
-            composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
+            changeDueDate(scheduledEventTitle)
             pressBack()
         }
         composeTestRule.waitForIdle()
@@ -202,8 +193,9 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-            clickOnFilter()
-            checkEventsAreOverdue()
+        }
+        searchTeiRobot(composeTestRule) {
+            checkListOfSearchTEIWithAdditionalInfo("First name: ADRIANNA", "1 day overdue")
         }
     }
 
@@ -446,12 +438,6 @@ class SearchTETest : BaseTest() {
         9,
         30,
     )
-
-    private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat(DATE_FORMAT)
-        val calendar = Calendar.getInstance()
-        return sdf.format(calendar.time)
-    }
 
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()
