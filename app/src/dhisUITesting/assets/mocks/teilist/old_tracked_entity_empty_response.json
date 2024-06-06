@@ -1,0 +1,62 @@
+{
+  "headers": [
+    {
+      "name": "instance",
+      "column": "Instance",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "created",
+      "column": "Created",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "lastupdated",
+      "column": "Last updated",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "ou",
+      "column": "Organisation unit",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "ouname",
+      "column": "Organisation unit name",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "te",
+      "column": "Tracked entity type",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    },
+    {
+      "name": "inactive",
+      "column": "Inactive",
+      "type": "java.lang.String",
+      "hidden": false,
+      "meta": false
+    }
+  ],
+  "metaData": {
+    "names": {
+      "nEenWmSyUEp": "Person"
+    }
+  },
+  "width": 9,
+  "height": 0,
+  "rows": [
+  ]
+}
