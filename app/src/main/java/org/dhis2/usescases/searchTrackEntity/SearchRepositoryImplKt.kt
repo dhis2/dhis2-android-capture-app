@@ -30,13 +30,7 @@ class SearchRepositoryImplKt(
     private val metadataIconProvider: MetadataIconProvider,
 ) : SearchRepositoryKt {
 
-    private lateinit var savedSearchParamenters: SearchParametersModel
-
-    private lateinit var savedFilters: FilterManager
-
     private lateinit var trackedEntityInstanceQuery: TrackedEntitySearchCollectionRepository
-
-    private val fetchedTeiUids = HashSet<String>()
 
     override fun searchTrackedEntities(
         searchParametersModel: SearchParametersModel,
@@ -51,26 +45,23 @@ class SearchRepositoryImplKt(
         isOnline: Boolean,
     ): TrackedEntitySearchCollectionRepository {
         var allowCache = false
-        savedSearchParamenters = searchParametersModel.copy()
-        savedFilters = FilterManager.getInstance().copy()
 
-        if (searchParametersModel != savedSearchParamenters || !FilterManager.getInstance()
-                .sameFilters(savedFilters)
+        if (searchParametersModel != searchRepositoryJava.savedSearchParameters || !FilterManager.getInstance()
+                .sameFilters(searchRepositoryJava.savedFilters)
         ) {
             trackedEntityInstanceQuery =
                 searchRepositoryJava.getFilteredRepository(searchParametersModel)
         } else {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
+            searchRepositoryJava.getFilteredRepository(searchParametersModel)
             allowCache = true
         }
 
-        if (fetchedTeiUids.isNotEmpty() && searchParametersModel.selectedProgram == null) {
+        if (searchRepositoryJava.fetchedTeiUIDs.isNotEmpty() && searchParametersModel.selectedProgram == null) {
             trackedEntityInstanceQuery =
-                trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
+                trackedEntityInstanceQuery.excludeUids().`in`(searchRepositoryJava.fetchedTeiUIDs.toList())
         }
 
-        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isNotEmpty()) {
+        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
         } else {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
@@ -131,7 +122,8 @@ class SearchRepositoryImplKt(
                                 options.associate {
                                     it.uid() to metadataIconProvider(
                                         it.style(),
-                                        program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                                        program?.style()?.color()?.toColor()
+                                            ?: SurfaceColor.Primary,
                                     )
                                 }
 
@@ -177,7 +169,12 @@ class SearchRepositoryImplKt(
                                 .blockingGet()
 
                             val metadataIconMap =
-                                options.associate { it.uid() to metadataIconProvider(it.style(), SurfaceColor.Primary) }
+                                options.associate {
+                                    it.uid() to metadataIconProvider(
+                                        it.style(),
+                                        SurfaceColor.Primary,
+                                    )
+                                }
 
                             OptionSetConfiguration.OptionConfigData(
                                 options = options,
