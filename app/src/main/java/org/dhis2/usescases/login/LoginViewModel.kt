@@ -11,6 +11,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.dhis2.R
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -584,6 +585,7 @@ class LoginViewModel(
                         view.setUrl(it.serverUrl)
                         view.setUser(it.username)
                         displayManageAccount()
+                        view.displayMessage(resourceManager.getString(R.string.importing_successful))
                     },
                     onFailure = {
                         view.displayMessage(resourceManager.parseD2Error(it))
