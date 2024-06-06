@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -122,7 +123,9 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             substring = true,
             useUnmergedTree = true,
         ).performClick()
-        composeTestRule.onNodeWithText(currentDate).performTextReplacement(date)
+        composeTestRule.onNode(
+            hasText(currentDate) and hasAnyAncestor(isDialog())
+        ).performTextReplacement(date)
     }
 
     fun typeOnDateParameter(dateValue: String) {
