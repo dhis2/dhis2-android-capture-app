@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -25,7 +26,7 @@ import org.hamcrest.CoreMatchers.allOf
 
 fun enrollmentRobot(
     composeTestRule: ComposeTestRule,
-    enrollmentRobot: EnrollmentRobot.() -> Unit
+    enrollmentRobot: EnrollmentRobot.() -> Unit,
 ) {
     EnrollmentRobot(composeTestRule).apply {
         enrollmentRobot()
@@ -99,6 +100,15 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .perform(
                 actionOnItemAtPosition<DashboardProgramViewHolder>(position, click())
             )
+    }
+
+    fun typeOnDateParameterWithLabel(label: String, dateValue: String) {
+        composeTestRule.apply {
+            onNode(
+                hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
+                useUnmergedTree = true,
+            ).performTextReplacement(dateValue)
+        }
     }
 
     fun openFormSection(personAttribute: String) {

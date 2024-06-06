@@ -8,10 +8,12 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 fun teiFlowRobot(
     composeTestRule: ComposeTestRule,
-    teiFlowRobot: TeiFlowRobot.() -> Unit
+    teiFlowRobot: TeiFlowRobot.() -> Unit,
 ) {
     TeiFlowRobot(composeTestRule).apply {
         teiFlowRobot()
@@ -21,10 +23,10 @@ fun teiFlowRobot(
 class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun registerTEI(
-        registrationModel: RegisterTEIUIModel
+        registrationModel: RegisterTEIUIModel,
     ) {
         val registrationDate = registrationModel.firstSpecificDate
-        val enrollmentDate = registrationModel.enrollmentDate
+        val incidentDate = getCurrentDate()
 
         searchTeiRobot(composeTestRule) {
             openNextSearchParameter("First name")
@@ -38,14 +40,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
 
         enrollmentRobot(composeTestRule) {
-            typeOnInputDateField(
-                "${enrollmentDate.day}0${enrollmentDate.month}${enrollmentDate.year}",
-                "Date of enrollment *"
-            )
-            typeOnInputDateField(
-                "${enrollmentDate.day}0${enrollmentDate.month}${enrollmentDate.year}",
-                "LMP Date *"
-            )
+            typeOnDateParameterWithLabel("LMP Date *", incidentDate)
             clickOnSaveEnrollment()
         }
     }
@@ -76,7 +71,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkPastEventsAreClosed(
-        programPosition: Int
+        programPosition: Int,
     ) {
         enrollmentRobot(composeTestRule) {
             clickOnEnrolledProgram(programPosition)
@@ -101,16 +96,34 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun changeDueDate(
         cardTitle: String,
-        date: String,
     ) {
         teiDashboardRobot(composeTestRule) {
             clickOnEventGroupByStageUsingDate(cardTitle)
         }
 
         eventRobot(composeTestRule) {
-            clickOnEventReportDate()
-            selectSpecificDate(date)
+            clickOnEventDueDate()
+            selectSpecificDate(getCurrentDatePickerDate(), getPreviousDate())
             acceptUpdateEventDate()
         }
+    }
+
+    private fun getCurrentDate(): String {
+        val sdf = SimpleDateFormat("ddMMYYYY")
+        val calendar = Calendar.getInstance()
+        return sdf.format(calendar.time)
+    }
+
+    private fun getPreviousDate(): String {
+        val sdf = SimpleDateFormat("MMddYYYY")
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_MONTH, -1)
+        return sdf.format(calendar.time)
+    }
+
+    private fun getCurrentDatePickerDate(): String {
+        val sdf = SimpleDateFormat("MM/dd/YYYY")
+        val calendar = Calendar.getInstance()
+        return sdf.format(calendar.time)
     }
 }
