@@ -81,7 +81,9 @@ class TeiDashboardCardMapper(
                 ?.let {
                     val attribute = it.filterAttributes().firstOrNull()
                     val key = attribute?.first?.displayFormName()
-                    val value = attribute?.second?.value()
+                    val value = attribute?.second?.value()?.takeIf { attrValue ->
+                        attrValue.isNotEmpty()
+                    } ?: "-"
                     "$key: $value"
                 } ?: "-"
 
@@ -102,7 +104,7 @@ class TeiDashboardCardMapper(
             if (it.first.valueType() == ValueType.PHONE_NUMBER) {
                 AdditionalInfoItem(
                     key = "${it.first.displayFormName()}:",
-                    value = it.second.value() ?: "",
+                    value = it.second.value()?.takeIf { attrValue -> attrValue.isNotEmpty() } ?: "-",
                     icon = {
                         Icon(
                             imageVector = Icons.Filled.PhoneEnabled,
@@ -246,5 +248,4 @@ class TeiDashboardCardMapper(
         this.filter { it.first.valueType() != ValueType.IMAGE }
             .filter { it.first.valueType() != ValueType.COORDINATE }
             .filter { it.first.valueType() != ValueType.FILE_RESOURCE }
-            .filter { it.second.value()?.isNotEmpty() == true }
 }
