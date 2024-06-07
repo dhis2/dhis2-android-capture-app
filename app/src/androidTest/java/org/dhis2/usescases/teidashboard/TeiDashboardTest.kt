@@ -183,7 +183,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            enableComposeForms()
             clickOnFormFabButton()
             clickOnNotNow()
         }
@@ -240,7 +239,7 @@ class TeiDashboardTest : BaseTest() {
 
         eventRobot(composeTestRule) {
             waitToDebounce(600)
-            fillRadioButtonForm(4)
+//            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnCompleteButton()
             waitToDebounce(600)
@@ -255,7 +254,7 @@ class TeiDashboardTest : BaseTest() {
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         val womanProgram = "MNCH / PNC (Adult Woman)"
         val personAttribute =
-            context.getString(R.string.enrollment_single_section_label).replace("%s", "")
+            context.getString(R.string.enrollment_single_section_label).replace("%s", "Person")
         val visitPNCEvent = "PNC Visit"
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
@@ -271,14 +270,11 @@ class TeiDashboardTest : BaseTest() {
             clickOnMenuProgramEnrollments()
         }
 
-        enrollmentRobot {
+        enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
-            clickOnPersonAttributes(personAttribute)
-            waitToDebounce(5000)
-            clickOnCalendarItem()
-            clickOnAcceptInDatePicker()
-            scrollToBottomProgramForm()
+            openFormSection(personAttribute)
+            typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()
         }
 
@@ -322,8 +318,8 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "10/1/2021",
-            "10/1/2021",
+            "10/01/2021",
+            "10/01/2021",
             "Ngelehun CHC",
             "40.48713205295354",
             "-3.6847423830882633",

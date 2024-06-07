@@ -9,7 +9,6 @@ import org.dhis2.form.model.UiEventType.ADD_FILE
 import org.dhis2.form.model.UiEventType.ADD_PICTURE
 import org.dhis2.form.model.UiEventType.ADD_SIGNATURE
 import org.dhis2.form.model.UiEventType.AGE_CALENDAR
-import org.dhis2.form.model.UiEventType.AGE_YEAR_MONTH_DAY
 import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
 import org.dhis2.form.model.UiEventType.DATE_TIME
 import org.dhis2.form.model.UiEventType.EMAIL
@@ -27,7 +26,6 @@ import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import timber.log.Timber
-import java.util.Calendar
 
 class UiEventFactoryImpl(
     val uid: String,
@@ -54,6 +52,7 @@ class UiEventFactoryImpl(
                             value?.let { DateUtils.oldUiDateFormat().parse(it) },
                             allowFutureDates ?: true,
                         )
+
                         ValueType.DATETIME -> RecyclerViewUiEvents.OpenCustomCalendar(
                             uid,
                             label,
@@ -61,55 +60,56 @@ class UiEventFactoryImpl(
                             allowFutureDates ?: true,
                             isDateTime = true,
                         )
+
                         ValueType.TIME -> RecyclerViewUiEvents.OpenTimePicker(
                             uid,
                             label,
                             value?.let { DateUtils.timeFormat().parse(it) },
                         )
+
                         else -> null
                     }
                 }
+
                 AGE_CALENDAR -> RecyclerViewUiEvents.OpenCustomCalendar(
                     uid = uid,
                     label = label,
                     date = value?.toDate(),
                     allowFutureDates = allowFutureDates ?: false,
                 )
-                AGE_YEAR_MONTH_DAY -> {
-                    val yearMonthDay = valueToYearMonthDay(value)
-                    RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar(
-                        uid = uid,
-                        year = yearMonthDay[0],
-                        month = yearMonthDay[1],
-                        day = yearMonthDay[2],
-                    )
-                }
+
                 ORG_UNIT -> RecyclerViewUiEvents.OpenOrgUnitDialog(
                     uid,
                     label,
                     value,
                     fieldUiModel.orgUnitSelectorScope,
                 )
+
                 REQUEST_CURRENT_LOCATION -> RecyclerViewUiEvents.RequestCurrentLocation(
                     uid = uid,
                 )
+
                 REQUEST_LOCATION_BY_MAP -> RecyclerViewUiEvents.RequestLocationByMap(
                     uid = uid,
                     featureType = getFeatureType(renderingType),
                     value = value,
                 )
+
                 SHOW_DESCRIPTION -> RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                     title = label,
                     message = description,
                 )
+
                 ADD_PICTURE -> RecyclerViewUiEvents.AddImage(uid)
                 SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
                     label,
                     value ?: "",
                 )
+
                 COPY_TO_CLIPBOARD -> RecyclerViewUiEvents.CopyToClipboard(
                     value = value,
                 )
+
                 QR_CODE -> {
                     if (value.isNullOrEmpty() && fieldUiModel.editable) {
                         RecyclerViewUiEvents.ScanQRCode(
@@ -130,6 +130,7 @@ class UiEventFactoryImpl(
                         null
                     }
                 }
+
                 OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
                 ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
                 ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
@@ -140,11 +141,13 @@ class UiEventFactoryImpl(
                     value,
                     uid,
                 )
+
                 SHARE_IMAGE -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SEND,
                     fieldUiModel.displayName,
                     uid,
                 )
+
                 else -> null
             }
         } catch (e: Exception) {
@@ -163,9 +166,4 @@ class UiEventFactoryImpl(
             else -> FeatureType.NONE
         }
     }
-
-    private fun valueToYearMonthDay(value: String?) = value?.toDate()?.let {
-        Calendar.getInstance().time = it
-        DateUtils.getDifference(it, Calendar.getInstance().time)
-    } ?: intArrayOf(0, 0, 0)
 }

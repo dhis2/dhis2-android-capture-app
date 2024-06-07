@@ -126,8 +126,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 .plus(
                         new EventInitialModule(this,
                                 eventUid,
-                                programStageUid,
-                                getContext())
+                                programStageUid)
                 );
         eventInitialComponent.inject(this);
         super.onCreate(savedInstanceState);

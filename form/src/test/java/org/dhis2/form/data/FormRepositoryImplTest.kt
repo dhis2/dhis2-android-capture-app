@@ -310,7 +310,6 @@ class FormRepositoryImplTest {
     private fun provideItemList() = listOf<FieldUiModel>(
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = "value",
             label = "field1",
             valueType = ValueType.TEXT,
@@ -321,7 +320,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             label = "field2",
             valueType = ValueType.TEXT,
@@ -332,7 +330,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid003",
-            layoutId = 3,
             value = "value",
             label = "field3",
             valueType = ValueType.TEXT,
@@ -345,14 +342,12 @@ class FormRepositoryImplTest {
 
     private fun section1() = SectionUiModelImpl(
         uid = "section1",
-        layoutId = 1,
         label = "section1",
         selectedField = ObservableField(""),
     )
 
     private fun section2() = SectionUiModelImpl(
         uid = "section2",
-        layoutId = 1,
         label = "section2",
         selectedField = ObservableField(""),
     )
@@ -361,7 +356,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = "value",
             displayName = "displayValue",
             label = "field1",
@@ -373,7 +367,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             displayName = "displayValue",
             label = "field2",
@@ -385,7 +378,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid003",
-            layoutId = 3,
             value = "value",
             displayName = "displayValue",
             label = "field3",
@@ -402,7 +394,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "EVENT_CATEGORY_COMBO_UID-uid001",
-            layoutId = 1,
             value = value,
             displayName = "displayValue",
             label = "field1",
@@ -423,7 +414,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = null,
             displayName = "displayValue",
             label = "field1",
@@ -436,7 +426,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             displayName = "displayValue",
             label = "field2",

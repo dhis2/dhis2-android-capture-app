@@ -20,7 +20,6 @@ import androidx.fragment.app.FragmentTransaction;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.form.model.EventMode;
 import org.dhis2.form.model.EventRecords;
@@ -35,8 +34,7 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 
-public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView,
-        OnEditionListener {
+public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
 
     @Inject
     EventCaptureFormPresenter presenter;
@@ -102,11 +100,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                 .factory(activity.getSupportFragmentManager())
                 .setRecords(new EventRecords(eventUid, eventMode))
                 .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
-                .useComposeForm(
-                        featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS)
-                )
                 .build();
-        activity.setFormEditionListener(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -165,11 +159,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     @Override
     public void performSaveClick() {
         formView.onSaveClick();
-    }
-
-    @Override
-    public void onEditionListener() {
-        formView.onEditionFinish();
     }
 
     @Override

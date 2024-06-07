@@ -8,7 +8,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,14 +21,13 @@ class TeiDashboardTestNoComposable : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Ignore
     @Test
     fun shouldSuccessfullyCreateRelationshipWhenClickAdd() {
         val teiName = "Tim"
         val teiLastName = "Johnson"
         val relationshipName = "Filona"
         val relationshipLastName = "Ryder"
-        val completeName = "Ryder Filona"
+        val completeName = "Filona Ryder"
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
@@ -51,10 +49,11 @@ class TeiDashboardTestNoComposable : BaseTest() {
 
         searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(relationshipName, 0)
-            typeAttributeAtPosition(relationshipLastName, 1)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(relationshipName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(relationshipLastName)
             clickOnSearch()
-            waitToDebounce(5000)
             clickOnTEI(relationshipName, relationshipLastName)
         }
 
@@ -67,24 +66,24 @@ class TeiDashboardTestNoComposable : BaseTest() {
     fun shouldDeleteTeiSuccessfully() {
         val teiName = "Gertrude"
         val teiLastName = "Fjordsen"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
             clickOnTEI(teiName, teiLastName)
-            //scrollToTEIandClick()
         }
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteTEI()
+            clickOnConfirmDeleteTEI()
         }
 
         searchTeiRobot(composeTestRule) {
@@ -96,24 +95,24 @@ class TeiDashboardTestNoComposable : BaseTest() {
     fun shouldDeleteEnrollmentSuccessfully() {
         val teiName = "Anna"
         val teiLastName = "Jones"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
 
         setupCredentials()
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            //     waitToDebounce(400)
             clickOnTEI(teiName, teiLastName)
         }
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuDeleteEnrollment()
+            clickOnConfirmDeleteEnrollment()
         }
 
         searchTeiRobot(composeTestRule) {

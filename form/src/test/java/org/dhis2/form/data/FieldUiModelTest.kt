@@ -73,7 +73,6 @@ class FieldUiModelTest {
 
     private fun fieldUiModel() = FieldUiModelImpl(
         "uid",
-        1,
         label = "label",
         valueType = ValueType.TEXT,
         optionSetConfiguration = OptionSetConfiguration.config(5) {

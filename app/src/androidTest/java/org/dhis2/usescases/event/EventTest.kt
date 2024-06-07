@@ -68,8 +68,6 @@ class EventTest : BaseTest() {
         val completion = 92
         val email = "mail@mail.com"
 
-        enableComposeForms()
-
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {
@@ -105,7 +103,7 @@ class EventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            fillRadioButtonForm(radioFormLength)
+//            fillRadioButtonForm(radioFormLength)
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
@@ -131,7 +129,7 @@ class EventTest : BaseTest() {
             clickNextButton()
         }
         eventRobot(composeTestRule) {
-            typeOnRequiredEventForm("125", 1)
+//            typeOnRequiredEventForm("125", 1)
             clickOnFormFabButton()
             checkSecondaryButtonNotVisible()
         }

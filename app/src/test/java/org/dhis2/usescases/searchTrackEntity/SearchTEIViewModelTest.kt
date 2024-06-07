@@ -677,7 +677,6 @@ class SearchTEIViewModelTest {
         return listOf(
             FieldUiModelImpl(
                 uid = "uid1",
-                layoutId = 3,
                 label = "Date",
                 value = "04",
                 autocompleteList = emptyList(),
@@ -691,7 +690,6 @@ class SearchTEIViewModelTest {
         return listOf(
             FieldUiModelImpl(
                 uid = "uid1",
-                layoutId = 1,
                 label = "Org Unit",
                 value = "orgUnitUid",
                 displayName = "Friendly OrgUnit Name",
@@ -701,7 +699,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid2",
-                layoutId = 2,
                 label = "Gender",
                 value = "M",
                 displayName = "Male",
@@ -711,7 +708,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid3",
-                layoutId = 3,
                 label = "Date",
                 value = "2024-02-21",
                 autocompleteList = emptyList(),
@@ -720,7 +716,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid4",
-                layoutId = 4,
                 label = "Date and Time",
                 value = "2024-02-21T01:00",
                 autocompleteList = emptyList(),
@@ -729,7 +724,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid5",
-                layoutId = 5,
                 label = "Boolean",
                 value = "false",
                 autocompleteList = emptyList(),
@@ -738,7 +732,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid6",
-                layoutId = 6,
                 label = "Yes Only",
                 value = "true",
                 autocompleteList = emptyList(),
@@ -747,7 +740,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid7",
-                layoutId = 7,
                 label = "Text",
                 value = "Text value",
                 autocompleteList = emptyList(),
@@ -756,7 +748,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid8",
-                layoutId = 8,
                 label = "Other field",
                 value = null,
                 autocompleteList = emptyList(),
@@ -765,7 +756,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid9",
-                layoutId = 9,
                 label = "Percentage",
                 value = "18",
                 autocompleteList = emptyList(),

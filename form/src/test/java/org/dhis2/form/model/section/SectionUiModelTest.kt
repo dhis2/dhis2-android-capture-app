@@ -71,7 +71,6 @@ class SectionUiModelTest {
 
     private fun givenClosingSectionUiModel() = SectionUiModelImpl(
         CLOSING_SECTION_UID,
-        1,
         null,
         false,
         null,
@@ -79,7 +78,6 @@ class SectionUiModelTest {
         null,
         false,
         "",
-        null,
         null,
         null,
         null,
@@ -103,7 +101,6 @@ class SectionUiModelTest {
 
     private fun givenSectionUiModelWithNullDescription() = SectionUiModelImpl(
         "",
-        1,
         null,
         false,
         null,
@@ -111,7 +108,6 @@ class SectionUiModelTest {
         null,
         false,
         "",
-        null,
         null,
         null,
         null,
@@ -135,7 +131,6 @@ class SectionUiModelTest {
 
     private fun givenSectionUiModelWithEmptyDescription() = SectionUiModelImpl(
         "",
-        1,
         null,
         false,
         null,
@@ -143,7 +138,6 @@ class SectionUiModelTest {
         null,
         false,
         "",
-        null,
         null,
         null,
         "",
@@ -167,7 +161,6 @@ class SectionUiModelTest {
 
     private fun givenSectionUiModelWithDescription() = SectionUiModelImpl(
         "",
-        1,
         null,
         false,
         null,
@@ -175,7 +168,6 @@ class SectionUiModelTest {
         null,
         false,
         "",
-        null,
         null,
         null,
         "This is a description",

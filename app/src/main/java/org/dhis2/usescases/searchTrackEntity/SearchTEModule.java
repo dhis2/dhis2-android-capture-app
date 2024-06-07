@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -19,8 +20,8 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -35,7 +36,6 @@ import org.dhis2.form.data.metadata.OptionSetConfiguration;
 import org.dhis2.form.data.metadata.OrgUnitConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
-import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
 import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
@@ -43,9 +43,6 @@ import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.LegendValueProviderImpl;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
-import org.dhis2.form.ui.provider.UiStyleProviderImpl;
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
 import org.dhis2.maps.geometry.bound.BoundsGeometry;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
@@ -66,7 +63,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -202,16 +198,9 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            ColorUtils colorUtils,
             DhisPeriodUtils periodUtils
     ) {
         return new FieldViewModelFactoryImpl(
-                new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, colorUtils),
-                        new LongTextUiColorFactoryImpl(moduleContext, colorUtils),
-                        false
-                ),
-                new LayoutProviderImpl(),
                 new HintProviderImpl(context),
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),

@@ -27,7 +27,6 @@ import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
@@ -246,9 +245,6 @@ class TeiDashboardMobileActivity :
                 )
                 .factory(supportFragmentManager)
                 .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW))
-                .useComposeForm(
-                    featureConfig?.isFeatureEnable(Feature.COMPOSE_FORMS) ?: false,
-                )
                 .build()
 
             supportFragmentManager.beginTransaction()

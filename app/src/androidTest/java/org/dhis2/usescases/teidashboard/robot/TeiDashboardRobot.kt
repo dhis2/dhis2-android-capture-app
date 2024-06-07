@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
-import android.view.View
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -10,15 +10,13 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.recyclerview.widget.RecyclerView
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -31,11 +29,9 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.common.viewactions.clickChildViewWithId
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
@@ -44,9 +40,6 @@ import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 
 fun teiDashboardRobot(
     composeTestRule: ComposeTestRule,
@@ -219,152 +212,36 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.enrollmentDate)
-                            )
-                        )
-                    )
-                )
-            )
-        )
+        composeTestRule.apply {
+            onNode(
+                hasText(
+                    enrollmentUIModel.enrollmentDate
+                ) and hasAnySibling(
+                    hasText("Date of enrollment *")
+                ),
+                useUnmergedTree = true,
+            ).assertIsDisplayed()
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.birthday)
-                            )
-                        )
-                    )
-                )
-            )
-        )
+            onNode(
+                hasText(
+                    enrollmentUIModel.birthday
+                ) and hasAnySibling(
+                    hasText("Date of birth *")
+                ),
+                useUnmergedTree = true,
+            ).assertIsDisplayed()
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.orgUnit)
-                            )
-                        )
-                    )
-                )
-            )
-        )
+            onNodeWithText(enrollmentUIModel.orgUnit).assertIsDisplayed()
+            onNodeWithText("Latitude: ${enrollmentUIModel.latitude}").assertIsDisplayed()
+            onNodeWithText("Longitude: ${enrollmentUIModel.longitude}").assertIsDisplayed()
+            onNodeWithText("Next").performScrollTo()
+            onNodeWithText("Next").performClick()
 
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.latitude)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.longitude)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItemAtPosition<DashboardProgramViewHolder>(
-                    6,
-                    clickChildViewWithId(R.id.section_details)
-                )
-            )
-
-        waitToDebounce(2000)
-
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.name)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.lastName)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                not(
-                    recyclerChildViews(
-                        hasItem(
-                            hasDescendant(
-                                withText(enrollmentUIModel.sex)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-    }
-
-    private fun recyclerChildViews(matcher: Matcher<View>): BoundedMatcher<View?, RecyclerView> =
-        object : BoundedMatcher<View?, RecyclerView>(RecyclerView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("RecyclerView child views: ")
-                matcher.describeTo(description)
-            }
-
-            override fun matchesSafely(recyclerView: RecyclerView): Boolean =
-                matcher.matches(sequence {
-                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> =
-                        recyclerView.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
-                    for (position in 0..<adapter.itemCount) {
-                        val holder = adapter.createViewHolder(
-                            recyclerView,
-                            adapter.getItemViewType(position)
-                        )
-                        adapter.onBindViewHolder(holder, position)
-                        yield(holder.itemView)
-                    }
-                })
+            onNodeWithText(enrollmentUIModel.name).assertIsDisplayed()
+            onNodeWithText(enrollmentUIModel.lastName).assertIsDisplayed()
+            onNodeWithText(enrollmentUIModel.sex).assertIsDisplayed()
         }
+    }
 
     fun clickOnScheduleNew() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -400,12 +277,12 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnTimelineEvents() {
         try {
             onView(withText(R.string.show_events_timeline)).perform(click())
-        }catch (e: NoMatchingViewException){
+        } catch (e: NoMatchingViewException) {
             checkIfGroupedEventsIsVisible()
         }
     }
 
-    private fun checkIfGroupedEventsIsVisible(){
+    private fun checkIfGroupedEventsIsVisible() {
         onView(withText(R.string.group_events_by_stage)).check(matches(isDisplayed()))
     }
 
@@ -545,5 +422,13 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnEventGroupByStageUsingDate(dueDate: String) {
         composeTestRule.onNodeWithText(dueDate).performClick()
+    }
+
+    fun clickOnConfirmDeleteTEI() {
+        composeTestRule.onNodeWithText("Delete").performClick()
+    }
+
+    fun clickOnConfirmDeleteEnrollment() {
+        composeTestRule.onNodeWithText("Remove").performClick()
     }
 }

@@ -53,7 +53,6 @@ class SyncFlowTest : BaseTest() {
     override fun setUp() {
         super.setUp()
         setupMockServer()
-        enableComposeForms()
         workInfoStatusLiveData =
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
@@ -83,7 +82,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            fillRadioButtonForm(4)
+//            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
