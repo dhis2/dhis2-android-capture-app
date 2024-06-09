@@ -182,7 +182,7 @@ android {
             applicationId = "org.dhis2.psi"
             dimension = "default"
             versionCode = libs.versions.vCode.get().toInt()
-            versionName = "2.9.1-psi-fork-1"
+            versionName = "2.9.1.1-psi-fork-1"
         }
     }
 
