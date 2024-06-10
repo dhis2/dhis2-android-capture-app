@@ -118,7 +118,7 @@ class OUTreeFragment private constructor() : BottomSheetDialogFragment() {
                     onItemClick = presenter::onOpenChildren,
                     onItemSelected = presenter::onOrgUnitCheckChanged,
                     onClearAll = presenter::clearAll,
-                    onDone = { confirmOuSelection() }
+                    onDone = { confirmOuSelection() },
                 )
             }
         }
