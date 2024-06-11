@@ -26,8 +26,6 @@ import java.util.Date
 import java.util.Locale
 
 class SchedulingViewModel(
-    val enrollment: Enrollment,
-    val programStages: List<ProgramStage>,
     val d2: D2,
     val resourceManager: ResourceManager,
     val periodUtils: DhisPeriodUtils,
@@ -37,12 +35,15 @@ class SchedulingViewModel(
     lateinit var configureEventReportDate: ConfigureEventReportDate
     lateinit var configureEventCatCombo: ConfigureEventCatCombo
 
-    private val _programStage: MutableStateFlow<ProgramStage> = MutableStateFlow(programStages.first())
-    val programStage: StateFlow<ProgramStage> get() = _programStage
+    lateinit var enrollment: Enrollment
+    lateinit var programStages: List<ProgramStage>
+
+    private val _programStage: MutableStateFlow<ProgramStage?> = MutableStateFlow(null)
+    val programStage: StateFlow<ProgramStage?> get() = _programStage
 
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
-    var onEventScheduled: (() -> Unit)? = null
+    var onEventScheduled: ((String) -> Unit)? = null
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
     val eventDate: StateFlow<EventDate> get() = _eventDate
@@ -50,16 +51,12 @@ class SchedulingViewModel(
     private val _eventCatCombo: MutableStateFlow<EventCatCombo> = MutableStateFlow(EventCatCombo())
     val eventCatCombo: StateFlow<EventCatCombo> get() = _eventCatCombo
 
-    init {
-        loadConfiguration()
-    }
-
     private fun loadConfiguration() {
         repository = EventDetailsRepository(
             d2 = d2,
             programUid = enrollment.program().orEmpty(),
             eventUid = null,
-            programStageUid = programStage.value.uid(),
+            programStageUid = programStage.value?.uid(),
             fieldFactory = null,
             eventCreationType = EventCreationType.SCHEDULE,
             onError = resourceManager::parseD2Error,
@@ -68,14 +65,14 @@ class SchedulingViewModel(
             creationType = EventCreationType.SCHEDULE,
             resourceProvider = EventDetailResourcesProvider(
                 enrollment.program().orEmpty(),
-                programStage.value.uid(),
+                programStage.value?.uid(),
                 resourceManager,
             ),
             repository = repository,
-            periodType = programStage.value.periodType(),
+            periodType = programStage.value?.periodType(),
             periodUtils = periodUtils,
             enrollmentId = enrollment.uid(),
-            scheduleInterval = programStage.value.standardInterval() ?: 0,
+            scheduleInterval = programStage.value?.standardInterval() ?: 0,
         )
         configureEventCatCombo = ConfigureEventCatCombo(
             repository = repository,
@@ -142,7 +139,7 @@ class SchedulingViewModel(
     }
 
     fun showPeriodDialog() {
-        programStage.value.periodType()?.let {
+        programStage.value?.periodType()?.let {
             showPeriods?.invoke()
         }
     }
@@ -171,10 +168,15 @@ class SchedulingViewModel(
                 ).flowOn(Dispatchers.IO)
                     .collect {
                         if (it != null) {
-                            onEventScheduled?.invoke()
+                            onEventScheduled?.invoke(programStage.value?.uid() ?: "")
                         }
                     }
             }
         }
+    }
+
+    fun setInitialProgramStage(programStage: ProgramStage) {
+        _programStage.value = programStage
+        loadConfiguration()
     }
 }
