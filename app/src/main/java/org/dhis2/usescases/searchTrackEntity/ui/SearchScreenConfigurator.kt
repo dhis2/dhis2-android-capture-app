@@ -9,6 +9,7 @@ import org.dhis2.bindings.dp
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
+import org.dhis2.usescases.searchTrackEntity.SearchScreenState
 import org.dhis2.usescases.searchTrackEntity.SearchTEScreenState
 import org.dhis2.usescases.searchTrackEntity.ui.BackdropManager.changeBoundsIf
 import org.dhis2.utils.isPortrait
@@ -24,7 +25,9 @@ class SearchScreenConfigurator(
                 if (isPortrait()) {
                     configureListScreen(screenState)
                 } else {
-                    configureLandscapeAnalyticsScreen(false)
+                    if (screenState.screenState != SearchScreenState.MAP) {
+                        configureLandscapeAnalyticsScreen(false)
+                    }
                     configureLandscapeListScreen(screenState)
                 }
         }
