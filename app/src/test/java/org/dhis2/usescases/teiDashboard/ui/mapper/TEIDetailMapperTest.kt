@@ -7,7 +7,6 @@ import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -61,7 +60,6 @@ class TEIDetailMapperTest {
         val model = DashboardEnrollmentModel(
             setEnrollment(),
             emptyList<ProgramStage>(),
-            emptyList<Event>(),
             setTei(),
             attributeValues,
             emptyList<TrackedEntityAttributeValue>(),

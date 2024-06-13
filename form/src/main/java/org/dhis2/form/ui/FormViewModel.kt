@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -21,6 +24,7 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.FieldListConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
@@ -78,6 +82,11 @@ class FormViewModel(
 
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
 
+    private val fieldListChannel = Channel<FieldListConfiguration>(
+        capacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
     init {
         viewModelScope.launch {
             _pendingIntents
@@ -92,6 +101,19 @@ class FormViewModel(
                 .flowOn(dispatcher.io())
                 .collect { result -> displayResult(result) }
         }
+
+        viewModelScope.launch(dispatcher.io()) {
+            fieldListChannel.consumeEach { fieldListConfiguration ->
+                val result = async {
+                    repository.composeList(fieldListConfiguration.skipProgramRules)
+                }
+                _items.postValue(result.await())
+                if (fieldListConfiguration.finish) {
+                    runDataIntegrityCheck()
+                }
+            }
+        }
+
         loadData()
     }
 
@@ -648,15 +670,9 @@ class FormViewModel(
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
         FormCountingIdlingResource.increment()
-        viewModelScope.launch(dispatcher.io()) {
-            val result = async {
-                repository.composeList(skipProgramRules)
-            }
-            _items.postValue(result.await())
-            if (finish) {
-                runDataIntegrityCheck()
-            }
-        }
+        fieldListChannel.trySend(
+            FieldListConfiguration(skipProgramRules, finish),
+        )
     }
 
     fun updateConfigurationErrors() {
