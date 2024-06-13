@@ -4,12 +4,15 @@ import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,8 +36,19 @@ class TeiFlowTest : BaseTest() {
     private val dateEnrollment = createEnrollmentDate()
     private val currentDate = getCurrentDate()
 
+    override fun setUp() {
+        super.setUp()
+        setupMockServer()
+    }
+
     @Test
     fun shouldEnrollToSameProgramAfterClosingIt() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val totalEventsPerEnrollment = 3
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
@@ -105,6 +119,5 @@ class TeiFlowTest : BaseTest() {
 
         const val DATE_FORMAT = "dd/M/yyyy"
         const val DATE_PICKER_FORMAT = ", d MMMM"
-
     }
 }
