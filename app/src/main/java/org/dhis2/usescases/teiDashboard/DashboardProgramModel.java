@@ -34,6 +34,8 @@ public class DashboardProgramModel extends BaseObservable {
     private Enrollment currentEnrollment;
     private List<ProgramStage> programStages;
     private List<Program> enrollmentPrograms;
+
+
     private List<OrganisationUnit> orgsUnits;
     private List<Enrollment> teiEnrollments;
 
