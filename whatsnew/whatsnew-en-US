@@ -1,11 +1,9 @@
-- Event and enrollment label can be customized via the Maintenance App.
-- Supports multiselect data elements.
-- Support for custom icons.
-- Event/enrollment details are now more accessible within forms.
-- Improved search flow and dashboard layout.
-- Redesigned input fields.
-- Support line listing analytics.
-- Custom map layers can be used.
-- Export/import databases for troubleshooting.
-- Better feedback for configuration errors.
-- Better navigation for many TEIs
+# Release notes - Android App for DHIS2 - 3.0.0.1
+
+### Bug
+
+[ANDROAPP-6194](https://dhis2.atlassian.net/browse/ANDROAPP-6194) Unable to search outside the program
+
+[ANDROAPP-6195](https://dhis2.atlassian.net/browse/ANDROAPP-6195) Missing terms in transifex
+
+[ANDROAPP-6210](https://dhis2.atlassian.net/browse/ANDROAPP-6210) UninitializedPropertyAccessException on breaking the glass
