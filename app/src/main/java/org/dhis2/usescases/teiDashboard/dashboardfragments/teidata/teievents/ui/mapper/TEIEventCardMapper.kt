@@ -43,6 +43,7 @@ class TEIEventCardMapper(
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
+            id = event.event?.uid() ?: "",
             avatar = if (event.groupedByStage != true) {
                 {
                     ProvideAvatar(eventItem = event)
@@ -343,11 +344,12 @@ class TEIEventCardMapper(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
-                            contentDescription = resourceManager.getString(R.string.enter_event_data).format(
-                                event.stage?.eventLabel() ?: resourceManager.getString(
-                                    R.string.event,
+                            contentDescription = resourceManager.getString(R.string.enter_event_data)
+                                .format(
+                                    event.stage?.eventLabel() ?: resourceManager.getString(
+                                        R.string.event,
+                                    ),
                                 ),
-                            ),
                             tint = TextColor.OnPrimaryContainer,
                         )
                     },
@@ -365,11 +367,12 @@ class TEIEventCardMapper(
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
-                            contentDescription = resourceManager.getString(R.string.enter_event_data).format(
-                                event.stage?.eventLabel() ?: resourceManager.getString(
-                                    R.string.event,
+                            contentDescription = resourceManager.getString(R.string.enter_event_data)
+                                .format(
+                                    event.stage?.eventLabel() ?: resourceManager.getString(
+                                        R.string.event,
+                                    ),
                                 ),
-                            ),
                             tint = TextColor.OnPrimaryContainer,
                         )
                     },

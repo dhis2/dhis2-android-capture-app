@@ -50,6 +50,7 @@ class TEICardMapper(
         onImageClick: (String) -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
+            id = searchTEIModel.tei.uid(),
             avatar = { ProvideAvatar(searchTEIModel, onImageClick) },
             title = getTitle(searchTEIModel),
             lastUpdated = searchTEIModel.tei.lastUpdated().toDateSpan(context),

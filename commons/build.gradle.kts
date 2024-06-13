@@ -92,6 +92,7 @@ dependencies {
     api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
+    api(libs.androidx.compose.paging)
 
     api(libs.google.material)
     api(libs.google.gson)

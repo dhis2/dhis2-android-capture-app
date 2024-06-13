@@ -253,10 +253,6 @@ class ProgramEventDetailActivity :
         binding.name = programModel.displayName()
     }
 
-    override fun showFilterProgress() {
-        programEventsViewModel.setProgress(true)
-    }
-
     override fun renderError(message: String) {
         if (activity != null) {
             MaterialAlertDialogBuilder(activity, R.style.MaterialDialog)

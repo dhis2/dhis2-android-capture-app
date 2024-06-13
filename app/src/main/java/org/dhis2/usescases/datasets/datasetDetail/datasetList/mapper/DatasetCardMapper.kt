@@ -36,6 +36,9 @@ class DatasetCardMapper(
         onCardCLick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
+            id = with(dataset) {
+                "${datasetUid()}_${periodId()}_${orgUnitUid()}_${catOptionComboUid()}"
+            },
             title = dataset.namePeriod(),
             lastUpdated = dataset.lastUpdated().toDateSpan(context),
             additionalInfo = getAdditionalInfoList(dataset, editable),
