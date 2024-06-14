@@ -30,6 +30,8 @@ class EventListFragment : FragmentGlobalAbstract() {
     @Inject
     lateinit var cardMapper: EventCardMapper
 
+    val eventListViewModel by viewModels<EventListViewModel> { eventListViewModelFactory }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,7 +45,6 @@ class EventListFragment : FragmentGlobalAbstract() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
-                val eventListViewModel by viewModels<EventListViewModel> { eventListViewModelFactory }
                 val programEventsViewModel by activityViewModels<ProgramEventDetailViewModel>()
                 val cardClicked by eventListViewModel.onEventCardClick.collectAsState(null)
                 val syncClicked by eventListViewModel.onSyncClick.collectAsState(null)
@@ -64,5 +65,10 @@ class EventListFragment : FragmentGlobalAbstract() {
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        eventListViewModel.refreshData()
     }
 }

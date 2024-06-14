@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.model.ListCardUiModel
@@ -81,5 +80,9 @@ class EventListViewModel(
         viewModelScope.launch {
             _onEventCardClick.emit(eventUidAndOrgUnit)
         }
+    }
+
+    fun refreshData() {
+        filterManager.publishData()
     }
 }
