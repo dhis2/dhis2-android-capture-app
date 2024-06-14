@@ -318,7 +318,6 @@ class ProgramEventDetailActivity :
     }
 
     override fun selectOrgUnitForNewEvent() {
-        enableAddEventButton(false)
         OUTreeFragment.Builder()
             .showAsDialog()
             .singleSelection()

@@ -17,6 +17,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.get
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -40,7 +42,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
 
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
-            if (singleSelection && preselectedOrgUnits.size > 1) {
+            require(!(singleSelection && preselectedOrgUnits.size > 1)) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -49,7 +51,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
 
         fun singleSelection() = apply {
-            if (preselectedOrgUnits.size > 1) {
+            require(preselectedOrgUnits.size > 1) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -85,6 +87,8 @@ class OUTreeFragment private constructor() : DialogFragment() {
     private val presenter: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
+
+    val singleEventEnforcer = SingleEventEnforcer.get()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -165,7 +169,9 @@ class OUTreeFragment private constructor() : DialogFragment() {
     private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
     private fun confirmOuSelection() {
-        selectionCallback(presenter.getOrgUnits())
+        singleEventEnforcer.processEvent {
+            selectionCallback(presenter.getOrgUnits())
+        }
         exitOuSelection()
     }
 

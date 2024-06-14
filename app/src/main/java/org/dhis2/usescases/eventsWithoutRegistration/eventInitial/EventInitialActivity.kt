@@ -1,403 +1,434 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
+package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
-import static org.dhis2.commons.Constants.ENROLLMENT_UID;
-import static org.dhis2.commons.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.commons.Constants.EVENT_PERIOD_TYPE;
-import static org.dhis2.commons.Constants.ORG_UNIT;
-import static org.dhis2.commons.Constants.PERMANENT;
-import static org.dhis2.commons.Constants.PROGRAM_UID;
-import static org.dhis2.commons.Constants.TRACKED_ENTITY_INSTANCE;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
-import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_EVENT;
-import static org.dhis2.utils.analytics.AnalyticsConstants.SHOW_HELP;
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.SparseBooleanArray
+import android.view.View
+import android.widget.PopupMenu
+import androidx.databinding.DataBindingUtil
+import io.reactivex.disposables.CompositeDisposable
+import org.dhis2.App
+import org.dhis2.R
+import org.dhis2.commons.Constants
+import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.DialogClickListener
+import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.SingleEventEnforcerImpl
+import org.dhis2.databinding.ActivityEventInitialBinding
+import org.dhis2.form.model.EventMode
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment
+import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity
+import org.dhis2.utils.HelpManager
+import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.CREATE_EVENT
+import org.dhis2.utils.analytics.DATA_CREATION
+import org.dhis2.utils.analytics.DELETE_EVENT
+import org.dhis2.utils.analytics.SHOW_HELP
+import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramStage
+import java.util.Objects
+import javax.inject.Inject
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.SparseBooleanArray;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentTransaction;
-
-import org.dhis2.App;
-import org.dhis2.R;
-import org.dhis2.commons.Constants;
-import org.dhis2.commons.data.EventCreationType;
-import org.dhis2.commons.dialogs.CustomDialog;
-import org.dhis2.commons.dialogs.DialogClickListener;
-import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.databinding.ActivityEventInitialBinding;
-import org.dhis2.form.model.EventMode;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails;
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsFragment;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
-import org.dhis2.utils.HelpManager;
-import org.dhis2.utils.analytics.AnalyticsConstants;
-import org.hisp.dhis.android.core.common.Geometry;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStage;
-
-import java.util.Objects;
-
-import javax.inject.Inject;
-
-import io.reactivex.disposables.CompositeDisposable;
-import kotlin.Unit;
-
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, EventDetailsComponentProvider {
+class EventInitialActivity :
+    ActivityGlobalAbstract(),
+    EventInitialContract.View,
+    EventDetailsComponentProvider {
 
     @Inject
-    EventInitialPresenter presenter;
+    lateinit var presenter: EventInitialPresenter
 
     @Inject
-    ResourceManager resourceManager;
+    lateinit var resourceManager: ResourceManager
 
-    private ActivityEventInitialBinding binding;
+    private lateinit var binding: ActivityEventInitialBinding
 
-    //Bundle variables
-    private String programUid;
-    private String eventUid;
-    private EventCreationType eventCreationType;
-    private String getTrackedEntityInstance;
-    private String enrollmentUid;
-    private String selectedOrgUnit;
-    private PeriodType periodType;
-    private String programStageUid;
-    private EnrollmentStatus enrollmentStatus;
-    private int eventScheduleInterval;
+    // Bundle variables
+    private var programUid: String? = null
+    private var eventUid: String? = null
+    private var eventCreationType: EventCreationType? = null
+    private var getTrackedEntityInstance: String? = null
+    private var enrollmentUid: String? = null
+    private var selectedOrgUnit: String? = null
+    private var periodType: PeriodType? = null
+    private var programStageUid: String? = null
+    private var enrollmentStatus: EnrollmentStatus? = null
+    private var eventScheduleInterval = 0
 
-    private ProgramStage programStage;
-    private Program program;
-    private Boolean accessData;
-    private EventDetails eventDetails = new EventDetails();
+    private var programStage: ProgramStage? = null
+    private var program: Program? = null
+    private var accessData: Boolean? = null
+    private var eventDetails = EventDetails()
 
-    private final CompositeDisposable disposable = new CompositeDisposable();
+    private var singleEventEnforcer: SingleEventEnforcer? = null
 
-    public EventInitialComponent eventInitialComponent;
+    private val disposable = CompositeDisposable()
 
-    public static Bundle getBundle(String programUid, String eventUid, String eventCreationType,
-                                   String teiUid, PeriodType eventPeriodType, String orgUnit, String stageUid,
-                                   String enrollmentUid, int eventScheduleInterval, EnrollmentStatus enrollmentStatus) {
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.PROGRAM_UID, programUid);
-        bundle.putString(Constants.EVENT_UID, eventUid);
-        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType);
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
-        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
-        bundle.putString(Constants.ORG_UNIT, orgUnit);
-        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType);
-        bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid);
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
-        bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
-        return bundle;
+    var eventInitialComponent: EventInitialComponent? = null
+
+    private fun initVariables() {
+        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
+        eventUid = intent.getStringExtra(Constants.EVENT_UID)
+        eventCreationType =
+            if (intent.getStringExtra(Constants.EVENT_CREATION_TYPE) != null) {
+                EventCreationType.valueOf(
+                    intent.getStringExtra(Constants.EVENT_CREATION_TYPE)!!,
+                )
+            } else {
+                EventCreationType.DEFAULT
+            }
+        getTrackedEntityInstance = intent.getStringExtra(Constants.TRACKED_ENTITY_INSTANCE)
+        enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
+        selectedOrgUnit = intent.getStringExtra(Constants.ORG_UNIT)
+        periodType = intent.getSerializableExtra(Constants.EVENT_PERIOD_TYPE) as PeriodType?
+        programStageUid = intent.getStringExtra(Constants.PROGRAM_STAGE_UID)
+        enrollmentStatus =
+            intent.getSerializableExtra(Constants.ENROLLMENT_STATUS) as EnrollmentStatus?
+        eventScheduleInterval = intent.getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0)
+        singleEventEnforcer = SingleEventEnforcerImpl()
     }
 
-    private void initVariables() {
-        programUid = getIntent().getStringExtra(PROGRAM_UID);
-        eventUid = getIntent().getStringExtra(Constants.EVENT_UID);
-        eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
-                EventCreationType.valueOf(getIntent().getStringExtra(EVENT_CREATION_TYPE)) :
-                EventCreationType.DEFAULT;
-        getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
-        enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
-        selectedOrgUnit = getIntent().getStringExtra(ORG_UNIT);
-        periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
-        programStageUid = getIntent().getStringExtra(Constants.PROGRAM_STAGE_UID);
-        enrollmentStatus = (EnrollmentStatus) getIntent().getSerializableExtra(Constants.ENROLLMENT_STATUS);
-        eventScheduleInterval = getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0);
+    public override fun onCreate(savedInstanceState: Bundle?) {
+        initVariables()
+        eventInitialComponent = Objects.requireNonNull((applicationContext as App).userComponent())
+            ?.plus(
+                EventInitialModule(
+                    this,
+                    eventUid,
+                    programStageUid,
+                    context,
+                ),
+            )
+        eventInitialComponent!!.inject(this)
+        super.onCreate(savedInstanceState)
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial)
+        binding.setPresenter(presenter)
+
+        initProgressBar()
+
+        val bundle = Bundle()
+        bundle.putString(Constants.EVENT_UID, eventUid)
+        bundle.putString(
+            Constants.EVENT_CREATION_TYPE,
+            intent.getStringExtra(Constants.EVENT_CREATION_TYPE),
+        )
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid)
+        bundle.putString(Constants.PROGRAM_UID, programUid)
+        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, periodType)
+        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
+        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval)
+        bundle.putString(Constants.ORG_UNIT, selectedOrgUnit)
+        bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus)
+
+        val eventDetailsFragment = EventDetailsFragment()
+        eventDetailsFragment.arguments = bundle
+
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentDetailsContainer, eventDetailsFragment).commit()
+
+        eventDetailsFragment.onEventDetailsChange = { eventDetails: EventDetails ->
+            this.eventDetails = eventDetails
+            Unit
+        }
+        eventDetailsFragment.onButtonCallback = {
+            singleEventEnforcer!!.processEvent {
+                onActionButtonClick()
+                null
+            }
+            Unit
+        }
+        presenter.init(programUid, eventUid, selectedOrgUnit, programStageUid)
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        initVariables();
-        eventInitialComponent = Objects.requireNonNull(((App) getApplicationContext()).userComponent())
-                .plus(
-                        new EventInitialModule(this,
-                                eventUid,
-                                programStageUid,
-                                getContext())
-                );
-        eventInitialComponent.inject(this);
-        super.onCreate(savedInstanceState);
-
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
-        binding.setPresenter(presenter);
-
-        initProgressBar();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.EVENT_UID, eventUid);
-        bundle.putString(Constants.EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
-        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
-        bundle.putString(PROGRAM_UID, programUid);
-        bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, periodType);
-        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid);
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval);
-        bundle.putString(Constants.ORG_UNIT, selectedOrgUnit);
-        bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus);
-
-        EventDetailsFragment eventDetailsFragment = new EventDetailsFragment();
-        eventDetailsFragment.setArguments(bundle);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentDetailsContainer, eventDetailsFragment).commit();
-
-        eventDetailsFragment.setOnEventDetailsChange(eventDetails -> {
-            this.eventDetails = eventDetails;
-            return Unit.INSTANCE;
-        });
-        eventDetailsFragment.setOnButtonCallback(() -> {
-            onActionButtonClick();
-            return Unit.INSTANCE;
-        });
-        presenter.init(programUid, eventUid, selectedOrgUnit, programStageUid);
-    }
-
-    private void onActionButtonClick() {
-        String programStageModelUid = programStage == null ? "" : programStage.uid();
-        Geometry geometry = null;
-        if (eventDetails.getCoordinates() != null) {
+    private fun onActionButtonClick() {
+        val programStageModelUid = if (programStage == null) "" else programStage!!.uid()
+        var geometry: Geometry? = null
+        if (eventDetails.coordinates != null) {
             geometry = Geometry.builder()
-                    .coordinates(eventDetails.getCoordinates())
-                    .type(programStage.featureType())
-                    .build();
+                .coordinates(eventDetails.coordinates)
+                .type(programStage!!.featureType())
+                .build()
         }
 
         if (eventUid == null) { // This is a new Event
-            presenter.onEventCreated();
-            analyticsHelper().setEvent(CREATE_EVENT, AnalyticsConstants.DATA_CREATION, CREATE_EVENT);
-            if (eventCreationType == EventCreationType.REFERAL && eventDetails.getTemCreate() != null && eventDetails.getTemCreate().equals(PERMANENT)) {
+            presenter.onEventCreated()
+            analyticsHelper().setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
+            if (eventCreationType == EventCreationType.REFERAL && eventDetails.temCreate != null && eventDetails.temCreate == Constants.PERMANENT) {
                 presenter.scheduleEventPermanent(
-                        enrollmentUid,
-                        getTrackedEntityInstance,
-                        programStageModelUid,
-                        eventDetails.getSelectedDate(),
-                        eventDetails.getSelectedOrgUnit(),
-                        null,
-                        eventDetails.getCatOptionComboUid(),
-                        geometry
-                );
+                    enrollmentUid,
+                    getTrackedEntityInstance,
+                    programStageModelUid,
+                    eventDetails.selectedDate,
+                    eventDetails.selectedOrgUnit,
+                    null,
+                    eventDetails.catOptionComboUid,
+                    geometry,
+                )
             } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                 presenter.scheduleEvent(
-                        enrollmentUid,
-                        programStageModelUid,
-                        eventDetails.getSelectedDate(),
-                        eventDetails.getSelectedOrgUnit(),
-                        null,
-                        eventDetails.getCatOptionComboUid(),
-                        geometry
-                );
+                    enrollmentUid,
+                    programStageModelUid,
+                    eventDetails.selectedDate,
+                    eventDetails.selectedOrgUnit,
+                    null,
+                    eventDetails.catOptionComboUid,
+                    geometry,
+                )
             } else {
                 presenter.createEvent(
-                        enrollmentUid,
-                        programStageModelUid,
-                        eventDetails.getSelectedDate(),
-                        eventDetails.getSelectedOrgUnit(),
-                        null,
-                        eventDetails.getCatOptionComboUid(),
-                        geometry,
-                        getTrackedEntityInstance);
+                    enrollmentUid,
+                    programStageModelUid,
+                    eventDetails.selectedDate,
+                    eventDetails.selectedOrgUnit,
+                    null,
+                    eventDetails.catOptionComboUid,
+                    geometry,
+                    getTrackedEntityInstance,
+                )
             }
-        }else{
-            startFormActivity(eventUid,false);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.onDettach();
-        disposable.dispose();
-        super.onDestroy();
-    }
-
-    private void initProgressBar() {
-        if (eventUid != null && presenter.getCompletionPercentageVisibility()) {
-            binding.completion.setVisibility(View.VISIBLE);
         } else {
-            binding.completion.setVisibility(View.GONE);
+            startFormActivity(eventUid!!, false)
         }
     }
 
-    @Override
-    public void setProgram(@NonNull Program program) {
-        this.program = program;
-
-        setUpActivityTitle();
+    override fun onDestroy() {
+        presenter.onDettach()
+        disposable.dispose()
+        super.onDestroy()
     }
 
-    private void setUpActivityTitle() {
-        String activityTitle;
-        if (eventCreationType == EventCreationType.REFERAL) {
-            activityTitle = getString(R.string.referral);
+    private fun initProgressBar() {
+        if (eventUid != null && presenter.completionPercentageVisibility) {
+            binding.completion.visibility = View.VISIBLE
         } else {
-            activityTitle = eventUid == null ?
-                    resourceManager.formatWithEventLabel(R.string.new_event_label, programStageUid, 1, false)
-                    : program.displayName();
+            binding.completion.visibility = View.GONE
         }
-        binding.setName(activityTitle);
     }
 
-    @Override
-    public void onEventCreated(String eventUid) {
+    override fun setProgram(program: Program) {
+        this.program = program
+
+        setUpActivityTitle()
+    }
+
+    private fun setUpActivityTitle() {
+        val activityTitle = if (eventCreationType == EventCreationType.REFERAL) {
+            getString(R.string.referral)
+        } else {
+            if (eventUid == null) {
+                resourceManager.formatWithEventLabel(
+                    R.string.new_event_label,
+                    programStageUid,
+                    1,
+                    false,
+                )
+            } else {
+                program!!.displayName()!!
+            }
+        }
+        binding.name = activityTitle
+    }
+
+    override fun onEventCreated(eventUid: String) {
         showToast(
-                resourceManager.formatWithEventLabel(
-                        R.string.event_label_created,
-                        programStageUid,
-                1, false
-        ));
+            resourceManager.formatWithEventLabel(
+                R.string.event_label_created,
+                programStageUid,
+                1,
+                false,
+            ),
+        )
         if (eventCreationType != EventCreationType.SCHEDULE && eventCreationType != EventCreationType.REFERAL) {
-            startFormActivity(eventUid, true);
+            startFormActivity(eventUid, true)
         } else {
-            finish();
+            finish()
         }
     }
 
-    @Override
-    public void onEventUpdated(String eventUid) {
-        startFormActivity(eventUid, false);
+    override fun onEventUpdated(eventUid: String) {
+        startFormActivity(eventUid, false)
     }
 
-    private void startFormActivity(String eventUid, boolean isNew) {
-        Intent intent = new Intent(this, EventCaptureActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid, isNew ? EventMode.NEW : EventMode.CHECK));
-        startActivity(intent);
-        finish();
+    private fun startFormActivity(eventUid: String, isNew: Boolean) {
+        val intent = Intent(
+            this,
+            EventCaptureActivity::class.java,
+        )
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+        intent.putExtras(
+            getActivityBundle(
+                eventUid,
+                programUid!!,
+                if (isNew) EventMode.NEW else EventMode.CHECK,
+            ),
+        )
+        startActivity(intent)
+        finish()
     }
 
-    @Override
-    public void setProgramStage(ProgramStage programStage) {
-        this.programStage = programStage;
-        binding.setProgramStage(programStage);
+    override fun setProgramStage(programStage: ProgramStage) {
+        this.programStage = programStage
+        binding.programStage = programStage
 
-        if (periodType == null)
-            periodType = programStage.periodType();
+        if (periodType == null) periodType = programStage.periodType()
     }
 
-    @Override
-    public void updatePercentage(float primaryValue) {
-        binding.completion.setCompletionPercentage(primaryValue);
+    override fun updatePercentage(primaryValue: Float) {
+        binding.completion.setCompletionPercentage(primaryValue)
     }
 
-    @Override
-    public void showProgramStageSelection() {
-        presenter.getProgramStage(programStageUid);
+    override fun showProgramStageSelection() {
+        presenter.getProgramStage(programStageUid)
     }
 
-    @Override
-    public void setAccessDataWrite(Boolean canWrite) {
-        this.accessData = canWrite;
+    override fun setAccessDataWrite(canWrite: Boolean) {
+        this.accessData = canWrite
     }
 
-    @Override
-    public void showQR() {
-        Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
-        intent.putExtra(Constants.EVENT_UID, eventUid);
-        startActivity(intent);
+    override fun showQR() {
+        val intent = Intent(
+            this@EventInitialActivity,
+            QrEventsWORegistrationActivity::class.java,
+        )
+        intent.putExtra(Constants.EVENT_UID, eventUid)
+        startActivity(intent)
     }
 
-    @Override
-    public void setTutorial() {
-
-        new Handler().postDelayed(() -> {
-            SparseBooleanArray stepConditions = new SparseBooleanArray();
-            stepConditions.put(0, eventUid == null);
-            HelpManager.getInstance().show(getActivity(), HelpManager.TutorialName.EVENT_INITIAL, stepConditions);
-        }, 500);
+    override fun setTutorial() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val stepConditions = SparseBooleanArray()
+            stepConditions.put(0, eventUid == null)
+            HelpManager.getInstance()
+                .show(activity, HelpManager.TutorialName.EVENT_INITIAL, stepConditions)
+        }, 500)
     }
 
-    @Override
-    public void showMoreOptions(View view) {
-        new AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
-                .onMenuInflated(popupMenu -> {
-                    popupMenu.getMenu().findItem(R.id.menu_delete).setVisible(accessData && presenter.isEnrollmentOpen());
-                    popupMenu.getMenu().findItem(R.id.menu_share).setVisible(eventUid != null);
-                    return Unit.INSTANCE;
-                })
-                .onMenuItemClicked(itemId -> {
-                    switch (itemId) {
-                        case R.id.showHelp:
-                            analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP);
-                            setTutorial();
-                            break;
-                        case R.id.menu_delete:
-                            confirmDeleteEvent();
-                            break;
-                        case R.id.menu_share:
-                            presenter.onShareClick();
-                            break;
-                        default:
-                            break;
-                    }
-                    return false;
-                })
-                .build()
-                .show();
-    }
-
-    public void confirmDeleteEvent() {
-        new CustomDialog(
-                this,
-                resourceManager.formatWithEventLabel(
-                        R.string.delete_event_label,
-                        programStageUid,
-                        1, false),
-                resourceManager.formatWithEventLabel(
-                        R.string.confirm_delete_event_label,
-                        programStageUid,
-                        1, false),
-                getString(R.string.delete),
-                getString(R.string.cancel),
-                0,
-                new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT);
-                        presenter.deleteEvent(getTrackedEntityInstance);
+    override fun showMoreOptions(view: View) {
+        AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
+            .onMenuInflated { popupMenu: PopupMenu ->
+                popupMenu.menu.findItem(R.id.menu_delete).setVisible(
+                    accessData!! && presenter.isEnrollmentOpen,
+                )
+                popupMenu.menu.findItem(R.id.menu_share).setVisible(eventUid != null)
+                Unit
+            }
+            .onMenuItemClicked { itemId: Int? ->
+                when (itemId) {
+                    R.id.showHelp -> {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        setTutorial()
                     }
 
-                    @Override
-                    public void onNegative() {
-                        // dismiss
+                    R.id.menu_delete -> confirmDeleteEvent()
+                    R.id.menu_share -> presenter.onShareClick()
+                    else -> {
+                        // do nothing
                     }
                 }
-        ).show();
+                false
+            }
+            .build()
+            .show()
     }
 
-    @Override
-    public void showEventWasDeleted() {
-        showToast(resourceManager.formatWithEventLabel(
+    fun confirmDeleteEvent() {
+        CustomDialog(
+            this,
+            resourceManager.formatWithEventLabel(
+                R.string.delete_event_label,
+                programStageUid,
+                1,
+                false,
+            ),
+            resourceManager.formatWithEventLabel(
+                R.string.confirm_delete_event_label,
+                programStageUid,
+                1,
+                false,
+            ),
+            getString(R.string.delete),
+            getString(R.string.cancel),
+            0,
+            object : DialogClickListener {
+                override fun onPositive() {
+                    analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
+                    presenter.deleteEvent(getTrackedEntityInstance)
+                }
+
+                override fun onNegative() {
+                    // dismiss
+                }
+            },
+        ).show()
+    }
+
+    override fun showEventWasDeleted() {
+        showToast(
+            resourceManager.formatWithEventLabel(
                 R.string.event_label_was_deleted,
                 programStageUid,
-                1, false
-        ));
-        finish();
+                1,
+                false,
+            ),
+        )
+        finish()
     }
 
-    @Override
-    public void showDeleteEventError() {
-        showToast(resourceManager.formatWithEventLabel(
+    override fun showDeleteEventError() {
+        showToast(
+            resourceManager.formatWithEventLabel(
                 R.string.delete_event_label_error,
                 programStageUid,
-                1, false
-        ));
+                1,
+                false,
+            ),
+        )
     }
 
-    @Nullable
-    @Override
-    public EventDetailsComponent provideEventDetailsComponent(@Nullable EventDetailsModule module) {
-        return eventInitialComponent.plus(module);
+    override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {
+        return eventInitialComponent!!.plus(module)
+    }
+
+    companion object {
+        fun getBundle(
+            programUid: String?,
+            eventUid: String?,
+            eventCreationType: String?,
+            teiUid: String?,
+            eventPeriodType: PeriodType?,
+            orgUnit: String?,
+            stageUid: String?,
+            enrollmentUid: String?,
+            eventScheduleInterval: Int,
+            enrollmentStatus: EnrollmentStatus?,
+        ): Bundle {
+            val bundle = Bundle()
+            bundle.putString(Constants.PROGRAM_UID, programUid)
+            bundle.putString(Constants.EVENT_UID, eventUid)
+            bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType)
+            bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid)
+            bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
+            bundle.putString(Constants.ORG_UNIT, orgUnit)
+            bundle.putSerializable(Constants.EVENT_PERIOD_TYPE, eventPeriodType)
+            bundle.putString(Constants.PROGRAM_STAGE_UID, stageUid)
+            bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, eventScheduleInterval)
+            bundle.putSerializable(Constants.ENROLLMENT_STATUS, enrollmentStatus)
+            return bundle
+        }
     }
 }

@@ -34,6 +34,8 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.schedulers.SingleEventEnforcer;
+import org.dhis2.commons.schedulers.SingleEventEnforcerImpl;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
@@ -506,13 +508,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void observeLegacyInteractions() {
+        SingleEventEnforcer singleEventEnforcer = new SingleEventEnforcerImpl();
+
         viewModel.getLegacyInteraction().observe(this, legacyInteraction -> {
             if (legacyInteraction != null) {
                 switch (legacyInteraction.getId()) {
-                    case ON_ENROLL_CLICK -> {
+                    case ON_ENROLL_CLICK -> singleEventEnforcer.processEvent( () -> {
                         LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
                         presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
-                    }
+                        return null;
+                    } );
                     case ON_ADD_RELATIONSHIP -> {
                         LegacyInteraction.OnAddRelationship interaction = (LegacyInteraction.OnAddRelationship) legacyInteraction;
                         presenter.addRelationship(interaction.getTeiUid(), interaction.getRelationshipTypeUid(), interaction.getOnline());
