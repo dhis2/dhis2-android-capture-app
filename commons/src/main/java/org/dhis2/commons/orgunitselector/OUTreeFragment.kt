@@ -51,7 +51,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
 
         fun singleSelection() = apply {
-            require(preselectedOrgUnits.size > 1) {
+            require(preselectedOrgUnits.size <= 1) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
