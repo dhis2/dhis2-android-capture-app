@@ -36,6 +36,7 @@ class EventListViewModel(
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
         filterManager.asFlow(viewModelScope)
             .flatMapLatest {
+                EventListIdlingResourceSingleton.increment()
                 eventRepository.filteredProgramEvents()
                     .map { pagingData ->
                         pagingData.map { event ->
