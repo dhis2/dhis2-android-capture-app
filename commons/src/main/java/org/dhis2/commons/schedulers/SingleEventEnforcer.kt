@@ -1,7 +1,5 @@
 package org.dhis2.commons.schedulers
 
-import timber.log.Timber
-
 fun interface SingleEventEnforcer {
     fun processEvent(event: () -> Unit)
 
@@ -19,14 +17,7 @@ class SingleEventEnforcerImpl : SingleEventEnforcer {
 
     override fun processEvent(event: () -> Unit) {
         if (now - lastEventTimeMs >= 1200L) {
-            Timber.d(
-                "should be first event and the condition is true ",
-            )
             event.invoke()
-        } else {
-            Timber.d(
-                " consecutive events and the condition is false ",
-            )
         }
         lastEventTimeMs = now
     }
