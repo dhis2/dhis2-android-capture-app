@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.R
@@ -112,6 +113,7 @@ class OUTreeFragment private constructor() : BottomSheetDialogFragment() {
             setContent {
                 val list by presenter.treeNodes.collectAsState()
                 OrgBottomSheet(
+                    clearAllButtonText = stringResource(id = R.string.action_clear_all),
                     orgTreeItems = list,
                     onSearch = presenter::searchByName,
                     onDismiss = { cancelOuSelection() },
