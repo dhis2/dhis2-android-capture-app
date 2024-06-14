@@ -105,14 +105,13 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
-            Espresso.pressBack()
             assertCellSelected(firstId, 1, 0)
             clickOnCell(firstId, 1, 0)
             assertInputComponentInfo(
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =
                 fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: ""
+                    ?.joinToString(separator = ",") { it.cells[0].value } ?: ""
             )
         }
     }
