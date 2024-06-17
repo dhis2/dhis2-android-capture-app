@@ -2,6 +2,13 @@ package org.dhis2.usescases.pin
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.usescases.BaseTest
@@ -32,9 +39,9 @@ class PinTest : BaseTest() {
         }
     }
 
-    @Ignore("Killing process makes test failed")
+//    @Ignore("Killing process makes test failed")
     @Test
-    fun shouldCloseAppIfPinIsSet() {
+    fun shouldCloseAppIfPinIsSet() = runTest {
         startActivity()
 
         homeRobot {
@@ -48,7 +55,15 @@ class PinTest : BaseTest() {
             clickPinButton("3")
             clickPinButton("4")
         }
-    }
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(2000)
+            withContext(Dispatchers.Main) {
+                pinRobot {
+                    checkActivityHasFinished(ruleLoginActivity.activity)
+                }
+            }
+        }
+        }
 
     @Test
     fun shouldSuccessfullyLoginIfClickForgotYourCode() {

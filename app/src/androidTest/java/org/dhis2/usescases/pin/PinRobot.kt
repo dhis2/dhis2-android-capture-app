@@ -1,6 +1,7 @@
 package org.dhis2.usescases.pin
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -8,11 +9,15 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import junit.framework.TestCase
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.isToast
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.hamcrest.CoreMatchers.allOf
+import org.junit.Assert
 
 fun pinRobot(pinBody: PinRobot.() -> Unit) {
     PinRobot().apply {
@@ -36,5 +41,9 @@ class PinRobot : BaseRobot() {
 
     fun checkToastDisplayed(toastText: String) {
         onView(withText(toastText)).inRoot(isToast()).check(matches(isDisplayed()))
+    }
+
+    fun checkActivityHasFinished(activity: LoginActivity) {
+        TestCase.assertTrue(activity.isFinishing)
     }
 }
