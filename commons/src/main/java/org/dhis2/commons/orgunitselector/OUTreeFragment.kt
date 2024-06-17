@@ -19,7 +19,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import kotlinx.coroutines.launch
-import org.dhis2.commons.schedulers.get
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
