@@ -803,8 +803,6 @@ public class DateUtils {
         dialog.show();
     }
 
-
-
     public interface OnFromToSelector {
         void onFromToSelected(List<DatePeriod> datePeriods);
     }
