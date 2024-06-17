@@ -26,6 +26,8 @@ import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.date.DateUtils;
+import org.dhis2.commons.date.Period;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -34,8 +36,6 @@ import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.schedulers.SingleEventEnforcer;
-import org.dhis2.commons.schedulers.SingleEventEnforcerImpl;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
@@ -45,9 +45,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
+import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -62,6 +62,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -508,16 +509,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void observeLegacyInteractions() {
-        SingleEventEnforcer singleEventEnforcer = new SingleEventEnforcerImpl();
 
         viewModel.getLegacyInteraction().observe(this, legacyInteraction -> {
             if (legacyInteraction != null) {
                 switch (legacyInteraction.getId()) {
-                    case ON_ENROLL_CLICK -> singleEventEnforcer.processEvent( () -> {
+                    case ON_ENROLL_CLICK -> {
                         LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
                         presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
-                        return null;
-                    } );
+
+                    }
                     case ON_ADD_RELATIONSHIP -> {
                         LegacyInteraction.OnAddRelationship interaction = (LegacyInteraction.OnAddRelationship) legacyInteraction;
                         presenter.addRelationship(interaction.getTeiUid(), interaction.getRelationshipTypeUid(), interaction.getOnline());
@@ -677,14 +677,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
             });
         } else {
-            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        if (periodRequest.getSecond() == Filters.PERIOD) {
-                            FilterManager.getInstance().addPeriod(datePeriods);
-                        } else {
-                            FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
-                        }
-                    },
-                    true);
+
+            DateUtils.OnFromToSelector onFromToSelector = datePeriods -> {
+                if (periodRequest.getSecond() == Filters.PERIOD) {
+                    FilterManager.getInstance().addPeriod(datePeriods);
+                } else {
+                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
+                }
+            };
+
+            DateUtils.OnNextSelected onNextSelected = () -> {
+                Disposable disposable = new RxDateDialog(this, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> onFromToSelector.onFromToSelected(DateUtils.getInstance().getDatePeriodListFor(
+                                        selectedDates.val1(),
+                                        selectedDates.val0())
+                                ),
+                                Timber::e
+                        );
+            };
+
+            DateUtils.getInstance().showPeriodDialog(this,onFromToSelector,
+                    true, onNextSelected);
         }
     }
 

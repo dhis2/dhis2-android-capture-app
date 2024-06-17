@@ -169,14 +169,15 @@ class OUTreeFragment private constructor() : DialogFragment() {
     private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
     private fun confirmOuSelection() {
-        singleEventEnforcer.processEvent {
-            selectionCallback(presenter.getOrgUnits())
-        }
+        selectionCallback(presenter.getOrgUnits())
+
         exitOuSelection()
     }
 
     private fun cancelOuSelection() {
-        selectionCallback(emptyList())
+        singleEventEnforcer.processEvent {
+            selectionCallback(emptyList())
+        }
         exitOuSelection()
     }
 

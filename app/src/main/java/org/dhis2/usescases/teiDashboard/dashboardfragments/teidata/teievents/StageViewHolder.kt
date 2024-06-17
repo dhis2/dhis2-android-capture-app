@@ -22,7 +22,6 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
@@ -47,7 +46,6 @@ internal class StageViewHolder(
         val stage = eventItem.stage!!
 
         val resourceManager = ResourceManager(itemView.context, colorUtils)
-        val singleEventEnforcer = SingleEventEnforcer.get()
         composeView.setContent {
             Row(
                 modifier = Modifier
@@ -95,7 +93,7 @@ internal class StageViewHolder(
                             },
                     ) {
                         NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
-                            singleEventEnforcer.processEvent { presenter.onAddNewEventOptionSelected(it, stage) }
+                            presenter.onAddNewEventOptionSelected(it, stage)
                         }
                     }
                 }

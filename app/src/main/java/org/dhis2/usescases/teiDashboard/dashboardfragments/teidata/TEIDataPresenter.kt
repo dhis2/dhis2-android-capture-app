@@ -24,6 +24,8 @@ import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
@@ -84,6 +86,8 @@ class TEIDataPresenter(
 
     private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
     val events: LiveData<List<EventViewModel>> = _events
+
+    private val singleEventEnforcer = SingleEventEnforcer.get()
 
     fun init() {
         programUid?.let {
@@ -350,6 +354,12 @@ class TEIDataPresenter(
     }
 
     fun onAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
+        singleEventEnforcer.processEvent {
+            manageAddNewEventOptionSelected(eventCreationType, stage)
+        }
+    }
+
+    private fun manageAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
