@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -53,7 +54,9 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.PROGRAM_STAGE_UID
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG_RESULT
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
@@ -158,6 +161,16 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             presenter.events.observe(viewLifecycleOwner) {
                 setEvents(it)
                 showLoadingProgress(false)
+            }
+
+            setFragmentResultListener(SCHEDULING_DIALOG_RESULT) { _, bundle ->
+                showToast(
+                    resourceManager.formatWithEventLabel(
+                        R.string.event_label_created,
+                        bundle.getString(PROGRAM_STAGE_UID),
+                    ),
+                )
+                presenter.fetchEvents()
             }
         }.root
     }
@@ -374,18 +387,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun displayScheduleEvent() {
         val model = dashboardViewModel.dashboardModel.value
         if (model is DashboardEnrollmentModel) {
-            SchedulingDialog(
+            SchedulingDialog.newInstance(
                 enrollment = model.currentEnrollment,
                 programStages = presenter.filterAvailableStages(model.programStages),
-                onScheduled = { programStageUid ->
-                    showToast(
-                        resourceManager.formatWithEventLabel(
-                            R.string.event_label_created,
-                            programStageUid,
-                        ),
-                    )
-                    presenter.fetchEvents()
-                },
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
     }
