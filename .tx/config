@@ -44,3 +44,16 @@ source_lang  = en
 type         = ANDROID
 minimum_perc = 0
 
+[o:hisp-uio:p:dhis2-android-capture-app:r:ui-strings-xml]
+file_filter  = ui-components/src/main/res/values-<lang>/strings.xml
+source_file  = ui-components/src/main/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+
+[o:hisp-uio:p:dhis2-android-capture-app:r:table-strings-xml]
+file_filter  = compose-table/src/main/res/values-<lang>/strings.xml
+source_file  = compose-table/src/main/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
