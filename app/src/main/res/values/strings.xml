@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<resources>
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -243,7 +243,7 @@
     <string name="settingsCheckVersion">Software update</string>
     <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Export database</string>
-    <string name="settingsExportDBMessage">Export your database and share it with your administrator</string>
+    <string name="settingsExportDBMessage">Export yout database and share it with your administrator</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>
@@ -495,7 +495,7 @@
     <string name="send_user_name_title">Send data</string>
     <string name="send_user_name_mesage">Help DHIS2 improve this app by sharing error logs associated to your user id.</string>
     <string name="improve_app_msg_title">Do you want to help us improve this app?</string>
-    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.  For further details, please refer to our privacy policy.</string>
+    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.\n\nFor further details, please refer to our privacy policy.</string>
     <string name="improve_app_msg_clickable_word">privacy policy</string>
     <string name="check_mandatory_field">Check fields</string>
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
@@ -700,7 +700,7 @@
     <string name="complete_anyway">Complete anyway</string>
     <string name="fk_message">Missing %s %s from %s %s</string>
     <string name="filters_title_event_status">Event status</string>
-    <string name="filters_title_enrollment_status" translatable="false">@string/enrollment_status</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="enrollment_date">Enrollment date</string>
     <string name="dataset_empty_list_can_create">There are no data. Click \"+\" to add new a new record</string>
     <string name="dataset_emtpy_list_can_not_create">There are no data. You don\'t have permission to add new records.</string>
@@ -925,7 +925,7 @@
         <item quantity="one">%s warning</item>
         <item quantity="other">%s warnings</item>
     </plurals>
-    <string name="new_version_message">App version <b>%s</b> is now available. Do you want to download it?</string>
+    <string name="new_version_message">App version <b>%s</b> is now available.\nDo you want to download it?</string>
     <string name="software_update">"Software update"</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download now</string>
@@ -972,10 +972,5 @@
     <string name="database_export_downloaded">Database downloaded</string>
     <string name="importing_database">Importing database</string>
     <string name="re_open_to_edit">Re-open form to edit</string>
-    <string name="show_more">Show more</string>
-    <string name="show_less">Show less</string>
-    <string name="sync">Sync</string>
-    <string name="show_fields">Show fields</string>
-    <string name="hide_fields">Hide fields</string>
     <string name="importing_successful">Import successful</string>
 </resources>
