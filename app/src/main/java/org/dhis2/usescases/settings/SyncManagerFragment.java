@@ -292,8 +292,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         getString(R.string.action_accept),
                         true,
                         () -> {
-                            analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
-                            presenter.deleteLocalData();
+                            if (deleteLocalDataDialog.isAdded()) {
+                                analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                                presenter.deleteLocalData();
+                            }
                             return null;
                         })
         );
