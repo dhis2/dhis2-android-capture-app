@@ -38,7 +38,7 @@ fun EventListScreen(
             .fillMaxSize()
             .background(Color.White)
             .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.Absolute.spacedBy(Spacing.Spacing8),
+        verticalArrangement = Arrangement.Absolute.spacedBy(Spacing.Spacing4),
     ) {
         WorkingListChipGroup(
             Modifier.padding(top = Spacing.Spacing16),
@@ -78,7 +78,7 @@ fun EventListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        verticalArrangement = Arrangement.Absolute.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.Absolute.spacedBy(4.dp),
                     ) {
                         items(count = events.itemCount) { index ->
                             val card = events[index]!!
