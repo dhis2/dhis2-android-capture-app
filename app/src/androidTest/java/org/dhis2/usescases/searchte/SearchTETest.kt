@@ -15,6 +15,8 @@ import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_RESPONSE
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
 import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
@@ -202,6 +204,16 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_EVENTS_PATH,
+            API_OLD_EVENTS_RESPONSE,
+        )
         enableComposeForms()
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
