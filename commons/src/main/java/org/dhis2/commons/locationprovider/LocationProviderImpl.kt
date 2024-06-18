@@ -75,7 +75,8 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     }
 
     override fun hasLocationEnabled(): Boolean {
-        return locationManager.isProviderEnabled(locationProvider)
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     override fun stopLocationUpdates() {
