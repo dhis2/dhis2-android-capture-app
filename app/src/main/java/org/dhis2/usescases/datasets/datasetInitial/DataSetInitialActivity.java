@@ -111,7 +111,6 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             preselectedOrgUnits.add(selectedOrgUnit.uid());
         }
         new OUTreeFragment.Builder()
-                .showAsDialog()
                 .singleSelection()
                 .withPreselectedOrgUnits(preselectedOrgUnits)
                 .orgUnitScope(new OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))

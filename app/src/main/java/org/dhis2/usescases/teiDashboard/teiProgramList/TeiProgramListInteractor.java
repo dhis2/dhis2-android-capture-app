@@ -142,7 +142,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
         OUTreeFragment orgUnitDialog = new OUTreeFragment.Builder()
-                .showAsDialog()
                 .singleSelection()
                 .onSelection(selectedOrgUnits -> {
                     if (!selectedOrgUnits.isEmpty())

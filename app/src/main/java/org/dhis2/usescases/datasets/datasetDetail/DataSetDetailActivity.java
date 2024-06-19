@@ -180,7 +180,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void openOrgUnitTreeSelector() {
         new OUTreeFragment.Builder()
-                .showAsDialog()
                 .withPreselectedOrgUnits(FilterManager.getInstance().getOrgUnitUidsFilters())
                 .onSelection(selectedOrgUnits -> {
                     presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);

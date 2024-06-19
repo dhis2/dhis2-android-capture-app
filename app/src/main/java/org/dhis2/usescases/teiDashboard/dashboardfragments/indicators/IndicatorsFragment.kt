@@ -141,7 +141,6 @@ class IndicatorsFragment : FragmentGlobalAbstract(), IndicatorsView {
         lineListingColumnId: Int?,
     ) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 chartModel.graph.orgUnitsSelected(lineListingColumnId).toMutableList(),
             )

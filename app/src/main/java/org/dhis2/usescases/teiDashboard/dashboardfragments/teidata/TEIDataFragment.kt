@@ -520,7 +520,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     override fun displayOrgUnitSelectorForNewEvent(programUid: String, programStageUid: String) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),

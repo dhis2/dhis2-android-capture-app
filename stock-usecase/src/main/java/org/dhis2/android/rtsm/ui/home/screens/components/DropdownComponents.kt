@@ -466,7 +466,6 @@ fun openOrgUnitTreeSelector(
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     OUTreeFragment.Builder()
-        .showAsDialog()
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
         .withPreselectedOrgUnits(

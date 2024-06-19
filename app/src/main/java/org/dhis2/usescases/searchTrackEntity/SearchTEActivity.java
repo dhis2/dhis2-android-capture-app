@@ -350,7 +350,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 resourceManager,
                 (uid, preselectedOrgUnits, orgUnitScope, label) -> {
                     new OUTreeFragment.Builder()
-                            .showAsDialog()
                             .withPreselectedOrgUnits(preselectedOrgUnits)
                             .singleSelection()
                             .onSelection(selectedOrgUnits -> {
@@ -649,7 +648,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void openOrgUnitTreeSelector() {
         new OUTreeFragment.Builder()
-                .showAsDialog()
                 .withPreselectedOrgUnits(
                         FilterManager.getInstance().getOrgUnitUidsFilters()
                 )
