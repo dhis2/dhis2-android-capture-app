@@ -2,7 +2,7 @@
 ndk = "21.4.7075529"
 sdk = "34"
 minSdk = "21"
-vCode = "131"
+vCode = "132"
 vName = "2.9.1.1-psi-fork-1"
 kotlinCompilerExtensionVersion = "1.5.6"
 gradle = "8.2.0"
