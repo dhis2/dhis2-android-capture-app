@@ -3,8 +3,6 @@ package org.dhis2.usescases.main
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onChildAt
@@ -12,10 +10,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -23,6 +24,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.HOME_ITEM
 import org.dhis2.usescases.main.program.HOME_ITEMS
+import org.dhis2.usescases.pin.PinRobot
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
@@ -56,12 +58,16 @@ class MainRobot : BaseRobot() {
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
+    fun clickDeleteAccount() = apply {
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
+    }
+
     fun clickJiraIssue() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_jira))
     }
-
-    fun clickDeleteAccount() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
+    fun typePIN(pin: String) {
+        onView(withId(R.id.indicator_dots)).perform(TypeTextAction(PIN))
+        pressImeActionButton()
     }
 
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
@@ -106,8 +112,17 @@ class MainRobot : BaseRobot() {
             .assert(hasText(items, substring = true))
     }
 
+    fun checkIsDeleteAccountVisible(){
+        onView(withText("Delete Account")).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    fun clickAccept(){
+        onView(withText("Accept")).perform(click())
+    }
+
     companion object {
         const val FRAGMENT_TRANSITION = 1500L
         const val LOGOUT_TRANSITION = 2000L
+        const val PIN = "1234"
     }
 }

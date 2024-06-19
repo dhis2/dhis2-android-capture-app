@@ -40,6 +40,9 @@ class LoginRobot : BaseRobot() {
         closeKeyboard()
     }
 
+    fun isServerURLFieldDisplayed(){
+        onView(withId(R.id.server_url_edit)).check(matches(isDisplayed()))
+    }
     fun clearServerField() {
         onView(withId(R.id.server_url_edit)).perform(clearText())
     }
