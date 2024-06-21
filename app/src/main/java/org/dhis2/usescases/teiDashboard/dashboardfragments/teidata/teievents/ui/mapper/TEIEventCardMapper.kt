@@ -43,7 +43,6 @@ class TEIEventCardMapper(
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            id = event.event?.uid() ?: "",
             avatar = if (event.groupedByStage != true) {
                 {
                     ProvideAvatar(eventItem = event)

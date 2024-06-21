@@ -43,7 +43,6 @@ class EventCardMapper(
         onCardClick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            id = event.event?.uid() ?: "",
             title = event.displayDate ?: "",
             lastUpdated = event.lastUpdate.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
