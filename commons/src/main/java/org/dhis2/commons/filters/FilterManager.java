@@ -363,6 +363,7 @@ public class FilterManager implements Serializable {
     }
 
     public Flowable<FilterManager> asFlowable() {
+        this.scope = null;
         return filterProcessor;
     }
 
