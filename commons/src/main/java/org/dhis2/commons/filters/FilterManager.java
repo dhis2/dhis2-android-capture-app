@@ -51,6 +51,10 @@ public class FilterManager implements Serializable {
         this.catComboAdapter = adapter;
     }
 
+    public void clearFlow() {
+        this.scope = null;
+    }
+
     public enum PeriodRequest {
         FROM_TO, OTHER
     }
