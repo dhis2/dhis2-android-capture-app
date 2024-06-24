@@ -19,6 +19,9 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -204,7 +207,11 @@ class FormViewModel(
                 } else {
                     val saveResult = repository.save(action.id, action.value, action.extraData)
                     if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
-                        repository.updateValueOnList(action.id, action.value, action.valueType)
+                        if (action.isEventDetailsRow) {
+                            repository.fetchFormItems(openErrorLocation)
+                        } else {
+                            repository.updateValueOnList(action.id, action.value, action.valueType)
+                        }
                     } else {
                         repository.updateErrorList(
                             action.copy(
@@ -630,7 +637,13 @@ class FormViewModel(
         error = error,
         type = actionType,
         valueType = valueType,
+        isEventDetailsRow = isEventDetailField(uid),
     )
+
+    private fun isEventDetailField(uid: String): Boolean {
+        val eventDetailsIds = listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
+        return eventDetailsIds.contains(uid)
+    }
 
     fun onItemsRendered() {
         loading.value = false
