@@ -445,7 +445,11 @@ class SearchTEIViewModel(
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
                         setListScreen()
-                        _refreshData.postValue(Unit)
+                        fetchListResults { flow ->
+                            flow?.let {
+                                _refreshData.postValue(Unit)
+                            }
+                        }
                     }
 
                     SearchScreenState.MAP -> {
