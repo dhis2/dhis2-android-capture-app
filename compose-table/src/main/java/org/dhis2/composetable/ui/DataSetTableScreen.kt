@@ -6,13 +6,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -32,6 +37,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.TableState
 import org.dhis2.composetable.actions.TableInteractions
 import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TableCell
@@ -43,6 +49,9 @@ import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
 import org.dhis2.composetable.ui.extensions.collapseIfExpanded
 import org.dhis2.composetable.ui.extensions.expandIfCollapsed
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -53,6 +62,7 @@ fun DataSetTableScreen(
         TableCell,
         updateCellValue: (TableCell) -> Unit,
     ) -> TextInputModel?,
+    emptyTablesText: String? = null,
     onEdition: (editing: Boolean) -> Unit,
     onSaveValue: (TableCell) -> Unit,
     bottomContent: @Composable (() -> Unit)? = null,
@@ -257,7 +267,7 @@ fun DataSetTableScreen(
         ),
     ) {
         AnimatedVisibility(
-            visible = tableScreenState.tables.isEmpty(),
+            visible = tableScreenState.state == TableState.LOADING,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
@@ -277,10 +287,35 @@ fun DataSetTableScreen(
             LocalUpdatingCell provides updatingCell,
             LocalInteraction provides iter,
         ) {
-            DataTable(
-                tableList = tableScreenState.tables,
-                bottomContent = bottomContent,
-            )
+            if (tableScreenState.state == TableState.SUCCESS && tableScreenState.tables.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    InfoBar(
+                        infoBarData = InfoBarData(
+                            text = emptyTablesText ?: "",
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.ErrorOutline,
+                                    contentDescription = "warning",
+                                    tint = AdditionalInfoItemColor.WARNING.color,
+                                )
+                            },
+                            color = AdditionalInfoItemColor.WARNING.color,
+                            backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                            actionText = null,
+                            onClick = {},
+                        ),
+                    )
+                }
+            } else {
+                DataTable(
+                    tableList = tableScreenState.tables,
+                    bottomContent = bottomContent,
+                )
+            }
         }
         displayDescription?.let {
             TableDialog(
