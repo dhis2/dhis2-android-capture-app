@@ -68,6 +68,8 @@ class FormViewModel(
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
 
+    var previousActionItem: RowAction? = null
+
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
 
@@ -229,6 +231,7 @@ class FormViewModel(
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
                 val storeResult = saveLastFocusedItem(action)
                 repository.setFocusedItem(action)
+                previousActionItem = action
                 storeResult
             }
 
@@ -307,24 +310,32 @@ class FormViewModel(
     }
 
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
-        val error = checkFieldError(it.valueType, it.value, it.fieldMask)
-        if (error != null) {
-            val action = rowActionFromIntent(
-                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
-            )
-            repository.updateErrorList(action)
+        if (previousActionItem == null) previousActionItem = rowAction
+        if (previousActionItem?.value != it.value && previousActionItem?.id == rowAction.id) {
+            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
+            if (error != null) {
+                val action = rowActionFromIntent(
+                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
+                )
+                repository.updateErrorList(action)
+                StoreResult(
+                    rowAction.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+            } else {
+                checkAutoCompleteForLastFocusedItem(it)
+                val intent = getSaveIntent(it)
+                val action = rowActionFromIntent(intent)
+                val result = repository.save(it.uid, it.value, action.extraData)
+                repository.updateValueOnList(it.uid, it.value, it.valueType)
+                repository.updateErrorList(action)
+                result
+            }
+        } else {
             StoreResult(
                 rowAction.id,
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED,
             )
-        } else {
-            checkAutoCompleteForLastFocusedItem(it)
-            val intent = getSaveIntent(it)
-            val action = rowActionFromIntent(intent)
-            val result = repository.save(it.uid, it.value, action.extraData)
-            repository.updateValueOnList(it.uid, it.value, it.valueType)
-            repository.updateErrorList(action)
-            result
         }
     } ?: StoreResult(
         rowAction.id,
