@@ -385,6 +385,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(name)
             clickOnSearch()
+            composeTestRule.waitForIdle()
         }
 
         filterRobot {

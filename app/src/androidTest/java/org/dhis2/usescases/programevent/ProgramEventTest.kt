@@ -55,6 +55,7 @@ class ProgramEventTest : BaseTest() {
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
+        composeTestRule.waitForIdle()
         programEventsRobot(composeTestRule) {
             checkEventWasCreatedAndClosed("1/1/2001")
         }
@@ -121,6 +122,7 @@ class ProgramEventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             checkEventWasDeleted(eventDate)
         }
+        composeTestRule.waitForIdle()
         rule.getScenario().onActivity {
             context.applicationContext.deleteDatabase(DB_TO_IMPORT)
         }
