@@ -63,21 +63,6 @@ class EventInitialTest {
 
     val date: Date? = dateFormat.parse(dateString)
 
-    private val eventDetailsRepository: EventDetailsRepository = mock {
-        on { getProgramStage() } doReturn programStage
-        on { catCombo() } doReturn catCombo
-        on { getEvent() } doReturn null
-        on { getObjectStyle() } doReturn style
-        on { getOrganisationUnit(ORG_UNIT_UID) } doReturn orgUnit
-        on { getGeometryModel() } doReturn geometryModel
-        on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
-        on { getEditableStatus() } doReturn EventEditableStatus.Editable()
-        on { getEnrollmentDate(ENROLLMENT_UID) } doReturn date
-        on { getStageLastDate(ENROLLMENT_UID) } doReturn DateUtils.uiDateFormat()
-            .parse("20/8/2023")!!
-
-    }
-
     private val metadataIconProvider:MetadataIconProvider = mock{
         on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
     }
@@ -116,6 +101,20 @@ class EventInitialTest {
 
     private val eventDetailResourcesProvider: EventDetailResourcesProvider = mock {
         on { provideDueDate() } doReturn "Due date"
+    }
+
+    private val eventDetailsRepository: EventDetailsRepository = mock {
+        on { getProgramStage() } doReturn programStage
+        on { catCombo() } doReturn catCombo
+        on { getEvent() } doReturn null
+        on { getObjectStyle() } doReturn style
+        on { getOrganisationUnit(ORG_UNIT_UID) } doReturn orgUnit
+        on { getGeometryModel() } doReturn geometryModel
+        on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
+        on { getEditableStatus() } doReturn EventEditableStatus.Editable()
+        on { getEnrollmentDate(ENROLLMENT_UID) } doReturn date
+        on { getStageLastDate(ENROLLMENT_UID) } doReturn DateUtils.uiDateFormat()
+            .parse("20/8/2023")!!
     }
 
     private fun createConfigureEventTemp(eventCreationType: EventCreationType) = ConfigureEventTemp(
