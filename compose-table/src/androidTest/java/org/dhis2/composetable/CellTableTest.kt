@@ -47,7 +47,9 @@ class CellTableTest {
             )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 1, 0)
+            composeTestRule.waitForIdle()
             typeOnInputComponent("check")
+            composeTestRule.waitForIdle()
             assertCellHasText(firstId, 1, 0, "check")
         }
     }
