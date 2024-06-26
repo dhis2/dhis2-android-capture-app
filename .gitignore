@@ -11,3 +11,4 @@
 /venv
 /*.secrets.yml
 /gradle.deps
+.kotlin/
