@@ -37,9 +37,9 @@ class ConfigureEventCompletionDialog(
             !canComplete && onCompleteMessage != null,
         )
         val mainButton = getMainButton(dialogType, eventState)
-        val secondaryButton = if (canSkipErrorFix || eventState == EventStatus.COMPLETED) {
+        val secondaryButton = if (canSkipErrorFix || dialogType == WARNING) {
             EventCompletionButtons(
-                SecondaryButton(if (eventState == EventStatus.COMPLETED) provider.provideSaveAnyway() else provider.provideNotNow()),
+                SecondaryButton(provider.provideNotNow()),
                 FormBottomDialog.ActionType.FINISH,
             )
         } else {
