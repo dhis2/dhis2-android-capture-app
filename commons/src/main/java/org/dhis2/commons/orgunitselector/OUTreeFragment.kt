@@ -29,7 +29,7 @@ const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
 const val ARG_SCOPE = "OUTreeFragment.ARG_SCOPE"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
-class OUTreeFragment private constructor() : DialogFragment() {
+class OUTreeFragment() : DialogFragment() {
 
     class Builder {
         private var showAsDialog = false
