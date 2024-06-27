@@ -19,6 +19,9 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
@@ -192,113 +195,125 @@ class FormViewModel(
 
     private fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
-            ActionType.ON_SAVE -> {
-                if (action.valueType == ValueType.COORDINATE) {
-                    repository.setFieldRequestingCoordinates(action.id, false)
-                }
+            ActionType.ON_SAVE -> handleOnSaveAction(action)
+            ActionType.ON_FOCUS, ActionType.ON_NEXT -> handleFocusOrNextAction(action)
+            ActionType.ON_TEXT_CHANGE -> handleOnTextChangeAction(action)
+            ActionType.ON_SECTION_CHANGE -> handleOnSectionChangeAction(action)
+            ActionType.ON_FINISH -> handleOnFinishAction(action)
+            ActionType.ON_REQUEST_COORDINATES -> handleOnRequestCoordinatesAction(action)
+            ActionType.ON_CANCEL_REQUEST_COORDINATES -> handleOnCancelRequestCoordinatesAction(action)
+            ActionType.ON_ADD_IMAGE_FINISHED -> handleOnAddImageFinishedAction(action)
+            ActionType.ON_STORE_FILE -> handleOnStoreFileAction(action)
+        }
+    }
 
-                repository.updateErrorList(action)
-                if (action.error != null) {
-                    StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                    )
-                } else {
-                    val saveResult = repository.save(action.id, action.value, action.extraData)
-                    if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
-                        repository.updateValueOnList(action.id, action.value, action.valueType)
-                    } else {
-                        repository.updateErrorList(
-                            action.copy(
-                                error = Throwable(saveResult.valueStoreResultMessage),
-                            ),
-                        )
-                    }
-                    saveResult ?: StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_CHANGED,
-                    )
-                }
-            }
+    private fun handleOnSaveAction(action: RowAction): StoreResult {
+        if (action.valueType == ValueType.COORDINATE) {
+            repository.setFieldRequestingCoordinates(action.id, false)
+        }
 
-            ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                val storeResult = saveLastFocusedItem(action)
-                repository.setFocusedItem(action)
-                previousActionItem = action
-                storeResult
-            }
+        repository.updateErrorList(action)
+        if (action.error != null) {
+            return StoreResult(
+                action.id,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            )
+        }
 
-            ActionType.ON_TEXT_CHANGE -> {
+        val saveResult = repository.save(action.id, action.value, action.extraData)
+        if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
+            if (action.isEventDetailsRow) {
+                repository.fetchFormItems(openErrorLocation)
+            } else {
                 repository.updateValueOnList(action.id, action.value, action.valueType)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.TEXT_CHANGING,
+            }
+        } else {
+            repository.updateErrorList(
+                action.copy(
+                    error = Throwable(saveResult.valueStoreResultMessage),
+                ),
+            )
+        }
+        return saveResult ?: StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_CHANGED,
+        )
+    }
+
+    private fun handleFocusOrNextAction(action: RowAction): StoreResult {
+        val storeResult = saveLastFocusedItem(action)
+        repository.setFocusedItem(action)
+        previousActionItem = action
+        return storeResult
+    }
+
+    private fun handleOnTextChangeAction(action: RowAction): StoreResult {
+        repository.updateValueOnList(action.id, action.value, action.valueType)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.TEXT_CHANGING,
+        )
+    }
+
+    private fun handleOnSectionChangeAction(action: RowAction): StoreResult {
+        repository.updateSectionOpened(action)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnFinishAction(action: RowAction): StoreResult {
+        repository.setFocusedItem(action)
+        return StoreResult(
+            "",
+            ValueStoreResult.FINISH,
+        )
+    }
+
+    private fun handleOnRequestCoordinatesAction(action: RowAction): StoreResult {
+        repository.setFieldRequestingCoordinates(action.id, true)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnCancelRequestCoordinatesAction(action: RowAction): StoreResult {
+        repository.setFieldRequestingCoordinates(action.id, false)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnAddImageFinishedAction(action: RowAction): StoreResult {
+        repository.setFieldAddingImage(action.id, false)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnStoreFileAction(action: RowAction): StoreResult {
+        val saveResult = repository.storeFile(action.id, action.value)
+        return when (saveResult?.valueStoreResult) {
+            ValueStoreResult.FILE_SAVED -> {
+                processUserAction(
+                    rowActionFromIntent(
+                        FormIntent.OnSave(
+                            uid = action.id,
+                            value = saveResult.uid,
+                            valueType = action.valueType,
+                        ),
+                    ),
                 )
             }
-
-            ActionType.ON_SECTION_CHANGE -> {
-                repository.updateSectionOpened(action)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_FINISH -> {
-                repository.setFocusedItem(action)
-                StoreResult(
-                    "",
-                    ValueStoreResult.FINISH,
-                )
-            }
-
-            ActionType.ON_REQUEST_COORDINATES -> {
-                repository.setFieldRequestingCoordinates(action.id, true)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_CANCEL_REQUEST_COORDINATES -> {
-                repository.setFieldRequestingCoordinates(action.id, false)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_ADD_IMAGE_FINISHED -> {
-                repository.setFieldAddingImage(action.id, false)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_STORE_FILE -> {
-                val saveResult = repository.storeFile(action.id, action.value)
-                when (saveResult?.valueStoreResult) {
-                    ValueStoreResult.FILE_SAVED -> {
-                        processUserAction(
-                            rowActionFromIntent(
-                                FormIntent.OnSave(
-                                    uid = action.id,
-                                    value = saveResult.uid,
-                                    valueType = action.valueType,
-                                ),
-                            ),
-                        )
-                    }
-
-                    null -> StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                    )
-
-                    else -> saveResult
-                }
-            }
+            null -> StoreResult(
+                action.id,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            )
+            else -> saveResult
         }
     }
 
@@ -641,7 +656,13 @@ class FormViewModel(
         error = error,
         type = actionType,
         valueType = valueType,
+        isEventDetailsRow = isEventDetailField(uid),
     )
+
+    private fun isEventDetailField(uid: String): Boolean {
+        val eventDetailsIds = listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
+        return eventDetailsIds.contains(uid)
+    }
 
     fun onItemsRendered() {
         loading.value = false
