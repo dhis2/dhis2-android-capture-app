@@ -1,10 +1,11 @@
 package org.dhis2.utils
 
-import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.toFriendlyDate
+import org.dhis2.commons.extensions.toFriendlyDateTime
+import org.dhis2.commons.extensions.toPercentage
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import java.text.ParseException
 
 /**
  * QUADRAM. Created by ppajuelo on 25/09/2018.
@@ -52,18 +53,14 @@ class ValueUtils private constructor() {
                     }
                 }
                 ValueType.DATE, ValueType.AGE -> {
-                    teAttrValue = formatDate(teAttrValue)
+                    teAttrValue = teAttrValue?.toFriendlyDate()
                 }
                 ValueType.DATETIME -> {
-                    teAttrValue = formatDateTime(teAttrValue)
+                    teAttrValue = teAttrValue?.toFriendlyDateTime()
                 }
 
                 ValueType.PERCENTAGE -> {
-                    teAttrValue?.let {
-                        if (it.isNotEmpty()) {
-                            teAttrValue = "$it %"
-                        }
-                    }
+                    teAttrValue = teAttrValue?.toPercentage()
                 }
                 else -> {
                     teAttrValue = transformOptionSet(optionSetUid, d2, value)
@@ -86,40 +83,6 @@ class ValueUtils private constructor() {
                 }
             }
             return teAttrValue
-        }
-
-        private fun formatDate(value: String?): String {
-            return if (value?.isNotEmpty() == true) {
-                var formattedDate = ""
-                val date = try {
-                    DateUtils.oldUiDateFormat().parse(value)
-                } catch (e: ParseException) {
-                    null
-                }
-                date?.let {
-                    formattedDate = DateUtils.uiDateFormat().format(date)
-                }
-                formattedDate
-            } else {
-                ""
-            }
-        }
-
-        private fun formatDateTime(value: String?): String {
-            return if (value?.isNotEmpty() == true) {
-                var formattedDate = ""
-                val date = try {
-                    DateUtils.databaseDateFormatNoSeconds().parse(value)
-                } catch (e: ParseException) {
-                    null
-                }
-                date?.let {
-                    formattedDate = DateUtils.uiDateTimeFormat().format(date)
-                }
-                formattedDate
-            } else {
-                ""
-            }
         }
     }
 }
