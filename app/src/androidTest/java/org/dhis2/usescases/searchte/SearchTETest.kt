@@ -130,7 +130,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(lastName)
             clickOnSearch()
-            composeTestRule.waitForIdle()
+
             checkListOfSearchTEI(
                 title = "First name: $firstName",
                 attributes = mapOf("Last name:" to lastName),
