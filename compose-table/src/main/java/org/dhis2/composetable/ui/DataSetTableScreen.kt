@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.TableScreenState
@@ -308,6 +309,7 @@ fun DataSetTableScreen(
                             actionText = null,
                             onClick = {},
                         ),
+                        Modifier.testTag(EMPTY_TABLE_TEXT_TAG),
                     )
                 }
             } else {
@@ -330,3 +332,5 @@ fun DataSetTableScreen(
         }
     }
 }
+
+const val EMPTY_TABLE_TEXT_TAG = "EMPTY_TABLE_TEXT_TAG"
