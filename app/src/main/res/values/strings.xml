@@ -978,4 +978,5 @@
     <string name="show_fields">Show fields</string>
     <string name="hide_fields">Hide fields</string>
     <string name="importing_successful">Import successful</string>
+    <string name="section_misconfigured">This section is misconfigured.\nContact your administrator.</string>
 </resources>
