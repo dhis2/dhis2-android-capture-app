@@ -44,30 +44,27 @@ class SearchRepositoryImplKt(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): TrackedEntitySearchCollectionRepository {
-        var allowCache = false
-
-        if (searchParametersModel != searchRepositoryJava.savedSearchParameters || !FilterManager.getInstance()
-                .sameFilters(searchRepositoryJava.savedFilters)
-        ) {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
-        } else {
+        trackedEntityInstanceQuery =
             searchRepositoryJava.getFilteredRepository(searchParametersModel)
-            allowCache = true
+
+        val allowCache = !(
+            searchParametersModel != searchRepositoryJava.savedSearchParameters ||
+                !FilterManager.getInstance().sameFilters(searchRepositoryJava.savedFilters)
+            )
+
+        if (
+            searchRepositoryJava.fetchedTeiUIDs.isNotEmpty() &&
+            searchParametersModel.selectedProgram == null
+        ) {
+            trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids()
+                .`in`(searchRepositoryJava.fetchedTeiUIDs.toList())
         }
 
-        if (searchRepositoryJava.fetchedTeiUIDs.isNotEmpty() && searchParametersModel.selectedProgram == null) {
-            trackedEntityInstanceQuery =
-                trackedEntityInstanceQuery.excludeUids().`in`(searchRepositoryJava.fetchedTeiUIDs.toList())
-        }
-
-        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
+        return if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
         } else {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
         }
-
-        return pagerFlow
     }
 
     override suspend fun searchParameters(
