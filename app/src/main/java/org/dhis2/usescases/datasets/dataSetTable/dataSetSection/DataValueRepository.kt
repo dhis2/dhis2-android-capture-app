@@ -8,13 +8,13 @@ import io.reactivex.Single
 import org.dhis2.bindings.decimalFormat
 import org.dhis2.commons.bindings.dataValueConflicts
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -61,6 +61,7 @@ class DataValueRepository(
                             ?.categoryComboUid()
                 }?.distinct()
             }
+
             else -> {
                 val dataElementsSectionUid = d2.dataSetModule().sections().withDataElements()
                     .byDataSetUid().eq(dataSetUid)
@@ -319,43 +320,35 @@ class DataValueRepository(
 
     private fun getDataElements(categoryCombo: CategoryCombo): Flowable<List<DataElement>> {
         return if (sectionUid != "NO_SECTION") {
-            val listDataElements =
-                d2.dataSetModule().sections().withDataElements().byDataSetUid().eq(dataSetUid)
-                    .uid(sectionUid).blockingGet()?.dataElements()
-            val dataElementsOverride: MutableList<DataElement> =
-                ArrayList()
-            val dataSetElements =
-                d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-                    ?.dataSetElements()
-            listDataElements
-                ?.map { transformDataElement(it, dataSetElements) }
-                ?.filter { it.categoryComboUid() == categoryCombo.uid() }
-                ?.forEach { dataElementsOverride.add(it) }
+            val dataElementsInSection = d2.dataSetModule().sections().withDataElements()
+                .byDataSetUid().eq(dataSetUid)
+                .uid(sectionUid)
+                .blockingGet()
+                ?.dataElements()
+
+            val dataSetElements = d2.dataSetModule().dataSets().withDataSetElements()
+                .uid(dataSetUid)
+                .blockingGet()
+                ?.dataSetElements()
 
             Flowable.just(
-                dataElementsOverride,
+                dataElementsInSection
+                    ?.map { transformDataElement(it, dataSetElements) }
+                    ?.filter { it.categoryComboUid() == categoryCombo.uid() },
             )
         } else {
-            val dataElementUids: MutableList<String> =
-                ArrayList()
-            val dataSetElements =
-                d2.dataSetModule().dataSets().withDataSetElements().byUid().eq(dataSetUid).one()
-                    .blockingGet()?.dataSetElements()
-            for (dataSetElement in dataSetElements!!) {
-                if (dataSetElement.categoryCombo() != null &&
-                    categoryCombo.uid() == dataSetElement.categoryCombo()!!.uid()
-                ) {
-                    dataElementUids.add(dataSetElement.dataElement().uid())
-                } else {
-                    val uid = d2.dataElementModule().dataElements()
-                        .uid(dataSetElement.dataElement().uid()).blockingGet()?.categoryComboUid()
-                    if (categoryCombo.uid() == uid) {
-                        dataElementUids.add(dataSetElement.dataElement().uid())
-                    }
-                }
-            }
+            val dataElementsInDataset =
+                d2.dataSetModule().dataSets().withDataSetElements()
+                    .uid(dataSetUid)
+                    .blockingGet()
+                    ?.dataSetElements()
+
+            val dataElementsUids = dataElementsInDataset
+                ?.filter { it.categoryCombo()?.uid() == categoryCombo.uid() }
+                ?.map { it.dataElement().uid() }
+
             d2.dataElementModule().dataElements()
-                .byUid().`in`(dataElementUids)
+                .byUid().`in`(dataElementsUids)
                 .orderByName(RepositoryScope.OrderByDirection.ASC)
                 .get().toFlowable()
         }
@@ -490,35 +483,13 @@ class DataValueRepository(
     }
 
     fun getDataTableModel(categoryCombo: CategoryCombo): Observable<DataTableModel> {
-        return Flowable.zip<
-            List<DataElement>,
-            Map<String, List<List<Pair<CategoryOption, Category>>>>,
-            List<DataSetTableModel>,
-            List<DataElementOperand>,
-            List<DataElementOperand>,
-            DataTableModel,
-            >(
+        return Flowable.zip(
             getDataElements(categoryCombo),
             getCatOptions(categoryCombo.uid()),
             getDataValues(),
             getGreyFields(),
             getCompulsoryDataElements(),
-        ) { dataElements: List<DataElement>,
-            optionsWithCategory: Map<
-                String,
-                List<
-                    List<
-                        Pair<
-                            CategoryOption,
-                            Category,
-                            >,
-                        >,
-                    >,
-                >,
-            dataValues: List<DataSetTableModel>,
-            disabledDataElements: List<DataElementOperand>,
-            compulsoryCells: List<DataElementOperand>,
-            ->
+        ) { dataElements, optionsWithCategory, dataValues, disabledDataElements, compulsoryCells ->
             var options: List<List<String>> = ArrayList()
             for ((_, value) in optionsWithCategory) {
                 options = getCatOptionCombos(value, 0, ArrayList(), null)
@@ -663,7 +634,7 @@ class DataValueRepository(
                     .byDataElementUid().eq(dataElement.uid())
                     .byCategoryOptionComboUid().eq(categoryOptionCombo.uid())
                     .blockingGet()
-                    ?.find { it.dataElement() == dataElement.uid() }
+                    .find { it.dataElement() == dataElement.uid() }
                     ?.syncState()
 
                 val conflictInField =

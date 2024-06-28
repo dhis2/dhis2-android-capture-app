@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.filters.FilterManager;
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -879,5 +880,23 @@ public class DateUtils {
             datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
         }
         return datePeriods;
+    }
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+                && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
 }
