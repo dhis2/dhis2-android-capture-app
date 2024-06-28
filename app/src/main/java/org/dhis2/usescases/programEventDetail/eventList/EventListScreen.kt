@@ -47,7 +47,7 @@ fun EventListScreen(
         val events = eventListViewModel.eventList.collectAsLazyPagingItems()
         when (events.loadState.refresh) {
             is LoadState.Error -> {
-                EventListIdlingResourceSingleton.decrement()
+                // no-op
             }
             LoadState.Loading -> {
                 Box(
@@ -100,8 +100,8 @@ fun EventListScreen(
                         }
                     }
                 }
-                EventListIdlingResourceSingleton.decrement()
             }
         }
+        EventListIdlingResourceSingleton.decrement()
     }
 }
