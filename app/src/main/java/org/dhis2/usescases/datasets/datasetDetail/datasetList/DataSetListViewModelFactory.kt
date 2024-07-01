@@ -21,7 +21,6 @@ class DataSetListViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return DataSetListViewModel(
             dataSetDetailRepository,
-            schedulerProvider,
             filterManager,
             matomoAnalyticsController,
             dispatchers,
