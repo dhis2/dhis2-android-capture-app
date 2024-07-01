@@ -5,8 +5,8 @@ minSdk = "21"
 vCode = "130"
 vName = "3.0"
 kotlinCompilerExtensionVersion = "1.5.6"
-gradle = "8.2.2"
-kotlin = '1.9.21'
+gradle = "8.4.2"
+kotlin = '2.0.0'
 hilt = '2.47'
 jacoco = '0.8.10'
 designSystem = "0.3.0-SNAPSHOT"
@@ -84,7 +84,7 @@ androidx_test = "1.5.0"
 dexmaker-mockito-inline = "2.28.1"
 hamcrest = "2.2"
 kotlinxserialization = "1.5.1"
-desugar_jdk_libs = "2.0.3"
+desugar_jdk_libs = "2.0.4"
 google_truth = "1.1.2"
 kotlinxcoroutines = "1.6.4"
 rxrelay = "2.1.1"
@@ -213,6 +213,8 @@ dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" } #TODO: Remove alongside AutoValue
 [plugins]
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material-themeadapter", "google-material3-themeadapter"]

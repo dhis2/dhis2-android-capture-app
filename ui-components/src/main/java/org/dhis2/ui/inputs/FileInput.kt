@@ -63,7 +63,7 @@ fun BoxedInput(
         ) {
             val (leadingIconRef, contentRef, trailingIconsRef) = createRefs()
             leadingIcon(
-                modifier = Modifier.constrainAs(leadingIconRef) {
+                Modifier.constrainAs(leadingIconRef) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -71,7 +71,7 @@ fun BoxedInput(
                 },
             )
             content(
-                modifier = Modifier.constrainAs(contentRef) {
+                Modifier.constrainAs(contentRef) {
                     start.linkTo(leadingIconRef.end, 8.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
