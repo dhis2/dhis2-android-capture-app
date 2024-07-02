@@ -2,23 +2,21 @@ package org.dhis2.usescases.programevent.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withTagValue
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.anyOf
-import org.hamcrest.CoreMatchers.equalTo
 
 fun programEventsRobot(
     composeTestRule: ComposeContentTestRule,
@@ -33,7 +31,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnEvent(eventDate: String) {
-        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate),5000)
         composeTestRule.onNodeWithText(eventDate).performClick()
     }
 
@@ -45,21 +43,21 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         onView(withId(R.id.navigation_map_view)).perform(click())
     }
 
-    fun checkEventWasCreatedAndClosed(eventName: String) {
-        waitForView(
-            allOf(
-                withId(R.id.recycler),
-                hasDescendant(withText(eventName)),
-                hasDescendant(
-                    withTagValue(
-                        anyOf(
-                            equalTo(R.drawable.ic_event_status_complete),
-                            equalTo(R.drawable.ic_event_status_complete_read)
-                        )
+    @OptIn(ExperimentalTestApi::class)
+    fun checkEventWasCreatedAndClosed(eventDate: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EVENT_ITEM"))
+        composeTestRule.onNode(
+            hasTestTag("EVENT_ITEM")
+                    and
+                    hasAnyDescendant(
+                        hasText("Event completed")
                     )
-                )
-            )
-        ).check(matches(isDisplayed()))
+                    and
+                    hasAnyDescendant(
+                        hasText("View only")
+                    ),
+            useUnmergedTree = true
+        ).assertIsDisplayed()
     }
 
     fun checkEventIsComplete(eventDate: String) {

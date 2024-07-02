@@ -1,14 +1,11 @@
 package org.dhis2.usescases.programEventDetail
 
-import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import com.mapbox.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
@@ -41,22 +38,11 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         filterPresenter.filteredEventProgram(it)
     }
 
-    override fun filteredProgramEvents(): LiveData<PagedList<EventViewModel>> {
+    override fun filteredProgramEvents(): Flow<PagingData<Event>> {
         val program = program().blockingGet() ?: throw NullPointerException()
-        val dataSource = filterPresenter
+        return filterPresenter
             .filteredEventProgram(program)
-            .dataSource
-            .map { event ->
-                mapper.eventToEventViewModel(event)
-            }
-        return LivePagedListBuilder(
-            object : DataSource.Factory<Event, EventViewModel>() {
-                override fun create(): DataSource<Event, EventViewModel> {
-                    return dataSource
-                }
-            },
-            20,
-        ).build()
+            .getPagingData(10)
     }
 
     override fun filteredEventsForMap(): Flowable<ProgramEventMapData> {

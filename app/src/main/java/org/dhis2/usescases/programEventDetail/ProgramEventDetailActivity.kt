@@ -246,15 +246,12 @@ class ProgramEventDetailActivity :
         FilterManager.getInstance().clearCatOptCombo()
         FilterManager.getInstance().clearWorkingList(true)
         FilterManager.getInstance().clearAssignToMe()
+        FilterManager.getInstance().clearFlow()
         presenter.clearOtherFiltersIfWebAppIsConfig()
     }
 
     override fun setProgram(programModel: Program) {
         binding.name = programModel.displayName()
-    }
-
-    override fun showFilterProgress() {
-        programEventsViewModel.setProgress(true)
     }
 
     override fun renderError(message: String) {

@@ -124,10 +124,12 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnSearch() {
         closeKeyboard()
         composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkListOfSearchTEI(title: String, attributes: Map<String?, String>) {
         //Checks title and all attributes are displayed
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
             item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }

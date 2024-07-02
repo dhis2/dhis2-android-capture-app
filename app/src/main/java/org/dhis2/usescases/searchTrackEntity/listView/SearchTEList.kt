@@ -29,6 +29,7 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
+import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -151,6 +152,11 @@ class SearchTEList : FragmentGlobalAbstract() {
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        SearchIdlingResourceSingleton.decrement()
+                    } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        SearchIdlingResourceSingleton.increment()
+                    }
                     if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
                         viewModel.isScrollingDown.value = false
                     }
