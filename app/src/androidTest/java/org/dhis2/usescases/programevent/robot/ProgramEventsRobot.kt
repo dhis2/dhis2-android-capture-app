@@ -43,8 +43,9 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         onView(withId(R.id.navigation_map_view)).perform(click())
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkEventWasCreatedAndClosed(eventDate: String) {
-        composeTestRule.onRoot().printToLog("TEST")
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EVENT_ITEM"))
         composeTestRule.onNode(
             hasTestTag("EVENT_ITEM")
                     and
