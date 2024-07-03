@@ -398,6 +398,7 @@ class FormViewModel(
                     intent.valueType,
                     intent.value,
                     intent.fieldMask,
+                    intent.allowFutureDates,
                 )
 
                 createRowAction(
@@ -586,7 +587,7 @@ class FormViewModel(
         try {
             val date = LocalDate.parse(dateString, formatter)
             if (allowFutureDates == false && date.isAfter(LocalDate.now())) {
-                return Result.Failure(DateFailure.ParseException)
+                return Result.Failure(Throwable())
             }
             return valueType.validator.validate(dateString)
         } catch (e: DateTimeParseException) {
