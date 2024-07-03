@@ -5,9 +5,10 @@ import dagger.Provides
 import dagger.Subcomponent
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
+import org.dhis2.usescases.programEventDetail.ProgramEventMapper
+import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 
 @PerFragment
 @Subcomponent(modules = [EventListModule::class])
@@ -16,23 +17,22 @@ interface EventListComponent {
 }
 
 @Module
-class EventListModule(
-    val view: EventListFragmentView,
-) {
+class EventListModule {
     @Provides
     @PerFragment
-    fun providePresenter(
+    fun providePresenterFactory(
         filterManager: FilterManager,
         programEventDetailRepository: ProgramEventDetailRepository,
-        preferences: PreferenceProvider,
-        schedulers: SchedulerProvider,
-    ): EventListPresenter {
-        return EventListPresenter(
-            view,
+        dispatcher: DispatcherProvider,
+        mapper: ProgramEventMapper,
+        cardMapper: EventCardMapper,
+    ): EventListPresenterFactory {
+        return EventListPresenterFactory(
             filterManager,
             programEventDetailRepository,
-            preferences,
-            schedulers,
+            dispatcher,
+            mapper,
+            cardMapper,
         )
     }
 }

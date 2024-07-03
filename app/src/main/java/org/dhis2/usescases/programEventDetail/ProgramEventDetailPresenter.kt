@@ -97,7 +97,6 @@ class ProgramEventDetailPresenter(
         )
         compositeDisposable.add(
             filterManager.asFlowable().onBackpressureLatest()
-                .doOnNext { view.showFilterProgress() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

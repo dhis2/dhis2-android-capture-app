@@ -1,19 +1,19 @@
 package org.dhis2.usescases.programEventDetail
 
-import androidx.lifecycle.LiveData
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import io.reactivex.Flowable
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
 interface ProgramEventDetailRepository {
-    fun filteredProgramEvents(): LiveData<PagedList<EventViewModel>>
+    fun filteredProgramEvents(): Flow<PagingData<Event>>
     fun filteredEventsForMap(): Flowable<ProgramEventMapData>
     fun program(): Single<Program?>
     fun getAccessDataWrite(): Boolean
