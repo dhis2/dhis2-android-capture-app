@@ -155,4 +155,4 @@ private fun getString(
 }
 
 fun Date?.toUi(): String? =
-    this?.let { SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this) }
+    this?.let { DateUtils.uiDateFormat().format(this) }
