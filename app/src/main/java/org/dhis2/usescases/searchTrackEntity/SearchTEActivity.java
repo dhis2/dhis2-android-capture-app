@@ -363,7 +363,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                                 uid,
                                                 selectedOrgUnit,
                                                 ValueType.ORGANISATION_UNIT,
-                                                null
+                                                null,
+                                                true
                                         )
                                 );
                                 return Unit.INSTANCE;
