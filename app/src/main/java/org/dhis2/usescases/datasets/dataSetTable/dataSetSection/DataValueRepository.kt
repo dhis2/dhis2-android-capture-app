@@ -334,13 +334,12 @@ class DataValueRepository(
 
             val dataElements = d2.dataElementModule().dataElements()
                 .byUid().`in`(dataSetElementsInDataset?.map { it.dataElement().uid() })
-                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .orderByName(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet()
 
             Flowable.just(
                 dataElements.map { transformDataElement(it, dataSetElementsInDataset) }
-                    .filter { it.categoryComboUid() == categoryCombo.uid() }
-                    .sortedBy { it.displayFormName()?.lowercase() },
+                    .filter { it.categoryComboUid() == categoryCombo.uid() },
             )
         }
     }
