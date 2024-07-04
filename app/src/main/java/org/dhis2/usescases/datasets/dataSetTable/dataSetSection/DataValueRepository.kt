@@ -158,29 +158,16 @@ class DataValueRepository(
         dataElement: DataElement,
         override: List<DataSetElement>?,
     ): DataElement {
-        return override
-            ?.firstOrNull {
-                it.dataElement().uid() == dataElement.uid() && it.categoryCombo() != null
-            }?.let {
-                DataElement.builder()
-                    .uid(dataElement.uid())
-                    .code(dataElement.code())
-                    .name(dataElement.name())
-                    .displayName(dataElement.displayName())
-                    .shortName(dataElement.shortName())
-                    .displayShortName(dataElement.displayShortName())
-                    .description(dataElement.description())
-                    .displayDescription(dataElement.displayDescription())
-                    .valueType(dataElement.valueType())
-                    .zeroIsSignificant(dataElement.zeroIsSignificant())
-                    .aggregationType(dataElement.aggregationType())
-                    .formName(dataElement.formName())
-                    .domainType(dataElement.domainType())
-                    .displayFormName(dataElement.displayFormName())
-                    .optionSet(dataElement.optionSet())
-                    .categoryCombo(it.categoryCombo()).build()
-            }
-            ?: dataElement
+        val dataSetElement = override?.firstOrNull {
+            it.dataElement().uid() == dataElement.uid() && it.categoryCombo() != null
+        }
+        return if (dataSetElement != null) {
+            dataElement.toBuilder()
+                .categoryCombo(dataSetElement.categoryCombo())
+                .build()
+        } else {
+            dataElement
+        }
     }
 
     private fun getDataValues(): Flowable<List<DataSetTableModel>> {
@@ -291,6 +278,7 @@ class DataValueRepository(
                 .get()
                 .map { section -> section.greyedFields() }
                 .toFlowable()
+
         else -> Flowable.just(ArrayList())
     }
 
@@ -334,23 +322,26 @@ class DataValueRepository(
             Flowable.just(
                 dataElementsInSection
                     ?.map { transformDataElement(it, dataSetElements) }
-                    ?.filter { it.categoryComboUid() == categoryCombo.uid() },
+                    ?.filter { it.categoryComboUid() == categoryCombo.uid() }
+                    ?.sortedBy { it.displayFormName() },
             )
         } else {
-            val dataElementsInDataset =
+            val dataSetElementsInDataset =
                 d2.dataSetModule().dataSets().withDataSetElements()
                     .uid(dataSetUid)
                     .blockingGet()
                     ?.dataSetElements()
 
-            val dataElementsUids = dataElementsInDataset
-                ?.filter { it.categoryCombo()?.uid() == categoryCombo.uid() }
-                ?.map { it.dataElement().uid() }
+            val dataElements = d2.dataElementModule().dataElements()
+                .byUid().`in`(dataSetElementsInDataset?.map { it.dataElement().uid() })
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
 
-            d2.dataElementModule().dataElements()
-                .byUid().`in`(dataElementsUids)
-                .orderByName(RepositoryScope.OrderByDirection.ASC)
-                .get().toFlowable()
+            Flowable.just(
+                dataElements.map { transformDataElement(it, dataSetElementsInDataset) }
+                    .filter { it.categoryComboUid() == categoryCombo.uid() }
+                    .sortedBy { it.displayFormName()?.lowercase() },
+            )
         }
     }
 
@@ -396,6 +387,7 @@ class DataValueRepository(
                                     .blockingIsEmpty()
                                 hasDataValueAuthority && canWriteCatOption && canWriteOrgUnit
                             }
+
                     else -> Flowable.just(false)
                 }
             }
@@ -643,6 +635,7 @@ class DataValueRepository(
                             State.ERROR,
                             State.WARNING,
                             -> true
+
                             else -> false
                         }
                     }?.filter {
@@ -656,10 +649,13 @@ class DataValueRepository(
                         conflictInField != null &&
                         error != null ->
                         conflictInField + listOf(error)
+
                     valueStateSyncState == State.ERROR && conflictInField != null ->
                         conflictInField
+
                     error != null ->
                         listOf(error)
+
                     else -> null
                 }
 
@@ -667,6 +663,7 @@ class DataValueRepository(
                     valueStateSyncState == State.WARNING &&
                         conflictInField != null ->
                         conflictInField
+
                     else ->
                         null
                 }
