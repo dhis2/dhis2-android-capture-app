@@ -398,7 +398,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         this,
                         () -> {
                             presenter.trackSearchMapVisualization();
-                            viewModel.setMapScreen();
                             showMap();
                             showSearchAndFilterButtons();
                             return null;
