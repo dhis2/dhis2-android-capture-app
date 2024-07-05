@@ -638,8 +638,8 @@ class SearchTEIViewModelTest {
         val expectedMap = mapOf(
             "uid1" to "Friendly OrgUnit Name",
             "uid2" to "Male",
-            "uid3" to "21/2/2024",
-            "uid4" to "21/2/2024 01:00",
+            "uid3" to "21/02/2024",
+            "uid4" to "21/02/2024 - 01:00",
             "uid5" to "Boolean: false",
             "uid6" to "Yes Only",
             "uid7" to "Text value",
