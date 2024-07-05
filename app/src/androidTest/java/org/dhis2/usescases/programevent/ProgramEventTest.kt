@@ -57,13 +57,13 @@ class ProgramEventTest : BaseTest() {
         }
         composeTestRule.waitForIdle()
         programEventsRobot(composeTestRule) {
-            checkEventWasCreatedAndClosed("1/1/2001")
+            checkEventWasCreatedAndClosed()
         }
     }
 
     @Test
     fun shouldOpenExistingEvent() {
-        val eventDate = "15/3/2020"
+        val eventDate = "15/03/2020"
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(antenatalCare)
@@ -81,7 +81,7 @@ class ProgramEventTest : BaseTest() {
     @Ignore("Flaky test, will be look om issue ANDROAPP-6030")
     @Test
     fun shouldCompleteAnEventAndReopenIt() {
-        val eventDate = "15/3/2020"
+        val eventDate = "15/03/2020"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
@@ -107,7 +107,7 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldDeleteEvent() {
-        val eventDate = "15/3/2020"
+        val eventDate = "15/03/2020"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 

@@ -7,9 +7,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -44,7 +42,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     @OptIn(ExperimentalTestApi::class)
-    fun checkEventWasCreatedAndClosed(eventDate: String) {
+    fun checkEventWasCreatedAndClosed() {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("EVENT_ITEM"))
         composeTestRule.onNode(
             hasTestTag("EVENT_ITEM")

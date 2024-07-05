@@ -435,7 +435,7 @@ class SearchTETest : BaseTest() {
     private fun createDisplayListFields() = DisplayListFieldsUIModel(
         "Sarah",
         "Thompson",
-        "2001-01-01",
+        "01/01/2001",
         "sarah@gmail.com",
         "Main street 1",
         "56",
