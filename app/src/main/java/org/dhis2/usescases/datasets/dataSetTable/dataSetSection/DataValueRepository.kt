@@ -322,8 +322,7 @@ class DataValueRepository(
             Flowable.just(
                 dataElementsInSection
                     ?.map { transformDataElement(it, dataSetElements) }
-                    ?.filter { it.categoryComboUid() == categoryCombo.uid() }
-                    ?.sortedBy { it.displayFormName() },
+                    ?.filter { it.categoryComboUid() == categoryCombo.uid() },
             )
         } else {
             val dataSetElementsInDataset =
