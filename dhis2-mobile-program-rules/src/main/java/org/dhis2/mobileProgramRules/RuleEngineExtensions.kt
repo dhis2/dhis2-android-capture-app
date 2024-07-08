@@ -474,15 +474,8 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                     }
             }
         } else if (de?.valueType()?.isNumeric == true) {
-            value = if (value.isNullOrEmpty()) {
-                ""
-            } else {
-                try {
-                    value.toFloat().toString()
-                } catch (e: Exception) {
-                    Timber.e(e)
-                    ""
-                }
+            if (value.isNullOrEmpty()) {
+                value = ""
             }
         }
         RuleDataValue(
