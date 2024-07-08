@@ -188,7 +188,7 @@ private fun onShareClick(context: Context, onSuccess: () -> Unit, launcher: Acti
 }
 
 private fun checkPermissionAndAndroidVersion(context: Context) =
-    Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU ||
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
         ContextCompat.checkSelfPermission(
             context,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
