@@ -97,7 +97,7 @@ class TeiFlowTest : BaseTest() {
     private fun getCurrentDate(): String {
         val sdf = DateUtils.uiDateFormat()
         val dateFormat = sdf.format(Date())
-        return dateFormat.removePrefix("0")
+        return dateFormat
     }
 
     private fun prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
