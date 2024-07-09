@@ -43,10 +43,10 @@ public class DateUtils {
     public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
     public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
-    public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
+    public static final String SIMPLE_DATE_FORMAT = "dd/MM/yyyy";
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
     public static final String UI_LIBRARY_FORMAT = "ddMMyyyy";
-    public static final String SIMPLE_DATE_TIME_FORMAT = "d/M/yyyy HH:mm";
+    public static final String SIMPLE_DATE_TIME_FORMAT = "dd/MM/yyyy - HH:mm";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {

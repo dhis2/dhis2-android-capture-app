@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
@@ -16,7 +17,6 @@ import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.text.SimpleDateFormat
 import java.util.Date
 
 
@@ -95,9 +95,9 @@ class TeiFlowTest : BaseTest() {
     )
 
     private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat(DATE_FORMAT)
+        val sdf = DateUtils.uiDateFormat()
         val dateFormat = sdf.format(Date())
-        return dateFormat.removePrefix("0")
+        return dateFormat
     }
 
     private fun prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
@@ -117,7 +117,5 @@ class TeiFlowTest : BaseTest() {
         const val ORG_UNIT = "Ngelehun CHC"
         const val NAME = "Marta"
         const val LASTNAME = "Stuart"
-
-        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }

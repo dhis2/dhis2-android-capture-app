@@ -1,6 +1,7 @@
 package org.dhis2.bindings
 
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.toPercentage
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -71,13 +72,13 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
         ValueType.IMAGE, ValueType.FILE_RESOURCE ->
             d2.fileResourceModule().fileResources().uid(value).blockingGet()?.path() ?: ""
 
-        ValueType.DATE ->
+        ValueType.DATE, ValueType.AGE ->
             DateUtils.uiDateFormat().format(
                 DateUtils.oldUiDateFormat().parse(value) ?: "",
             )
 
         ValueType.DATETIME ->
-            DateUtils.dateTimeFormat().format(
+            DateUtils.uiDateTimeFormat().format(
                 DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
             )
 
@@ -85,6 +86,8 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
             DateUtils.timeFormat().format(
                 DateUtils.timeFormat().parse(value) ?: "",
             )
+
+        ValueType.PERCENTAGE -> value.toPercentage()
 
         else -> value
     }
