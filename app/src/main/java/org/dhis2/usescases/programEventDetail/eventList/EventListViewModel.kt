@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programEventDetail.eventList
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -33,6 +34,9 @@ class EventListViewModel(
     private var _onEventCardClick: MutableStateFlow<Pair<String, String>?> = MutableStateFlow(null)
     val onEventCardClick: Flow<Pair<String, String>?> = _onEventCardClick
 
+    private val _displayOrgUnitName = MutableLiveData(true)
+    private val displayOrgUnitName = _displayOrgUnitName
+
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
         filterManager.asFlow(viewModelScope)
             .flatMapLatest {
@@ -41,13 +45,17 @@ class EventListViewModel(
                     .map { pagingData ->
                         pagingData.map { event ->
                             withContext(dispatchers.io()) {
+                                _displayOrgUnitName.postValue(
+                                    event.program()?.let { program ->
+                                        eventRepository.displayOrganisationUnit(program)
+                                    } ?: true,
+                                )
+
                                 val eventModel = mapper.eventToEventViewModel(event)
                                 cardMapper.map(
                                     event = eventModel,
                                     editable = eventRepository.isEventEditable(event.uid()),
-                                    displayOrgUnit = event.program()?.let { program ->
-                                        eventRepository.displayOrganisationUnit(program)
-                                    } ?: true,
+                                    displayOrgUnit = displayOrgUnitName.value ?: true,
                                     onSyncIconClick = {
                                         onSyncIconClick(
                                             eventModel.event?.uid(),
