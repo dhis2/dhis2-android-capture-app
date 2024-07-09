@@ -107,8 +107,8 @@ class TEICardMapper(
     private fun getAdditionalInfoList(searchTEIModel: SearchTeiModel): List<AdditionalInfoItem> {
         val attributeList = searchTEIModel.attributeValues.map {
             AdditionalInfoItem(
-                key = "${it.key}:",
-                value = it.value.value() ?: "",
+                key = it.key,
+                value = it.value.value() ?: "-",
             )
         }.toMutableList()
 
