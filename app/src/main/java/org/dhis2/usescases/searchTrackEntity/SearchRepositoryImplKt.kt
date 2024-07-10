@@ -93,7 +93,7 @@ class SearchRepositoryImplKt(
                     it.renderingType?.isQROrBarcode() == true && isUnique(it.uid)
                 }.thenByDescending {
                     it.renderingType?.isQROrBarcode() == true
-                }.thenByDescending { isUnique(it.uid) }
+                }.thenByDescending { isUnique(it.uid) },
             )
         }
 
