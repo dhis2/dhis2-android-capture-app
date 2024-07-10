@@ -132,10 +132,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
+            item.key?.let { composeTestRule.onNodeWithText("$it:",true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value), useUnmergedTree = true
+                        and hasText(item.value,true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -174,17 +174,16 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         //Given the title is the first attribute
         val title = "First name: ${displayListFieldsUIModel.name}"
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
-
         //When we expand all attribute list
         composeTestRule.onNodeWithText("Show more").performClick()
-
+        composeTestRule.waitForIdle()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
+            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value), useUnmergedTree = true
+                        and hasText(item.value,true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -210,26 +209,26 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         composeTestRule.onNode(
             hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(additionalText),
+                    and hasText(additionalText, true),
             useUnmergedTree = true,
         ).assertIsDisplayed()
     }
 
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
         AdditionalInfoItem(
-            key = "Last name:",
+            key = "Last name",
             value = displayListFieldsUIModel.lastName,
         ),
         AdditionalInfoItem(
-            key = "Email:",
+            key = "Email",
             value = displayListFieldsUIModel.email,
         ),
         AdditionalInfoItem(
-            key = "Date of birth:",
+            key = "Date of birth",
             value = displayListFieldsUIModel.birthday,
         ),
         AdditionalInfoItem(
-            key = "Address:",
+            key = "Address",
             value = displayListFieldsUIModel.address,
         ),
     )

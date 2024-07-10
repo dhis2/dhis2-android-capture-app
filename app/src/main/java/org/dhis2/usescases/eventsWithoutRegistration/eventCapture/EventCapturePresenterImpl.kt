@@ -194,13 +194,13 @@ class EventCapturePresenterImpl(
                 .defaultSubscribe(
                     schedulerProvider,
                     onNext = {
-                        EventIdlingResourceSingleton.decrement()
                         if (addNew) {
                             view.restartDataEntry()
                         } else {
                             preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid)
                             view.finishDataEntry()
                         }
+                        EventIdlingResourceSingleton.decrement()
                     },
                     onError = {
                         EventIdlingResourceSingleton.decrement()

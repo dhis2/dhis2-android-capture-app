@@ -84,7 +84,7 @@ class SearchTETest : BaseTest() {
             clickOnSearch()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName),
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -133,7 +133,7 @@ class SearchTETest : BaseTest() {
 
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName),
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -231,7 +231,7 @@ class SearchTETest : BaseTest() {
             changeDueDate(scheduledEventTitle)
             pressBack()
         }
-
+        composeTestRule.waitForIdle()
         filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
@@ -402,7 +402,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             checkListOfSearchTEI(
                 title = "First name: $name",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName)
             )
         }
     }
