@@ -171,6 +171,7 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
             clickOnFilter()
+            waitToDebounce(2000)
             checkTEIsAreOpen()
         }
     }
@@ -337,8 +338,10 @@ class SearchTETest : BaseTest() {
             clickOnOpenSearch()
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(name)
+            waitToDebounce(2000)
             clickOnSearch()
             composeTestRule.waitForIdle()
+
         }
 
         filterRobot {
