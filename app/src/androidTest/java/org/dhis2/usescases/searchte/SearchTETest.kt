@@ -75,7 +75,7 @@ class SearchTETest : BaseTest() {
             clickOnSearch()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -112,7 +112,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -197,7 +197,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
             pressBack()
         }
-
+        composeTestRule.waitForIdle()
         filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
@@ -338,6 +338,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(name)
             clickOnSearch()
+            composeTestRule.waitForIdle()
         }
 
         filterRobot {
@@ -354,7 +355,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             checkListOfSearchTEI(
                 title = "First name: $name",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName)
             )
         }
     }
