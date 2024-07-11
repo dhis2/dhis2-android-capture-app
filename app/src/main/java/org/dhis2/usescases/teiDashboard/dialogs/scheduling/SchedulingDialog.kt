@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.bindings.app
@@ -20,14 +22,25 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 import javax.inject.Inject
 
-class SchedulingDialog(
-    val enrollment: Enrollment,
-    val programStages: List<ProgramStage>,
-    val onScheduled: (String) -> Unit,
-) : BottomSheetDialogFragment() {
+class SchedulingDialog : BottomSheetDialogFragment() {
     companion object {
         const val SCHEDULING_DIALOG = "SCHEDULING_DIALOG"
+        const val SCHEDULING_DIALOG_RESULT = "SCHEDULING_DIALOG_RESULT"
+        const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
+
+        fun newInstance(
+            enrollment: Enrollment,
+            programStages: List<ProgramStage>,
+        ): SchedulingDialog {
+            return SchedulingDialog().apply {
+                this.enrollment = enrollment
+                this.programStages = programStages
+            }
+        }
     }
+
+    var enrollment: Enrollment? = null
+    var programStages: List<ProgramStage>? = null
 
     @Inject
     lateinit var factory: SchedulingViewModelFactory
@@ -40,12 +53,7 @@ class SchedulingDialog(
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        app().userComponent()?.plus(
-            SchedulingModule(
-                enrollment,
-                programStages,
-            ),
-        )?.inject(this)
+        app().userComponent()?.plus(SchedulingModule())?.inject(this)
     }
 
     override fun onCreateView(
@@ -53,17 +61,24 @@ class SchedulingDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        enrollment?.let {
+            viewModel.enrollment = it
+        }
+        programStages?.let {
+            viewModel.programStages = it
+            viewModel.setInitialProgramStage(it.first())
+        }
+        viewModel.onEventScheduled = {
+            setFragmentResult(SCHEDULING_DIALOG_RESULT, bundleOf(PROGRAM_STAGE_UID to it))
+            dismiss()
+        }
+
         viewModel.showCalendar = {
             showCalendarDialog()
         }
 
         viewModel.showPeriods = {
             showPeriodDialog()
-        }
-
-        viewModel.onEventScheduled = {
-            dismiss()
-            onScheduled(viewModel.programStage.value.uid())
         }
 
         return ComposeView(requireContext()).apply {
@@ -73,8 +88,8 @@ class SchedulingDialog(
             setContent {
                 SchedulingDialogUi(
                     viewModel = viewModel,
-                    programStages = programStages,
-                    orgUnitUid = enrollment.organisationUnit(),
+                    programStages = viewModel.programStages,
+                    orgUnitUid = viewModel.enrollment.organisationUnit(),
                     onDismiss = { dismiss() },
                 )
             }

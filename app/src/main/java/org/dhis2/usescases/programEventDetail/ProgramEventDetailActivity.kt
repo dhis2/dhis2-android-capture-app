@@ -22,6 +22,9 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.date.DateUtils.OnFromToSelector
+import org.dhis2.commons.date.Period
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -40,15 +43,17 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
+import org.dhis2.utils.customviews.RxDateDialog
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
 
 class ProgramEventDetailActivity :
@@ -241,15 +246,12 @@ class ProgramEventDetailActivity :
         FilterManager.getInstance().clearCatOptCombo()
         FilterManager.getInstance().clearWorkingList(true)
         FilterManager.getInstance().clearAssignToMe()
+        FilterManager.getInstance().clearFlow()
         presenter.clearOtherFiltersIfWebAppIsConfig()
     }
 
     override fun setProgram(programModel: Program) {
         binding.name = programModel.displayName()
-    }
-
-    override fun showFilterProgress() {
-        programEventsViewModel.setProgress(true)
     }
 
     override fun renderError(message: String) {
@@ -318,7 +320,6 @@ class ProgramEventDetailActivity :
     }
 
     override fun selectOrgUnitForNewEvent() {
-        enableAddEventButton(false)
         OUTreeFragment.Builder()
             .showAsDialog()
             .singleSelection()
@@ -357,17 +358,32 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this) { datePeriod: List<DatePeriod?>? ->
+            DateUtils.getInstance().fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
                 FilterManager.getInstance().addPeriod(datePeriod)
             }
         } else {
+            val onFromToSelector =
+                OnFromToSelector { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) }
+
             DateUtils.getInstance().showPeriodDialog(
                 this,
-                { datePeriods: List<DatePeriod?>? ->
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                },
+                onFromToSelector,
                 true,
-            )
+            ) {
+                val disposable = RxDateDialog(activity, Period.WEEKLY)
+                    .createForFilter().show()
+                    .subscribe(
+                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
+                            onFromToSelector.onFromToSelected(
+                                DateUtils.getInstance().getDatePeriodListFor(
+                                    selectedDates.val1(),
+                                    selectedDates.val0(),
+                                ),
+                            )
+                        },
+                        { t: Throwable? -> Timber.e(t) },
+                    )
+            }
         }
     }
 

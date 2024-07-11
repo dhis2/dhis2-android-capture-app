@@ -19,7 +19,7 @@ class ProgramEventDetailViewModel(
     val dispatcher: DispatcherProvider,
     val createEventUseCase: CreateEventUseCase,
 ) : ViewModel() {
-    private val progress = MutableLiveData(true)
+    private val progress = MutableLiveData(false)
     val writePermission = MutableLiveData(false)
     val eventSyncClicked = MutableLiveData<String?>(null)
     val eventClicked = MutableLiveData<Pair<String, String>?>(null)

@@ -14,7 +14,6 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_TEI
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -70,7 +69,6 @@ class TeiDashboardPresenterTest {
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
         val enrollment = Enrollment.builder().uid("enrollmentUid").build()
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
-        val events = listOf(Event.builder().uid("eventUid").build())
         val trackedEntityAttributes = listOf(
             Pair(
                 TrackedEntityAttribute.builder().uid("teiAttr").build(),
@@ -95,9 +93,6 @@ class TeiDashboardPresenterTest {
         whenever(
             repository.getProgramStages(programUid),
         ) doReturn Observable.just(programStages)
-        whenever(
-            repository.getTEIEnrollmentEvents(programUid, teiUid),
-        ) doReturn Observable.just(events)
         whenever(
             repository.getAttributesMap(programUid, teiUid),
         ) doReturn Observable.just(trackedEntityAttributes)

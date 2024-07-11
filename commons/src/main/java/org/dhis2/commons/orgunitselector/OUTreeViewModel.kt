@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.ui.dialogs.orgunit.OrgUnitTreeItem
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -18,6 +20,11 @@ class OUTreeViewModel(
 ) : ViewModel() {
     private val _treeNodes = MutableStateFlow(emptyList<OrgUnitTreeItem>())
     val treeNodes: StateFlow<List<OrgUnitTreeItem>> = _treeNodes
+
+    private val _finalSelectedOrgUnits = MutableStateFlow(emptyList<OrganisationUnit>())
+    val finalSelectedOrgUnits: StateFlow<List<OrganisationUnit>> = _finalSelectedOrgUnits
+
+    private val singleEventEnforcer = SingleEventEnforcer.get()
 
     init {
         fetchInitialOrgUnits()
@@ -156,7 +163,13 @@ class OUTreeViewModel(
         return nodesCopy
     }
 
-    fun getOrgUnits(): List<OrganisationUnit> {
+    private fun getOrgUnits(): List<OrganisationUnit> {
         return selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
+    }
+
+    fun confirmSelection() {
+        singleEventEnforcer.processEvent {
+            _finalSelectedOrgUnits.update { getOrgUnits() }
+        }
     }
 }

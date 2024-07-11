@@ -18,7 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.data.SearchTeiModel
-import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.toFriendlyDate
+import org.dhis2.commons.extensions.toFriendlyDateTime
+import org.dhis2.commons.extensions.toPercentage
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
@@ -38,7 +40,6 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import timber.log.Timber
-import java.text.ParseException
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
@@ -223,7 +224,9 @@ class SearchTEIViewModel(
             SearchScreenState.LIST -> setListScreen()
             SearchScreenState.MAP -> setMapScreen()
             SearchScreenState.ANALYTICS -> setAnalyticsScreen()
-            else -> {}
+            else -> {
+                // no-op
+            }
         }
     }
 
@@ -445,7 +448,11 @@ class SearchTEIViewModel(
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
                         setListScreen()
-                        _refreshData.postValue(Unit)
+                        fetchListResults { flow ->
+                            flow?.let {
+                                _refreshData.postValue(Unit)
+                            }
+                        }
                     }
 
                     SearchScreenState.MAP -> {
@@ -923,6 +930,7 @@ class SearchTEIViewModel(
         val map = mutableMapOf<String, String>()
         uiState.items.filter { !it.value.isNullOrEmpty() }
             .forEach { item ->
+
                 when (item.valueType) {
                     ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
                         map[item.uid] = (item.displayName ?: "")
@@ -930,31 +938,13 @@ class SearchTEIViewModel(
 
                     ValueType.DATE, ValueType.AGE -> {
                         item.value?.let {
-                            if (it.isNotEmpty()) {
-                                val date = try {
-                                    DateUtils.oldUiDateFormat().parse(it)
-                                } catch (e: ParseException) {
-                                    null
-                                }
-                                map[item.uid] = date?.let {
-                                    DateUtils.uiDateFormat().format(date)
-                                } ?: it
-                            }
+                            map[item.uid] = it.toFriendlyDate()
                         }
                     }
 
                     ValueType.DATETIME -> {
                         item.value?.let {
-                            if (it.isNotEmpty()) {
-                                val date = try {
-                                    DateUtils.databaseDateFormatNoSeconds().parse(it)
-                                } catch (e: ParseException) {
-                                    null
-                                }
-                                map[item.uid] = date?.let {
-                                    DateUtils.uiDateTimeFormat().format(date)
-                                } ?: it
-                            }
+                            map[item.uid] = it.toFriendlyDateTime()
                         }
                     }
 
@@ -971,7 +961,9 @@ class SearchTEIViewModel(
                     }
 
                     ValueType.PERCENTAGE -> {
-                        map[item.uid] = "${item.value}%"
+                        item.value?.let {
+                            map[item.uid] = it.toPercentage()
+                        }
                     }
 
                     else -> {

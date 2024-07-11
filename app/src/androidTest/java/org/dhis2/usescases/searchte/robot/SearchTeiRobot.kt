@@ -124,10 +124,12 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnSearch() {
         closeKeyboard()
         composeTestRule.onNodeWithTag("SEARCH_BUTTON").performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkListOfSearchTEI(title: String, attributes: Map<String?, String>) {
         //Checks title and all attributes are displayed
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
             item.key?.let { composeTestRule.onNodeWithText(it).assertIsDisplayed() }
@@ -202,6 +204,15 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnEnroll() {
         onView(withId(R.id.createButton)).perform(click())
+    }
+
+    fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        composeTestRule.onNode(
+            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                    and hasText(additionalText),
+            useUnmergedTree = true,
+        ).assertIsDisplayed()
     }
 
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(

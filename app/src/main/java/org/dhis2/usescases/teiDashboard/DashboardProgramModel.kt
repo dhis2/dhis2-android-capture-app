@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -31,7 +30,6 @@ sealed class DashboardModel(
 data class DashboardEnrollmentModel(
     val currentEnrollment: Enrollment,
     val programStages: List<ProgramStage>,
-    val eventModels: List<Event>,
     override val trackedEntityInstance: TrackedEntityInstance,
     val trackedEntityAttributes: List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>,
     override val trackedEntityAttributeValues: List<TrackedEntityAttributeValue>,

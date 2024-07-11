@@ -206,7 +206,8 @@ class OUTreeViewModelTest {
         whenever(
             repository.orgUnit(childOrgUnits[0].uid()),
         ) doReturn childOrgUnits[0]
-        val result = viewModel.getOrgUnits()
+        viewModel.confirmSelection()
+        val result = viewModel.finalSelectedOrgUnits.value
         assertTrue(result.size == 1)
         assertTrue(result.first().uid() == childOrgUnits[0].uid())
     }

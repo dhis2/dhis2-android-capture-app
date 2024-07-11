@@ -25,9 +25,13 @@ class EventCaptureResourcesProvider(
 
     fun provideWarningInfo() = resourceManager.getString(R.string.missing_warning_fields_events)
 
+    fun provideWarningInfoCompletedEvent() = resourceManager.getString(R.string.missing_warning_fields_completed_events)
+
     fun provideReview() = R.string.review
 
     fun provideNotNow() = R.string.not_now
+
+    fun provideSaveAnyway() = R.string.save_anyway
 
     fun provideCompleteInfo() = resourceManager.getString(R.string.event_can_be_completed)
 

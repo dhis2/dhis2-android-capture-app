@@ -53,6 +53,7 @@ class SearchFlowTest : BaseTest() {
             )
         val filterCounter = "1"
         val filterTotalCount = "2"
+        enableComposeForms()
         prepareWomanProgrammeIntentAndLaunchActivity(rule)
 
         teiFlowRobot(composeTestRule) {
