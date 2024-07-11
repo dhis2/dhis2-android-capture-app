@@ -48,7 +48,7 @@ class ProgramEventTest : BaseTest() {
             clickOnCompleteButton()
         }
         programEventsRobot(composeTestRule) {
-            checkEventWasCreatedAndClosed(eventOrgUnit)
+            checkEventWasCreatedAndClosed()
         }
     }
 
