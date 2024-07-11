@@ -9,6 +9,7 @@ import org.dhis2.animations.CarouselViewAnimations;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -289,7 +290,8 @@ public class SearchTEModule {
             NetworkUtils networkUtils,
             D2 d2,
             ResourceManager resourceManager,
-            DisplayNameProvider displayNameProvider
+            DisplayNameProvider displayNameProvider,
+            FilterManager filterManager
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -302,7 +304,8 @@ public class SearchTEModule {
                 new SearchDispatchers(),
                 new MapStyleConfiguration(d2),
                 resourceManager,
-                displayNameProvider
+                displayNameProvider,
+                filterManager
         );
     }
 

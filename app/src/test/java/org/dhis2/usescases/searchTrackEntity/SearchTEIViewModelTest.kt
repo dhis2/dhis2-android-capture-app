@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -51,6 +52,7 @@ class SearchTEIViewModelTest {
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
     private val resourceManager: ResourceManager = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
+    private val filterManager: FilterManager = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -88,6 +90,7 @@ class SearchTEIViewModelTest {
             mapStyleConfiguration,
             resourceManager = resourceManager,
             displayNameProvider = displayNameProvider,
+            filterManager = filterManager,
         )
         testingDispatcher.scheduler.advanceUntilIdle()
     }

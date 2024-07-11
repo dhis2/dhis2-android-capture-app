@@ -54,6 +54,7 @@ class SearchTEIViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
     private val resourceManager: ResourceManager,
     private val displayNameProvider: DisplayNameProvider,
+    private val filterManager: FilterManager,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -65,8 +66,6 @@ class SearchTEIViewModel(
 
     private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
     val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
-
-    val filterManager: FilterManager = FilterManager.getInstance()
 
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
