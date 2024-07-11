@@ -152,7 +152,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val title = "First name: ${displayListFieldsUIModel.name}"
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
         //When we expand all attribute list
-        composeTestRule.onNodeWithText("Show more").performClick()
+        composeTestRule.onNodeWithText("Show more", true).performClick()
         composeTestRule.waitForIdle()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
