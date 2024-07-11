@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
+import org.dhis2.composetable.model.DropdownOption
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.compositions.LocalCurrentCellValue
 import org.dhis2.composetable.ui.compositions.LocalInteraction
@@ -57,7 +58,7 @@ fun TableCell(
     cell: TableCell,
     maxLines: Int,
     headerExtraSize: Int,
-    options: List<String>,
+    options: List<DropdownOption>,
     headerLabel: String,
 ) {
     val localInteraction = LocalInteraction.current
