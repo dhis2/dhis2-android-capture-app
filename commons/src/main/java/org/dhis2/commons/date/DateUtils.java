@@ -3,6 +3,7 @@ package org.dhis2.commons.date;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -26,6 +27,7 @@ public class DateUtils {
     }
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String DATABASE_FORMAT_NO_TIME = "yyyy-MM-dd";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
@@ -768,5 +770,23 @@ public class DateUtils {
     public static int[] getDifference(Date startDate, Date endDate) {
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+    }
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+                && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
 }

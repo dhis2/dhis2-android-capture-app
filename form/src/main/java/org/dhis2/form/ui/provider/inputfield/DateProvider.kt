@@ -69,14 +69,21 @@ fun ProvideInputDate(
             onNextClicked = onNextClicked,
             onValueChanged = {
                 value = it ?: TextFieldValue()
-                intentHandler.invoke(
+                val formIntent = if (value.text.length == 8) {
+                    FormIntent.OnSave(
+                        uid = fieldUiModel.uid,
+                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                        valueType = fieldUiModel.valueType,
+                        allowFutureDates = fieldUiModel.allowFutureDates,
+                    )
+                } else {
                     FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
                         value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
                         valueType = fieldUiModel.valueType,
-                        allowFutureDates = fieldUiModel.allowFutureDates ?: true,
-                    ),
-                )
+                    )
+                }
+                intentHandler.invoke(formIntent)
             },
             selectableDates = selectableDates,
             yearRange = yearIntRange,
