@@ -341,7 +341,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiLastName, composeTestRule)
+            clickOnTEI(teiName, composeTestRule)
         }
 
         teiDashboardRobot(composeTestRule) {
