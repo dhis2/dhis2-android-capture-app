@@ -48,11 +48,11 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
             hasTestTag("EVENT_ITEM")
                     and
                     hasAnyDescendant(
-                        hasText("Event completed")
+                        hasText("Event completed", true)
                     )
                     and
                     hasAnyDescendant(
-                        hasText("View only")
+                        hasText("View only", true)
                     ),
             useUnmergedTree = true
         ).assertIsDisplayed()
