@@ -37,7 +37,7 @@ class SearchRepositoryTest {
             "unique-code" to createTrackedEntityAttributeRepository("unique-code", true),
             "bp-number" to createTrackedEntityAttributeRepository("bp-number", true),
             "national-id" to createTrackedEntityAttributeRepository("national-id", true),
-            "unique-id" to createTrackedEntityAttributeRepository("unique-id", true)
+            "unique-id" to createTrackedEntityAttributeRepository("unique-id", true),
         )
 
         val trackedEntityAttributeCollection = mock<TrackedEntityAttributeCollectionRepository>()
@@ -52,7 +52,7 @@ class SearchRepositoryTest {
             fieldViewModelFactory = fieldViewModelFactory,
             metadataIconProvider = metadataIconProvider,
             dispatcher = dispatchers,
-            searchRepositoryJava = mock()
+            searchRepositoryJava = mock(),
         )
     }
 
@@ -61,22 +61,21 @@ class SearchRepositoryTest {
         val mockData = createMockData()
         val sortedData = searchRepository.sortSearchParameters(mockData)
 
-        // Assert the order of the sorted data
-        assertEquals("unique-code", sortedData[0].uid) // Unique Code (QR Code, Unique)
-        assertEquals("bp-number", sortedData[1].uid) // BP Number (Barcode, Unique)
-        assertEquals("qr-code", sortedData[2].uid)        // QR Code (QR_CODE, Not Unique)
-        assertEquals("bar-code", sortedData[3].uid)       // Bar Code (Barcode, Not Unique)
-        assertEquals("unique-id", sortedData[4].uid) // Unique ID (Text, Unique)
-        assertEquals("national-id", sortedData[5].uid) // National ID (Text, Unique)
-        assertEquals("first-name", sortedData[6].uid)        // First Name (Text, Not Unique)
-        assertEquals("last-name", sortedData[7].uid)        // Last Name (Text, Not Unique)
-        assertEquals("phone-number", sortedData[8].uid)        // Phone Number (Phone Number, Not Unique)
-        assertEquals("state", sortedData[9].uid)        // State (Text, Not Unique)
+        assertEquals("unique-code", sortedData[0].uid)
+        assertEquals("bp-number", sortedData[1].uid)
+        assertEquals("qr-code", sortedData[2].uid)
+        assertEquals("bar-code", sortedData[3].uid)
+        assertEquals("unique-id", sortedData[4].uid)
+        assertEquals("national-id", sortedData[5].uid)
+        assertEquals("first-name", sortedData[6].uid)
+        assertEquals("last-name", sortedData[7].uid)
+        assertEquals("phone-number", sortedData[8].uid)
+        assertEquals("state", sortedData[9].uid)
     }
 
     private fun createTrackedEntityAttributeRepository(
         uid: String,
-        unique: Boolean
+        unique: Boolean,
     ): ReadOnlyOneObjectRepositoryFinalImpl<TrackedEntityAttribute> {
         val attribute = mock<TrackedEntityAttribute> {
             on { uid() } doReturn uid
@@ -95,7 +94,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "unique-code",
@@ -103,7 +102,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.QR_CODE,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "last-name",
@@ -111,7 +110,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "phone-number",
@@ -119,7 +118,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.PHONE_NUMBER,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "unique-id",
@@ -127,7 +126,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "state",
@@ -135,7 +134,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "national-id",
@@ -143,7 +142,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.DEFAULT,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "qr-code",
@@ -151,7 +150,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.QR_CODE,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "bar-code",
@@ -159,7 +158,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.BAR_CODE,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
             FieldUiModelImpl(
                 uid = "bp-number",
@@ -167,7 +166,7 @@ class SearchRepositoryTest {
                 valueType = ValueType.TEXT,
                 renderingType = UiRenderType.BAR_CODE,
                 autocompleteList = emptyList(),
-                optionSetConfiguration = null
+                optionSetConfiguration = null,
             ),
         )
     }
