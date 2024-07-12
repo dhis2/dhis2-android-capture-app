@@ -473,10 +473,8 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                         ""
                     }
             }
-        } else if (de?.valueType()?.isNumeric == true) {
-            if (value.isNullOrEmpty()) {
-                value = ""
-            }
+        } else if (de?.valueType()?.isNumeric == true && value.isNullOrEmpty()) {
+            value = ""
         }
         RuleDataValue(
             eventDate = event.eventDate()!!.toRuleEngineInstant(),
