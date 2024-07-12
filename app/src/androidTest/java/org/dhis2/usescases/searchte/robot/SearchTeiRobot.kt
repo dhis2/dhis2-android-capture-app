@@ -44,27 +44,10 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnTEI(teiName: String, teiLastName: String) {
-        waitForView(
-            allOf(
-                withId(R.id.scrollView),
-                hasDescendant(withText(teiName)),
-                hasDescendant(withText(teiLastName))
-            )
-        ).perform(
-            scrollTo<SearchTEViewHolder>(
-                allOf(
-                    hasDescendant(withText(teiName)),
-                    hasDescendant(withText(teiLastName))
-                )
-            ),
-            actionOnItem<SearchTEViewHolder>(
-                allOf(
-                    hasDescendant(withText(teiName)),
-                    hasDescendant(withText(teiLastName))
-                ), click()
-            )
-        )
+    fun clickOnTEI(teiName: String, composeTestRule: ComposeTestRule) {
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkTEIsDelete(teiName: String, teiLastName: String) {
