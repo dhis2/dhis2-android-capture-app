@@ -14,9 +14,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -46,27 +44,10 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnTEI(teiName: String, teiLastName: String) {
-        waitForView(
-            allOf(
-                withId(R.id.scrollView),
-                hasDescendant(withText(teiName)),
-                hasDescendant(withText(teiLastName))
-            )
-        ).perform(
-            scrollTo<SearchTEViewHolder>(
-                allOf(
-                    hasDescendant(withText(teiName)),
-                    hasDescendant(withText(teiLastName))
-                )
-            ),
-            actionOnItem<SearchTEViewHolder>(
-                allOf(
-                    hasDescendant(withText(teiName)),
-                    hasDescendant(withText(teiLastName))
-                ), click()
-            )
-        )
+    fun clickOnTEI( teiLastName: String,composeTestRule: ComposeTestRule) {
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Last name: $teiLastName", true).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkTEIsDelete(teiName: String, teiLastName: String) {
