@@ -1,9 +1,8 @@
-# Release notes - Android App for DHIS2 - 3.0.0.1
+# Release notes - Android App for DHIS2 - 3.0.0.2
 
-### Bug
-
-[ANDROAPP-6194](https://dhis2.atlassian.net/browse/ANDROAPP-6194) Unable to search outside the program
-
-[ANDROAPP-6195](https://dhis2.atlassian.net/browse/ANDROAPP-6195) Missing terms in transifex
-
-[ANDROAPP-6210](https://dhis2.atlassian.net/browse/ANDROAPP-6210) UninitializedPropertyAccessException on breaking the glass
+- IllegalArgumentException: Key "" was already used.
+- App crash when a catCombo is override
+- Future date can be entered in Date of birth search field
+- Phone number input value type lacks of support for international symbols like \+, \(, \)
+- Maps - App crashes when navigating from home to maps but not from analytics to maps
+- Value of a TEA of valuetype AGE/DATE is not fully validated

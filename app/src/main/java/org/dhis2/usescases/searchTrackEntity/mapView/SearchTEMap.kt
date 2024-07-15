@@ -89,6 +89,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         (context as SearchTEActivity).searchComponent.plus(
             SearchTEMapModule(),
         ).inject(this)
+        viewModel.setMapScreen()
     }
 
     override fun onCreateView(

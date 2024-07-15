@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
@@ -46,6 +47,8 @@ import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailu
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateTimeFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.TimeFailure
 import timber.log.Timber
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -446,6 +449,7 @@ class FormViewModel(
                     intent.valueType,
                     intent.value,
                     intent.fieldMask,
+                    intent.allowFutureDates,
                 )
 
                 createRowAction(
@@ -600,10 +604,10 @@ class FormViewModel(
         }
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-
+        val isValidDateFormat = isValidDate(dateTimeString.substring(0, 10))
         try {
             val date = LocalDateTime.parse(dateTimeString, formatter)
-            if (allowFutureDates == false && date.isAfter(LocalDateTime.now())) {
+            if (allowFutureDates == false && date.isAfter(LocalDateTime.now()) || !isValidDateFormat) {
                 return Result.Failure(DateFailure.ParseException)
             }
             return valueType.validator.validate(dateTimeString)
@@ -633,12 +637,24 @@ class FormViewModel(
 
         try {
             val date = LocalDate.parse(dateString, formatter)
-            if (allowFutureDates == false && date.isAfter(LocalDate.now())) {
-                return Result.Failure(DateFailure.ParseException)
+            val formatDateValid = isValidDate(dateString)
+            if (allowFutureDates == false && date.isAfter(LocalDate.now()) || !formatDateValid) {
+                return Result.Failure(Throwable())
             }
             return valueType.validator.validate(dateString)
         } catch (e: DateTimeParseException) {
             return Result.Failure(DateFailure.ParseException)
+        }
+    }
+
+    private fun isValidDate(text: String): Boolean {
+        val format = SimpleDateFormat(DateUtils.DATABASE_FORMAT_NO_TIME)
+        format.isLenient = false
+        return try {
+            format.parse(text)
+            true
+        } catch (e: ParseException) {
+            false
         }
     }
 

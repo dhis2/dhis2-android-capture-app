@@ -366,7 +366,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                                                 uid,
                                                 selectedOrgUnit,
                                                 ValueType.ORGANISATION_UNIT,
-                                                null
+                                                null,
+                                                true
                                         )
                                 );
                                 return Unit.INSTANCE;
@@ -400,7 +401,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         this,
                         () -> {
                             presenter.trackSearchMapVisualization();
-                            viewModel.setMapScreen();
                             showMap();
                             showSearchAndFilterButtons();
                             return null;
