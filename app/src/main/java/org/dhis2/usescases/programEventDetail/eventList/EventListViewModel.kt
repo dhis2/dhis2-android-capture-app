@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -35,8 +36,9 @@ class EventListViewModel(
     val onEventCardClick: Flow<Pair<String, String>?> = _onEventCardClick
 
     private val _displayOrgUnitName = MutableLiveData(true)
-    private val displayOrgUnitName = _displayOrgUnitName
+    val displayOrgUnitName = _displayOrgUnitName
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
         filterManager.asFlow(viewModelScope)
             .flatMapLatest {
