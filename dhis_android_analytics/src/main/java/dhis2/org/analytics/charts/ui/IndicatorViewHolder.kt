@@ -58,7 +58,7 @@ class IndicatorViewHolder(
                         modifier = Modifier.then(
                             if (programIndicatorModel.programIndicator?.description() != null) {
                                 Modifier.clickable(
-                                    interactionSource =  MutableInteractionSource(),
+                                    interactionSource = MutableInteractionSource(),
                                     indication = rememberRipple(),
                                     onClick = { showDescription(programIndicatorModel.programIndicator) },
                                 )
