@@ -279,16 +279,6 @@ class MainPresenter(
         checkVersionUpdate()
         workManagerController
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
-        val workerItem = WorkerItem(
-            Constants.RESERVED,
-            WorkerType.RESERVED,
-            null,
-            null,
-            null,
-            null,
-        )
-        workManagerController.cancelAllWorkByTag(workerItem.workerName)
-        workManagerController.syncDataForWorker(workerItem)
     }
 
     fun observeDataSync(): LiveData<SyncStatusData> {
