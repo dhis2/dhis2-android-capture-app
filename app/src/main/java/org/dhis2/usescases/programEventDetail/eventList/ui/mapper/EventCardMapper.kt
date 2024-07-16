@@ -67,8 +67,8 @@ class EventCardMapper(
             !it.second.isNullOrEmpty()
         }?.map {
             AdditionalInfoItem(
-                key = "${it.first}:",
-                value = it.second ?: "",
+                key = it.first,
+                value = it.second ?: "-",
             )
         }?.toMutableList() ?: mutableListOf()
 
@@ -144,7 +144,7 @@ class EventCardMapper(
         ) {
             list.add(
                 AdditionalInfoItem(
-                    key = "${event.nameCategoryOptionCombo}:",
+                    key = event.nameCategoryOptionCombo,
                     value = event.catComboName ?: "",
                     isConstantItem = true,
                 ),

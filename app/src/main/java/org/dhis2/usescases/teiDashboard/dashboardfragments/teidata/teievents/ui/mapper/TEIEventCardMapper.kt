@@ -103,8 +103,8 @@ class TEIEventCardMapper(
             !it.second.isNullOrEmpty() && it.second != "-"
         }?.map {
             AdditionalInfoItem(
-                key = "${it.first}:",
-                value = it.second ?: "",
+                key = it.first,
+                value = it.second ?: "-",
             )
         }?.toMutableList() ?: mutableListOf()
 
@@ -161,8 +161,8 @@ class TEIEventCardMapper(
         ) {
             list.add(
                 AdditionalInfoItem(
-                    key = "${event.nameCategoryOptionCombo}:",
-                    value = event.catComboName ?: "",
+                    key = event.nameCategoryOptionCombo,
+                    value = event.catComboName ?: "-",
                     isConstantItem = true,
                 ),
             )

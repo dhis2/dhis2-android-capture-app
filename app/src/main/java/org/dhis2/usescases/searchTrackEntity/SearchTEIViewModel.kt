@@ -54,6 +54,7 @@ class SearchTEIViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
     private val resourceManager: ResourceManager,
     private val displayNameProvider: DisplayNameProvider,
+    private val filterManager: FilterManager,
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -326,20 +327,20 @@ class SearchTEIViewModel(
                 withContext(dispatchers.io()) {
                     if (
                         searching && networkUtils.isOnline() &&
-                        FilterManager.getInstance().stateFilters.isEmpty()
+                        filterManager.stateFilters.isEmpty()
                     ) {
                         searchRepository.transform(
                             item,
                             searchParametersModel.selectedProgram,
                             false,
-                            FilterManager.getInstance().sortingItem,
+                            filterManager.sortingItem,
                         )
                     } else {
                         searchRepository.transform(
                             item,
                             searchParametersModel.selectedProgram,
                             true,
-                            FilterManager.getInstance().sortingItem,
+                            filterManager.sortingItem,
                         )
                     }
                 }
@@ -364,7 +365,7 @@ class SearchTEIViewModel(
                         item,
                         searchParametersModel.selectedProgram,
                         true,
-                        FilterManager.getInstance().sortingItem,
+                        filterManager.sortingItem,
                     )
                 }
             }
@@ -387,20 +388,20 @@ class SearchTEIViewModel(
                     withContext(dispatchers.io()) {
                         if (
                             searching && networkUtils.isOnline() &&
-                            FilterManager.getInstance().stateFilters.isEmpty()
+                            filterManager.stateFilters.isEmpty()
                         ) {
                             searchRepository.transform(
                                 item,
                                 searchParametersModel.selectedProgram,
                                 false,
-                                FilterManager.getInstance().sortingItem,
+                                filterManager.sortingItem,
                             )
                         } else {
                             searchRepository.transform(
                                 item,
                                 searchParametersModel.selectedProgram,
                                 true,
-                                FilterManager.getInstance().sortingItem,
+                                filterManager.sortingItem,
                             )
                         }
                     }
@@ -445,7 +446,12 @@ class SearchTEIViewModel(
                     SearchScreenState.LIST -> {
                         SearchIdlingResourceSingleton.increment()
                         setListScreen()
-                        _refreshData.postValue(Unit)
+                        fetchListResults { flow ->
+                            flow?.let {
+                                _refreshData.postValue(Unit)
+                                SearchIdlingResourceSingleton.decrement()
+                            }
+                        }
                     }
 
                     SearchScreenState.MAP -> {
@@ -888,9 +894,9 @@ class SearchTEIViewModel(
                     /* selectedProgram = */
                     searchParametersModel.selectedProgram,
                     /* offlineOnly = */
-                    !(isOnline && FilterManager.getInstance().stateFilters.isEmpty()),
+                    !(isOnline && filterManager.stateFilters.isEmpty()),
                     /* sortingItem = */
-                    FilterManager.getInstance().sortingItem,
+                    filterManager.sortingItem,
                 )
             }
 

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -81,7 +82,9 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNode(hasText(date, true)).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun typeOnDateParameter(dateValue: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_DATE_TIME_TEXT_FIELD"),2000)
         composeTestRule.apply {
             onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performClick()
             onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)

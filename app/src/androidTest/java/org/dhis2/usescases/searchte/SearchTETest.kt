@@ -75,7 +75,7 @@ class SearchTETest : BaseTest() {
             clickOnSearch()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -112,7 +112,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -171,6 +171,7 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
             clickOnFilter()
+            waitToDebounce(2000)
             checkTEIsAreOpen()
         }
     }
@@ -197,7 +198,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
             pressBack()
         }
-
+        composeTestRule.waitForIdle()
         filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
@@ -299,7 +300,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, teiLastName)
+            clickOnTEI(teiName, composeTestRule)
         }
 
         teiDashboardRobot(composeTestRule) {
@@ -337,7 +338,10 @@ class SearchTETest : BaseTest() {
             clickOnOpenSearch()
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(name)
+            waitToDebounce(2000)
             clickOnSearch()
+            composeTestRule.waitForIdle()
+
         }
 
         filterRobot {
@@ -354,7 +358,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             checkListOfSearchTEI(
                 title = "First name: $name",
-                attributes = mapOf("Last name:" to lastName)
+                attributes = mapOf("Last name" to lastName)
             )
         }
     }

@@ -899,7 +899,7 @@
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
-    <string name="enrolledIn">Enrolled in:</string>
+    <string name="enrolledIn">Enrolled in</string>
     <string name="sync_dialog_title_not_synced">Sync needed</string>
     <string name="sync_dialog_title_error">Sync error</string>
     <string name="sync_dialog_title_synced">Synced</string>
@@ -943,12 +943,12 @@
     <string name="sync_retry">Retry sync</string>
     <string name="marked_follow_up">Marked for follow-up</string>
     <string name="overdue">Overdue %s</string>
-    <string name="registered_in">Registered in:</string>
+    <string name="registered_in">Registered in</string>
     <string name="view_only">View only</string>
     <string name="scheduled">Scheduled: %s</string>
     <string name="scheduled_for">Scheduled for %s</string>
     <string name="skipped">Skipped</string>
-    <string name="programs">Programs:</string>
+    <string name="programs">Programs</string>
     <string name="sync_successful">Sync successful</string>
     <string name="sync_warning">Sync warning</string>
     <string name="sync_error">Sync Error</string>
