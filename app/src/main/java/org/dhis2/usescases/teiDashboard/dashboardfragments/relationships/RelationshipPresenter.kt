@@ -59,7 +59,7 @@ class RelationshipPresenter internal constructor(
                         view.setFeatureCollection(
                             teiUid,
                             relationshipModel,
-                            mapRelationshipsToFeatureCollection.map(relationshipModel),
+                            mapRelationshipsToFeatureCollection.mapLegacy(relationshipModel),
                         )
                     },
                     { Timber.d(it) },

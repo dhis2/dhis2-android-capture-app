@@ -5,17 +5,16 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.areLngLatCorrect
 import org.dhis2.maps.geometry.closestPointTo
-import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
 class MapLineRelationshipToFeature {
 
-    fun map(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
+    fun map(fromGeometry: Geometry, toGeometry: Geometry): Feature? {
         val (lineStartPoint, lineEndPoint) = getStartPoints(
-            relationshipUiComponentModel.from.geometry!!,
-            relationshipUiComponentModel.to.geometry!!,
+            fromGeometry,
+            toGeometry,
         )
 
         val lonLineStart = lineStartPoint[0]

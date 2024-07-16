@@ -1,4 +1,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_compass" android:state_pressed="true" />
-    <item android:drawable="@drawable/ic_compass"/>
+    <item android:drawable="@drawable/ic_compass_new" android:state_pressed="true" />
+    <item android:drawable="@drawable/ic_compass_new"/>
 </selector>
