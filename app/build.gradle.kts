@@ -1,7 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -64,8 +64,6 @@ android {
         }
     }
 
-    ndkVersion = libs.versions.ndk.get()
-    compileSdk = libs.versions.sdk.get().toInt()
     namespace = "org.dhis2"
     testNamespace = "org.dhis2.test"
 
@@ -75,6 +73,8 @@ android {
 
     defaultConfig {
         applicationId = "com.dhis2"
+        compileSdk = libs.versions.sdk.get().toInt()
+        targetSdk = libs.versions.sdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
         versionName = libs.versions.vName.get()
@@ -126,12 +126,6 @@ android {
                     "META-INF/gradle/incremental.annotation.processors"
                 )
             )
-        }
-    }
-
-    testOptions {
-        unitTests {
-            isReturnDefaultValues = true
         }
     }
 

@@ -9,10 +9,10 @@ apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     namespace = "org.dhis2.dhis2_mobile_program_rules"
-    compileSdk = 34
+    compileSdk = libs.versions.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
