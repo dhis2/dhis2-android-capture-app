@@ -1,10 +1,12 @@
 package org.dhis2.usescases.programEventDetail.eventList
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -33,6 +35,10 @@ class EventListViewModel(
     private var _onEventCardClick: MutableStateFlow<Pair<String, String>?> = MutableStateFlow(null)
     val onEventCardClick: Flow<Pair<String, String>?> = _onEventCardClick
 
+    private val _displayOrgUnitName = MutableLiveData(true)
+    val displayOrgUnitName = _displayOrgUnitName
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
         filterManager.asFlow(viewModelScope)
             .flatMapLatest {
@@ -41,13 +47,17 @@ class EventListViewModel(
                     .map { pagingData ->
                         pagingData.map { event ->
                             withContext(dispatchers.io()) {
+                                _displayOrgUnitName.postValue(
+                                    event.program()?.let { program ->
+                                        eventRepository.displayOrganisationUnit(program)
+                                    } ?: true,
+                                )
+
                                 val eventModel = mapper.eventToEventViewModel(event)
                                 cardMapper.map(
                                     event = eventModel,
                                     editable = eventRepository.isEventEditable(event.uid()),
-                                    displayOrgUnit = event.program()?.let { program ->
-                                        eventRepository.displayOrganisationUnit(program)
-                                    } ?: true,
+                                    displayOrgUnit = displayOrgUnitName.value ?: true,
                                     onSyncIconClick = {
                                         onSyncIconClick(
                                             eventModel.event?.uid(),

@@ -77,10 +77,6 @@ class ProgramEventDetailViewModel(
         return eventRepository.isEventEditable(eventUid)
     }
 
-    fun displayOrganisationUnit(programUid: String): Boolean {
-        return eventRepository.displayOrganisationUnit(programUid)
-    }
-
     fun onOrgUnitForNewEventSelected(
         orgUnitUid: String,
         programUid: String,
