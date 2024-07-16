@@ -10,17 +10,26 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.ui.toColor
+import org.dhis2.usescases.events.EventInfoProvider
+import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.relationship.RelationshipItem
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper.toTrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import timber.log.Timber
 
 class SearchRepositoryImplKt(
     private val searchRepositoryJava: SearchRepository,
@@ -28,9 +37,11 @@ class SearchRepositoryImplKt(
     private val dispatcher: DispatcherProvider,
     private val fieldViewModelFactory: FieldViewModelFactory,
     private val metadataIconProvider: MetadataIconProvider,
+    private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
+    private val eventInfoProvider: EventInfoProvider,
 ) : SearchRepositoryKt {
 
-    private lateinit var savedSearchParamenters: SearchParametersModel
+    private lateinit var savedSearchParameters: SearchParametersModel
 
     private lateinit var savedFilters: FilterManager
 
@@ -51,10 +62,10 @@ class SearchRepositoryImplKt(
         isOnline: Boolean,
     ): TrackedEntitySearchCollectionRepository {
         var allowCache = false
-        savedSearchParamenters = searchParametersModel.copy()
+        savedSearchParameters = searchParametersModel.copy()
         savedFilters = FilterManager.getInstance().copy()
 
-        if (searchParametersModel != savedSearchParamenters || !FilterManager.getInstance()
+        if (searchParametersModel != savedSearchParameters || !FilterManager.getInstance()
                 .sameFilters(savedFilters)
         ) {
             trackedEntityInstanceQuery =
@@ -114,6 +125,169 @@ class SearchRepositoryImplKt(
             .blockingGet()
     }
 
+    override fun searchTeiForMap(
+        searchParametersModel: SearchParametersModel,
+        isOnline: Boolean,
+    ): List<MapItemModel> {
+        var allowCache = false
+        if (searchParametersModel != savedSearchParameters || FilterManager.getInstance() != savedFilters) {
+            trackedEntityInstanceQuery =
+                searchRepositoryJava.getFilteredRepository(searchParametersModel)
+        } else {
+            allowCache = true
+        }
+
+        return if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
+            trackedEntityInstanceQuery.allowOnlineCache()
+                .eq(allowCache).offlineFirst().blockingGet()
+                .map { tei ->
+                    transformForMap(
+                        tei,
+                        searchParametersModel.selectedProgram,
+                    )
+                }
+        } else {
+            trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
+                .blockingGet()
+                .map { tei ->
+                    transformForMap(
+                        tei,
+                        searchParametersModel.selectedProgram,
+                    )
+                }
+        }
+    }
+
+    private fun transformForMap(
+        searchItem: TrackedEntitySearchItem,
+        selectedProgram: Program?,
+    ): MapItemModel {
+        fetchedTeiUids.add(searchItem.uid())
+        val tei = if (searchItem.isOnline) {
+            d2.trackedEntityModule().trackedEntityInstances()
+                .uid(searchItem.uid()).blockingGet()!!
+        } else {
+            toTrackedEntityInstance(searchItem)
+        }
+
+        val attributeValues = trackedEntityInstanceInfoProvider.getTeiAdditionalInfoList(
+            searchItem.attributeValues ?: emptyList(),
+        )
+
+        return MapItemModel(
+            uid = searchItem.uid,
+            avatarProviderConfiguration = trackedEntityInstanceInfoProvider.getAvatar(
+                tei,
+                selectedProgram?.uid(),
+                attributeValues.firstOrNull(),
+            ),
+            title = trackedEntityInstanceInfoProvider.getTeiTitle(
+                searchItem.header,
+                attributeValues,
+            ),
+            description = null,
+            lastUpdated = trackedEntityInstanceInfoProvider.getTeiLastUpdated(searchItem),
+            additionalInfoList = attributeValues,
+            isOnline = d2.trackedEntityModule().trackedEntityInstances().uid(searchItem.uid)
+                .blockingGet() == null,
+            geometry = searchItem.geometry,
+            relatedInfo = trackedEntityInstanceInfoProvider.getRelatedInfo(
+                searchItem,
+                selectedProgram,
+            ),
+        )
+    }
+
+    override fun searchRelationshipsForMap(
+        teis: List<MapItemModel>,
+        selectedProgram: Program?,
+    ): List<MapItemModel> {
+        return buildList {
+            teis.forEach { tei ->
+                d2.relationshipModule().relationships().getByItem(
+                    searchItem = RelationshipItem.builder().trackedEntityInstance(
+                        RelationshipItemTrackedEntityInstance.builder()
+                            .trackedEntityInstance(tei.uid)
+                            .build(),
+                    ).build(),
+                    includeDeleted = false,
+                    onlyAccessible = false,
+                )
+                    .forEach { relationship ->
+                        add(
+                            trackedEntityInstanceInfoProvider.updateRelationshipInfo(
+                                tei,
+                                relationship,
+                            ),
+                        )
+
+                        val relationshipTarget = if (relationship.to()?.trackedEntityInstance()
+                                ?.trackedEntityInstance() == tei.uid
+                        ) {
+                            relationship.from()
+                        } else {
+                            relationship.to()
+                        }
+
+                        when {
+                            relationshipTarget?.trackedEntityInstance() != null &&
+                                teis.find { it.uid == relationshipTarget.elementUid() } == null -> {
+                                val trackedEntityType =
+                                    d2.trackedEntityModule().trackedEntityInstances()
+                                        .uid(relationshipTarget.elementUid())
+                                        .blockingGet()
+                                        ?.trackedEntityType()
+                                val relationshipTei = d2.trackedEntityModule().trackedEntitySearch()
+                                    .byTrackedEntityType().eq(trackedEntityType)
+                                    .uid(relationshipTarget.elementUid())
+                                    .blockingGet()
+
+                                relationshipTei?.let {
+                                    add(
+                                        trackedEntityInstanceInfoProvider.updateRelationshipInfo(
+                                            transformForMap(it, null),
+                                            relationship,
+                                        ),
+                                    )
+                                }
+                            }
+
+                            relationshipTarget?.event() != null -> {
+                                Timber.tag("MAP RELATIONSHIP BUILDER")
+                                    .d("Event need to be added and updated with relationship info")
+                            }
+                        }
+                    }
+            }
+        }
+    }
+
+    override fun searchEventForMap(
+        teiUids: List<String>,
+        selectedProgram: Program?,
+    ): List<MapItemModel> {
+        return d2.eventModule().events()
+            .byTrackedEntityInstanceUids(teiUids)
+            .byProgramUid().eq(selectedProgram?.uid())
+            .byStatus().`in`(listOf(EventStatus.ACTIVE, EventStatus.OVERDUE, EventStatus.COMPLETED))
+            .byDeleted().isFalse
+            .blockingGet().map { event ->
+                with(eventInfoProvider) {
+                    MapItemModel(
+                        uid = event.uid(),
+                        avatarProviderConfiguration = getAvatar(event),
+                        title = getEventTitle(event),
+                        description = getEventDescription(event),
+                        lastUpdated = getEventLastUpdated(event),
+                        additionalInfoList = getAdditionInfoList(event),
+                        isOnline = false,
+                        geometry = event.geometry(),
+                        relatedInfo = getRelatedInfo(event),
+                    )
+                }
+            }
+    }
+
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
         val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
             .withRenderType()
@@ -148,7 +322,8 @@ class SearchRepositoryImplKt(
                                 options.associate {
                                     it.uid() to metadataIconProvider(
                                         it.style(),
-                                        program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                                        program?.style()?.color()?.toColor()
+                                            ?: SurfaceColor.Primary,
                                     )
                                 }
 
@@ -194,7 +369,12 @@ class SearchRepositoryImplKt(
                                 .blockingGet()
 
                             val metadataIconMap =
-                                options.associate { it.uid() to metadataIconProvider(it.style(), SurfaceColor.Primary) }
+                                options.associate {
+                                    it.uid() to metadataIconProvider(
+                                        it.style(),
+                                        SurfaceColor.Primary,
+                                    )
+                                }
 
                             OptionSetConfiguration.OptionConfigData(
                                 options = options,

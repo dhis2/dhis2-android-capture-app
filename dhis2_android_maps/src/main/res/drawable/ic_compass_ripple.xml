@@ -1,4 +1,4 @@
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/color_item_selected_c3">
-    <item android:drawable="@drawable/ic_compass" />
+    <item android:drawable="@drawable/ic_compass_new" />
 </ripple>

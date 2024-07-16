@@ -10,10 +10,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.mapbox.geojson.Feature
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
@@ -28,6 +32,13 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.maps.extensions.FeatureSource
+import org.dhis2.maps.extensions.source
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -57,6 +68,8 @@ class SearchTEIViewModel(
     private val filterManager: FilterManager,
 ) : ViewModel() {
 
+    private lateinit var layersVisibility: Map<String, MapLayer>
+
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
     val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
 
@@ -70,8 +83,11 @@ class SearchTEIViewModel(
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
 
-    private val _mapResults = MutableLiveData<TrackerMapData>()
-    val mapResults: LiveData<TrackerMapData> = _mapResults
+    private val _mapResults = Channel<TrackerMapData>()
+    val mapResults: Flow<TrackerMapData> = _mapResults.receiveAsFlow()
+
+    private val _mapItemClicked = MutableSharedFlow<String>()
+    val mapItemClicked: Flow<String> = _mapItemClicked
 
     private val _screenState = MutableLiveData<SearchTEScreenState>()
     val screenState: LiveData<SearchTEScreenState> = _screenState
@@ -418,10 +434,13 @@ class SearchTEIViewModel(
                 mapDataRepository.getTrackerMapData(
                     searchRepository.getProgram(initialProgramUid),
                     queryData,
+                    layersVisibility,
                 )
             }
+
             try {
-                _mapResults.postValue(result.await())
+                val data = result.await()
+                _mapResults.send(data)
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -985,5 +1004,39 @@ class SearchTEIViewModel(
                 }
             }
         return map
+    }
+
+    fun onFeatureClicked(feature: Feature) {
+        val uid = when (feature.source()) {
+            FeatureSource.TEI, FeatureSource.ENROLLMENT ->
+                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            FeatureSource.RELATIONSHIP ->
+                feature.getStringProperty(
+                    MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                )
+            FeatureSource.TRACKER_EVENT ->
+                feature.getStringProperty(
+                    MapTeiEventsToFeatureCollection.EVENT_UID,
+                )
+
+            FeatureSource.EVENT ->
+                feature.getStringProperty(
+                    MapEventToFeatureCollection.EVENT,
+                )
+            FeatureSource.FIELD ->
+                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+                    ?: feature.getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
+            null -> null
+        }
+        uid?.let {
+            viewModelScope.launch {
+                _mapItemClicked.emit(uid)
+            }
+        }
+    }
+
+    fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
+        this.layersVisibility = layersVisibility
+        fetchMapResults()
     }
 }

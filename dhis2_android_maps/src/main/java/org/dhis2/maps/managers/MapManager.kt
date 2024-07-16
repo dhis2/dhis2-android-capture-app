@@ -28,6 +28,7 @@ import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
 import org.dhis2.maps.carousel.CarouselAdapter
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
@@ -298,5 +299,12 @@ abstract class MapManager(
         } else {
             null
         }
+    }
+
+    fun updateLayersVisibility(layerVisibility: HashMap<String, Boolean>): HashMap<String, MapLayer> {
+        layerVisibility.forEach { (sourceId, visible) ->
+            mapLayerManager.handleLayer(sourceId, visible)
+        }
+        return mapLayerManager.mapLayers
     }
 }

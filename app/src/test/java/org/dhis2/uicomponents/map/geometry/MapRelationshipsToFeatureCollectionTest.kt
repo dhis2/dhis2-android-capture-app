@@ -71,7 +71,7 @@ class MapRelationshipsToFeatureCollectionTest {
             0.0,
         )
 
-        val result = mapRelationshipsToFeatureCollection.map(relationshipsModel)
+        val result = mapRelationshipsToFeatureCollection.mapLegacy(relationshipsModel)
         assertThat(result.first.size, `is`(2))
 
         val relationshipFirstType = result.first[FIRST_RELATIONSHIP_TYPE]

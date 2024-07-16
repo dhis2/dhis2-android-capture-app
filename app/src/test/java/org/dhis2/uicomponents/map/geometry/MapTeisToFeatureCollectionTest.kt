@@ -96,7 +96,7 @@ class MapTeisToFeatureCollectionTest {
         whenever(
             mapRelationshipToRelationshipMapModel.mapList(teiList[0].relationships),
         ) doReturn relationshipModels
-        whenever(mapRelationshipsToFeatureCollection.map(relationshipModels)) doReturn Pair(
+        whenever(mapRelationshipsToFeatureCollection.mapLegacy(relationshipModels)) doReturn Pair(
             mapOf(relationshipModels[0].displayName!! to FeatureCollection.fromFeature(feature)),
             boundingBox.getEnclosingBoundingBox(listOf()),
         )
