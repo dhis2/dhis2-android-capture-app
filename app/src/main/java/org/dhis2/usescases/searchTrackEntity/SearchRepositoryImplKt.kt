@@ -84,10 +84,27 @@ class SearchRepositoryImplKt(
         teiTypeUid: String,
     ): List<FieldUiModel> =
         withContext(dispatcher.io()) {
-            programUid?.let {
+            val searchParameters = programUid?.let {
                 programTrackedEntityAttributes(programUid)
             } ?: trackedEntitySearchFields(teiTypeUid)
+
+            sortSearchParameters(searchParameters)
         }
+
+    fun sortSearchParameters(parameters: List<FieldUiModel>): List<FieldUiModel> {
+        return parameters.sortedWith(
+            compareByDescending<FieldUiModel> {
+                it.renderingType?.isQROrBarcode() == true && isUnique(it.uid)
+            }.thenByDescending {
+                it.renderingType?.isQROrBarcode() == true
+            }.thenByDescending { isUnique(it.uid) },
+        )
+    }
+
+    private fun isUnique(teaUid: String): Boolean {
+        return d2.trackedEntityModule().trackedEntityAttributes().uid(teaUid)
+            .blockingGet()?.unique() ?: false
+    }
 
     override suspend fun searchTrackedEntitiesImmediate(
         searchParametersModel: SearchParametersModel,
