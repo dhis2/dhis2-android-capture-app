@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
@@ -108,9 +109,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitForIdle()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkListOfSearchTEI(title: String, attributes: Map<String?, String>) {
         //Checks title and all attributes are displayed
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(title))
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
             item.key?.let { composeTestRule.onNodeWithText("$it:",true).assertIsDisplayed() }
