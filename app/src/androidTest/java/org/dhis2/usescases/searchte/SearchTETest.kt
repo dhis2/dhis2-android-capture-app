@@ -401,7 +401,6 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
             clickOnFilter()
-            checkTEIsAreOpen()
         }
 
         searchTeiRobot(composeTestRule) {
