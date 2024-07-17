@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dhis2.org.R
 import org.dhis2.commons.dialogs.CustomDialog
 import org.hisp.dhis.android.core.program.ProgramIndicator
-import org.hisp.dhis.mobile.ui.designsystem.component.IndicatorInput
+import org.hisp.dhis.mobile.ui.designsystem.component.Indicator
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class IndicatorViewHolder(
@@ -47,7 +47,7 @@ class IndicatorViewHolder(
                             },
                         ),
                 ) {
-                    IndicatorInput(
+                    Indicator(
                         title = programIndicatorModel.label(),
                         indicatorColor = if (!programIndicatorModel.color.isNullOrEmpty()) {
                             Color(programIndicatorModel.color())
