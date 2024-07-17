@@ -67,6 +67,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.clearPassButton)).perform(click())
     }
 
+    fun clearURLField() {
+        onView(withId(R.id.clearUrl)).perform(click())
+    }
+
     fun clickLoginButton() {
         onView(withId(R.id.login)).perform(click())
     }
@@ -79,8 +83,25 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.login)).check(matches(not(isEnabled())))
     }
 
+    fun checkLoginButtonIsVisible() {
+        onView(withId(R.id.login)).check(matches((isEnabled())))
+    }
+
+
     fun checkAuthErrorAlertIsVisible() {
         onView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
+    }
+
+    fun clickOKAuthErrorAlert() {
+        onView(withText(OK)).perform(click())
+    }
+
+    fun clickCancelAuthErrorAlert() {
+        onView(withText(Cancel)).perform(click())
+    }
+
+    fun checkAuthErrorOKButtonIsVisible() {
+        onView(withText(OK)).check(matches(isDisplayed()))
     }
 
     fun checkUnblockSessionViewIsVisible() {
@@ -93,6 +114,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkPasswordFieldIsClear() {
         onView(withId(R.id.user_pass_edit)).check(matches(withText("")))
+    }
+
+    fun checkURLFieldIsClear() {
+        onView(withId(R.id.server_url_edit)).check(matches(withText("")))
     }
 
     fun checkURL(url: String) {
@@ -140,5 +165,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     companion object {
         const val LOGIN_ERROR_TITLE = "Login error"
+        const val OK = "OK"
+        const val Cancel = "cancel"
     }
 }
