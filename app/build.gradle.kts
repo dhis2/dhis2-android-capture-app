@@ -252,7 +252,6 @@ dependencies {
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.dagger.hilt.android)
-    implementation(libs.network.gsonconverter)
     implementation(libs.network.okhttp)
     implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
