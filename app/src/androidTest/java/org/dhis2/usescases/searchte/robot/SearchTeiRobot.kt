@@ -19,6 +19,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers
@@ -157,8 +158,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         //Given the title is the first attribute
         val title = "First name: ${displayListFieldsUIModel.name}"
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
+        val showMoreText = InstrumentationRegistry.getInstrumentation()
+            .targetContext.getString(R.string.show_more)
         //When we expand all attribute list
-        composeTestRule.onNodeWithText("Show more").performClick()
+        composeTestRule.onNodeWithText(showMoreText, useUnmergedTree = true).performClick()
         composeTestRule.waitForIdle()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
