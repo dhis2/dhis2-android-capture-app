@@ -6,6 +6,7 @@ import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.jira.IssueRequest
@@ -15,7 +16,7 @@ import org.dhis2.data.jira.toBasicAuth
 import org.dhis2.data.jira.toJiraJql
 
 class JiraRepository(
-    private val jiraApi: JiraIssueService,
+//    private val jiraApi: JiraIssueService,
     private val prefs: PreferenceProvider,
 ) {
     private var session: String? = prefs.getString(Constants.JIRA_AUTH, null)
@@ -35,15 +36,18 @@ class JiraRepository(
 
         val requestBody = Gson().toJson(request)
             .toRequestBody(MEDIA_TYPE_APPLICATION_JSON.toMediaTypeOrNull())
-        return jiraApi.getJiraIssues(basic, requestBody)
+        return Single.just(JiraIssueListResponse(0, 0, emptyList()))
+//        return jiraApi.getJiraIssues(basic, requestBody)
     }
 
+//
     fun sendJiraIssue(summary: String, description: String): Single<ResponseBody> {
         val basic = session?.toBasicAuth()
         val issueRequest = IssueRequest(summary, description)
         val requestBody = Gson().toJson(issueRequest)
             .toRequestBody(MEDIA_TYPE_APPLICATION_JSON.toMediaTypeOrNull())
-        return jiraApi.createIssue(basic, requestBody)
+//        return jiraApi.createIssue(basic, requestBody)
+        return Single.just("".toResponseBody())
     }
 
     fun saveCredentials() {

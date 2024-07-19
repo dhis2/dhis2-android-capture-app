@@ -44,7 +44,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import retrofit2.Response
 import timber.log.Timber
 import java.io.File
 
@@ -222,7 +221,7 @@ class LoginViewModel(
                                     setValue(SESSION_LOCKED, false)
                                 }
                                 deletePin()
-                                Response.success<Any>(null)
+                                Result.success(null)
                             }
                         }
                 }
@@ -265,13 +264,13 @@ class LoginViewModel(
         userManager?.let { userManager ->
             disposable.add(
                 userManager.handleAuthData(serverUrl, data, requestCode)
-                    .map<Response<Any>> {
+                    .map {
                         run {
                             with(preferenceProvider) {
                                 setValue(SESSION_LOCKED, false)
                             }
                             deletePin()
-                            Response.success(null)
+                            Result.success(null)
                         }
                     }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
@@ -317,8 +316,8 @@ class LoginViewModel(
     }
 
     @VisibleForTesting
-    fun handleResponse(userResponse: Response<*>) {
-        if (userResponse.isSuccessful) {
+    fun handleResponse(userResponse: Result<*>) {
+        if (userResponse.isSuccess) {
             updateServerUrls()
             updateLoginUsers()
             val displayTrackingMessage = hasToDisplayTrackingMessage()
