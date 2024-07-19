@@ -17,6 +17,7 @@ import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
@@ -195,6 +196,7 @@ class SearchRepositoryImplKt(
                 searchItem,
                 selectedProgram,
             ),
+            state = searchItem.syncState ?: State.SYNCED,
         )
     }
 
@@ -283,6 +285,7 @@ class SearchRepositoryImplKt(
                         isOnline = false,
                         geometry = event.geometry(),
                         relatedInfo = getRelatedInfo(event),
+                        state = event.aggregatedSyncState() ?: State.SYNCED,
                     )
                 }
             }
