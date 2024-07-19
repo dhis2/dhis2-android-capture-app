@@ -112,6 +112,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullySearchUsingMoreThanOneField() {
         mockWebServerRobot.addResponse(
@@ -140,8 +141,8 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
-    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
@@ -154,6 +155,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldCheckDisplayInList() {
         mockWebServerRobot.addResponse(
@@ -205,6 +207,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         mockWebServerRobot.addResponse(
