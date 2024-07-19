@@ -34,6 +34,7 @@ import org.dhis2.maps.R
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -130,6 +131,7 @@ fun MapItemHorizontalListPreview() {
                 isOnline = false,
                 geometry = null,
                 relatedInfo = null,
+                state = State.SYNCED,
             ),
         )
     }
