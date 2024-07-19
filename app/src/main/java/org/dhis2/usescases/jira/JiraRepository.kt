@@ -39,6 +39,7 @@ class JiraRepository(
         return Single.just(JiraIssueListResponse(0, 0, emptyList()))
 //        return jiraApi.getJiraIssues(basic, requestBody)
     }
+
 //
     fun sendJiraIssue(summary: String, description: String): Single<ResponseBody> {
         val basic = session?.toBasicAuth()

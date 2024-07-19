@@ -1,27 +1,10 @@
 package org.dhis2.usescases.jira
 
-//import android.content.Context
-//import android.content.Intent
-//import android.net.Uri
 import android.os.Bundle
-//import android.provider.Browser
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-//import androidx.fragment.app.viewModels
-//import androidx.lifecycle.Observer
-//import androidx.recyclerview.widget.DividerItemDecoration
-//import org.dhis2.commons.prefs.PreferenceProvider
-//import org.dhis2.commons.prefs.PreferenceProviderImpl
-//import org.dhis2.commons.resources.ColorUtils
-//import org.dhis2.commons.resources.ResourceManager
-//import org.dhis2.data.jira.ClickedIssueData
-//import org.dhis2.data.jira.JiraIssuesResult
-//import org.dhis2.databinding.FragmentJiraBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-//import org.dhis2.usescases.main.MainActivity
-//import org.dhis2.utils.NetworkUtils
-//import javax.inject.Inject
 
 class JiraFragment : FragmentGlobalAbstract() {
 //    @Inject
