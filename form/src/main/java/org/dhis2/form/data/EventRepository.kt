@@ -390,7 +390,7 @@ class EventRepository(
 
         return fieldFactory.create(
             id = EVENT_REPORT_DATE_UID,
-            label = programStage?.executionDateLabel() ?: resources.formatWithEventLabel(
+            label = programStage?.displayExecutionDateLabel() ?: resources.formatWithEventLabel(
                 R.string.event_label_date,
                 programStage?.uid(),
             ),

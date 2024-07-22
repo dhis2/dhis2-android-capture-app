@@ -338,14 +338,14 @@ class TEIEventCardMapper(
                 Button(
                     style = ButtonStyle.TONAL,
                     text = resourceManager.getString(R.string.enter_event_data).format(
-                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event),
+                        event.stage?.displayEventLabel() ?: resourceManager.getString(R.string.event),
                     ),
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = resourceManager.getString(R.string.enter_event_data)
                                 .format(
-                                    event.stage?.eventLabel() ?: resourceManager.getString(
+                                    event.stage?.displayEventLabel() ?: resourceManager.getString(
                                         R.string.event,
                                     ),
                                 ),
@@ -361,14 +361,14 @@ class TEIEventCardMapper(
                 Button(
                     style = ButtonStyle.TONAL,
                     text = resourceManager.getString(R.string.enter_cancel_event_data).format(
-                        event.stage?.eventLabel() ?: resourceManager.getString(R.string.event),
+                        event.stage?.displayEventLabel() ?: resourceManager.getString(R.string.event),
                     ),
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = resourceManager.getString(R.string.enter_event_data)
                                 .format(
-                                    event.stage?.eventLabel() ?: resourceManager.getString(
+                                    event.stage?.displayEventLabel() ?: resourceManager.getString(
                                         R.string.event,
                                     ),
                                 ),
