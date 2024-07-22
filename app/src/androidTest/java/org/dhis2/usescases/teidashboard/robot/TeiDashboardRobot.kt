@@ -275,15 +275,25 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnTimelineEvents() {
-        try {
-            onView(withText(R.string.show_events_timeline)).perform(click())
-        } catch (e: NoMatchingViewException) {
-            checkIfGroupedEventsIsVisible()
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            val timelineLabel = getString(R.string.show_event_label_timeline)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 1)
+            val itemLabel = timelineLabel.format(eventLabel)
+            try {
+                onView(withText(itemLabel)).perform(click())
+            } catch (e: NoMatchingViewException) {
+                checkIfGroupedEventsIsVisible()
+            }
         }
     }
 
     private fun checkIfGroupedEventsIsVisible() {
-        onView(withText(R.string.group_events_by_stage)).check(matches(isDisplayed()))
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            val timelineLabel = getString(R.string.group_event_label_by_stage)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 1)
+            val itemLabel = timelineLabel.format(eventLabel)
+            onView(withText(itemLabel)).check(matches(isDisplayed()))
+        }
     }
 
     fun checkEventWasScheduled(eventName: String, position: Int) {

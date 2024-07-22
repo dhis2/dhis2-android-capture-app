@@ -650,6 +650,20 @@ class TeiDashboardMobileActivity :
                         3,
                     )
                 }
+                popupMenu.menu.findItem(R.id.groupEvents)?.let { groupEventsItems ->
+                    groupEventsItems.title = resourceManager.formatWithProgramEventLabel(
+                        R.string.group_event_label_by_stage,
+                        programUid ?: "",
+                        2,
+                    )
+                }
+                popupMenu.menu.findItem(R.id.showTimeline)?.let { showTimelineItems ->
+                    showTimelineItems.title = resourceManager.formatWithProgramEventLabel(
+                        R.string.show_event_label_timeline,
+                        programUid ?: "",
+                        2,
+                    )
+                }
                 Unit
             }
             .onMenuItemClicked { itemId: Int? ->

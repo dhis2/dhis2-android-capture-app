@@ -11,9 +11,10 @@ class EventDetailResourcesProvider(
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
 
-    fun provideEventDate() = resourceManager.formatWithEventLabel(
+    fun provideEventDate() = resourceManager.formatWithProgramStageEventLabel(
         R.string.event_label_date,
         programStage,
+        programUid,
     )
 
     fun provideEditionStatus(reason: EventNonEditableReason): String {
@@ -45,14 +46,16 @@ class EventDetailResourcesProvider(
 
     fun provideButtonCheck() = resourceManager.getString(R.string.check_event)
 
-    fun provideEventCreatedMessage() = resourceManager.formatWithEventLabel(
+    fun provideEventCreatedMessage() = resourceManager.formatWithProgramStageEventLabel(
         R.string.event_label_updated,
         programStage,
+        programUid,
     )
 
-    fun provideEventCreationError() = resourceManager.formatWithEventLabel(
+    fun provideEventCreationError() = resourceManager.formatWithProgramStageEventLabel(
         R.string.failed_insert_event_label,
         programStage,
+        programUid,
     )
 
     fun provideReOpened() = resourceManager.getString(R.string.re_opened)

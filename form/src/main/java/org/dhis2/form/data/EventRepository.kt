@@ -165,9 +165,10 @@ class EventRepository(
         return mutableListOf(
             fieldFactory.createSection(
                 sectionUid = EVENT_DATA_SECTION_UID,
-                sectionName = resources.formatWithEventLabel(
+                sectionName = resources.formatWithProgramStageEventLabel(
                     stringResource = R.string.event_data_section_title,
                     programStageUid = event?.programStage(),
+                    programUid = programUid,
                 ),
                 description = null,
                 isOpen = true,
@@ -392,9 +393,10 @@ class EventRepository(
 
         return fieldFactory.create(
             id = EVENT_REPORT_DATE_UID,
-            label = programStage?.executionDateLabel() ?: resources.formatWithEventLabel(
+            label = programStage?.executionDateLabel() ?: resources.formatWithProgramStageEventLabel(
                 R.string.event_label_date,
                 programStage?.uid(),
+                programUid,
             ),
             valueType = ValueType.DATE,
             mandatory = true,
@@ -457,9 +459,10 @@ class EventRepository(
     private fun createEventDetailsSection(): FieldUiModel {
         return fieldFactory.createSection(
             sectionUid = EVENT_DETAILS_SECTION_UID,
-            sectionName = resources.formatWithEventLabel(
+            sectionName = resources.formatWithProgramStageEventLabel(
                 stringResource = R.string.event_details_section_title,
                 programStageUid = event?.programStage(),
+                programUid = programUid,
             ),
             description = programStage?.description(),
             isOpen = false,

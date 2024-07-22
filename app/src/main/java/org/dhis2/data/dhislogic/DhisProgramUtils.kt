@@ -161,7 +161,7 @@ class DhisProgramUtils @Inject constructor(val d2: D2) {
             ProgramType.WITH_REGISTRATION -> {
                 program.trackedEntityType()?.displayName() ?: defaultTrackerLabel
             }
-            ProgramType.WITHOUT_REGISTRATION -> defaultEventLabel
+            ProgramType.WITHOUT_REGISTRATION -> program.eventLabel() ?: defaultEventLabel
             null -> ""
         }
     }

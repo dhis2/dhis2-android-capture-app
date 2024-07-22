@@ -109,24 +109,58 @@ class ResourceManager(
             .getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
-    fun getEventLabel(
+    private fun getProgramStageEventLabel(
         programStageUid: String? = null,
+        programUid: String? = null,
         quantity: Int = 1,
     ) = try {
         D2Manager.getD2().programModule()
             .programStages().uid(programStageUid)
-            .blockingGet()?.eventLabel()
+            .blockingGet()?.displayEventLabel()
+    } catch (e: Exception) {
+        null
+    } ?: programEventLabel(programUid, quantity)
+
+    fun formatWithProgramStageEventLabel(
+        @StringRes stringResource: Int,
+        programStageUid: String? = null,
+        programUid: String?,
+        quantity: Int = 1,
+        formatWithQuantity: Boolean = false,
+    ): String {
+        val eventLabel = getProgramStageEventLabel(programStageUid, programUid, quantity)
+        return with(getString(stringResource)) {
+            val finalLabel = if (this@with.startsWith("%s")) {
+                eventLabel.capitalize(Locale.current)
+            } else {
+                eventLabel
+            }
+            if (formatWithQuantity) {
+                format(quantity, finalLabel)
+            } else {
+                format(finalLabel)
+            }
+        }
+    }
+
+    fun programEventLabel(
+        programUid: String? = null,
+        quantity: Int = 1,
+    ) = try {
+        D2Manager.getD2().programModule()
+            .programs().uid(programUid)
+            .blockingGet()?.displayEventLabel()
     } catch (e: Exception) {
         null
     } ?: getPlural(R.plurals.event_label, quantity)
 
-    fun formatWithEventLabel(
+    fun formatWithProgramEventLabel(
         @StringRes stringResource: Int,
-        programStageUid: String? = null,
+        programUid: String? = null,
         quantity: Int = 1,
         formatWithQuantity: Boolean = false,
     ): String {
-        val eventLabel = getEventLabel(programStageUid, quantity)
+        val eventLabel = programEventLabel(programUid, quantity)
         return with(getString(stringResource)) {
             val finalLabel = if (this@with.startsWith("%s")) {
                 eventLabel.capitalize(Locale.current)

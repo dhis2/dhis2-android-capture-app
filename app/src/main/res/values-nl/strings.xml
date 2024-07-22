@@ -369,7 +369,6 @@
     <string name="jira_credential_error">Controleer of uw jira-gebruiker en -wachtwoord correct zijn</string>
     <string name="jira_issue_error">Foutmelding van het probleem</string>
     <string name="jira_fields_error">Alle velden zijn verplicht</string>
-    <string name="dialog_generate_new_event">Nieuwe gebeurtenis genereren</string>
     <string name="message_generate_new_event">Wil je nog een evenement aanmaken?</string>
     <string name="event_completed_title">Evenementen voltooid</string>
     <string name="event_completed_message">Alle evenementen in dit programma zijn voltooid. Wilt u het programma ook afsluiten?</string>
@@ -687,8 +686,6 @@
     <string name="validation_internal_error_datasets">We konden de gegevenskwaliteit niet controleren. Neem contact op met uw beheerder</string>
     <string name="are_you_sure">Weet je het zeker?</string>
     <string name="reopen_question">Wilt u de dataset opnieuw openen?</string>
-    <string name="group_events_by_stage">Groepsevenementen per podium</string>
-    <string name="show_events_timeline">Tijdlijn van gebeurtenissen weergeven</string>
     <string name="filters_title_date">Datum</string>
     <string name="filters_title_event_date">Evenement datum</string>
     <string name="tei_type_has_no_attributes">%s heeft geen openbare attributen. Selecteer een programma</string>

@@ -357,7 +357,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     override fun showDateEditionWarning() {
         val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(R.string.enrollment_date_edition_warning)
+            .setMessage(
+                resourceManager.formatWithProgramEventLabel(
+                    R.string.enrollment_date_edition_warning_event_label,
+                    presenter.getProgram()?.uid(),
+                    2,
+                ),
+            )
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
     }

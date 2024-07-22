@@ -260,7 +260,6 @@
     <string name="jira_credential_error">Kontrollera att din JIRA användare och ditt lösenord är korrekta</string>
     <string name="jira_issue_error">Ett fel uppstod vid rapporteringen av problemet</string>
     <string name="jira_fields_error">Alla fält Alla fält är obligatoriskarävs</string>
-    <string name="dialog_generate_new_event">Skapa ny händelse</string>
     <string name="message_generate_new_event">Vill du skapa en annan händelse?</string>
     <string name="event_completed_title">Avslutade händelser</string>
     <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>

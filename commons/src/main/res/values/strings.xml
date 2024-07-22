@@ -42,8 +42,8 @@
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filters_title_date">Date</string>
-    <string name="filters_title_event_date">Event date</string>
-    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_event_label_date">%s date</string>
+    <string name="filters_title_event_label_status">%s status</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
 
@@ -294,5 +294,10 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
+    <string name="group_event_label_by_stage">Group %s by stage</string>
+    <string name="show_event_label_timeline">Show %s timeline</string>
+    <string name="empty_tei_event_label_add">There are no %s registered, click "+" to add a new one.</string>
+    <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
+    <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
 
 </resources>

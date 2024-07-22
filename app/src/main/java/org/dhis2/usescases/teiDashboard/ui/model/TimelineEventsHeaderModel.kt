@@ -5,5 +5,6 @@ import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions
 data class TimelineEventsHeaderModel(
     val displayEventCreationButton: Boolean = true,
     val eventCount: Int,
+    val eventLabel: String,
     val options: List<EventCreationOptions>,
 )

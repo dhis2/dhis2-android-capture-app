@@ -360,7 +360,6 @@
     <string name="jira_credential_error">Sjekk at din jira bruker og passord er korrekt</string>
     <string name="jira_issue_error">Feil ved rapportering av problemet</string>
     <string name="jira_fields_error">Alle felt er obligatoriske</string>
-    <string name="dialog_generate_new_event">Generer en ny hendelse</string>
     <string name="message_generate_new_event">Vil du opprette en ny hendelse?</string>
     <string name="event_completed_title">Hendelser er fullført</string>
     <string name="event_completed_message">Alle hendelser i dette programmet er fullført. Vil du lukke programmet også?</string>
@@ -670,8 +669,6 @@
     <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
-    <string name="group_events_by_stage">Grupper hendelser per fase</string>
-    <string name="show_events_timeline">Vis tidslinjen for hendelser</string>
     <string name="filters_title_date">Dato</string>
     <string name="filters_title_event_date">Hendelsesdato</string>
     <string name="tei_type_has_no_attributes">%shar ingen offentlige attributter. Velg et program</string>

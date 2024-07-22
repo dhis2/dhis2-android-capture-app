@@ -238,6 +238,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 timelineEventHeaderModel = TimelineEventsHeaderModel(
                     displayEventCreationButton,
                     eventCount,
+                    resourceManager.programEventLabel(programUid, eventCount),
                     presenter.getNewEventOptionsByStages(null),
                 ),
                 timelineOnEventCreationOptionSelected = {
@@ -342,9 +343,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.teiRecycler.visibility = View.GONE
 
             if (presenter.shouldDisplayEventCreationButton.value == true) {
-                binding.emptyTeis.setText(R.string.empty_tei_add)
+                binding.emptyTeis.text = resourceManager.formatWithProgramEventLabel(
+                    R.string.empty_tei_event_label_add,
+                    programUid,
+                    2,
+                )
             } else {
-                binding.emptyTeis.setText(R.string.empty_tei_no_add)
+                binding.emptyTeis.text = resourceManager.formatWithProgramEventLabel(
+                    R.string.empty_tei_event_label_no_add,
+                    programUid,
+                    2,
+                )
             }
         } else {
             binding.emptyTeis.visibility = View.GONE
@@ -375,9 +384,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 programStages = presenter.filterAvailableStages(model.programStages),
                 onScheduled = { programStageUid ->
                     showToast(
-                        resourceManager.formatWithEventLabel(
+                        resourceManager.formatWithProgramStageEventLabel(
                             R.string.event_label_created,
                             programStageUid,
+                            programUid,
                         ),
                     )
                     presenter.fetchEvents()
@@ -389,9 +399,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun showDialogCloseProgram() {
         dialog = CustomDialog(
             requireContext(),
-            resourceManager.formatWithEventLabel(
+            resourceManager.formatWithProgramStageEventLabel(
                 R.string.event_label_completed,
                 programStageFromEvent?.uid(),
+                programUid,
             ),
             resourceManager.formatWithEnrollmentLabel(
                 programUid = programUid,

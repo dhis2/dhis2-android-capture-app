@@ -85,7 +85,7 @@
                     android:background="@color/white"
                     android:gravity="center"
                     android:padding="42dp"
-                    android:text="@string/empty_tei_add"
+                    android:text="@string/empty_tei_event_label_add"
                     android:textSize="@dimen/primaryTextSize"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"

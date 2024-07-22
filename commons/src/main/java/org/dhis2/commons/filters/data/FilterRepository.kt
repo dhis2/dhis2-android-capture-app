@@ -532,7 +532,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventDateLabel(),
+            resources.filterEventDateLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.ENROLLMENT_DATE] = EnrollmentDateFilter(
             ProgramType.TRACKER,
@@ -564,7 +564,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramUidAndUserAssignment = d2.programModule()
@@ -694,7 +694,7 @@ class FilterRepository @Inject constructor(
             programType,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramAndUserAssignment = d2.programModule()

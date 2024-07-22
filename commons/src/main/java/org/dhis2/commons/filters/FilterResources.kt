@@ -87,8 +87,11 @@ class FilterResources(val resourceManager: ResourceManager) {
         1,
     )
 
-    fun filterEventDateLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_date)
+    fun filterEventDateLabel(programUid: String): String =
+        resourceManager.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_date,
+            programUid,
+        )
 
     fun filterOrgUnitLabel(): String = resourceManager.getString(R.string.filters_title_org_unit)
     fun filterSyncLabel(): String = resourceManager.getString(R.string.filters_title_state)
@@ -105,8 +108,11 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun filterFollowUpLabel(teTypeName: String): String =
         resourceManager.getString(R.string.filter_follow_up_label).format(teTypeName)
 
-    fun filterEventStatusLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_status)
+    fun filterEventStatusLabel(programUid: String): String =
+        resourceManager.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_status,
+            programUid,
+        )
 
     fun enrollmentStatusToText(enrollmentStatusList: List<EnrollmentStatus>): List<String> =
         enrollmentStatusList.map {

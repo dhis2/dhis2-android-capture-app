@@ -365,9 +365,10 @@ class EventCaptureActivity :
 
     override fun showSnackBar(messageId: Int, programStage: String) {
         showToast(
-            resourceManager.formatWithEventLabel(
+            resourceManager.formatWithProgramStageEventLabel(
                 messageId,
                 programStage,
+                programUid,
             ),
         )
     }
@@ -427,13 +428,15 @@ class EventCaptureActivity :
         presenter.programStage().let {
             CustomDialog(
                 this,
-                resourceManager.formatWithEventLabel(
+                resourceManager.formatWithProgramStageEventLabel(
                     R.string.delete_event_label,
                     programStageUid = it,
+                    programUid,
                 ),
-                resourceManager.formatWithEventLabel(
+                resourceManager.formatWithProgramStageEventLabel(
                     R.string.confirm_delete_event_label,
                     programStageUid = it,
+                    programUid,
                 ),
                 getString(R.string.delete),
                 getString(R.string.cancel),
@@ -456,9 +459,10 @@ class EventCaptureActivity :
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setTitle(R.string.conflict)
             .setMessage(
-                resourceManager.formatWithEventLabel(
+                resourceManager.formatWithProgramStageEventLabel(
                     R.string.event_label_date_in_future_message,
                     programStageUid = presenter.programStage(),
+                    programUid = programUid,
                 ),
             )
             .setPositiveButton(

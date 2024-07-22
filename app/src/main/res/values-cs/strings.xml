@@ -370,7 +370,6 @@
     <string name="jira_credential_error">Zkontrolujte, zda je váš uživatel a heslo jira správné</string>
     <string name="jira_issue_error">Chyba při hlášení problému</string>
     <string name="jira_fields_error">Všechna pole jsou povinná</string>
-    <string name="dialog_generate_new_event">Generovat novou událost</string>
     <string name="message_generate_new_event">Chcete vytvořit další událost?</string>
     <string name="event_completed_title">Události byly dokončeny</string>
     <string name="event_completed_message">Všechny události v tomto programu jsou dokončeny. Chcete také ukončit program?</string>
@@ -686,8 +685,6 @@
     <string name="validation_internal_error_datasets">Nemohli jsme zkontrolovat kvalitu dat. Kontaktujte svého správce</string>
     <string name="are_you_sure">Jste si jist?</string>
     <string name="reopen_question">Chcete znovu otevřít soubor dat?</string>
-    <string name="group_events_by_stage">Skupinové akce podle fáze</string>
-    <string name="show_events_timeline">Zobrazit časovou osu událostí</string>
     <string name="filters_title_date">Datum</string>
     <string name="filters_title_event_date">Datum události</string>
     <string name="tei_type_has_no_attributes">%s nemá žádné veřejné atributy. Vyberte program</string>

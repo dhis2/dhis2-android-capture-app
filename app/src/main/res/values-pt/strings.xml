@@ -362,7 +362,6 @@
     <string name="jira_credential_error">Verifique se seu usuário e senha do jira estão corretos</string>
     <string name="jira_issue_error">Erro ao relatar o problema</string>
     <string name="jira_fields_error">Todos os campos são obrigatórios</string>
-    <string name="dialog_generate_new_event">Gerar novo evento</string>
     <string name="message_generate_new_event">Deseja criar outro evento?</string>
     <string name="event_completed_title">Eventos Concluídos</string>
     <string name="event_completed_message">Todos os eventos deste programa estão concluídos. Deseja encerrar o programa também?</string>
@@ -672,8 +671,6 @@
     <string name="validation_internal_error_datasets">Não foi possível verificar a qualidade dos dados. Contate seu administrador</string>
     <string name="are_you_sure">Tem certeza?</string>
     <string name="reopen_question">Você deseja reabrir o conjunto de dados?</string>
-    <string name="group_events_by_stage">Eventos de grupo por estágio</string>
-    <string name="show_events_timeline">Mostrar cronograma de eventos</string>
     <string name="filters_title_date">Data</string>
     <string name="filters_title_event_date">Data de incidente</string>
     <string name="tei_type_has_no_attributes">%s não tem atributos públicos. Selecione um programa</string>
