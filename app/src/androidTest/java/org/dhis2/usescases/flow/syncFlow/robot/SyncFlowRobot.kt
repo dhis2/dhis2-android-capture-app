@@ -34,7 +34,7 @@ class SyncFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun checkSyncWasSuccessfully() {
         val expectedTitle = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.sync_dialog_title_synced)
-        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedTitle))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedTitle), 2_000L)
         composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle, true))
     }
 

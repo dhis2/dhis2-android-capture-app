@@ -40,6 +40,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.compositions.LocalCurrentCellValue
 import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.dhis2.composetable.ui.compositions.LocalUpdatingCell
+import org.dhis2.composetable.ui.extensions.isNumeric
 import org.dhis2.composetable.ui.modifiers.cellBorder
 import org.dhis2.composetable.ui.semantics.CELL_ERROR_UNDERLINE_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
@@ -173,7 +174,7 @@ fun TableCell(
             overflow = TextOverflow.Ellipsis,
             style = TextStyle.Default.copy(
                 fontSize = TableTheme.dimensions.defaultCellTextSize,
-                textAlign = TextAlign.End,
+                textAlign = if (cellValue.isNumeric()) TextAlign.End else TextAlign.Start,
                 color = LocalTableColors.current.cellTextColor(
                     hasError = cell.error != null,
                     hasWarning = cell.warning != null,
