@@ -4,19 +4,25 @@ import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.commons.bindings.event
+import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
+import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
@@ -31,6 +37,8 @@ class RelationshipRepositoryImpl(
     private val resources: ResourceManager,
     private val teiAttributesProvider: TeiAttributesProvider,
     private val metadataIconProvider: MetadataIconProvider,
+    private val trackedEntityInfoProvider: TrackedEntityInstanceInfoProvider,
+    private val eventInfoProvider: EventInfoProvider,
 ) : RelationshipRepository {
 
     override fun relationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
@@ -44,6 +52,148 @@ class RelationshipRepositoryImpl(
         return when (config) {
             is EventRelationshipConfiguration -> eventRelationships()
             is TrackerRelationshipConfiguration -> enrollmentRelationships()
+        }
+    }
+
+    override fun mapRelationships(): Single<List<MapItemModel>> {
+        return when (config) {
+            is EventRelationshipConfiguration -> Single.just(eventMapRelationships())
+            is TrackerRelationshipConfiguration -> Single.just(enrollmentMapRelationships())
+        }
+    }
+
+    private fun eventMapRelationships(): List<MapItemModel> {
+        return buildList {
+            d2.relationshipModule().relationships().withItems().getByItem(
+                RelationshipItem.builder()
+                    .event(
+                        RelationshipItemEvent.builder()
+                            .event((config as EventRelationshipConfiguration).eventUid)
+                            .build(),
+                    )
+                    .build(),
+            ).forEach { relationship ->
+                mapEventRelationshipItemToMapItemModel(
+                    relationship.from()!!.elementUid(),
+                    relationship,
+                )?.let {
+                    add(it)
+                }
+                when {
+                    relationship.to()?.event() != null ->
+                        mapEventRelationshipItemToMapItemModel(
+                            relationship.to()!!.elementUid(),
+                            relationship,
+                        )?.let { add(it) }
+
+                    relationship.to()?.trackedEntityInstance() != null ->
+                        mapTeiRelationshipItemToMapItemModel(
+                            relationship.to()!!.elementUid(),
+                            relationship,
+                            null,
+                        )?.let { add(it) }
+                }
+            }
+        }
+    }
+
+    private fun enrollmentMapRelationships(): List<MapItemModel> {
+        val programUid = d2.enrollmentModule().enrollments()
+            .uid((config as TrackerRelationshipConfiguration).enrollmentUid).blockingGet()
+            ?.program()
+
+        return buildList {
+            d2.relationshipModule().relationships().withItems().getByItem(
+                RelationshipItem.builder()
+                    .trackedEntityInstance(
+                        RelationshipItemTrackedEntityInstance.builder()
+                            .trackedEntityInstance(config.teiUid)
+                            .build(),
+                    )
+                    .build(),
+            ).filter { it.to()?.trackedEntityInstance() != null }.forEach { relationship ->
+
+                mapTeiRelationshipItemToMapItemModel(
+                    relationship.from()!!.trackedEntityInstance()!!.trackedEntityInstance(),
+                    relationship,
+                    programUid,
+                )?.let {
+                    add(it)
+                }
+                mapTeiRelationshipItemToMapItemModel(
+                    relationship.to()!!.trackedEntityInstance()!!.trackedEntityInstance(),
+                    relationship,
+                    programUid,
+                )?.let {
+                    add(it)
+                }
+            }
+        }
+    }
+
+    private fun mapEventRelationshipItemToMapItemModel(
+        eventUid: String,
+        relationship: Relationship,
+    ): MapItemModel? {
+        val event = d2.event(eventUid)
+        return event?.let {
+            MapItemModel(
+                uid = it.uid(),
+                avatarProviderConfiguration = eventInfoProvider.getAvatar(it),
+                title = eventInfoProvider.getEventTitle(it),
+                description = eventInfoProvider.getEventDescription(it),
+                lastUpdated = eventInfoProvider.getEventLastUpdated(it),
+                additionalInfoList = eventInfoProvider.getAdditionInfoList(it),
+                isOnline = false,
+                geometry = it.geometry(),
+                relatedInfo = eventInfoProvider.getRelatedInfo(it),
+                state = relationship.syncState() ?: State.SYNCED,
+            )
+        }
+    }
+
+    private fun mapTeiRelationshipItemToMapItemModel(
+        teiUid: String,
+        relationship: Relationship,
+        programUid: String?,
+    ): MapItemModel? {
+        val searchTei = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(teiUid)
+            .blockingGet()
+
+        val searchItem = d2.trackedEntityModule().trackedEntitySearch()
+            .byTrackedEntityType().eq(searchTei?.trackedEntityType())
+            .uid(teiUid)
+            .blockingGet()
+
+        return searchItem?.let {
+            val attributeValues = trackedEntityInfoProvider.getTeiAdditionalInfoList(
+                searchItem.attributeValues ?: emptyList(),
+            )
+
+            val model = MapItemModel(
+                uid = searchItem.uid,
+                avatarProviderConfiguration = trackedEntityInfoProvider.getAvatar(
+                    searchTei!!,
+                    programUid,
+                    attributeValues.firstOrNull(),
+                ),
+                title = trackedEntityInfoProvider.getTeiTitle(
+                    header = searchItem.header,
+                    attributeValues = attributeValues,
+                ),
+                description = null,
+                lastUpdated = trackedEntityInfoProvider.getTeiLastUpdated(searchItem),
+                additionalInfoList = attributeValues,
+                isOnline = false,
+                geometry = searchItem.geometry,
+                relatedInfo = trackedEntityInfoProvider.getRelatedInfo(
+                    searchItem = searchItem,
+                    selectedProgram = programUid?.let { d2.program(programUid) },
+                ),
+                state = relationship.syncState() ?: State.SYNCED,
+            )
+            trackedEntityInfoProvider.updateRelationshipInfo(model, relationship)
         }
     }
 
@@ -62,9 +212,11 @@ class RelationshipRepositoryImpl(
                         relationshipType.fromConstraint()?.trackedEntityType()
                             ?.uid() == teTypeUid ->
                             relationshipType.toConstraint()?.trackedEntityType()?.uid()
+
                         relationshipType.bidirectional() == true && relationshipType.toConstraint()
                             ?.trackedEntityType()?.uid() == teTypeUid ->
                             relationshipType.fromConstraint()?.trackedEntityType()?.uid()
+
                         else -> null
                     }
                     secondaryTeTypeUid?.let {
@@ -90,14 +242,18 @@ class RelationshipRepositoryImpl(
                         relationshipType.fromConstraint()?.programStage()
                             ?.uid() == programStageUid ->
                             relationshipType.toConstraint()?.trackedEntityType()?.uid()
+
                         relationshipType.fromConstraint()?.program()?.uid() == programUid ->
                             relationshipType.toConstraint()?.trackedEntityType()?.uid()
+
                         relationshipType.bidirectional() == true && relationshipType.toConstraint()
                             ?.programStage()?.uid() == programStageUid ->
                             relationshipType.fromConstraint()?.trackedEntityType()?.uid()
+
                         relationshipType.bidirectional() == true && relationshipType.toConstraint()
                             ?.program()?.uid() == programUid ->
                             relationshipType.fromConstraint()?.trackedEntityType()?.uid()
+
                         else -> null
                     }
                     secondaryUid?.let { Pair(relationshipType, secondaryUid) }
@@ -279,6 +435,7 @@ class RelationshipRepositoryImpl(
                                 orgUnitInScope(toEvent?.organisationUnit())
                         }
                     }
+
                     relationship.to()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                         direction = RelationshipDirection.FROM
                         toGeometry = tei?.geometry()
@@ -312,6 +469,7 @@ class RelationshipRepositoryImpl(
                                 orgUnitInScope(fromEvent?.organisationUnit())
                         }
                     }
+
                     else -> return@mapNotNull null
                 }
 
@@ -352,7 +510,10 @@ class RelationshipRepositoryImpl(
         } ?: false
     }
 
-    private fun getOwnerColor(uid: String, relationshipOwnerType: RelationshipOwnerType): MetadataIconData {
+    private fun getOwnerColor(
+        uid: String,
+        relationshipOwnerType: RelationshipOwnerType,
+    ): MetadataIconData {
         return when (relationshipOwnerType) {
             RelationshipOwnerType.EVENT -> {
                 val event = d2.eventModule().events().uid(uid).blockingGet()
@@ -365,6 +526,7 @@ class RelationshipRepositoryImpl(
                     metadataIconProvider(programStage!!.style(), SurfaceColor.Primary)
                 }
             }
+
             RelationshipOwnerType.TEI -> {
                 val tei = d2.trackedEntityModule().trackedEntityInstances()
                     .uid(uid).blockingGet()
@@ -420,9 +582,11 @@ class RelationshipRepositoryImpl(
             attrValuesFromType.isNotEmpty() -> {
                 attrValuesFromType
             }
+
             attrValuesFromType.isEmpty() -> {
                 attrValueFromProgramTrackedEntityAttribute
             }
+
             else -> {
                 listOf(Pair("uid", teiTypeName))
             }
