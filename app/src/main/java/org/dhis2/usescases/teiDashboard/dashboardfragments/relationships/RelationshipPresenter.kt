@@ -1,14 +1,25 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.mapbox.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.maps.extensions.FeatureSource
+import org.dhis2.maps.extensions.source
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
+import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -46,6 +57,15 @@ class RelationshipPresenter internal constructor(
 
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
+    private val _relationshipsModels = MutableLiveData<List<RelationshipViewModel>>()
+    val relationshipModels: LiveData<List<RelationshipViewModel>> = _relationshipsModels
+    private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
+    val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
+    private val _relationshipMapModels: MutableLiveData<List<MapItemModel>> = MutableLiveData()
+    val relationshipMapModels: LiveData<List<MapItemModel>> = _relationshipMapModels
+    private val _mapItemClicked = MutableLiveData<String>()
+    val mapItemClicked: LiveData<String> = _mapItemClicked
+
     fun init() {
         compositeDisposable.add(
             updateRelationships.startWith(true)
@@ -54,13 +74,8 @@ class RelationshipPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        view.setRelationships(it)
-                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
-                        view.setFeatureCollection(
-                            teiUid,
-                            relationshipModel,
-                            mapRelationshipsToFeatureCollection.mapLegacy(relationshipModel),
-                        )
+                        _relationshipsModels.postValue(it)
+//                        view.setRelationships(it)
                     },
                     { Timber.d(it) },
                 ),
@@ -199,11 +214,65 @@ class RelationshipPresenter internal constructor(
                 ownerUid,
                 relationshipRepository.getEventProgram(ownerUid),
             )
+
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun fetchMapData() {
+        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(_relationshipsModels.value ?: emptyList())
+        view.setFeatureCollection(
+            teiUid,
+            relationshipModel,
+            mapRelationshipsToFeatureCollection.mapLegacy(relationshipModel),
+        )
+        compositeDisposable.add(
+            relationshipRepository.mapRelationships()
+                .map { mapItems ->
+                    val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
+                    RelationshipMapData(
+                        mapItems = mapItems,
+                        relationshipFeatures = featureCollection.first,
+                        boundingBox = featureCollection.second,
+                    )
+                }
+                .defaultSubscribe(
+                    schedulerProvider,
+                    onSuccess = { data ->
+                        _relationshipMapData.postValue(data)
+                    },
+                ),
+        )
+    }
+
+    fun onFeatureClicked(feature: Feature) {
+        val uid = when (feature.source()) {
+            FeatureSource.TEI, FeatureSource.ENROLLMENT ->
+                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+            FeatureSource.RELATIONSHIP ->
+                feature.getStringProperty(
+                    MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                )
+            FeatureSource.TRACKER_EVENT ->
+                feature.getStringProperty(
+                    MapTeiEventsToFeatureCollection.EVENT_UID,
+                )
+
+            FeatureSource.EVENT ->
+                feature.getStringProperty(
+                    MapEventToFeatureCollection.EVENT,
+                )
+            FeatureSource.FIELD ->
+                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+                    ?: feature.getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
+            null -> null
+        }
+        uid?.let {
+            _mapItemClicked.postValue(it)
+        }
     }
 }
