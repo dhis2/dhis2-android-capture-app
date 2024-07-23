@@ -87,8 +87,7 @@ class MapRelationshipsToFeatureCollection(
                             )
 //                            feature?.addRelationshipInfo(it)
                             feature
-                        } 
-                        else {
+                        } else {
                             null
                         }
                     } else {
