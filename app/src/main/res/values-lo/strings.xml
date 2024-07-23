@@ -709,7 +709,6 @@
     <string name="syncing_data_sets">ອັບເດດຊຸດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="syncing_done">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
     <string name="program_description">ລາຍລະອຽດຂອງສາຍງານ</string>
-    <string name="enrolledIn">ລົງທະບຽນໃນ:</string>
     <string name="sync_dialog_title_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
     <string name="sync_dialog_action_send">ສົ່ງ</string>
     <string name="sync_dialog_action_not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
