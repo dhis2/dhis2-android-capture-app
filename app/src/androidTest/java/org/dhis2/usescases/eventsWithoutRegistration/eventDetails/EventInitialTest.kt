@@ -12,6 +12,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
@@ -51,7 +52,6 @@ import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
 class EventInitialTest {
 
     @get:Rule
@@ -63,16 +63,15 @@ class EventInitialTest {
 
     val date: Date? = dateFormat.parse(dateString)
 
-    private val metadataIconProvider:MetadataIconProvider = mock{
-        on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
+    private val metadataIconProvider: MetadataIconProvider = mock {
+        on { invoke(any()) } doReturn MetadataIconData.defaultIcon()
     }
 
     private lateinit var viewModel: EventDetailsViewModel
 
-
     private val locationProvider: LocationProvider = mock()
     private val resourceManager: ResourceManager = mock()
-
+    private val eventResourcesProvider: EventResourcesProvider = mock()
 
     private val periodUtils: DhisPeriodUtils = mock()
     private val preferencesProvider: PreferenceProvider = mock()
@@ -159,10 +158,15 @@ class EventInitialTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
-        metadataIconProvider = metadataIconProvider
+        metadataIconProvider = metadataIconProvider,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(
+        PROGRAM_UID,
+        programStage.uid(),
+        resourceManager,
+        eventResourcesProvider,
+    )
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
@@ -211,35 +215,30 @@ class EventInitialTest {
         resourcesProvider = provideEventResourcesProvider(),
     )
 
-
     @Test
     fun shouldAddStandardIntervalDaysIfScheduleIntervalIsGreaterThanZero() {
-
         viewModel = initViewModel(
             periodType = null,
             eventCreationType = EventCreationType.SCHEDULE,
             enrollmentStatus = EnrollmentStatus.ACTIVE,
-            scheduleInterval = 20
+            scheduleInterval = 20,
         )
 
         composeTestRule.setContent {
-
-
             val date by viewModel.eventDate.collectAsState()
             val details by viewModel.eventDetails.collectAsState()
             ProvideInputDate(
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick =  {} ,
+                    onDateClick = {},
                     onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
                     required = true,
-                )
+                ),
             )
-
         }
         composeTestRule.onNodeWithTag(INPUT_EVENT_INITIAL_DATE).assertIsDisplayed()
         assert(viewModel.eventDate.value.dateValue == "9/9/2023")
@@ -247,33 +246,29 @@ class EventInitialTest {
 
     @Test
     fun shouldNotAddStandardIntervalDaysIfScheduleIntervalIsZero() {
-
         viewModel = initViewModel(
             periodType = null,
             eventCreationType = EventCreationType.SCHEDULE,
             enrollmentStatus = EnrollmentStatus.ACTIVE,
-            scheduleInterval = 0
+            scheduleInterval = 0,
         )
 
         composeTestRule.setContent {
-
-
             val date by viewModel.eventDate.collectAsState()
             val details by viewModel.eventDetails.collectAsState()
             ProvideInputDate(
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick =  {},
+                    onDateClick = {},
                     onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
                     required = true,
-                )
+                ),
 
             )
-
         }
         composeTestRule.onNodeWithTag(INPUT_EVENT_INITIAL_DATE).assertIsDisplayed()
         assert(viewModel.eventDate.value.dateValue == "20/8/2023")
@@ -281,12 +276,11 @@ class EventInitialTest {
 
     @Test
     fun shouldShowEmptyCategorySelectorIfCategoryHasNoOptions() {
-
         viewModel = initViewModel(
             periodType = null,
             eventCreationType = EventCreationType.SCHEDULE,
             enrollmentStatus = EnrollmentStatus.ACTIVE,
-            scheduleInterval = 0
+            scheduleInterval = 0,
         )
         composeTestRule.setContent {
             val date by viewModel.eventDate.collectAsState()
@@ -308,7 +302,7 @@ class EventInitialTest {
                     required = true,
                     noOptionsText = "No options available",
                     catComboText = "No options catCombo",
-                )
+                ),
             )
         }
         composeTestRule.onNodeWithTag(EMPTY_CATEGORY_SELECTOR).assertIsDisplayed()
