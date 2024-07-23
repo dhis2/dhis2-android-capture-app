@@ -9,6 +9,7 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -157,6 +158,10 @@ object Injector {
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(),
             resources = provideResourcesManager(context),
+            eventResourcesProvider = EventResourcesProvider(
+                provideD2(),
+                provideResourcesManager(context),
+            ),
             dateUtils = DateUtils.getInstance(),
             eventMode = eventRecords.eventMode,
         )

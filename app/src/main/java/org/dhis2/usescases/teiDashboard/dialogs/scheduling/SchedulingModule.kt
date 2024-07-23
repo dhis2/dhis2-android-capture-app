@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -19,7 +20,15 @@ class SchedulingModule(
     fun provideSchedulingViewModelFactory(
         d2: D2,
         resourceManager: ResourceManager,
+        eventResourcesProvider: EventResourcesProvider,
         periodUtils: DhisPeriodUtils,
     ): SchedulingViewModelFactory =
-        SchedulingViewModelFactory(enrollment, programStages, d2, resourceManager, periodUtils)
+        SchedulingViewModelFactory(
+            enrollment,
+            programStages,
+            d2,
+            resourceManager,
+            eventResourcesProvider,
+            periodUtils,
+        )
 }

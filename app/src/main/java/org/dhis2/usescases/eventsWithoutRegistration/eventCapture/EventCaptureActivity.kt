@@ -23,7 +23,7 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
@@ -80,7 +80,7 @@ class EventCaptureActivity :
     private var eventMode: EventMode? = null
 
     @Inject
-    lateinit var resourceManager: ResourceManager
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     @JvmField
     var eventCaptureComponent: EventCaptureComponent? = null
@@ -365,7 +365,7 @@ class EventCaptureActivity :
 
     override fun showSnackBar(messageId: Int, programStage: String) {
         showToast(
-            resourceManager.formatWithProgramStageEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 messageId,
                 programStage,
                 programUid,
@@ -428,12 +428,12 @@ class EventCaptureActivity :
         presenter.programStage().let {
             CustomDialog(
                 this,
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                     R.string.delete_event_label,
                     programStageUid = it,
                     programUid,
                 ),
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                     R.string.confirm_delete_event_label,
                     programStageUid = it,
                     programUid,
@@ -459,7 +459,7 @@ class EventCaptureActivity :
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setTitle(R.string.conflict)
             .setMessage(
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                     R.string.event_label_date_in_future_message,
                     programStageUid = presenter.programStage(),
                     programUid = programUid,

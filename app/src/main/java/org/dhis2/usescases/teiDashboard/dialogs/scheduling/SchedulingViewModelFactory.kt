@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -14,6 +15,7 @@ class SchedulingViewModelFactory(
     private val programStages: List<ProgramStage>,
     private val d2: D2,
     private val resourceManager: ResourceManager,
+    val eventResourcesProvider: EventResourcesProvider,
     private val periodUtils: DhisPeriodUtils,
 ) : ViewModelProvider.Factory {
 
@@ -23,6 +25,7 @@ class SchedulingViewModelFactory(
             programStages,
             d2,
             resourceManager,
+            eventResourcesProvider,
             periodUtils,
         ) as T
     }

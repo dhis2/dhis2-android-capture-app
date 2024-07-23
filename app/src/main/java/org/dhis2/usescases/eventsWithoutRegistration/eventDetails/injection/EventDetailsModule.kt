@@ -9,6 +9,7 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
@@ -55,8 +56,14 @@ class EventDetailsModule(
     @PerFragment
     fun provideEventDetailResourceProvider(
         resourceManager: ResourceManager,
+        eventResourcesProvider: EventResourcesProvider,
     ): EventDetailResourcesProvider {
-        return EventDetailResourcesProvider(programUid, programStageUid, resourceManager)
+        return EventDetailResourcesProvider(
+            programUid,
+            programStageUid,
+            resourceManager,
+            eventResourcesProvider,
+        )
     }
 
     @Provides

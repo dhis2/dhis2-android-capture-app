@@ -10,6 +10,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -48,6 +49,7 @@ class EventRepository(
     private val d2: D2,
     private val metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
+    private val eventResourcesProvider: EventResourcesProvider,
     private val dateUtils: DateUtils,
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
@@ -165,7 +167,7 @@ class EventRepository(
         return mutableListOf(
             fieldFactory.createSection(
                 sectionUid = EVENT_DATA_SECTION_UID,
-                sectionName = resources.formatWithProgramStageEventLabel(
+                sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                     stringResource = R.string.event_data_section_title,
                     programStageUid = event?.programStage(),
                     programUid = programUid,
@@ -393,11 +395,12 @@ class EventRepository(
 
         return fieldFactory.create(
             id = EVENT_REPORT_DATE_UID,
-            label = programStage?.executionDateLabel() ?: resources.formatWithProgramStageEventLabel(
-                R.string.event_label_date,
-                programStage?.uid(),
-                programUid,
-            ),
+            label = programStage?.displayExecutionDateLabel()
+                ?: eventResourcesProvider.formatWithProgramStageEventLabel(
+                    R.string.event_label_date,
+                    programStage?.uid(),
+                    programUid,
+                ),
             valueType = ValueType.DATE,
             mandatory = true,
             optionSet = null,
@@ -459,7 +462,7 @@ class EventRepository(
     private fun createEventDetailsSection(): FieldUiModel {
         return fieldFactory.createSection(
             sectionUid = EVENT_DETAILS_SECTION_UID,
-            sectionName = resources.formatWithProgramStageEventLabel(
+            sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                 stringResource = R.string.event_details_section_title,
                 programStageUid = event?.programStage(),
                 programUid = programUid,

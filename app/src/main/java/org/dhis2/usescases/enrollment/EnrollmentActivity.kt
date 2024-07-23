@@ -16,6 +16,7 @@ import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -46,6 +47,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var resourceManager: ResourceManager
+
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     @Inject
     lateinit var presenter: EnrollmentPresenterImpl
@@ -355,12 +359,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    override fun showDateEditionWarning() {
+    override fun showDateEditionWarning(programUid: String?) {
         val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setMessage(
-                resourceManager.formatWithProgramEventLabel(
+                eventResourcesProvider.formatWithProgramEventLabel(
                     R.string.enrollment_date_edition_warning_event_label,
-                    presenter.getProgram()?.uid(),
+                    programUid,
                     2,
                 ),
             )

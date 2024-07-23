@@ -31,6 +31,7 @@ class SchedulingViewModelTest {
             programStages = listOf(programStage),
             d2 = mock(),
             resourceManager = mock(),
+            eventResourcesProvider = mock(),
             periodUtils = mock(),
         )
     }

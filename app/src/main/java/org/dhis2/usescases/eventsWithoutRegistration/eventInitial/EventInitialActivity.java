@@ -30,7 +30,7 @@ import org.dhis2.commons.data.EventCreationType;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.DialogClickListener;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.resources.EventResourcesProvider;
 import org.dhis2.databinding.ActivityEventInitialBinding;
 import org.dhis2.form.model.EventMode;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -62,7 +62,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     EventInitialPresenter presenter;
 
     @Inject
-    ResourceManager resourceManager;
+    EventResourcesProvider eventResourcesProvider;
 
     private ActivityEventInitialBinding binding;
 
@@ -242,7 +242,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             activityTitle = getString(R.string.referral);
         } else {
             activityTitle = eventUid == null ?
-                    resourceManager.formatWithProgramStageEventLabel(R.string.new_event_label, programStageUid, programUid, 1, false)
+                    eventResourcesProvider.formatWithProgramStageEventLabel(R.string.new_event_label, programStageUid, programUid, 1, false)
                     : program.displayName();
         }
         binding.setName(activityTitle);
@@ -251,7 +251,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventCreated(String eventUid) {
         showToast(
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                         R.string.event_label_created,
                         programStageUid,
                         programUid,
@@ -350,12 +350,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void confirmDeleteEvent() {
         new CustomDialog(
                 this,
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                         R.string.delete_event_label,
                         programStageUid,
                         programUid,
                         1, false),
-                resourceManager.formatWithProgramStageEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                         R.string.confirm_delete_event_label,
                         programStageUid,
                         programUid,
@@ -380,7 +380,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showEventWasDeleted() {
-        showToast(resourceManager.formatWithProgramStageEventLabel(
+        showToast(eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_was_deleted,
                 programStageUid,
                 programUid,
@@ -391,7 +391,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showDeleteEventError() {
-        showToast(resourceManager.formatWithProgramStageEventLabel(
+        showToast(eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.delete_event_label_error,
                 programStageUid,
                 programUid,
