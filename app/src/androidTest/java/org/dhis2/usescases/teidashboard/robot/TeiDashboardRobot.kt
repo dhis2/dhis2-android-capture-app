@@ -43,7 +43,7 @@ import org.hamcrest.CoreMatchers.equalTo
 
 fun teiDashboardRobot(
     composeTestRule: ComposeTestRule,
-    teiDashboardRobot: TeiDashboardRobot.() -> Unit
+    teiDashboardRobot: TeiDashboardRobot.() -> Unit,
 ) {
     TeiDashboardRobot(composeTestRule).apply {
         teiDashboardRobot()
@@ -118,19 +118,21 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .check(
                 matches(
                     allOf(
-                        isDisplayed(), isNotEmpty(),
+                        isDisplayed(),
+                        isNotEmpty(),
                         atPosition(
-                            0, hasDescendant(
+                            0,
+                            hasDescendant(
                                 hasSibling(
                                     allOf(
                                         withId(R.id.programStageName),
-                                        withText(eventName)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                        withText(eventName),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
@@ -178,7 +180,6 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText("Enrollment completed").assertIsDisplayed()
     }
 
-
     fun checkCanNotAddEvent() {
         composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true)
             .assertDoesNotExist()
@@ -215,18 +216,18 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.apply {
             onNode(
                 hasText(
-                    enrollmentUIModel.enrollmentDate
+                    enrollmentUIModel.enrollmentDate,
                 ) and hasAnySibling(
-                    hasText("Date of enrollment *")
+                    hasText("Date of enrollment *"),
                 ),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
 
             onNode(
                 hasText(
-                    enrollmentUIModel.birthday
+                    enrollmentUIModel.birthday,
                 ) and hasAnySibling(
-                    hasText("Date of birth *")
+                    hasText("Date of birth *"),
                 ),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
@@ -277,7 +278,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnTimelineEvents() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val timelineLabel = getString(R.string.show_event_label_timeline)
-            val eventLabel = resources.getQuantityString(R.plurals.event_label, 1)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
             val itemLabel = timelineLabel.format(eventLabel)
             try {
                 onView(withText(itemLabel)).perform(click())
@@ -290,7 +291,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     private fun checkIfGroupedEventsIsVisible() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val timelineLabel = getString(R.string.group_event_label_by_stage)
-            val eventLabel = resources.getQuantityString(R.plurals.event_label, 1)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
             val itemLabel = timelineLabel.format(eventLabel)
             onView(withText(itemLabel)).check(matches(isDisplayed()))
         }
@@ -301,22 +302,24 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .check(
                 matches(
                     allOf(
-                        isDisplayed(), isNotEmpty(),
+                        isDisplayed(),
+                        isNotEmpty(),
                         atPosition(
-                            position, allOf(
+                            position,
+                            allOf(
                                 hasDescendant(withText(eventName)),
                                 hasDescendant(
                                     withTagValue(
                                         anyOf(
                                             equalTo(R.drawable.ic_event_status_schedule),
-                                            equalTo(R.drawable.ic_event_status_schedule_read)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                            equalTo(R.drawable.ic_event_status_schedule_read),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
@@ -325,20 +328,21 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .check(
                 matches(
                     allOf(
-                        isDisplayed(), isNotEmpty(),
+                        isDisplayed(),
+                        isNotEmpty(),
                         atPosition(
                             position,
                             hasDescendant(
                                 withTagValue(
                                     anyOf(
                                         equalTo(R.drawable.ic_event_status_complete),
-                                        equalTo(R.drawable.ic_event_status_complete_read)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                        equalTo(R.drawable.ic_event_status_complete_read),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
@@ -367,10 +371,11 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                     hasDescendant(
                         allOf(
                             withText(eventDate),
-                            withId(R.id.event_date)
-                        )
-                    ), click()
-                )
+                            withId(R.id.event_date),
+                        ),
+                    ),
+                    click(),
+                ),
             )
     }
 
@@ -386,23 +391,23 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                         hasItem(
                             allOf(
                                 hasDescendant(withText(firstProgramStage.name)),
-                                hasDescendant(withText(firstProgramStage.events))
-                            )
+                                hasDescendant(withText(firstProgramStage.events)),
+                            ),
                         ),
                         hasItem(
                             allOf(
                                 hasDescendant(withText(secondProgramStage.name)),
-                                hasDescendant(withText(secondProgramStage.events))
-                            )
+                                hasDescendant(withText(secondProgramStage.events)),
+                            ),
                         ),
                         hasItem(
                             allOf(
                                 hasDescendant(withText(thirdProgramStage.name)),
-                                hasDescendant(withText(thirdProgramStage.events))
-                            )
-                        )
-                    )
-                )
+                                hasDescendant(withText(thirdProgramStage.events)),
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
@@ -423,10 +428,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                         allOf(
                             hasDescendant(withText(eventDetails.date)),
                             hasDescendant(withText(eventDetails.orgUnit)),
-                            hasDescendant(withTagValue(equalTo(status)))
-                        )
-                    )
-                )
+                            hasDescendant(withTagValue(equalTo(status))),
+                        ),
+                    ),
+                ),
             )
     }
 
