@@ -861,7 +861,6 @@
     <string name="downloading_image_resources">Afbeeldingen downloaden...</string>
     <string name="program_description">Programma beschrijving</string>
     <string name="wrong_pin">Verkeerde speld</string>
-    <string name="enrolledIn">Ingeschreven in:</string>
     <string name="sync_dialog_title_not_synced">Synchronisatie nodig</string>
     <string name="sync_dialog_title_error">Synchronisatiefout</string>
     <string name="sync_dialog_title_synced">Gesynchroniseerd</string>
