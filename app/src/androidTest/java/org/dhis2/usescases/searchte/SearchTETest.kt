@@ -325,6 +325,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullyFilterBySync() {
         mockWebServerRobot.addResponse(

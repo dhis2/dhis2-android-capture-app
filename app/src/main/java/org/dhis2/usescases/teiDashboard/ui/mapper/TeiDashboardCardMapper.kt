@@ -148,7 +148,7 @@ class TeiDashboardCardMapper(
                     if (item.currentProgram().displayIncidentDate() == true) {
                         addIncidentDate(
                             list,
-                            item.currentProgram().incidentDateLabel(),
+                            item.currentProgram().displayIncidentDateLabel(),
                             item.currentEnrollment.incidentDate(),
                         )
                     }
@@ -156,7 +156,7 @@ class TeiDashboardCardMapper(
                     addEnrollmentDate(
                         item.currentProgram().uid(),
                         list,
-                        item.currentProgram().enrollmentDateLabel(),
+                        item.currentProgram().displayEnrollmentDateLabel(),
                         item.currentEnrollment.enrollmentDate(),
                     )
                 }.also { list ->
