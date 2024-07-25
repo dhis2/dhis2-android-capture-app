@@ -203,6 +203,9 @@ class VisualizationToGraph(
 
                 is TrackerLineListItem.ProgramIndicator -> metadata[category.uid]?.displayName
                     ?: category.uid
+
+                is TrackerLineListItem.Category -> metadata[category.uid]?.displayName
+                    ?: category.uid
             }
         }
     }
