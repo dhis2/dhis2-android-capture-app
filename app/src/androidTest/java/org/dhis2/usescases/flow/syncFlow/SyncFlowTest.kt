@@ -21,7 +21,7 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.imports.ImportStatus
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
