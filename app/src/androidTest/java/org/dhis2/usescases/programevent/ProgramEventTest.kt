@@ -39,14 +39,10 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldCreateNewEventAndCompleteIt() {
-        val eventOrgUnit = "Ngelehun CHC"
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
-        }
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(eventOrgUnit)
         }
         eventRobot(composeTestRule) {
             typeOnDateParameter(
