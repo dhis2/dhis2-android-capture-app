@@ -17,7 +17,6 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatur
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
-import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -61,8 +60,6 @@ class RelationshipPresenter internal constructor(
     val relationshipModels: LiveData<List<RelationshipViewModel>> = _relationshipsModels
     private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
     val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
-    private val _relationshipMapModels: MutableLiveData<List<MapItemModel>> = MutableLiveData()
-    val relationshipMapModels: LiveData<List<MapItemModel>> = _relationshipMapModels
     private val _mapItemClicked = MutableLiveData<String>()
     val mapItemClicked: LiveData<String> = _mapItemClicked
 
@@ -75,7 +72,6 @@ class RelationshipPresenter internal constructor(
                 .subscribe(
                     {
                         _relationshipsModels.postValue(it)
-//                        view.setRelationships(it)
                     },
                     { Timber.d(it) },
                 ),

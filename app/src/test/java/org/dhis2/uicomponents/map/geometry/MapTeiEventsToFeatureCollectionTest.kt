@@ -1,51 +1,39 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
-import org.dhis2.maps.model.EventUiComponentModel
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.maps.model.MapItemModel
+import org.dhis2.maps.model.RelatedInfo
+import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
-import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import java.util.Date
 
 class MapTeiEventsToFeatureCollectionTest {
 
     private lateinit var mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection
-    private val bounds: GetBoundingBox = mock()
-    private val mapPointToFeature: MapPointToFeature = mock()
-    private val mapPolygonToFeature: MapPolygonToFeature = mock()
 
     @Before
     fun setUp() {
         mapTeiEventsToFeatureCollection =
             MapTeiEventsToFeatureCollection(
-                mapPointToFeature,
-                mapPolygonToFeature,
-                bounds,
+                mapPointToFeature = MapPointToFeature(),
+                mapPolygonToFeature = MapPolygonToFeature(),
+                bounds = GetBoundingBox(),
             )
     }
 
     @Test
     fun `Should map event models to point feature collection`() {
         val events = createEventsList()
-        val eventFeaturePoint =
-            Feature.fromGeometry(Point.fromLngLat(POINT_LONGITUDE, POINT_LATITUDE))
-
-        whenever(mapPointToFeature.map(events[0].event.geometry()!!)) doReturn eventFeaturePoint
 
         val result = mapTeiEventsToFeatureCollection.map(events)
         val featureCollection = result.first.featureCollectionMap
@@ -60,22 +48,30 @@ class MapTeiEventsToFeatureCollectionTest {
         }
     }
 
-    private fun createEventsList(): List<EventUiComponentModel> {
-        val event = EventUiComponentModel(
-            "eventUid",
-            Event.builder().uid(EVENTUID).geometry(
-                getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]"),
-            ).build(),
-            Enrollment.builder().uid("enrollmentUid").build(),
-            ProgramStage.builder().uid("stageUid").displayName("stage").build(),
-            Date(),
-            linkedMapOf(),
-            "image",
-            "default",
-            "orgUnit",
-            MetadataIconData.defaultIcon(),
+    private fun createEventsList(): List<MapItemModel> {
+        return listOf(
+            MapItemModel(
+                uid = EVENTUID,
+                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
+                    "image",
+                    "",
+                ),
+                title = "",
+                description = null,
+                lastUpdated = "",
+                additionalInfoList = emptyList(),
+                isOnline = false,
+                geometry = getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]"),
+                relatedInfo = RelatedInfo(
+                    event = RelatedInfo.Event(
+                        stageUid = "stageUid",
+                        stageDisplayName = "stage",
+                        teiUid = "teiUid",
+                    ),
+                ),
+                state = State.SYNCED,
+            ),
         )
-        return listOf(event)
     }
 
     companion object {

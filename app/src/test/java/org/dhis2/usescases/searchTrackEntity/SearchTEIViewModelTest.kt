@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.mapbox.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.maplibre.geojson.BoundingBox
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -244,14 +244,9 @@ class SearchTEIViewModelTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `Should fetch map results`() {
-        whenever(
-            mapDataRepository.getTrackerMapData(
-                testingProgram(),
-                viewModel.queryData,
-            ),
-        ) doReturn TrackerMapData(
-            mutableListOf(),
+        val trackerMapData = TrackerMapData(
             EventsByProgramStage("tag", mapOf()),
+            mutableListOf(),
             hashMapOf(),
             BoundingBox.fromLngLats(
                 0.0,
@@ -259,14 +254,22 @@ class SearchTEIViewModelTest {
                 0.0,
                 0.0,
             ),
-            mutableListOf(),
             mutableMapOf(),
         )
+        whenever(
+            mapDataRepository.getTrackerMapData(
+                testingProgram(),
+                viewModel.queryData,
+            ),
+        ) doReturn trackerMapData
 
-        viewModel.fetchMapResults()
-        testingDispatcher.scheduler.advanceUntilIdle()
-        val mapResult = viewModel.mapResults.value
-        assertTrue(mapResult != null)
+        runTest {
+            viewModel.fetchMapResults()
+            testingDispatcher.scheduler.advanceUntilIdle()
+            viewModel.mapResults.test {
+                assertTrue(awaitItem() == trackerMapData)
+            }
+        }
     }
 
     @Test
@@ -304,8 +307,8 @@ class SearchTEIViewModelTest {
                 viewModel.queryData,
             ),
         ) doReturn TrackerMapData(
-            mutableListOf(),
             EventsByProgramStage("tag", mapOf()),
+            mutableListOf(),
             hashMapOf(),
             BoundingBox.fromLngLats(
                 0.0,
@@ -313,7 +316,6 @@ class SearchTEIViewModelTest {
                 0.0,
                 0.0,
             ),
-            mutableListOf(),
             mutableMapOf(),
         )
         setCurrentProgram(testingProgram())

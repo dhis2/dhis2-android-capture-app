@@ -9,7 +9,6 @@ import org.dhis2.maps.geometry.mapper.addTeiInfo
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
-import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.maps.model.MapItemModel
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -19,7 +18,6 @@ class MapTeisToFeatureCollection(
     private val mapPointToFeature: MapPointToFeature,
     private val mapPolygonToFeature: MapPolygonToFeature,
     private val mapPolygonPointToFeature: MapPolygonPointToFeature,
-    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
 ) {
 
@@ -56,8 +54,6 @@ class MapTeisToFeatureCollection(
             }
 
             if (shouldAddRelationships && mapItemRelationshipList.isNotEmpty()) {
-                /*                val relationshipModels =
-                                    mapRelationshipToRelationshipMapModel.mapList(searchTeiModel.relationships)*/
                 val relationshipsFeatureCollections =
                     mapRelationshipsToFeatureCollection.map(mapItemRelationshipList)
                 relationshipsFeatureCollections.first.forEach { (key, featureCollection) ->

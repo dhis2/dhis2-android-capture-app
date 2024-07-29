@@ -125,7 +125,6 @@ public class SearchTEModule {
     MapTeisToFeatureCollection provideMapTeisToFeatureCollection() {
         return new MapTeisToFeatureCollection(new BoundsGeometry(),
                 new MapPointToFeature(), new MapPolygonToFeature(), new MapPolygonPointToFeature(),
-                new MapRelationshipToRelationshipMapModel(),
                 new MapRelationshipsToFeatureCollection(
                         new MapLineRelationshipToFeature(),
                         new MapPointToFeature(),
