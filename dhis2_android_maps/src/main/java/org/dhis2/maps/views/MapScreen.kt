@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.dhis2.maps.model.MapItemModel
 
@@ -36,7 +37,7 @@ fun MapScreen(
             actionButtons()
         }
         MapItemHorizontalPager(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter).testTag("MAP_CAROUSEL"),
             state = listState,
             items = items,
             onItem = onItem,

@@ -16,7 +16,6 @@ import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
@@ -44,8 +43,6 @@ class SearchTETest : BaseTest() {
 
     @get:Rule
     val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
-
-    private var mapIdlingResource: MapIdlingResource? = null
 
     private val customDispatcherProvider =
         context.applicationContext.app().appComponent().customDispatcherProvider()
@@ -377,13 +374,6 @@ class SearchTETest : BaseTest() {
             } catch (ex: IdlingResourceTimeoutException) {
                 throw RuntimeException("Could not start test")
             }
-        }
-    }
-
-    @After
-    fun unregisterIdlingResource() {
-        if (mapIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mapIdlingResource)
         }
     }
 

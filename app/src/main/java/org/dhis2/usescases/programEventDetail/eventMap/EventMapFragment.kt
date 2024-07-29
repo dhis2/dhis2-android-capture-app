@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
@@ -161,12 +162,12 @@ class EventMapFragment :
                                         loadMap(it, savedInstanceState)
                                     }
                                 },
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize().testTag("MAP"),
                             ) {}
                         },
                         onItem = { item ->
                             ListCard(
-                                modifier = Modifier.fillParentMaxWidth(),
+                                modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
                                 listAvatar = {
                                     AvatarProvider(
                                         avatarProviderConfiguration = item.avatarProviderConfiguration,
