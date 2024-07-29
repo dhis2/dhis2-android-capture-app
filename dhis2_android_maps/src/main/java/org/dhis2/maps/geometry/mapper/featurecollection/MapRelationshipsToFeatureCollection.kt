@@ -85,7 +85,6 @@ class MapRelationshipsToFeatureCollection(
                                 fromGeometry = from.geometry,
                                 toGeometry = to.geometry,
                             )
-//                            feature?.addRelationshipInfo(it)
                             feature
                         } else {
                             null
@@ -95,10 +94,6 @@ class MapRelationshipsToFeatureCollection(
                     }
                 }
 
-                /*val lineFeatures = relationModels.value.mapNotNull {
-                    val feature = mapLineToFeature.map(fromGeometry =, toGeometry = )
-                    feature?.addRelationshipInfo(it)
-                }*/
                 val pointFeatures = relationModels.value.mapNotNull { relationModel ->
                     relationModel.geometry?.let {
                         val feature = if (it.type() == FeatureType.POINT) {

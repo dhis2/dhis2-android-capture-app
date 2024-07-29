@@ -48,11 +48,13 @@ class SearchRepositoryTest {
         }
 
         searchRepository = SearchRepositoryImplKt(
+            searchRepositoryJava = mock(),
             d2 = d2,
+            dispatcher = dispatchers,
             fieldViewModelFactory = fieldViewModelFactory,
             metadataIconProvider = metadataIconProvider,
-            dispatcher = dispatchers,
-            searchRepositoryJava = mock(),
+            trackedEntityInstanceInfoProvider = mock(),
+            eventInfoProvider = mock(),
         )
     }
 
