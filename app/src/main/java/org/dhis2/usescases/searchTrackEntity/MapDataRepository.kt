@@ -2,6 +2,9 @@ package org.dhis2.usescases.searchTrackEntity
 
 import com.mapbox.geojson.FeatureCollection
 import org.dhis2.data.search.SearchParametersModel
+import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
+import org.dhis2.maps.extensions.filterTeiByLayerVisibility
+import org.dhis2.maps.extensions.filterTrackerEventsByLayerVisibility
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -59,31 +62,12 @@ class MapDataRepository(
             mapTeiEventsToFeatureCollection.map(mapEvents).component1()
 
         return TrackerMapData(
-            mapItems = mapTeis.filter {
-                (teiLayerIsVisible(layersVisibility) and hasCoordinates(it)) or
-                    (enrollmentLayerIsVisible(layersVisibility) and hasEnrollmentCoordinates(it)) or
-                    (
-                        attributeLayerIsVisible(
-                            it,
-                            layersVisibility,
-                            coordinateAttributes,
-                        ) and hasAttributeCoordinates(
-                            it,
-                            coordinateAttributes,
-                        )
-                        )
-            } + mapEvents.filter {
-                (eventLayerIsVisible(it, layersVisibility) and hasCoordinates(it)) or
-                    (
-                        dataElementLayerIsVisible(
-                            it,
-                            layersVisibility,
-                            coordinateDataElements,
-                        ) and hasDataElementCoordinates(it, coordinateDataElements)
-                        )
-            } + mapRelationships.filter {
-                relationshipLayerIsVisible(it, layersVisibility) and hasCoordinates(it)
-            },
+            mapItems = mapTeis.filterTeiByLayerVisibility(layersVisibility, coordinateAttributes) +
+                mapEvents.filterTrackerEventsByLayerVisibility(
+                    layersVisibility,
+                    coordinateDataElements,
+                ) +
+                mapRelationships.filterRelationshipsByLayerVisibility(layersVisibility),
             eventFeatures = eventsByProgramStage,
             teiFeatures = teiFeatureCollection.first,
             teiBoundingBox = teiFeatureCollection.second,

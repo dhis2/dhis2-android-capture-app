@@ -26,7 +26,6 @@ import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import org.dhis2.R
-import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.bindings.app
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
@@ -61,9 +60,6 @@ import javax.inject.Inject
 class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     @Inject
     lateinit var presenter: RelationshipPresenter
-
-    @Inject
-    lateinit var animations: CarouselViewAnimations
 
     @Inject
     lateinit var mapNavigation: ExternalMapNavigation
@@ -213,8 +209,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                             )
                                         },
                                     ) {
-                                        val layerDialog = MapLayerDialog(relationshipMapManager)
-                                        layerDialog.show(
+                                        MapLayerDialog(relationshipMapManager) { layersVisibility ->
+                                            presenter.filterVisibleMapItems(layersVisibility)
+                                        }.show(
                                             childFragmentManager,
                                             MapLayerDialog::class.java.name,
                                         )
@@ -272,8 +269,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
                             if (relationships?.isEmpty() == true) {
                                 NoRelationships()
-                            } 
-                            else {
+                            } else {
                                 AndroidView(factory = { context ->
 
                                     binding.root

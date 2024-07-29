@@ -27,7 +27,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
-import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorType
@@ -67,9 +66,6 @@ class SearchTEMap : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var viewModelFactory: SearchTeiViewModelFactory
-
-    @Inject
-    lateinit var animations: CarouselViewAnimations
 
     @Inject
     lateinit var colorUtils: ColorUtils
@@ -332,11 +328,6 @@ class SearchTEMap : FragmentGlobalAbstract() {
                 },
             )
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        teiMapManager?.onDestroy()
     }
 
     override fun onLowMemory() {

@@ -43,9 +43,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     var enrollmentFeatureType: FeatureType? = FeatureType.POINT
     private var boundingBox: BoundingBox? = null
 
-    init {
-        numberOfUiIcons = 3
-    }
+    override var numberOfUiIcons: Int = 3
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -234,7 +232,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 eventsFeatureCollection?.keys?.toList() ?: emptyList(),
             ).updateLayers(
                 LayerType.FIELD_COORDINATE_LAYER,
-                fieldFeatureCollections.keys.toList() ?: emptyList(),
+                fieldFeatureCollections.keys.toList(),
             )
     }
 
@@ -349,7 +347,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     ENROLLMENT_SOURCE_ID,
                 )?.visible == true
             }
-                ?.map { (key, collection) ->
+                ?.map { (_, collection) ->
                     collection.features()?.filter {
                         it.getStringProperty(propertyName) == propertyValue
                     }?.map {
@@ -374,7 +372,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }
     }
 
-    override fun findFeatures(propertyValue: String): List<Feature>? {
+    override fun findFeatures(propertyValue: String): List<Feature> {
         val mainProperties = arrayListOf(
             TEI_UID,
             RELATIONSHIP_UID,
@@ -431,6 +429,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                             RELATIONSHIP_UID,
                             features.first().getStringProperty(RELATIONSHIP_UID),
                         )
+
                         else -> features.first()
                     }
                 }

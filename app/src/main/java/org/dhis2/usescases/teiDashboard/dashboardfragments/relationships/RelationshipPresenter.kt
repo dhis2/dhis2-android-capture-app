@@ -11,12 +11,10 @@ import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
-import org.dhis2.maps.extensions.FeatureSource
-import org.dhis2.maps.extensions.source
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
+import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.maps.model.MapItemModel
@@ -45,6 +43,8 @@ class RelationshipPresenter internal constructor(
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
     private val mapStyleConfig: MapStyleConfiguration,
 ) {
+
+    private lateinit var layersVisibility: Map<String, MapLayer>
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val teiType: String? =
@@ -224,7 +224,8 @@ class RelationshipPresenter internal constructor(
     }
 
     fun fetchMapData() {
-        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(_relationshipsModels.value ?: emptyList())
+        val relationshipModel =
+            mapRelationshipToRelationshipMapModel.mapList(_relationshipsModels.value ?: emptyList())
         view.setFeatureCollection(
             teiUid,
             relationshipModel,
@@ -235,7 +236,7 @@ class RelationshipPresenter internal constructor(
                 .map { mapItems ->
                     val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
                     RelationshipMapData(
-                        mapItems = mapItems,
+                        mapItems = mapItems.filterRelationshipsByLayerVisibility(layersVisibility),
                         relationshipFeatures = featureCollection.first,
                         boundingBox = featureCollection.second,
                     )
@@ -250,29 +251,13 @@ class RelationshipPresenter internal constructor(
     }
 
     fun onFeatureClicked(feature: Feature) {
-        val uid = when (feature.source()) {
-            FeatureSource.TEI, FeatureSource.ENROLLMENT ->
-                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-            FeatureSource.RELATIONSHIP ->
-                feature.getStringProperty(
-                    MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-                )
-            FeatureSource.TRACKER_EVENT ->
-                feature.getStringProperty(
-                    MapTeiEventsToFeatureCollection.EVENT_UID,
-                )
-
-            FeatureSource.EVENT ->
-                feature.getStringProperty(
-                    MapEventToFeatureCollection.EVENT,
-                )
-            FeatureSource.FIELD ->
-                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-                    ?: feature.getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
-            null -> null
-        }
-        uid?.let {
+        feature.toStringProperty()?.let {
             _mapItemClicked.postValue(it)
         }
+    }
+
+    fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
+        this.layersVisibility = layersVisibility
+        fetchMapData()
     }
 }

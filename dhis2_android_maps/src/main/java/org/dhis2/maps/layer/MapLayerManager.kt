@@ -20,7 +20,7 @@ import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 
 class MapLayerManager(
-    val mapboxMap: MapboxMap,
+    val mapBoxMap: MapboxMap,
     val baseMapManager: BaseMapManager,
     val colorUtils: ColorUtils,
 ) {
@@ -69,7 +69,7 @@ class MapLayerManager(
 
     fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
         apply {
-            val style = mapboxMap.style!!
+            val style = mapBoxMap.style!!
             mapLayers[sourceId ?: layerType.name] = when (layerType) {
                 LayerType.TEI_LAYER -> TeiMapLayer(
                     style,
@@ -198,9 +198,9 @@ class MapLayerManager(
     fun changeStyle(basemapPosition: Int) {
         currentStylePosition = basemapPosition
         val newStyle = baseMapManager.baseMapStyles[basemapPosition]
-        (mapboxMap.uiSettings.attributionDialogManager as AttributionManager)
+        (mapBoxMap.uiSettings.attributionDialogManager as AttributionManager)
             .updateCurrentBaseMap(newStyle)
-        mapboxMap.setStyle(baseMapManager.styleJson(newStyle)) {
+        mapBoxMap.setStyle(baseMapManager.styleJson(newStyle)) {
             styleChangeCallback?.invoke(it)
         }
     }
