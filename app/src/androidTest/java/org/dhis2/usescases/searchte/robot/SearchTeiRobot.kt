@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -92,10 +93,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         //Checks title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText("$it:",true).assertIsDisplayed() }
+            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -146,7 +147,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -156,8 +157,12 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkCarouselTEICardInfo(firstName: String) {
-        onView(withId(R.id.map_carousel))
-            .check(matches(hasItem(hasDescendant(withText(firstName)))))
+        composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
+            .assertIsDisplayed()
+        composeTestRule.onNode(
+            hasTestTag("MAP_ITEM") and hasAnyDescendant(hasText(firstName)),
+            true
+        ).assertIsDisplayed()
     }
 
     fun clickOnOpenSearch() {
