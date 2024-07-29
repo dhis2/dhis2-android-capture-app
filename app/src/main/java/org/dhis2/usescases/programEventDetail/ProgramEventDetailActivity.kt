@@ -156,7 +156,7 @@ class ProgramEventDetailActivity :
 
     private fun initInjection() {
         component = app().userComponent()
-            ?.plus(ProgramEventDetailModule(this, programUid))
+            ?.plus(ProgramEventDetailModule(this, this, programUid))
         component?.inject(this)
     }
 

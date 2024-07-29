@@ -4,7 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
-import org.dhis2.animations.CarouselViewAnimations
+import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
@@ -31,6 +31,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -38,6 +39,7 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 class ProgramEventDetailModule(
+    private val context: Context,
     private val view: ProgramEventDetailView,
     private val programUid: String,
 ) {
@@ -144,6 +146,8 @@ class ProgramEventDetailModule(
         dhisMapUtils: DhisMapUtils,
         filterPresenter: FilterPresenter,
         charts: Charts,
+        resourceManager: ResourceManager,
+        metadataIconProvider: MetadataIconProvider,
     ): ProgramEventDetailRepository {
         return ProgramEventDetailRepositoryImpl(
             programUid,
@@ -154,13 +158,13 @@ class ProgramEventDetailModule(
             dhisMapUtils,
             filterPresenter,
             charts,
+            EventInfoProvider(
+                d2,
+                resourceManager,
+                DateLabelProvider(context, resourceManager),
+                metadataIconProvider,
+            ),
         )
-    }
-
-    @Provides
-    @PerActivity
-    fun animations(): CarouselViewAnimations {
-        return CarouselViewAnimations()
     }
 
     @Provides

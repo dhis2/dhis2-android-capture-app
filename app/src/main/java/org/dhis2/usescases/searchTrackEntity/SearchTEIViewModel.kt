@@ -32,12 +32,7 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
-import org.dhis2.maps.extensions.FeatureSource
-import org.dhis2.maps.extensions.source
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
@@ -68,7 +63,7 @@ class SearchTEIViewModel(
     private val filterManager: FilterManager,
 ) : ViewModel() {
 
-    private lateinit var layersVisibility: Map<String, MapLayer>
+    private var layersVisibility: Map<String, MapLayer> = emptyMap()
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
     val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
@@ -1007,30 +1002,9 @@ class SearchTEIViewModel(
     }
 
     fun onFeatureClicked(feature: Feature) {
-        val uid = when (feature.source()) {
-            FeatureSource.TEI, FeatureSource.ENROLLMENT ->
-                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-            FeatureSource.RELATIONSHIP ->
-                feature.getStringProperty(
-                    MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-                )
-            FeatureSource.TRACKER_EVENT ->
-                feature.getStringProperty(
-                    MapTeiEventsToFeatureCollection.EVENT_UID,
-                )
-
-            FeatureSource.EVENT ->
-                feature.getStringProperty(
-                    MapEventToFeatureCollection.EVENT,
-                )
-            FeatureSource.FIELD ->
-                feature.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
-                    ?: feature.getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
-            null -> null
-        }
-        uid?.let {
+        feature.toStringProperty()?.let {
             viewModelScope.launch {
-                _mapItemClicked.emit(uid)
+                _mapItemClicked.emit(it)
             }
         }
     }

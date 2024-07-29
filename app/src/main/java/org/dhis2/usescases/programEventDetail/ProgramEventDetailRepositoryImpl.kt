@@ -11,14 +11,19 @@ import io.reactivex.Single
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.maps.extensions.filterEventsByLayerVisibility
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.EventMapManager
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.usescases.events.EventInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
@@ -33,6 +38,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     private val mapUtils: DhisMapUtils,
     private val filterPresenter: FilterPresenter,
     private val charts: Charts?,
+    private val eventInfoProvider: EventInfoProvider,
 ) : ProgramEventDetailRepository {
 
     private val programRepository = d2.programModule().programs().uid(programUid)
@@ -59,18 +65,40 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         ).build()
     }
 
-    override fun filteredEventsForMap(): Flowable<ProgramEventMapData> {
+    override fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData> {
         return filterRepository?.get()
             ?.map { listEvents ->
                 val (first, second) = mapEventToFeatureCollection.map(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
                 programEventFeatures[EventMapManager.EVENTS] = first
-                val deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents)),
-                )
+                val coordinateDataElements =
+                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents))
+                val deFeatureCollection =
+                    mapCoordinateFieldToFeatureCollection.map(coordinateDataElements)
                 programEventFeatures.putAll(deFeatureCollection)
+
+                val mapEvents = listEvents.map { event ->
+                    with(eventInfoProvider) {
+                        MapItemModel(
+                            uid = event.uid(),
+                            avatarProviderConfiguration = getAvatar(event),
+                            title = getEventTitle(event),
+                            description = getEventDescription(event),
+                            lastUpdated = getEventLastUpdated(event),
+                            additionalInfoList = getAdditionInfoList(event),
+                            isOnline = false,
+                            geometry = event.geometry(),
+                            relatedInfo = getRelatedInfo(event),
+                            state = event.aggregatedSyncState() ?: State.SYNCED,
+                        )
+                    }
+                }
+
                 ProgramEventMapData(
-                    mapper.eventsToProgramEvents(listEvents),
+                    mapEvents.filterEventsByLayerVisibility(
+                        layersVisibility,
+                        coordinateDataElements,
+                    ),
                     programEventFeatures,
                     second,
                 )

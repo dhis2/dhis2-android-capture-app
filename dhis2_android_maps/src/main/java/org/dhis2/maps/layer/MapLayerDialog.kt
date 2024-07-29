@@ -200,7 +200,6 @@ class MapLayerDialog(
             onLayersVisibility(
                 mapManager.updateLayersVisibility(layerVisibility),
             )
-            mapManager.carouselAdapter?.updateLayers(mapManager.mapLayerManager.mapLayers)
             dismiss()
         }
     }
@@ -230,7 +229,7 @@ class MapLayerDialog(
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
                     layerIcon.setImageBitmap(
-                        mapManager.mapLayerManager.mapboxMap.style?.getImage(
+                        mapManager.mapLayerManager.mapBoxMap.style?.getImage(
                             image,
                         ),
                     )
