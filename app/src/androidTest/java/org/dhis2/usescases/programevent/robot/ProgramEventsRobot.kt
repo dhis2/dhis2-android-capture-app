@@ -73,6 +73,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun checkMapIsDisplayed() {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("MAP", true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("MAP_CAROUSEL",true).assertIsDisplayed()
     }
