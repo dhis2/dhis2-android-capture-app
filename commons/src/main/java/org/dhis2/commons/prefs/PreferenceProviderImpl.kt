@@ -100,10 +100,6 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
             getString(SECURE_USER_NAME, "") == userName
     }
 
-    override fun saveJiraCredentials(jiraAuth: String): String {
-        return String.format("Basic %s", jiraAuth)
-    }
-
     override fun clear() {
         sharedPreferences.edit().clear().apply()
     }

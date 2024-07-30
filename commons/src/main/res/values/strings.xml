@@ -24,8 +24,6 @@
     <string name="event_overview">Details</string>
     <string name="select_option">Select option</string>
     <string name="search">Search</string>
-    <string name="jira_issue_sent">Issue Sent</string>
-    <string name="jira_issue_sent_error">Error sending issue</string>
     <string name="events">events</string>
     <string name="data_sets">Data sets</string>
     <string name="tei">TEI</string>

@@ -299,7 +299,6 @@
     <string name="qr_error_attr">Cet attribut ne peut pas être ajouté</string>
     <string name="qr_error_enrollment">Cette inscription ne peu pas être ajoutée</string>
 
-    <string name="jira_report">Signaler les problèmes à Jira</string>
     <string name="about">À propos</string>
     <string name="programs_to_enroll">Programmes disponibles pour l´admission</string>
     <string name="select_all">Tout sélectionner</string>
@@ -363,9 +362,7 @@
     <string name="date_dialog_tigle">sélectionner des dates pour filtrer</string>
     <string name="select_option">Sélectionnez une option</string>
     <string name="issue_reported">Problème signalé</string>
-    <string name="jira_credential_error">Vérifiez que votre nom d\'utilisateur et votre mot de passe à Jira sont corrects</string>
-    <string name="jira_issue_error">Erreur du signalement du problème</string>
-    <string name="jira_fields_error">Tous les champs sont obligatoires</string>
+    <string name="dialog_generate_new_event">Générer un nouvel événement</string>
     <string name="message_generate_new_event">Voulez-vous créer un nouvel événement</string>
     <string name="event_completed_title">événements terminés</string>
     <string name="event_completed_message">Tous les événements de ce programme sont terminés. Voulez-vous fermer le programme aussi?</string>
@@ -680,6 +677,8 @@
     <string name="validation_internal_error_datasets">Nous n\'avons pas pu vérifier la qualité des données. Contactez votre administrateur</string>
     <string name="are_you_sure">Etes-vous sûre ?</string>
     <string name="reopen_question">Voulez-vous rouvrir l\'ensemble de données?</string>
+    <string name="group_events_by_stage">Événements de groupe par étape</string>
+    <string name="show_events_timeline">Afficher la chronologie des événements</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Date d´événement</string>
     <string name="tei_type_has_no_attributes">%s n\'a pas d\'attributs publics. Veuillez sélectionner un programme</string>
@@ -702,8 +701,6 @@
     <string name="metada_first_sync_error">Nous avons trouvé une erreur lors de la synchronisation avec votre serveur. Partagez l\'erreur avec votre administrateur système si c\'est possible</string>
     <string name="error_init_session">Nous n\'avons pas pu connecter la session avec votre nom d\'utilisateur</string>
     <string name="enrollment_date_edition_warning">Il y a des événements planifiés qui ne seront pas reprogrammés</string>
-    <string name="jira_issue_sent">Problème envoyé</string>
-    <string name="jira_issue_sent_error">Erreur lors de l\'envoi du problème</string>
     <string name="section_charts">Graphiques</string>
     <string name="navigation_list_view">Vue de liste</string>
     <string name="navigation_table_view">Vue de tableau</string>

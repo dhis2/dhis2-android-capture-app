@@ -295,7 +295,6 @@
     <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
     <string name="qr_error_enrollment">Không thể đăng ký</string>
 
-    <string name="jira_report">Báo cáo vấn đề lên Jira</string>
     <string name="about">Giới thiệu</string>
     <string name="programs_to_enroll">Chương trình để đăng ký</string>
     <string name="select_all">chọn tất cả</string>
@@ -359,9 +358,7 @@
     <string name="date_dialog_tigle">Chọn ngày để lọc</string>
     <string name="select_option">Tùy chọn</string>
     <string name="issue_reported">Vấn đề đã được báo cáo</string>
-    <string name="jira_credential_error">Kiểm tra lại tên tài khoản và mật khẩu Jira </string>
-    <string name="jira_issue_error">Có lỗi khi báo cáo vấn đề</string>
-    <string name="jira_fields_error">Tất cả các trường là bắt buộc</string>
+    <string name="dialog_generate_new_event">Tạo sự kiện mới</string>
     <string name="message_generate_new_event">Bạn có muốn tạo một sự kiện khác?</string>
     <string name="event_completed_title">Sự kiện đã hoàn tất</string>
     <string name="event_completed_message">Tất cả các sự kiện trong chương trình này đã hoàn tất. Bạn có muốn đóng chương trình không?</string>
@@ -677,6 +674,8 @@
     <string name="validation_internal_error_datasets">Chúng tôi không thể kiểm tra chất lượng dữ liệu. Hãy liên hệ quản lý của bạn.</string>
     <string name="are_you_sure">Bạn có chắc chắn không?</string>
     <string name="reopen_question">Bạn có muốn mở-lại biểu nhập này không?</string>
+    <string name="group_events_by_stage">Nhóm sự kiện theo giai đoạn</string>
+    <string name="show_events_timeline">Hiển thị dòng thời gian sự kiện</string>
     <string name="filters_title_date">Ngày</string>
     <string name="filters_title_event_date">Ngày sự kiện</string>
     <string name="tei_type_has_no_attributes">%s không có các thuộc tính công khai. Vui lòng chọn một chương trình.</string>
@@ -700,8 +699,6 @@
     <string name="metada_first_sync_error">Chúng tôi đã tìm thấy một lỗi khi đang đồng bộ với máy chủ của bạn. Hãy chia sẻ lỗi này với quản lý của bạn nếu có thể.</string>
     <string name="error_init_session">Chúng ta không thể khởi đầu phiên đăng nhập bằng tên đăng nhập của bạn</string>
     <string name="enrollment_date_edition_warning">Có các sự kiện đã lên kế hoạch mà sẽ không chỉnh sửa lịch hẹn.</string>
-    <string name="jira_issue_sent">Đã gửi vấn đề</string>
-    <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="section_charts">Biểu đồ</string>
     <string name="navigation_list_view">Xem danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>

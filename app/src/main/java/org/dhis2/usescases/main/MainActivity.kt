@@ -486,11 +486,6 @@ class MainActivity :
                 mainNavigator.openQR()
             }
 
-            R.id.menu_jira -> {
-                presenter.trackJiraReport()
-                mainNavigator.openJira()
-            }
-
             R.id.menu_about -> {
                 mainNavigator.openAbout()
             }

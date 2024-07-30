@@ -326,7 +326,6 @@
     <string name="qr_error_attr">This attribute can\'t be added</string>
     <string name="qr_error_enrollment">This enrollment can\'t be added</string>
 
-    <string name="jira_report">Report Jira Issue</string>
     <string name="about">About</string>
     <string name="programs_to_enroll">Programs to enroll</string>
     <string name="select_all">select all</string>
@@ -390,9 +389,7 @@
     <string name="date_dialog_tigle">Select dates to filter</string>
     <string name="select_option">Select option</string>
     <string name="issue_reported">Issue reported</string>
-    <string name="jira_credential_error">Check that your jira user and password are correct</string>
-    <string name="jira_issue_error">Error reporting the issue</string>
-    <string name="jira_fields_error">All fields are mandatory</string>
+    <string name="dialog_generate_new_event">Generate new event</string>
     <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
@@ -743,8 +740,6 @@
     <string name="metada_first_sync_error">We found an error when syncing with your server. Share the error with your system administrator if possible.</string>
     <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
-    <string name="jira_issue_sent">Issue Sent</string>
-    <string name="jira_issue_sent_error">Error sending issue</string>
     <string name="section_charts">Charts</string>
     <string name="navigation_list_view">List view</string>
     <string name="navigation_table_view">Table view</string>

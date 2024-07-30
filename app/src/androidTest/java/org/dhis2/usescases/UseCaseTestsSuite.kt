@@ -6,7 +6,6 @@ import org.dhis2.usescases.enrollment.EnrollmentTest
 import org.dhis2.usescases.event.EventTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.EventInitialTest
 import org.dhis2.usescases.filters.FilterTest
-import org.dhis2.usescases.jira.JiraTest
 import org.dhis2.usescases.login.LoginTest
 import org.dhis2.usescases.main.MainTest
 import org.dhis2.usescases.pin.PinTest
@@ -27,7 +26,6 @@ import org.junit.runners.Suite
     EventInitialTest::class,
     EventTest::class,
     FilterTest::class,
-    JiraTest::class,
     LoginTest::class,
     MainTest::class,
     PinTest::class,
