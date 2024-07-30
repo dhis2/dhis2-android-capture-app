@@ -1,7 +1,9 @@
 package org.dhis2.usescases.login
 
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
@@ -15,25 +17,28 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
-import org.dhis2.usescases.BaseTest
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.ui.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
-import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
-fun loginRobot(loginBody: LoginRobot.() -> Unit) {
-    LoginRobot().apply {
+
+fun loginRobot(
+    composeTestRule: ComposeTestRule,
+    loginBody: LoginRobot.() -> Unit
+) {
+    LoginRobot(composeTestRule).apply {
         loginBody()
     }
 }
 
-class LoginRobot : BaseRobot() {
+class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun typeServer(server: String) {
         onView(withId(R.id.server_url_edit)).perform(TypeTextAction(server))
@@ -118,12 +123,15 @@ class LoginRobot : BaseRobot() {
         onView(withId(android.R.id.content)).check(matches(isDisplayed()))
     }
 
-    fun clickOnPrivacyPolicy(composeTestRule: ComposeContentTestRule) {
+    fun clickOnPrivacyPolicy() {
         composeTestRule.onNodeWithTag(CLICKABLE_TEXT_TAG).performClick()
     }
 
-    fun acceptTrackerDialog(composeTestRule: ComposeContentTestRule){
-        composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG).performClick()
+    fun acceptTrackerDialog() {
+        val title = InstrumentationRegistry
+            .getInstrumentation()
+            .targetContext.getString(R.string.improve_app_msg_title)
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
     fun checkPrivacyViewIsOpened() {

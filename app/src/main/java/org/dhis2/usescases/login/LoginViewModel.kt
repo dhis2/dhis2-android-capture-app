@@ -195,9 +195,7 @@ class LoginViewModel(
         try {
             view.hideKeyboard()
             analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-            increment()
             logIn()
-            decrement()
         } catch (throwable: Throwable) {
             Timber.e(throwable)
             handleError(throwable)
@@ -206,6 +204,7 @@ class LoginViewModel(
 
     private fun logIn() {
         _loginProgressVisible.postValue(true)
+        increment()
         disposable.add(
             Observable.just(view.initLogin())
                 .flatMap { userManager ->
@@ -225,7 +224,10 @@ class LoginViewModel(
                             }
                         }
                 }
-                .doOnTerminate { _loginProgressVisible.postValue(false) }
+                .doOnTerminate {
+                    decrement()
+                    _loginProgressVisible.postValue(false)
+                }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
