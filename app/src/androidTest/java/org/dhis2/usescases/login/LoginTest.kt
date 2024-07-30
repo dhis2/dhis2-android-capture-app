@@ -20,9 +20,9 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_ME_PATH
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.API_SYSTEM_INFO_PATH
-import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
 import org.junit.Rule
 import org.junit.Test
 class LoginTest : BaseTest() {
