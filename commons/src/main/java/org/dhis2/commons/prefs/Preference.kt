@@ -7,6 +7,7 @@ class Preference {
         const val INITIAL_DATA_SYNC_DONE = "INITIAL_DATA_SYNC_DONE"
         const val SESSION_LOCKED = "SessionLocked"
         const val PIN = "pin"
+        const val PIN_ENABLED = "PIN_ENABLED"
 
         // SYNC PARAMETERS
         const val EVENT_MAX = "EVENT_MAX"
