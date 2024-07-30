@@ -241,39 +241,41 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-        FilterManager.getInstance().clearUnsupportedFilters();
-
-        if (initSearchNeeded) {
-            presenter.init();
-        } else {
-            initSearchNeeded = true;
+        if(this.sessionManagerServiceImpl.isUserLoggedIn()) {
+            FilterManager.getInstance().clearUnsupportedFilters();
+            if (initSearchNeeded) {
+                presenter.init();
+            } else {
+                initSearchNeeded = true;
+            }
+            binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
         }
-
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
     }
 
     @Override
     protected void onPause() {
-        presenter.setOpeningFilterToNone();
-        if (initSearchNeeded) {
-            presenter.onDestroy();
+        if(sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.setOpeningFilterToNone();
+            if (initSearchNeeded) {
+                presenter.onDestroy();
+            }
         }
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        presenter.onDestroy();
-
-        FilterManager.getInstance().clearEnrollmentStatus();
-        FilterManager.getInstance().clearEventStatus();
-        FilterManager.getInstance().clearEnrollmentDate();
-        FilterManager.getInstance().clearWorkingList(true);
-        FilterManager.getInstance().clearSorting();
-        FilterManager.getInstance().clearAssignToMe();
-        FilterManager.getInstance().clearFollowUp();
-        presenter.clearOtherFiltersIfWebAppIsConfig();
-
+        if(sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.onDestroy();
+            FilterManager.getInstance().clearEnrollmentStatus();
+            FilterManager.getInstance().clearEventStatus();
+            FilterManager.getInstance().clearEnrollmentDate();
+            FilterManager.getInstance().clearWorkingList(true);
+            FilterManager.getInstance().clearSorting();
+            FilterManager.getInstance().clearAssignToMe();
+            FilterManager.getInstance().clearFollowUp();
+            presenter.clearOtherFiltersIfWebAppIsConfig();
+        }
         super.onDestroy();
     }
 
@@ -382,37 +384,41 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void configureBottomNavigation() {
         binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-            if (viewModel.searchOrFilterIsOpen()) {
-                searchScreenConfigurator.closeBackdrop();
-            }
-            binding.mainComponent.setVisibility(View.VISIBLE);
-            switch (item.getItemId()) {
-                case R.id.navigation_list_view -> {
-                    viewModel.setListScreen();
-                    showList();
-                    showSearchAndFilterButtons();
+            if(sessionManagerServiceImpl.isUserLoggedIn()) {
+                if (viewModel.searchOrFilterIsOpen()) {
+                    searchScreenConfigurator.closeBackdrop();
                 }
-                case R.id.navigation_map_view -> networkUtils.performIfOnline(
-                        this,
-                        () -> {
-                            presenter.trackSearchMapVisualization();
-                            viewModel.setMapScreen();
-                            showMap();
-                            showSearchAndFilterButtons();
-                            return null;
-                        },
-                        () -> {
-                            binding.navigationBar.selectItemAt(0);
-                            return null;
-                        },
-                        getString(R.string.msg_network_connection_maps)
-                );
-                case R.id.navigation_analytics -> {
-                    presenter.trackSearchAnalytics();
-                    viewModel.setAnalyticsScreen();
-                    fromAnalytics = true;
-                    showAnalytics();
-                    hideSearchAndFilterButtons();
+                binding.mainComponent.setVisibility(View.VISIBLE);
+                switch (item.getItemId()) {
+                    case R.id.navigation_list_view -> {
+                        viewModel.setListScreen();
+                        showList();
+                        showSearchAndFilterButtons();
+                    }
+                    case R.id.navigation_map_view -> networkUtils.performIfOnline(
+                            this,
+                            () -> {
+                                presenter.trackSearchMapVisualization();
+                                viewModel.setMapScreen();
+                                showMap();
+                                showSearchAndFilterButtons();
+                                return null;
+                            },
+                            () -> {
+                                binding.navigationBar.selectItemAt(0);
+                                return null;
+                            },
+                            getString(R.string.msg_network_connection_maps)
+                    );
+                    case R.id.navigation_analytics -> {
+                        if(sessionManagerServiceImpl.isUserLoggedIn()) {
+                            presenter.trackSearchAnalytics();
+                            viewModel.setAnalyticsScreen();
+                            fromAnalytics = true;
+                            showAnalytics();
+                            hideSearchAndFilterButtons();
+                        }
+                    }
                 }
             }
             return true;

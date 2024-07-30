@@ -237,11 +237,11 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
-
-        presenter.init()
-        presenter.initFilters()
-
-        binding.totalFilters = FilterManager.getInstance().totalFilters
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.init()
+            presenter.initFilters()
+            binding.totalFilters = FilterManager.getInstance().totalFilters
+        }
     }
 
     override fun onPause() {

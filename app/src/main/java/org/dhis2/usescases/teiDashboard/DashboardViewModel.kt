@@ -108,7 +108,12 @@ class DashboardViewModel(
     }
 
     fun updateDashboard() {
-        fetchDashboardModel()
+        try {
+            fetchDashboardModel()
+        }
+        catch (e: Exception) {
+            Timber.d(e.message)
+        }
     }
 
     fun updateEventUid(uid: String?) {

@@ -10,12 +10,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.fragment.app.Fragment;
 
-import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.commons.locationprovider.LocationProvider;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
+import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 import javax.inject.Inject;
 
@@ -23,7 +22,7 @@ import javax.inject.Inject;
  * QUADRAM. Created by ppajuelo on 18/10/2017.
  */
 
-public abstract class FragmentGlobalAbstract extends Fragment implements AbstractActivityContracts.View {
+public abstract class FragmentGlobalAbstract extends SessionManagerFragment implements AbstractActivityContracts.View {
 
     @Inject
     public LocationProvider locationProvider;
@@ -34,7 +33,6 @@ public abstract class FragmentGlobalAbstract extends Fragment implements Abstrac
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
-
     }
 
     //endregion

@@ -98,20 +98,22 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
     }
 
     override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
-        liveDataList?.removeObservers(viewLifecycleOwner)
-        this.liveDataList = pagedListLiveData
-        liveDataList?.observe(viewLifecycleOwner) { pagedList: PagedList<EventViewModel> ->
-            programEventsViewModel.setProgress(false)
-            liveAdapter?.submitList(pagedList) {
-                if ((binding.recycler.adapter?.itemCount ?: 0) == 0) {
-                    binding.emptyTeis.text = getString(R.string.empty_tei_add)
-                    binding.emptyTeis.visibility = View.VISIBLE
-                    binding.recycler.visibility = View.GONE
-                } else {
-                    binding.emptyTeis.visibility = View.GONE
-                    binding.recycler.visibility = View.VISIBLE
+        if (isUserLoggedIn()) {
+            liveDataList?.removeObservers(viewLifecycleOwner)
+            this.liveDataList = pagedListLiveData
+            liveDataList?.observe(viewLifecycleOwner) { pagedList: PagedList<EventViewModel> ->
+                programEventsViewModel.setProgress(false)
+                liveAdapter?.submitList(pagedList) {
+                    if ((binding.recycler.adapter?.itemCount ?: 0) == 0) {
+                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
+                        binding.emptyTeis.visibility = View.VISIBLE
+                        binding.recycler.visibility = View.GONE
+                    } else {
+                        binding.emptyTeis.visibility = View.GONE
+                        binding.recycler.visibility = View.VISIBLE
+                    }
+                    EventListIdlingResourceSingleton.decrement()
                 }
-                EventListIdlingResourceSingleton.decrement()
             }
         }
     }

@@ -214,9 +214,11 @@ class TeiDashboardMobileActivity :
             displayStatusError(it)
         }
         dashboardViewModel.dashboardModel.observe(this) {
-            when (it) {
-                is DashboardEnrollmentModel -> setData(it)
-                is DashboardTEIModel -> setDataWithOutProgram(it)
+            if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                when (it) {
+                    is DashboardEnrollmentModel -> setData(it)
+                    is DashboardTEIModel -> setDataWithOutProgram(it)
+                }
             }
         }
     }
@@ -283,19 +285,21 @@ class TeiDashboardMobileActivity :
             binding.navigationBar.pageConfiguration(pageConfigurator)
             binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
                 adapter?.let { pagerAdapter ->
-                    when (item.itemId) {
-                        R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
-                        R.id.navigation_relationships -> presenter.trackDashboardRelationships()
-                        R.id.navigation_notes -> presenter.trackDashboardNotes()
-                    }
-                    pagerAdapter.getNavigationPagePosition(item.itemId)
-                        .takeIf { it != NO_POSITION }
-                        ?.let {
-                            when {
-                                this.isLandscape() -> binding.teiTablePager?.currentItem = it
-                                else -> binding.teiPager?.currentItem = it
-                            }
+                    if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                        when (item.itemId) {
+                            R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
+                            R.id.navigation_relationships -> presenter.trackDashboardRelationships()
+                            R.id.navigation_notes -> presenter.trackDashboardNotes()
                         }
+                        pagerAdapter.getNavigationPagePosition(item.itemId)
+                            .takeIf { it != NO_POSITION }
+                            ?.let {
+                                when {
+                                    this.isLandscape() -> binding.teiTablePager?.currentItem = it
+                                    else -> binding.teiPager?.currentItem = it
+                                }
+                            }
+                    }
                 }
                 true
             }
@@ -306,18 +310,20 @@ class TeiDashboardMobileActivity :
 
     override fun onResume() {
         super.onResume()
-        if (currentOrientation != -1) {
-            val nextOrientation = if (this.isLandscape()) 1 else 0
-            if (currentOrientation != nextOrientation && adapter != null) {
-                adapter?.notifyDataSetChanged()
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            if (currentOrientation != -1) {
+                val nextOrientation = if (this.isLandscape()) 1 else 0
+                if (currentOrientation != nextOrientation && adapter != null) {
+                    adapter?.notifyDataSetChanged()
+                }
             }
+            currentOrientation = if (this.isLandscape()) 1 else 0
+            if (adapter == null) {
+                restoreAdapter(programUid)
+            }
+            presenter.refreshTabCounters()
+            dashboardViewModel.updateDashboard()
         }
-        currentOrientation = if (this.isLandscape()) 1 else 0
-        if (adapter == null) {
-            restoreAdapter(programUid)
-        }
-        presenter.refreshTabCounters()
-        dashboardViewModel.updateDashboard()
     }
 
     override fun onPause() {

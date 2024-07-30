@@ -166,89 +166,91 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     private fun showDetailCard() {
         binding.detailCard.setContent {
-            val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
-            val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
-            val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
-            val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
-            val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
-            val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
-                false,
-            )
-            val eventCount by presenter.events.map { it.count() }.observeAsState(0)
-
-            val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
-                infoBarMapper.map(
-                    infoBarType = InfoBarType.SYNC,
-                    item = dashboardModel as DashboardEnrollmentModel,
-                    actionCallback = { dashboardActivity.openSyncDialog() },
-                    showInfoBar = syncNeeded,
+            if (isUserLoggedIn()) {
+                val dashboardModel by dashboardViewModel.dashboardModel.observeAsState()
+                val followUp by dashboardViewModel.showFollowUpBar.collectAsState()
+                val syncNeeded by dashboardViewModel.syncNeeded.collectAsState()
+                val enrollmentStatus by dashboardViewModel.showStatusBar.collectAsState()
+                val groupingEvents by dashboardViewModel.groupByStage.observeAsState()
+                val displayEventCreationButton by presenter.shouldDisplayEventCreationButton.observeAsState(
+                    false,
                 )
-            }
+                val eventCount by presenter.events.map { it.count() }.observeAsState(0)
 
-            val followUpInfoBar =
-                dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                val syncInfoBar = dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
                     infoBarMapper.map(
-                        infoBarType = InfoBarType.FOLLOW_UP,
+                        infoBarType = InfoBarType.SYNC,
                         item = dashboardModel as DashboardEnrollmentModel,
-                        actionCallback = {
-                            dashboardViewModel.onFollowUp()
+                        actionCallback = { dashboardActivity.openSyncDialog() },
+                        showInfoBar = syncNeeded,
+                    )
+                }
+
+                val followUpInfoBar =
+                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                        infoBarMapper.map(
+                            infoBarType = InfoBarType.FOLLOW_UP,
+                            item = dashboardModel as DashboardEnrollmentModel,
+                            actionCallback = {
+                                dashboardViewModel.onFollowUp()
+                            },
+                            showInfoBar = followUp,
+                        )
+                    }
+                val enrollmentInfoBar =
+                    dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
+                        infoBarMapper.map(
+                            infoBarType = InfoBarType.ENROLLMENT_STATUS,
+                            item = dashboardModel as DashboardEnrollmentModel,
+                            actionCallback = { },
+                            showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+                        )
+                    }
+
+                val card = dashboardModel?.let {
+                    teiDashboardCardMapper.map(
+                        dashboardModel = it,
+                        onImageClick = { fileToShow ->
+                            val intent = ImageDetailActivity.intent(
+                                context = requireActivity(),
+                                title = null,
+                                imagePath = fileToShow.path,
+                            )
+
+                            startActivity(intent)
                         },
-                        showInfoBar = followUp,
-                    )
-                }
-            val enrollmentInfoBar =
-                dashboardModel.takeIf { it is DashboardEnrollmentModel }?.let {
-                    infoBarMapper.map(
-                        infoBarType = InfoBarType.ENROLLMENT_STATUS,
-                        item = dashboardModel as DashboardEnrollmentModel,
-                        actionCallback = { },
-                        showInfoBar = enrollmentStatus != EnrollmentStatus.ACTIVE,
+                        phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
+                        emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
+                        programsCallback = {
+                            startActivity(
+                                TeiDashboardMobileActivity.intent(
+                                    dashboardActivity.getContext(),
+                                    dashboardActivity.activityTeiUid(),
+                                    null,
+                                    null,
+                                ),
+                            )
+                        },
                     )
                 }
 
-            val card = dashboardModel?.let {
-                teiDashboardCardMapper.map(
-                    dashboardModel = it,
-                    onImageClick = { fileToShow ->
-                        val intent = ImageDetailActivity.intent(
-                            context = requireActivity(),
-                            title = null,
-                            imagePath = fileToShow.path,
-                        )
-
-                        startActivity(intent)
-                    },
-                    phoneCallback = { openChooser(it, Intent.ACTION_DIAL) },
-                    emailCallback = { openChooser(it, Intent.ACTION_SENDTO) },
-                    programsCallback = {
-                        startActivity(
-                            TeiDashboardMobileActivity.intent(
-                                dashboardActivity.getContext(),
-                                dashboardActivity.activityTeiUid(),
-                                null,
-                                null,
-                            ),
-                        )
+                TeiDetailDashboard(
+                    syncData = syncInfoBar,
+                    followUpData = followUpInfoBar,
+                    enrollmentData = enrollmentInfoBar,
+                    card = card,
+                    isGrouped = groupingEvents ?: true,
+                    timelineEventHeaderModel = TimelineEventsHeaderModel(
+                        displayEventCreationButton,
+                        eventCount,
+                        eventResourcesProvider.programEventLabel(programUid, eventCount),
+                        presenter.getNewEventOptionsByStages(null),
+                    ),
+                    timelineOnEventCreationOptionSelected = {
+                        presenter.onAddNewEventOptionSelected(it, null)
                     },
                 )
             }
-
-            TeiDetailDashboard(
-                syncData = syncInfoBar,
-                followUpData = followUpInfoBar,
-                enrollmentData = enrollmentInfoBar,
-                card = card,
-                isGrouped = groupingEvents ?: true,
-                timelineEventHeaderModel = TimelineEventsHeaderModel(
-                    displayEventCreationButton,
-                    eventCount,
-                    eventResourcesProvider.programEventLabel(programUid, eventCount),
-                    presenter.getNewEventOptionsByStages(null),
-                ),
-                timelineOnEventCreationOptionSelected = {
-                    presenter.onAddNewEventOptionSelected(it, null)
-                },
-            )
         }
     }
 
