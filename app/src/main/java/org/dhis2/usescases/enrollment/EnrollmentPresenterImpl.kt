@@ -174,7 +174,7 @@ class EnrollmentPresenterImpl(
     fun updateFields(action: RowAction? = null) {
         action?.let {
             if (shouldShowDateEditionWarning(it.id)) {
-                view.showDateEditionWarning()
+                view.showDateEditionWarning(getProgram()?.uid())
             }
         }
     }

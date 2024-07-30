@@ -370,7 +370,6 @@
     <string name="jira_credential_error">Переконайтеся, що Ваші логін та пароль jira правильні</string>
     <string name="jira_issue_error">Помилка при повідомленні про проблему</string>
     <string name="jira_fields_error">Усі поля обов\'язкові для заповнення</string>
-    <string name="dialog_generate_new_event">Створити новий випадок</string>
     <string name="message_generate_new_event">Ви хочете створити інший випадок?</string>
     <string name="event_completed_title">Завершені випадки</string>
     <string name="event_completed_message">Усі випадки цієї програми завершено. Ви бажаєте закрити також і програму?</string>
@@ -686,8 +685,6 @@
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
-    <string name="group_events_by_stage">Згрупуйте випадки за етапами</string>
-    <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>

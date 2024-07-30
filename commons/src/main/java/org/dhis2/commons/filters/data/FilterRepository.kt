@@ -43,7 +43,9 @@ import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import javax.inject.Inject
 
-class FilterRepository @Inject constructor(
+class FilterRepository
+@Inject
+constructor(
     private val d2: D2,
     val resources: FilterResources,
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig,
@@ -532,7 +534,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventDateLabel(),
+            resources.filterEventDateLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.ENROLLMENT_DATE] = EnrollmentDateFilter(
             ProgramType.TRACKER,
@@ -564,7 +566,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramUidAndUserAssignment = d2.programModule()
@@ -694,7 +696,7 @@ class FilterRepository @Inject constructor(
             programType,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramAndUserAssignment = d2.programModule()

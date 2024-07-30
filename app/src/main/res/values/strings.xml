@@ -393,7 +393,6 @@
     <string name="jira_credential_error">Check that your jira user and password are correct</string>
     <string name="jira_issue_error">Error reporting the issue</string>
     <string name="jira_fields_error">All fields are mandatory</string>
-    <string name="dialog_generate_new_event">Generate new event</string>
     <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
@@ -721,8 +720,6 @@
     <string name="validation_internal_error_datasets">We could not check data quality. Contact your administrator</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reopen_question">Do you want to re-open the data set?</string>
-    <string name="group_events_by_stage">Group events by stage</string>
-    <string name="show_events_timeline">Show events timeline</string>
     <string name="filters_title_date">Date</string>
     <string name="filters_title_event_date">Event date</string>
     <string name="tei_type_has_no_attributes">%s has no public attributes. Please select a program</string>
@@ -965,7 +962,6 @@
     <string name="schedule">Schedule</string>
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
-    <string name="event_count">%d events</string>
     <string name="timeline">Timeline</string>
     <string name="clear_search">Clear search</string>
     <string name="optional">Optional</string>

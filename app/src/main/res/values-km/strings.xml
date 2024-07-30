@@ -268,7 +268,6 @@
     <string name="jira_credential_error">ពិនិត្យមើលថាតើ ឈ្មោះ និង លេខសំងាត់របស់អ្នកត្រឹមត្រូវ</string>
     <string name="jira_issue_error">កំហុសក្នុងការរាយការណ៍បញ្ហា</string>
     <string name="jira_fields_error">គ្រប់ទិន្នន័យទាំងអស់ត្រូវបំពេញ</string>
-    <string name="dialog_generate_new_event">បង្កើតព្រឹត្តិការណ៏ថ្មី</string>
     <string name="message_generate_new_event">តើអ្នកចង់បង្កើតព្រឹត្តិការណ៏ថ្មីមួយទៀតទេ?</string>
     <string name="event_completed_title">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
     <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>

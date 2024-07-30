@@ -32,6 +32,7 @@ import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -98,6 +99,9 @@ class TeiDashboardMobileActivity :
 
     @Inject
     lateinit var resourceManager: ResourceManager
+
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
@@ -648,6 +652,20 @@ class TeiDashboardMobileActivity :
                         programUid ?: "",
                         R.string.program_selector_V2,
                         3,
+                    )
+                }
+                popupMenu.menu.findItem(R.id.groupEvents)?.let { groupEventsItems ->
+                    groupEventsItems.title = eventResourcesProvider.formatWithProgramEventLabel(
+                        R.string.group_event_label_by_stage,
+                        programUid ?: "",
+                        2,
+                    )
+                }
+                popupMenu.menu.findItem(R.id.showTimeline)?.let { showTimelineItems ->
+                    showTimelineItems.title = eventResourcesProvider.formatWithProgramEventLabel(
+                        R.string.show_event_label_timeline,
+                        programUid ?: "",
+                        2,
                     )
                 }
                 Unit

@@ -37,6 +37,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
@@ -87,6 +88,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     @Inject
     lateinit var resourceManager: ResourceManager
+
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     @Inject
     lateinit var cardMapper: TEIEventCardMapper
@@ -238,6 +242,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 timelineEventHeaderModel = TimelineEventsHeaderModel(
                     displayEventCreationButton,
                     eventCount,
+                    eventResourcesProvider.programEventLabel(programUid, eventCount),
                     presenter.getNewEventOptionsByStages(null),
                 ),
                 timelineOnEventCreationOptionSelected = {
@@ -342,9 +347,17 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             binding.teiRecycler.visibility = View.GONE
 
             if (presenter.shouldDisplayEventCreationButton.value == true) {
-                binding.emptyTeis.setText(R.string.empty_tei_add)
+                binding.emptyTeis.text = eventResourcesProvider.formatWithProgramEventLabel(
+                    R.string.empty_tei_event_label_add,
+                    programUid,
+                    2,
+                )
             } else {
-                binding.emptyTeis.setText(R.string.empty_tei_no_add)
+                binding.emptyTeis.text = eventResourcesProvider.formatWithProgramEventLabel(
+                    R.string.empty_tei_event_label_no_add,
+                    programUid,
+                    2,
+                )
             }
         } else {
             binding.emptyTeis.visibility = View.GONE
@@ -375,9 +388,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 programStages = presenter.filterAvailableStages(model.programStages),
                 onScheduled = { programStageUid ->
                     showToast(
-                        resourceManager.formatWithEventLabel(
+                        eventResourcesProvider.formatWithProgramStageEventLabel(
                             R.string.event_label_created,
                             programStageUid,
+                            programUid,
                         ),
                     )
                     presenter.fetchEvents()
@@ -389,9 +403,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun showDialogCloseProgram() {
         dialog = CustomDialog(
             requireContext(),
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_completed,
                 programStageFromEvent?.uid(),
+                programUid,
             ),
             resourceManager.formatWithEnrollmentLabel(
                 programUid = programUid,
