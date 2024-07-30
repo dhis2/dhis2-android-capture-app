@@ -1,13 +1,12 @@
 package org.dhis2.usescases.main
 
-import androidx.compose.ui.test.junit4.createComposeRule
 import android.content.Intent
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.usescases.BaseTest
 import org.dhis2.common.filters.filterRobotCommon
+import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.loginRobot
-import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.settings.settingsRobot
 import org.junit.Ignore
 import org.junit.Rule
@@ -50,7 +49,7 @@ class MainTest : BaseTest() {
     }
 
     @Test
-    fun checkDateFilterSetInitialDateWhenOpenedAgain(){
+    fun checkDateFilterSetInitialDateWhenOpenedAgain() {
         setupCredentials()
         setDatePicker()
         startActivity()
@@ -62,14 +61,14 @@ class MainTest : BaseTest() {
         filterRobotCommon {
             openFilterAtPosition(0)
             clickOnFromToDateOption()
-            selectDate(2020,6,15)
+            selectDate(2020, 6, 15)
             acceptDateSelected()
-            selectDate(2020,11,7)
+            selectDate(2020, 11, 7)
             acceptDateSelected()
             clickOnFromToDateOption()
-            checkDate(2020,6,15)
+            checkDate(2020, 6, 15)
             acceptDateSelected()
-            checkDate(2020,11,7)
+            checkDate(2020, 11, 7)
         }
     }
 
@@ -89,7 +88,7 @@ class MainTest : BaseTest() {
             clickOnAcceptDialog()
         }
 
-        loginRobot {
+        loginRobot(composeTestRule) {
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
         }
