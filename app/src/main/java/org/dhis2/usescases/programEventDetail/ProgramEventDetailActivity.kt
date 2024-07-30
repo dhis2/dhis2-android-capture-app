@@ -31,8 +31,10 @@ import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
@@ -80,6 +82,9 @@ class ProgramEventDetailActivity :
 
     @Inject
     lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
+
+    @Inject
+    lateinit var ouRepositoryConfiguration: OURepositoryConfiguration
 
     private var backDropActive = false
     private var programUid: String = ""
@@ -161,7 +166,13 @@ class ProgramEventDetailActivity :
 
     private fun initInjection() {
         component = app().userComponent()
-            ?.plus(ProgramEventDetailModule(this, programUid))
+            ?.plus(
+                ProgramEventDetailModule(
+                    this,
+                    programUid,
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                ),
+            )
         component?.inject(this)
     }
 
@@ -320,27 +331,41 @@ class ProgramEventDetailActivity :
     }
 
     override fun selectOrgUnitForNewEvent() {
-        OUTreeFragment.Builder()
-            .showAsDialog()
-            .singleSelection()
-            .orgUnitScope(
-                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
-            )
-            .onSelection { selectedOrgUnits ->
-                if (selectedOrgUnits.isNotEmpty()) {
-                    presenter.stageUid?.let {
-                        programEventsViewModel.onOrgUnitForNewEventSelected(
-                            programUid = programUid,
-                            orgUnitUid = selectedOrgUnits.first().uid(),
-                            programStageUid = it,
-                        )
-                    }
-                } else {
-                    enableAddEventButton(true)
-                }
+        val orgUnitList = ouRepositoryConfiguration.orgUnitRepository(null)
+        if (orgUnitList.size == 1) {
+            presenter.stageUid?.let {
+                programEventsViewModel.onOrgUnitForNewEventSelected(
+                    programUid = programUid,
+                    orgUnitUid = orgUnitList.first().uid(),
+                    programStageUid = it,
+                )
             }
-            .build()
-            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+        } else {
+            OUTreeFragment.Builder()
+                .showAsDialog()
+                .singleSelection()
+                .withPreselectedOrgUnits(
+                    listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
+                )
+                .orgUnitScope(
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                )
+                .onSelection { selectedOrgUnits ->
+                    if (selectedOrgUnits.isNotEmpty()) {
+                        presenter.stageUid?.let {
+                            programEventsViewModel.onOrgUnitForNewEventSelected(
+                                programUid = programUid,
+                                orgUnitUid = selectedOrgUnits.first().uid(),
+                                programStageUid = it,
+                            )
+                        }
+                    } else {
+                        enableAddEventButton(true)
+                    }
+                }
+                .build()
+                .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+        }
     }
 
     private fun enableAddEventButton(enable: Boolean) {
