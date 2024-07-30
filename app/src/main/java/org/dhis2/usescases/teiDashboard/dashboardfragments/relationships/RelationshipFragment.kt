@@ -24,10 +24,8 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.locationprovider.LocationSettingLauncher.requestEnableLocationSetting
@@ -40,6 +38,7 @@ import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.views.MapScreen
+import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
@@ -73,7 +72,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     private lateinit var binding: FragmentRelationshipsBinding
     private lateinit var relationshipAdapter: RelationshipAdapter
     private var relationshipType: RelationshipType? = null
-    private lateinit var relationshipMapManager: RelationshipMapManager
+    private var relationshipMapManager: RelationshipMapManager? = null
     private var sources: Set<String>? = null
     private lateinit var mapButtonObservable: MapButtonObservable
 
@@ -161,7 +160,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
                             LaunchedEffect(key1 = items) {
                                 mapData?.let { data ->
-                                    relationshipMapManager.takeIf { it.isMapReady() }
+                                    relationshipMapManager.takeIf { it?.isMapReady() == true }
                                         ?.update(data.relationshipFeatures, data.boundingBox)
                                 }
                             }
@@ -179,15 +178,15 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                 listState = listState,
                                 onItemScrolled = { item ->
                                     with(relationshipMapManager) {
-                                        this.requestMapLayerManager()?.selectFeature(null)
-                                        this.findFeatures(item.uid)
+                                        this?.requestMapLayerManager()?.selectFeature(null)
+                                        this?.findFeatures(item.uid)
                                             ?.takeIf { it.isNotEmpty() }?.let { features ->
                                                 map?.centerCameraOnFeatures(features)
                                             }
                                     }
                                 },
                                 onNavigate = { item ->
-                                    relationshipMapManager.findFeature(item.uid)?.let { feature ->
+                                    relationshipMapManager?.findFeature(item.uid)?.let { feature ->
                                         startActivity(mapNavigation.navigateToMapIntent(feature))
                                     }
                                 },
@@ -209,12 +208,14 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                             )
                                         },
                                     ) {
-                                        MapLayerDialog(relationshipMapManager) { layersVisibility ->
-                                            presenter.filterVisibleMapItems(layersVisibility)
-                                        }.show(
-                                            childFragmentManager,
-                                            MapLayerDialog::class.java.name,
-                                        )
+                                        relationshipMapManager?.let {
+                                            MapLayerDialog(it) { layersVisibility ->
+                                                presenter.filterVisibleMapItems(layersVisibility)
+                                            }.show(
+                                                childFragmentManager,
+                                                MapLayerDialog::class.java.name,
+                                            )
+                                        }
                                     }
                                     IconButton(
                                         style = IconButtonStyle.TONAL,
@@ -264,6 +265,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                 },
                             )
                         }
+
                         else -> {
                             val relationships by presenter.relationshipModels.observeAsState()
 
@@ -274,9 +276,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
                                     binding.root
                                 }, update = {
-                                    binding.relationshipRecycler.adapter = RelationshipAdapter(presenter, colorUtils).also {
-                                        it.submitList(relationships)
-                                    }
+                                    binding.relationshipRecycler.adapter =
+                                        RelationshipAdapter(presenter, colorUtils).also {
+                                            it.submitList(relationships)
+                                        }
                                 })
                             }
                         }
@@ -287,21 +290,24 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        relationshipMapManager = RelationshipMapManager(mapView)
-        lifecycle.addObserver(relationshipMapManager)
-        relationshipMapManager.onCreate(savedInstanceState)
-        relationshipMapManager.onMapClickListener =
-            org.dhis2.maps.views.OnMapClickListener(relationshipMapManager, presenter::onFeatureClicked)
-        relationshipMapManager.init(
-            presenter.fetchMapStyles(),
-        ) { permissionManager ->
-            handleMissingPermission(permissionManager)
+        relationshipMapManager = RelationshipMapManager(mapView).also {
+            lifecycle.addObserver(it)
+            it.onCreate(savedInstanceState)
+            it.onMapClickListener = OnMapClickListener(
+                it,
+                presenter::onFeatureClicked,
+            )
+            it.init(
+                presenter.fetchMapStyles(),
+            ) { permissionManager ->
+                handleMissingPermission(permissionManager)
+            }
         }
     }
 
     private fun handleMapPositionClick() {
         if (locationProvider.hasLocationEnabled()) {
-            relationshipMapManager.centerCameraOnMyPosition { permissionManager ->
+            relationshipMapManager?.centerCameraOnMyPosition { permissionManager ->
                 permissionManager?.requestLocationPermissions(
                     activity,
                 )
@@ -321,7 +327,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        relationshipMapManager.onSaveInstanceState(outState)
+        relationshipMapManager?.onSaveInstanceState(outState)
     }
 
     @Deprecated("Deprecated in Java")
@@ -332,9 +338,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     ) {
         if (
             mapButtonObservable.relationshipMap().value == true &&
-            relationshipMapManager.permissionsManager != null
+            relationshipMapManager?.permissionsManager != null
         ) {
-            relationshipMapManager.permissionsManager?.onRequestPermissionsResult(
+            relationshipMapManager?.permissionsManager?.onRequestPermissionsResult(
                 requestCode,
                 permissions,
                 grantResults,
@@ -344,9 +350,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
     override fun onResume() {
         super.onResume()
-        if (mapButtonObservable.relationshipMap().value == true) {
-//            animations.initMapLoading(binding.mapCarousel)
-        }
         presenter.init()
     }
 
@@ -357,16 +360,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
     override fun onLowMemory() {
         super.onLowMemory()
-        relationshipMapManager.onLowMemory()
-    }
-
-    override fun setRelationships(relationships: List<RelationshipViewModel>) {
-        /*relationshipAdapter.submitList(relationships)
-        if (relationships.isNotEmpty()) {
-            binding.emptyRelationships.visibility = View.GONE
-        } else {
-            binding.emptyRelationships.visibility = View.VISIBLE
-        }*/
+        relationshipMapManager?.onLowMemory()
     }
 
     override fun goToAddRelationship(teiUid: String, teiTypeUidToAdd: String) {
@@ -475,61 +469,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         relationshipsMapModels: List<RelationshipUiComponentModel>,
         map: Pair<Map<String, FeatureCollection>, BoundingBox>,
     ) {
-        relationshipMapManager.update(map.first, map.second)
+        relationshipMapManager?.update(map.first, map.second)
         sources = map.first.keys
-//        val carouselAdapter = CarouselAdapter.Builder()
-//            .addCurrentTei(currentTei)
-//            .addOnDeleteRelationshipListener { relationshipUid ->
-//                if (binding.mapCarousel.carouselEnabled) {
-//                    presenter.deleteRelationship(relationshipUid)
-//                }
-//                true
-//            }
-//            .addOnRelationshipClickListener { teiUid, ownerType ->
-//                if (binding.mapCarousel.carouselEnabled) {
-//                    presenter.onRelationshipClicked(ownerType, teiUid)
-//                }
-//                true
-//            }
-//            /*.addOnNavigateClickListener { uid ->
-//                val feature = relationshipMapManager.findFeature(uid)
-//                if (feature != null) {
-//                    startActivity(mapNavigation.navigateToMapIntent(feature))
-//                }
-//            }*/
-//            .build()
-// //        binding.mapCarousel.setAdapter(carouselAdapter)
-// //        binding.mapCarousel.attachToMapManager(relationshipMapManager)
-//        carouselAdapter.addItems(relationshipsMapModels)
-// //        animations.endMapLoading(binding.mapCarousel)
-//        mapButtonObservable.onRelationshipMapLoaded()
     }
-
-   /* override fun onMapClick(point: LatLng): Boolean {
-        val pointf = relationshipMapManager.map!!.projection.toScreenLocation(point)
-        val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
-        sources?.forEach { sourceId ->
-            val lineLayerId = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
-            val pointLayerId = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
-            val features = relationshipMapManager.map
-                ?.queryRenderedFeatures(rectF, lineLayerId, pointLayerId)
-            if (features?.isNotEmpty() == true) {
-                relationshipMapManager.mapLayerManager.selectFeature(null)
-                val selectedFeature = relationshipMapManager.findFeature(
-                    sourceId,
-                    MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-                    features[0].getStringProperty(
-                        MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-                    ),
-                )
-                relationshipMapManager.mapLayerManager.getLayer(sourceId, true)
-                    ?.setSelectedItem(selectedFeature)
-//                binding.mapCarousel.scrollToFeature(features[0])
-                return true
-            }
-        }
-        return false
-    }*/
 
     companion object {
         const val TEI_A_UID = "TEI_A_UID"
