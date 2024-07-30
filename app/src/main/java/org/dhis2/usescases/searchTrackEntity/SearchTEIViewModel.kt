@@ -311,6 +311,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
+        SearchIdlingResourceSingleton.increment()
         viewModelScope.launch(dispatchers.io()) {
             val resultPagedList = async {
                 when {
@@ -319,7 +320,13 @@ class SearchTEIViewModel(
                     else -> null
                 }
             }
-            onPagedListReady(resultPagedList.await())
+            try {
+                onPagedListReady(resultPagedList.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                SearchIdlingResourceSingleton.decrement()
+            }
         }
     }
 
@@ -424,6 +431,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchMapResults() {
+        SearchIdlingResourceSingleton.increment()
         viewModelScope.launch {
             val result = async(context = dispatchers.io()) {
                 mapDataRepository.getTrackerMapData(
@@ -438,6 +446,8 @@ class SearchTEIViewModel(
                 _mapResults.send(data)
             } catch (e: Exception) {
                 Timber.e(e)
+            } finally {
+                SearchIdlingResourceSingleton.decrement()
             }
             searching = false
         }
@@ -458,21 +468,17 @@ class SearchTEIViewModel(
                 )
                 when (_screenState.value?.screenState) {
                     SearchScreenState.LIST -> {
-                        SearchIdlingResourceSingleton.increment()
                         setListScreen()
                         fetchListResults { flow ->
                             flow?.let {
                                 _refreshData.postValue(Unit)
-                                SearchIdlingResourceSingleton.decrement()
                             }
                         }
                     }
 
                     SearchScreenState.MAP -> {
-                        SearchIdlingResourceSingleton.increment()
                         _refreshData.postValue(Unit)
                         setMapScreen()
-                        fetchMapResults()
                     }
 
                     else -> searching = false
@@ -600,8 +606,6 @@ class SearchTEIViewModel(
         } else {
             handleInitWithoutData()
         }
-
-        SearchIdlingResourceSingleton.decrement()
     }
 
     private fun handleDisplayInListResult(hasProgramResults: Boolean) {
@@ -729,7 +733,6 @@ class SearchTEIViewModel(
     }
 
     fun mapDataFetched() {
-        SearchIdlingResourceSingleton.decrement()
     }
 
     fun onProgramSelected(
@@ -947,6 +950,7 @@ class SearchTEIViewModel(
                     ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
                         map[item.uid] = (item.displayName ?: "")
                     }
+
                     ValueType.DATE, ValueType.AGE -> {
                         item.value?.let {
                             if (it.isNotEmpty()) {
@@ -961,6 +965,7 @@ class SearchTEIViewModel(
                             }
                         }
                     }
+
                     ValueType.DATETIME -> {
                         item.value?.let {
                             if (it.isNotEmpty()) {
@@ -975,9 +980,11 @@ class SearchTEIViewModel(
                             }
                         }
                     }
+
                     ValueType.BOOLEAN -> {
                         map[item.uid] = "${item.label}: ${item.value}"
                     }
+
                     ValueType.TRUE_ONLY -> {
                         item.value?.let {
                             if (it == "true") {
@@ -985,9 +992,11 @@ class SearchTEIViewModel(
                             }
                         }
                     }
+
                     ValueType.PERCENTAGE -> {
                         map[item.uid] = "${item.value}%"
                     }
+
                     else -> {
                         map[item.uid] = (item.value ?: "")
                     }

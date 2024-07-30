@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -239,7 +240,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                             },
                             onItem = { item ->
                                 ListCard(
-                                    modifier = Modifier.fillParentMaxWidth(),
+                                    modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
                                     listAvatar = {
                                         AvatarProvider(
                                             avatarProviderConfiguration = item.avatarProviderConfiguration,

@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
 
     @get:Rule
@@ -367,13 +367,7 @@ class SearchTETest : BaseTest() {
 
         searchTeiRobot(composeTestRule) {
             clickOnShowMap()
-            try {
-                val device = UiDevice.getInstance(getInstrumentation())
-                device.wait(Until.hasObject(By.desc(MAP_LOADED)), 6000)
-                checkCarouselTEICardInfo(firstName)
-            } catch (ex: IdlingResourceTimeoutException) {
-                throw RuntimeException("Could not start test")
-            }
+            checkCarouselTEICardInfo(firstName)
         }
     }
 

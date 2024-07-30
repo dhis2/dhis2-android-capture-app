@@ -89,7 +89,6 @@ fun MapItemHorizontalPager(
             }
         }
         LazyRow(
-            modifier = modifier,
             state = state,
             horizontalArrangement = spacedBy(4.dp),
             verticalAlignment = Alignment.Bottom,

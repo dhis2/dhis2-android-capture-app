@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -149,15 +150,17 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnShowMap() {
-        onView(withId(R.id.navigation_map_view)).perform(click())
+        waitForView(withId(R.id.navigation_map_view)).perform(click())
+//        onView(withId(R.id.navigation_map_view))
     }
 
     fun checkCarouselTEICardInfo(firstName: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
             .assertIsDisplayed()
         composeTestRule.onNode(
-            hasTestTag("MAP_ITEM") and hasAnyDescendant(hasText(firstName)),
-            true
+            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                    and hasText(firstName, true), useUnmergedTree = true
         ).assertIsDisplayed()
     }
 
