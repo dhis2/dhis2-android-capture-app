@@ -479,6 +479,7 @@ class SearchTEIViewModel(
                     SearchScreenState.MAP -> {
                         _refreshData.postValue(Unit)
                         setMapScreen()
+                        fetchMapResults()
                     }
 
                     else -> searching = false
