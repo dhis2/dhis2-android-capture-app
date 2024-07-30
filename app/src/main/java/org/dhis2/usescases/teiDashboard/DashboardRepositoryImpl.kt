@@ -373,30 +373,35 @@ class DashboardRepositoryImpl(
         }
     }
 
-    override fun getDashboardModel(): DashboardModel {
-        return if (programUid.isNullOrEmpty()) {
-            DashboardTEIModel(
-                getTEIEnrollments(teiUid).blockingFirst(),
-                getTrackedEntityInstance(teiUid).blockingFirst(),
-                getTEIAttributeValues(null, teiUid).blockingFirst(),
-                getTeiActivePrograms(teiUid, true).blockingFirst(),
-                getTeiOrgUnits(teiUid, null).blockingFirst(),
-                getTeiHeader(),
-                getTeiProfilePath(),
-            )
-        } else {
-            DashboardEnrollmentModel(
-                getEnrollment().blockingFirst(),
-                getProgramStages(programUid).blockingFirst(),
-                getTEIEnrollmentEvents(programUid, teiUid).blockingFirst(),
-                getTrackedEntityInstance(teiUid).blockingFirst(),
-                getAttributesMap(programUid, teiUid).blockingFirst(),
-                getTEIAttributeValues(programUid, teiUid).blockingFirst(),
-                getTeiActivePrograms(teiUid, false).blockingFirst(),
-                getTeiOrgUnits(teiUid, programUid).blockingFirst(),
-                getTeiHeader(),
-                getTeiProfilePath(),
-            )
+    override fun getDashboardModel(): DashboardModel? {
+        try {
+            return if (programUid.isNullOrEmpty()) {
+                DashboardTEIModel(
+                    getTEIEnrollments(teiUid).blockingFirst(),
+                    getTrackedEntityInstance(teiUid).blockingFirst(),
+                    getTEIAttributeValues(null, teiUid).blockingFirst(),
+                    getTeiActivePrograms(teiUid, true).blockingFirst(),
+                    getTeiOrgUnits(teiUid, null).blockingFirst(),
+                    getTeiHeader(),
+                    getTeiProfilePath(),
+                )
+            } else {
+                DashboardEnrollmentModel(
+                    getEnrollment().blockingFirst(),
+                    getProgramStages(programUid).blockingFirst(),
+                    getTEIEnrollmentEvents(programUid, teiUid).blockingFirst(),
+                    getTrackedEntityInstance(teiUid).blockingFirst(),
+                    getAttributesMap(programUid, teiUid).blockingFirst(),
+                    getTEIAttributeValues(programUid, teiUid).blockingFirst(),
+                    getTeiActivePrograms(teiUid, false).blockingFirst(),
+                    getTeiOrgUnits(teiUid, programUid).blockingFirst(),
+                    getTeiHeader(),
+                    getTeiProfilePath(),
+                )
+            }
+        } catch (exception: Exception) {
+            Timber.d(exception.message)
+            return null
         }
     }
 

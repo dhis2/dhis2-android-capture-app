@@ -48,12 +48,11 @@ class SessionManagerServiceImpl(
     }
 
     companion object {
-        private const val SESSION_TIMEOUT_DURATION = 10 * 1000 // 5 seconds
+        // todo request configured session time out duration when ready for production
+        private const val SESSION_TIMEOUT_DURATION = 10 * 1000 // 10 seconds
     }
 
     private fun logoutUser(navigateAction: (Int) -> Unit, scope: LifecycleCoroutineScope) {
-        // todo check if user has PIN configured
-        // todo
         scope.launch {
             Completable.fromCallable {
                 FilterManager.getInstance().clearAllFilters()

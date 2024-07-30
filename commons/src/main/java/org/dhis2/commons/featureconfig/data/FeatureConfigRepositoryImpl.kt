@@ -4,7 +4,6 @@ import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.featureconfig.model.FeatureState
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.settings.ExperimentalFeature
 import javax.inject.Inject
 
 class FeatureConfigRepositoryImpl @Inject constructor(
@@ -26,7 +25,7 @@ class FeatureConfigRepositoryImpl @Inject constructor(
             preferences.getBoolean(feature.name, false)
         } else {
             d2.settingModule().generalSetting()
-                .hasExperimentalFeature(ExperimentalFeature.NewFormLayout).blockingGet()
+                .hasExperimentalFeature(feature.name).blockingGet()
         }
     }
 }

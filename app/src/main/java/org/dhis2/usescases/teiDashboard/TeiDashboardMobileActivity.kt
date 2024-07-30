@@ -218,6 +218,8 @@ class TeiDashboardMobileActivity :
                 when (it) {
                     is DashboardEnrollmentModel -> setData(it)
                     is DashboardTEIModel -> setDataWithOutProgram(it)
+                    else -> // Do nothing
+                        Unit
                 }
             }
         }
