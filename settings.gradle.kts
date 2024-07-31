@@ -5,3 +5,4 @@ include(
     ":stock-usecase"
 )
 include(":dhis2-mobile-program-rules")
+include(":myplugin")
