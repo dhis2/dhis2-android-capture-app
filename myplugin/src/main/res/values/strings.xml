@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyPlugin</string>
+    <string name="amazing_plugin">This is my amazing plugin!!!</string>
+    <string name="rock">¡¡¡Lets Rock!!!</string>
 </resources>
