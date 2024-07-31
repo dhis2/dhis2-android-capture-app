@@ -14,4 +14,10 @@
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>
     <string name="map_attributionErrorNoBrowser">No web browser installed on device, can\'t open web page.</string>
+    <string name="accuracy_range" >Accuracy range</string>
+    <string name="accuracy_good">Good</string>
+    <string name="accuracy_low">Low</string>
+    <string name="accuracy_medium">Medium</string>
+    <string name="accuracy_verygood">Very good</string>
+    <string name="accuracy_please_wait">Please wait…</string>
 </resources>
