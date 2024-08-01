@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -32,7 +35,13 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
+import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.maps.R
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToPosition
@@ -44,7 +53,11 @@ import org.dhis2.maps.geometry.point.PointViewModel
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.geometry.polygon.PolygonViewModel
 import org.dhis2.maps.layer.basemaps.BaseMapManager
+import org.dhis2.maps.location.AccuracyIndicator
 import org.dhis2.maps.location.MapActivityLocationCallback
+import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.toAccuracyRance
+import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -91,6 +104,11 @@ class MapSelectorActivity :
 
     private var pointViewModel: PointViewModel? = null
 
+    private val locationProvider: LocationProvider = LocationProviderImpl(this)
+
+    private val _accuracyRange = MutableSharedFlow<AccuracyRange>()
+    val accuracyRange: Flow<AccuracyRange> = _accuracyRange
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
@@ -132,6 +150,26 @@ class MapSelectorActivity :
                 onClick = { onSaveButtonClick?.invoke() },
             )
         }
+
+        binding.accuracyIndicator.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(this@MapSelectorActivity))
+            setContent {
+                Dhis2Theme {
+                    val accuracy by accuracyRange.collectAsState(AccuracyRange.None())
+                    AccuracyIndicator(accuracyRange = accuracy)
+                }
+            }
+        }
+
+        locationProvider.getLastKnownLocation(
+            onNewLocation = {
+                GlobalScope.launch {
+                    _accuracyRange.emit(it.accuracy.toAccuracyRance())
+                }
+            },
+            onPermissionNeeded = {},
+            onLocationDisabled = {},
+        )
     }
 
     private fun centerCameraOnMyPosition() {
@@ -419,6 +457,7 @@ class MapSelectorActivity :
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+        locationProvider.stopLocationUpdates()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
