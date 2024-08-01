@@ -58,8 +58,6 @@ class EventMapFragment :
     @Inject
     lateinit var presenter: EventMapPresenter
 
-    private lateinit var mapView: MapView
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -127,7 +125,7 @@ class EventMapFragment :
                                     )
                                 },
                             ) {
-                                MapLayerDialog(eventMapManager!!) { layersVisibility ->
+                                MapLayerDialog(eventMapManager!!, presenter.programUid()) { layersVisibility ->
                                     presenter.filterVisibleMapItems(layersVisibility)
                                 }.show(
                                     childFragmentManager,
