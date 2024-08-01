@@ -1,6 +1,7 @@
 package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -22,6 +23,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
@@ -142,7 +144,20 @@ abstract class MapManager(
         return LatLng(point.latitude(), point.longitude())
     }
 
-    fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
+    fun onLocationButtonClicked(
+        isLocationEnabled: Boolean,
+        context: Activity,
+    ) {
+        if (isLocationEnabled) {
+            centerCameraOnMyPosition { permissionManager ->
+                permissionManager?.requestLocationPermissions(context)
+            }
+        } else {
+            LocationSettingLauncher.requestEnableLocationSetting(context)
+        }
+    }
+
+    private fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
         val isLocationActivated =
             map?.locationComponent?.isLocationComponentActivated ?: false
         if (isLocationActivated) {
@@ -284,7 +299,6 @@ abstract class MapManager(
 
             Lifecycle.Event.ON_START -> {
                 mapView.onStart()
-//                map?.locationComponent?.onStart()
             }
 
             Lifecycle.Event.ON_RESUME -> {
@@ -302,7 +316,6 @@ abstract class MapManager(
             Lifecycle.Event.ON_DESTROY -> {
                 markerViewManager?.onDestroy()
                 symbolManager?.onDestroy()
-//                map?.locationComponent?.onStop()
                 mapView.onDestroy()
             }
 

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.tracker
 
 import org.dhis2.bindings.profilePicturePath
-import org.dhis2.commons.bindings.fromCache
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.maps.model.MapItemModel
@@ -77,12 +76,6 @@ class TrackedEntityInstanceInfoProvider(
                 },
             )
         }
-    }
-
-    private fun getProgram(programUid: String) = fromCache(cachedPrograms, programUid) {
-        d2.programModule().programs()
-            .uid(programUid)
-            .blockingGet()
     }
 
     fun getRelatedInfo(

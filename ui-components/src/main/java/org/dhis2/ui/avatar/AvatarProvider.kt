@@ -28,7 +28,6 @@ fun AvatarProvider(
         is AvatarProviderConfiguration.Metadata ->
             MetadataIconAvatar(
                 avatarProviderConfiguration,
-                onImageClick,
             )
     }
 }
@@ -36,7 +35,6 @@ fun AvatarProvider(
 @Composable
 private fun MetadataIconAvatar(
     config: AvatarProviderConfiguration.Metadata,
-    onImageClick: (String) -> Unit,
 ) {
     Avatar(
         metadataAvatar = {

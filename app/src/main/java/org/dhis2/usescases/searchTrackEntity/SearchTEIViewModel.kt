@@ -738,9 +738,6 @@ class SearchTEIViewModel(
         } ?: false
     }
 
-    fun mapDataFetched() {
-    }
-
     fun onProgramSelected(
         programIndex: Int,
         programs: List<ProgramSpinnerModel>,

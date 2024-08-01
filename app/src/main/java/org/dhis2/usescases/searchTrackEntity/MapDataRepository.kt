@@ -9,14 +9,6 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeat
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.MapLayer
-import org.dhis2.maps.layer.types.EnrollmentMapLayer
-import org.dhis2.maps.layer.types.FieldMapLayer
-import org.dhis2.maps.layer.types.RelationshipMapLayer
-import org.dhis2.maps.layer.types.TeiEventMapLayer
-import org.dhis2.maps.layer.types.TeiMapLayer
-import org.dhis2.maps.model.MapItemModel
-import org.dhis2.maps.utils.CoordinateAttributeInfo
-import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.dhis2.maps.utils.DhisMapUtils
 import org.hisp.dhis.android.core.program.Program
 
@@ -73,81 +65,5 @@ class MapDataRepository(
             teiBoundingBox = teiFeatureCollection.second,
             dataElementFeaturess = coordinateFields,
         )
-    }
-
-    private fun teiLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean {
-        return layersVisibility.values.find { it is TeiMapLayer }?.visible == true
-    }
-
-    private fun enrollmentLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean {
-        return layersVisibility.values.find { it is EnrollmentMapLayer }?.visible == true
-    }
-
-    private fun attributeLayerIsVisible(
-        mapTeiModel: MapItemModel,
-        layersVisibility: Map<String, MapLayer>,
-        coordinateAttributes: List<CoordinateAttributeInfo>,
-    ): Boolean {
-        return layersVisibility.entries.any { (_, mapLayer) ->
-            (mapLayer is FieldMapLayer) and
-                mapLayer.visible and
-                (coordinateAttributes.find { it.tei.uid() == mapTeiModel.uid } != null)
-        }
-    }
-
-    private fun dataElementLayerIsVisible(
-        mapTeiModel: MapItemModel,
-        layersVisibility: Map<String, MapLayer>,
-        coordinateDataElements: List<CoordinateDataElementInfo>,
-    ): Boolean {
-        return layersVisibility.entries.any { (_, mapLayer) ->
-            (mapLayer is FieldMapLayer) and
-                mapLayer.visible and
-                (coordinateDataElements.find { it.event.uid() == mapTeiModel.uid } != null)
-        }
-    }
-
-    private fun eventLayerIsVisible(
-        mapItemModel: MapItemModel,
-        layersVisibility: Map<String, MapLayer>,
-    ): Boolean {
-        return layersVisibility.entries.filter { it.value is TeiEventMapLayer }
-            .find { (sourceId, mapLayer) ->
-                mapLayer.visible and (mapItemModel.relatedInfo?.event?.stageDisplayName == sourceId)
-            } != null
-    }
-
-    private fun relationshipLayerIsVisible(
-        mapItemModel: MapItemModel,
-        layersVisibility: Map<String, MapLayer>,
-    ): Boolean {
-        return layersVisibility.entries.filter { it.value is RelationshipMapLayer }
-            .find { (sourceId, mapLayer) ->
-                mapLayer.visible and (mapItemModel.relatedInfo?.relationship?.displayName == sourceId)
-            } != null
-    }
-
-    private fun hasCoordinates(mapTeiModel: MapItemModel): Boolean {
-        return mapTeiModel.geometry != null
-    }
-
-    private fun hasEnrollmentCoordinates(mapTeiModel: MapItemModel): Boolean {
-        return mapTeiModel.relatedInfo?.enrollment?.geometry != null
-    }
-
-    private fun hasAttributeCoordinates(
-        mapTeiModel: MapItemModel,
-        coordinateAttributes: List<CoordinateAttributeInfo>,
-    ): Boolean {
-        return coordinateAttributes.find { it.tei.uid() == mapTeiModel.uid } != null
-    }
-
-    private fun hasDataElementCoordinates(
-        mapTeiModel: MapItemModel,
-        coordinateDataElements: List<CoordinateDataElementInfo>,
-    ): Boolean {
-        return coordinateDataElements.find {
-            it.enrollment?.uid() == mapTeiModel.relatedInfo?.enrollment?.uid
-        } != null
     }
 }

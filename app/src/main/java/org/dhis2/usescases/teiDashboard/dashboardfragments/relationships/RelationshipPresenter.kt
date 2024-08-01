@@ -51,9 +51,6 @@ class RelationshipPresenter internal constructor(
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
             .blockingGet()?.trackedEntityType()
-    private val programStageUid =
-        d2.eventModule().events().uid(eventUid).blockingGet()?.programStage()
-
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     private val _relationshipsModels = MutableLiveData<List<RelationshipViewModel>>()

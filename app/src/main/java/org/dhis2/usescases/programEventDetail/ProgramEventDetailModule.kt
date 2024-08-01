@@ -146,8 +146,7 @@ class ProgramEventDetailModule(
         dhisMapUtils: DhisMapUtils,
         filterPresenter: FilterPresenter,
         charts: Charts,
-        resourceManager: ResourceManager,
-        metadataIconProvider: MetadataIconProvider,
+        eventInfoProvider: EventInfoProvider,
     ): ProgramEventDetailRepository {
         return ProgramEventDetailRepositoryImpl(
             programUid,
@@ -158,14 +157,22 @@ class ProgramEventDetailModule(
             dhisMapUtils,
             filterPresenter,
             charts,
-            EventInfoProvider(
-                d2,
-                resourceManager,
-                DateLabelProvider(context, resourceManager),
-                metadataIconProvider,
-            ),
+            eventInfoProvider,
         )
     }
+
+    @Provides
+    @PerActivity
+    fun eventInfoProvider(
+        d2: D2,
+        resourceManager: ResourceManager,
+        metadataIconProvider: MetadataIconProvider,
+    ) = EventInfoProvider(
+        d2,
+        resourceManager,
+        DateLabelProvider(context, resourceManager),
+        metadataIconProvider,
+    )
 
     @Provides
     @PerActivity

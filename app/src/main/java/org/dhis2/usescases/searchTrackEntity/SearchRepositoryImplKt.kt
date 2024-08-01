@@ -233,7 +233,7 @@ class SearchRepositoryImplKt(
 
                         when {
                             relationshipTarget?.trackedEntityInstance() != null &&
-                                teis.find { it.uid == relationshipTarget.elementUid() } == null -> {
+                                teis.none { it.uid == relationshipTarget.elementUid() } -> {
                                 val trackedEntityType =
                                     d2.trackedEntityModule().trackedEntityInstances()
                                         .uid(relationshipTarget.elementUid())
