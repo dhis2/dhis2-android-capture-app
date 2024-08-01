@@ -50,9 +50,8 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
             locationManager.getLastKnownLocation(locationProvider!!).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
-                } else {
-                    requestLocationUpdates(onNewLocation)
                 }
+                requestLocationUpdates(onNewLocation)
             }
         }
     }
@@ -67,9 +66,11 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
                         stopLocationUpdates()
                     }
                 }
+
                 override fun onProviderEnabled(provider: String) {
                     // Need implementation for compatibility
                 }
+
                 override fun onProviderDisabled(provider: String) {
                     // Need implementation for compatibility
                 }
