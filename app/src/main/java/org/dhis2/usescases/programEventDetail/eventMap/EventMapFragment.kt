@@ -22,8 +22,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
+import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.ui.SyncButtonProvider
 import org.dhis2.maps.camera.centerCameraOnFeatures
@@ -82,7 +82,7 @@ class EventMapFragment :
                     val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
 
                     LaunchedEffect(key1 = clickedItem) {
-                        if (clickedItem != null) {
+                        clickedItem?.let {
                             listState.animateScrollToItem(
                                 items.indexOfFirst { it.uid == clickedItem },
                             )
@@ -141,19 +141,8 @@ class EventMapFragment :
                                         contentDescription = "",
                                     )
                                 },
-                            ) {
-                                if (locationProvider.hasLocationEnabled()) {
-                                    eventMapManager?.centerCameraOnMyPosition { permissionManager ->
-                                        permissionManager?.requestLocationPermissions(
-                                            requireActivity(),
-                                        )
-                                    }
-                                } else {
-                                    LocationSettingLauncher.requestEnableLocationSetting(
-                                        requireContext(),
-                                    )
-                                }
-                            }
+                                onClick = ::onLocationButtonClicked,
+                            )
                         },
                         map = {
                             AndroidView(
@@ -162,26 +151,20 @@ class EventMapFragment :
                                         loadMap(it, savedInstanceState)
                                     }
                                 },
-                                modifier = Modifier.fillMaxSize().testTag("MAP"),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .testTag("MAP"),
                             ) {}
                         },
                         onItem = { item ->
                             ListCard(
-                                modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
+                                modifier = Modifier
+                                    .fillParentMaxWidth()
+                                    .testTag("MAP_ITEM"),
                                 listAvatar = {
                                     AvatarProvider(
                                         avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                        onImageClick = { path ->
-                                            if (path.isNotBlank()) {
-                                                val intent = ImageDetailActivity.intent(
-                                                    context = requireContext(),
-                                                    title = null,
-                                                    imagePath = path,
-                                                )
-
-                                                startActivity(intent)
-                                            }
-                                        },
+                                        onImageClick = ::launchImageDetail,
                                     )
                                 },
                                 title = ListCardTitleModel(text = item.title),
@@ -209,6 +192,13 @@ class EventMapFragment :
                 }
             }
         }
+    }
+
+    private fun onLocationButtonClicked() {
+        eventMapManager?.onLocationButtonClicked(
+            locationProvider.hasLocationEnabled(),
+            requireActivity(),
+        )
     }
 
     override fun onResume() {

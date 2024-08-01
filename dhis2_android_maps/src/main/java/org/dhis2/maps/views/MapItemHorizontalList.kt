@@ -106,7 +106,7 @@ fun MapItemHorizontalPager(
 @Composable
 fun MapItemHorizontalListPreview() {
     val items = mutableListOf<MapItemModel>()
-    repeat(200) { index ->
+    repeat(200) {
         items.add(
             MapItemModel(
                 uid = UUID.randomUUID().toString(),
@@ -117,16 +117,11 @@ fun MapItemHorizontalListPreview() {
                 title = "Title",
                 description = null,
                 lastUpdated = "5 min ago",
-                additionalInfoList = listOf(
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                    AdditionalInfoItem(key = "key:", value = "Hello there"),
-                ),
+                additionalInfoList = buildList {
+                    repeat(8) {
+                        add(AdditionalInfoItem(key = "key:", value = "Hello there"))
+                    }
+                },
                 isOnline = false,
                 geometry = null,
                 relatedInfo = null,

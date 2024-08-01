@@ -26,9 +26,9 @@ import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
 import org.dhis2.bindings.app
+import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.data.tuples.Trio
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
-import org.dhis2.commons.locationprovider.LocationSettingLauncher.requestEnableLocationSetting
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentRelationshipsBinding
 import org.dhis2.form.model.EventMode
@@ -114,28 +114,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false)
-//        relationshipAdapter = RelationshipAdapter(presenter, colorUtils)
-//        binding.relationshipRecycler.adapter = relationshipAdapter
-
-//        mapButtonObservable.relationshipMap().observe(viewLifecycleOwner) { showMap ->
-//            val mapVisibility = if (showMap) View.VISIBLE else View.GONE
-//            val listVisibility = if (showMap) View.GONE else View.VISIBLE
-//            binding.relationshipRecycler.visibility = listVisibility
-//            binding.mapView.visibility = mapVisibility
-//            binding.mapLayerButton.visibility = mapVisibility
-//            binding.mapPositionButton.visibility = mapVisibility
-//            binding.mapCarousel.visibility = mapVisibility
-//            binding.dialFabLayout.setFabVisible(!showMap)
-//        }
-        /*binding.mapLayerButton.setOnClickListener {
-            val layerDialog = MapLayerDialog(
-                relationshipMapManager,
-            )
-            layerDialog.show(childFragmentManager, MapLayerDialog::class.java.name)
-        }*/
-//        binding.mapPositionButton.setOnClickListener { handleMapPositionClick() }
-//        binding.emptyRelationships.setContent { NoRelationships() }
-//        return binding.root
 
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -225,9 +203,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                                 contentDescription = "",
                                             )
                                         },
-                                    ) {
-                                        handleMapPositionClick()
-                                    }
+                                        onClick = ::onLocationButtonClicked,
+                                    )
                                 },
                                 onItem = { item ->
                                     ListCard(
@@ -235,17 +212,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                         listAvatar = {
                                             AvatarProvider(
                                                 avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                                onImageClick = { path ->
-                                                    if (path.isNotBlank()) {
-                                                        val intent = ImageDetailActivity.intent(
-                                                            context = requireContext(),
-                                                            title = null,
-                                                            imagePath = path,
-                                                        )
-
-                                                        startActivity(intent)
-                                                    }
-                                                },
+                                                onImageClick = ::launchImageDetail,
                                             )
                                         },
                                         title = ListCardTitleModel(text = item.title),
@@ -272,8 +239,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             if (relationships?.isEmpty() == true) {
                                 NoRelationships()
                             } else {
-                                AndroidView(factory = { context ->
-
+                                AndroidView(factory = { _ ->
                                     binding.root
                                 }, update = {
                                     binding.relationshipRecycler.adapter =
@@ -287,6 +253,13 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 }
             }
         }
+    }
+
+    private fun onLocationButtonClicked() {
+        relationshipMapManager?.onLocationButtonClicked(
+            locationProvider.hasLocationEnabled(),
+            requireActivity(),
+        )
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
@@ -305,23 +278,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         }
     }
 
-    private fun handleMapPositionClick() {
-        if (locationProvider.hasLocationEnabled()) {
-            relationshipMapManager?.centerCameraOnMyPosition { permissionManager ->
-                permissionManager?.requestLocationPermissions(
-                    activity,
-                )
-            }
-        } else {
-            requestEnableLocationSetting(requireContext())
-        }
-    }
-
     private fun handleMissingPermission(permissionManager: PermissionsManager?) {
         if (locationProvider.hasLocationEnabled()) {
             permissionManager?.requestLocationPermissions(activity)
         } else {
-            requestEnableLocationSetting(requireContext())
+            LocationSettingLauncher.requestEnableLocationSetting(requireContext())
         }
     }
 

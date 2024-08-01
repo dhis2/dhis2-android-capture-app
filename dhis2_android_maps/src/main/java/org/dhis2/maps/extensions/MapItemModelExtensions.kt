@@ -71,15 +71,15 @@ private fun MapItemModel.hasEnrollmentCoordinates(): Boolean {
 private fun MapItemModel.hasAttributeCoordinates(
     coordinateAttributes: List<CoordinateAttributeInfo>,
 ): Boolean {
-    return coordinateAttributes.find { it.tei.uid() == uid } != null
+    return coordinateAttributes.any { it.tei.uid() == uid }
 }
 
 private fun MapItemModel.hasDataElementCoordinates(
     coordinateDataElements: List<CoordinateDataElementInfo>,
 ): Boolean {
-    return coordinateDataElements.find {
+    return coordinateDataElements.any {
         it.enrollment?.uid() == relatedInfo?.enrollment?.uid
-    } != null
+    }
 }
 
 private fun teiLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean {

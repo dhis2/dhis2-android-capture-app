@@ -198,7 +198,7 @@ class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
     private fun selectedFeature(rectF: RectF): Feature? {
         var selectedFeature: Feature? = null
         val sourcesAndLayers = mapLayerManager.sourcesAndLayersForSearch()
-        sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (source, layers) ->
+        sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (_, layers) ->
             val features = map?.queryRenderedFeatures(rectF, *layers) ?: emptyList()
             if (features.isNotEmpty()) {
                 mapLayerManager.selectFeature(null)

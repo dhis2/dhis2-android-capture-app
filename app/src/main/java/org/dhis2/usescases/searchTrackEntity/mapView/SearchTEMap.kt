@@ -28,8 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
 import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
-import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.ui.SyncButtonProvider
@@ -110,20 +109,6 @@ class SearchTEMap : FragmentGlobalAbstract() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        /*viewModel.screenState.observe(viewLifecycleOwner) {
-            if (it.screenState == SearchScreenState.MAP) {
-                val backdropActive = isPortrait() && (it as SearchList).searchFilters.isOpened
-                binding.mapView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                    val bottomMargin = if (backdropActive) {
-                        0
-                    } else {
-                        40.DP
-                    }
-                    setMargins(0, 0, 0, bottomMargin)
-                }
-            }
-        }*/
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
@@ -154,7 +139,6 @@ class SearchTEMap : FragmentGlobalAbstract() {
                             data.dataElementFeaturess,
                             data.teiBoundingBox,
                         )
-                        viewModel.mapDataFetched()
                     }
                 }
 
@@ -202,27 +186,12 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                     }
                                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                                 }
-                                IconButton(
-                                    style = IconButtonStyle.TONAL,
-                                    icon = {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_my_location),
-                                            contentDescription = "",
-                                        )
-                                    },
-                                ) {
-                                    if (locationProvider.hasLocationEnabled()) {
-                                        teiMapManager?.centerCameraOnMyPosition { permissionManager ->
-                                            permissionManager?.requestLocationPermissions(
-                                                requireActivity(),
-                                            )
-                                        }
-                                    } else {
-                                        LocationSettingLauncher.requestEnableLocationSetting(
-                                            requireContext(),
-                                        )
-                                    }
-                                }
+                                IconButton(style = IconButtonStyle.TONAL, icon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_my_location),
+                                        contentDescription = "",
+                                    )
+                                }, onClick = ::onLocationButtonClicked)
                             },
                             onItemScrolled = { item ->
                                 with(teiMapManager) {
@@ -244,17 +213,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                     listAvatar = {
                                         AvatarProvider(
                                             avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                            onImageClick = { path ->
-                                                if (path.isNotBlank()) {
-                                                    val intent = ImageDetailActivity.intent(
-                                                        context = requireContext(),
-                                                        title = null,
-                                                        imagePath = path,
-                                                    )
-
-                                                    startActivity(intent)
-                                                }
-                                            },
+                                            onImageClick = ::launchImageDetail,
                                         )
                                     },
                                     title = ListCardTitleModel(text = item.title),
@@ -294,6 +253,13 @@ class SearchTEMap : FragmentGlobalAbstract() {
                 }
             }
         }
+    }
+
+    private fun onLocationButtonClicked() {
+        teiMapManager?.onLocationButtonClicked(
+            locationProvider.hasLocationEnabled(),
+            requireActivity(),
+        )
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {

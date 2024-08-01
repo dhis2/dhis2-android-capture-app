@@ -52,9 +52,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         val dataSource = filterPresenter
             .filteredEventProgram(program)
             .dataSource
-            .map { event ->
-                mapper.eventToEventViewModel(event)
-            }
+            .map(mapper::eventToEventViewModel)
         return LivePagedListBuilder(
             object : DataSource.Factory<Event, EventViewModel>() {
                 override fun create(): DataSource<Event, EventViewModel> {
@@ -108,9 +106,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
 
     override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
-            .map { event ->
-                mapper.eventToProgramEvent(event)
-            }
+            .map(mapper::eventToProgramEvent)
             .toFlowable()
     }
 
