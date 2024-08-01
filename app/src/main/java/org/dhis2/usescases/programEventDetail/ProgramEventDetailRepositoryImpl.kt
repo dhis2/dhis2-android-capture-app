@@ -12,8 +12,6 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.maps.extensions.filterEventsByLayerVisibility
-import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.model.MapItemModel
@@ -33,8 +31,6 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     private val programUid: String,
     private val d2: D2,
     private val mapper: ProgramEventMapper,
-    private val mapEventToFeatureCollection: MapEventToFeatureCollection,
-    private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
     private val mapUtils: DhisMapUtils,
     private val filterPresenter: FilterPresenter,
     private val charts: Charts?,
@@ -63,16 +59,19 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         ).build()
     }
 
-    override fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData> {
+    override fun filteredEventsForMap(
+        layersVisibility: Map<String, MapLayer>,
+    ): Flowable<ProgramEventMapData> {
         return filterRepository?.get()
             ?.map { listEvents ->
-                val (first, second) = mapEventToFeatureCollection.map(listEvents)
+                val (first, second) = mapUtils.eventsToFeatureCollection(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
                 programEventFeatures[EventMapManager.EVENTS] = first
                 val coordinateDataElements =
                     mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents))
                 val deFeatureCollection =
-                    mapCoordinateFieldToFeatureCollection.map(coordinateDataElements)
+                    mapUtils.coordinateFieldsToFeatureCollection(coordinateDataElements)
+
                 programEventFeatures.putAll(deFeatureCollection)
 
                 val mapEvents = listEvents.map { event ->

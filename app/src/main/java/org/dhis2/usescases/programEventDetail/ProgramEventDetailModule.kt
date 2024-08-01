@@ -20,15 +20,6 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.maps.geometry.bound.GetBoundingBox
-import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
-import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
-import org.dhis2.maps.geometry.mapper.featurecollection.MapAttributeToFeature
-import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
-import org.dhis2.maps.geometry.point.MapPointToFeature
-import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.usescases.events.EventInfoProvider
@@ -89,43 +80,6 @@ class ProgramEventDetailModule(
 
     @Provides
     @PerActivity
-    fun provideMapGeometryToFeature(): MapGeometryToFeature {
-        return MapGeometryToFeature(MapPointToFeature(), MapPolygonToFeature())
-    }
-
-    @Provides
-    @PerActivity
-    fun provideMapEventToFeatureCollection(
-        mapGeometryToFeature: MapGeometryToFeature,
-    ): MapEventToFeatureCollection {
-        return MapEventToFeatureCollection(
-            mapGeometryToFeature,
-            GetBoundingBox(),
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideMapDataElementToFeatureCollection(
-        attributeToFeatureMapper: MapAttributeToFeature,
-        dataElementToFeatureMapper: MapDataElementToFeature,
-    ): MapCoordinateFieldToFeatureCollection {
-        return MapCoordinateFieldToFeatureCollection(
-            dataElementToFeatureMapper,
-            attributeToFeatureMapper,
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideMapCoordinateFieldToFeature(
-        mapGeometryToFeature: MapGeometryToFeature,
-    ): MapCoordinateFieldToFeature {
-        return MapCoordinateFieldToFeature(mapGeometryToFeature)
-    }
-
-    @Provides
-    @PerActivity
     fun provideEventMapper(
         d2: D2,
         periodUtils: DhisPeriodUtils,
@@ -141,8 +95,6 @@ class ProgramEventDetailModule(
     fun eventDetailRepository(
         d2: D2,
         mapper: ProgramEventMapper,
-        mapEventToFeatureCollection: MapEventToFeatureCollection,
-        mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
         dhisMapUtils: DhisMapUtils,
         filterPresenter: FilterPresenter,
         charts: Charts,
@@ -152,8 +104,6 @@ class ProgramEventDetailModule(
             programUid,
             d2,
             mapper,
-            mapEventToFeatureCollection,
-            mapCoordinateFieldToFeatureCollection,
             dhisMapUtils,
             filterPresenter,
             charts,
