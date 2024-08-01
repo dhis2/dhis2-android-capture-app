@@ -181,7 +181,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                         )
                                     },
                                 ) {
-                                    MapLayerDialog(teiMapManager!!) { layersVisibility ->
+                                    MapLayerDialog(teiMapManager!!, viewModel.initialProgramUid) { layersVisibility ->
                                         viewModel.filterVisibleMapItems(layersVisibility)
                                     }
                                         .show(childFragmentManager, MapLayerDialog::class.java.name)

@@ -49,7 +49,7 @@ import java.text.ParseException
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
 class SearchTEIViewModel(
-    private val initialProgramUid: String?,
+    val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
     private val searchRepository: SearchRepository,
     private val searchRepositoryKt: SearchRepositoryKt,

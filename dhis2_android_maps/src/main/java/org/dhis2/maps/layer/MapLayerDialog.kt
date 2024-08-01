@@ -35,6 +35,7 @@ import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICO
 
 class MapLayerDialog(
     private val mapManager: MapManager,
+    private val programUid: String?,
     private val onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {},
 ) : BottomSheetDialogFragment() {
 
@@ -135,7 +136,7 @@ class MapLayerDialog(
                     addCheckBox(
                         source,
                         resourceManager.formatWithEnrollmentLabel(
-                            programUid = null, // TODO:5894 programUid not available
+                            programUid = programUid,
                             stringResource = R.string.dialog_layer_enrollment_coordinates_v2,
                             1,
                         ),

@@ -187,7 +187,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                         },
                                     ) {
                                         relationshipMapManager?.let {
-                                            MapLayerDialog(it) { layersVisibility ->
+                                            MapLayerDialog(it, programUid()) { layersVisibility ->
                                                 presenter.filterVisibleMapItems(layersVisibility)
                                             }.show(
                                                 childFragmentManager,

@@ -84,4 +84,8 @@ class EventMapPresenter(
         this.layersVisibility = layersVisibility
         filterManager.publishData()
     }
+
+    fun programUid(): String? {
+        return eventRepository.program().blockingGet()?.uid()
+    }
 }
