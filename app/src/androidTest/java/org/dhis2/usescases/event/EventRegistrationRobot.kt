@@ -40,7 +40,7 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
     private fun clickOnNextQR() {
-        onView(withId(R.id.next)).perform(click())
+        waitForView(withId(R.id.next)).perform(click())
     }
 
     fun clickOnAllQR(listQR: Int) {

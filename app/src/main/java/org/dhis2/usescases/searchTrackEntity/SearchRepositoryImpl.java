@@ -368,7 +368,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         String value = attribute.getValue();
         String transformedValue;
         if (value != null) {
-            transformedValue = ValueUtils.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
+            transformedValue =  ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
         } else {
             transformedValue = sortingValueSetter.getUnknownLabel();
         }
@@ -409,8 +409,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (count > 0) {
             tei.setHasOverdue(true);
-            Date scheduleDate = scheduleList.size() > 0 ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = overdueList.size() > 0 ? overdueList.get(0).dueDate() : null;
+            Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
+            Date overdueDate = !overdueList.isEmpty()  ? overdueList.get(0).dueDate() : null;
             Date dateToShow = null;
             if (scheduleDate != null && overdueDate != null) {
                 if (scheduleDate.before(overdueDate)) {
@@ -530,8 +530,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private int getTeiDefaultRes(TrackedEntityInstance tei) {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
-        return resources.getObjectStyleDrawableResource(teiType.style().icon(), R.drawable.photo_temp_gray);
+        TrackedEntityType teiTypeValues = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
+        return resources.getObjectStyleDrawableResource(teiTypeValues.style().icon(), R.drawable.photo_temp_gray);
     }
 
     private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei, Program selectedProgram) {

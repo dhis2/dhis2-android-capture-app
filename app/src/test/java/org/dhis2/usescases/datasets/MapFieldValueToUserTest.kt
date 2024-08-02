@@ -49,6 +49,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         val dataElement =
             DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.BOOLEAN).build()
@@ -79,6 +80,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         val dataElement =
             DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.ORGANISATION_UNIT)
@@ -109,6 +111,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
@@ -139,6 +142,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         val dataElement =
             DataElement.builder().uid(DATAELEMENT_UID).valueType(ValueType.FILE_RESOURCE).build()
@@ -167,6 +171,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
@@ -197,6 +202,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
@@ -226,6 +232,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =
@@ -255,6 +262,7 @@ class MapFieldValueToUserTest {
             1,
             "1",
             "",
+            emptyList(),
         )
         whenever(resources.getString(any())) doReturn UNSUPPORTED_VALUES
         val dataElement =

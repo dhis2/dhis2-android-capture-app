@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +24,8 @@ import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
@@ -85,6 +86,8 @@ class TEIDataPresenter(
 
     private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
     val events: LiveData<List<EventViewModel>> = _events
+
+    private val singleEventEnforcer = SingleEventEnforcer.get()
 
     fun init() {
         programUid?.let {
@@ -195,32 +198,6 @@ class TEIDataPresenter(
 
     fun changeCatOption(eventUid: String?, catOptionComboUid: String?) {
         dashboardRepository.saveCatOption(eventUid, catOptionComboUid)
-    }
-
-    fun areEventsCompleted() {
-        compositeDisposable.add(
-            dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teiUid)
-                .flatMap { events ->
-                    if (events.isEmpty()) {
-                        dashboardRepository.getTEIEnrollmentEvents(
-                            programUid,
-                            teiUid,
-                        )
-                    } else {
-                        Observable.just(events)
-                    }
-                }
-                .map { events ->
-                    Observable.fromIterable(events)
-                        .all { event -> event.status() == EventStatus.COMPLETED }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    view.areEventsCompleted(),
-                    Timber.Forest::d,
-                ),
-        )
     }
 
     fun displayGenerateEvent(eventUid: String?) {
@@ -377,6 +354,12 @@ class TEIDataPresenter(
     }
 
     fun onAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
+        singleEventEnforcer.processEvent {
+            manageAddNewEventOptionSelected(eventCreationType, stage)
+        }
+    }
+
+    private fun manageAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->

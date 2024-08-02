@@ -140,6 +140,7 @@ class TableDataToTableModelMapperTest {
             1,
             "1",
             "",
+            emptyList(),
         )
     }
 

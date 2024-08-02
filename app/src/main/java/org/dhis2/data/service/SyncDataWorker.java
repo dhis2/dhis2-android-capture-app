@@ -18,10 +18,10 @@ import androidx.work.WorkerParameters;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.Constants;
-import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -70,7 +70,7 @@ public class SyncDataWorker extends Worker {
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_events),
-                25);
+                20);
 
         try {
             presenter.syncAndDownloadEvents();
@@ -85,7 +85,7 @@ public class SyncDataWorker extends Worker {
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_teis),
-                50);
+                40);
 
         try {
             presenter.syncAndDownloadTeis();
@@ -100,7 +100,7 @@ public class SyncDataWorker extends Worker {
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_data_sets),
-                75);
+                60);
 
         try {
             presenter.syncAndDownloadDataValues();
@@ -115,10 +115,23 @@ public class SyncDataWorker extends Worker {
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_resources),
-                90);
+                80);
 
         try {
             presenter.downloadResources();
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        triggerNotification(
+                getApplicationContext().getString(R.string.app_name),
+                "syncing reserved values",
+                95
+
+        );
+
+        try {
+            presenter.syncReservedValues();
         } catch (Exception e) {
             Timber.e(e);
         }

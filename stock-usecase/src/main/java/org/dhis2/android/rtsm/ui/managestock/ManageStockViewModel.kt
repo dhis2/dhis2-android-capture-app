@@ -43,6 +43,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.TableState
 import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
@@ -265,6 +266,7 @@ class ManageStockViewModel @Inject constructor(
         _screenState.postValue(
             TableScreenState(
                 tables = tables,
+                state = TableState.SUCCESS,
             ),
         )
 

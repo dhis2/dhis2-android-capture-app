@@ -65,8 +65,9 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
         releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
-        track: alpha
+        track: production
         whatsNewDirectory: whatsnew
+        userFraction: 0.99
 
 
     - name: Github Patch Release

@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -252,7 +253,16 @@ class EventCapturePresenterTest {
         whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
         whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        val eventCompletionDialog: EventCompletionDialog = mock()
+        whenever(
+            configureEventCompletionDialog.invoke(
+                emptyList(), emptyMap(), emptyList(), true, null, false,
+                EventStatus.COMPLETED,
+            ),
+        ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
         whenever(eventRepository.isEventEditable(any())) doReturn true
 
@@ -269,7 +279,13 @@ class EventCapturePresenterTest {
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         presenter.init()
-
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        val eventCompletionDialog: EventCompletionDialog = mock()
+        whenever(
+            configureEventCompletionDialog.invoke(emptyList(), emptyMap(), emptyList(), true, null, false, EventStatus.COMPLETED),
+        ) doReturn eventCompletionDialog
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
         whenever(eventRepository.isEventEditable(any())) doReturn true
         whenever(eventRepository.isEnrollmentCancelled) doReturn true
@@ -325,7 +341,67 @@ class EventCapturePresenterTest {
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         val eventCompletionDialog: EventCompletionDialog = mock()
         whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
+        ) doReturn eventCompletionDialog
+        whenever(
+            eventRepository.isEnrollmentOpen,
+        ) doReturn true
+
+        presenter.attemptFinish(
+            canComplete = true,
+            onCompleteMessage = "Complete",
+            errorFields = listOf(mock()),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+        )
+
+        verify(view).showCompleteActions(any())
+        verify(view).showNavigationBar()
+    }
+
+    @Test
+    fun `Should show completion dialog and not navigate back when event is completed and there are error fields`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        val eventCompletionDialog = EventCompletionDialog(mock(), mock(), null, listOf(FieldWithIssue("uid", "fieldName", mock(), "message")))
+        whenever(
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
+        ) doReturn eventCompletionDialog
+        whenever(
+            eventRepository.isEnrollmentOpen,
+        ) doReturn true
+
+        presenter.attemptFinish(
+            canComplete = true,
+            onCompleteMessage = "Complete",
+            errorFields = listOf(FieldWithIssue("uid", "fieldName", mock(), "message")),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+        )
+
+        verify(view).showCompleteActions(any())
+        verify(view).showNavigationBar()
+    }
+
+    @Test
+    fun `Should save and finish if event is is completed and has no errors`() {
+        initializeMocks()
+        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
+        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        val eventCompletionDialog: EventCompletionDialog = mock()
+        whenever(
+            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any(), any()),
         ) doReturn eventCompletionDialog
         whenever(
             eventRepository.isEnrollmentOpen,
@@ -339,8 +415,7 @@ class EventCapturePresenterTest {
             warningFields = emptyList(),
         )
 
-        verify(view).showCompleteActions(any())
-        verify(view).showNavigationBar()
+        verify(view).saveAndFinish()
     }
 
     @Test

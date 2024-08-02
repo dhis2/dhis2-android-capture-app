@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry.tablefields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.composetable.model.DropdownOption;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.SectionRenderingType;
 
@@ -28,5 +29,6 @@ public interface FieldViewModelFactory {
                           @Nullable int row,
                           @Nullable int column,
                           @Nullable String categoryOptionCombo,
-                          @Nullable String catCombo);
+                          @Nullable String catCombo,
+                          @Nullable List<DropdownOption> options);
 }

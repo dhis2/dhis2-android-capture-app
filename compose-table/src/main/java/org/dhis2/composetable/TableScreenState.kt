@@ -6,6 +6,7 @@ import java.util.UUID
 data class TableScreenState(
     val tables: List<TableModel>,
     val id: UUID = UUID.randomUUID(),
+    val state: TableState = TableState.LOADING,
 )
 
 data class TableConfigurationState(
@@ -16,4 +17,9 @@ data class TableConfigurationState(
     fun isResized() = !overwrittenTableWidth.isNullOrEmpty() or
         !overwrittenRowHeaderWidth.isNullOrEmpty() or
         !overwrittenColumnWidth.isNullOrEmpty()
+}
+
+enum class TableState {
+    LOADING,
+    SUCCESS,
 }

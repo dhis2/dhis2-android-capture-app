@@ -126,7 +126,7 @@ fun buttonTitle(scheduleNew: Boolean): String = when (scheduleNew) {
 fun ProvideScheduleNewEventForm(
     programStages: List<ProgramStage>,
     viewModel: SchedulingViewModel,
-    selectedProgramStage: ProgramStage,
+    selectedProgramStage: ProgramStage?,
     date: EventDate,
     catCombo: EventCatCombo,
     orgUnitUid: String?,
@@ -136,7 +136,7 @@ fun ProvideScheduleNewEventForm(
             title = stringResource(id = R.string.program_stage),
             state = InputShellState.UNFOCUSED,
             dropdownItems = programStages.map { DropdownItem(it.displayName().orEmpty()) },
-            selectedItem = DropdownItem(selectedProgramStage.displayName().orEmpty()),
+            selectedItem = DropdownItem(selectedProgramStage?.displayName().orEmpty()),
             onResetButtonClicked = {},
             onItemSelected = { item ->
                 programStages.find { it.displayName() == item.label }
@@ -145,7 +145,7 @@ fun ProvideScheduleNewEventForm(
         )
     }
 
-    if (willShowCalendar(selectedProgramStage.periodType())) {
+    if (willShowCalendar(selectedProgramStage?.periodType())) {
         ProvideInputDate(
             EventInputDateUiModel(
                 eventDate = date,

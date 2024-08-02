@@ -8,8 +8,6 @@ import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.data.service.ReservedValuesWorkerComponent;
-import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
 import org.dhis2.data.service.SyncGranularRxComponent;
@@ -149,9 +147,6 @@ public interface UserComponent {
 
     @NonNull
     SyncMetadataWorkerComponent plus(SyncMetadataWorkerModule syncDataWorkerModule);
-
-    @NonNull
-    ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
 
     @NonNull
     EventCaptureComponent plus(EventCaptureModule eventCaptureModule);

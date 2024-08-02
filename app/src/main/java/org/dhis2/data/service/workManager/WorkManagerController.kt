@@ -35,7 +35,7 @@ interface WorkManagerController {
 
     fun syncDataForWorker(workerItem: WorkerItem)
     fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String)
-    fun syncDataForWorker(metadataWorkerTag: String, workName: String)
+    fun syncDataForWorker(dataWorkerTag: String, workName: String)
     fun beginUniqueWork(workerItem: WorkerItem)
     fun enqueuePeriodicWork(workerItem: WorkerItem)
 

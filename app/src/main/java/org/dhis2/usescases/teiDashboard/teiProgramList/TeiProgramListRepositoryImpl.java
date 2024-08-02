@@ -2,20 +2,17 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.R;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
-import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 
 import java.util.ArrayList;
 import java.util.Collections;

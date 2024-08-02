@@ -4,11 +4,12 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import org.dhis2.composetable.model.DropdownOption
 
 @Composable
 fun DropDownOptions(
     expanded: Boolean,
-    options: List<String>,
+    options: List<DropdownOption>,
     onDismiss: () -> Unit,
     onSelected: (code: String, label: String) -> Unit,
 ) {
@@ -17,14 +18,12 @@ fun DropDownOptions(
         onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
-            val code = option.split("_")[0]
-            val label = option.split("_")[1]
             DropdownMenuItem(
                 onClick = {
-                    onSelected.invoke(code, label)
+                    onSelected.invoke(option.code, option.name)
                 },
             ) {
-                Text(text = label)
+                Text(text = option.name)
             }
         }
     }

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
-import org.hisp.dhis.mobile.ui.designsystem.component.IndicatorInput
+import org.hisp.dhis.mobile.ui.designsystem.component.Indicator
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -37,7 +37,7 @@ class GraphToIndicator {
                     ) {
                         series.forEach {
                             val coordinate = it.coordinates.lastOrNull()
-                            IndicatorInput(
+                            Indicator(
                                 title = it.fieldName,
                                 content = it.coordinates.lastOrNull()?.textValue() ?: "",
                                 indicatorColor = if (coordinate?.legendValue?.color != null) {

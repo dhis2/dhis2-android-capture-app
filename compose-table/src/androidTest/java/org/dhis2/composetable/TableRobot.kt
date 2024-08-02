@@ -17,6 +17,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -40,6 +41,7 @@ import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.ui.DataSetTableScreen
 import org.dhis2.composetable.ui.DataTable
 import org.dhis2.composetable.ui.DrawableId
+import org.dhis2.composetable.ui.EMPTY_TABLE_TEXT_TAG
 import org.dhis2.composetable.ui.INPUT_ERROR_MESSAGE_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_HELPER_TEXT_TEST_TAG
 import org.dhis2.composetable.ui.INPUT_ICON_TEST_TAG
@@ -170,6 +172,33 @@ class TableRobot(
                         val updatedData = updateValue(fakeModel, tableCell)
                         model = TableScreenState(updatedData)
                     }
+                )
+            }
+        }
+        return fakeModel
+    }
+
+    fun initEmptyTableAppScreen(
+        emptyTablesText: String,
+    ): List<TableModel> {
+        val fakeModel: List<TableModel> = emptyList()
+        composeTestRule.setContent {
+            val screenState = TableScreenState(fakeModel, state = TableState.SUCCESS)
+
+            val model by remember { mutableStateOf(screenState) }
+            TableTheme(
+                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableConfiguration = TableConfiguration(),
+                tableResizeActions = object : TableResizeActions {}
+            ) {
+                DataSetTableScreen(
+                    tableScreenState = model,
+                    onCellClick = { _, _, _ ->
+                            null
+                    },
+                    emptyTablesText = emptyTablesText,
+                    onEdition = {},
+                    onSaveValue = {}
                 )
             }
         }
@@ -455,5 +484,13 @@ class TableRobot(
 
     fun hideKeyboard() {
         keyboardHelper.hideKeyboard()
+    }
+
+    fun assertInfoBarIsVisible(emptyString: String) {
+        composeTestRule.onNode(
+            hasParent(hasTestTag(EMPTY_TABLE_TEXT_TAG))
+                and
+                hasText(emptyString)
+        ).assertIsDisplayed()
     }
 }

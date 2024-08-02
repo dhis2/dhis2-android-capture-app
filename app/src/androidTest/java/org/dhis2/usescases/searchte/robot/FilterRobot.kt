@@ -6,11 +6,9 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -32,16 +30,6 @@ fun filterRobot(filterRobot: FilterRobot.() -> Unit) {
 }
 
 class FilterRobot : BaseRobot() {
-
-    fun clickOnEnrollmentDateFilter() {
-        val tag = "DATE OF ENROLLMENT"
-        onView(allOf(withId(R.id.filterLayout), hasDescendant(withText(tag)))).perform(click())
-    }
-
-    fun clickOnTodayEnrollmentDate(){
-        onView(allOf(withId(R.id.today),
-            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).perform(click())
-    }
 
     fun clickOnFilter() {
         onView(withId(R.id.search_filter_general)).perform(click())
@@ -66,10 +54,6 @@ class FilterRobot : BaseRobot() {
     fun closeFilterRowAtField(filter: String) {
         onView(withId(R.id.filterRecyclerLayout))
             .perform(actionOnItem<FilterHolder>(hasDescendant(withText(filter)), clickChildViewWithId(R.id.filterArrow)))
-    }
-
-    fun closeSearchForm() {
-        onView(withId(R.id.close_filter)).perform(click())
     }
 
     fun clickOnSortByField(fieldFilter: String) {
@@ -100,11 +84,6 @@ class FilterRobot : BaseRobot() {
     fun checkTEIsAreOpen() {
         onView(withId(R.id.scrollView))
             .check(matches(allElementsWithHolderTypeHave(SearchTEViewHolder::class.java,hasDescendant(withText(R.string.event_open)))))
-    }
-
-    fun checkEventsAreOverdue() {
-        onView(withId(R.id.scrollView))
-            .check(matches(allOf(allElementsWithHolderTypeHave(SearchTEViewHolder::class.java,hasDescendant(withId(R.id.overdueIcon))), isDisplayed())))
     }
 
     fun checkTEIWithOrgUnit(orgUnit: String) {

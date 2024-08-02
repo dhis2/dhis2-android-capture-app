@@ -15,7 +15,6 @@ import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewModel
@@ -37,11 +36,9 @@ class DataSetListViewModelTest {
 
     private lateinit var viewModel: DataSetListViewModel
     private val repository: DataSetDetailRepository = mock()
-    private val scheduler = TrampolineSchedulerProvider()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val testingDispatcher = StandardTestDispatcher()
 
     private val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
@@ -56,7 +53,6 @@ class DataSetListViewModelTest {
         whenever(repository.canWriteAny()) doReturn Flowable.just(true)
         viewModel = DataSetListViewModel(
             repository,
-            scheduler,
             filterManager,
             matomoAnalyticsController,
             object : DispatcherProvider {
@@ -75,7 +71,6 @@ class DataSetListViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Should get the list of dataSet`() {
         val dataSets = listOf(dummyDataSet(), dummyDataSet(), dummyDataSet())
@@ -84,7 +79,6 @@ class DataSetListViewModelTest {
         ) doReturn Flowable.just(dataSets)
         viewModel = DataSetListViewModel(
             repository,
-            scheduler,
             filterManager,
             matomoAnalyticsController,
             object : DispatcherProvider {
@@ -105,7 +99,6 @@ class DataSetListViewModelTest {
         assert(viewModel.datasets.value == dataSets)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Should get write permissions`() {
         whenever(repository.canWriteAny()) doReturn Flowable.just(true)

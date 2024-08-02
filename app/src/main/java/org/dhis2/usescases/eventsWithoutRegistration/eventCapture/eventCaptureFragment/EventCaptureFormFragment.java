@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureF
 
 import static org.dhis2.commons.Constants.EVENT_MODE;
 import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.form.data.EventRepository.EVENT_ORG_UNIT_UID;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.NonEditableReasonBlockKt.showNonEditableReasonMessage;
 import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
 
@@ -22,6 +23,7 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
+import org.dhis2.form.model.ActionType;
 import org.dhis2.form.model.EventMode;
 import org.dhis2.form.model.EventRecords;
 import org.dhis2.form.ui.FormView;
@@ -29,6 +31,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
@@ -78,6 +81,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         String eventUid = getArguments().getString(Constants.EVENT_UID, "");
         EventMode eventMode = EventMode.valueOf(getArguments().getString(EVENT_MODE));
+        loadForm(eventUid, eventMode);
+
+        activity.setFormEditionListener(this);
+        super.onCreate(savedInstanceState);
+    }
+
+    private void loadForm(String eventUid, EventMode eventMode) {
         formView = new FormView.Builder()
                 .locationProvider(locationProvider)
                 .onLoadingListener(loading -> {
@@ -87,6 +97,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                         activity.hideProgress();
                     }
                     return Unit.INSTANCE;
+                }).onItemChangeListener( action -> {
+                    if(action.isEventDetailsRow()){
+                        presenter.showOrHideSaveButton();
+                    }
+                    return Unit.INSTANCE;
+
                 })
                 .onFocused(() -> {
                     activity.hideNavigationBar();
@@ -107,8 +123,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                         featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS)
                 )
                 .build();
-        activity.setFormEditionListener(this);
-        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -190,6 +204,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void showNonEditableMessage(@NonNull String reason, boolean canBeReOpened) {
+        binding.editableReasonContainer.setVisibility(View.VISIBLE);
+
         showNonEditableReasonMessage(
                 binding.editableReasonContainer,
                 reason,
@@ -203,6 +219,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void hideNonEditableMessage() {
-        binding.editableReasonContainer.removeAllViews();
+        binding.editableReasonContainer.setVisibility(View.GONE);
     }
 }

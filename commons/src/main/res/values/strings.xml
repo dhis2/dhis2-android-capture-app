@@ -140,7 +140,7 @@
     <string name="section_charts_indicators">Charts and indicators</string>
 
     <!-- Enrollment -->
-    <string name="enrolled_in">Enrolled in:</string>
+    <string name="enrolled_in">Enrolled in</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Password is missing. Please enter password.</string>

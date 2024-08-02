@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 const val DATE_FORMAT_EXPRESSION = "yyyy-MM-dd"
 const val MONTHLY_FORMAT_EXPRESSION = "MMM yyyy"
 const val YEARLY_FORMAT_EXPRESSION = "yyyy"
-const val SIMPLE_DATE_FORMAT = "d/M/yyyy"
+const val SIMPLE_DATE_FORMAT = "dd/MM/yyyy"
 
 class DhisPeriodUtils(
     d2: D2,

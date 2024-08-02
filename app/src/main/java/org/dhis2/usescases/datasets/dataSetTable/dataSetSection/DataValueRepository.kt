@@ -9,6 +9,7 @@ import org.dhis2.bindings.decimalFormat
 import org.dhis2.commons.bindings.dataValueConflicts
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.composetable.model.DropdownOption
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
@@ -608,12 +609,13 @@ class DataValueRepository(
                     null,
                     dataElement.displayDescription(),
                     dataElement.uid(),
-                    options,
+                    ArrayList(),
                     "android",
                     row,
                     column,
                     categoryOptionCombo.uid(),
                     dataTableModel.catCombo?.uid(),
+                    options,
                 )
 
                 val valueStateSyncState = d2.dataValueModule().dataValues()
@@ -832,6 +834,7 @@ class DataValueRepository(
                 column,
                 "",
                 "",
+                ArrayList(),
             ),
         )
         values.add(totalRow.decimalFormat)
@@ -893,6 +896,7 @@ class DataValueRepository(
                     columnPos,
                     "",
                     "",
+                    ArrayList(),
                 ),
             )
 
@@ -971,12 +975,13 @@ class DataValueRepository(
             null,
             dataElement.displayDescription(),
             dataElement.uid(),
-            getOptionsForOptionSet(dataElement.optionSetUid()),
+            ArrayList(),
             "android",
             0,
             0,
             cell.id!!.split("_")[1],
             dataElement.categoryComboUid(),
+            getOptionsForOptionSet(dataElement.optionSetUid()),
         )
     }
 
@@ -1001,6 +1006,11 @@ class DataValueRepository(
             .byOptionSetUid().eq(it)
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet()
-            .map { option -> "${option.code()}_${option.displayName()}" }
+            .map { option ->
+                DropdownOption(
+                    option.code() ?: "",
+                    option.displayName() ?: "",
+                )
+            }
     } ?: emptyList()
 }

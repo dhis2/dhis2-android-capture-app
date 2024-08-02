@@ -12,4 +12,5 @@ data class RowAction(
     val error: Throwable? = null,
     val type: ActionType,
     val valueType: ValueType? = null,
+    val isEventDetailsRow: Boolean = false,
 )

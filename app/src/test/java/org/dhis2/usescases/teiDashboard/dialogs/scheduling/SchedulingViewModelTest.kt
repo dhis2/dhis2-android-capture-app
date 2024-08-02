@@ -5,8 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy
@@ -14,9 +12,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class SchedulingViewModelTest {
-
-    private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
-    private val programStage = ProgramStage.builder().uid("programStage").build()
 
     private lateinit var schedulingViewModel: SchedulingViewModel
 
@@ -27,8 +22,6 @@ class SchedulingViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         schedulingViewModel = SchedulingViewModel(
-            enrollment = enrollment,
-            programStages = listOf(programStage),
             d2 = mock(),
             resourceManager = mock(),
             periodUtils = mock(),

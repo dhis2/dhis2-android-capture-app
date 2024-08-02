@@ -863,6 +863,7 @@
     <string name="action_ok">Ok</string>
     <string name="init_search">Start a search to find any %s</string>
     <string name="search_or_create">You can search or create a new %s</string>
+    <string name="missing_warning_fields_completed_events">You have some warning messages.</string>
     <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
     <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
@@ -898,7 +899,7 @@
     <string name="downloading_image_resources">Downloading images...</string>
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
-    <string name="enrolledIn">Enrolled in:</string>
+    <string name="enrolledIn">Enrolled in</string>
     <string name="sync_dialog_title_not_synced">Sync needed</string>
     <string name="sync_dialog_title_error">Sync error</string>
     <string name="sync_dialog_title_synced">Synced</string>
@@ -942,12 +943,12 @@
     <string name="sync_retry">Retry sync</string>
     <string name="marked_follow_up">Marked for follow-up</string>
     <string name="overdue">Overdue %s</string>
-    <string name="registered_in">Registered in:</string>
+    <string name="registered_in">Registered in</string>
     <string name="view_only">View only</string>
     <string name="scheduled">Scheduled: %s</string>
     <string name="scheduled_for">Scheduled for %s</string>
     <string name="skipped">Skipped</string>
-    <string name="programs">Programs:</string>
+    <string name="programs">Programs</string>
     <string name="sync_successful">Sync successful</string>
     <string name="sync_warning">Sync warning</string>
     <string name="sync_error">Sync Error</string>
@@ -976,4 +977,6 @@
     <string name="sync">Sync</string>
     <string name="show_fields">Show fields</string>
     <string name="hide_fields">Hide fields</string>
+    <string name="importing_successful">Import successful</string>
+    <string name="section_misconfigured">This section is misconfigured.\nContact your administrator.</string>
 </resources>

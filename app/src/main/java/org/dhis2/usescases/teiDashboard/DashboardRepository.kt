@@ -29,8 +29,6 @@ interface DashboardRepository {
 
     fun getEnrollment(): Observable<Enrollment>
 
-    fun getTEIEnrollmentEvents(programUid: String?, teiUid: String): Observable<List<Event>>
-
     fun getEnrollmentEventsWithDisplay(
         programUid: String?,
         teiUid: String,

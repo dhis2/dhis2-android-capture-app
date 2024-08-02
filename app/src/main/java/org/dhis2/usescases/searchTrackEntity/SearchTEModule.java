@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -19,8 +21,8 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -66,7 +68,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -300,7 +301,8 @@ public class SearchTEModule {
             NetworkUtils networkUtils,
             D2 d2,
             ResourceManager resourceManager,
-            DisplayNameProvider displayNameProvider
+            DisplayNameProvider displayNameProvider,
+            FilterManager filterManager
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -313,7 +315,8 @@ public class SearchTEModule {
                 new SearchDispatchers(),
                 new MapStyleConfiguration(d2),
                 resourceManager,
-                displayNameProvider
+                displayNameProvider,
+                filterManager
         );
     }
 

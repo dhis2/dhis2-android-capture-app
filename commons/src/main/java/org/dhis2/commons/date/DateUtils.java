@@ -1,16 +1,26 @@
 package org.dhis2.commons.date;
 
+import android.content.Context;
+import android.widget.DatePicker;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -35,10 +45,10 @@ public class DateUtils {
     public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
     public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
-    public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
+    public static final String SIMPLE_DATE_FORMAT = "dd/MM/yyyy";
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
     public static final String UI_LIBRARY_FORMAT = "ddMMyyyy";
-    public static final String SIMPLE_DATE_TIME_FORMAT = "d/M/yyyy HH:mm";
+    public static final String SIMPLE_DATE_TIME_FORMAT = "dd/MM/yyyy - HH:mm";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -770,6 +780,107 @@ public class DateUtils {
     public static int[] getDifference(Date startDate, Date endDate) {
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+    }
+
+    public void fromCalendarSelector(Context context, OnFromToSelector fromToListener) {
+        Date startDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle(null);
+        dialog.setInitialDate(startDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                //Do nothing
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                toCalendarSelector(datePicker, context, fromToListener);
+            }
+        });
+        dialog.show();
+    }
+
+    public interface OnFromToSelector {
+        void onFromToSelected(List<DatePeriod> datePeriods);
+    }
+
+    public interface OnNextSelected {
+        void onNextSelector();
+    }
+
+    private void toCalendarSelector(DatePicker datePicker, Context context, OnFromToSelector fromToListener) {
+        Calendar fromDate = Calendar.getInstance();
+        fromDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+
+        Date endDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            endDate = FilterManager.getInstance().getPeriodFilters().get(0).endDate();
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle(null);
+        dialog.setInitialDate(endDate);
+        dialog.setMinDate(fromDate.getTime());
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                //Do nothing
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar toDate = Calendar.getInstance();
+                toDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                List<DatePeriod> dates = new ArrayList<>();
+                dates.add(DatePeriod.builder().startDate(fromDate.getTime()).endDate(toDate.getTime()).build());
+                fromToListener.onFromToSelected(dates);
+            }
+        });
+        dialog.show();
+    }
+
+    public void showPeriodDialog(Context context, OnFromToSelector fromToListener, boolean fromOtherPeriod, OnNextSelected onNextSelected ) {
+        Date startDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle("Daily");
+        dialog.setInitialDate(startDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.isFromOtherPeriods(fromOtherPeriod);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                onNextSelected.onNextSelector();
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar chosenDate = Calendar.getInstance();
+                chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                List<Date> dates = new ArrayList<>();
+                dates.add(chosenDate.getTime());
+                fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
+            }
+        });
+        dialog.show();
+    }
+
+
+    public  List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
+        List<DatePeriod> datePeriods = new ArrayList<>();
+        for (Date date : selectedDates) {
+            Date[] startEndDates = getDateFromDateAndPeriod(date, period);
+            datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
+        }
+        return datePeriods;
     }
 
     public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {

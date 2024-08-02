@@ -15,6 +15,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.TableState
 import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableModel
@@ -79,7 +80,7 @@ class DataValuePresenter(
                 .subscribe(
                     {
                         screenState.update { currentScreenState ->
-                            currentScreenState.copy(tables = it.tables)
+                            currentScreenState.copy(tables = it.tables, state = TableState.SUCCESS)
                         }
                     },
                     { Timber.e(it) },
