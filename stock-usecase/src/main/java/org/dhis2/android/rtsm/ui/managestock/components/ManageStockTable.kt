@@ -146,7 +146,6 @@ fun ManageStockTable(
                 tableDimensions = dimensions,
                 tableConfiguration = TableConfiguration(
                     headerActionsEnabled = false,
-                    textInputViewMode = false,
                 ),
                 tableValidator = viewModel,
                 tableResizeActions = tableResizeActions,
