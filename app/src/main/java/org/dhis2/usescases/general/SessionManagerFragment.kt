@@ -10,6 +10,6 @@ abstract class SessionManagerFragment : Fragment() {
     lateinit var sessionManagerServiceImpl: SessionManagerServiceImpl
 
     fun isUserLoggedIn(): Boolean {
-        return if (::sessionManagerServiceImpl.isInitialized) sessionManagerServiceImpl.isUserLoggedIn() else true
+        return (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.isUserLoggedIn())
     }
 }

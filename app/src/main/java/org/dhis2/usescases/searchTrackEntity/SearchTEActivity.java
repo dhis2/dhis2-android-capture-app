@@ -424,6 +424,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             return true;
         });
 
+        observePageConfiguration();
+    }
+
+    private  void observePageConfiguration() {
         viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
             if (initialPage == 0) {
                 showList();

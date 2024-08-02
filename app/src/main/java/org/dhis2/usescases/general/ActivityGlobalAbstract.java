@@ -34,8 +34,7 @@ public abstract class ActivityGlobalAbstract extends SessionManagerActivity
     private static final String FRAGMENT_TAG = "SYNC";
 
     public String uuid;
-    @Inject
-    public AnalyticsHelper analyticsHelper;
+
     @Inject
     public CrashReportController crashReportController;
 

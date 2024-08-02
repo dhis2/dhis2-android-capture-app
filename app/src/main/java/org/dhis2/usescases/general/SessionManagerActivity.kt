@@ -152,7 +152,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                 null
             },
             {
-                analyticsHelper?.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
                 if (this !is LoginActivity) {
                     startActivity(LoginActivity::class.java, null, true, true, null)
                 }

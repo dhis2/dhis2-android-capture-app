@@ -183,6 +183,43 @@ class TeiDashboardMobileActivity :
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS)
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
+
+        setRelationshipMapIconListener()
+        setSyncButtonListener()
+        setFormViewForLandScape()
+        setNavigationBar()
+        setEditButton()
+        observeErrorMessages()
+        observeDashboardModel()
+    }
+
+    private fun observeErrorMessages() {
+        dashboardViewModel.showStatusErrorMessages.observe(this) {
+            displayStatusError(it)
+        }
+    }
+
+    private fun setSyncButtonListener() {
+        binding.syncButton.setOnClickListener { openSyncDialog() }
+        if (intent.shouldLaunchSyncDialog()) {
+            openSyncDialog()
+        }
+    }
+
+    private fun observeDashboardModel() {
+        dashboardViewModel.dashboardModel.observe(this) {
+            if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                when (it) {
+                    is DashboardEnrollmentModel -> setData(it)
+                    is DashboardTEIModel -> setDataWithOutProgram(it)
+                    else -> // Do nothing
+                        Unit
+                }
+            }
+        }
+    }
+
+    private fun setRelationshipMapIconListener() {
         binding.relationshipMapIcon.setOnClickListener {
             networkUtils.performIfOnline(
                 this,
@@ -202,26 +239,6 @@ class TeiDashboardMobileActivity :
                 {},
                 getString(R.string.msg_network_connection_maps),
             )
-        }
-        binding.syncButton.setOnClickListener { openSyncDialog() }
-        if (intent.shouldLaunchSyncDialog()) {
-            openSyncDialog()
-        }
-        setFormViewForLandScape()
-        setNavigationBar()
-        setEditButton()
-        dashboardViewModel.showStatusErrorMessages.observe(this) {
-            displayStatusError(it)
-        }
-        dashboardViewModel.dashboardModel.observe(this) {
-            if (sessionManagerServiceImpl.isUserLoggedIn()) {
-                when (it) {
-                    is DashboardEnrollmentModel -> setData(it)
-                    is DashboardTEIModel -> setDataWithOutProgram(it)
-                    else -> // Do nothing
-                        Unit
-                }
-            }
         }
     }
 
@@ -285,31 +302,34 @@ class TeiDashboardMobileActivity :
         if (programUid != null) {
             binding.navigationBar.visibility = View.VISIBLE
             binding.navigationBar.pageConfiguration(pageConfigurator)
-            binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-                adapter?.let { pagerAdapter ->
-                    if (sessionManagerServiceImpl.isUserLoggedIn()) {
-                        when (item.itemId) {
-                            R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
-                            R.id.navigation_relationships -> presenter.trackDashboardRelationships()
-                            R.id.navigation_notes -> presenter.trackDashboardNotes()
-                        }
-                        pagerAdapter.getNavigationPagePosition(item.itemId)
-                            .takeIf { it != NO_POSITION }
-                            ?.let {
-                                when {
-                                    this.isLandscape() -> binding.teiTablePager?.currentItem = it
-                                    else -> binding.teiPager?.currentItem = it
-                                }
-                            }
-                    }
-                }
-                true
-            }
+            setNavigationBarListener()
         } else {
             binding.navigationBar.visibility = View.GONE
         }
     }
 
+    private fun setNavigationBarListener() {
+        binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
+            adapter?.let { pagerAdapter ->
+                if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                    when (item.itemId) {
+                        R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
+                        R.id.navigation_relationships -> presenter.trackDashboardRelationships()
+                        R.id.navigation_notes -> presenter.trackDashboardNotes()
+                    }
+                    pagerAdapter.getNavigationPagePosition(item.itemId)
+                        .takeIf { it != NO_POSITION }
+                        ?.let {
+                            when {
+                                this.isLandscape() -> binding.teiTablePager?.currentItem = it
+                                else -> binding.teiPager?.currentItem = it
+                            }
+                        }
+                }
+            }
+            true
+        }
+    }
     override fun onResume() {
         super.onResume()
         if (sessionManagerServiceImpl.isUserLoggedIn()) {
@@ -611,13 +631,8 @@ class TeiDashboardMobileActivity :
     }
 
     override fun showMoreOptions(view: View?) {
-        val menu: Int = if (enrollmentUid == null) {
-            R.menu.dashboard_tei_menu
-        } else if (dashboardViewModel.groupByStage.value != false) {
-            R.menu.dashboard_menu_group
-        } else {
-            R.menu.dashboard_menu
-        }
+        val menu: Int = getMenuId()
+
         AppMenuHelper.Builder()
             .anchor(view!!)
             .menu(this, menu)
@@ -710,6 +725,16 @@ class TeiDashboardMobileActivity :
                 true
             }
             .build().show()
+    }
+
+    private fun getMenuId(): Int {
+        return if (enrollmentUid == null) {
+            R.menu.dashboard_tei_menu
+        } else if (dashboardViewModel.groupByStage.value != false) {
+            R.menu.dashboard_menu_group
+        } else {
+            R.menu.dashboard_menu
+        }
     }
 
     override fun updateNoteBadge(numberOfNotes: Int) {
