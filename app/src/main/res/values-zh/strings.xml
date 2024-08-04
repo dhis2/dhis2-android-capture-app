@@ -590,8 +590,8 @@
     <string name="filter_event_status_skipped">跳过的</string>
     <string name="event_tei_limits">事件：%s 最大：%s%s 当前：%s ，实体：%s 最大：%s%s 当前：%s</string>
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
-    <string name="enrollment_data_hide">隐藏注册数据</string>
-    <string name="enrollment_data_show">显示注册数据</string>
+    <string name="enrollment_data_hide">隐藏加入数据</string>
+    <string name="enrollment_data_show">显示加入数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
@@ -685,7 +685,7 @@
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
     <string name="coordinates_error">坐标值无效</string>
     <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
-    <string name="break_glass_error_v2">您无法在此项目中注册来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
+    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
