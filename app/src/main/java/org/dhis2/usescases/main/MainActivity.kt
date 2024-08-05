@@ -35,9 +35,11 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.ui.dialogs.alert.AlertDialog
 import org.dhis2.ui.model.ButtonUiModel
+import org.dhis2.usescases.customplugins.CustomPluginActivity
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
@@ -46,6 +48,9 @@ import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import java.io.File
 import javax.inject.Inject
 

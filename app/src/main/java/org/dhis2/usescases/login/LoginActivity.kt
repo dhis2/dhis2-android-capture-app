@@ -271,21 +271,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             blockLoginInfo()
         }
 
-        val pluginDownloader = PluginDownloader(applicationContext)
-        val pluginUrl =
-            "https://raw.githubusercontent.com/dhis2/dhis2-android-capture-app/ANDROAPP-5502-PoC-Plug-play-modules/myplugin-debug.apk"
-
-        lifecycleScope.launch {
-            val downloadedFile = pluginDownloader.downloadPlugin(pluginUrl)
-            if (downloadedFile != null) {
-                val pluginManager = PluginManager(context)
-
-                val plugin = pluginManager.loadPlugin(downloadedFile)
-                binding.composeView.setContent {
-                    plugin?.Show() ?: Text(text = "Plugin not loaded")
-                }
-            }
-        }
     }
 
     private fun checkUrl(urlString: String): Boolean {
