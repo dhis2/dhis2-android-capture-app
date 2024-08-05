@@ -1,5 +1,6 @@
 package org.dhis2.mobile.myplugin
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,13 +13,13 @@ class PluginImpl : PluginInterface, ComponentActivity() {
         }
 
     @Composable
-    override fun Show() {
-        initializeMainActivity()
+    override fun Show(context: Context) {
+        Intent(context, MainActivity::class.java).apply {
+            getActivityContent.launch(this)
+        }
     }
 
     private fun initializeMainActivity() {
-        Intent(this, MainActivity::class.java).apply {
-            getActivityContent.launch(this)
-        }
+
     }
 }
