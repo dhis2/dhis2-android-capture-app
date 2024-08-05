@@ -7,19 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import org.dhis2.commons.plugin.PluginInterface
 
-class PluginImpl : PluginInterface, ComponentActivity() {
-    private val getActivityContent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        }
+class PluginImpl : PluginInterface {
 
     @Composable
     override fun Show(context: Context) {
-        Intent(context, MainActivity::class.java).apply {
-            getActivityContent.launch(this)
-        }
+        val intent = MainActivity.getIntent(context)
+          context.startActivity(intent)
     }
 
-    private fun initializeMainActivity() {
-
-    }
 }

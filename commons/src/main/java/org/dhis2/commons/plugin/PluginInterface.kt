@@ -5,5 +5,5 @@ import androidx.compose.runtime.Composable
 
 interface PluginInterface {
     @Composable
-    fun Show(Context: Context)
+    fun Show(context: Context)
 }
