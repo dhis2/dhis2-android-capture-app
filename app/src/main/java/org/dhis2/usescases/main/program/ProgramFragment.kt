@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -30,6 +31,7 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentProgramBinding
+import org.dhis2.usescases.customplugins.CustomPluginActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.navigateTo
@@ -38,6 +40,9 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -93,20 +98,37 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
             setContent {
                 val items by presenter.programs.observeAsState()
                 val state by presenter.downloadState().observeAsState()
-                ProgramList(
-                    downLoadState = state,
-                    programs = items,
-                    onItemClick = {
-                        presenter.onItemClick(it)
-                    },
-                    onGranularSyncClick = {
-                        showSyncDialog(it)
-                    },
-                )
+                Column {
+                    ListCard(
+                        title = ListCardTitleModel(text = "Our custom plugin"),
+                        additionalInfoList = emptyList(),
+                        listAvatar = {
+                            Avatar(textAvatar = "P")
+                        },
+                        onCardClick = {
+                            navigateToCustomPluginActivity()
+                        },
+                    )
+                    ProgramList(
+                        downLoadState = state,
+                        programs = items,
+                        onItemClick = {
+                            presenter.onItemClick(it)
+                        },
+                        onGranularSyncClick = {
+                            showSyncDialog(it)
+                        },
+                    )
+                }
             }
         }
     }
 
+    private fun navigateToCustomPluginActivity() {
+        Intent(activity, CustomPluginActivity::class.java).apply {
+            getActivityContent.launch(this)
+        }
+    }
     override fun onResume() {
         super.onResume()
         presenter.init()

@@ -21,7 +21,6 @@ class PluginDownloader(val context: Context) {
      */
     suspend fun downloadPlugin(url: String): File? {
         return withContext(Dispatchers.IO) {
-
             // Create a request to download the file
             val request = Request.Builder().url(url).build()
 
@@ -29,7 +28,6 @@ class PluginDownloader(val context: Context) {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return@withContext null
 
-                //uuu
                 // Create a temporary file in the internal storage
                 val tempFile = File(context.filesDir, "temp_plugin.apk")
                 // Write the response body to the temp file

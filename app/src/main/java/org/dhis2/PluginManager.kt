@@ -7,14 +7,13 @@ import java.io.File
 
 class PluginManager(private val context: Context) {
 
-
     fun loadPlugin(pluginFile: File): PluginInterface? {
         val dexOutputDir = context.getDir("dex", Context.MODE_PRIVATE).absolutePath
         val classLoader = DexClassLoader(
             pluginFile.absolutePath,
             dexOutputDir,
             null,
-            context.classLoader
+            context.classLoader,
         )
 
         return try {

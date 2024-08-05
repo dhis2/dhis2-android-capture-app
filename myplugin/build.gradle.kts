@@ -3,6 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.application")
     kotlin("android")
+
+    kotlin("kapt")
+    id("kotlin-parcelize")
+    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
@@ -16,6 +20,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -59,11 +64,15 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.bundles.stock.implementation)
+    kapt(libs.bundles.stock.kapt)
+
     implementation(project(":commons"))
     implementation(libs.androidx.coreKtx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.preview)

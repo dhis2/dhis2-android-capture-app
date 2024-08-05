@@ -15,19 +15,15 @@ import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
-import org.dhis2.PluginDownloader
-import org.dhis2.PluginManager
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.buildInfo
@@ -270,12 +266,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         if (!isDeletion && accountsCount == 1) {
             blockLoginInfo()
         }
-
     }
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
