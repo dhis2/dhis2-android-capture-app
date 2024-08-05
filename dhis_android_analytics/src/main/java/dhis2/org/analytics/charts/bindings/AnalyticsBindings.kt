@@ -41,6 +41,7 @@ fun PeriodType.datePattern(): String = when (this) {
     PeriodType.Monthly,
     PeriodType.BiMonthly,
     PeriodType.Quarterly,
+    PeriodType.QuarterlyNov,
     PeriodType.SixMonthly,
     PeriodType.SixMonthlyApril,
     PeriodType.SixMonthlyNov,

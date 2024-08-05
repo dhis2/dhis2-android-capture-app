@@ -305,6 +305,29 @@ class DhisPeriodUtilsTest {
     }
 
     @Test
+    fun `QuaterlyNov period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.QuarterlyNov,
+                testDate,
+            ),
+        ) doReturn Period.builder()
+            .periodId("periodId")
+            .startDate(GregorianCalendar(2019, 8, 1).time)
+            .endDate(GregorianCalendar(2019, 10, 31).time)
+            .build()
+
+        Assert.assertEquals(
+            "Sep 2019 - Dec 2019",
+            periodUtils.getPeriodUIString(
+                PeriodType.QuarterlyNov,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
     fun `SixMonthly period should return expected result`() {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
