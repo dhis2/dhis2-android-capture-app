@@ -45,16 +45,10 @@ class PluginImpl : PluginInterface {
 
         Scaffold(modifier = Modifier.fillMaxSize()) {
                 innerPadding ->
-            LazyColumn(
-                Modifier.padding(top = 16.dp),
-            ) {
-                items(programs.value) {
-                    ProgramCard(program = it.program)
-                }
-            }
+
             Column(modifier = Modifier.padding(innerPadding)) {
                 CardDetail(
-                    title = "This is content resides in the plugin apk we have created!!!",
+                    title = "This content resides in the plugin apk we have created!!!",
                     additionalInfoList = listOf(
                         AdditionalInfoItem(
                             icon = {
@@ -83,6 +77,13 @@ class PluginImpl : PluginInterface {
                         )
                     ),
                 )
+                LazyColumn(
+                    Modifier.padding(top = 16.dp),
+                ) {
+                    items(programs.value) {
+                        ProgramCard(program = it.program)
+                    }
+                }
             }
         }
     }
