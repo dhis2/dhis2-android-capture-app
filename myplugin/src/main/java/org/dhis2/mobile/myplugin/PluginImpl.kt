@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,8 +43,8 @@ class PluginImpl : PluginInterface {
 
     @Composable
     fun MainScreen(
-        viewModel: MainViewModel  = viewModel(),
     ) {
+        val viewModel = MainViewModel()
         val programs = viewModel.programList.observeAsState(listOf())
 
         Scaffold(modifier = Modifier.fillMaxSize()) {

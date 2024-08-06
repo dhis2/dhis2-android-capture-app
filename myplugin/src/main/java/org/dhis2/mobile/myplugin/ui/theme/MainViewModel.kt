@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class MainViewModel @Inject constructor(
-    private val d2: D2,
+   // private val d2: D2,
 ) : ViewModel() {
     private val _programList = MutableLiveData<List<ProgramItem>>()
     val programList: LiveData<List<ProgramItem>>
@@ -29,14 +29,7 @@ open class MainViewModel @Inject constructor(
     }
 
     private fun getProgramsInCaptureOrgUnits(): List<ProgramItem> {
-        return d2.programModule().programs()
-            .withTrackedEntityType()
-            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
-            .blockingGet().map { sdkProgram ->
-                ProgramItem(
-                    program = sdkProgram
-                )
-            }
+        return emptyList()
     }
 }
 
