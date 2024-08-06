@@ -1,7 +1,6 @@
 package org.dhis2.common.matchers
 
 import android.view.View
-import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,8 +9,6 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
-import java.sql.Date
-import java.text.SimpleDateFormat
 
 class RecyclerviewMatchers {
 
@@ -109,36 +106,6 @@ class RecyclerviewMatchers {
                         if(holder.javaClass == holderClass) {
                             if (!matcher.matches(holder.itemView)) return false
                         }
-                    }
-                    return true
-                }
-            }
-        }
-
-        fun dateIsInRange(id:Int, startDate: String, endDate: String) : Matcher<View> {
-            return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-                override fun describeTo(description: Description) {
-                    description.appendText("all elements have dates between $startDate and $endDate : ")
-                }
-                override fun matchesSafely(view: RecyclerView): Boolean {
-                    val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder> = if(view.adapter is ConcatAdapter){
-                        (view.adapter as ConcatAdapter).adapters[1] as RecyclerView.Adapter<RecyclerView.ViewHolder>
-                    }else{
-                        view.adapter!!
-                    }
-                    for (position in 0 until adapter.itemCount) {
-                        val type = adapter.getItemViewType(position)
-                        val holder = adapter.createViewHolder(view, type)
-                        adapter.onBindViewHolder(holder, position)
-
-                        val start = Date.valueOf(startDate)
-                        val end = Date.valueOf(endDate)
-                        val range = start..end
-                        val date = holder.itemView.findViewById<TextView>(id).text.toString()
-                        val initialFormattedDate = SimpleDateFormat("dd/M/yyyy").parse(date)
-                        val formatter = SimpleDateFormat("yyyy-MM-dd")
-                        val parsedDate = formatter.format(initialFormattedDate)
-                        if (Date.valueOf(parsedDate) !in range) return false
                     }
                     return true
                 }

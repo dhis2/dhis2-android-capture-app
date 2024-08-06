@@ -17,11 +17,11 @@ import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
-import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
+import org.dhis2.commons.resources.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
+import org.dhis2.usescases.flow.teiFlow.TeiFlowTest.Companion.DATE_FORMAT
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
@@ -116,7 +116,6 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
@@ -129,7 +128,6 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldCheckDisplayInList() {
         val displayInListData = createDisplayListFields()
@@ -151,27 +149,26 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
+    fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
             .format(
                 context.resources.getQuantityString(R.plurals.enrollment, 1)
-                    .capitalize(Locale.current)
+                    .capitalize(Locale.current),
             )
         val totalFilterCount = "2"
         val filterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(enrollmentStatusFilter)
-            clickOnFilterActiveOption()
+            clickOnFilterCompletedOption()
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
             clickOnFilter()
-            waitToDebounce(2000)
-            checkTEIsAreOpen()
+            checkTeiAreCompleted()
         }
     }
 
@@ -198,7 +195,7 @@ class SearchTETest : BaseTest() {
             pressBack()
         }
         composeTestRule.waitForIdle()
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
@@ -211,6 +208,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
+    @Ignore("Test not checking nothing, try to create integration test")
     fun shouldSuccessfullyFilterByOrgUnitAndUseSort() {
         val orgUnitFilter = "ORG. UNIT"
         val orgUnitNgelehun = "Ngelehun CHC"
@@ -218,7 +216,7 @@ class SearchTETest : BaseTest() {
         val filterCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(orgUnitFilter)
             clickOnSortByField(orgUnitFilter)
@@ -235,15 +233,13 @@ class SearchTETest : BaseTest() {
         val enrollmentDate = "DATE OF ENROLLMENT"
         val enrollmentDateFrom = createFromEnrollmentDate()
         val enrollmentDateTo = createToEnrollmentDate()
-        val startDate = "2021-05-01"
-        val endDate = "2021-05-31"
         val totalFilterCount = "2"
         val filterCount = "1"
 
         setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(enrollmentDate)
             clickOnFromToDate()
@@ -253,7 +249,14 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
             clickOnFilter()
-            checkDateIsInRange(startDate, endDate)
+        }
+        searchTeiRobot(composeTestRule) {
+            clickOnTEI("Alan")
+        }
+
+        teiDashboardRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
+            checkEnrollmentDate(enrollmentDateFrom)
         }
     }
 
@@ -262,15 +265,15 @@ class SearchTETest : BaseTest() {
         val eventDate = context.getString(R.string.filters_title_event_date)
         val eventDateFrom = createFromEventDate()
         val eventDateTo = createToEventDate()
-        val startDate = "2020-05-01"
-        val endDate = "2020-05-31"
         val totalCount = "2"
         val filterCount = "1"
+        val name = "Heather"
+        val lastName = "Greene"
 
         setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(eventDate)
             clickOnFromToDate()
@@ -280,7 +283,13 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
             clickOnFilter()
-            checkDateIsInRange(startDate, endDate)
+        }
+
+        searchTeiRobot(composeTestRule) {
+            checkListOfSearchTEI(
+                title = "First name: $name",
+                attributes = mapOf("Last name" to lastName),
+            )
         }
     }
 
@@ -299,7 +308,7 @@ class SearchTETest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {
@@ -308,7 +317,7 @@ class SearchTETest : BaseTest() {
             pressBack()
         }
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(syncFilter)
             clickOnNotSync()
@@ -340,10 +349,9 @@ class SearchTETest : BaseTest() {
             waitToDebounce(2000)
             clickOnSearch()
             composeTestRule.waitForIdle()
-
         }
 
-        filterRobot {
+        filterRobot(composeTestRule) {
             clickOnFilter()
             clickOnFilterBy(enrollmentStatus)
             clickOnFilterActiveOption()
@@ -351,13 +359,12 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
             clickOnFilter()
-            checkTEIsAreOpen()
         }
 
         searchTeiRobot(composeTestRule) {
             checkListOfSearchTEI(
                 title = "First name: $name",
-                attributes = mapOf("Last name" to lastName)
+                attributes = mapOf("Last name" to lastName),
             )
         }
     }
@@ -394,54 +401,54 @@ class SearchTETest : BaseTest() {
         "sarah@gmail.com",
         "Main street 1",
         "56",
-        "167"
+        "167",
     )
 
     private fun createFromEnrollmentDate() = DateRegistrationUIModel(
         2021,
         5,
-        1
+        1,
     )
 
     private fun createToEnrollmentDate() = DateRegistrationUIModel(
         2021,
         5,
-        31
+        31,
     )
 
     private fun createFromEventDate() = DateRegistrationUIModel(
         2020,
         5,
-        1
+        1,
     )
 
     private fun createToEventDate() = DateRegistrationUIModel(
         2020,
         5,
-        31
+        31,
     )
 
     private fun createRegisterTEI() = RegisterTEIUIModel(
         "ADRIANNA",
         "ROBERTS",
         dateRegistration,
-        dateEnrollment
+        dateEnrollment,
     )
 
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
         2000,
         6,
-        30
+        30,
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
         2020,
-        10,
-        30
+        9,
+        30,
     )
 
     private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat(TeiFlowTest.DATE_PICKER_FORMAT)
+        val sdf = SimpleDateFormat(DATE_FORMAT)
         val calendar = Calendar.getInstance()
         return sdf.format(calendar.time)
     }

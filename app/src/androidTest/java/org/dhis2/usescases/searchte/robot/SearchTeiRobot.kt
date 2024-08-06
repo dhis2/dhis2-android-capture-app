@@ -42,7 +42,7 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnTEI(teiName: String, composeTestRule: ComposeTestRule) {
+    fun clickOnTEI(teiName: String) {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
         composeTestRule.waitForIdle()
