@@ -1,8 +1,5 @@
 package org.dhis2.maps.camera
 
-import android.content.Context
-import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
@@ -19,14 +16,13 @@ import timber.log.Timber
 const val DEFAULT_BOUND_PADDING = 50
 const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
 
-fun MapboxMap.initCameraToViewAllElements(context: Context?, bounds: LatLngBounds) {
+fun MapboxMap.initCameraToViewAllElements(bounds: LatLngBounds) {
     if (bounds.latitudeNorth == 0.0 && bounds.latitudeSouth == 0.0 &&
         bounds.longitudeEast == 0.0 && bounds.longitudeWest == 0.0
     ) {
         this.cameraPosition = CameraPosition.Builder()
             .zoom(2.0)
             .build()
-        context?.let { Toast.makeText(context, "No data to load on map", LENGTH_LONG).show() }
     } else {
         zoomInToLanLngBoundsAnimation(bounds)
     }
@@ -134,7 +130,7 @@ fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
         .include(pointToLatLn(bbox.northeast()))
         .include(pointToLatLn(bbox.southwest()))
         .build()
-    initCameraToViewAllElements(null, bounds)
+    initCameraToViewAllElements(bounds)
 }
 
 fun pointToLatLn(point: Point): LatLng {

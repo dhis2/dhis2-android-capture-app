@@ -12,6 +12,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
@@ -131,10 +132,7 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
             .include(pointToLatLn(boundingBox.northeast()))
             .include(pointToLatLn(boundingBox.southwest()))
             .build()
-        map?.initCameraToViewAllElements(
-            mapView.context,
-            bounds,
-        )
+        map?.initCameraToViewAllElements(bounds)
     }
 
     fun pointToLatLn(point: Point): LatLng {
@@ -229,10 +227,15 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
                 activateLocationComponent(
-                    LocationComponentActivationOptions.builder(
-                        mapView.context,
-                        style,
-                    ).build(),
+                    LocationComponentActivationOptions
+                        .builder(mapView.context, style)
+                        .locationComponentOptions(
+                            LocationComponentOptions.builder(mapView.context)
+                                .accuracyAnimationEnabled(true)
+                                .build(),
+                        )
+                        .useDefaultLocationEngine(true)
+                        .build(),
                 )
                 isLocationComponentEnabled = true
             } else {

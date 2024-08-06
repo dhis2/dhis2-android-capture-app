@@ -63,6 +63,8 @@ data class Graph(
                 -> {
                     ChronoUnit.YEARS.between(YearMonth.from(min), YearMonth.from(max)).toFloat()
                 }
+
+                PeriodType.QuarterlyNov -> TODO()
             }
         } else {
             0f
@@ -129,6 +131,8 @@ data class Graph(
                 val date = minDate().plusYears(numberOfSteps)
                 YearMonth.from(date).atDay(1)
             }
+
+            PeriodType.QuarterlyNov -> TODO()
         }
     }
 

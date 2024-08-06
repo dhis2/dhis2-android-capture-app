@@ -19,5 +19,9 @@
     <string name="accuracy_low">Low</string>
     <string name="accuracy_medium">Medium</string>
     <string name="accuracy_verygood">Very good</string>
-    <string name="accuracy_please_wait">Please wait…</string>
+    <string name="accuracy_please_wait">Wait for better accuracy…</string>
+    <string name="location_not_available">Your current position is not available.</string>
+    <string name="accuracy_can_not_improve">This is the best accuracy we could get.</string>
+    <string name="accuracy_minimun_set_not_allow">A minimum precision of %dm is required to save</string>
+    <string name="accuracy_minimun_set_allow">Do you want to save it?</string>
 </resources>
