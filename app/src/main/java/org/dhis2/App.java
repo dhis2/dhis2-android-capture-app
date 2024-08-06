@@ -128,7 +128,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     public void initCrashController() {
-        if (areTrackingPermissionGranted()) {
+        if (false/*areTrackingPermissionGranted()*/) {
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
                 options.setAnrReportInDebug(true);

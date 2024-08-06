@@ -53,6 +53,8 @@ class DateToPosition {
                 val yearDiff = minMonth?.let { ChronoUnit.YEARS.between(it, yearMonth) } ?: 0
                 yearDiff.toFloat()
             }
+
+            PeriodType.QuarterlyNov -> TODO()
         }
 
         if (minMonth == null) updateMinMonth(yearMonth)
