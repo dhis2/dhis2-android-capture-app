@@ -356,7 +356,6 @@
     <string name="date_dialog_tigle">Pilih tanggal untuk difilter</string>
     <string name="select_option">Pilih opsi</string>
     <string name="issue_reported">Masalah dilaporkan</string>
-    <string name="dialog_generate_new_event">Buat even baru</string>
     <string name="message_generate_new_event">Apakah Anda ingin membuat even lain?</string>
     <string name="event_completed_title">Even Selesai</string>
     <string name="event_completed_message">Semua even dalam program ini selesai. Apakah Anda ingin menutup program?</string>
@@ -777,8 +776,6 @@
     <string name="validation_internal_error_datasets">Kami tidak dapat memeriksa kualitas data. Hubungi administrator Anda</string>
     <string name="are_you_sure">Anda yakin?</string>
     <string name="reopen_question">Apakah Anda ingin membuka kembali data set?</string>
-    <string name="group_events_by_stage">Grup even berdasarkan tahap</string>
-    <string name="show_events_timeline">Tampilkan timeline even</string>
     <string name="filters_title_date">Tanggal</string>
     <string name="filters_title_event_date">Tanggal even</string>
     <string name="tei_type_has_no_attributes">%s tidak memiliki atribut publik. Silakan pilih program</string>

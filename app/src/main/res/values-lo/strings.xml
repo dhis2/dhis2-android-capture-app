@@ -350,7 +350,6 @@
     <string name="date_dialog_tigle">ເລືອກວັນທີເພື່ອຄັດຈ້ອນ</string>
     <string name="select_option">ເລືອກທາງເລືອກ</string>
     <string name="issue_reported">ບັນຫາຖືກລາຍງານແລ້ວ</string>
-    <string name="dialog_generate_new_event">ປ້ອນກໍລະນີໃໝ່</string>
     <string name="message_generate_new_event">ທ່ານຕ້ອງການປ້ອນຂໍ້ມູນກໍລະນີອື່ນບໍ?</string>
     <string name="event_completed_title">ກໍລະນີໄດ້ປ້ອນເຂົ້າສໍາເລັດແລ້ວ</string>
     <string name="event_completed_message">ກໍລະນີທັງໝົດໃນໂປຣແກຣມນີ້ໄດ້ຖືກດໍາເນີນການສໍາເລັດແລ້ວ. ທ່ານຕ້ອງການປິດໂປຣແກຣມນີ້ບໍ່?</string>
@@ -639,7 +638,6 @@
     <string name="event_data">ຂໍ້ມູນ</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="reopen_question">ທ່ານຕ້ອງການເປີດຊຸດຂໍ້ມູນຄືນໃໝ່ບໍ?</string>
-    <string name="group_events_by_stage">ຈັດກຸ່ມເຫດການຕາມຂັ້ນຕອນ</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filters_title_event_date">ວັນທີເຫດການ</string>
     <string name="privacy_policy_title">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
