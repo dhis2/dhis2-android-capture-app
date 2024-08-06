@@ -288,7 +288,6 @@
     <string name="qr_error_attr">ຄຸນລັກສະນະອັນນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
     <string name="qr_error_enrollment">ການຂື້ນທະບຽນນີ້ບໍ່ສາມາດປ້ອນເຂົ້າໄດ້</string>
 
-    <string name="jira_report">ລາຍງານບັນຫາໃຫ້ Jira</string>
     <string name="about">ກ່ຽວກັບ</string>
     <string name="programs_to_enroll">ໂປຣແກຣມເພື່ອລົງທະບຽນ</string>
     <string name="select_all">ເລືອກທັງໝົດ</string>
@@ -351,9 +350,7 @@
     <string name="date_dialog_tigle">ເລືອກວັນທີເພື່ອຄັດຈ້ອນ</string>
     <string name="select_option">ເລືອກທາງເລືອກ</string>
     <string name="issue_reported">ບັນຫາຖືກລາຍງານແລ້ວ</string>
-    <string name="jira_credential_error">ກວດເບີ່ງວ່າ ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານສໍາລັບ jira ຖືກຕ້ອງລະບໍ</string>
-    <string name="jira_issue_error">ຂໍ້ຄວາມທີ່ຜິດໄດ້ລາຍງານເຖີງບັນຫາ</string>
-    <string name="jira_fields_error">ຫ້ອງປ້ອນຂໍ້ມູນທັງໝົດແມ່ນຈໍາເປັນຕ້ອງປ້ອນຂໍ້ມູນໃສ່</string>
+    <string name="dialog_generate_new_event">ປ້ອນກໍລະນີໃໝ່</string>
     <string name="message_generate_new_event">ທ່ານຕ້ອງການປ້ອນຂໍ້ມູນກໍລະນີອື່ນບໍ?</string>
     <string name="event_completed_title">ກໍລະນີໄດ້ປ້ອນເຂົ້າສໍາເລັດແລ້ວ</string>
     <string name="event_completed_message">ກໍລະນີທັງໝົດໃນໂປຣແກຣມນີ້ໄດ້ຖືກດໍາເນີນການສໍາເລັດແລ້ວ. ທ່ານຕ້ອງການປິດໂປຣແກຣມນີ້ບໍ່?</string>
@@ -642,6 +639,7 @@
     <string name="event_data">ຂໍ້ມູນ</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="reopen_question">ທ່ານຕ້ອງການເປີດຊຸດຂໍ້ມູນຄືນໃໝ່ບໍ?</string>
+    <string name="group_events_by_stage">ຈັດກຸ່ມເຫດການຕາມຂັ້ນຕອນ</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filters_title_event_date">ວັນທີເຫດການ</string>
     <string name="privacy_policy_title">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
@@ -650,8 +648,6 @@
     <string name="customactivityoncrash_error_activity_error_details">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_title">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
-    <string name="jira_issue_sent">ສົ່ງບັນຫາແລ້ວ</string>
-    <string name="jira_issue_sent_error">ເກີດຄວາມຜິດພາດໃນການສົ່ງບັນຫາ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
     <string name="navigation_list_view">ເບີ່ງລາຍການ</string>
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>

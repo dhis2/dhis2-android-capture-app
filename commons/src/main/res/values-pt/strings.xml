@@ -22,8 +22,6 @@
     <string name="event_overview">Detalhes</string>
     <string name="select_option">Selecionar opção</string>
     <string name="search">Pesquisar</string>
-    <string name="jira_issue_sent">Problema Enviado</string>
-    <string name="jira_issue_sent_error">Erro ao enviar Problema</string>
     <string name="events">eventos</string>
     <string name="data_sets">Agregação de Dados</string>
     <string name="tei">TEI</string>

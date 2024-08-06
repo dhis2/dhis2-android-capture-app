@@ -303,7 +303,6 @@
     <string name="qr_error_attr">Tento atribut nelze přidat</string>
     <string name="qr_error_enrollment">Tento zápis nelze přidat</string>
 
-    <string name="jira_report">Nahlásit problém do Jira</string>
     <string name="about">O nás</string>
     <string name="programs_to_enroll">Programy k zápisu</string>
     <string name="select_all">vybrat vše</string>
@@ -367,9 +366,7 @@
     <string name="date_dialog_tigle">Vyberte data, která chcete filtrovat</string>
     <string name="select_option">Vyberte možnost</string>
     <string name="issue_reported">Problém byl nahlášen</string>
-    <string name="jira_credential_error">Zkontrolujte, zda je váš uživatel a heslo jira správné</string>
-    <string name="jira_issue_error">Chyba při hlášení problému</string>
-    <string name="jira_fields_error">Všechna pole jsou povinná</string>
+    <string name="dialog_generate_new_event">Generovat novou událost</string>
     <string name="message_generate_new_event">Chcete vytvořit další událost?</string>
     <string name="event_completed_title">Události byly dokončeny</string>
     <string name="event_completed_message">Všechny události v tomto programu jsou dokončeny. Chcete také ukončit program?</string>
@@ -708,8 +705,6 @@
     <string name="metada_first_sync_error">Při synchronizaci se serverem jsme našli chybu. Pokud je to možné, sdílejte chybu se správcem systému.</string>
     <string name="error_init_session">Nemohli jsme zahájit relaci s vaším uživatelem</string>
     <string name="enrollment_date_edition_warning">Jsou plánované události, které nebudou znovu naplánovány</string>
-    <string name="jira_issue_sent">Problém odeslán</string>
-    <string name="jira_issue_sent_error">Chyba při odesílání problému</string>
     <string name="section_charts">Grafy</string>
     <string name="navigation_list_view">Zobrazení seznamu</string>
     <string name="navigation_table_view">Zobrazení tabulky</string>

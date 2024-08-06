@@ -303,7 +303,6 @@
     <string name="qr_error_attr">Цей атрибут не можна додати</string>
     <string name="qr_error_enrollment">Цю реєстрацію не можна додати</string>
 
-    <string name="jira_report">Повідомити про проблему Jira</string>
     <string name="about">Про</string>
     <string name="programs_to_enroll">Програми для реєстрації</string>
     <string name="select_all">обрати усі</string>
@@ -367,9 +366,7 @@
     <string name="date_dialog_tigle">Обрати дати для фільтрування</string>
     <string name="select_option">Обрати опцію</string>
     <string name="issue_reported">Про проблему повідомлено</string>
-    <string name="jira_credential_error">Переконайтеся, що Ваші логін та пароль jira правильні</string>
-    <string name="jira_issue_error">Помилка при повідомленні про проблему</string>
-    <string name="jira_fields_error">Усі поля обов\'язкові для заповнення</string>
+    <string name="dialog_generate_new_event">Створити новий випадок</string>
     <string name="message_generate_new_event">Ви хочете створити інший випадок?</string>
     <string name="event_completed_title">Завершені випадки</string>
     <string name="event_completed_message">Усі випадки цієї програми завершено. Ви бажаєте закрити також і програму?</string>
@@ -685,6 +682,8 @@
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
+    <string name="group_events_by_stage">Згрупуйте випадки за етапами</string>
+    <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>
@@ -708,8 +707,6 @@
     <string name="metada_first_sync_error">Ми знайшли помилку під час синхронізації з Вашим сервером. Якщо можливо, повідомте про помилку системному адміністратору.</string>
     <string name="error_init_session">Нам не вдалося почати сесію із Вашим користувачем</string>
     <string name="enrollment_date_edition_warning">Є заплановані випадки, які не будуть перенесені</string>
-    <string name="jira_issue_sent">Надіслано сповіщення про проблему</string>
-    <string name="jira_issue_sent_error">Помилка при надсиланні сповіщення про проблему</string>
     <string name="section_charts">Діаграми</string>
     <string name="navigation_list_view">У вигляді списку</string>
     <string name="navigation_table_view">У вигляді таблиці</string>

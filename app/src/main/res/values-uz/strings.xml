@@ -293,7 +293,6 @@
     <string name="qr_error_attr">Ушбу атрибутларрни қўшиб бўлмади</string>
     <string name="qr_error_enrollment">Ушбу қайдларни қўшиб бўлмади</string>
 
-    <string name="jira_report">Jira нашри учун хабар бериш</string>
     <string name="about">Ҳақида</string>
     <string name="programs_to_enroll">Рўйхатга олиш дастурлари</string>
     <string name="select_all">ҳаммасини белгилаш</string>
@@ -357,9 +356,7 @@
     <string name="date_dialog_tigle">Фильтрлаш учун саналарни танланг</string>
     <string name="select_option">Вариант танланг</string>
     <string name="issue_reported">Муаммо ҳақида хабар берилди</string>
-    <string name="jira_credential_error">Jira фойдаланувчингиз ва паролингиз тўғрилигини текширинг</string>
-    <string name="jira_issue_error">Муаммо ҳақида хабар беришда хатолик юз берди</string>
-    <string name="jira_fields_error">Барча майдонлар мажбурий</string>
+    <string name="dialog_generate_new_event">Янги ҳодиса/тадбир яратиш</string>
     <string name="message_generate_new_event">Ҳақиқатдан ҳам бошқа ҳодиса/тадбир яратмоқчимисиз?</string>
     <string name="event_completed_title">Ҳодиса/Тадбир Тугалланди</string>
     <string name="event_completed_message">Ушбу дастурдаги барча ҳодиса/тадбирлар якунланди. Ҳақиқатдан ҳам ушбу дастурни ёпишни хохлайсизми?</string>
@@ -671,6 +668,8 @@
     <string name="validation_internal_error_datasets">Маълумотлар сифатини текшириб бўлмади. Администраторингизга мурожаат қилинг</string>
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="reopen_question">Маълумотлар тўпламини қайта очиб кўрмоқчимисиз?</string>
+    <string name="group_events_by_stage">Ҳодиса/тадбирларни босқичма-босқич гуруҳлаш</string>
+    <string name="show_events_timeline">Ҳодиса/тадбирлар жадвалини кўрсатиш</string>
     <string name="filters_title_date">Сана</string>
     <string name="filters_title_event_date">Тадбир санаси</string>
     <string name="tei_type_has_no_attributes">%s умумий хусусиятларга эга эмас. Илтимос, дастурни танланг</string>
@@ -693,8 +692,6 @@
     <string name="metada_first_sync_error">Серверингиз билан синхронизацияда хатоликни аниқладик. Иложи бўлса, хатолик ҳақида администраторингизга хабар беринг.</string>
     <string name="error_init_session">Сизнинг фойдаланувчингиз билан сеанс ташкиллаштира олмадик</string>
     <string name="enrollment_date_edition_warning">Режалаштирила олинмайдиган ҳодиса/тадбир режалари мавжуд</string>
-    <string name="jira_issue_sent">Муаммо юборилди</string>
-    <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
     <string name="section_charts">Диаграммалар</string>
     <string name="navigation_list_view">Рўйхат кўриниши</string>
     <string name="navigation_table_view">Жадвал кўриниши</string>

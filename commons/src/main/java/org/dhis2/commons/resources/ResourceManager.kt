@@ -129,10 +129,6 @@ class ResourceManager(
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
     fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
-    fun jiraIssueSentMessage(): String = getWrapperContext().getString(R.string.jira_issue_sent)
-    fun jiraIssueSentErrorMessage(): String =
-        getWrapperContext().getString(R.string.jira_issue_sent_error)
-
     fun sectionFeedback(): String = getWrapperContext().getString(R.string.section_feedback)
     fun sectionIndicators(): String = getWrapperContext().getString(R.string.section_indicators)
     fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)

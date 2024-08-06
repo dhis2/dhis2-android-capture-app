@@ -292,7 +292,6 @@
     <string name="qr_error_attr">该属性不能被添加</string>
     <string name="qr_error_enrollment">该注册不能添加</string>
 
-    <string name="jira_report">报告Jira问题</string>
     <string name="about">关于</string>
     <string name="programs_to_enroll">注册的项目</string>
     <string name="select_all">全选</string>
@@ -356,9 +355,7 @@
     <string name="date_dialog_tigle">选择过滤日期</string>
     <string name="select_option">选择选项</string>
     <string name="issue_reported">报告的问题</string>
-    <string name="jira_credential_error">检查你的jira用户和密码是正确的</string>
-    <string name="jira_issue_error">报告问题发生错误</string>
-    <string name="jira_fields_error">所有的字段都是强制的</string>
+    <string name="dialog_generate_new_event">生成新事件</string>
     <string name="message_generate_new_event">你要创建另外的事件？</string>
     <string name="event_completed_title">完成的事件</string>
     <string name="event_completed_message">该项目的所有事件已经完成。你同时要关闭该项目吗？</string>
@@ -668,6 +665,8 @@
     <string name="validation_internal_error_datasets">不能检查质量，联系管理员</string>
     <string name="are_you_sure">你确信？</string>
     <string name="reopen_question">你要重新打开数据集？</string>
+    <string name="group_events_by_stage">按阶段分组事件</string>
+    <string name="show_events_timeline">显示事件时间线</string>
     <string name="filters_title_date">日期</string>
     <string name="filters_title_event_date">事故日期</string>
     <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
@@ -690,8 +689,6 @@
     <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
     <string name="error_init_session">我们无法与您的用户发起会话</string>
     <string name="enrollment_date_edition_warning">已经计划的事件不会重新安排</string>
-    <string name="jira_issue_sent">已发送的问题</string>
-    <string name="jira_issue_sent_error">发送问题时出错</string>
     <string name="section_charts">图表</string>
     <string name="navigation_list_view">列表显示</string>
     <string name="navigation_table_view">表格检视</string>

@@ -56,10 +56,6 @@ class MainRobot : BaseRobot() {
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
-    fun clickJiraIssue() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_jira))
-    }
-
     fun clickDeleteAccount() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
     }

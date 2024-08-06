@@ -206,7 +206,6 @@
     <string name="qr_error_attr">Det här attributet kan inte läggas till</string>
     <string name="qr_error_enrollment">Denna inskrivning kan inte läggas till</string>
 
-    <string name="jira_report">Rapportera ett problem i JIRA</string>
     <string name="about">Handla om</string>
     <string name="programs_to_enroll">Program för att registrera</string>
     <string name="select_all">markera allt</string>
@@ -257,9 +256,7 @@
     <string name="date_dialog_tigle">Välj datum för att filtrera</string>
     <string name="select_option">Välj alternativ</string>
     <string name="issue_reported">Problem rapporterat</string>
-    <string name="jira_credential_error">Kontrollera att din JIRA användare och ditt lösenord är korrekta</string>
-    <string name="jira_issue_error">Ett fel uppstod vid rapporteringen av problemet</string>
-    <string name="jira_fields_error">Alla fält Alla fält är obligatoriskarävs</string>
+    <string name="dialog_generate_new_event">Skapa ny händelse</string>
     <string name="message_generate_new_event">Vill du skapa en annan händelse?</string>
     <string name="event_completed_title">Avslutade händelser</string>
     <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>

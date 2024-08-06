@@ -293,7 +293,6 @@
     <string name="qr_error_attr">Denne attributten kan ikke legges til</string>
     <string name="qr_error_enrollment">Denne registreringen kan ikke legges til</string>
 
-    <string name="jira_report">Rapporter et Jira problem</string>
     <string name="about">Om</string>
     <string name="programs_to_enroll">Programmer å registrere</string>
     <string name="select_all">velg alle</string>
@@ -357,9 +356,7 @@
     <string name="date_dialog_tigle">Velg datoer for å filtrere</string>
     <string name="select_option">Velg et alternativ</string>
     <string name="issue_reported">Problemer rapportert</string>
-    <string name="jira_credential_error">Sjekk at din jira bruker og passord er korrekt</string>
-    <string name="jira_issue_error">Feil ved rapportering av problemet</string>
-    <string name="jira_fields_error">Alle felt er obligatoriske</string>
+    <string name="dialog_generate_new_event">Generer en ny hendelse</string>
     <string name="message_generate_new_event">Vil du opprette en ny hendelse?</string>
     <string name="event_completed_title">Hendelser er fullført</string>
     <string name="event_completed_message">Alle hendelser i dette programmet er fullført. Vil du lukke programmet også?</string>
@@ -669,6 +666,8 @@
     <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
+    <string name="group_events_by_stage">Grupper hendelser per fase</string>
+    <string name="show_events_timeline">Vis tidslinjen for hendelser</string>
     <string name="filters_title_date">Dato</string>
     <string name="filters_title_event_date">Hendelsesdato</string>
     <string name="tei_type_has_no_attributes">%shar ingen offentlige attributter. Velg et program</string>
@@ -689,8 +688,6 @@
     <string name="customactivityoncrash_error_activity_error_details_copied">Kopiert til utklippstavle</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasjon om feil</string>
     <string name="enrollment_date_edition_warning">Det er planlagte arrangementer som ikke vil bli planlagt på nytt</string>
-    <string name="jira_issue_sent">Sak sendt</string>
-    <string name="jira_issue_sent_error">Feil ved sending av sak</string>
     <string name="section_charts">Diagrammer</string>
     <string name="navigation_list_view">Listevisning</string>
     <string name="navigation_table_view">Tabellvisning</string>
