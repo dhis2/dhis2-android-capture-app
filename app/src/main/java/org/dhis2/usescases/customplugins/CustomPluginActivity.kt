@@ -6,10 +6,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,8 @@ import org.dhis2.PluginManager
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.mobile.ui.designsystem.component.SubTitle
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class CustomPluginActivity : ActivityGlobalAbstract() {
 
@@ -35,25 +39,23 @@ class CustomPluginActivity : ActivityGlobalAbstract() {
         val pluginDownloader = PluginDownloader(applicationContext)
         val pluginUrl =
             "https://raw.githubusercontent.com/dhis2/dhis2-android-capture-app/ANDROAPP-5502-PoC-Plug-play-modules/myplugin-debug.apk"
-        var isLoading  = mutableStateOf(true)
+        val isLoading  = mutableStateOf(true)
         setContent{
-
-
             AnimatedVisibility(
                 visible = isLoading.value,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                Column {
+                Column (modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally)  {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White),
                         contentAlignment = Alignment.Center,
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = SurfaceColor.Primary)
                     }
-                    Title(text = "Downloading Plugin... this may take a while.")
+                    Title(text = "Downloading Plugin... this may take a while.", modifier = Modifier.padding(vertical = Spacing.Spacing16))
                     SubTitle(text = "Ensure you have a stable internet connection.")
                 }
             }
