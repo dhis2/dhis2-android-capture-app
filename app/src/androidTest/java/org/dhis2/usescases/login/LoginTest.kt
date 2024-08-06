@@ -100,6 +100,7 @@ class LoginTest : BaseTest() {
             //Manual test case 5184
             acceptTrackerDialog()
             clickYesOnAcceptTrackerDialog()
+            composeTestRule.waitForIdle()
             viewHome()
         }
         cleanDatabase()
@@ -124,6 +125,9 @@ class LoginTest : BaseTest() {
             typePassword(PASSWORD)
             clickLoginButton()
             acceptTrackerDialog()
+            clickYesOnAcceptTrackerDialog()
+            composeTestRule.waitForIdle()
+            viewHome()
         }
         cleanDatabase()
     }
