@@ -28,6 +28,8 @@ import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
+import androidx.compose.ui.test.hasText
+
 
 fun loginRobot(
     composeTestRule: ComposeTestRule,
@@ -39,6 +41,9 @@ fun loginRobot(
 }
 
 class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
+
+
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     fun typeServer(server: String) {
         onView(withId(R.id.server_url_edit)).perform(TypeTextAction(server))
@@ -159,8 +164,17 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
+    fun clickYesOnAcceptTrackerDialog() {
+        composeTestRule.onNodeWithText(context.getString(R.string.yes))
+            .performClick()
+    }
+
     fun checkPrivacyViewIsOpened() {
         Intents.intended(CoreMatchers.allOf(hasComponent(PolicyView::class.java.name)))
+    }
+
+    fun viewHome() {
+        composeTestRule.onNode(hasText("Home")).assertIsDisplayed()
     }
 
     companion object {
