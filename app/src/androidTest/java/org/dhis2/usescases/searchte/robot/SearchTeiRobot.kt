@@ -1,16 +1,21 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -166,11 +171,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
-        composeTestRule.onNode(
-            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(additionalText),
-            useUnmergedTree = true,
-        ).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(additionalText).assertIsDisplayed()
     }
 
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
