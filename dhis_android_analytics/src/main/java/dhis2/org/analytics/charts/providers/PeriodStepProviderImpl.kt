@@ -209,7 +209,6 @@ class PeriodStepProviderImpl(
             ).years
 
             null -> 0
-            PeriodType.QuarterlyNov -> TODO()
         }
     }
 

@@ -57,6 +57,4 @@ fun PeriodType.datePattern(): String = when (this) {
     -> {
         "YYYY"
     }
-
-    PeriodType.QuarterlyNov -> TODO()
 }

@@ -79,8 +79,6 @@ class GraphToBarData {
             -> {
                 YEARLY_BAR_WIDTH
             }
-
-            PeriodType.QuarterlyNov -> TODO()
         }
     }
 }
