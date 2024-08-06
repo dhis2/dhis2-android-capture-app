@@ -18,6 +18,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_android_components_ViewModelComponent
+
 import org.dhis2.commons.plugin.PluginInterface
 import org.dhis2.mobile.myplugin.ui.theme.MainViewModel
 import org.dhis2.mobile.myplugin.ui.theme.ProgramItem
@@ -33,15 +35,14 @@ class PluginImpl : PluginInterface {
 
     @Composable
     override fun Show(context: Context) {
-        val viewModel: MainViewModel = viewModel()
-        MainScreen(viewModel)
+        MainScreen()
     }
 
 
 
     @Composable
     fun MainScreen(
-        viewModel: MainViewModel,
+        viewModel: MainViewModel  = viewModel(),
     ) {
         val programs = viewModel.programList.observeAsState(listOf())
 
