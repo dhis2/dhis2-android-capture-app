@@ -5,13 +5,17 @@ import android.app.Instrumentation
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
+import org.dhis2.R
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -38,6 +42,67 @@ class LoginTest : BaseTest() {
         super.setUp()
         setupMockServer()
         D2Manager.removeCredentials()
+    }
+
+    @Test
+    fun loginFlow(){
+        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
+        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
+        mockWebServerRobot.addResponse(
+            GET,
+            PATH_WEBAPP_GENERAL_SETTINGS,
+            API_METADATA_SETTINGS_RESPONSE_ERROR,
+            404
+        )
+        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR, 404)
+        startLoginActivity()
+
+        loginRobot(composeTestRule) {
+
+            //shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton()
+            // Manual Test case - 4122
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clearUsernameField()
+            clearPasswordField()
+            checkUsernameFieldIsClear()
+            checkPasswordFieldIsClear()
+
+            //Manual Test case - 4123
+            checkLoginButtonIsHidden()
+
+            // shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled()
+            // Manual Test case 4126
+            enableIntents()
+            clearServerField()
+            typeServer(MOCK_SERVER_URL)
+            clickAccountRecovery()
+            checkWebviewWithRecoveryAccountIsOpened()
+            pressBack()
+
+            // shouldGetAuthErrorWhenCredentialsAreWrong()
+            // Manual test case 4121
+            mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
+            typeUsername(USERNAME)
+            typePassword(PASSWORD)
+            clickLoginButton()
+            checkAuthErrorAlertIsVisible()
+            clickOKAuthErrorAlert()
+
+            // shouldLoginSuccessfullyWhenCredentialsAreRight()
+            mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
+            clearPasswordField()
+            typePassword(PASSWORD)
+            clickLoginButton()
+
+            //Manual test case 5184
+            acceptTrackerDialog()
+            clickYesOnAcceptTrackerDialog()
+            viewHome()
+        }
+        cleanDatabase()
     }
 
     @Test
