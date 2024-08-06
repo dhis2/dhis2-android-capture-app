@@ -18,12 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_android_components_ViewModelComponent
+import org.dhis2.commons.extensions.serializable
 
 import org.dhis2.commons.plugin.PluginInterface
+import org.dhis2.mobile.myplugin.di.MainViewmodelFactory
 import org.dhis2.mobile.myplugin.ui.theme.MainViewModel
+import org.dhis2.mobile.myplugin.ui.theme.MainViewModel_Factory
 import org.dhis2.mobile.myplugin.ui.theme.ProgramItem
+import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
@@ -32,7 +37,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 
 class PluginImpl : PluginInterface {
-
 
     @Composable
     override fun Show(context: Context) {
@@ -44,7 +48,8 @@ class PluginImpl : PluginInterface {
     @Composable
     fun MainScreen(
     ) {
-        val viewModel = MainViewModel()
+
+        val viewModel = MainViewModel(D2Manager.getD2())
         val programs = viewModel.programList.observeAsState(listOf())
 
         Scaffold(modifier = Modifier.fillMaxSize()) {
