@@ -35,46 +35,42 @@ class CustomPluginActivity : ActivityGlobalAbstract() {
         val pluginDownloader = PluginDownloader(applicationContext)
         val pluginUrl =
             "https://raw.githubusercontent.com/dhis2/dhis2-android-capture-app/ANDROAPP-5502-PoC-Plug-play-modules/myplugin-debug.apk"
+        var isLoading  = mutableStateOf(true)
+        setContent{
 
+
+            AnimatedVisibility(
+                visible = isLoading.value,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                    Title(text = "Downloading Plugin... this may take a while.")
+                    SubTitle(text = "Ensure you have a stable internet connection.")
+                }
+            }
+
+
+        }
         lifecycleScope.launch {
             val downloadedFile = pluginDownloader.downloadPlugin(pluginUrl)
 
             setContent {
-                var isLoading by remember {
-                    mutableStateOf(true)
-                }
 
-                AnimatedVisibility(
-                    visible = isLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    Column {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth()
-                                .background(Color.White),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                        Title(text = "Downloading Plugin... this may take a while.")
-                        SubTitle(text = "Ensure you have a stable internet connection.")
-                    }
-                }
-                if (downloadedFile != null) {
-                    val pluginManager = PluginManager(context)
-                    isLoading = false
-                    val plugin = pluginManager.loadPlugin(downloadedFile)
-                    plugin?.Show() ?: Text(text = "Plugin not loaded")
-                }
 
                 if (downloadedFile != null) {
                     val pluginManager = PluginManager(context)
-                    isLoading = false
+                    isLoading.value = false
                     val plugin = pluginManager.loadPlugin(downloadedFile)
-                    plugin?.Show() ?: Text(text = "Plugin not loaded")
+                    plugin?.Show(context) ?: Text(text = "Plugin not loaded")
                 }
             }
         }
