@@ -1,10 +1,7 @@
 package org.dhis2;
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_PERMISSION_KEY;
-
 import android.content.Context;
 import android.os.Looper;
-import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,7 +51,6 @@ import org.dhis2.utils.session.PinModule;
 import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.hisp.dhis.android.core.D2Manager;
-import org.hisp.dhis.android.core.datastore.KeyValuePair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -394,16 +390,5 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public SyncComponentProvider getSyncComponentProvider() {
         return new SyncStatusDialogProvider();
-    }
-
-    private boolean areTrackingPermissionGranted() {
-        boolean isUserLoggedIn = serverComponent != null &&
-                serverComponent.userManager().isUserLoggedIn().blockingFirst();
-        if (!D2Manager.isD2Instantiated() || !isUserLoggedIn) {
-            return false;
-        }
-        KeyValuePair granted = D2Manager.getD2().dataStoreModule().localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
-        return granted != null && Boolean.parseBoolean(granted.value());
     }
 }
