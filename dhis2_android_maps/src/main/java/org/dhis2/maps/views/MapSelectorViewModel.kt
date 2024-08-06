@@ -8,12 +8,12 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.extensions.toLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.AccuracyRange
@@ -28,6 +28,7 @@ class MapSelectorViewModel(
     private val featureType: FeatureType,
     private val initialCoordinates: String?,
     private val mapStyleConfig: MapStyleConfiguration,
+    private val dispatchers: DispatcherProvider,
 ) : ViewModel() {
 
     private var currentUserLocation: LatLng? = null
@@ -40,7 +41,7 @@ class MapSelectorViewModel(
     val accuracyRange: Flow<AccuracyRange> = _accuracyRange
 
     fun init() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io()) {
             val geometry: MapGeometry? = initialCoordinates?.let {
                 val geometry = Geometry.builder()
                     .type(featureType)
@@ -88,7 +89,7 @@ class MapSelectorViewModel(
     }
 
     fun updateSelectedGeometry(point: LatLng) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io()) {
             val newPoint = Point.fromLngLat(point.longitude, point.latitude)
             when (featureType) {
                 FeatureType.POINT -> updateCurrentGeometry(newPoint)
@@ -113,13 +114,13 @@ class MapSelectorViewModel(
     }
 
     private fun onNewLocationAccuracy(accuracy: Float) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io()) {
             _accuracyRange.emit(accuracy.toAccuracyRance())
         }
     }
 
     fun onSaveCurrentGeometry(onValueReady: (String?) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io()) {
             val result = async {
                 when (val geometry = currentFeature?.geometry()) {
                     is Point -> {
