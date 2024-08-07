@@ -370,7 +370,6 @@
     <string name="date_dialog_tigle">حدد التواريخ للتصفية</string>
     <string name="select_option">تحديد الخيار</string>
     <string name="issue_reported">تم الإبلاغ عن المشكلة</string>
-    <string name="dialog_generate_new_event">توليد حدث جديد</string>
     <string name="message_generate_new_event">هل تريد إنشاء حدث جديد</string>
     <string name="event_completed_title">اكتملت الأحداث</string>
     <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب أيضاً في تعيين البرنامج كمغلق؟</string>
@@ -686,8 +685,6 @@
     <string name="validation_internal_error_datasets">لم نتمكن من التحقق من جودة البيانات. تواصل مع مديرك</string>
     <string name="are_you_sure">هل أنت متأكد؟</string>
     <string name="reopen_question">هل تريد إعادة فتح حزمة البيانات؟</string>
-    <string name="group_events_by_stage">تجميع الأحداث حسب المرحلة</string>
-    <string name="show_events_timeline">عرض الخط الزمني للأحداث</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="filters_title_event_date">بيانات الحدث</string>
     <string name="tei_type_has_no_attributes">%s لا يملك أي سمات عامة، يرجى تحديد برنامج</string>

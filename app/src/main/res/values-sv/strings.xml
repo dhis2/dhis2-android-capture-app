@@ -256,7 +256,6 @@
     <string name="date_dialog_tigle">Välj datum för att filtrera</string>
     <string name="select_option">Välj alternativ</string>
     <string name="issue_reported">Problem rapporterat</string>
-    <string name="dialog_generate_new_event">Skapa ny händelse</string>
     <string name="message_generate_new_event">Vill du skapa en annan händelse?</string>
     <string name="event_completed_title">Avslutade händelser</string>
     <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>

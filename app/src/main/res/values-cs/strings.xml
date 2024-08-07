@@ -366,7 +366,6 @@
     <string name="date_dialog_tigle">Vyberte data, která chcete filtrovat</string>
     <string name="select_option">Vyberte možnost</string>
     <string name="issue_reported">Problém byl nahlášen</string>
-    <string name="dialog_generate_new_event">Generovat novou událost</string>
     <string name="message_generate_new_event">Chcete vytvořit další událost?</string>
     <string name="event_completed_title">Události byly dokončeny</string>
     <string name="event_completed_message">Všechny události v tomto programu jsou dokončeny. Chcete také ukončit program?</string>
