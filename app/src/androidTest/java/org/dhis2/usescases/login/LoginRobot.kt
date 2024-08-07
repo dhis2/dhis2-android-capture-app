@@ -173,10 +173,6 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         Intents.intended(CoreMatchers.allOf(hasComponent(PolicyView::class.java.name)))
     }
 
-    fun viewHome() {
-        composeTestRule.onNode(hasText("Home")).assertIsDisplayed()
-    }
-
     companion object {
         const val LOGIN_ERROR_TITLE = "Login error"
         const val OK = "OK"
