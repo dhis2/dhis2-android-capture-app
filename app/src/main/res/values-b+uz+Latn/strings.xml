@@ -341,7 +341,6 @@
     <string name="date_dialog_tigle">Filtrlash uchun sanalarni tanlang</string>
     <string name="select_option">Variant tanlang</string>
     <string name="issue_reported">Muammo haqida xabar berildi</string>
-    <string name="dialog_generate_new_event">Yangi hodisa/tadbir yaratish</string>
     <string name="message_generate_new_event">Haqiqatdan ham boshqa hodisa/tadbir yaratmoqchimisiz?</string>
     <string name="event_completed_title">Hodisa/Tadbir Tugallandi</string>
     <string name="event_completed_message">Ushbu dasturdagi barcha hodisa/tadbirlar yakunlandi. Haqiqatdan ham ushbu dasturni yopishni xoxlaysizmi?</string>
@@ -646,8 +645,6 @@
     <string name="validation_internal_error_datasets">Maʼlumotlar sifatini tekshirib boʼlmadi. Аdministratoringizga murojaat qiling</string>
     <string name="are_you_sure">Ishonchinigiz komilmi?</string>
     <string name="reopen_question">Maʼlumotlar toʼplamini qayta ochib koʼrmoqchimisiz?</string>
-    <string name="group_events_by_stage">Hodisa/tadbirlarni bosqichma-bosqich guruhlash</string>
-    <string name="show_events_timeline">Hodisa/tadbirlar jadvalini koʼrsatish</string>
     <string name="filters_title_date">Sana</string>
     <string name="filters_title_event_date">Hodisa/Tadbir sanasi</string>
     <string name="tei_type_has_no_attributes">%s umumiy xususiyatlarga ega emas. Iltimos, dasturni tanlang</string>
