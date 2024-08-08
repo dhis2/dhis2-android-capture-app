@@ -69,7 +69,7 @@ fun TextInput(
     Column(
         modifier = Modifier
             .testTag(INPUT_TEST_TAG)
-            .onSizeChanged { tableDimensions.textInputHeight = it.height  }
+            .onSizeChanged { tableDimensions.textInputHeight = it.height }
             .fillMaxWidth()
             .background(
                 color = Color.White,

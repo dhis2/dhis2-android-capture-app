@@ -125,7 +125,7 @@ fun TableCell(
     CellLegendBox(
         modifier = Modifier
             .testTag("$tableId$CELL_TEST_TAG${cell.row}${cell.column}")
-            .onSizeChanged { currentCellHeight = it.height  }
+            .onSizeChanged { currentCellHeight = it.height }
             .width(cellWidth)
             .fillMaxHeight()
             .defaultMinSize(minHeight = dimensions.defaultCellHeight)
@@ -269,7 +269,7 @@ fun TableCell(
                 0f,
                 0f,
                 dimensions.defaultCellWidth * 2f,
-                dimensions.textInputHeight.toFloat() + currentCellHeight
+                dimensions.textInputHeight.toFloat() + currentCellHeight,
             )
             coroutineScope.launch {
                 bringIntoViewRequester.bringIntoView(marginCoordinates)
