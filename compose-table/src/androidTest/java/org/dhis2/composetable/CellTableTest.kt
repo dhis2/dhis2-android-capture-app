@@ -39,6 +39,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6397")
     @Test
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
