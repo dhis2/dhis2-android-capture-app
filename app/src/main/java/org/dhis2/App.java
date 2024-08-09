@@ -4,7 +4,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_
 
 import android.content.Context;
 import android.os.Looper;
-import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.commons.reporting.CrashReportModule;
 import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
+import org.dhis2.commons.service.SessionManagerModule;
 import org.dhis2.commons.sync.SyncComponentProvider;
 import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dispatcher.DispatcherModule;
@@ -201,6 +201,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .preferenceModule(new PreferenceModule())
                 .networkUtilsModule(new NetworkUtilsModule())
                 .workManagerController(new WorkManagerModule())
+                .sessionManagerService(new SessionManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule())
                 .customDispatcher(new CustomDispatcherModule())

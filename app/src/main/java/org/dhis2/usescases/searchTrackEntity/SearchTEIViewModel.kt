@@ -436,45 +436,50 @@ class SearchTEIViewModel(
 
     private fun performSearch() {
         viewModelScope.launch(dispatchers.io()) {
-            if (canPerformSearch()) {
-                searching = queryData.isNotEmpty()
-                uiState = uiState.copy(
-                    clearSearchEnabled = queryData.isNotEmpty(),
-                    searchedItems = getFriendlyQueryData(),
-                )
-                when (_screenState.value?.screenState) {
-                    SearchScreenState.LIST -> {
-                        SearchIdlingResourceSingleton.increment()
-                        setListScreen()
-                        fetchListResults { flow ->
-                            flow?.let {
-                                _refreshData.postValue(Unit)
-                                SearchIdlingResourceSingleton.decrement()
+            try {
+                if (canPerformSearch()) {
+                    searching = queryData.isNotEmpty()
+                    uiState = uiState.copy(
+                        clearSearchEnabled = queryData.isNotEmpty(),
+                        searchedItems = getFriendlyQueryData(),
+                    )
+
+                    when (_screenState.value?.screenState) {
+                        SearchScreenState.LIST -> {
+                            SearchIdlingResourceSingleton.increment()
+                            setListScreen()
+                            fetchListResults { flow ->
+                                flow?.let {
+                                    _refreshData.postValue(Unit)
+                                    SearchIdlingResourceSingleton.decrement()
+                                }
                             }
                         }
-                    }
 
-                    SearchScreenState.MAP -> {
-                        SearchIdlingResourceSingleton.increment()
-                        _refreshData.postValue(Unit)
-                        setMapScreen()
-                        fetchMapResults()
-                    }
+                        SearchScreenState.MAP -> {
+                            SearchIdlingResourceSingleton.increment()
+                            _refreshData.postValue(Unit)
+                            setMapScreen()
+                            fetchMapResults()
+                        }
 
-                    else -> searching = false
+                        else -> searching = false
+                    }
+                } else {
+                    val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 0
+                    val message = resourceManager.getString(
+                        R.string.search_min_num_attr,
+                        minAttributesToSearch,
+                    )
+                    uiState = uiState.copy(minAttributesMessage = message)
+                    uiState.updateMinAttributeWarning(true)
+                    setSearchScreen()
+                    _refreshData.postValue(Unit)
                 }
-            } else {
-                val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                    ?.minAttributesRequiredToSearch()
-                    ?: 0
-                val message = resourceManager.getString(
-                    R.string.search_min_num_attr,
-                    minAttributesToSearch,
-                )
-                uiState = uiState.copy(minAttributesMessage = message)
-                uiState.updateMinAttributeWarning(true)
-                setSearchScreen()
-                _refreshData.postValue(Unit)
+            } catch (e: Exception) {
+                Timber.d(e.message)
             }
         }
     }

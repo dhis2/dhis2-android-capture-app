@@ -199,6 +199,7 @@ class MainPresenter(
                 syncStatusController.restore()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
+                preferences.setValue(Preference.PIN_ENABLED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
             }.andThen(
                 repository.logOut(),

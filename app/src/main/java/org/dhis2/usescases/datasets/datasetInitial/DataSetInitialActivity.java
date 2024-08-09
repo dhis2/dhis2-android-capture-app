@@ -69,7 +69,9 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init();
+        if(sessionManagerServiceImpl.isUserLoggedIn()){
+            presenter.init();
+        }
     }
 
     @Override

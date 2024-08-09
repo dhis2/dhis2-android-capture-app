@@ -235,13 +235,15 @@ class ProgramEventDetailActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.setOpeningFilterToNone()
-        presenter.onDettach()
-        FilterManager.getInstance().clearEventStatus()
-        FilterManager.getInstance().clearCatOptCombo()
-        FilterManager.getInstance().clearWorkingList(true)
-        FilterManager.getInstance().clearAssignToMe()
-        presenter.clearOtherFiltersIfWebAppIsConfig()
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.setOpeningFilterToNone()
+            presenter.onDettach()
+            FilterManager.getInstance().clearEventStatus()
+            FilterManager.getInstance().clearCatOptCombo()
+            FilterManager.getInstance().clearWorkingList(true)
+            FilterManager.getInstance().clearAssignToMe()
+            presenter.clearOtherFiltersIfWebAppIsConfig()
+        }
     }
 
     override fun setProgram(programModel: Program) {
