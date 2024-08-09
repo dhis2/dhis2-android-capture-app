@@ -80,6 +80,7 @@ class SyncPresenterImpl(
         val programEventUids = d2.programModule().programs()
             .byProgramType().eq(ProgramType.WITHOUT_REGISTRATION)
             .blockingGetUids()
+        syncStatusController.startDownloadingEvents()
         Completable.fromObservable(d2.eventModule().events().upload())
             .andThen(
                 Completable.fromObservable(
@@ -148,6 +149,8 @@ class SyncPresenterImpl(
             .byProgramType().eq(ProgramType.WITH_REGISTRATION)
             .blockingGetUids()
 
+        syncStatusController.startDownloadingTracker()
+
         Completable.fromObservable(d2.trackedEntityModule().trackedEntityInstances().upload())
             .andThen(
                 Completable.fromObservable(
@@ -182,6 +185,7 @@ class SyncPresenterImpl(
 
     override fun syncAndDownloadDataValues() {
         if (!d2.dataSetModule().dataSets().blockingIsEmpty()) {
+            syncStatusController.startDownloadingDataSets()
             Completable.fromObservable(d2.dataValueModule().dataValues().upload())
                 .andThen(
                     Completable.fromObservable(
@@ -190,9 +194,12 @@ class SyncPresenterImpl(
                 )
                 .andThen(
                     Completable.fromObservable(
-                        d2.aggregatedModule().data().download().doOnNext {
-                            syncStatusController.updateDownloadProcess(it.dataSets())
-                        },
+                        d2.aggregatedModule().data().download()
+                            .doOnNext {
+                                syncStatusController.updateDownloadProcess(it.dataSets())
+                            }.doOnComplete {
+                                syncStatusController.finishDownloadingDataSets()
+                            },
                     ),
                 ).blockingAwait()
         }

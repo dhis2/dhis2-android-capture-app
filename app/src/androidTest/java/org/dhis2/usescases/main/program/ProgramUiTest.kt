@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.graphics.Color
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -26,7 +25,7 @@ class ProgramUiTest {
     @Test
     fun shouldShowProgramDescriptionIcon() {
         //Given a program with description
-        initProgramItem(programViewModel = provideFakeProgramViewModel())
+        initProgramItem(programUiModel = provideFakeProgramViewModel())
 
         //Then description icon is visible
         val programDescription = getString(R.string.program_description)
@@ -37,7 +36,7 @@ class ProgramUiTest {
     fun shouldNotShowProgramDescriptionIcon() {
         //Given a program without description
         initProgramItem(
-            programViewModel = provideFakeProgramViewModel().copy(description = null)
+            programUiModel = provideFakeProgramViewModel().copy(description = null)
         )
 
         //Then description icon is not visible
@@ -48,7 +47,7 @@ class ProgramUiTest {
     @Test
     fun shouldShowDescriptionDialog() {
         //Given a program with description
-        initProgramItem(programViewModel = provideFakeProgramViewModel())
+        initProgramItem(programUiModel = provideFakeProgramViewModel())
 
         //When user taps on description icon
         val programDescription = getString(R.string.program_description)
@@ -61,7 +60,7 @@ class ProgramUiTest {
     @Test
     fun shouldDismissDescriptionDialogWhenTapsOnClose() {
         //Given program description dialog is shown
-        initProgramItem(programViewModel = provideFakeProgramViewModel())
+        initProgramItem(programUiModel = provideFakeProgramViewModel())
         val programDescription = getString(R.string.program_description)
         composeTestRule.onNodeWithContentDescription(programDescription).performClick()
 
@@ -74,14 +73,14 @@ class ProgramUiTest {
 
     private fun getString(stringResource: Int) = context.resources.getString(stringResource)
 
-    private fun initProgramItem(programViewModel: ProgramViewModel) {
+    private fun initProgramItem(programUiModel: ProgramUiModel) {
         composeTestRule.setContent {
-            ProgramItem(programViewModel = programViewModel)
+            ProgramItem(programViewModel = programUiModel)
         }
     }
 
     private fun provideFakeProgramViewModel() =
-        ProgramViewModel(
+        ProgramUiModel(
             uid = "qweqwe",
             title = "Program title",
             MetadataIconData(

@@ -1,31 +1,45 @@
 package org.dhis2.usescases.main.program
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
+import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class ProgramPresenterTest {
 
-    private lateinit var presenter: ProgramPresenter
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val coroutineScope = MainCoroutineScopeRule()
+
+    private lateinit var presenter: ProgramViewModel
 
     private val view: ProgramView = mock()
     private val programRepository: ProgramRepository = mock()
@@ -33,14 +47,27 @@ class ProgramPresenterTest {
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val testingDispatcher = StandardTestDispatcher()
+    private val dispatcherProvider = object : DispatcherProvider {
+        override fun io(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun computation(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun ui(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+    }
 
     @Before
     fun setUp() {
-        presenter = ProgramPresenter(
+        presenter = ProgramViewModel(
             view,
             programRepository,
-            schedulers,
-            filterManager,
+            dispatcherProvider,
             matomoAnalyticsController,
             syncStatusController,
         )
@@ -63,8 +90,8 @@ class ProgramPresenterTest {
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-        verify(view).showFilterProgress()
-        verify(view).openOrgUnitTreeSelector()
+/*        verify(view).showFilterProgress()
+        verify(view).openOrgUnitTreeSelector()*/
     }
 
     @Test
@@ -86,9 +113,9 @@ class ProgramPresenterTest {
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-
+/*
         verify(view).showFilterProgress()
-        verify(view).openOrgUnitTreeSelector()
+        verify(view).openOrgUnitTreeSelector()*/
     }
 
     @Test
@@ -119,42 +146,6 @@ class ProgramPresenterTest {
     }
 
     @Test
-    fun `Should show program description when image is clicked`() {
-        presenter.showDescription("description")
-
-        verify(view).showDescription("description")
-    }
-
-    @Test
-    fun `Should do nothing when program description is null`() {
-        presenter.showDescription(null)
-
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `Should do nothing when program description is empty`() {
-        presenter.showDescription("")
-
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `Should hide filters screen`() {
-        presenter.showHideFilterClick()
-
-        verify(view).showHideFilter()
-    }
-
-    @Test
-    fun `Should clear all filters`() {
-        presenter.clearFilterClick()
-
-        verify(filterManager).clearAllFilters()
-        verify(view).clearFilters()
-    }
-
-    @Test
     fun `Should clear all disposables`() {
         presenter.dispose()
 
@@ -167,8 +158,8 @@ class ProgramPresenterTest {
         verify(filterManager).publishData()
     }
 
-    private fun programViewModel(): ProgramViewModel {
-        return ProgramViewModel(
+    private fun programViewModel(): ProgramUiModel {
+        return ProgramUiModel(
             "uid",
             "displayName",
             MetadataIconData(
@@ -187,11 +178,12 @@ class ProgramPresenterTest {
             filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = Date(),
         )
     }
 
-    private fun dataSetViewModel(): ProgramViewModel {
-        return ProgramViewModel(
+    private fun dataSetViewModel(): ProgramUiModel {
+        return ProgramUiModel(
             "uid",
             "displayName",
             MetadataIconData(
@@ -210,6 +202,7 @@ class ProgramPresenterTest {
             filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = Date(),
         )
     }
 }

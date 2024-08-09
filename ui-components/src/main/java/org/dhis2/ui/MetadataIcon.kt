@@ -35,6 +35,7 @@ fun MetadataIcon(
     size: AvatarSize = AvatarSize.Normal,
 ) {
     MetadataAvatar(
+        modifier = modifier,
         icon = {
             if (metadataIconData.isFileLoaded()) {
                 org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon(

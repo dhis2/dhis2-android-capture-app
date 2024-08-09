@@ -31,9 +31,9 @@ internal class ProgramRepositoryImpl(
 
     private val programViewModelMapper = ProgramViewModelMapper()
     private var lastSyncStatus: SyncStatusData? = null
-    private var baseProgramCache: List<ProgramViewModel> = emptyList()
+    private var baseProgramCache: List<ProgramUiModel> = emptyList()
 
-    override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
+    override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> {
         return programModels(syncStatusData).onErrorReturn { arrayListOf() }
             .mergeWith(aggregatesModels(syncStatusData).onErrorReturn { arrayListOf() })
             .flatMapIterable { data -> data }
@@ -48,7 +48,7 @@ internal class ProgramRepositoryImpl(
 
     override fun aggregatesModels(
         syncStatusData: SyncStatusData,
-    ): Flowable<List<ProgramViewModel>> {
+    ): Flowable<List<ProgramUiModel>> {
         return Flowable.fromCallable {
             aggregatesModels().blockingFirst()
                 .applySync(syncStatusData)
@@ -59,7 +59,7 @@ internal class ProgramRepositoryImpl(
         baseProgramCache = emptyList()
     }
 
-    private fun aggregatesModels(): Flowable<List<ProgramViewModel>> {
+    private fun aggregatesModels(): Flowable<List<ProgramUiModel>> {
         return filterPresenter.filteredDataSetInstances().get()
             .toFlowable()
             .map { dataSetSummaries ->
@@ -84,7 +84,7 @@ internal class ProgramRepositoryImpl(
             }
     }
 
-    override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramViewModel>> {
+    override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> {
         return Flowable.fromCallable {
             baseProgramCache.ifEmpty {
                 baseProgramCache = basePrograms()
@@ -94,7 +94,7 @@ internal class ProgramRepositoryImpl(
         }
     }
 
-    private fun basePrograms(): List<ProgramViewModel> {
+    private fun basePrograms(): List<ProgramUiModel> {
         return dhisProgramUtils.getProgramsInCaptureOrgUnits()
             .flatMap { programs ->
                 ParallelFlowable.from(Flowable.fromIterable(programs))
@@ -128,7 +128,7 @@ internal class ProgramRepositoryImpl(
             }.toList().toFlowable().blockingFirst()
     }
 
-    private fun List<ProgramViewModel>.applyFilters(): List<ProgramViewModel> {
+    private fun List<ProgramUiModel>.applyFilters(): List<ProgramUiModel> {
         return map { programModel ->
             val program = d2.programModule().programs().uid(programModel.uid).blockingGet()
             val (count, hasOverdue) =
@@ -147,9 +147,9 @@ internal class ProgramRepositoryImpl(
         }
     }
 
-    private fun List<ProgramViewModel>.applySync(
+    private fun List<ProgramUiModel>.applySync(
         syncStatusData: SyncStatusData,
-    ): List<ProgramViewModel> {
+    ): List<ProgramUiModel> {
         return map { programModel ->
             programModel.copy(
                 downloadState = when {
@@ -189,7 +189,7 @@ internal class ProgramRepositoryImpl(
         val teiIds = filterPresenter.filteredTrackerProgram(program)
             .offlineFirst().blockingGetUids()
         val mCount = teiIds.size
-        val mOverdue = dhisTeiUtils.hasOverdueInProgram(teiIds, program)
+        val mOverdue = /*dhisTeiUtils.hasOverdueInProgram(teiIds, program)*/false
 
         return Pair(mCount, mOverdue)
     }

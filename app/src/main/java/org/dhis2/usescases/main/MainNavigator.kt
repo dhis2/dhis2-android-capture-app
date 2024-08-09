@@ -90,11 +90,7 @@ class MainNavigator(
 
     fun openVisualizations() {
         val visualizationFragment = GroupAnalyticsFragment.forHome()
-        val sharedView = if (isPrograms()) {
-            (currentFragment as ProgramFragment).sharedView()
-        } else {
-            null
-        }
+        val sharedView = null
         if (sharedView != null) {
             visualizationFragment.sharedElementEnterTransition = ChangeBounds()
             visualizationFragment.sharedElementReturnTransition = ChangeBounds()

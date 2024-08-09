@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -58,7 +57,6 @@ class MainPresenter(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val filterManager: FilterManager,
     private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
@@ -116,44 +114,6 @@ class MainPresenter(
                 ),
         )
         trackDhis2Server()
-    }
-
-    fun initFilters() {
-        disposable.add(
-            Flowable.just(filterRepository.homeFilters())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filters ->
-                        if (filters.isEmpty()) {
-                            view.hideFilters()
-                        } else {
-                            view.setFilters(filters)
-                        }
-                    },
-                    { Timber.e(it) },
-                ),
-        )
-
-        disposable.add(
-            filterManager.asFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filterManager -> view.updateFilters(filterManager.totalFilters) },
-                    { Timber.e(it) },
-                ),
-        )
-
-        disposable.add(
-            filterManager.periodRequest
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { periodRequest -> view.showPeriodRequest(periodRequest.first) },
-                    { Timber.e(it) },
-                ),
-        )
     }
 
     fun trackDhis2Server() {
@@ -240,10 +200,6 @@ class MainPresenter(
         view.back()
     }
 
-    fun showFilter() {
-        view.showHideFilter()
-    }
-
     fun onDetach() {
         disposable.clear()
     }
@@ -262,7 +218,6 @@ class MainPresenter(
 
     fun onNavigateBackToHome() {
         view.goToHome()
-        initFilters()
     }
 
     fun onClickSyncManager() {
