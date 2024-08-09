@@ -35,4 +35,9 @@ class EventListPresenter(
     fun program(): Program? {
         return eventRepository.program().blockingGet()
     }
+
+    fun clear() {
+        disposable.clear()
+        EventListIdlingResourceSingleton.decrement()
+    }
 }

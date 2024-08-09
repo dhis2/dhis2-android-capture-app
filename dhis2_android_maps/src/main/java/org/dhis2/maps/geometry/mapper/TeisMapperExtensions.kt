@@ -1,14 +1,13 @@
 package org.dhis2.maps.geometry.mapper
 
 import com.mapbox.geojson.Feature
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
-import org.dhis2.maps.model.EventUiComponentModel
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelationshipUiComponentModel
 
-fun Feature?.addTeiInfo(searchTeiModel: SearchTeiModel): Feature? {
+internal fun Feature?.addTeiInfo(mapItemModel: MapItemModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
@@ -16,35 +15,39 @@ fun Feature?.addTeiInfo(searchTeiModel: SearchTeiModel): Feature? {
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            searchTeiModel.tei.uid(),
+            mapItemModel.uid,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            searchTeiModel.profilePicturePath,
+            mapItemModel.profilePicturePath(),
         )
-        if (searchTeiModel.selectedEnrollment != null) {
+        if (mapItemModel.relatedInfo?.enrollment != null) {
             addStringProperty(
                 MapTeisToFeatureCollection.ENROLLMENT_UID,
-                searchTeiModel.selectedEnrollment.uid(),
+                mapItemModel.relatedInfo.enrollment.uid,
             )
         }
     }
     return this
 }
 
-fun Feature?.addTeiEnrollmentInfo(searchTeiModel: SearchTeiModel): Feature? {
+internal fun Feature?.addTeiEnrollmentInfo(mapItemModel: MapItemModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
             org.dhis2.maps.extensions.FeatureSource.ENROLLMENT.name,
         )
-        addStringProperty(
-            MapTeisToFeatureCollection.ENROLLMENT_UID,
-            searchTeiModel.selectedEnrollment.uid(),
-        )
+
+        mapItemModel.relatedInfo?.enrollment?.let {
+            addStringProperty(
+                MapTeisToFeatureCollection.ENROLLMENT_UID,
+                mapItemModel.relatedInfo.enrollment.uid,
+            )
+        }
+
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            searchTeiModel.tei.uid(),
+            mapItemModel.uid,
         )
     }
     return this
@@ -78,6 +81,34 @@ fun Feature?.addRelationshipInfo(
             MapRelationshipsToFeatureCollection.TO_TEI,
             relationshipUiComponentModel.to.teiUid,
         )
+    }
+    return this
+}
+
+fun Feature?.addRelationshipInfo(
+    mapItemModel: MapItemModel,
+): Feature? {
+    if (this != null) {
+        addStringProperty(
+            org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
+            org.dhis2.maps.extensions.FeatureSource.RELATIONSHIP.name,
+        )
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_UID,
+            mapItemModel.uid,
+        )
+        addStringProperty(
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            mapItemModel.relatedInfo?.relationship?.uid,
+        )
+        addStringProperty(
+            MapTeisToFeatureCollection.TEI_IMAGE,
+            mapItemModel.profilePicturePath(),
+        )
+        /*addNumberProperty(
+            MapTeisToFeatureCollection.TEI_IMAGE,
+            mapItemModel.relatedInfo.defaultImage,
+        )*/
     }
     return this
 }
@@ -130,27 +161,27 @@ fun Feature?.addRelationToInfo(
     return this
 }
 
-fun Feature?.addTeiEventInfo(eventUiComponentModel: EventUiComponentModel): Feature? {
-    if (this != null) {
+internal fun Feature?.addTeiEventInfo(mapItemModel: MapItemModel): Feature? {
+    if (this != null && mapItemModel.relatedInfo?.event != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
             org.dhis2.maps.extensions.FeatureSource.TRACKER_EVENT.name,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_UID,
-            eventUiComponentModel.enrollment.trackedEntityInstance(),
+            mapItemModel.relatedInfo.event.teiUid,
         )
         addStringProperty(
             MapTeisToFeatureCollection.TEI_IMAGE,
-            eventUiComponentModel.teiImage,
+            mapItemModel.profilePicturePath(),
         )
         addStringProperty(
             MapTeiEventsToFeatureCollection.EVENT_UID,
-            eventUiComponentModel.event.uid(),
+            mapItemModel.uid,
         )
         addStringProperty(
             MapTeiEventsToFeatureCollection.STAGE_UID,
-            eventUiComponentModel.programStage?.uid(),
+            mapItemModel.relatedInfo.event.stageUid,
         )
     }
     return this

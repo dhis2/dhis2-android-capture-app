@@ -17,7 +17,12 @@ class MapLineToRelationshipFeatureTest {
     fun `Should map line to feature`() {
         val relationshipModel = relationshipUiComponentModel()
 
-        val result = mapper.map(relationshipModel)
+        val result = with(relationshipModel) {
+            mapper.map(
+                from.geometry!!,
+                to.geometry!!,
+            )
+        }
         val line = result?.geometry() as LineString
 
         assertThat(line.type(), `is`(LINE_STRING))
@@ -31,7 +36,12 @@ class MapLineToRelationshipFeatureTest {
     fun `Should not map line to feature`() {
         val relationshipModel = relationshipUiComponentModelWrongCoordinates()
 
-        val result = mapper.map(relationshipModel)
+        val result = with(relationshipModel) {
+            mapper.map(
+                from.geometry!!,
+                to.geometry!!,
+            )
+        }
 
         assertTrue(result == null)
     }

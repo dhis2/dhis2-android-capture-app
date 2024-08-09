@@ -48,9 +48,17 @@ class MapRelationshipsToFeatureCollectionTest {
         val relationshipsModel =
             listOf(relationshipUiComponentModel(), relationshipUiComponentModelSecond())
 
-        whenever(mapLineToFeature.map(firstRelationship)) doReturn getLineFeature(firstRelationship)
         whenever(
-            mapLineToFeature.map(secondRelationship),
+            mapLineToFeature.map(
+                firstRelationship.from.geometry!!,
+                firstRelationship.to.geometry!!,
+            ),
+        ) doReturn getLineFeature(firstRelationship)
+        whenever(
+            mapLineToFeature.map(
+                secondRelationship.from.geometry!!,
+                secondRelationship.to.geometry!!,
+            ),
         ) doReturn getLineFeature(secondRelationship)
         whenever(
             mapPointToFeature.map(firstRelationship.from.geometry!!),
@@ -71,7 +79,7 @@ class MapRelationshipsToFeatureCollectionTest {
             0.0,
         )
 
-        val result = mapRelationshipsToFeatureCollection.map(relationshipsModel)
+        val result = mapRelationshipsToFeatureCollection.mapLegacy(relationshipsModel)
         assertThat(result.first.size, `is`(2))
 
         val relationshipFirstType = result.first[FIRST_RELATIONSHIP_TYPE]

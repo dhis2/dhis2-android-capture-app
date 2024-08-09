@@ -1,6 +1,8 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Single
+import junit.framework.TestCase.assertTrue
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
@@ -20,6 +22,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
@@ -30,6 +33,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class RelationshipPresenterTest {
+
+    @JvmField
+    @Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
 
     lateinit var presenter: RelationshipPresenter
     private val view: RelationshipView = mock()
@@ -84,7 +91,7 @@ class RelationshipPresenterTest {
 
         presenter.init()
 
-        verify(view).setRelationships(relationships)
+        assertTrue(presenter.relationshipModels.value?.isNotEmpty() == true)
         verify(view).initFab(any())
     }
 
@@ -99,7 +106,7 @@ class RelationshipPresenterTest {
 
         presenter.init()
 
-        verify(view).setRelationships(relationships)
+        assertTrue(presenter.relationshipModels.value == relationships)
         verify(view).initFab(any())
     }
 

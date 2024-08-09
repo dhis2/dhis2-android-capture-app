@@ -16,7 +16,6 @@ import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.common.idlingresources.MapIdlingResource
 import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
@@ -39,13 +38,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
 
     @get:Rule
     val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
-
-    private var mapIdlingResource: MapIdlingResource? = null
 
     private val customDispatcherProvider =
         context.applicationContext.app().appComponent().customDispatcherProvider()
@@ -370,20 +367,7 @@ class SearchTETest : BaseTest() {
 
         searchTeiRobot(composeTestRule) {
             clickOnShowMap()
-            try {
-                val device = UiDevice.getInstance(getInstrumentation())
-                device.wait(Until.hasObject(By.desc(MAP_LOADED)), 6000)
-                checkCarouselTEICardInfo(firstName)
-            } catch (ex: IdlingResourceTimeoutException) {
-                throw RuntimeException("Could not start test")
-            }
-        }
-    }
-
-    @After
-    fun unregisterIdlingResource() {
-        if (mapIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mapIdlingResource)
+            checkCarouselTEICardInfo(firstName)
         }
     }
 

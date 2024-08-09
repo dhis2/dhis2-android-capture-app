@@ -1,6 +1,7 @@
 package org.dhis2.maps.layer
 
 import android.app.Dialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.resources.ColorType
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.resources.getPrimaryColor
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.DialogMapLayerBinding
@@ -32,10 +35,18 @@ import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICO
 
 class MapLayerDialog(
     private val mapManager: MapManager,
+    private val programUid: String?,
+    private val onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {},
 ) : BottomSheetDialogFragment() {
 
     private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
     lateinit var binding: DialogMapLayerBinding
+    lateinit var resourceManager: ResourceManager
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        resourceManager = ResourceManager(context, ColorUtils())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,7 +135,11 @@ class MapLayerDialog(
                 is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
                     addCheckBox(
                         source,
-                        requireContext().getString(R.string.dialog_layer_enrollment_coordinates_v2), // TODO:5894 programUid not available
+                        resourceManager.formatWithEnrollmentLabel(
+                            programUid = programUid,
+                            stringResource = R.string.dialog_layer_enrollment_coordinates_v2,
+                            1,
+                        ),
                         MapLayerManager.ENROLLMENT_ICON_ID,
                     ),
                 )
@@ -183,7 +198,9 @@ class MapLayerDialog(
             layerVisibility.forEach { (sourceId, visible) ->
                 mapManager.mapLayerManager.handleLayer(sourceId, visible)
             }
-            mapManager.carouselAdapter?.updateLayers(mapManager.mapLayerManager.mapLayers)
+            onLayersVisibility(
+                mapManager.updateLayersVisibility(layerVisibility),
+            )
             dismiss()
         }
     }
@@ -213,7 +230,7 @@ class MapLayerDialog(
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
                     layerIcon.setImageBitmap(
-                        mapManager.mapLayerManager.mapboxMap.style?.getImage(
+                        mapManager.mapLayerManager.mapBoxMap.style?.getImage(
                             image,
                         ),
                     )

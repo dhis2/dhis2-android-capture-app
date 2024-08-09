@@ -20,6 +20,12 @@ import androidx.databinding.BindingAdapter
 import org.dhis2.commons.R
 import kotlin.math.pow
 
+inline fun <T> fromCache(cache: MutableMap<String, T>, key: String?, defaultValue: () -> T?): T? {
+    return cache[key] ?: run {
+        defaultValue()?.also { cache[key ?: ""] = it }
+    }
+}
+
 @BindingAdapter("scrollingTextView")
 fun TextView.setScrollingTextView(canScroll: Boolean) {
     if (canScroll) {

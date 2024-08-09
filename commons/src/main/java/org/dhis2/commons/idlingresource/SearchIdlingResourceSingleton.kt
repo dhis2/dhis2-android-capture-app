@@ -7,19 +7,17 @@ object SearchIdlingResourceSingleton {
     private const val RESOURCE = "SEARCH"
 
     @JvmField
-    val countingIdlingResource = CountingIdlingResource(RESOURCE)
+    val countingIdlingResource = CountingIdlingResource(RESOURCE, true)
 
     fun increment() {
         if (countingIdlingResource.isIdleNow) {
             countingIdlingResource.increment()
         }
-        countingIdlingResource.dumpStateToLogs()
     }
 
     fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
             countingIdlingResource.decrement()
         }
-        countingIdlingResource.dumpStateToLogs()
     }
 }
