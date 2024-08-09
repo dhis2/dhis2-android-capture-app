@@ -1,5 +1,7 @@
 package org.dhis2.utils;
 
+import static org.dhis2.utils.OrientationUtilsKt.isPortrait;
+
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 
@@ -140,19 +142,24 @@ public class HelpManager {
     }
 
     private List<FancyShowCaseView> teiDashboardTutorial(ActivityGlobalAbstract activity) {
+        FancyShowCaseView tuto2 = null;
         FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_1))
                 .enableAutoTextPosition()
                 .closeOnTouch(true)
                 .build();
-        FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_dashboard_2))
-                .enableAutoTextPosition()
-                .focusOn(activity.findViewById(R.id.editButton))
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .titleGravity(Gravity.BOTTOM)
-                .closeOnTouch(true)
-                .build();
+
+        if (isPortrait()) {
+            tuto2 = new FancyShowCaseView.Builder(activity)
+                    .title(activity.getString(R.string.tuto_dashboard_2))
+                    .enableAutoTextPosition()
+                    .focusOn(activity.findViewById(R.id.editButton))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .titleGravity(Gravity.BOTTOM)
+                    .closeOnTouch(true)
+                    .build();
+        }
+
         FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
                 .title(activity.getString(R.string.tuto_dashboard_6))
                 .enableAutoTextPosition()
@@ -171,7 +178,7 @@ public class HelpManager {
 
         ArrayList<FancyShowCaseView> steps = new ArrayList<>();
         steps.add(tuto1);
-        steps.add(tuto2);
+        if (tuto2 != null) steps.add(tuto2);
         steps.add(tuto3);
         steps.add(tuto4);
         return steps;

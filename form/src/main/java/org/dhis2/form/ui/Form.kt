@@ -100,7 +100,6 @@ fun Form(
                         focusManager.clearFocus()
                     }
                 }
-
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
