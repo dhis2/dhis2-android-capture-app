@@ -5,17 +5,13 @@ import android.app.Instrumentation
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
-import org.dhis2.R
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -45,7 +41,7 @@ class LoginTest : BaseTest() {
     }
 
     @Test
-    fun loginFlow(){
+    fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(
@@ -59,8 +55,7 @@ class LoginTest : BaseTest() {
 
         loginRobot(composeTestRule) {
 
-            //shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton()
-            // Manual Test case - 4122
+            // Test case - [ANDROAPP-4122](https://dhis2.atlassian.net/browse/ANDROAPP-4122)
             clearServerField()
             typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
@@ -70,11 +65,10 @@ class LoginTest : BaseTest() {
             checkUsernameFieldIsClear()
             checkPasswordFieldIsClear()
 
-            //Manual Test case - 4123
+            //Test case - [ANDROAPP-4123](https://dhis2.atlassian.net/browse/ANDROAPP-4123)
             checkLoginButtonIsHidden()
 
-            // shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled()
-            // Manual Test case 4126
+            // Test case - [ANDROAPP-4126](https://dhis2.atlassian.net/browse/ANDROAPP-4126)
             enableIntents()
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -82,8 +76,7 @@ class LoginTest : BaseTest() {
             checkWebviewWithRecoveryAccountIsOpened()
             pressBack()
 
-            // shouldGetAuthErrorWhenCredentialsAreWrong()
-            // Manual test case 4121
+            // Test case - [ANDROAPP-4121](https://dhis2.atlassian.net/browse/ANDROAPP-4121)
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
@@ -91,97 +84,17 @@ class LoginTest : BaseTest() {
             checkAuthErrorAlertIsVisible()
             clickOKAuthErrorAlert()
 
-            // shouldLoginSuccessfullyWhenCredentialsAreRight()
+            // Test case - [ANDROAPP-4121](https://dhis2.atlassian.net/browse/ANDROAPP-4121)
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
             clearPasswordField()
             typePassword(PASSWORD)
             clickLoginButton()
 
-            //Manual test case 5184
+            //Test case - [ANDROAPP-5184](https://dhis2.atlassian.net/browse/ANDROAPP-5184)
             acceptTrackerDialog()
             clickYesOnAcceptTrackerDialog()
         }
         cleanDatabase()
-    }
-
-    @Test
-    fun shouldLoginSuccessfullyWhenCredentialsAreRight() {
-        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(
-            GET,
-            PATH_WEBAPP_GENERAL_SETTINGS,
-            API_METADATA_SETTINGS_RESPONSE_ERROR,
-            404
-        )
-        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR, 404)
-        startLoginActivity()
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clickLoginButton()
-            acceptTrackerDialog()
-            clickYesOnAcceptTrackerDialog()
-        }
-        cleanDatabase()
-    }
-
-    @Test
-    fun shouldGetAuthErrorWhenCredentialsAreWrong() {
-        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
-        startLoginActivity()
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clickLoginButton()
-            checkAuthErrorAlertIsVisible()
-        }
-    }
-
-    @Test
-    fun shouldHideLoginButtonIfPasswordIsMissing() {
-        startLoginActivity()
-
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clearPasswordField()
-            checkLoginButtonIsHidden()
-        }
-    }
-
-    @Test
-    fun shouldLaunchWebViewWhenClickAccountRecoveryAndServerIsFilled() {
-        enableIntents()
-        startLoginActivity()
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            clickAccountRecovery()
-            checkWebviewWithRecoveryAccountIsOpened()
-        }
-    }
-
-    @Test
-    fun shouldClearFieldsAndHideLoginButtonWhenClickCredentialXButton() {
-        startLoginActivity()
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clearUsernameField()
-            clearPasswordField()
-            checkUsernameFieldIsClear()
-            checkPasswordFieldIsClear()
-            checkLoginButtonIsHidden()
-        }
     }
 
     @Test
@@ -274,15 +187,10 @@ class LoginTest : BaseTest() {
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
         const val API_METADATA_SETTINGS_RESPONSE_ERROR =
             "mocks/settingswebapp/generalsettings_404.json"
-        const val API_METADATA_SETTINGS_PROGRAM_RESPONSE_ERROR =
-            "mocks/settingswebapp/programsettings_404.json"
-        const val API_METADATA_SETTINGS_DATASET_RESPONSE_ERROR =
-            "mocks/settingswebapp/datasetsettings_404.json"
         const val API_METADATA_SETTINGS_INFO_ERROR = "mocks/settingswebapp/infosettings_404.json"
         const val PATH_WEBAPP_GENERAL_SETTINGS =
             "/api/dataStore/ANDROID_SETTING_APP/general_settings?.*"
         const val PATH_WEBAPP_INFO = "/api/dataStore/ANDROID_SETTINGS_APP/info?.*"
-        const val PATH_APPS = "/api/apps?.*"
         const val DB_GENERATED_BY_LOGIN = "127-0-0-1-8080_test_unencrypted.db"
         const val PIN_PASSWORD = 1234
         const val USERNAME = "test"
