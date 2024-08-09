@@ -15,7 +15,16 @@ class SyncStatusController {
     fun initDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
         Timber.tag("SYNC").d("INIT DATA SYNC")
         progressStatusMap = programDownload
-        downloadStatus.postValue(SyncStatusData(true, false, progressStatusMap))
+        downloadStatus.postValue(
+            SyncStatusData(
+                running = true,
+                downloadingEvents = false,
+                downloadingTracker = false,
+                downloadingDataSetValues = false,
+                false,
+                progressStatusMap,
+            ),
+        )
     }
 
     fun updateDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
@@ -24,7 +33,7 @@ class SyncStatusController {
             it.putAll(programDownload)
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap),
+            downloadStatus.value?.copy(programSyncStatusMap = progressStatusMap),
         )
     }
 
@@ -32,7 +41,7 @@ class SyncStatusController {
         Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap),
+            downloadStatus.value?.copy(running = false, programSyncStatusMap = progressStatusMap),
         )
     }
 
@@ -45,7 +54,13 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap),
+            SyncStatusData(true, programSyncStatusMap = progressStatusMap),
+        )
+    }
+
+    fun startDownloadingEvents() {
+        downloadStatus.postValue(
+            downloadStatus.value?.copy(downloadingEvents = true),
         )
     }
 
@@ -59,7 +74,16 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap),
+            downloadStatus.value?.copy(
+                downloadingEvents = false,
+                programSyncStatusMap = progressStatusMap,
+            ),
+        )
+    }
+
+    fun startDownloadingTracker() {
+        downloadStatus.postValue(
+            downloadStatus.value?.copy(downloadingTracker = true),
         )
     }
 
@@ -74,7 +98,10 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(true, false, progressStatusMap),
+            downloadStatus.value?.copy(
+                downloadingTracker = false,
+                programSyncStatusMap = progressStatusMap,
+            ),
         )
     }
 
@@ -87,19 +114,30 @@ class SyncStatusController {
             }
         }
         downloadStatus.postValue(
-            SyncStatusData(false, false, progressStatusMap),
+            SyncStatusData(false, programSyncStatusMap = progressStatusMap),
         )
     }
 
     fun initDownloadMedia() {
         Timber.tag("SYNC").d("INIT FILES")
-
         downloadStatus.postValue(
-            SyncStatusData(true, true, progressStatusMap),
+            downloadStatus.value?.copy(downloadingMedia = true),
         )
     }
 
     fun restore() {
         downloadStatus.postValue(SyncStatusData())
+    }
+
+    fun startDownloadingDataSets() {
+        downloadStatus.postValue(
+            downloadStatus.value?.copy(downloadingDataSetValues = true),
+        )
+    }
+
+    fun finishDownloadingDataSets() {
+        downloadStatus.postValue(
+            downloadStatus.value?.copy(downloadingDataSetValues = false),
+        )
     }
 }

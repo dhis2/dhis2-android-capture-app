@@ -16,6 +16,7 @@ apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 repositories {
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
     mavenCentral()
+    mavenLocal()
 }
 
 android {

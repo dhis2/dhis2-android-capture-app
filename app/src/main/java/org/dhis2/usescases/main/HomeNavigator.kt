@@ -8,7 +8,7 @@ import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
-import org.dhis2.usescases.main.program.ProgramViewModel
+import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.hisp.dhis.android.core.program.ProgramType
@@ -39,7 +39,7 @@ sealed class HomeItemData(
     ) : HomeItemData(uid, label, accessDataWrite)
 }
 
-fun ProgramViewModel.toHomeItemData(): HomeItemData {
+fun ProgramUiModel.toHomeItemData(): HomeItemData {
     return when (programType) {
         ProgramType.WITHOUT_REGISTRATION.name ->
             HomeItemData.EventProgram(

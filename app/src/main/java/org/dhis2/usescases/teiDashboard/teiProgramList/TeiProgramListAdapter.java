@@ -10,7 +10,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     private List<TeiProgramListItem> listItems;
     private List<EnrollmentViewModel> activeEnrollments;
     private List<EnrollmentViewModel> inactiveEnrollments;
-    private List<ProgramViewModel> programs;
-    private List<ProgramViewModel> possibleEnrollmentPrograms;
+    private List<ProgramUiModel> programs;
+    private List<ProgramUiModel> possibleEnrollmentPrograms;
 
     TeiProgramListAdapter(TeiProgramListContract.Presenter presenter) {
         this.presenter = presenter;
@@ -128,7 +128,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         orderList();
     }
 
-    void setPrograms(List<ProgramViewModel> programs) {
+    void setPrograms(List<ProgramUiModel> programs) {
         this.programs.clear();
         this.programs.addAll(programs);
         orderList();
@@ -163,7 +163,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
         boolean found;
         boolean active;
-        for (ProgramViewModel programModel : programs) {
+        for (ProgramUiModel programModel : programs) {
             found = false;
             active = false;
             for (EnrollmentViewModel enrollment : activeEnrollments) {
@@ -192,7 +192,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             TeiProgramListItem thirdTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE);
             listItems.add(thirdTeiProgramListItem);
 
-            for (ProgramViewModel programToEnroll : possibleEnrollmentPrograms) {
+            for (ProgramUiModel programToEnroll : possibleEnrollmentPrograms) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programToEnroll, TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL);
                 listItems.add(teiProgramListItem);
             }

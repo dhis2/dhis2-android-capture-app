@@ -2,11 +2,9 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.NonNull;
 
-import org.dhis2.R;
 import org.dhis2.commons.resources.MetadataIconProvider;
-import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
@@ -15,7 +13,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,7 +85,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> allPrograms(String trackedEntityId) {
+    public Flowable<List<ProgramUiModel>> allPrograms(String trackedEntityId) {
         String trackedEntityType = d2.trackedEntityModule().trackedEntityInstances().byUid().eq(trackedEntityId).one().blockingGet().trackedEntityType();
         return Flowable.just(d2.organisationUnitModule().organisationUnits().byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).blockingGet())
                 .map(captureOrgUnits -> {
@@ -175,7 +172,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     }
 
     @Override
-    public ProgramViewModel updateProgramViewModel(ProgramViewModel programViewModel, ProgramDownloadState programDownloadState) {
-        return programViewModelMapper.map(programViewModel, programDownloadState);
+    public ProgramUiModel updateProgramViewModel(ProgramUiModel programUiModel, ProgramDownloadState programDownloadState) {
+        return programViewModelMapper.map(programUiModel, programDownloadState);
     }
 }

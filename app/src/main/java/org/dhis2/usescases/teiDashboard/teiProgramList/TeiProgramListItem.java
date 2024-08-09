@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import androidx.annotation.IntDef;
 
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,11 +30,11 @@ public class TeiProgramListItem {
     }
 
     private EnrollmentViewModel enrollmentModel;
-    private ProgramViewModel programModel;
+    private ProgramUiModel programModel;
     private @TeiProgramListItemViewType
     int viewType;
 
-    public TeiProgramListItem(EnrollmentViewModel enrollmentModel, ProgramViewModel programModel, int viewType) {
+    public TeiProgramListItem(EnrollmentViewModel enrollmentModel, ProgramUiModel programModel, int viewType) {
         this.enrollmentModel = enrollmentModel;
         this.programModel = programModel;
         this.viewType = viewType;
@@ -44,7 +44,7 @@ public class TeiProgramListItem {
         return enrollmentModel;
     }
 
-    public ProgramViewModel getProgramModel() {
+    public ProgramUiModel getProgramModel() {
         return programModel;
     }
 

@@ -9,6 +9,7 @@ import androidx.core.graphics.toColorInt
 import org.dhis2.commons.R
 import org.dhis2.ui.icons.SyncingIcon
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun State.toIconData(): Pair<ImageVector, Color> {
@@ -36,7 +37,7 @@ fun State.toIconData(): Pair<ImageVector, Color> {
         State.SENT_VIA_SMS,
         State.SYNCED_VIA_SMS,
         -> Color("#03A9F4".toColorInt())
-        else -> Color("#4CAF50".toColorInt())
+        else -> TextColor.OnSurfaceLight
     }
 
     return Pair(imageVector, tint)

@@ -26,14 +26,15 @@ import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
-import org.dhis2.usescases.main.program.ProgramViewModel
+import org.dhis2.usescases.main.program.ProgramUiModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import java.util.Date
 
 @Composable
-fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
+fun EnrollToProgram(programUiModel: ProgramUiModel, onEnrollClickListener: () -> Unit) {
     Column {
         Row(
             modifier = Modifier
@@ -48,14 +49,14 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
                     .width(56.dp)
                     .height(56.dp)
                     .alpha(0.5f),
-                metadataIconData = programViewModel.metadataIconData,
+                metadataIconData = programUiModel.metadataIconData,
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 modifier = Modifier
                     .weight(2f, true)
                     .padding(end = 12.dp),
-                text = programViewModel.title,
+                text = programUiModel.title,
                 fontSize = 14.sp,
             )
         }
@@ -68,8 +69,8 @@ fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: (
             Button(
                 text = stringResource(id = R.string.enroll),
                 modifier = Modifier.fillMaxWidth()
-                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) },
-                enabled = !programViewModel.isDownloading(),
+                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programUiModel.title) },
+                enabled = !programUiModel.isDownloading(),
                 onClick = onEnrollClickListener,
                 style = ButtonStyle.TONAL,
             )
@@ -89,14 +90,14 @@ fun EnrollToProgramDisabledPreview() {
     EnrollToProgram(testingProgramModel(ProgramDownloadState.DOWNLOADED)) {}
 }
 
-private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramViewModel(
+private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramUiModel(
     uid = "qweqwe",
     title = "A very long long long program title",
     metadataIconData = MetadataIconData(
         imageCardData = ImageCardData.IconCardData(
-            uid = "",
-            label = "",
-            iconRes = "ic_positive_negative",
+            uid = "7e0cb105-c276-4f12-9f56-a26af8314121",
+            label = "Stethoscope",
+            iconRes = "dhis2_stethoscope_positive",
             iconTint = "#00BCD4".toColor(),
         ),
         color = "#00BCD4".toColor(),
@@ -113,6 +114,7 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramVi
     false,
     downloadState = downloadState,
     stockConfig = null,
+    lastUpdated = Date(),
 )
 
 const val PROGRAM_TO_ENROLL = "PROGRAM_TO_ENROLL_%s"

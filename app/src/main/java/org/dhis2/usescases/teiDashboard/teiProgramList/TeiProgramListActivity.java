@@ -13,7 +13,7 @@ import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void setPrograms(List<ProgramViewModel> programs) {
+    public void setPrograms(List<ProgramUiModel> programs) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }

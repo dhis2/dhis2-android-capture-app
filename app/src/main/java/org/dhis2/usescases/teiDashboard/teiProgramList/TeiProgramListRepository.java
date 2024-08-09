@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.main.program.ProgramDownloadState;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 
@@ -22,7 +22,7 @@ public interface TeiProgramListRepository {
     Observable<List<EnrollmentViewModel>> otherEnrollments(String trackedEntityId);
 
     @NonNull
-    Flowable<List<ProgramViewModel>> allPrograms(String trackedEntityId);
+    Flowable<List<ProgramUiModel>> allPrograms(String trackedEntityId);
 
     @NonNull
     Observable<List<Program>> alreadyEnrolledPrograms(String trackedEntityId);
@@ -36,5 +36,5 @@ public interface TeiProgramListRepository {
 
     Program getProgram(String programUid);
 
-    ProgramViewModel updateProgramViewModel(ProgramViewModel programViewModel, ProgramDownloadState programDownloadState);
+    ProgramUiModel updateProgramViewModel(ProgramUiModel programUiModel, ProgramDownloadState programDownloadState);
 }
