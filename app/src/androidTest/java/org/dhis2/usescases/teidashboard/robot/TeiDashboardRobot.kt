@@ -3,6 +3,8 @@ package org.dhis2.usescases.teidashboard.robot
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -31,6 +33,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
+import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
@@ -445,5 +448,15 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnConfirmDeleteEnrollment() {
         composeTestRule.onNodeWithText("Remove").performClick()
+    }
+
+    fun checkEnrollmentDate(enrollmentDate: DateRegistrationUIModel) {
+        composeTestRule.onNodeWithTag("LIST_CARD_ADDITIONAL_INFO_COLUMN").assertIsDisplayed()
+        composeTestRule.onNode(
+            hasParent(
+                hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN")) and
+                    hasText("Date of enrollment:  ${enrollmentDate.day}/${enrollmentDate.month}/${enrollmentDate.year}", true),
+            useUnmergedTree = true
+        ).assertIsDisplayed()
     }
 }

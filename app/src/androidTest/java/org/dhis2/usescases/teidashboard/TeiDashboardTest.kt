@@ -271,7 +271,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
             openFormSection(personAttribute)

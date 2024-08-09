@@ -33,7 +33,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot(composeTestRule) {
-            clickOnTEI(teiName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {
@@ -54,7 +54,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(relationshipLastName)
             clickOnSearch()
-            clickOnTEI(relationshipName, composeTestRule)
+            clickOnTEI(relationshipName)
         }
 
         relationshipRobot {
@@ -77,7 +77,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {
@@ -106,7 +106,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {

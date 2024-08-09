@@ -74,7 +74,7 @@ class SyncFlowTest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {
