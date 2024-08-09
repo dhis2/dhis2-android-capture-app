@@ -20,15 +20,13 @@ class SessionManagerServiceImpl(
     private val featureConfig: FeatureConfigRepository,
 ) : SessionManagerService {
 
-    private var lastInteractionTime: Long = System.currentTimeMillis()
-
     override fun onUserInteraction() {
-        lastInteractionTime = System.currentTimeMillis()
+        preferences.setValue(Preference.LAST_USER_INTERACTION.toString(), System.currentTimeMillis())
     }
 
     override fun checkSessionTimeout(navigateAction: (Int) -> Unit, scope: LifecycleCoroutineScope): Boolean {
         val currentTime = System.currentTimeMillis()
-        return if (currentTime - lastInteractionTime > SESSION_TIMEOUT_DURATION && !preferences.getBoolean(
+        return if (currentTime - preferences.getLong(Preference.LAST_USER_INTERACTION.toString(), 0L)!! > SESSION_TIMEOUT_DURATION && !preferences.getBoolean(
                 Preference.PIN_ENABLED, false,
             ) && featureConfig.isFeatureEnable(
                 Feature.AUTO_LOGOUT,
