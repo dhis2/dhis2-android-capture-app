@@ -264,7 +264,6 @@
     <string name="date_dialog_tigle">ជ្រើសរើសថ្ងៃខែឆ្នាំដើម្បីច្រោះទិន្នន័យ</string>
     <string name="select_option">កំណត់​ជម្រើស</string>
     <string name="issue_reported">បានរាយការណ៏បញ្ហា</string>
-    <string name="dialog_generate_new_event">បង្កើតព្រឹត្តិការណ៏ថ្មី</string>
     <string name="message_generate_new_event">តើអ្នកចង់បង្កើតព្រឹត្តិការណ៏ថ្មីមួយទៀតទេ?</string>
     <string name="event_completed_title">ព្រឹត្តិការណ៏បានបញ្ចប់</string>
     <string name="event_completed_message">គ្រប់ព្រឹត្តិការណ៏ទាំងអស់នៅក្នុងកម្មវិធីនេះបានបញ្ចប់។ តើអ្នកចង់បិទកម្មវិធីនេះទេ?</string>
