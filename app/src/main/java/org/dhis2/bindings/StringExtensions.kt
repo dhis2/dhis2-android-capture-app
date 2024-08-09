@@ -38,7 +38,7 @@ fun String.toDate(): Date {
     }
     if (date == null) {
         try {
-            date = DateUtils.databaseDateFormat().parse(this)
+            date = DateUtils.databaseDateFormatNoZulu().parse(this)
         } catch (e: Exception) {
             Timber.d("wrong format")
         }
