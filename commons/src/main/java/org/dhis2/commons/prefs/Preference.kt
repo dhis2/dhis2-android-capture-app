@@ -8,6 +8,7 @@ class Preference {
         const val SESSION_LOCKED = "SessionLocked"
         const val PIN = "pin"
         const val PIN_ENABLED = "PIN_ENABLED"
+        const val LAST_USER_INTERACTION = 0L
 
         // SYNC PARAMETERS
         const val EVENT_MAX = "EVENT_MAX"

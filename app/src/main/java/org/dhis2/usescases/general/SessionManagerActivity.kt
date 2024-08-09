@@ -115,9 +115,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     }
 
     override fun onUserInteraction() {
-        if (::sessionManagerServiceImpl.isInitialized) sessionManagerServiceImpl.onUserInteraction()
-
-        // Implement sessionManagerMethods
+        if (::sessionManagerServiceImpl.isInitialized && this !is SplashActivity) sessionManagerServiceImpl.onUserInteraction()
     }
 
     private var comesFromImageSource: Boolean = false
@@ -206,7 +204,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     }
 
     private fun checkSessionTimeout() {
-        if (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.checkSessionTimeout({ accountsCount -> sessionAction(accountsCount) }, lifecycleScope) && this !is LoginActivity && this !is SplashActivity) {
+        if (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.checkSessionTimeout({ accountsCount -> sessionAction(accountsCount) }, lifecycleScope) && this !is LoginActivity) {
             workManagerController.cancelAllWork()
             syncStatusController.restore()
         }
@@ -244,7 +242,9 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                     showPinDialog()
                 }
             } else {
-                checkSessionTimeout()
+                if (this !is LoginActivity && this !is SplashActivity) {
+                    checkSessionTimeout()
+                }
             }
         }
     }
