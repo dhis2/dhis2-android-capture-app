@@ -17,11 +17,25 @@ data class ProgramUiModel(
     val onlyEnrollOnce: Boolean,
     val accessDataWrite: Boolean,
     val state: State,
+    val hasOverdueEvent: Boolean,
+    val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState,
     val downloadActive: Boolean = false,
     val stockConfig: AppConfig?,
     val lastUpdated: Date,
 ) {
+    private var hasShownCompleteSyncAnimation = false
+
+    fun setCompleteSyncAnimation() {
+        hasShownCompleteSyncAnimation = true
+    }
+
+    fun hasShowCompleteSyncAnimation() = hasShownCompleteSyncAnimation
+
+    fun translucent(): Boolean {
+        return (filtersAreActive && count == 0) || downloadState == ProgramDownloadState.DOWNLOADING
+    }
+
     fun countDescription() = "%s %s".format(count, typeName)
 
     fun isDownloading() = downloadActive || downloadState == ProgramDownloadState.DOWNLOADING

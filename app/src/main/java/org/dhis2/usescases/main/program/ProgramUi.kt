@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,8 +56,12 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.bindings.addIf
+import org.dhis2.commons.date.toDateSpan
+import org.dhis2.commons.filters.data.toStringResource
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -65,6 +70,9 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
+import org.hisp.dhis.mobile.ui.designsystem.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.AvatarStyleData
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ExpandableItemColumn
@@ -217,6 +225,14 @@ private fun DownloadMessage(downLoadState: SyncStatusData?) {
             )
         }
     }
+}
+
+private fun getDownloadLabel(downLoadState: SyncStatusData?) = when {
+    downLoadState?.downloadingEvents == true -> "Syncing events..."
+    downLoadState?.downloadingTracker == true -> "Syncing programs..."
+    downLoadState?.downloadingDataSetValues == true -> "Syncing data sets..."
+    downLoadState?.downloadingMedia == true -> "Syncing file resources..."
+    else -> ""
 }
 
 @Composable
@@ -646,6 +662,81 @@ fun ListPreview() {
         ),
     )
 }
+
+@Composable
+fun ProgramItem(
+    modifier: Modifier,
+    program: ProgramUiModel,
+    programLayout: ProgramLayout,
+    verticalPadding: Dp,
+    onSizeChanged: (IntSize) -> Unit,
+    onItemClick: (programUiModel: ProgramUiModel) -> Unit,
+    onGranularSyncClick: (programUiModel: ProgramUiModel) -> Unit,
+) {
+    when (programLayout) {
+        ProgramLayout.DEFAULT ->
+            ListCard(
+                modifier = modifier,
+                listCardState = rememberListCardState(
+                    title = ListCardTitleModel(text = program.title),
+                    lastUpdated = program.lastUpdated.toDateSpan(LocalContext.current)
+                        .takeIf { !program.isDownloading() },
+                    description = ListCardDescriptionModel(text = program.countDescription())
+                        .takeIf { !program.isDownloading() },
+
+                    loading = program.isDownloading(),
+                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                        additionalInfoList = buildList {
+                            program.description?.let { description ->
+                                add(
+                                    AdditionalInfoItem(
+                                        value = description,
+                                        color = TextColor.OnSurfaceLight,
+                                    ),
+                                )
+                            }
+                            addIf(
+                                listOf(
+                                    State.TO_POST,
+                                    State.TO_UPDATE,
+                                    State.ERROR,
+                                    State.WARNING,
+                                ).contains(program.state),
+                                getStateAdditionalInfoItem(program.state),
+                            )
+                        },
+                        syncProgressItem = AdditionalInfoItem(
+                            icon = {
+                                SyncStateIcon(state = program.state)
+                            },
+                            value = stringResource(id = program.state.toStringResource()),
+                            color = program.state.toIconData().second,
+                            isConstantItem = false,
+                        ),
+                        expandLabelText = "Show description",
+                        shrinkLabelText = "Hide description",
+                        minItemsToShow = 0,
+                    ),
+                    expandable = true,
+                    itemVerticalPadding = verticalPadding,
+                ),
+                listAvatar = {
+                    ProgramAvatar(
+                        program = program,
+                        avatarSize = programLayout.metadataAvatarSize(),
+                    )
+                },
+
+                onCardClick = { onItemClick(program) },
+                actionButton = {
+                    if (!program.isDownloading()) {
+                        ProvideSyncButton(state = program.state) {
+                            onGranularSyncClick(program)
+                        }
+                    }
+                },
+                onSizeChanged = onSizeChanged,
+            )
 
 private fun testingProgramModel() = ProgramUiModel(
     uid = "qweqwe",
