@@ -43,8 +43,8 @@ class DashboardViewModel(
     private var _state = MutableStateFlow<State?>(null)
     val state = _state.asStateFlow()
 
-    private val _dashboardModel = MutableLiveData<DashboardModel>()
-    var dashboardModel: LiveData<DashboardModel> = _dashboardModel
+    private val _dashboardModel = MutableLiveData<DashboardModel?>()
+    var dashboardModel: LiveData<DashboardModel?> = _dashboardModel
 
     private val _groupByStage = MutableLiveData<Boolean>()
     val groupByStage: LiveData<Boolean> = _groupByStage
@@ -66,7 +66,7 @@ class DashboardViewModel(
                 try {
                     val model = result.await()
                     _dashboardModel.postValue(model)
-                    if (model is DashboardEnrollmentModel) {
+                    if (model is DashboardEnrollmentModel && model != null) {
                         _showFollowUpBar.value =
                             model.currentEnrollment.followUp() ?: false
                         _syncNeeded.value =
