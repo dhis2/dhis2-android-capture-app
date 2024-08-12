@@ -91,6 +91,10 @@ class LoginTest : BaseTest() {
             clickLoginButton()
 
             //Test case - [ANDROAPP-5184](https://dhis2.atlassian.net/browse/ANDROAPP-5184)
+            checkShareDataDialogIsDisplayed()
+            clickOnPrivacyPolicy()
+            checkPrivacyViewIsOpened()
+            pressBack()
             acceptTrackerDialog()
             clickYesOnAcceptTrackerDialog()
         }
