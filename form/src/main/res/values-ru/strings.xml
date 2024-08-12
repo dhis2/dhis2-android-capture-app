@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="invalid_integer">Значение должно быть целым числом</string>
+    <string name="error">Ошибка</string>
+    <string name="required">Обязательный</string>
+    <string name="date">Дата</string>
+    <string name="hint_year">Годы</string>
+    <string name="hint_month">Месяцы</string>
+    <string name="hint_day">Дни</string>
+    <string name="polygon">Полигон</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="polygon_captured">Полигон зафиксирован</string>
+    <string name="due_date">Дата выполнения</string>
+    <string name="complete">Завершенный</string>
+    <string name="discard_changes">Сбросить изменения</string>
+    <string name="share">Поделиться</string>
     <string name="action_close">Закрыть</string>
-</resources>
+    <string name="incident_date">Дата происшествия</string>
+    <string name="download">Скачать</string>
+    <string name="coordinates">Координаты</string>
+    <string name="no_options">Нет доступных вариантов</string>
+    </resources>
