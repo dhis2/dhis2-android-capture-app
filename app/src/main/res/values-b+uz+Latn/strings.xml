@@ -653,8 +653,6 @@
     <string name="validation_internal_error_datasets">Maʼlumotlar sifatini tekshirib boʼlmadi. Аdministratoringizga murojaat qiling</string>
     <string name="are_you_sure">Ishonchinigiz komilmi?</string>
     <string name="reopen_question">Maʼlumotlar toʼplamini qayta ochib koʼrmoqchimisiz?</string>
-    <string name="group_events_by_stage">Hodisa/tadbirlarni bosqichma-bosqich guruhlash</string>
-    <string name="show_events_timeline">Hodisa/tadbirlar jadvalini koʼrsatish</string>
     <string name="filters_title_date">Sana</string>
     <string name="filters_title_event_date">Hodisa/Tadbir sanasi</string>
     <string name="tei_type_has_no_attributes">%s umumiy xususiyatlarga ega emas. Iltimos, dasturni tanlang</string>

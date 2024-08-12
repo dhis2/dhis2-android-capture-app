@@ -689,8 +689,6 @@
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
-    <string name="group_events_by_stage">Згрупуйте випадки за етапами</string>
-    <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>
