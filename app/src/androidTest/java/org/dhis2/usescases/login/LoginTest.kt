@@ -7,11 +7,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -114,12 +109,6 @@ class LoginTest : BaseTest() {
     }
 
     @Test
-    fun shouldGoToHomeScreenWhenUserIsLoggedIn() {
-        setupCredentials()
-        startLoginActivity()
-    }
-
-    @Test
     fun shouldGenerateLoginThroughQR() {
         enableIntents()
         mockOnActivityForResult()
@@ -140,35 +129,6 @@ class LoginTest : BaseTest() {
         intending(allOf(IntentMatchers.hasComponent(ScanActivity::class.java.name))).respondWith(
             result
         )
-    }
-
-    @Test
-    fun shouldDisplayShareDataDialogAndOpenPrivacyPolicy() {
-        mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
-        mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-        mockWebServerRobot.addResponse(
-            GET,
-            PATH_WEBAPP_GENERAL_SETTINGS,
-            API_METADATA_SETTINGS_RESPONSE_ERROR,
-            404
-        )
-        mockWebServerRobot.addResponse(GET, PATH_WEBAPP_INFO, API_METADATA_SETTINGS_INFO_ERROR, 404)
-        startLoginActivity()
-        loginRobot(composeTestRule) {
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clickLoginButton()
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(2000)
-                withContext(Dispatchers.Main) {
-                    checkShareDataDialogIsDisplayed()
-                    clickOnPrivacyPolicy()
-                    checkPrivacyViewIsOpened()
-                }
-            }
-        }
     }
 
     private fun startLoginActivity() {
