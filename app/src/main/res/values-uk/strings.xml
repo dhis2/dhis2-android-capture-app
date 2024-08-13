@@ -380,7 +380,6 @@
     <string name="date_dialog_tigle">Обрати дати для фільтрування</string>
     <string name="select_option">Обрати опцію</string>
     <string name="issue_reported">Про проблему повідомлено</string>
-    <string name="dialog_generate_new_event">Створити новий випадок</string>
     <string name="jira_credential_error">Переконайтеся, що Ваші логін та пароль jira правильні</string>
     <string name="jira_issue_error">Помилка при повідомленні про проблему</string>
     <string name="jira_fields_error">Усі поля обов\'язкові для заповнення</string>
@@ -698,7 +697,6 @@
     <string name="completed_by">Виконано з %s: %s</string>
     <string name="updated_time">Оновлено: %s</string>
     <string name="action_done">Обрати</string>
-    <string name="action_done">Готово!</string>
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
