@@ -7,7 +7,6 @@ import io.reactivex.schedulers.TestScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
@@ -30,7 +29,7 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-class ProgramPresenterTest {
+class ProgramViewModelTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -44,7 +43,6 @@ class ProgramPresenterTest {
     private val view: ProgramView = mock()
     private val programRepository: ProgramRepository = mock()
     private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
-    private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val testingDispatcher = StandardTestDispatcher()
@@ -76,13 +74,9 @@ class ProgramPresenterTest {
     @Test
     fun `Should initialize program list`() {
         val programs = listOf(programViewModel())
-        val filterManagerFlowable = Flowable.just(filterManager)
         val programsFlowable = Flowable.just(programs)
         val syncStatusData = SyncStatusData(true)
 
-        whenever(filterManager.asFlowable()) doReturn mock()
-        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
-        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
         whenever(
             syncStatusController.observeDownloadProcess(),
         ) doReturn MutableLiveData(syncStatusData)
@@ -90,32 +84,8 @@ class ProgramPresenterTest {
 
         presenter.init()
         schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-/*        verify(view).showFilterProgress()
-        verify(view).openOrgUnitTreeSelector()*/
-    }
-
-    @Test
-    fun `Should render error when there is a problem getting programs`() {
-        val filterManagerFlowable = Flowable.just(filterManager)
-        val syncStatusData = SyncStatusData(true)
-
-        whenever(filterManager.asFlowable()) doReturn mock()
-        whenever(filterManager.asFlowable().startWith(filterManager)) doReturn filterManagerFlowable
-        whenever(
-            syncStatusController.observeDownloadProcess(),
-        ) doReturn MutableLiveData(syncStatusData)
-
-        whenever(
-            programRepository.homeItems(syncStatusData),
-        ) doReturn Flowable.error(Exception(""))
-
-        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
-
-        presenter.init()
-        schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
-/*
-        verify(view).showFilterProgress()
-        verify(view).openOrgUnitTreeSelector()*/
+        verify(programRepository).clearCache()
+        assertTrue(presenter.programs.value?.isNotEmpty() == true)
     }
 
     @Test
@@ -152,12 +122,6 @@ class ProgramPresenterTest {
         assertTrue(presenter.disposable.size() == 0)
     }
 
-    @Test
-    fun `Should refresh program list when granular sync finished`() {
-        presenter.updateProgramQueries()
-        verify(filterManager).publishData()
-    }
-
     private fun programViewModel(): ProgramUiModel {
         return ProgramUiModel(
             "uid",
@@ -174,8 +138,6 @@ class ProgramPresenterTest {
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
-            hasOverdueEvent = false,
-            filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
             lastUpdated = Date(),
@@ -198,8 +160,6 @@ class ProgramPresenterTest {
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
-            hasOverdueEvent = false,
-            filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
             lastUpdated = Date(),

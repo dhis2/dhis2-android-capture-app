@@ -972,4 +972,9 @@
     <string name="hide_fields">Hide fields</string>
     <string name="importing_successful">Import successful</string>
     <string name="section_misconfigured">This section is misconfigured.\nContact your administrator.</string>
+    <string name="successful_sync">Successful sync</string>
+    <string name="syncing_something">Syncing %s…</string>
+    <string name="file_resources">file resources</string>
+    <string name="show_description">Show description</string>
+    <string name="hide_description">Hide description</string>
 </resources>

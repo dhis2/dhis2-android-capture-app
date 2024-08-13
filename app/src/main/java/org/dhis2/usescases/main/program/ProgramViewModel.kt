@@ -5,11 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.dhis2.commons.matomo.Actions.Companion.SYNC_BTN
 import org.dhis2.commons.matomo.Categories.Companion.HOME
@@ -30,21 +26,11 @@ class ProgramViewModel internal constructor(
     private val _programs = MutableLiveData<List<ProgramUiModel>>()
     val programs: LiveData<List<ProgramUiModel>> = _programs
 
-    private val refreshData = MutableStateFlow(Unit)
-
     var disposable: CompositeDisposable = CompositeDisposable()
 
-    @OptIn(FlowPreview::class)
     fun init() {
         programRepository.clearCache()
-
-        viewModelScope.launch(dispatchers.io()) {
-            refreshData.debounce(500)
-                .onStart { emit(Unit) }
-                .collect {
-                    fetchPrograms()
-                }
-        }
+        fetchPrograms()
     }
 
     private fun fetchPrograms() {
@@ -69,7 +55,7 @@ class ProgramViewModel internal constructor(
     }
 
     fun updateProgramQueries() {
-        programRepository.clearCache()
+        init()
     }
 
     fun onItemClick(programModel: ProgramUiModel) {
@@ -84,7 +70,7 @@ class ProgramViewModel internal constructor(
 
     fun setIsDownloading() {
         viewModelScope.launch(dispatchers.io()) {
-            refreshData.emit(Unit)
+            fetchPrograms()
         }
     }
 }

@@ -110,8 +110,6 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramUi
     onlyEnrollOnce = false,
     accessDataWrite = true,
     state = State.SYNCED,
-    hasOverdueEvent = true,
-    false,
     downloadState = downloadState,
     stockConfig = null,
     lastUpdated = Date(),

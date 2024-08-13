@@ -20,9 +20,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
-import org.hisp.dhis.mobile.ui.designsystem.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.io.File
 import java.util.Date

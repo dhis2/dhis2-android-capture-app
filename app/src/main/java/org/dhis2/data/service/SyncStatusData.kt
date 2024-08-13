@@ -26,4 +26,13 @@ data class SyncStatusData(
         return lastStatus?.programSyncStatusMap?.get(uid)?.isComplete == false &&
             programSyncStatusMap[uid]?.isComplete == true
     }
+
+    fun canDisplayMessage() = when {
+        running == false or
+            downloadingEvents or
+            downloadingTracker or
+            downloadingDataSetValues or
+            downloadingMedia -> true
+        else -> false
+    }
 }

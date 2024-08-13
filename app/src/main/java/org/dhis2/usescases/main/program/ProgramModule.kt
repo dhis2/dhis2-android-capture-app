@@ -11,7 +11,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusController
 import org.hisp.dhis.android.core.D2
 
@@ -41,7 +40,6 @@ class ProgramModule(private val view: ProgramView) {
         d2: D2,
         filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
-        dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
         colorUtils: ColorUtils,
         metadataIconProvider: MetadataIconProvider,
@@ -50,7 +48,6 @@ class ProgramModule(private val view: ProgramView) {
             d2,
             filterPresenter,
             dhisProgramUtils,
-            dhisTrackedEntityInstanceUtils,
             ResourceManager(view.context, colorUtils),
             metadataIconProvider,
             schedulerProvider,
