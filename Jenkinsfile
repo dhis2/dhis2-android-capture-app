@@ -3,6 +3,11 @@ pipeline {
         label "ec2-android"
     }
 
+    triggers {
+//         cron('0 0 * * *')
+        cron('*/30 * * * *')
+    }
+
     options {
         buildDiscarder(logRotator(daysToKeepStr: '5'))
         timeout(time: 50)
