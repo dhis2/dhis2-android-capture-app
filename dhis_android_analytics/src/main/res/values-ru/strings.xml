@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">Принять</string>
+    <string name="period">Период</string>
+    <string name="none">Не известное значение</string>
+    <string name="daily">Ежедневно</string>
+    <string name="today">Сегодня</string>
+    <string name="other">Другое</string>
+    <string name="yesterday">Вчера</string>
+    <string name="thisyear">Текущий год</string>
+    <string name="weekly">Еженедельно</string>
+    <string name="monthly">Ежемесячно</string>
+    <string name="yearly">Ежегодно</string>
+    <string name="all">Все</string>
+    <string name="reset">Перезагрузить</string>
+    </resources>
