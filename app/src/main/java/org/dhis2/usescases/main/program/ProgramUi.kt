@@ -7,7 +7,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,10 +57,8 @@ import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.filters.data.toStringResource
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.ui.icons.SyncStateIcon
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -73,6 +70,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ExpandableItemColumn
@@ -227,11 +226,29 @@ private fun DownloadMessage(downLoadState: SyncStatusData?) {
     }
 }
 
-private fun getDownloadLabel(downLoadState: SyncStatusData?) = when {
-    downLoadState?.downloadingEvents == true -> "Syncing events..."
-    downLoadState?.downloadingTracker == true -> "Syncing programs..."
-    downLoadState?.downloadingDataSetValues == true -> "Syncing data sets..."
-    downLoadState?.downloadingMedia == true -> "Syncing file resources..."
+@Composable
+private fun downloadInfoText(downLoadState: SyncStatusData?) = when {
+    downLoadState?.running == false -> stringResource(R.string.successful_sync)
+    downLoadState?.downloadingEvents == true -> stringResource(
+        id = R.string.syncing_something,
+        stringResource(id = R.string.events).lowercase(),
+    )
+
+    downLoadState?.downloadingTracker == true -> stringResource(
+        id = R.string.syncing_something,
+        stringResource(id = R.string.programs).lowercase(),
+    )
+
+    downLoadState?.downloadingDataSetValues == true -> stringResource(
+        id = R.string.syncing_something,
+        stringResource(id = R.string.data_sets).lowercase(),
+    )
+
+    downLoadState?.downloadingMedia == true -> stringResource(
+        id = R.string.syncing_something,
+        stringResource(id = R.string.file_resources).lowercase(),
+    )
+
     else -> ""
 }
 

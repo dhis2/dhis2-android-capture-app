@@ -20,10 +20,10 @@ import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.ui.MetadataIcon
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.mobile.ui.designsystem.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
