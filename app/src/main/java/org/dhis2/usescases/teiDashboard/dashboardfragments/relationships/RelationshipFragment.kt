@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -122,138 +123,139 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 Dhis2Theme {
                     val showMap by mapButtonObservable.relationshipMap().observeAsState()
                     LaunchedEffect(key1 = showMap) {
-                        if (showMap == true) {
-                            presenter.fetchMapData()
-                        }
+                        presenter.takeIf { showMap == true }?.fetchMapData()
                     }
                     when (showMap) {
-                        true -> {
-                            val listState = rememberLazyListState()
-
-                            val mapData by presenter.relationshipMapData.observeAsState()
-                            val items by remember {
-                                derivedStateOf { mapData?.mapItems ?: emptyList() }
-                            }
-
-                            val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
-
-                            LaunchedEffect(key1 = items) {
-                                mapData?.let { data ->
-                                    relationshipMapManager.takeIf { it?.isMapReady() == true }
-                                        ?.update(data.relationshipFeatures, data.boundingBox)
-                                }
-                            }
-
-                            LaunchedEffect(key1 = clickedItem) {
-                                if (clickedItem != null) {
-                                    listState.animateScrollToItem(
-                                        items.indexOfFirst { it.uid == clickedItem },
-                                    )
-                                }
-                            }
-
-                            MapScreen(
-                                items = items,
-                                listState = listState,
-                                onItemScrolled = { item ->
-                                    with(relationshipMapManager) {
-                                        this?.requestMapLayerManager()?.selectFeature(null)
-                                        this?.findFeatures(item.uid)
-                                            ?.takeIf { it.isNotEmpty() }?.let { features ->
-                                                map?.centerCameraOnFeatures(features)
-                                            }
-                                    }
-                                },
-                                onNavigate = { item ->
-                                    relationshipMapManager?.findFeature(item.uid)?.let { feature ->
-                                        startActivity(mapNavigation.navigateToMapIntent(feature))
-                                    }
-                                },
-                                map = {
-                                    AndroidView(factory = { context ->
-                                        val map = MapView(context)
-                                        loadMap(map, savedInstanceState)
-                                        map
-                                    }) {
-                                    }
-                                },
-                                actionButtons = {
-                                    IconButton(
-                                        style = IconButtonStyle.TONAL,
-                                        icon = {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.ic_layers),
-                                                contentDescription = "",
-                                            )
-                                        },
-                                    ) {
-                                        relationshipMapManager?.let {
-                                            MapLayerDialog(it, programUid()) { layersVisibility ->
-                                                presenter.filterVisibleMapItems(layersVisibility)
-                                            }.show(
-                                                childFragmentManager,
-                                                MapLayerDialog::class.java.name,
-                                            )
-                                        }
-                                    }
-                                    IconButton(
-                                        style = IconButtonStyle.TONAL,
-                                        icon = {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.ic_my_location),
-                                                contentDescription = "",
-                                            )
-                                        },
-                                        onClick = ::onLocationButtonClicked,
-                                    )
-                                },
-                                onItem = { item ->
-                                    ListCard(
-                                        modifier = Modifier.fillParentMaxWidth(),
-                                        listAvatar = {
-                                            AvatarProvider(
-                                                avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                                onImageClick = ::launchImageDetail,
-                                            )
-                                        },
-                                        title = ListCardTitleModel(text = item.title),
-                                        description = item.description?.let {
-                                            ListCardDescriptionModel(
-                                                text = it,
-                                            )
-                                        },
-                                        lastUpdated = item.lastUpdated,
-                                        additionalInfoList = item.additionalInfoList,
-                                        expandLabelText = stringResource(id = R.string.show_more),
-                                        shrinkLabelText = stringResource(id = R.string.show_less),
-                                        onCardClick = {
-                                            openDashboardFor(item.uid)
-                                        },
-                                    )
-                                },
-                            )
-                        }
-
-                        else -> {
-                            val relationships by presenter.relationshipModels.observeAsState()
-
-                            if (relationships?.isEmpty() == true) {
-                                NoRelationships()
-                            } else {
-                                AndroidView(factory = { _ ->
-                                    binding.root
-                                }, update = {
-                                    binding.relationshipRecycler.adapter =
-                                        RelationshipAdapter(presenter, colorUtils).also {
-                                            it.submitList(relationships)
-                                        }
-                                })
-                            }
-                        }
+                        true -> RelationshipMapScreen(savedInstanceState)
+                        else -> RelationshipListScreen()
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun RelationshipListScreen() {
+        val relationships by presenter.relationshipModels.observeAsState()
+
+        if (relationships?.isEmpty() == true) {
+            NoRelationships()
+        } else {
+            AndroidView(factory = { _ ->
+                binding.root
+            }, update = {
+                binding.relationshipRecycler.adapter =
+                    RelationshipAdapter(presenter, colorUtils).also {
+                        it.submitList(relationships)
+                    }
+            })
+        }
+    }
+
+    @Composable
+    private fun RelationshipMapScreen(savedInstanceState: Bundle?) {
+        val listState = rememberLazyListState()
+
+        val mapData by presenter.relationshipMapData.observeAsState()
+        val items by remember {
+            derivedStateOf { mapData?.mapItems ?: emptyList() }
+        }
+
+        val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
+
+        LaunchedEffect(key1 = items) {
+            mapData?.let { data ->
+                relationshipMapManager.takeIf { it?.isMapReady() == true }
+                    ?.update(data.relationshipFeatures, data.boundingBox)
+            }
+        }
+
+        LaunchedEffect(key1 = clickedItem) {
+            listState.takeIf { clickedItem != null }?.animateScrollToItem(
+                items.indexOfFirst { it.uid == clickedItem },
+            )
+        }
+
+        MapScreen(
+            items = items,
+            listState = listState,
+            onItemScrolled = { item ->
+                with(relationshipMapManager) {
+                    this?.requestMapLayerManager()?.selectFeature(null)
+                    this?.findFeatures(item.uid)
+                        ?.takeIf { it.isNotEmpty() }?.let { features ->
+                            map?.centerCameraOnFeatures(features)
+                        }
+                }
+            },
+            onNavigate = { item ->
+                relationshipMapManager?.findFeature(item.uid)?.let { feature ->
+                    startActivity(mapNavigation.navigateToMapIntent(feature))
+                }
+            },
+            map = {
+                AndroidView(factory = { context ->
+                    val map = MapView(context)
+                    loadMap(map, savedInstanceState)
+                    map
+                }) {
+                }
+            },
+            actionButtons = {
+                IconButton(
+                    style = IconButtonStyle.TONAL,
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_layers),
+                            contentDescription = "",
+                        )
+                    },
+                ) {
+                    relationshipMapManager?.let {
+                        MapLayerDialog(it, programUid()) { layersVisibility ->
+                            presenter.filterVisibleMapItems(layersVisibility)
+                        }.show(
+                            childFragmentManager,
+                            MapLayerDialog::class.java.name,
+                        )
+                    }
+                }
+                IconButton(
+                    style = IconButtonStyle.TONAL,
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_my_location),
+                            contentDescription = "",
+                        )
+                    },
+                    onClick = ::onLocationButtonClicked,
+                )
+            },
+            onItem = { item ->
+                ListCard(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    listAvatar = {
+                        AvatarProvider(
+                            avatarProviderConfiguration = item.avatarProviderConfiguration,
+                            onImageClick = ::launchImageDetail,
+                        )
+                    },
+                    title = ListCardTitleModel(text = item.title),
+                    description = item.description?.let {
+                        ListCardDescriptionModel(
+                            text = it,
+                        )
+                    },
+                    lastUpdated = item.lastUpdated,
+                    additionalInfoList = item.additionalInfoList,
+                    expandLabelText = stringResource(id = R.string.show_more),
+                    shrinkLabelText = stringResource(id = R.string.show_less),
+                    onCardClick = {
+                        openDashboardFor(item.uid)
+                    },
+                )
+            },
+        )
     }
 
     private fun onLocationButtonClicked() {

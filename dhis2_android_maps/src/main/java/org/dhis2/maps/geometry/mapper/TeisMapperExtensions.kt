@@ -105,10 +105,6 @@ fun Feature?.addRelationshipInfo(
             MapTeisToFeatureCollection.TEI_IMAGE,
             mapItemModel.profilePicturePath(),
         )
-        /*addNumberProperty(
-            MapTeisToFeatureCollection.TEI_IMAGE,
-            mapItemModel.relatedInfo.defaultImage,
-        )*/
     }
     return this
 }

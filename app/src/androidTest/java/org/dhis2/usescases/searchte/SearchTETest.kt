@@ -33,7 +33,6 @@ import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
 import java.util.Date
 
-//@RunWith(AndroidJUnit4::class)
 class SearchTETest : BaseTest() {
 
     @get:Rule

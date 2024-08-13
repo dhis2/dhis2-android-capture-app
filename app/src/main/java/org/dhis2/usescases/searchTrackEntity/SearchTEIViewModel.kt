@@ -471,18 +471,18 @@ class SearchTEIViewModel(
                     when (_screenState.value?.screenState) {
                         SearchScreenState.LIST -> {
                             setListScreen()
-                        fetchListResults { flow ->
-                            flow?.let {
-                                _refreshData.postValue(Unit)
+                            fetchListResults { flow ->
+                                flow?.let {
+                                    _refreshData.postValue(Unit)
                                 }
                             }
                         }
 
                         SearchScreenState.MAP -> {
                             _refreshData.postValue(Unit)
-                        setMapScreen()
-                        fetchMapResults()
-                    }
+                            setMapScreen()
+                            fetchMapResults()
+                        }
 
                         else -> searching = false
                     }

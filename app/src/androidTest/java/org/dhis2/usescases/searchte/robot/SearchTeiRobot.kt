@@ -155,7 +155,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnShowMap() {
         waitForView(withId(R.id.navigation_map_view)).perform(click())
-//        onView(withId(R.id.navigation_map_view))
     }
 
     fun checkCarouselTEICardInfo(firstName: String) {

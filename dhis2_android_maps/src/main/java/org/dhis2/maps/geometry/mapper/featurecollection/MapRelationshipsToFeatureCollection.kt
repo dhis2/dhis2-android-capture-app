@@ -22,7 +22,7 @@ class MapRelationshipsToFeatureCollection(
     private val mapPolygonToFeature: MapPolygonToFeature,
     private val bounds: @NotNull GetBoundingBox,
 ) {
-    @Deprecated("")
+    @Deprecated("use map instead")
     fun mapLegacy(
         relationships: List<RelationshipUiComponentModel>,
     ): Pair<Map<String, FeatureCollection>, BoundingBox> {
