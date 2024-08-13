@@ -3,13 +3,13 @@ package org.dhis2.usescases.main.program
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
-import io.reactivex.schedulers.TestScheduler
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -27,14 +27,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
+@ExperimentalCoroutinesApi
 class ProgramViewModelTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineScope = MainCoroutineScopeRule()
 
@@ -42,10 +41,9 @@ class ProgramViewModelTest {
 
     private val view: ProgramView = mock()
     private val programRepository: ProgramRepository = mock()
-    private val schedulers: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
-    private val testingDispatcher = StandardTestDispatcher()
+    private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider = object : DispatcherProvider {
         override fun io(): CoroutineDispatcher {
             return testingDispatcher
@@ -62,6 +60,7 @@ class ProgramViewModelTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
         presenter = ProgramViewModel(
             view,
             programRepository,
@@ -83,7 +82,6 @@ class ProgramViewModelTest {
         whenever(programRepository.homeItems(any())) doReturn programsFlowable
 
         presenter.init()
-        schedulers.io().advanceTimeBy(1, TimeUnit.SECONDS)
         verify(programRepository).clearCache()
         assertTrue(presenter.programs.value?.isNotEmpty() == true)
     }
@@ -127,7 +125,12 @@ class ProgramViewModelTest {
             "uid",
             "displayName",
             MetadataIconData(
-                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+                imageCardData = ImageCardData.IconCardData(
+                    "",
+                    "",
+                    "ic_home_positive",
+                    "#84FFFF".toColor(),
+                ),
                 color = "#84FFFF".toColor(),
             ),
             1,
@@ -149,7 +152,12 @@ class ProgramViewModelTest {
             "uid",
             "displayName",
             MetadataIconData(
-                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+                imageCardData = ImageCardData.IconCardData(
+                    "",
+                    "",
+                    "ic_home_positive",
+                    "#84FFFF".toColor(),
+                ),
                 color = "#84FFFF".toColor(),
             ),
             1,

@@ -34,8 +34,8 @@ class ProgramViewModel internal constructor(
     }
 
     private fun fetchPrograms() {
-        viewModelScope.launch(dispatchers.io()) {
-            val result = async {
+        viewModelScope.launch {
+            val result = async(dispatchers.io()) {
                 programRepository.homeItems(
                     syncStatusController.observeDownloadProcess().value!!,
                 ).blockingLast()
