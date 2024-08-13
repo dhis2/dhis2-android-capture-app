@@ -22,6 +22,7 @@
     <string name="conf_error_value_to_assign_option_set">Правило програми %s намагається призначити значення %s, яке не належить до набору параметрів %s</string>
     <string name="conf_error_value_option_set">Значення для поля %s не належить параметру, встановленому в %s</string>
     <string name="field_is_mandatory">Це поле обов\'язкове для заповнення</string>
+    <string name="required">Обов\'язкове поле</string>
     <string name="date">Дата</string>
     <string name="hint_year">Роки</string>
     <string name="hint_month">Місяці</string>
@@ -93,4 +94,9 @@
     <string name="tei_coordinates">Координати для</string>
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>
     <string name="incident_date">Дата інциденту</string>
-    </resources>
+    <string name="download">Завантажити</string>
+    <string name="org_unit">Організаційний підрозділ</string>
+    <string name="category_combo">Комбінація категорій</string>
+    <string name="no_options">Немає доступних опцій</string>
+    <string name="cat_combo">Комбінація категорій</string>
+</resources>
