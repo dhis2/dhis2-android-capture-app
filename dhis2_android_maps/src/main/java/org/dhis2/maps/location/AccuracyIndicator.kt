@@ -83,7 +83,7 @@ fun AccuracyIndicator(
             )
             Tag(
                 label = accuracyRangeLabel(accuracyRange),
-                type = TagType.DEFAULT,
+                type = accuracyTagType(accuracyRange),
             )
             Text(
                 text = messageText(
@@ -182,6 +182,14 @@ private fun accuracyRangeLabel(accuracyRange: AccuracyRange) = when (accuracyRan
     is AccuracyRange.Low -> stringResource(id = R.string.accuracy_low)
     is AccuracyRange.Medium -> stringResource(id = R.string.accuracy_medium)
     is AccuracyRange.VeryGood -> stringResource(id = R.string.accuracy_verygood)
+}
+
+private fun accuracyTagType(accuracyRange: AccuracyRange) = when (accuracyRange) {
+    is AccuracyRange.Good -> TagType.SUCCESS
+    is AccuracyRange.Low -> TagType.ERROR
+    is AccuracyRange.Medium -> TagType.WARNING
+    is AccuracyRange.None -> TagType.DEFAULT
+    is AccuracyRange.VeryGood -> TagType.SUCCESS
 }
 
 @Composable

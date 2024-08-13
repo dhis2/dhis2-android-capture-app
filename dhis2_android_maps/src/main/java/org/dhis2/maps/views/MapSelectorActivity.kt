@@ -22,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -31,14 +29,13 @@ import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.location.engine.LocationEngineRequest
 import com.mapbox.mapboxsdk.location.engine.MapboxFusedLocationEngineImpl
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.bindings.clipWithAllRoundedCorners
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ActivityMapSelectorBinding
+import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
@@ -48,9 +45,7 @@ import org.dhis2.maps.location.LOCATION_INTERVAL
 import org.dhis2.maps.location.MapActivityLocationCallback
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.AccuracyRange
-import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.ui.theme.Dhis2Theme
-import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -96,24 +91,11 @@ class MapSelectorActivity :
     private var initialCoordinates: String? = null
     private lateinit var mapManager: DefaultMapManager
 
-    @Suppress("UNCHECKED_CAST")
     private val mapSelectorViewModel: MapSelectorViewModel by viewModels<MapSelectorViewModel> {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return MapSelectorViewModel(
-                    featureType = locationType,
-                    initialCoordinates = initialCoordinates,
-                    mapStyleConfig = MapStyleConfiguration(D2Manager.getD2()),
-                    dispatchers = object : DispatcherProvider {
-                        override fun io() = Dispatchers.IO
-
-                        override fun computation() = Dispatchers.Unconfined
-
-                        override fun ui() = Dispatchers.Main
-                    },
-                ) as T
-            }
-        }
+        Injector.provideMapSelectorViewModelFactory(
+            locationType = locationType,
+            initialCoordinates = initialCoordinates,
+        )
     }
 
     private val polygonAdapter = PolygonAdapter(
