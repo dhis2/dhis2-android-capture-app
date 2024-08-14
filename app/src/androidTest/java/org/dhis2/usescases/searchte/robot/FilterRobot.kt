@@ -118,6 +118,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkFilterCounter(filterCount: String) {
+        waitForView(withId(R.id.filterCounter))
         onView(allOf(withId(R.id.filterCounter), isDisplayed(), withParent(withId(R.id.mainToolbar))))
             .check(matches(withChild(withText(filterCount))))
     }
