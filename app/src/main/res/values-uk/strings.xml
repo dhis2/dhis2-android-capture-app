@@ -77,6 +77,8 @@
 
     <!-- Input hints -->
     <string name="search">Пошук</string>
+    <string name="search_add_new_te_type">Пошук / Додати нового \'%s\'</string>
+    <string name="search_te_type">Пошук \'%s\'</string>
     <string name="enter_text">Введіть текст</string>
     <string name="enter_long_text">Введіть довгий текст</string>
     <string name="enter_number">Введіть номер</string>
@@ -143,6 +145,8 @@
     <string name="delete">Видалити</string>
     <string name="total">Підсумок</string>
     <string name="most_recent_event_date">Дата останнього випадку</string>
+    <string name="no_options">Немає доступних опцій</string>
+
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Список реєстрацій</string>
     <string name="active_programs">Активні програми</string>
@@ -154,17 +158,23 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Подивитись подробиці</string>
     <string name="view_more">ДИВИТИСЬ БІЛЬШЕ</string>
+    <string name="edit">Редагувати</string>
     <string name="follow_up">Подальші дії</string>
     <string name="follow_up_enabled">Подальші дії увімкнено</string>
     <string name="follow_up_disabled">Подальші дії вимкнено</string>
     <string name="deactivate">Деактивувати</string>
     <string name="program_not_allow_events">Ця програма не дозволяє мати більше випадків</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Немає даних</string>
     <string name="events">випадки</string>
     <string name="done_task">Головна</string>
     <string name="app_info">Інформація про додаток</string>
     <string name="log_out">Вийти з системи</string>
     <string name="block_session">Заблокувати сесію</string>
+    <string name="show_more_events">Показати %s більше...</string>
+    <string name="show_less_events">Показати менше...</string>
+
     <!-- SYNC -->
     <string name="a_minute">1 хвилина</string>
     <string name="fifteen_minute">15 хвилин</string>
@@ -224,6 +234,7 @@
     <string name="settingsReset_descr">Вашу конфігурацію та дані додатку, що зберігаються на пристрої, буде видалено. Вас потрібно увійти знову, і дані, які не синхронізовані із сервером, будуть втрачені.</string>
     <string name="settingsSms">Налаштування SMS</string>
     <string name="settingsSms_descr">Перевірте та відредагуйте параметри, що стосуються SMS-шлюзу</string>
+    <string name="settingsCheckVersion">Оновлення додатку</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Дата реєстрації</string>
@@ -685,12 +696,10 @@
     <string name="download_tei_error">Не вдалося завантажити вибраний %s.</string>
     <string name="completed_by">Виконано з %s: %s</string>
     <string name="updated_time">Оновлено: %s</string>
-    <string name="action_done">Готово!</string>
+    <string name="action_done">Обрати</string>
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
-    <string name="group_events_by_stage">Згрупуйте випадки за етапами</string>
-    <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>
@@ -852,4 +861,24 @@
     <string name="sms_sync_opening_app">Відкриття програми SMS. Будь ласка, не змінюйте повідомлення.</string>
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
+    <string name="sync_dialog_title_synced">Синхронізовано</string>
+    <string name="sync_dialog_action_send">Надіслати</string>
+    <string name="sync_dialog_action_not_now">Не зараз</string>
+    <string name="software_update">Оновлення додатку</string>
+    <string name="check_for_updates">Перевірити оновлення</string>
+    <string name="checking_for_updates">Перевірка оновлень</string>
+    <string name="no_updates">Оновлення відсутні</string>
+    <string name="not_synced">Не синхронізовано</string>
+    <string name="overdue">Прострочений %s</string>
+    <string name="view_only">Тільки перегляд</string>
+    <string name="skipped">Пропущено</string>
+    <string name="programs">Програми</string>
+    <string name="sync_error">Помилка синхронізації</string>
+    <string name="mark_follow_up">Позначити для подальших дій</string>
+    <string name="remove">Видалити</string>
+    <string name="schedule_next">Запланувати наступний</string>
+    <string name="schedule">Запланувати</string>
+    <string name="program_stage">Етап програми</string>
+    <string name="clear_search">Очистити пошук</string>
+    <string name="optional">Необов\'язково</string>
     </resources>
