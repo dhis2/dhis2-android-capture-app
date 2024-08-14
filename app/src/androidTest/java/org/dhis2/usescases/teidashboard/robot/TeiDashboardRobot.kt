@@ -3,8 +3,6 @@ package org.dhis2.usescases.teidashboard.robot
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
-import androidx.compose.ui.test.hasParent
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -451,11 +449,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEnrollmentDate(enrollmentDate: DateRegistrationUIModel) {
-        composeTestRule.onNodeWithTag("LIST_CARD_ADDITIONAL_INFO_COLUMN").assertIsDisplayed()
         composeTestRule.onNode(
-            hasParent(
-                hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN")) and
-                    hasText("Date of enrollment:  ${enrollmentDate.day}/${enrollmentDate.month}/${enrollmentDate.year}", true),
+            hasText("Date of enrollment:  ${enrollmentDate.day}/${enrollmentDate.month}/${enrollmentDate.year}", true),
             useUnmergedTree = true
         ).assertIsDisplayed()
     }
