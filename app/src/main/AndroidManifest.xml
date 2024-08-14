@@ -73,6 +73,7 @@
         </activity>
         <activity
             android:name=".usescases.login.LoginActivity"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
