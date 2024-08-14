@@ -322,7 +322,7 @@ class FormViewModel(
 
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         if (previousActionItem == null) previousActionItem = rowAction
-        if (previousActionItem?.value != it.value && previousActionItem?.id == rowAction.id) {
+        if (previousActionItem?.value != it.value && previousActionItem?.id == it.uid) {
             val error = checkFieldError(it.valueType, it.value, it.fieldMask)
             if (error != null) {
                 val action = rowActionFromIntent(
