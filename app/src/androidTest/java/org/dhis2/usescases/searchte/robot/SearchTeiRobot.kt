@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
@@ -7,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,7 +44,7 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnTEI(teiName: String, composeTestRule: ComposeTestRule) {
+    fun clickOnTEI(teiName: String) {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
         composeTestRule.waitForIdle()
@@ -125,6 +127,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.spinner_text)).check(matches(withText(program)))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkFieldsFromDisplayList(
         displayListFieldsUIModel: DisplayListFieldsUIModel
     ) {
@@ -133,9 +136,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
         val showMoreText = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.show_more)
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(showMoreText))
         //When we expand all attribute list
         composeTestRule.onNodeWithText(showMoreText, true, useUnmergedTree = true).performClick()
-        composeTestRule.waitForIdle()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
@@ -162,6 +166,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnEnroll() {
         onView(withId(R.id.createButton)).perform(click())
+    }
+
+    fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(additionalText).assertIsDisplayed()
     }
 
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(
