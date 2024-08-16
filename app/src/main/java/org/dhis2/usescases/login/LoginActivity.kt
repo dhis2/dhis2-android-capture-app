@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.databinding.DataBindingUtil
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
-import com.google.accompanist.themeadapter.material3.Theme3Parameters
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

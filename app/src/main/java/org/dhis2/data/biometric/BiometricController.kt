@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
@@ -31,7 +30,8 @@ class BiometricController(
         biometricStatus = biometricManager.canAuthenticate(BIOMETRIC_STRONG)
         return when (biometricStatus) {
             BiometricManager.BIOMETRIC_SUCCESS,
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> true
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
+            -> true
             else -> false
         }
     }
@@ -46,12 +46,12 @@ class BiometricController(
                 ContextCompat.getMainExecutor(fragmentActivity),
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult
+                        result: BiometricPrompt.AuthenticationResult,
                     ) {
                         super.onAuthenticationSucceeded(result)
                         onSuccess()
                     }
-                }
+                },
             )
         }
 
@@ -65,12 +65,11 @@ class BiometricController(
     }
 
     private fun requestBiometricSetting() {
-
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
                 putExtra(
                     Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                    BIOMETRIC_STRONG
+                    BIOMETRIC_STRONG,
                 )
             }
         } else {
@@ -80,4 +79,3 @@ class BiometricController(
         requestBiometricSettings.launch(intent)
     }
 }
-

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.login
 
-import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -16,7 +15,6 @@ import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
