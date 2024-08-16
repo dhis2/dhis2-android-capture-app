@@ -749,6 +749,7 @@ class FormView : Fragment() {
     }
 
     private fun intentHandler(intent: FormIntent) {
+        FormCountingIdlingResource.increment()
         viewModel.submitIntent(intent)
     }
 

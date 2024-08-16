@@ -37,7 +37,6 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -204,7 +203,10 @@ class FormViewModel(
             ActionType.ON_SECTION_CHANGE -> handleOnSectionChangeAction(action)
             ActionType.ON_FINISH -> handleOnFinishAction(action)
             ActionType.ON_REQUEST_COORDINATES -> handleOnRequestCoordinatesAction(action)
-            ActionType.ON_CANCEL_REQUEST_COORDINATES -> handleOnCancelRequestCoordinatesAction(action)
+            ActionType.ON_CANCEL_REQUEST_COORDINATES -> handleOnCancelRequestCoordinatesAction(
+                action,
+            )
+
             ActionType.ON_ADD_IMAGE_FINISHED -> handleOnAddImageFinishedAction(action)
             ActionType.ON_STORE_FILE -> handleOnStoreFileAction(action)
         }
@@ -312,10 +314,12 @@ class FormViewModel(
                     ),
                 )
             }
+
             null -> StoreResult(
                 action.id,
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED,
             )
+
             else -> saveResult
         }
     }
@@ -676,7 +680,8 @@ class FormViewModel(
     )
 
     private fun isEventDetailField(uid: String): Boolean {
-        val eventDetailsIds = listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
+        val eventDetailsIds =
+            listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
         return eventDetailsIds.contains(uid)
     }
 
@@ -717,7 +722,6 @@ class FormViewModel(
     }
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
-        FormCountingIdlingResource.increment()
         fieldListChannel.trySend(
             FieldListConfiguration(skipProgramRules, finish),
         )
