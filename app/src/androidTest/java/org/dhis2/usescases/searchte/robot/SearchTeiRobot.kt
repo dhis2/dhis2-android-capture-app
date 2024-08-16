@@ -1,21 +1,18 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -130,6 +127,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.spinner_text)).check(matches(withText(program)))
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkFieldsFromDisplayList(
         displayListFieldsUIModel: DisplayListFieldsUIModel
     ) {
@@ -138,9 +136,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
         val showMoreText = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.show_more)
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(showMoreText))
         //When we expand all attribute list
         composeTestRule.onNodeWithText(showMoreText, true, useUnmergedTree = true).performClick()
-        composeTestRule.waitForIdle()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
