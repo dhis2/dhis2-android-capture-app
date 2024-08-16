@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import androidx.annotation.UiThread
-import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
@@ -46,7 +45,7 @@ class LoginContracts {
         fun openAccountRecovery()
 
         fun alreadyAuthenticated()
-        fun showCredentialsData(result: FingerPrintResult, vararg args: String)
+        fun showCredentialsData(vararg args: String)
         fun showEmptyCredentialsMessage()
         fun setTestingCredentials()
         fun getDefaultServerProtocol(): String

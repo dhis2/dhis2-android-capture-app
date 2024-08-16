@@ -15,9 +15,16 @@ import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.databinding.DataBindingUtil
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Theme3Parameters
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -33,8 +40,6 @@ import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.fingerprint.FingerPrintResult
-import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
@@ -207,6 +212,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
+        provideBiometricButton()
+
         binding.presenter = presenter
         setLoginVisibility(false)
 
@@ -264,6 +271,27 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         if (!isDeletion && accountsCount == 1) {
             blockLoginInfo()
+        }
+    }
+
+    private fun provideBiometricButton() {
+        binding.biometricButton.setContent {
+            val displayBiometric by presenter.displayBiometricLogin.observeAsState(false)
+            if (displayBiometric) {
+                Mdc3Theme {
+                    IconButton(
+                        onClick = {
+                            presenter.authenticateWithBiometric()
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_fingerprint),
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = stringResource(id = R.string.fingerprint_title),
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -509,8 +537,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showBiometricButton() {
-        // This is commented until fingerprint login for multiuser is supported
-        // binding.biometricButton.visibility = View.VISIBLE
+        binding.biometricButton.visibility = View.VISIBLE
     }
 
     private val requestQRScanner = registerForActivityResult(
@@ -578,14 +605,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun showCredentialsData(result: FingerPrintResult, vararg args: String) {
-        if (result.type == Type.SUCCESS) {
-            binding.serverUrlEdit.setText(args[0])
-            binding.userNameEdit.setText(args[1])
-            binding.userPassEdit.setText(args[2])
-        } else if (result.type == Type.ERROR && args[0] != getString(R.string.cancel)) {
-            showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
-        }
+    override fun showCredentialsData(vararg args: String) {
+        binding.serverUrlEdit.setText(args[0])
+        binding.userNameEdit.setText(args[1])
+        binding.userPassEdit.setText(args[2])
     }
 
     override fun showEmptyCredentialsMessage() {

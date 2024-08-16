@@ -979,4 +979,6 @@
     <string name="file_resources">file resources</string>
     <string name="show_description">Show description</string>
     <string name="hide_description">Hide description</string>
+    <string name="biometric_title">Verify It\'s You</string>
+    <string name="use_password">Use Password</string>
 </resources>

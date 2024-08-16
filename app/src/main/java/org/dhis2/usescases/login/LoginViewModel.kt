@@ -22,15 +22,13 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.fingerprint.FingerPrintController
-import org.dhis2.data.fingerprint.Type
+import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.TestingCredential
@@ -56,7 +54,7 @@ class LoginViewModel(
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
     private val dispatchers: DispatcherProvider,
-    private val fingerPrintController: FingerPrintController,
+    private val biometricController: BiometricController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
     private val network: NetworkUtils,
@@ -65,8 +63,6 @@ class LoginViewModel(
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
     var disposable: CompositeDisposable = CompositeDisposable()
-
-    private var canHandleBiometrics: Boolean? = null
 
     val serverUrl = MutableLiveData<String>()
     val userName = MutableLiveData<String>()
@@ -79,6 +75,9 @@ class LoginViewModel(
 
     private val _hasAccounts = MutableLiveData<Boolean>()
     val hasAccounts: LiveData<Boolean> = _hasAccounts
+
+    private val _displayBiometricLogin = MutableLiveData<Boolean>()
+    val displayBiometricLogin: LiveData<Boolean> = _displayBiometricLogin
 
     private val _displayMoreActions = MutableLiveData<Boolean>(true)
     val displayMoreActions: LiveData<Boolean> = _displayMoreActions
@@ -154,13 +153,18 @@ class LoginViewModel(
                                     view.setUrl(view.getDefaultServerProtocol())
                                 }
                             }
+                            checkBiometricVisibility()
+
+                            if (displayBiometricLogin.value == true) {
+                                biometricController.authenticate(requestBiometric = false) {
+                                    logIn()
+                                }
+                            }
                         },
                         { Timber.e(it) },
                     ),
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
-
-        showBiometricButtonIfVersionIsGreaterThanM(view)
     }
 
     private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
@@ -174,23 +178,14 @@ class LoginViewModel(
         }
     }
 
-    private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            disposable.add(
-                Observable.just(fingerPrintController.hasFingerPrint())
-                    .filter { canHandleBiometrics ->
-                        this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && preferenceProvider.contains(SECURE_SERVER_URL)
-                    }
-                    .subscribeOn(schedulers.io())
-                    .observeOn(schedulers.ui())
-                    .subscribe(
-                        { view.showBiometricButton() },
-                        { Timber.e(it) },
-                    ),
-            )
-        }
+    private fun checkBiometricVisibility() {
+        _displayBiometricLogin.value =
+            biometricController.hasBiometric() &&
+            userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
+            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false
     }
+
+    private fun buildSdkVersion() = Build.VERSION.SDK_INT
 
     fun onLoginButtonClick() {
         try {
@@ -367,10 +362,6 @@ class LoginViewModel(
             ?.blockingGet()?.value() == null
     }
 
-    fun canHandleBiometrics(): Boolean? {
-        return canHandleBiometrics
-    }
-
     fun areSameCredentials(): Boolean {
         return (
             preferenceProvider.areCredentialsSet() &&
@@ -390,57 +381,10 @@ class LoginViewModel(
         )
     }
 
-    fun onFingerprintClick() {
-        disposable.add(
-
-            fingerPrintController.authenticate()
-                .map { result ->
-                    if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS,
-                        )
-                    ) {
-                        Result.success(result)
-                    } else {
-                        Result.failure(Exception(EMPTY_CREDENTIALS))
-                    }
-                }
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        it.fold(
-                            onSuccess = { data ->
-                                when (data.type) {
-                                    Type.SUCCESS ->
-                                        view.showCredentialsData(
-                                            data,
-                                            preferenceProvider.getString(SECURE_SERVER_URL)!!,
-                                            preferenceProvider.getString(SECURE_USER_NAME)!!,
-                                            preferenceProvider.getString(SECURE_PASS)!!,
-                                        )
-
-                                    Type.INFO -> {
-                                        /*Do nothing*/
-                                    }
-
-                                    Type.ERROR ->
-                                        view.showCredentialsData(
-                                            data,
-                                            it.getOrNull()?.message!!,
-                                        )
-                                }
-                            },
-                            onFailure = {
-                                view.showEmptyCredentialsMessage()
-                            },
-                        )
-                    },
-                    {
-                        view.displayMessage(AUTH_ERROR)
-                    },
-                ),
-        )
+    fun authenticateWithBiometric() {
+        biometricController.authenticate {
+            logIn()
+        }
     }
 
     fun onAccountRecovery() {
@@ -517,6 +461,7 @@ class LoginViewModel(
             if (this.serverUrl.value != null) {
                 checkTestingEnvironment(this.serverUrl.value!!)
             }
+            checkBiometricVisibility()
         }
     }
 
