@@ -37,12 +37,31 @@ fun MapScreen(
             actionButtons()
         }
         MapItemHorizontalPager(
-            modifier = Modifier.align(Alignment.BottomCenter).testTag("MAP_CAROUSEL"),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .testTag("MAP_CAROUSEL"),
             state = listState,
             items = items,
             onItem = onItem,
             onItemScrolled = onItemScrolled,
             onNavigate = onNavigate,
         )
+    }
+}
+
+@Composable
+fun MapScreen(
+    actionButtons: @Composable (ColumnScope.() -> Unit),
+    map: @Composable (BoxScope.() -> Unit),
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        map()
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp),
+        ) {
+            actionButtons()
+        }
     }
 }
