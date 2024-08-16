@@ -407,4 +407,5 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
         return granted != null && Boolean.parseBoolean(granted.value());
     }
+
 }
