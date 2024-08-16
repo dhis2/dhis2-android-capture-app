@@ -5,14 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.model.ListCardUiModel
@@ -29,11 +26,9 @@ class EventListViewModel(
     val cardMapper: EventCardMapper,
 ) : ViewModel() {
 
-    val disposable = CompositeDisposable()
-    private var _onSyncClick: MutableStateFlow<String?> = MutableStateFlow(null)
-    val onSyncClick: Flow<String?> = _onSyncClick
-    private var _onEventCardClick: MutableStateFlow<Pair<String, String>?> = MutableStateFlow(null)
-    val onEventCardClick: Flow<Pair<String, String>?> = _onEventCardClick
+    var onSyncClickedListener: (eventUid: String?) -> Unit = { _ -> }
+
+    var onCardClickedListener: (eventUid: String, orgUnitUid: String) -> Unit = { _, _ -> }
 
     private val _displayOrgUnitName = MutableLiveData(true)
     val displayOrgUnitName = _displayOrgUnitName
@@ -59,17 +54,15 @@ class EventListViewModel(
                                     editable = eventRepository.isEventEditable(event.uid()),
                                     displayOrgUnit = displayOrgUnitName.value ?: true,
                                     onSyncIconClick = {
-                                        onSyncIconClick(
+                                        onSyncClickedListener(
                                             eventModel.event?.uid(),
                                         )
                                     },
                                     onCardClick = {
                                         eventModel.event?.let { event ->
-                                            onEventCardClick(
-                                                Pair(
-                                                    event.uid(),
-                                                    event.organisationUnit() ?: "",
-                                                ),
+                                            onCardClickedListener(
+                                                event.uid(),
+                                                event.organisationUnit() ?: "",
                                             )
                                         }
                                     },
@@ -80,18 +73,6 @@ class EventListViewModel(
             }.flowOn(dispatchers.io())
 
     val eventList = _eventList
-
-    private fun onSyncIconClick(eventUid: String?) {
-        viewModelScope.launch {
-            _onSyncClick.emit(eventUid)
-        }
-    }
-
-    private fun onEventCardClick(eventUidAndOrgUnit: Pair<String, String>) {
-        viewModelScope.launch {
-            _onEventCardClick.emit(eventUidAndOrgUnit)
-        }
-    }
 
     fun refreshData() {
         filterManager.publishData()

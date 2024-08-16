@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -41,24 +39,20 @@ class EventListFragment : FragmentGlobalAbstract() {
             ?.plus(EventListModule())
             ?.inject(this)
 
+        val programEventsViewModel by activityViewModels<ProgramEventDetailViewModel>()
+
+        eventListViewModel.onSyncClickedListener = { eventUid ->
+            eventUid?.let { programEventsViewModel.eventSyncClicked.value = it }
+        }
+
+        eventListViewModel.onCardClickedListener = { eventUid, orgUnitUid ->
+            programEventsViewModel.eventClicked.value = Pair(eventUid, orgUnitUid)
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
-                val programEventsViewModel by activityViewModels<ProgramEventDetailViewModel>()
-                val cardClicked by eventListViewModel.onEventCardClick.collectAsState(null)
-                val syncClicked by eventListViewModel.onSyncClick.collectAsState(null)
-
-                LaunchedEffect(key1 = cardClicked) {
-                    cardClicked?.let {
-                        programEventsViewModel.eventClicked.value = it
-                    }
-                }
-
-                LaunchedEffect(key1 = syncClicked) {
-                    programEventsViewModel.eventSyncClicked.value = syncClicked
-                }
-
                 EventListScreen(
                     eventListViewModel,
                     workingListViewModel,
