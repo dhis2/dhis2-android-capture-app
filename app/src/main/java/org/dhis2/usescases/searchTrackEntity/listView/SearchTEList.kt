@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -63,6 +64,8 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
+
+    private val KEY_SCROLL_POSITION = "scroll_position"
 
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
@@ -138,15 +141,26 @@ class SearchTEList : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?,
     ): View {
         return FragmentSearchListBinding.inflate(inflater, container, false).apply {
-            configureList(scrollView)
+            configureList(scrollView, savedInstanceState?.getInt(KEY_SCROLL_POSITION))
             configureOpenSearchButton(openSearchButton)
             configureCreateButton(createButton)
-        }.root.also {
+        }.also {
             observeNewData()
+        }.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val layoutManager = recycler.layoutManager as? LinearLayoutManager
+        layoutManager?.let {
+            outState.putInt(KEY_SCROLL_POSITION, it.findFirstCompletelyVisibleItemPosition())
         }
     }
 
-    private fun configureList(scrollView: RecyclerView) {
+    private fun configureList(
+        scrollView: RecyclerView,
+        currentVisiblePosition: Int?,
+    ) {
         scrollView.apply {
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -173,7 +187,7 @@ class SearchTEList : FragmentGlobalAbstract() {
             })
             lifecycleScope.launch {
                 liveAdapter.loadStateFlow.collectLatest {
-                    scrollToPosition(0)
+                    scrollToPosition(currentVisiblePosition ?: 0)
                 }
             }
         }.also {
