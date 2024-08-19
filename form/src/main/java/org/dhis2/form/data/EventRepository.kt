@@ -544,7 +544,8 @@ class EventRepository(
             else -> null
         }
         val friendlyValue = dataValue?.let {
-            valueRepository.blockingGetValueCheck(d2, uid).userFriendlyValue(d2)
+            valueRepository.blockingGetValueCheck(d2, uid)
+                .userFriendlyValue(d2, addPercentageSymbol = false)
         }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()
