@@ -218,6 +218,7 @@ class SearchTETest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             changeDueDate(scheduledEventTitle)
+            composeTestRule.waitForIdle()
             pressBack()
         }
         composeTestRule.waitForIdle()
