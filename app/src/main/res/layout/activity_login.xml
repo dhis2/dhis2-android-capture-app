@@ -248,20 +248,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="spread"/>
 
-                <!--<ImageButton
-                    style="@style/ActionIconNoPadding"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="14dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{()->presenter.onFingerprintClick()}"
-                    android:visibility="gone"
-
-                    app:srcCompat="@drawable/ic_fingerprint"
-                    app:tint="?colorPrimary"
-                    tools:visibility="visible" />-->
-
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/login"
                     style="@style/LoginButton"

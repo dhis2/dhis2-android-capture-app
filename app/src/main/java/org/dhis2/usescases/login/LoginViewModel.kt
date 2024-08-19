@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -132,27 +131,8 @@ class LoginViewModel(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         { systemInfo ->
-                            if (systemInfo.contextPath() != null) {
-                                view.setUrl(systemInfo.contextPath() ?: "")
-                                view.setUser(userManager.userName().blockingGet())
-                            } else {
-                                val isSessionLocked =
-                                    preferenceProvider.getBoolean(SESSION_LOCKED, false)
-                                if (!isSessionLocked) {
-                                    val serverUrl =
-                                        preferenceProvider.getString(
-                                            SECURE_SERVER_URL,
-                                            view.getDefaultServerProtocol(),
-                                        )
-                                    val user = preferenceProvider.getString(SECURE_USER_NAME, "")
-                                    if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
-                                        view.setUrl(serverUrl)
-                                        view.setUser(user)
-                                    }
-                                } else {
-                                    view.setUrl(view.getDefaultServerProtocol())
-                                }
-                            }
+                            setServerAndUserInfo(systemInfo.contextPath())
+
                             checkBiometricVisibility()
 
                             if (displayBiometricLogin.value == true) {
@@ -165,6 +145,29 @@ class LoginViewModel(
                     ),
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+    }
+
+    private fun setServerAndUserInfo(contextPath: String?) {
+        contextPath?.let {
+            view.setUrl(contextPath)
+            view.setUser(userManager?.userName()?.blockingGet() ?: "")
+        } ?: {
+            val isSessionLocked =
+                preferenceProvider.getBoolean(SESSION_LOCKED, false)
+            val serverUrl =
+                preferenceProvider.getString(
+                    SECURE_SERVER_URL,
+                    view.getDefaultServerProtocol(),
+                )
+            val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+
+            if (!isSessionLocked && !serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                view.setUrl(serverUrl)
+                view.setUser(user)
+            } else {
+                view.setUrl(view.getDefaultServerProtocol())
+            }
+        }
     }
 
     private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
@@ -184,8 +187,6 @@ class LoginViewModel(
             userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
             preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false
     }
-
-    private fun buildSdkVersion() = Build.VERSION.SDK_INT
 
     fun onLoginButtonClick() {
         try {
