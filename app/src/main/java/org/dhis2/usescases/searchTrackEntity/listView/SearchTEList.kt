@@ -161,6 +161,8 @@ class SearchTEList : FragmentGlobalAbstract() {
         scrollView: RecyclerView,
         currentVisiblePosition: Int?,
     ) {
+        var currentPosition = currentVisiblePosition
+        val layoutManager = scrollView.layoutManager as? LinearLayoutManager
         scrollView.apply {
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -180,14 +182,16 @@ class SearchTEList : FragmentGlobalAbstract() {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         viewModel.isScrollingDown.value = true
+                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
                     } else if (dy < 0) {
                         viewModel.isScrollingDown.value = false
+                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
                     }
                 }
             })
             lifecycleScope.launch {
                 liveAdapter.loadStateFlow.collectLatest {
-                    scrollToPosition(currentVisiblePosition ?: 0)
+                    scrollToPosition(currentPosition ?: 0)
                 }
             }
         }.also {
