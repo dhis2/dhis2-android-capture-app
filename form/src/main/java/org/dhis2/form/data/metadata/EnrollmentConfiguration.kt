@@ -66,7 +66,7 @@ class EnrollmentConfiguration(
             .value(
                 trackedEntityAttributeUid,
                 enrollment()?.trackedEntityInstance()!!,
-            ).blockingGet()?.userFriendlyValue(d2)
+            ).blockingGet()?.userFriendlyValue(d2, addPercentageSymbol = false)
 
     fun conflicts() = d2.enrollmentImportConflicts(enrollmentUid)
 

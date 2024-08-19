@@ -797,7 +797,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .trackedEntityInstance(searchTei.getTei().uid())
                 .build();
 
-        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attributeValue, d2);
+        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attributeValue, d2, true);
 
         TrackedEntityAttributeValue friendlyAttributeValue = attributeValue.toBuilder()
                 .value(friendlyValue)

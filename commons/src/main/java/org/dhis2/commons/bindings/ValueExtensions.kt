@@ -9,7 +9,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjec
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
 
-fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
+fun TrackedEntityAttributeValue.userFriendlyValue(
+    d2: D2,
+    addPercentageSymbol: Boolean = true,
+): String? {
     if (value().isNullOrEmpty()) {
         return value()
     }
@@ -25,33 +28,34 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
         attribute.optionSet()?.takeIf { attribute.valueType() != ValueType.MULTI_TEXT }?.let {
             return checkOptionSetValue(d2, it.uid(), value()!!)
-        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!)
+        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!, addPercentageSymbol)
     } else {
         return null
     }
 }
 
-fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
-    if (this == null) {
+fun TrackedEntityDataValue?.userFriendlyValue(
+    d2: D2,
+    addPercentageSymbol: Boolean = true,
+): String? {
+    if (this == null) return null
+
+    if (value().isNullOrEmpty()) {
+        return value()
+    }
+
+    val dataElement = d2.dataElementModule().dataElements()
+        .uid(dataElement())
+        .blockingGet()
+
+    if (dataElement == null) {
         return null
+    } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
+        dataElement.optionSet()?.takeIf { dataElement.valueType() != ValueType.MULTI_TEXT }?.let {
+            return checkOptionSetValue(d2, it.uid(), value()!!)
+        } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!, addPercentageSymbol)
     } else {
-        if (value().isNullOrEmpty()) {
-            return value()
-        }
-
-        val dataElement = d2.dataElementModule().dataElements()
-            .uid(dataElement())
-            .blockingGet()
-
-        if (dataElement == null) {
-            return null
-        } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
-            dataElement.optionSet()?.takeIf { dataElement.valueType() != ValueType.MULTI_TEXT }?.let {
-                return checkOptionSetValue(d2, it.uid(), value()!!)
-            } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
-        } else {
-            return null
-        }
+        return null
     }
 }
 
@@ -61,7 +65,12 @@ fun checkOptionSetValue(d2: D2, optionSetUid: String, code: String): String? {
         .byCode().eq(code).one().blockingGet()?.displayName()
 }
 
-fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
+fun checkValueTypeValue(
+    d2: D2,
+    valueType: ValueType?,
+    value: String,
+    addPercentageSymbol: Boolean = true,
+): String {
     return when (valueType) {
         ValueType.ORGANISATION_UNIT ->
             d2.organisationUnitModule().organisationUnits()
@@ -87,7 +96,13 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
                 DateUtils.timeFormat().parse(value) ?: "",
             )
 
-        ValueType.PERCENTAGE -> value.toPercentage()
+        ValueType.PERCENTAGE -> {
+            if (addPercentageSymbol) {
+                value.toPercentage()
+            } else {
+                value
+            }
+        }
 
         else -> value
     }
