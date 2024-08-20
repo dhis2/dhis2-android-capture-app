@@ -46,11 +46,6 @@ class MainRobot : BaseRobot() {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.block_button))
     }
 
-    fun clickOnLogout() {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.logout_button))
-        waitToDebounce(LOGOUT_TRANSITION)
-    }
-
     fun clickAbout() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
         waitToDebounce(FRAGMENT_TRANSITION)
@@ -70,36 +65,6 @@ class MainRobot : BaseRobot() {
 
     fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
-    }
-
-    fun openFilters() {
-        onView(withId(R.id.filterActionButton)).perform(click())
-    }
-
-    fun openProgramByPosition(composeTestRule: ComposeTestRule, position: Int) {
-        composeTestRule.onNodeWithTag(HOME_ITEMS)
-            .onChildAt(position)
-            .performClick()
-    }
-
-    fun filterByPeriodToday() {
-        onView(withId(R.id.filter)).perform(click())
-        onView(withId(R.id.filterLayout))
-        onView(withId(R.id.today)).perform(click())
-    }
-
-    @OptIn(ExperimentalTestApi::class)
-    fun checkItemsInProgram(
-        composeTestRule: ComposeTestRule,
-        position: Int,
-        program: String,
-        items: String
-    ) {
-        composeTestRule.onNodeWithTag(HOME_ITEMS, useUnmergedTree = true)
-            .performScrollToIndex(position)
-        composeTestRule.onNodeWithTag(HOME_ITEM.format(position))
-            .assert(hasText(program))
-            .assert(hasText(items, substring = true))
     }
 
     companion object {
