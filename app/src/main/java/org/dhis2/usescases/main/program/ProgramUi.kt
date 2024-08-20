@@ -39,9 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,7 +102,14 @@ fun ProgramList(
     onGranularSyncClick: (programUiModel: ProgramUiModel) -> Unit,
     downLoadState: SyncStatusData?,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(HOME_ITEMS)
+            .semantics {
+                HasPrograms = programs?.isNotEmpty() ?: false
+            },
+    ) {
         DownloadMessage(downLoadState)
 
         programs?.let {
@@ -652,6 +663,9 @@ private fun testingProgramModel() = ProgramUiModel(
     stockConfig = null,
     lastUpdated = Date(),
 )
+
+val HasPrograms = SemanticsPropertyKey<Boolean>("HasPrograms")
+var SemanticsPropertyReceiver.HasPrograms by HasPrograms
 
 const val HOME_ITEMS = "HOME_ITEMS"
 const val HOME_ITEM = "HOME_ITEMS_%s"

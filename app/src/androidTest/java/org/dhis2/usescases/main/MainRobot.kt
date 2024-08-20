@@ -1,28 +1,21 @@
 package org.dhis2.usescases.main
 
-import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onChildAt
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToIndex
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.login.LoginActivity
-import org.dhis2.usescases.main.program.HOME_ITEM
 import org.dhis2.usescases.main.program.HOME_ITEMS
+import org.dhis2.usescases.main.program.HasPrograms
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
@@ -56,7 +49,9 @@ class MainRobot : BaseRobot() {
     }
 
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
-        composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(HOME_ITEMS).assert(
+            SemanticsMatcher.expectValue(HasPrograms, true)
+        )
     }
 
     fun checkLogInIsLaunched() {
