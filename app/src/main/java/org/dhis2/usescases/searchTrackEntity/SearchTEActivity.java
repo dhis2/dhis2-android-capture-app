@@ -7,7 +7,9 @@ import static org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParam
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -137,6 +139,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private Content currentContent = null;
 
+    private String CURRENT_SCREEN = "current_screen";
+
     public static Intent getIntent(Context context, String programUid, String teiTypeToAdd, String teiUid, boolean fromRelationship) {
         Intent intent = new Intent(context, SearchTEActivity.class);
         Bundle extras = new Bundle();
@@ -164,7 +168,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
-
+        if(savedInstanceState!=null && savedInstanceState.getString(CURRENT_SCREEN)!=null){
+            currentContent = Content.valueOf(savedInstanceState.getString(CURRENT_SCREEN));
+        }
         initSearchParameters();
 
         searchScreenConfigurator = new SearchScreenConfigurator(
@@ -314,6 +320,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, (Serializable) viewModel.getQueryData());
         outState.putInt(INITIAL_PAGE, binding.navigationBar.currentPage());
+        outState.putString(CURRENT_SCREEN, currentContent.name());
     }
 
     private void openSyncDialog() {
