@@ -34,6 +34,7 @@ import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 
 abstract class MapManager(
     val mapView: MapView,
@@ -63,6 +64,7 @@ abstract class MapManager(
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
+        OnMapReadyIdlingResourceSingleton.countingIdlingResource.increment()
         this.mapStyles = mapStyles.ifEmpty { listOf(internalBaseMap()) }
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
@@ -70,6 +72,7 @@ abstract class MapManager(
                 this.map = mapLoaded
                 val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
+                OnMapReadyIdlingResourceSingleton.countingIdlingResource.decrement()
                 map?.setStyle(
                     baseMapManager.styleJson(
                         this.mapStyles.find { it.isDefault }

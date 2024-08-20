@@ -26,6 +26,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleto
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -86,6 +87,7 @@ open class BaseTest {
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
             EventDetailIdlingResourceSingleton.countingIdlingResource,
+            OnMapReadyIdlingResourceSingleton.countingIdlingResource,
         )
     }
 
