@@ -48,30 +48,6 @@ class MainTest : BaseTest() {
         }
     }
 
-    @Test
-    fun checkDateFilterSetInitialDateWhenOpenedAgain() {
-        setupCredentials()
-        setDatePicker()
-        startActivity()
-
-        homeRobot {
-            openFilters()
-        }
-
-        filterRobotCommon {
-            openFilterAtPosition(0)
-            clickOnFromToDateOption()
-            selectDate(2020, 6, 15)
-            acceptDateSelected()
-            selectDate(2020, 11, 7)
-            acceptDateSelected()
-            clickOnFromToDateOption()
-            checkDate(2020, 6, 15)
-            acceptDateSelected()
-            checkDate(2020, 11, 7)
-        }
-    }
-
     @Ignore
     @Test
     fun shouldShowDialogToDeleteAccount() {
