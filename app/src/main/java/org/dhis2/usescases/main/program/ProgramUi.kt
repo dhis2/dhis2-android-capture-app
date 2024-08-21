@@ -507,7 +507,9 @@ private fun syncingAdditionalInfoItem(program: ProgramUiModel) = AdditionalInfoI
             ProgramDownloadState.ERROR ->
                 DownloadErrorIcon()
 
-            ProgramDownloadState.NONE -> {}
+            ProgramDownloadState.NONE -> {
+//                no-op
+            }
         }
     },
     value = when (program.downloadState) {

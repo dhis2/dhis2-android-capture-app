@@ -92,7 +92,7 @@ class MainActivity :
     private val mainNavigator = MainNavigator(
         supportFragmentManager,
         { /*no-op*/ },
-    ) { titleRes, showFilterButton, showBottomNavigation ->
+    ) { titleRes, _, showBottomNavigation ->
         setTitle(getString(titleRes))
         setBottomNavigationVisibility(showBottomNavigation)
     }
@@ -467,10 +467,6 @@ class MainActivity :
 
     override fun obtainFileView(): File? {
         return this.cacheDir
-    }
-
-    private fun isNotificationRunning(): Boolean {
-        return notification
     }
 
     override fun hasToNotSync(): Boolean {
