@@ -3,6 +3,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -45,6 +46,15 @@ class RelationshipPresenter internal constructor(
         d2.eventModule().events().uid(eventUid).blockingGet()?.programStage()
 
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+
+    val teiTypeName: String? = teiType?.let { d2.trackedEntityType(it)?.displayName() }
+
+    val teiInstanceName = d2.trackedEntityModule().trackedEntitySearch()
+        .byTrackedEntityType().eq(teiType).blockingGet().firstOrNull {
+            it.uid == teiUid
+        }?.attributeValues?.firstOrNull {
+            it.displayInList
+        }?.value
 
     fun init() {
         compositeDisposable.add(
@@ -205,5 +215,9 @@ class RelationshipPresenter internal constructor(
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun handleRelationshipDeleteClick(itemUid: String, relatedTeiName: String) {
+        view.showDeleteRelationshipConfirmationDialog(itemUid, relatedTeiName)
     }
 }

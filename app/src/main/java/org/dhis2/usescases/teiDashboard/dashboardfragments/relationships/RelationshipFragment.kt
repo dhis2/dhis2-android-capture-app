@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
@@ -29,6 +30,7 @@ import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.ui.ThemeManager
+import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -359,6 +361,23 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             }
         }
         return false
+    }
+
+    override fun showDeleteRelationshipConfirmationDialog(relationshipUid: String, relatedTeiName: String) {
+        DeleteBottomSheetDialog(
+            title = ContextCompat.getString(binding.root.context, R.string.delete_relationship_dialog_title)
+                .format(relatedTeiName, presenter.teiInstanceName, presenter.teiTypeName),
+            description =ContextCompat.getString(binding.root.context, R.string.delete_relationship_dialog_message)
+                .format(relatedTeiName, presenter.teiInstanceName, presenter.teiTypeName),
+            mainButtonText = ContextCompat.getString(binding.root.context, R.string.remove),
+            deleteForever = false,
+            onMainButtonClick = {
+                presenter.deleteRelationship(relationshipUid)
+            },
+        ).show(
+            parentFragmentManager,
+            DeleteBottomSheetDialog.TAG,
+        )
     }
 
     companion object {

@@ -39,7 +39,8 @@ class RelationshipViewHolder(
                     View.GONE
                 }
                 setOnClickListener {
-                    relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
+                    //relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
+                    relationships.relationship.uid()?.let { presenter.handleRelationshipDeleteClick(it, relationships.displayRelationshipName()) }
                 }
             }
             relationshipTypeName.text = relationships.displayRelationshipTypeName()

@@ -976,4 +976,6 @@
     <string name="sync">Sync</string>
     <string name="show_fields">Show fields</string>
     <string name="hide_fields">Hide fields</string>
+    <string name="delete_relationship_dialog_title">Remove %s from %s %s</string>
+    <string name="delete_relationship_dialog_message">%s will be removed from %s %s</string>
 </resources>

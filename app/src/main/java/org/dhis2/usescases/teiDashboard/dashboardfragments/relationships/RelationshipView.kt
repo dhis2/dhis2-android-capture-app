@@ -23,4 +23,6 @@ interface RelationshipView : AbstractActivityContracts.View {
     )
 
     fun openEventFor(eventUid: String, programUid: String)
+
+    fun showDeleteRelationshipConfirmationDialog(relationshipUid: String, relatedTeiName: String)
 }
