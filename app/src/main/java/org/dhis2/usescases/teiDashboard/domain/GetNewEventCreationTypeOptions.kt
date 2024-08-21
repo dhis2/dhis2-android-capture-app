@@ -17,11 +17,19 @@ class GetNewEventCreationTypeOptions(
     ): List<EventCreationType> {
         val options: MutableList<EventCreationType> = mutableListOf()
 
+        // EyeSeeTea customization - Not show schedule events when programStage is null
+        // (timeline events view)
+    /*    programStage?.let {
+            if (shouldShowScheduleEvents(it)) {
+                options.add(SCHEDULE)
+            }
+        } ?: options.add(SCHEDULE)*/
+
         programStage?.let {
             if (shouldShowScheduleEvents(it)) {
                 options.add(SCHEDULE)
             }
-        } ?: options.add(SCHEDULE)
+        }
 
         options.add(ADDNEW)
 
@@ -32,13 +40,9 @@ class GetNewEventCreationTypeOptions(
     }
 
     private fun shouldShowReferralEvents(programUid: String): Boolean {
-        programConfigurationRepository.getConfigurationByProgram(programUid)
-            ?.let { programConfiguration ->
-                return programConfiguration.disableReferrals() != true
-            }
-        return true
+        return false
     }
 
     private fun shouldShowScheduleEvents(programStage: ProgramStage) =
-        programStage.hideDueDate() != true
+        false
 }
