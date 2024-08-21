@@ -294,6 +294,7 @@ abstract class MapManager(
         return mapLayerManager.mapLayers
     }
 
+    @SuppressLint("MissingPermission")
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
@@ -319,7 +320,10 @@ abstract class MapManager(
             Lifecycle.Event.ON_DESTROY -> {
                 markerViewManager?.onDestroy()
                 symbolManager?.onDestroy()
-                mapView.onDestroy()
+                map?.locationComponent?.isLocationComponentEnabled = false
+                if (!mapView.isDestroyed) {
+                    mapView.onDestroy()
+                }
             }
 
             Lifecycle.Event.ON_ANY -> {
