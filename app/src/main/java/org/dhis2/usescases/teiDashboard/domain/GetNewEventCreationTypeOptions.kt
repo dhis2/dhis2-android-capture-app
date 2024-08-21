@@ -40,9 +40,13 @@ class GetNewEventCreationTypeOptions(
     }
 
     private fun shouldShowReferralEvents(programUid: String): Boolean {
-        return false
+        programConfigurationRepository.getConfigurationByProgram(programUid)
+            ?.let { programConfiguration ->
+                return programConfiguration.disableReferrals() != true
+            }
+        return true
     }
 
     private fun shouldShowScheduleEvents(programStage: ProgramStage) =
-        false
+        programStage.hideDueDate() != true
 }
