@@ -2,9 +2,12 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollmen
 
 import com.google.gson.Gson
 import io.reactivex.Flowable
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.datastore.DataStoreEntry
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
+import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
@@ -46,6 +49,36 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
         entity: String?,
         orgUnit: String?
     ): Flowable<String> {
-        TODO("Not yet implemented")
+        return Flowable.fromIterable(programIds).map { id: String? ->
+
+
+            val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
+                .blockingGetEnrollmentAccess(entity!!, id!!)
+
+
+            val enrollementDoesnottExists = d2.enrollmentModule()
+                .enrollments().byTrackedEntityInstance()
+                .eq(entity).byProgram().eq(id).blockingIsEmpty()
+
+
+            if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS && enrollementDoesnottExists) {
+                val enrollment = d2.enrollmentModule().enrollments()
+                    .blockingAdd(
+                        EnrollmentCreateProjection.builder()
+                            .trackedEntityInstance(entity)
+                            .program(id)
+                            .organisationUnit(orgUnit)
+                            .build()
+                    )
+                d2.enrollmentModule().enrollments().uid(enrollment)
+                    .setEnrollmentDate(DateUtils.getInstance().today)
+                d2.enrollmentModule().enrollments().uid(enrollment)
+                    .setIncidentDate(DateUtils.getInstance().today)
+                d2.enrollmentModule().enrollments().uid(enrollment).setFollowUp(false)
+                enrollment
+            } else {
+                return@map ""
+            }
+        }
     }
 }
