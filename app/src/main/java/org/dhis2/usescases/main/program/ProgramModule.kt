@@ -3,6 +3,7 @@ package org.dhis2.usescases.main.program
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.resources.ColorUtils
@@ -22,12 +23,14 @@ class ProgramModule(private val view: ProgramView) {
     internal fun programViewModelFactory(
         programRepository: ProgramRepository,
         dispatcherProvider: DispatcherProvider,
+        featureConfigRepository: FeatureConfigRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
         syncStatusController: SyncStatusController,
     ): ProgramViewModelFactory {
         return ProgramViewModelFactory(
             view,
             programRepository,
+            featureConfigRepository,
             dispatcherProvider,
             matomoAnalyticsController,
             syncStatusController,
