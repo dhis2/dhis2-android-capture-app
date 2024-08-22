@@ -16,7 +16,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoEnrollment.model.ExternalEnrollmentCaptureModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.ExternalEnrollmentCaptureModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo

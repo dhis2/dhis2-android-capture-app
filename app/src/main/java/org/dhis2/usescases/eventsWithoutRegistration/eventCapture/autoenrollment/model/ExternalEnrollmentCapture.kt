@@ -1,6 +1,5 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoEnrollment.model
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model
 
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 

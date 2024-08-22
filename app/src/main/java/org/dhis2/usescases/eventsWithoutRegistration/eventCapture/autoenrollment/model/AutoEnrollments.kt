@@ -1,4 +1,4 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoEnrollment.model
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model
 
 data class AutoEnrollments(
     val disableManualEnrollement: List<String>,

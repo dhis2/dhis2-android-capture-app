@@ -5,7 +5,6 @@ import io.reactivex.Flowable
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
