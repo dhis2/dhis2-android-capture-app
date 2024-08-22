@@ -26,6 +26,8 @@ import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.UniqueAttributeController;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManagerImpl;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -52,14 +54,16 @@ public class EventCaptureModule {
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     SchedulerProvider schedulerProvider,
                                                     PreferenceProvider preferences,
-                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+                                                    ConfigureEventCompletionDialog configureEventCompletionDialog,
+                                                    AutoEnrollmentManager autoEnrollmentManager) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
                 eventCaptureRepository,
                 schedulerProvider,
                 preferences,
-                configureEventCompletionDialog);
+                configureEventCompletionDialog,
+                autoEnrollmentManager);
     }
 
     @Provides
@@ -155,5 +159,11 @@ public class EventCaptureModule {
             ResourceManager resourceManager
     ) {
         return new EventCaptureResourcesProvider(resourceManager);
+    }
+
+    @Provides
+    @PerActivity
+    AutoEnrollmentManager providesAutoEnrollmentManager(D2 d2){
+        return new AutoEnrollmentManagerImpl(d2);
     }
 }
