@@ -210,14 +210,25 @@ class SyncPresenterImpl(
                     setUpSMS()
                 },
 
-        ).andThen(
+            ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
         ).andThen(
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
                     .byDomainType().eq(FileResourceDomainType.ICON)
                     .download(),
-            ),
+            )
+                .andThen(
+                    Completable.fromObservable(
+                        d2.dataStoreModule()
+                            .dataStoreDownloader()
+                            .byNamespace().eq("workflow_redesign")
+                            .download(),
+                    ).doOnError {
+                        Timber.d("error while downloading Data store")
+                    }.onErrorComplete()
+                        .doOnComplete { Timber.d("finished datastore download") },
+                ),
         ).blockingAwait()
     }
 
