@@ -1,8 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment
 
+import com.google.gson.Gson
 import io.reactivex.Flowable
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.datastore.DataStoreEntry
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
@@ -19,7 +21,24 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     }
 
     override fun getAutoEnrollmentConfiguration(): Flowable<AutoEnrollmentConfig> {
-        TODO("Not yet implemented")
+        val ifExists = d2.dataStoreModule().dataStore().byNamespace().eq("workflow_redesign")
+            .byKey().eq("configs").one().blockingGet()
+        return if (ifExists != null) {
+            d2.dataStoreModule().dataStore().byNamespace().eq("workflow_redesign")
+                .byKey().eq("configs").one().get()
+                .toFlowable()
+                .map {
+                    Gson().fromJson(
+                        it.value(),
+                        AutoEnrollmentConfig::class.java
+                    )
+                }
+        } else Flowable.just(
+            Gson().fromJson(
+                AutoEnrollmentConfig.createDefaultAutoEnrollmentConfigObject(),
+                AutoEnrollmentConfig::class.java
+            )
+        )
     }
 
     override fun createEnrollments(
