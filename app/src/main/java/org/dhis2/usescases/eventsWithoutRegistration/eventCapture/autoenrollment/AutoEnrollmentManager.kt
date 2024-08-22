@@ -6,9 +6,9 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
 interface AutoEnrollmentManager {
 
-    fun getCurrentEventDataValues(eventUid: String?): Flowable<List<TrackedEntityDataValue>>
+    fun getCurrentEventDataValues(eventUid: String): Flowable<List<TrackedEntityDataValue>>
 
-    fun getCurrentEventTrackedEntityInstance(eventUid: String?): Flowable<String?>?
+    fun getCurrentEventTrackedEntityInstance(eventUid: String): Flowable<String?>?
 
     fun getAutoEnrollmentConfiguration(): Flowable<AutoEnrollmentConfig>
 
