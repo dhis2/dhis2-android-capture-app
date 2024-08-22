@@ -4,6 +4,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
@@ -13,7 +14,10 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatur
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.LayerType
 
-class RelationshipMapManager(mapView: MapView) : MapManager(mapView) {
+class RelationshipMapManager(
+    mapView: MapView,
+    locationEngine: LocationEngine,
+) : MapManager(mapView, locationEngine) {
 
     companion object {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"

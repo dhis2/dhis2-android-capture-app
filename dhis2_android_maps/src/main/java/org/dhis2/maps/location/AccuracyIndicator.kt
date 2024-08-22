@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,8 +52,8 @@ fun AccuracyIndicator(
     accuracyIndicatorState: AccuracyIndicatorState = rememberAccuracyIndicatorState(timeLeft = LOCATION_TIME_LEFT),
     accuracyRange: AccuracyRange,
     minLocationPrecision: Int? = null,
-
 ) {
+    val scope = rememberCoroutineScope()
     val density = LocalDensity.current
 
     LaunchedEffect(key1 = accuracyRange) {
@@ -61,11 +63,15 @@ fun AccuracyIndicator(
     Layout(
         modifier = modifier,
         content = {
-            Box(modifier = Modifier.size(24.dp)) {
-                if (accuracyIndicatorState.timeLeft > 0) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp),
+            ) {
+                if (accuracyIndicatorState.shouldDisplayProgress(accuracyRange)) {
                     ProgressIndicator(
                         modifier = Modifier.fillMaxSize(),
-                        type = ProgressIndicatorType.CIRCULAR,
+                        progress = accuracyIndicatorState.accuracyProgress(),
+                        type = ProgressIndicatorType.CIRCULAR_SMALL,
                     )
                 } else {
                     Icon(
@@ -78,7 +84,9 @@ fun AccuracyIndicator(
             }
 
             Text(
-                modifier = Modifier.height(24.dp),
+                modifier = Modifier
+                    .height(24.dp)
+                    .wrapContentHeight(Alignment.CenterVertically),
                 text = buildAccuracyText(accuracyRange),
             )
             Tag(
@@ -112,32 +120,44 @@ fun AccuracyIndicator(
             layout(constraints.maxWidth, totalHeight) {
                 val noLocation =
                     (accuracyIndicatorState.timeLeft == 0) and (accuracyRange is AccuracyRange.None)
+
+                val displayMessage = accuracyIndicatorState.displayMessage(accuracyRange)
+
                 if (!noLocation) {
                     placeProgressIndicator(
                         placeables[0],
                         constraints.maxWidth,
+                        totalHeight,
                         accuracyIndicatorState.progressPosition,
                     )
                 } else {
                     placeNoLocationMessage(
                         placeables[3],
                         constraints.maxWidth,
+                        totalHeight,
                     )
                 }
                 if (accuracyIndicatorState.displayInfo(accuracyRange)) {
+                    accuracyIndicatorState.updateVerticalOffset(
+                        scope,
+                        ((totalHeight - placeables[0].height) / 2)
+                            .takeIf { !displayMessage } ?: 0,
+                    )
+
                     placeAccuracyRange(
                         placeables[1],
                         placeables[0].width,
                         with(density) { 8.dp.toPx() }.toInt(),
+                        accuracyIndicatorState.verticalOffset,
                     )
                     placeAccuracyLabel(
                         placeables[2],
                         placeables[0].width,
                         placeables[1].width,
-                        with(density) { 2.dp.toPx() }.toInt(),
+                        accuracyIndicatorState.verticalOffset + with(density) { 2.dp.toPx() }.toInt(),
                         with(density) { 24.dp.toPx() }.toInt(),
                     )
-                    if ((accuracyIndicatorState.timeLeft == 0) or (accuracyRange is AccuracyRange.Low) or (accuracyRange is AccuracyRange.Medium)) {
+                    if (displayMessage) {
                         placeMessage(
                             placeables[3],
                             placeables[0].width,
@@ -213,18 +233,20 @@ private fun messageText(
             )
 
     else ->
-        stringResource(id = R.string.accuracy_please_wait) + " $timeLeft"
+        stringResource(id = R.string.accuracy_please_wait)
 }
 
 private fun Placeable.PlacementScope.placeProgressIndicator(
     progressIndicatorPlaceable: Placeable,
     totalWidth: Int,
+    totalHeight: Int,
     progressPosition: Float,
 ) {
     val centerPosition = (totalWidth - progressIndicatorPlaceable.width) / 2
+    val centerPositionY = (totalHeight - progressIndicatorPlaceable.height) / 2
     progressIndicatorPlaceable.placeRelative(
         (progressPosition * centerPosition).toInt(),
-        0,
+        centerPositionY,
     )
 }
 
@@ -232,8 +254,9 @@ private fun Placeable.PlacementScope.placeAccuracyRange(
     accuracyRangePlaceable: Placeable,
     indicatorWidth: Int,
     offset: Int,
+    verticalOffset: Int,
 ) {
-    accuracyRangePlaceable.placeRelative(indicatorWidth + offset, 0)
+    accuracyRangePlaceable.placeRelative(indicatorWidth + offset, verticalOffset)
 }
 
 private fun Placeable.PlacementScope.placeAccuracyLabel(
@@ -265,11 +288,13 @@ private fun Placeable.PlacementScope.placeMessage(
 private fun Placeable.PlacementScope.placeNoLocationMessage(
     messagePlaceable: Placeable,
     totalWidth: Int,
+    totalHeight: Int,
 ) {
     val centerPosition = (totalWidth - messagePlaceable.width) / 2
+    val centerPositionY = (totalHeight - messagePlaceable.height) / 2
     messagePlaceable.placeRelative(
         centerPosition,
-        0,
+        centerPositionY,
     )
 }
 

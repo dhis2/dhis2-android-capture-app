@@ -22,6 +22,7 @@ import org.dhis2.databinding.FragmentSearchMapBinding
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerDialog
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.TeiMapManager
 import org.dhis2.maps.model.MapStyle
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -117,7 +118,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             viewModel.setSearchScreen()
         }
 
-        teiMapManager = TeiMapManager(binding.mapView)
+        teiMapManager = TeiMapManager(binding.mapView, MapLocationEngine(requireContext()))
         teiMapManager?.let { lifecycle.addObserver(it) }
         teiMapManager?.onCreate(savedInstanceState)
         teiMapManager?.teiFeatureType = presenter.getTrackedEntityType(tEType).featureType()

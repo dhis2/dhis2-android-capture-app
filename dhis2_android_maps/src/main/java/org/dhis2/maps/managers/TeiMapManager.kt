@@ -14,6 +14,7 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
@@ -30,9 +31,11 @@ import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
-import java.util.HashMap
 
-class TeiMapManager(mapView: MapView) : MapManager(mapView) {
+class TeiMapManager(
+    mapView: MapView,
+    locationEngine: LocationEngine,
+) : MapManager(mapView, locationEngine) {
 
     private var fieldFeatureCollections: Map<String, FeatureCollection> = emptyMap()
     private var teiFeatureCollections: HashMap<String, FeatureCollection>? = null
@@ -431,6 +434,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                             RELATIONSHIP_UID,
                             features.first().getStringProperty(RELATIONSHIP_UID),
                         )
+
                         else -> features.first()
                     }
                 }
