@@ -133,8 +133,12 @@ fun ProgramList(
                             onSizeChanged(size)
                         }
                     },
-                    onItemClick = onItemClick,
-                    onGranularSyncClick = onGranularSyncClick,
+                    onItemClick = onItemClick
+                        .takeIf { downLoadState?.running == false }
+                        ?: run { {} },
+                    onGranularSyncClick = onGranularSyncClick
+                        .takeIf { downLoadState?.running == false }
+                        ?: run { {} },
                 )
             }
         } ?: run {
@@ -514,7 +518,7 @@ private fun syncingAdditionalInfoItem(program: ProgramUiModel) = AdditionalInfoI
     },
     value = when (program.downloadState) {
         ProgramDownloadState.DOWNLOADING ->
-            stringResource(id = R.string.syncing, program.typeName)
+            stringResource(id = R.string.syncing_resource, program.typeName)
 
         ProgramDownloadState.DOWNLOADED ->
             program.countDescription()
