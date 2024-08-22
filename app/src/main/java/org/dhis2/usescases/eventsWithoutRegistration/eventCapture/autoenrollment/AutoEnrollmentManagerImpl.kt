@@ -60,7 +60,6 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
                 .enrollments().byTrackedEntityInstance()
                 .eq(entity).byProgram().eq(id).blockingIsEmpty()
 
-
             if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS && enrollementDoesnottExists) {
                 val enrollment = d2.enrollmentModule().enrollments()
                     .blockingAdd(

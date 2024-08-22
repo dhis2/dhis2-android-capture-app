@@ -16,6 +16,8 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoEnrollment.model.ExternalEnrollmentCaptureModel
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
 import org.hisp.dhis.android.core.common.Unit
@@ -31,6 +33,7 @@ class EventCapturePresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog,
+    private val autoEnrollmentManager: AutoEnrollmentManager
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -138,6 +141,38 @@ class EventCapturePresenterImpl(
             view.showCompleteActions(eventCompletionDialog)
         }
         view.showNavigationBar()
+
+        compositeDisposable.add(
+            Flowable.zip(
+                autoEnrollmentManager.getCurrentEventTrackedEntityInstance(eventUid),
+                autoEnrollmentManager.getCurrentEventDataValues(eventUid),
+                autoEnrollmentManager.getAutoEnrollmentConfiguration(),
+                eventCaptureRepository.orgUnit(),
+                ::ExternalEnrollmentCaptureModel
+            ).defaultSubscribe(schedulerProvider, { external ->
+                val teiUid = external.teiUid
+                val currentEventDataValues = external.currentEventDataValues
+                val targetPrograms = external.configs.configurations.autoEnrollments.targetPrograms
+                val userOrgUnit = external.orgUnit.uid()
+                targetPrograms.forEach { targetItem ->
+                    currentEventDataValues
+                        .any {
+                            targetItem.constraintsDataElements
+                                .any { te -> te.id == it.dataElement() && te.requiredValue == it.value() }
+                        }.let {
+                            if (it) {
+                                autoEnrollmentManager.createEnrollments(
+                                    targetItem.ids,
+                                    teiUid,
+                                    userOrgUnit
+                                ).defaultSubscribe(schedulerProvider)
+                            }
+                        }
+
+                }
+            })
+        )
+
     }
 
     private fun canSkipErrorFix(
