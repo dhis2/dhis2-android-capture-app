@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
@@ -44,6 +45,9 @@ class ProgramViewModelTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
+    private val featureConfigRepository: FeatureConfigRepository = mock {
+        on { isFeatureEnable(any()) } doReturn false
+    }
     private val dispatcherProvider = object : DispatcherProvider {
         override fun io(): CoroutineDispatcher {
             return testingDispatcher
@@ -64,6 +68,7 @@ class ProgramViewModelTest {
         presenter = ProgramViewModel(
             view,
             programRepository,
+            featureConfigRepository,
             dispatcherProvider,
             matomoAnalyticsController,
             syncStatusController,
