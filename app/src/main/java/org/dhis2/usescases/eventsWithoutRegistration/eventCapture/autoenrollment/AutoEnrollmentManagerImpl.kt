@@ -2,14 +2,13 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollmen
 
 import com.google.gson.Gson
 import io.reactivex.Flowable
-import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import timber.log.Timber
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     override fun getCurrentEventDataValues(eventUid: String): Flowable<List<TrackedEntityDataValue>> {
@@ -61,7 +60,8 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
 
 
             val orgUnitHasPrgoramAccess =
-                d2.programModule().programs().byOrganisationUnitUid(orgUnit!!).uid(id).blockingGet()
+                d2.programModule().programs().byOrganisationUnitUid(orgUnit!!).byOrganisationUnitScope(
+                    OrganisationUnit.Scope.SCOPE_DATA_CAPTURE).uid(id).blockingGet()
 
             if ((hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS)
                 && enrollementDoesnottExists && orgUnitHasPrgoramAccess != null
