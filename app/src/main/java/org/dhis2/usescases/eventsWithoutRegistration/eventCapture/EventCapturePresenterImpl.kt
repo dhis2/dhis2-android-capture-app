@@ -155,6 +155,11 @@ class EventCapturePresenterImpl(
                 val currentEventDataValues = external.currentEventDataValues
                 val targetPrograms = external.configs.configurations.autoEnrollments.targetPrograms
                 val userOrgUnit = external.orgUnit.uid()
+
+
+
+
+
                 targetPrograms.forEach { targetItem ->
                     currentEventDataValues
                         .any {
