@@ -232,6 +232,7 @@ fun FullSearchButtonAndWorkingList(
     onCloseFilters: () -> Unit = {},
     onClearSearchQuery: () -> Unit = {},
     workingListViewModel: WorkingListViewModel? = null,
+    shouldShowCreateButton: Boolean = true
 ) {
     Column(modifier = modifier) {
         if (!isLandscape || queryData.isNotEmpty()) {
@@ -244,26 +245,28 @@ fun FullSearchButtonAndWorkingList(
                 ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
-                ) {
-                    if (queryData.isNotEmpty()) {
-                        SearchButtonWithQuery(
-                            modifier = Modifier.fillMaxWidth(),
-                            queryData = queryData,
-                            onClick = onSearchClick,
-                            onClearSearchQuery = onClearSearchQuery,
-                        )
-                    } else {
-                        SearchAndCreateTEIButton(
-                            onSearchClick = onSearchClick,
-                            teTypeName = teTypeName,
-                            createButtonVisible = createButtonVisible,
-                            onEnrollClick = onEnrollClick,
-                        )
+                if (shouldShowCreateButton) {
+                    Column(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
+                    ) {
+                        if (queryData.isNotEmpty()) {
+                            SearchButtonWithQuery(
+                                modifier = Modifier.fillMaxWidth(),
+                                queryData = queryData,
+                                onClick = onSearchClick,
+                                onClearSearchQuery = onClearSearchQuery,
+                            )
+                        } else {
+                            SearchAndCreateTEIButton(
+                                onSearchClick = onSearchClick,
+                                teTypeName = teTypeName,
+                                createButtonVisible = createButtonVisible,
+                                onEnrollClick = onEnrollClick,
+                            )
+                        }
                     }
                 }
 
@@ -293,7 +296,7 @@ fun FullSearchButtonAndWorkingList(
             }
         }
 
-        Spacer(modifier = Modifier.requiredHeight(Spacing.Spacing16))
+//        Spacer(modifier = Modifier.requiredHeight(Spacing.Spacing16))
 
         workingListViewModel?.let {
             WorkingListChipGroup(workingListViewModel = it)

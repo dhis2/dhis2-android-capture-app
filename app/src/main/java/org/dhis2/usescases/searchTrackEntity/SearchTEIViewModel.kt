@@ -30,6 +30,8 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
@@ -54,6 +56,7 @@ class SearchTEIViewModel(
     private val mapStyleConfig: MapStyleConfiguration,
     private val resourceManager: ResourceManager,
     private val displayNameProvider: DisplayNameProvider,
+    private val autoEnrollmentManager: AutoEnrollmentManager
 ) : ViewModel() {
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
@@ -62,6 +65,13 @@ class SearchTEIViewModel(
     val queryData = mutableMapOf<String, String>().apply {
         initialQuery?.let { putAll(it) }
     }
+
+    private val _programsToBlockDirectEnrollment = MutableLiveData<List<String>>()
+    val programsToBlockDirectEnrollment: LiveData<List<String>> = _programsToBlockDirectEnrollment
+
+    private val _currentProgram = MutableLiveData<String>()
+    val currentProgram: LiveData<String> = _currentProgram
+
 
     private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
     val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
@@ -107,6 +117,13 @@ class SearchTEIViewModel(
             _teTypeName.postValue(
                 searchRepository.trackedEntityType.displayName(),
             )
+
+            val targetPrograms = autoEnrollmentManager.getAutoEnrollmentConfiguration()
+                .blockingFirst().configurations.autoEnrollments.disableManualEnrollement
+            _programsToBlockDirectEnrollment.postValue(targetPrograms)
+
+            val currentProgram = searchRepository.currentProgram()
+            _currentProgram.postValue(currentProgram)
         }
     }
 
@@ -117,9 +134,9 @@ class SearchTEIViewModel(
         val displayFrontPageList =
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch = !displayFrontPageList &&
-            !searchRepository.canCreateInProgramWithoutSearch() &&
-            !searching &&
-            _filtersActive.value == false
+                !searchRepository.canCreateInProgramWithoutSearch() &&
+                !searching &&
+                _filtersActive.value == false
 
         createButtonScrollVisibility.postValue(
             if (searching) {
@@ -615,20 +632,20 @@ class SearchTEIViewModel(
             }
 
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
-                searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
                         searchRepository.getProgram(initialProgramUid)?.displayName(),
 
-                    ),
+                        ),
                 )
             }
 
             hasGlobalResults == null && searchRepository.getProgram(initialProgramUid) != null &&
-                searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                searchRepository.filtersApplyOnGlobalSearch() -> {
+                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                    searchRepository.filtersApplyOnGlobalSearch() -> {
                 listOf(
                     SearchResult(
                         type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,

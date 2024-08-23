@@ -20,5 +20,4 @@ interface AutoEnrollmentManager {
     ): Flowable<String>
 
 
-
 }

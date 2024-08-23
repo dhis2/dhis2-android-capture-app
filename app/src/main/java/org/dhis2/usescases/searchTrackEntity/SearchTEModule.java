@@ -65,6 +65,8 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManagerImpl;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -300,7 +302,8 @@ public class SearchTEModule {
             NetworkUtils networkUtils,
             D2 d2,
             ResourceManager resourceManager,
-            DisplayNameProvider displayNameProvider
+            DisplayNameProvider displayNameProvider,
+            AutoEnrollmentManager autoEnrollmentManager
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -313,8 +316,16 @@ public class SearchTEModule {
                 new SearchDispatchers(),
                 new MapStyleConfiguration(d2),
                 resourceManager,
-                displayNameProvider
+                displayNameProvider,
+                autoEnrollmentManager
         );
+    }
+
+
+    @Provides
+    @PerActivity
+    AutoEnrollmentManager autoEnrollmentManager(D2 d2){
+        return new AutoEnrollmentManagerImpl(d2);
     }
 
     @Provides

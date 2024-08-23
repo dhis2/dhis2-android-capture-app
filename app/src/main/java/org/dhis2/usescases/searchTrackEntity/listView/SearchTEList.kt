@@ -40,6 +40,7 @@ import org.dhis2.usescases.searchTrackEntity.ui.CreateNewButton
 import org.dhis2.usescases.searchTrackEntity.ui.FullSearchButtonAndWorkingList
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.dhis2.utils.isLandscape
+import timber.log.Timber
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -178,7 +179,11 @@ class SearchTEList : FragmentGlobalAbstract() {
             )
             setContent {
                 val teTypeName by viewModel.teTypeName.observeAsState()
+                val curreProgram by viewModel.currentProgram.observeAsState()
+                val programsToBlockDirectEnrollment by viewModel.programsToBlockDirectEnrollment.observeAsState()
+                val shouldShowCreateButton = !programsToBlockDirectEnrollment?.contains(curreProgram)!!
 
+                Timber.tag("PROGRAMS_CURRENT_HERE").d(shouldShowCreateButton.toString())
                 if (!teTypeName.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
@@ -202,6 +207,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                             viewModel.clearFocus()
                         },
                         workingListViewModel = workingListViewModel,
+                        shouldShowCreateButton = shouldShowCreateButton
                     )
                 }
             }

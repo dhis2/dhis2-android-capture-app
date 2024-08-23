@@ -91,4 +91,5 @@ public interface SearchRepository {
     SearchParametersModel getSavedSearchParameters();
 
     FilterManager getSavedFilters();
+    
 }
