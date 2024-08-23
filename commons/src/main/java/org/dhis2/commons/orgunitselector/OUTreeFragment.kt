@@ -22,7 +22,7 @@ const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
 const val ARG_SCOPE = "OUTreeFragment.ARG_SCOPE"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
-class OUTreeFragment private constructor() : BottomSheetDialogFragment() {
+class OUTreeFragment() : BottomSheetDialogFragment() {
 
     class Builder {
         private var preselectedOrgUnits = listOf<String>()
