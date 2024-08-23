@@ -16,8 +16,8 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.ExternalEnrollmentCaptureModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.AutoEnrollmentManager
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.ExternalEnrollmentCaptureModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
 import org.hisp.dhis.android.core.common.Unit
@@ -139,6 +139,7 @@ class EventCapturePresenterImpl(
                 canSkipErrorFix,
             )
             view.showCompleteActions(eventCompletionDialog)
+
         }
         view.showNavigationBar()
 

@@ -2,12 +2,14 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollmen
 
 import com.google.gson.Gson
 import io.reactivex.Flowable
+import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollment.model.AutoEnrollmentConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import timber.log.Timber
 
 class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
     override fun getCurrentEventDataValues(eventUid: String): Flowable<List<TrackedEntityDataValue>> {
@@ -48,18 +50,22 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
         entity: String?,
         orgUnit: String?
     ): Flowable<String> {
+
+
         return Flowable.fromIterable(programIds).map { id: String? ->
-
-
             val hasEnrollmentAccess = d2.enrollmentModule().enrollmentService()
                 .blockingGetEnrollmentAccess(entity!!, id!!)
-
-
             val enrollementDoesnottExists = d2.enrollmentModule()
                 .enrollments().byTrackedEntityInstance()
                 .eq(entity).byProgram().eq(id).blockingIsEmpty()
 
-            if (hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS && enrollementDoesnottExists) {
+
+            val orgUnitHasPrgoramAccess =
+                d2.programModule().programs().byOrganisationUnitUid(orgUnit!!).uid(id).blockingGet()
+
+            if ((hasEnrollmentAccess == EnrollmentAccess.WRITE_ACCESS)
+                && enrollementDoesnottExists && orgUnitHasPrgoramAccess != null
+            ) {
                 val enrollment = d2.enrollmentModule().enrollments()
                     .blockingAdd(
                         EnrollmentCreateProjection.builder()
@@ -79,4 +85,7 @@ class AutoEnrollmentManagerImpl(private val d2: D2) : AutoEnrollmentManager {
             }
         }
     }
+
+
+
 }

@@ -3,11 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.autoenrollmen
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 
-data class ExternalEnrollmentCapture(
-    val orgUnit: OrganisationUnit,
-    val trackedEntity: String,
-    val configs: AutoEnrollmentConfig
-)
+
 
 
 data class ExternalEnrollmentCaptureModel(
