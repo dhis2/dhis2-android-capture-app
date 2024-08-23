@@ -224,14 +224,6 @@ class MapSelectorActivity :
             {},
             {},
         )
-        /*mapboxLocationProvider.requestLocationUpdates(
-            LocationEngineRequest.Builder(LOCATION_INTERVAL)
-                .setFastestInterval(LOCATION_FASTEST_INTERVAL)
-                .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
-                .build(),
-            locationListener,
-            Looper.myLooper(),
-        )*/
     }
 
     override fun onDestroy() {
