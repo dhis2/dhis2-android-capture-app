@@ -1,8 +1,10 @@
-# Release notes - Android App for DHIS2 - 3.0.0.2
+This is a patch version that fixes:
+- Working lists aren't applied even when active.
+- Cannot navigate to event details or sync event after navigating back from details.
+- Login error in landscape.
+- Data entry not saving more than one value.
+- Incorrect workflow of Org unit when creating event.
+- Crash when rotating device in settings activity.
+- Option set not working well in data set if the code of option contains character "_".
 
-- IllegalArgumentException: Key "" was already used.
-- App crash when a catCombo is override
-- Future date can be entered in Date of birth search field
-- Phone number input value type lacks of support for international symbols like \+, \(, \)
-- Maps - App crashes when navigating from home to maps but not from analytics to maps
-- Value of a TEA of valuetype AGE/DATE is not fully validated
+Also stability issues. You can find all the details on Github.
