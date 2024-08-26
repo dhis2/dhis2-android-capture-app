@@ -480,7 +480,8 @@
     <string name="biometrics_dialog_title">Empty Credentials</string>
     <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
     <string name="biometrics_security_title">Biometric Security</string>
-    <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
+    <string name="biometrics_login_title">Quick login</string>
+    <string name="biometrics_login_text">Would you like to use your fingerprint or another biometric method to log in?</string>
     <string name="tab_tables">Tables</string>
     <string name="table">Table</string>
     <string name="login_https">https://</string>

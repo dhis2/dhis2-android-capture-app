@@ -8,10 +8,10 @@ interface PreferenceProvider {
 
     fun sharedPreferences(): SharedPreferences
 
-    fun saveUserCredentials(serverUrl: String, userName: String, pass: String)
+    fun saveUserCredentials(serverUrl: String, userName: String, pass: String?)
 
     fun areCredentialsSet(): Boolean
-    fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean
+    fun areSameCredentials(serverUrl: String, userName: String): Boolean
     fun clear()
     fun setValue(key: String, value: Any? = null)
     fun removeValue(key: String)

@@ -241,7 +241,7 @@ class LoginViewModelTest {
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
-        assert(loginViewModel.displayBiometricLogin.value == true)
+        assert(loginViewModel.canLoginWithBiometrics.value == true)
     }
 
     @Test
@@ -251,7 +251,7 @@ class LoginViewModelTest {
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("notLoggedServer", 0, 0, 0)
-        assert(loginViewModel.displayBiometricLogin.value == false)
+        assert(loginViewModel.canLoginWithBiometrics.value == false)
     }
 
     @Test
@@ -261,7 +261,7 @@ class LoginViewModelTest {
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
-        assert(loginViewModel.displayBiometricLogin.value == false)
+        assert(loginViewModel.canLoginWithBiometrics.value == false)
     }
 
     @Test
@@ -377,7 +377,7 @@ class LoginViewModelTest {
         loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
-        assert(loginViewModel.displayBiometricLogin.value == true)
+        assert(loginViewModel.canLoginWithBiometrics.value == true)
         verify(biometricController).authenticate(any(), any())
     }
 

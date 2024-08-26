@@ -21,6 +21,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
@@ -75,8 +76,8 @@ class LoginViewModel(
     private val _hasAccounts = MutableLiveData<Boolean>()
     val hasAccounts: LiveData<Boolean> = _hasAccounts
 
-    private val _displayBiometricLogin = MutableLiveData<Boolean>()
-    val displayBiometricLogin: LiveData<Boolean> = _displayBiometricLogin
+    private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
+    val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
 
     private val _displayMoreActions = MutableLiveData<Boolean>(true)
     val displayMoreActions: LiveData<Boolean> = _displayMoreActions
@@ -132,14 +133,7 @@ class LoginViewModel(
                     .subscribe(
                         { systemInfo ->
                             setServerAndUserInfo(systemInfo.contextPath())
-
                             checkBiometricVisibility()
-
-                            if (displayBiometricLogin.value == true) {
-                                biometricController.authenticate(requestBiometric = false) {
-                                    logIn()
-                                }
-                            }
                         },
                         { Timber.e(it) },
                     ),
@@ -181,11 +175,12 @@ class LoginViewModel(
         }
     }
 
-    private fun checkBiometricVisibility() {
-        _displayBiometricLogin.value =
+    fun checkBiometricVisibility() {
+        _canLoginWithBiometrics.value =
             biometricController.hasBiometric() &&
             userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
-            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false
+            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false &&
+            preferenceProvider.contains(SECURE_PASS)
     }
 
     fun onLoginButtonClick() {
@@ -363,27 +358,19 @@ class LoginViewModel(
             ?.blockingGet()?.value() == null
     }
 
-    fun areSameCredentials(): Boolean {
-        return (
-            preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(
-                    serverUrl.value!!,
-                    userName.value!!,
-                    password.value!!,
-                )
-            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
-    }
-
-    private fun saveUserCredentials() {
-        preferenceProvider.saveUserCredentials(
-            serverUrl.value!!,
-            userName.value!!,
-            "",
-        )
+    fun saveUserCredentials(userPass: String? = null) {
+        if (!preferenceProvider.areSameCredentials(serverUrl.value!!, userName.value!!)) {
+            preferenceProvider.saveUserCredentials(
+                serverUrl.value!!,
+                userName.value!!,
+                userPass
+            )
+        }
     }
 
     fun authenticateWithBiometric() {
         biometricController.authenticate {
+            password.value = preferenceProvider.getString(SECURE_PASS)
             logIn()
         }
     }
@@ -462,8 +449,8 @@ class LoginViewModel(
             if (this.serverUrl.value != null) {
                 checkTestingEnvironment(this.serverUrl.value!!)
             }
-            checkBiometricVisibility()
         }
+        checkBiometricVisibility()
     }
 
     fun onUserChanged(userName: CharSequence, start: Int, before: Int, count: Int) {
@@ -548,4 +535,9 @@ class LoginViewModel(
     fun setDisplayMoreActions(shouldDisplayMoreActions: Boolean) {
         _displayMoreActions.postValue(shouldDisplayMoreActions)
     }
+
+    fun shouldAskForBiometrics(): Boolean =
+        biometricController.hasBiometric() &&
+                !preferenceProvider.areCredentialsSet() &&
+                hasAccounts.value == false
 }

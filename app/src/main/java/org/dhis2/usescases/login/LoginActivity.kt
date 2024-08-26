@@ -20,10 +20,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.databinding.DataBindingUtil
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -45,6 +45,7 @@ import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
@@ -55,6 +56,7 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.NetworkUtils
+import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
@@ -266,6 +268,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         checkMessage()
         presenter.apply {
             checkServerInfoAndShowBiometricButton()
+            canLoginWithBiometrics.observe(this@LoginActivity) {
+                if (it && accountsCount == -1) {
+                    presenter.authenticateWithBiometric()
+                }
+            }
         }
 
         if (!isDeletion && accountsCount == 1) {
@@ -275,9 +282,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun provideBiometricButton() {
         binding.biometricButton.setContent {
-            val displayBiometric by presenter.displayBiometricLogin.observeAsState(false)
+            val displayBiometric by presenter.canLoginWithBiometrics.observeAsState(false)
             if (displayBiometric) {
-                Mdc3Theme {
+                Dhis2Theme {
                     IconButton(
                         onClick = {
                             presenter.authenticateWithBiometric()
@@ -296,7 +303,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
@@ -469,45 +476,32 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun onLoginDataUpdated(displayTrackingMessage: Boolean) {
         when {
             displayTrackingMessage -> showCrashlyticsDialog()
-            !presenter.areSameCredentials() -> {
-                handleFingerPrint()
+            presenter.shouldAskForBiometrics() -> showBiometricDialog()
+            else -> {
+                presenter.saveUserCredentials()
                 goToNextScreen()
             }
-
-            else -> goToNextScreen()
         }
     }
 
-    private fun handleFingerPrint() {
-        // This is commented until fingerprint login for multiuser is supported
-        /* if (presenter.canHandleBiometrics() == true) {
-            showInfoDialog(
-                getString(R.string.biometrics_security_title),
-                getString(R.string.biometrics_security_text),
-                object : OnDialogClickListener {
-                    override fun onPositiveClick() {
-                        presenter.saveUserCredentials(
-                            binding.serverUrlEdit.text.toString(),
-                            binding.userNameEdit.text.toString(),
-                            binding.userPassEdit.text.toString()
-                        )
-                        goToNextScreen()
-                    }
-
-                    override fun onNegativeClick() {
-                        goToNextScreen()
-                    }
-                }
-            )
-           goToNextScreen()
-        } else {
-            presenter.saveUserCredentials(
-                binding.serverUrlEdit.text.toString(),
-                binding.userNameEdit.text.toString(),
-                ""
-            )
-            goToNextScreen()
-        } */
+    private fun showBiometricDialog() {
+        BottomSheetDialog(
+            BottomSheetDialogUiModel(
+                title = getString(R.string.biometrics_login_title),
+                message = getString(R.string.biometrics_login_text),
+                iconResource = R.drawable.ic_fingerprint,
+                mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
+            ),
+            onMainButtonClicked = {
+                presenter.saveUserCredentials(binding.userPassEdit.text.toString())
+                onLoginDataUpdated(false)
+            },
+            onSecondaryButtonClicked = {
+                presenter.saveUserCredentials()
+                onLoginDataUpdated(false)
+            }
+        ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
     @Deprecated("Deprecated in Java")

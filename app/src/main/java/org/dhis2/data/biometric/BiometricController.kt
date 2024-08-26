@@ -29,17 +29,12 @@ class BiometricController(
         val biometricManager = BiometricManager.from(fragmentActivity)
         biometricStatus = biometricManager.canAuthenticate(BIOMETRIC_STRONG)
         return when (biometricStatus) {
-            BiometricManager.BIOMETRIC_SUCCESS,
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
-            -> true
+            BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
     }
 
-    fun authenticate(requestBiometric: Boolean = true, onSuccess: () -> Unit) {
-        if (requestBiometric && biometricStatus == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED) {
-            requestBiometricSetting()
-        }
+    fun authenticate(onSuccess: () -> Unit) {
         if (biometricPrompt == null) {
             biometricPrompt = BiometricPrompt(
                 fragmentActivity,
@@ -57,25 +52,9 @@ class BiometricController(
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(fragmentActivity.getString(R.string.biometric_title))
-            .setConfirmationRequired(true)
             .setNegativeButtonText(fragmentActivity.getString(R.string.use_password))
             .build()
 
         biometricPrompt?.authenticate(promptInfo)
-    }
-
-    private fun requestBiometricSetting() {
-        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                putExtra(
-                    Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                    BIOMETRIC_STRONG,
-                )
-            }
-        } else {
-            Intent(Settings.ACTION_SECURITY_SETTINGS)
-        }
-
-        requestBiometricSettings.launch(intent)
     }
 }

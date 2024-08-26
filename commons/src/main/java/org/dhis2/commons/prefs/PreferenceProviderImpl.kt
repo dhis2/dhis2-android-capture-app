@@ -85,17 +85,18 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         }
     }
 
-    override fun saveUserCredentials(serverUrl: String, userName: String, pass: String) {
+    override fun saveUserCredentials(serverUrl: String, userName: String, pass: String?) {
         setValue(SECURE_CREDENTIALS, true)
         setValue(SECURE_SERVER_URL, serverUrl)
         setValue(SECURE_USER_NAME, userName)
+        pass?.let { setValue(SECURE_PASS, it) }
     }
 
     override fun areCredentialsSet(): Boolean {
         return getBoolean(SECURE_CREDENTIALS, false)
     }
 
-    override fun areSameCredentials(serverUrl: String, userName: String, pass: String): Boolean {
+    override fun areSameCredentials(serverUrl: String, userName: String): Boolean {
         return getString(SECURE_SERVER_URL, "") == serverUrl &&
             getString(SECURE_USER_NAME, "") == userName
     }
