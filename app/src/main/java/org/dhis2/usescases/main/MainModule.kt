@@ -79,15 +79,8 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
     @PerActivity
     fun providePageConfigurator(
         homeRepository: HomeRepository,
-        resourceManager: ResourceManager,
     ): NavigationPageConfigurator {
-        return HomePageConfigurator(homeRepository, resourceManager)
-    }
-
-    @Provides
-    @PerActivity
-    fun provideResourceManager(): ResourceManager {
-        return ResourceManager(view.context, ColorUtils())
+        return HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
     }
 
     @Provides
