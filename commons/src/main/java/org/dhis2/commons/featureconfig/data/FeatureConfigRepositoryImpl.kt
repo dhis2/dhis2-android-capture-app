@@ -60,6 +60,6 @@ class FeatureConfigRepositoryImpl @Inject constructor(
     private fun getResponsiveHomeTotalItems(): Int? {
         val value = localDataStore
             .value(key = "${Feature.RESPONSIVE_HOME.name}_extras").blockingGet()?.value()
-        return Gson().fromJson(value, FeatureOptions.ResponsiveHome::class.java).totalItems
+        return value?.let { Gson().fromJson(value, FeatureOptions.ResponsiveHome::class.java).totalItems }
     }
 }
