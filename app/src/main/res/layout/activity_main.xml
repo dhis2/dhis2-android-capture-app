@@ -123,14 +123,11 @@
                     app:layout_constraintTop_toBottomOf="@id/toolbarProgress" />
 
 
-                <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+                <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/navigationBar"
-                    style="@style/DhisBottomNavigationView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:initialPage="0"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:menu="@menu/navigation_home_menu" />
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

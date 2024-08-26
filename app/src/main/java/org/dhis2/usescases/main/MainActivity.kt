@@ -13,9 +13,15 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.app.NotificationCompat
-import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -24,7 +30,8 @@ import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.hasPermissions
-import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.animations.hide
+import org.dhis2.commons.animations.show
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
@@ -35,11 +42,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import java.io.File
 import javax.inject.Inject
 
@@ -62,18 +71,13 @@ class MainActivity :
     lateinit var presenter: MainPresenter
 
     @Inject
-    lateinit var newAdapter: FiltersAdapter
-
-    @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
 
-    var notification: Boolean = false
-    var forceToNotSynced = false
     private var singleProgramNavigationDone = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            binding.navigationBar.pageConfiguration(pageConfigurator)
+            // no-op
         }
 
     private val requestWritePermissions =
@@ -87,8 +91,6 @@ class MainActivity :
 
     private var isPinLayoutVisible = false
 
-    private var backDropActive = false
-    private var elevation = 0f
     private val mainNavigator = MainNavigator(
         supportFragmentManager,
         { /*no-op*/ },
@@ -126,13 +128,17 @@ class MainActivity :
     //region LIFECYCLE
     override fun onCreate(savedInstanceState: Bundle?) {
         app().userComponent()?.let {
-            mainComponent = it.plus(MainModule(this)).apply {
-                inject(this@MainActivity)
-            }
+            mainComponent = it.plus(
+                MainModule(
+                    view = this,
+                    forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false),
+                ),
+            )
+            mainComponent.inject(this@MainActivity)
         } ?: navigateTo<LoginActivity>(true)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false)
+
         if (::presenter.isInitialized) {
             binding.presenter = presenter
         } else {
@@ -146,32 +152,8 @@ class MainActivity :
 
         binding.mainDrawerLayout.addDrawerListener(this)
 
-        binding.navigationBar.pageConfiguration(pageConfigurator)
-        binding.navigationBar.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_tasks -> {
-                }
-
-                R.id.navigation_programs -> {
-                    mainNavigator.openPrograms()
-                }
-
-                R.id.navigation_analytics -> {
-                    presenter.trackHomeAnalytics()
-                    mainNavigator.openVisualizations()
-                }
-            }
-            true
-        }
-
-        if (BuildConfig.DEBUG) {
-            binding.menu.setOnLongClickListener {
-                getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
-                false
-            }
-        }
-
-        elevation = ViewCompat.getElevation(binding.toolbar)
+        setUpNavigationBar()
+        setUpDevelopmentMode()
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
         singleProgramNavigationDone =
@@ -209,10 +191,14 @@ class MainActivity :
         }
 
         checkNotificationPermission()
+
+        registerOnBackPressedCallback()
     }
 
     private fun checkNotificationPermission() {
-        if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS))) {
+        if (!hasPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS)) and
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        ) {
             requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
@@ -234,6 +220,61 @@ class MainActivity :
         presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
+    }
+
+    private fun setUpDevelopmentMode() {
+        if (BuildConfig.DEBUG) {
+            binding.menu.setOnLongClickListener {
+                getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
+                false
+            }
+        }
+    }
+
+    private fun registerOnBackPressedCallback() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
+                backPressed()
+            }
+        } else {
+            onBackPressedDispatcher.addCallback(this) {
+                backPressed()
+            }
+        }
+    }
+
+    private fun setUpNavigationBar() {
+        binding.navigationBar.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val currentScreen by mainNavigator.selectedScreen.observeAsState()
+                val selectedItemIndex by remember {
+                    derivedStateOf {
+                        when (currentScreen) {
+                            MainNavigator.MainScreen.PROGRAMS -> 0
+                            MainNavigator.MainScreen.VISUALIZATIONS -> 1
+                            else -> null
+                        }
+                    }
+                }
+                NavigationBar(
+                    items = pageConfigurator.navigationItems(),
+                    selectedItemIndex = selectedItemIndex ?: 0,
+                ) { navigationPage ->
+                    when (navigationPage) {
+                        NavigationPage.ANALYTICS -> {
+                            presenter.trackHomeAnalytics()
+                            mainNavigator.openVisualizations()
+                        }
+
+                        NavigationPage.PROGRAMS -> mainNavigator.openPrograms()
+                        else -> {
+                            /*no-op*/
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun observeSyncState() {
@@ -345,17 +386,15 @@ class MainActivity :
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
+    private fun backPressed() {
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
-            else -> super.onBackPressed()
         }
     }
 
     override fun goToHome() {
-        mainNavigator.openHome(binding.navigationBar)
+        mainNavigator.openHome()
     }
 
     override fun changeFragment(id: Int) {
@@ -415,7 +454,7 @@ class MainActivity :
             }
 
             R.id.menu_home -> {
-                mainNavigator.openHome(binding.navigationBar)
+                mainNavigator.openHome()
             }
 
             R.id.menu_troubleshooting -> {
@@ -443,7 +482,6 @@ class MainActivity :
     }
 
     override fun showProgressDeleteNotification() {
-        notification = true
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -467,10 +505,6 @@ class MainActivity :
 
     override fun obtainFileView(): File? {
         return this.cacheDir
-    }
-
-    override fun hasToNotSync(): Boolean {
-        return forceToNotSynced
     }
 
     override fun cancelNotifications() {

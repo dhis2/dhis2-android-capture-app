@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import org.dhis2.R
 import org.dhis2.usescases.about.AboutFragment
@@ -14,7 +16,6 @@ import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
-import org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
 
 class MainNavigator(
     private val fragmentManager: FragmentManager,
@@ -34,28 +35,29 @@ class MainNavigator(
         ABOUT(R.string.about, R.id.menu_about),
     }
 
-    private var currentScreen: MainScreen? = null
+    private var currentScreen = MutableLiveData<MainScreen?>(null)
+    var selectedScreen: LiveData<MainScreen?> = currentScreen
     private var currentFragment: Fragment? = null
 
     fun isHome(): Boolean = isPrograms() || isVisualizations()
 
-    fun isPrograms(): Boolean = currentScreen == MainScreen.PROGRAMS
+    fun isPrograms(): Boolean = currentScreen.value == MainScreen.PROGRAMS
 
-    fun isVisualizations(): Boolean = currentScreen == MainScreen.VISUALIZATIONS
+    fun isVisualizations(): Boolean = currentScreen.value == MainScreen.VISUALIZATIONS
 
     fun getCurrentIfProgram(): ProgramFragment? {
         return currentFragment?.takeIf { it is ProgramFragment } as ProgramFragment
     }
 
-    fun currentScreenName() = currentScreen?.name
+    fun currentScreenName() = currentScreen.value?.name
 
     fun currentNavigationViewItemId(screenName: String): Int =
         MainScreen.valueOf(screenName).navViewId
 
-    fun openHome(navigationBottomBar: NavigationBottomBar) {
+    fun openHome() {
         when {
-            isVisualizations() -> navigationBottomBar.selectedItemId = R.id.navigation_analytics
-            else -> navigationBottomBar.selectedItemId = R.id.navigation_programs
+            isVisualizations() -> openVisualizations()
+            else -> openPrograms()
         }
     }
 
@@ -127,9 +129,9 @@ class MainNavigator(
         sharedView: View? = null,
         useFadeInTransition: Boolean = false,
     ) {
-        if (currentScreen != screen) {
+        if (currentScreen.value != screen) {
             onTransitionStart()
-            currentScreen = screen
+            currentScreen.value = screen
             currentFragment = fragment
             val transaction: FragmentTransaction = fragmentManager.beginTransaction()
             transaction.apply {

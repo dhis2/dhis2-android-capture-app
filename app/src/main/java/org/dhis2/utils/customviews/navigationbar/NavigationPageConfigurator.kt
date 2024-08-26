@@ -1,6 +1,7 @@
 package org.dhis2.utils.customviews.navigationbar
 
 import androidx.annotation.IdRes
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 
 interface NavigationPageConfigurator {
     fun pageVisibility(@IdRes pageId: Int): Boolean {
@@ -29,4 +30,5 @@ interface NavigationPageConfigurator {
     fun displayTableView(): Boolean = false
     fun displayTasks(): Boolean = false
     fun displayPrograms(): Boolean = false
+    fun navigationItems(): List<NavigationBarItem<NavigationPage>> = emptyList()
 }
