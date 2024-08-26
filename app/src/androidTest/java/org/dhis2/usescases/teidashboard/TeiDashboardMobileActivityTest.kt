@@ -21,6 +21,7 @@ import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -78,6 +79,7 @@ class TeiDashboardMobileActivityTest {
     private val presenter: TeiDashboardContracts.Presenter = mock()
     private val filterManager: FilterManager = mock()
     private val networkUtils: NetworkUtils = mock()
+    private val pageConfigurator: NavigationPageConfigurator = mock()
 
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
@@ -98,6 +100,8 @@ class TeiDashboardMobileActivityTest {
             repository,
             analyticsHelper,
             dispatcher,
+            pageConfigurator = pageConfigurator,
+            resourcesManager = resources,
         )
 
     }

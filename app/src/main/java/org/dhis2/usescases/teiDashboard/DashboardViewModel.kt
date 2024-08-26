@@ -1,5 +1,16 @@
 package org.dhis2.usescases.teiDashboard
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.StickyNote2
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Hub
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Hub
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,20 +20,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.State.SYNCED
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import timber.log.Timber
 
 class DashboardViewModel(
     private val repository: DashboardRepository,
     private val analyticsHelper: AnalyticsHelper,
     private val dispatcher: DispatcherProvider,
+    private val pageConfigurator: NavigationPageConfigurator,
+    private val resourcesManager: ResourceManager,
 ) : ViewModel() {
 
     private val eventUid = MutableLiveData<String>()
@@ -52,6 +72,12 @@ class DashboardViewModel(
     private val _noEnrollmentSelected = MutableLiveData(false)
     val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
 
+    private val _navigationBarUIState = mutableStateOf(
+        NavigationBarUIState<TEIDashboardItems>(),
+    )
+    val navigationBarUIState: MutableState<NavigationBarUIState<TEIDashboardItems>> =
+        _navigationBarUIState
+
     init {
         fetchDashboardModel()
         fetchGrouping()
@@ -66,7 +92,7 @@ class DashboardViewModel(
                 try {
                     val model = result.await()
                     _dashboardModel.postValue(model)
-                    if (model is DashboardEnrollmentModel && model != null) {
+                    if (model is DashboardEnrollmentModel) {
                         _showFollowUpBar.value =
                             model.currentEnrollment.followUp() ?: false
                         _syncNeeded.value =
@@ -75,6 +101,7 @@ class DashboardViewModel(
                         _state.value =
                             model.currentEnrollment.aggregatedSyncState()
                         _noEnrollmentSelected.value = false
+                        loadNavigationBarItems()
                     } else {
                         _noEnrollmentSelected.value = true
                     }
@@ -82,6 +109,59 @@ class DashboardViewModel(
                     Timber.e(e)
                 }
             }
+        }
+    }
+
+    private fun loadNavigationBarItems() {
+        val enrollmentItems = mutableListOf<NavigationBarItem<TEIDashboardItems>>()
+
+        if (isPortrait()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = TEIDashboardItems.DETAILS,
+                    icon = Icons.AutoMirrored.Outlined.Assignment,
+
+                    selectedIcon = Icons.AutoMirrored.Filled.Assignment,
+                    label = resourcesManager.getString(R.string.navigation_tei_data),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayAnalytics()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = TEIDashboardItems.ANALYTICS,
+                    icon = Icons.Outlined.BarChart,
+                    selectedIcon = Icons.Filled.BarChart,
+                    label = resourcesManager.getString(R.string.navigation_analytics),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayRelationships()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = TEIDashboardItems.RELATIONSHIPS,
+                    icon = Icons.Outlined.Hub,
+                    selectedIcon = Icons.Filled.Hub,
+                    label = resourcesManager.getString(R.string.navigation_relationships),
+                ),
+            )
+        }
+
+        enrollmentItems.add(
+            NavigationBarItem(
+                id = TEIDashboardItems.NOTES,
+                icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                label = resourcesManager.getString(R.string.navigation_notes),
+            ),
+        )
+
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(items = enrollmentItems)
+
+        if (navigationBarUIState.value.items.find { it.id == navigationBarUIState.value.selectedItem } == null) {
+            onNavigationItemSelected(navigationBarUIState.value.items.first().id)
         }
     }
 
@@ -180,5 +260,21 @@ class DashboardViewModel(
         if (selectedEventUid.value != uid) {
             this.selectedEventUid.value = uid
         }
+    }
+
+    fun updateNoteCounter(numberOfNotes: Int) {
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(
+            items = _navigationBarUIState.value.items.map {
+                if (it.id == TEIDashboardItems.NOTES) {
+                    it.copy(showBadge = numberOfNotes > 0)
+                } else {
+                    it
+                }
+            },
+        )
+    }
+
+    fun onNavigationItemSelected(itemId: TEIDashboardItems) {
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = itemId)
     }
 }
