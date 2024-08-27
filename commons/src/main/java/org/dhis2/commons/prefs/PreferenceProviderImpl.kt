@@ -96,7 +96,7 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         return getBoolean(SECURE_CREDENTIALS, false)
     }
 
-    override fun areSameCredentials(serverUrl: String, userName: String): Boolean {
+    override fun areSameCredentials(serverUrl: String?, userName: String?): Boolean {
         return getString(SECURE_SERVER_URL, "") == serverUrl &&
             getString(SECURE_USER_NAME, "") == userName
     }

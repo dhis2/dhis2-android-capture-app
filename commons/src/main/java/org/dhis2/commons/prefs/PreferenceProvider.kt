@@ -11,7 +11,7 @@ interface PreferenceProvider {
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String?)
 
     fun areCredentialsSet(): Boolean
-    fun areSameCredentials(serverUrl: String, userName: String): Boolean
+    fun areSameCredentials(serverUrl: String?, userName: String?): Boolean
     fun clear()
     fun setValue(key: String, value: Any? = null)
     fun removeValue(key: String)

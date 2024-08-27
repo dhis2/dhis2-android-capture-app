@@ -29,9 +29,9 @@ class LoginContracts {
 
         fun goToNextScreen()
 
-        fun setUrl(url: String)
+        fun setUrl(url: String?)
 
-        fun setUser(user: String)
+        fun setUser(user: String?)
 
         fun navigateToQRActivity()
 

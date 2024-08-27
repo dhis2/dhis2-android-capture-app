@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.databinding.DataBindingUtil
@@ -56,7 +55,6 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.WebViewActivity
 import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
@@ -79,6 +77,7 @@ const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
 const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
+const val FROM_SPLASH = "FROM_SPLASH"
 const val RESULT_ACCOUNT_SERVER = "RESULT_ACCOUNT_SERVER"
 const val RESULT_ACCOUNT_USERNAME = "RESULT_ACCOUNT_USERNAME"
 const val RESULT_ACCOUNT_CLICKED = "RESULT_ACCOUNT_CLICKED"
@@ -141,11 +140,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             accountsCount: Int = -1,
             isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null,
+            fromSplash: Boolean = false,
         ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
                 putBoolean(IS_DELETION, isDeletion)
                 putInt(ACCOUNTS_COUNT, accountsCount)
+                putBoolean(FROM_SPLASH, fromSplash)
                 when (logOutReason) {
                     OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
                     OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
@@ -167,6 +168,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         ): Intent = Intent().apply {
             serverUrl?.let { putExtra(RESULT_ACCOUNT_SERVER, serverUrl) }
             userName?.let { putExtra(RESULT_ACCOUNT_USERNAME, userName) }
+            putExtra(FROM_SPLASH, false)
             putExtra(RESULT_ACCOUNT_CLICKED, wasAccountClicked)
         }
     }
@@ -187,6 +189,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
         val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
+        val fromSplash = intent.getBooleanExtra(FROM_SPLASH, false)
 
         if ((isDeletion && accountsCount >= 1)) {
             openAccountsActivity()
@@ -269,7 +272,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         presenter.apply {
             checkServerInfoAndShowBiometricButton()
             canLoginWithBiometrics.observe(this@LoginActivity) {
-                if (it && accountsCount == -1) {
+                if (it && fromSplash) {
                     presenter.authenticateWithBiometric()
                 }
             }
@@ -303,7 +306,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun setTestingCredentials() {
@@ -355,11 +358,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         return NetworkUtils.isOnline(this)
     }
 
-    override fun setUrl(url: String) {
+    override fun setUrl(url: String?) {
         binding.serverUrlEdit.setText(if (!isEmpty(qrUrl)) qrUrl else url)
     }
 
-    override fun setUser(user: String) {
+    override fun setUser(user: String?) {
         binding.userNameEdit.setText(user)
         binding.userNameEdit.setSelectAllOnFocus(true)
     }
@@ -500,7 +503,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             onSecondaryButtonClicked = {
                 presenter.saveUserCredentials()
                 onLoginDataUpdated(false)
-            }
+            },
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 

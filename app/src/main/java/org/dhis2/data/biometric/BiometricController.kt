@@ -1,11 +1,7 @@
 package org.dhis2.data.biometric
 
-import android.content.Intent
-import android.os.Build
-import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -16,19 +12,10 @@ class BiometricController(
 ) {
 
     private var biometricPrompt: BiometricPrompt? = null
-    private var biometricStatus: Int = BiometricManager.BIOMETRIC_STATUS_UNKNOWN
-
-    private val requestBiometricSettings =
-        fragmentActivity.registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) {
-            hasBiometric()
-        }
 
     fun hasBiometric(): Boolean {
         val biometricManager = BiometricManager.from(fragmentActivity)
-        biometricStatus = biometricManager.canAuthenticate(BIOMETRIC_STRONG)
-        return when (biometricStatus) {
+        return when (biometricManager.canAuthenticate(BIOMETRIC_WEAK)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
