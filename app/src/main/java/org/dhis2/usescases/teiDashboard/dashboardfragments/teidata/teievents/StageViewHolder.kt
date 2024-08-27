@@ -22,6 +22,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.schedulers.get
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
@@ -45,7 +46,6 @@ internal class StageViewHolder(
         val stage = eventItem.stage!!
 
         val resourceManager = ResourceManager(itemView.context, colorUtils)
-
         composeView.setContent {
             Row(
                 modifier = Modifier

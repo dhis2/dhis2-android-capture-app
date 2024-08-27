@@ -20,6 +20,8 @@ class MockWebServerRobot(private val dhis2MockServer: Dhis2MockServer) {
         const val API_OLD_TRACKED_ENTITY_PATH = "/api/trackedEntityInstances/query?.*"
         const val API_OLD_TRACKED_ENTITY_RESPONSE =
             "mocks/teilist/old_tracked_entity_empty_response.json"
+        const val API_OLD_EVENTS_PATH = "/api/events?.*"
+        const val API_OLD_EVENTS_RESPONSE = "mocks/teilist/old_events_empty_response.json"
 
     }
 }

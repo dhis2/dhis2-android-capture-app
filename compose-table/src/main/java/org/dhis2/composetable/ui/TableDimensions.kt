@@ -40,6 +40,8 @@ data class TableDimensions(
     private var currentExtraSize: MutableMap<String, Int> = mutableMapOf()
     private fun extraWidthInTable(tableId: String): Int = extraWidths[tableId] ?: 0
 
+    var textInputHeight = 0
+
     fun rowHeaderWidth(tableId: String): Int {
         return (rowHeaderWidths[tableId] ?: defaultRowHeaderWidth) + extraWidthInTable(tableId)
     }

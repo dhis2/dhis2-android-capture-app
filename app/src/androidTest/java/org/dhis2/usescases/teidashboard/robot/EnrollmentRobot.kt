@@ -1,12 +1,15 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
@@ -24,15 +27,19 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.containsString
 
-fun enrollmentRobot(enrollmentRobot: EnrollmentRobot.() -> Unit) {
-    EnrollmentRobot().apply {
+fun enrollmentRobot(
+    composeTestRule: ComposeTestRule,
+    enrollmentRobot: EnrollmentRobot.() -> Unit,
+) {
+    EnrollmentRobot(composeTestRule).apply {
         enrollmentRobot()
     }
 }
 
-class EnrollmentRobot : BaseRobot() {
+class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
             .performClick()
     }
@@ -123,23 +130,13 @@ class EnrollmentRobot : BaseRobot() {
             )
     }
 
-    fun clickOnInputDate(label: String) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<FormViewHolder>(
-                    hasDescendant(withText(label)), clickChildViewWithId(R.id.inputEditText)
-                )
-            )
-    }
-
-    fun selectSpecificDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.datePicker)).perform(
-            PickerActions.setDate(
-                year,
-                monthOfYear,
-                dayOfMonth
-            )
-        )
+    fun typeOnDateParameterWithLabel(label: String, dateValue: String) {
+        composeTestRule.apply {
+            onNode(
+                hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
+                useUnmergedTree = true,
+            ).performTextReplacement(dateValue)
+        }
     }
 
     companion object {

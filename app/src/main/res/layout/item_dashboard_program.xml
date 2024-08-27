@@ -120,7 +120,7 @@
             app:layout_constraintEnd_toStartOf="@id/enrolledOrgUnit"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toBottomOf="@id/program_name"
-            tools:text="enrolled in:" />
+            tools:text="enrolled in" />
 
         <TextView
             android:id="@+id/enrolledOrgUnit"

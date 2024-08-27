@@ -48,6 +48,8 @@ class EventCardMapper(
             additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
             actionButton = {
                 ProvideSyncButton(
+                    syncButtonLabel = resourceManager.getString(R.string.sync),
+                    retryButtonLabel = resourceManager.getString(R.string.sync_retry),
                     state = event.event?.aggregatedSyncState(),
                     onSyncIconClick = onSyncIconClick,
                 )
@@ -67,8 +69,8 @@ class EventCardMapper(
             !it.second.isNullOrEmpty()
         }?.map {
             AdditionalInfoItem(
-                key = "${it.first}:",
-                value = it.second ?: "",
+                key = it.first,
+                value = it.second ?: "-",
             )
         }?.toMutableList() ?: mutableListOf()
 
@@ -144,7 +146,7 @@ class EventCardMapper(
         ) {
             list.add(
                 AdditionalInfoItem(
-                    key = "${event.nameCategoryOptionCombo}:",
+                    key = event.nameCategoryOptionCombo,
                     value = event.catComboName ?: "",
                     isConstantItem = true,
                 ),
@@ -231,40 +233,6 @@ class EventCardMapper(
         item?.let { list.add(it) }
     }
 
-    @Composable
-    private fun ProvideSyncButton(state: State?, onSyncIconClick: () -> Unit) {
-        val buttonText = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                resourceManager.getString(R.string.sync)
-            }
-
-            State.ERROR,
-            State.WARNING,
-            -> {
-                resourceManager.getString(R.string.sync_retry)
-            }
-
-            else -> null
-        }
-        buttonText?.let {
-            Button(
-                style = ButtonStyle.TONAL,
-                text = it,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Sync,
-                        contentDescription = it,
-                        tint = TextColor.OnPrimaryContainer,
-                    )
-                },
-                onClick = { onSyncIconClick() },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-
     private fun checkSyncStatus(
         list: MutableList<AdditionalInfoItem>,
         state: State?,
@@ -331,5 +299,44 @@ class EventCardMapper(
             else -> null
         }
         item?.let { list.add(it) }
+    }
+}
+
+@Composable
+fun ProvideSyncButton(
+    syncButtonLabel: String,
+    retryButtonLabel: String,
+    state: State?,
+    onSyncIconClick: () -> Unit,
+) {
+    val buttonText = when (state) {
+        State.TO_POST,
+        State.TO_UPDATE,
+        -> {
+            syncButtonLabel
+        }
+
+        State.ERROR,
+        State.WARNING,
+        -> {
+            retryButtonLabel
+        }
+
+        else -> null
+    }
+    buttonText?.let {
+        Button(
+            style = ButtonStyle.TONAL,
+            text = it,
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.Sync,
+                    contentDescription = it,
+                    tint = TextColor.OnPrimaryContainer,
+                )
+            },
+            onClick = { onSyncIconClick() },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

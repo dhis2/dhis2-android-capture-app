@@ -93,13 +93,9 @@ class TEICardMapper(
     }
 
     private fun getTitle(item: SearchTeiModel): String {
-        return if (item.header != null) {
-            item.header!!
-        } else if (item.attributeValues.isEmpty()) {
-            "-"
-        } else {
-            val key = item.attributeValues.keys.firstOrNull()
-            val value = item.attributeValues.values.firstOrNull()?.value()
+        return item.header ?: run {
+            val key = item.attributeValues.keys.firstOrNull() ?: "-"
+            val value = item.attributeValues.values.firstOrNull()?.value() ?: "-"
             "$key: $value"
         }
     }
@@ -107,8 +103,8 @@ class TEICardMapper(
     private fun getAdditionalInfoList(searchTEIModel: SearchTeiModel): List<AdditionalInfoItem> {
         val attributeList = searchTEIModel.attributeValues.map {
             AdditionalInfoItem(
-                key = "${it.key}:",
-                value = it.value.value() ?: "",
+                key = it.key,
+                value = it.value.value() ?: "-",
             )
         }.toMutableList()
 

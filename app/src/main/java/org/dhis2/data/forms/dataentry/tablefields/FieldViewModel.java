@@ -3,6 +3,8 @@ package org.dhis2.data.forms.dataentry.tablefields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.composetable.model.DropdownOption;
+
 import java.util.List;
 
 public abstract class FieldViewModel {
@@ -58,6 +60,9 @@ public abstract class FieldViewModel {
 
    @NonNull
     public abstract List<String> options();
+
+   @NonNull
+    public abstract List<DropdownOption> optionsList();
 
    @NonNull
     public abstract String storeBy();

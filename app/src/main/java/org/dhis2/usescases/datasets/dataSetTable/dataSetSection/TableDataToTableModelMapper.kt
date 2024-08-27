@@ -56,7 +56,7 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
                 maxLines = 3,
-                dropDownOptions = tableData.fieldViewModels[rowIndex][0].options(),
+                dropDownOptions = tableData.fieldViewModels[rowIndex][0].optionsList(),
             )
         } ?: emptyList()
 

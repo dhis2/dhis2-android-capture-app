@@ -81,7 +81,9 @@ class TeiDashboardCardMapper(
                 ?.let {
                     val attribute = it.filterAttributes().firstOrNull()
                     val key = attribute?.first?.displayFormName()
-                    val value = attribute?.second?.value()
+                    val value = attribute?.second?.value()?.takeIf { attrValue ->
+                        attrValue.isNotEmpty()
+                    } ?: "-"
                     "$key: $value"
                 } ?: "-"
 
@@ -101,8 +103,9 @@ class TeiDashboardCardMapper(
         }.map {
             if (it.first.valueType() == ValueType.PHONE_NUMBER) {
                 AdditionalInfoItem(
-                    key = "${it.first.displayFormName()}:",
-                    value = it.second.value() ?: "",
+                    key = it.first.displayFormName(),
+                    value = it.second.value()?.takeIf { attrValue -> attrValue.isNotEmpty() }
+                        ?: "-",
                     icon = {
                         Icon(
                             imageVector = Icons.Filled.PhoneEnabled,
@@ -115,8 +118,8 @@ class TeiDashboardCardMapper(
                 )
             } else if (it.first.valueType() == ValueType.EMAIL) {
                 AdditionalInfoItem(
-                    key = "${it.first.displayFormName()}:",
-                    value = it.second.value() ?: "",
+                    key = it.first.displayFormName(),
+                    value = it.second.value() ?: "-",
                     icon = {
                         Icon(
                             imageVector = Icons.Filled.MailOutline,
@@ -129,8 +132,8 @@ class TeiDashboardCardMapper(
                 )
             } else {
                 AdditionalInfoItem(
-                    key = "${it.first.displayFormName()}:",
-                    value = it.second.value() ?: "",
+                    key = it.first.displayFormName(),
+                    value = it.second.value() ?: "-",
                 )
             }
         }.toMutableList()
@@ -145,7 +148,7 @@ class TeiDashboardCardMapper(
                     if (item.currentProgram().displayIncidentDate() == true) {
                         addIncidentDate(
                             list,
-                            item.currentProgram().incidentDateLabel(),
+                            item.currentProgram().displayIncidentDateLabel(),
                             item.currentEnrollment.incidentDate(),
                         )
                     }
@@ -153,7 +156,7 @@ class TeiDashboardCardMapper(
                     addEnrollmentDate(
                         item.currentProgram().uid(),
                         list,
-                        item.currentProgram().enrollmentDateLabel(),
+                        item.currentProgram().displayEnrollmentDateLabel(),
                         item.currentEnrollment.enrollmentDate(),
                     )
                 }.also { list ->
@@ -201,7 +204,7 @@ class TeiDashboardCardMapper(
         list.add(
             AdditionalInfoItem(
                 key = resourceManager.getString(R.string.enrolledIn),
-                value = currentOrgUnit?.displayName() ?: "",
+                value = currentOrgUnit?.displayName() ?: "-",
                 isConstantItem = true,
             ),
         )
@@ -214,8 +217,8 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = "${incidentDateLabel ?: resourceManager.getString(R.string.incident_date)}:",
-                value = incidentDate.toUi() ?: "",
+                key = incidentDateLabel ?: resourceManager.getString(R.string.incident_date),
+                value = incidentDate.toUi() ?: "-",
                 isConstantItem = true,
             ),
         )
@@ -229,14 +232,12 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = "${
-                    programLabel ?: resourceManager.formatWithEnrollmentLabel(
-                        programUid,
-                        R.string.enrollment_date_V2,
-                        1,
-                    )
-                }:",
-                value = enrollmentDate.toUi() ?: "",
+                key = programLabel ?: resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_date_V2,
+                    1,
+                ),
+                value = enrollmentDate.toUi() ?: "-",
                 isConstantItem = true,
             ),
         )
@@ -246,5 +247,4 @@ class TeiDashboardCardMapper(
         this.filter { it.first.valueType() != ValueType.IMAGE }
             .filter { it.first.valueType() != ValueType.COORDINATE }
             .filter { it.first.valueType() != ValueType.FILE_RESOURCE }
-            .filter { it.second.value()?.isNotEmpty() == true }
 }
