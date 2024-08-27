@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
@@ -16,8 +17,9 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class DefaultMapManager(
     mapView: MapView,
+    locationEngine: LocationEngine,
     private val featureType: FeatureType,
-) : MapManager(mapView) {
+) : MapManager(mapView, locationEngine) {
 
     private var featureCollection: FeatureCollection? = null
 

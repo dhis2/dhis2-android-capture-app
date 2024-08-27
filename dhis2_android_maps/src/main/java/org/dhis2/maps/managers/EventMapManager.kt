@@ -8,6 +8,7 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.maps.R
@@ -18,7 +19,10 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollecti
 import org.dhis2.maps.layer.LayerType
 import org.hisp.dhis.android.core.common.FeatureType
 
-class EventMapManager(mapView: MapView) : MapManager(mapView) {
+class EventMapManager(
+    mapView: MapView,
+    locationEngine: LocationEngine,
+) : MapManager(mapView, locationEngine) {
 
     private var featureCollection: FeatureCollection? = null
     private var deFeatureCollection: Map<String, FeatureCollection> = emptyMap()
