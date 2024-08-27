@@ -16,6 +16,7 @@ import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.databinding.FragmentProgramEventDetailMapBinding
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.layer.MapLayerDialog
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
@@ -55,7 +56,7 @@ class EventMapFragment :
         programEventsViewModel.setProgress(true)
         binding = FragmentProgramEventDetailMapBinding.inflate(inflater, container, false)
         binding.apply {
-            eventMapManager = org.dhis2.maps.managers.EventMapManager(mapView)
+            eventMapManager = org.dhis2.maps.managers.EventMapManager(mapView, MapLocationEngine(requireContext()))
             eventMapManager?.let { fragmentLifeCycle.addObserver(it) }
             eventMapManager?.onCreate(savedInstanceState)
             eventMapManager?.featureType = presenter.programFeatureType()

@@ -17,11 +17,15 @@ import org.dhis2.maps.model.AccuracyRange
 @Stable
 interface AccuracyIndicatorState {
     val progressPosition: Float
+    val verticalOffset: Int
     var timeLeft: Int
 
     fun updateAccuracy(scope: CoroutineScope, accuracyRange: AccuracyRange)
     fun displayInfo(accuracyRange: AccuracyRange): Boolean
     fun displayMessage(accuracyRange: AccuracyRange): Boolean
+    fun accuracyProgress(): Float
+    fun updateVerticalOffset(scope: CoroutineScope, verticalOffset: Int)
+    fun shouldDisplayProgress(accuracyRange: AccuracyRange): Boolean
 }
 
 @Stable
@@ -29,14 +33,31 @@ class AccuracyIndicatorStateImpl(private val defaultTimeLeft: Int) : AccuracyInd
     override val progressPosition: Float
         get() = _progressX.value
 
+    override val verticalOffset: Int
+        get() = _verticalOffset.value.toInt()
+
     override var timeLeft by mutableIntStateOf(defaultTimeLeft)
 
     private var _progressX = Animatable(0f)
+
+    private var _verticalOffset = Animatable(0f)
+
+    private var _accuracyProgress = Animatable(0f)
 
     private val animationSpec = tween<Float>(
         durationMillis = 300,
         easing = FastOutSlowInEasing,
     )
+
+    override fun accuracyProgress(): Float = _accuracyProgress.value
+
+    override fun updateVerticalOffset(scope: CoroutineScope, verticalOffset: Int) {
+        scope.launch {
+            _verticalOffset.animateTo(
+                targetValue = verticalOffset.toFloat(),
+            )
+        }
+    }
 
     override fun updateAccuracy(scope: CoroutineScope, accuracyRange: AccuracyRange) {
         scope.launch {
@@ -54,6 +75,10 @@ class AccuracyIndicatorStateImpl(private val defaultTimeLeft: Int) : AccuracyInd
             while (timeLeft > 0) {
                 delay(1000)
                 timeLeft--
+
+                _accuracyProgress.animateTo(
+                    targetValue = 1f - timeLeft / defaultTimeLeft.toFloat(),
+                )
             }
         }
     }
@@ -65,8 +90,13 @@ class AccuracyIndicatorStateImpl(private val defaultTimeLeft: Int) : AccuracyInd
     override fun displayMessage(accuracyRange: AccuracyRange): Boolean {
         val noLocationNoTimeLeft = (timeLeft == 0) and (accuracyRange is AccuracyRange.None)
         val locationRequiresMessage =
-            (accuracyRange is AccuracyRange.Low) or (accuracyRange is AccuracyRange.Medium)
+            (accuracyRange is AccuracyRange.Low) or (accuracyRange is AccuracyRange.Medium) or
+                (accuracyRange is AccuracyRange.Good)
         return noLocationNoTimeLeft or locationRequiresMessage
+    }
+
+    override fun shouldDisplayProgress(accuracyRange: AccuracyRange): Boolean {
+        return timeLeft > 0 && (accuracyRange !is AccuracyRange.VeryGood)
     }
 }
 

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import android.os.Bundle
-import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
@@ -26,7 +25,6 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
-import com.mapbox.mapboxsdk.location.engine.LocationEngineRequest
 import com.mapbox.mapboxsdk.location.engine.MapboxFusedLocationEngineImpl
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.commons.bindings.clipWithAllRoundedCorners
@@ -40,9 +38,8 @@ import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.AccuracyIndicator
-import org.dhis2.maps.location.LOCATION_FASTEST_INTERVAL
-import org.dhis2.maps.location.LOCATION_INTERVAL
 import org.dhis2.maps.location.MapActivityLocationCallback
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.ui.theme.Dhis2Theme
@@ -119,7 +116,7 @@ class MapSelectorActivity :
 
         binding.mapView.clipWithAllRoundedCorners(8.dp)
 
-        mapManager = DefaultMapManager(binding.mapView, locationType)
+        mapManager = DefaultMapManager(binding.mapView, MapLocationEngine(this), locationType)
         mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
         mapSelectorViewModel.featureCollection.asLiveData().observe(this) { featureCollection ->
             mapManager.update(
@@ -222,13 +219,10 @@ class MapSelectorActivity :
 
     @RequiresPermission(permission.ACCESS_FINE_LOCATION)
     private fun initLocationUpdates() {
-        mapboxLocationProvider.requestLocationUpdates(
-            LocationEngineRequest.Builder(LOCATION_INTERVAL)
-                .setFastestInterval(LOCATION_FASTEST_INTERVAL)
-                .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
-                .build(),
-            locationListener,
-            Looper.myLooper(),
+        locationProvider.getLastKnownLocation(
+            { location -> locationListener.onLocationChanged(location) },
+            {},
+            {},
         )
     }
 

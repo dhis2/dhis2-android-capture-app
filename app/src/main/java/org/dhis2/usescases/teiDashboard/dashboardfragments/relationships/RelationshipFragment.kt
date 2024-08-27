@@ -26,6 +26,7 @@ import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.carousel.CarouselAdapter
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.layer.MapLayerDialog
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.ui.ThemeManager
@@ -99,7 +100,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView, OnMapCl
             DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false)
         relationshipAdapter = RelationshipAdapter(presenter, colorUtils)
         binding.relationshipRecycler.adapter = relationshipAdapter
-        relationshipMapManager = RelationshipMapManager(binding.mapView)
+        relationshipMapManager = RelationshipMapManager(binding.mapView, MapLocationEngine(requireContext()))
         lifecycle.addObserver(relationshipMapManager)
         relationshipMapManager.onCreate(savedInstanceState)
         relationshipMapManager.onMapClickListener = this

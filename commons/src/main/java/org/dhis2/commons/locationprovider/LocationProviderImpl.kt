@@ -5,32 +5,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 
-class LocationProviderImpl(val context: Context) : LocationProvider {
+open class LocationProviderImpl(val context: Context) : LocationProvider {
 
-    private val locationManager: LocationManager by lazy { initLocationManager() }
-    private val locationCriteria: Criteria by lazy { initHighAccuracyCriteria() }
-    private val locationProvider: String? by lazy { initLocationProvider() }
-
-    private fun initLocationManager(): LocationManager {
-        return context.getSystemService(LOCATION_SERVICE) as LocationManager
+    private val locationManager: LocationManager by lazy {
+        context.getSystemService(LOCATION_SERVICE) as LocationManager
     }
-
-    private fun initLocationProvider(): String? {
-        return locationManager.getBestProvider(locationCriteria, false)
-    }
-
-    private fun initHighAccuracyCriteria(): Criteria {
-        return Criteria().apply {
-            accuracy = Criteria.ACCURACY_FINE
-            speedAccuracy = Criteria.ACCURACY_HIGH
-        }
+    private val locationProvider: String? by lazy {
+        locationManager.getProviders(true).find { it == "fused" }
     }
 
     private var locationListener: LocationListener? = null
@@ -61,10 +48,7 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
         if (hasPermission()) {
             locationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
-                    location.let {
-                        onNewLocation(it)
-                        stopLocationUpdates()
-                    }
+                    onNewLocation(location)
                 }
 
                 override fun onProviderEnabled(provider: String) {
@@ -82,11 +66,10 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
             }
 
             locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
                 1000,
-                5f,
-                locationCriteria,
-                locationListener!!,
-                null,
+                1f,
+                requireNotNull(locationListener),
             )
         }
     }

@@ -13,6 +13,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.location.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
@@ -32,7 +33,10 @@ import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 
-abstract class MapManager(val mapView: MapView) : LifecycleObserver {
+abstract class MapManager(
+    val mapView: MapView,
+    val locationEngine: LocationEngine?,
+) : LifecycleObserver {
 
     var map: MapboxMap? = null
     lateinit var mapLayerManager: MapLayerManager
@@ -233,8 +237,14 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                             LocationComponentOptions.builder(mapView.context)
                                 .accuracyAnimationEnabled(true)
                                 .build(),
-                        )
-                        .useDefaultLocationEngine(true)
+                        ).apply {
+                            if (this@MapManager.locationEngine != null) {
+                                useDefaultLocationEngine(false)
+                                locationEngine(this@MapManager.locationEngine)
+                            } else {
+                                useDefaultLocationEngine(true)
+                            }
+                        }
                         .build(),
                 )
                 isLocationComponentEnabled = true
