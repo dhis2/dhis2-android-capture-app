@@ -697,16 +697,6 @@
     <string name="error_init_session">Chúng ta không thể khởi đầu phiên đăng nhập bằng tên đăng nhập của bạn</string>
     <string name="enrollment_date_edition_warning">Có các sự kiện đã lên kế hoạch mà sẽ không chỉnh sửa lịch hẹn.</string>
     <string name="section_charts">Biểu đồ</string>
-    <string name="navigation_list_view">Xem danh sách</string>
-    <string name="navigation_table_view">Xem bảng</string>
-    <string name="navigation_map_view">Xem bản đồ</string>
-    <string name="navigation_analytics">Phân tích</string>
-    <string name="navigation_tasks">Các nhiệm vụ</string>
-    <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_relationships">Quan hệ với bệnh nhân</string>
-    <string name="navigation_notes">Ghi Chú</string>
-    <string name="navigation_data_entry">Nhập dữ liệu</string>
-    <string name="navigation_tei_data">Chi tiết</string>
     <string name="show_bar_graph">Xem Cột</string>
     <string name="show_line_graph">Xe Đường</string>
     <string name="show_table_graph">Xem Bảng</string>

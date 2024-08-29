@@ -665,16 +665,6 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Xatto haqida maʼlumot</string>
     <string name="enrollment_date_edition_warning">Rejalashtirila olinmaydigan hodisa/tadbir rejalari mavjud</string>
     <string name="section_charts">Diagrammalar</string>
-    <string name="navigation_list_view">Roʼyxat koʼrinishi</string>
-    <string name="navigation_table_view">Jadval koʼrinishi</string>
-    <string name="navigation_map_view">Xarita koʼrinishi</string>
-    <string name="navigation_analytics">Аnalitika</string>
-    <string name="navigation_tasks">Vazifalar</string>
-    <string name="navigation_programs">Dasturlar</string>
-    <string name="navigation_relationships">Oʼzaro aloqalar</string>
-    <string name="navigation_notes">Izohlar</string>
-    <string name="navigation_data_entry">Maʼlumot kiritish</string>
-    <string name="navigation_tei_data">Тафсилотлари</string>
     <string name="show_table_graph">Jadval sifatida koʼrish</string>
     <string name="filter_period_this_year">Ушбу йил</string>
     <string name="filter_period_this_bimonth">Ushbu juft oylik</string>

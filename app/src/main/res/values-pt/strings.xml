@@ -690,16 +690,6 @@
     <string name="error_init_session">Não foi possível fazer login com seu nome de usuário</string>
     <string name="enrollment_date_edition_warning">Existem eventos planejados que não serão reprogramados</string>
     <string name="section_charts">Gráficos</string>
-    <string name="navigation_list_view">Vista de lista</string>
-    <string name="navigation_table_view">Vista de tabela</string>
-    <string name="navigation_map_view">Vista de mapa</string>
-    <string name="navigation_analytics">Google Analytics</string>
-    <string name="navigation_tasks">Tarefas</string>
-    <string name="navigation_programs">Programas</string>
-    <string name="navigation_relationships">Relacionamentos</string>
-    <string name="navigation_notes">Notas</string>
-    <string name="navigation_data_entry">Entrada de dados</string>
-    <string name="navigation_tei_data">Detalhes</string>
     <string name="show_bar_graph">Ver como barra</string>
     <string name="show_line_graph">Ver como linha</string>
     <string name="show_table_graph">Ver como tabela</string>

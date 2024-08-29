@@ -706,16 +706,6 @@
     <string name="error_init_session">We kunnen de sessie met uw gebruiker niet starten</string>
     <string name="enrollment_date_edition_warning">Er zijn geplande evenementen die niet opnieuw worden gepland</string>
     <string name="section_charts">Grafieken</string>
-    <string name="navigation_list_view">Lijstweergave</string>
-    <string name="navigation_table_view">Tabel weergave</string>
-    <string name="navigation_map_view">Kaartweergave</string>
-    <string name="navigation_analytics">Analyse</string>
-    <string name="navigation_tasks">Taken</string>
-    <string name="navigation_programs">Programma\'s</string>
-    <string name="navigation_relationships">Relaties</string>
-    <string name="navigation_notes">Notities</string>
-    <string name="navigation_data_entry">Gegevensinvoer</string>
-    <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Bekijk als balk</string>
     <string name="show_line_graph">Bekijk als lijn</string>
     <string name="show_table_graph">Bekijk als tabel</string>

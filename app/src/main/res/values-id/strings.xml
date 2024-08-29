@@ -799,16 +799,6 @@
     <string name="error_init_session">Kami tidak dapat memulai sesi dengan pengguna Anda</string>
     <string name="enrollment_date_edition_warning">Ada even yang direncanakan yang tidak akan dijadwalkan ulang</string>
     <string name="section_charts">Grafik</string>
-    <string name="navigation_list_view">Tampilan daftar</string>
-    <string name="navigation_table_view">Tampilan tabel</string>
-    <string name="navigation_map_view">Tampilan peta</string>
-    <string name="navigation_analytics">Analitik</string>
-    <string name="navigation_tasks">Tugas</string>
-    <string name="navigation_programs">Program-program</string>
-    <string name="navigation_relationships">Hubungan</string>
-    <string name="navigation_notes">Catatan</string>
-    <string name="navigation_data_entry">Data entri</string>
-    <string name="navigation_tei_data">Rincian</string>
     <string name="show_bar_graph">Lihat sebagai Bar</string>
     <string name="show_line_graph">Lihat sebagai Garis</string>
     <string name="show_table_graph">Lihat sebagai Tabel</string>

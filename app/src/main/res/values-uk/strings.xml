@@ -718,16 +718,6 @@
     <string name="error_init_session">Нам не вдалося почати сесію із Вашим користувачем</string>
     <string name="enrollment_date_edition_warning">Є заплановані випадки, які не будуть перенесені</string>
     <string name="section_charts">Діаграми</string>
-    <string name="navigation_list_view">У вигляді списку</string>
-    <string name="navigation_table_view">У вигляді таблиці</string>
-    <string name="navigation_map_view">У вигляді карти</string>
-    <string name="navigation_analytics">Аналітика</string>
-    <string name="navigation_tasks">Завдання</string>
-    <string name="navigation_programs">Програми</string>
-    <string name="navigation_relationships">Зв\'язки</string>
-    <string name="navigation_notes">Примітки</string>
-    <string name="navigation_data_entry">Введення даних</string>
-    <string name="navigation_tei_data">Деталі</string>
     <string name="show_bar_graph">Переглянути як стовпчикову діаграму</string>
     <string name="show_line_graph">Переглянути як лінійний графік</string>
     <string name="show_table_graph">Переглянути як таблицю</string>

@@ -699,16 +699,6 @@
     <string name="error_init_session">Nous n\'avons pas pu connecter la session avec votre nom d\'utilisateur</string>
     <string name="enrollment_date_edition_warning">Il y a des événements planifiés qui ne seront pas reprogrammés</string>
     <string name="section_charts">Graphiques</string>
-    <string name="navigation_list_view">Vue de liste</string>
-    <string name="navigation_table_view">Vue de tableau</string>
-    <string name="navigation_map_view">Vue de la carte</string>
-    <string name="navigation_analytics">Analytiques</string>
-    <string name="navigation_tasks">Tâches</string>
-    <string name="navigation_programs">Programmes</string>
-    <string name="navigation_relationships">Relations</string>
-    <string name="navigation_notes">Notes</string>
-    <string name="navigation_data_entry">Saisie de données</string>
-    <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Afficher comme graphique</string>
     <string name="show_line_graph">Afficher comme une ligne</string>
     <string name="show_table_graph">Afficher comme tableau</string>

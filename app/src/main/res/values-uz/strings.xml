@@ -690,16 +690,6 @@
     <string name="error_init_session">Сизнинг фойдаланувчингиз билан сеанс ташкиллаштира олмадик</string>
     <string name="enrollment_date_edition_warning">Режалаштирила олинмайдиган ҳодиса/тадбир режалари мавжуд</string>
     <string name="section_charts">Диаграммалар</string>
-    <string name="navigation_list_view">Рўйхат кўриниши</string>
-    <string name="navigation_table_view">Жадвал кўриниши</string>
-    <string name="navigation_map_view">Харита кўриниши</string>
-    <string name="navigation_analytics">Аналитика</string>
-    <string name="navigation_tasks">Вазифалар</string>
-    <string name="navigation_programs">Дастурлар</string>
-    <string name="navigation_relationships">Ўзаро алоқалар</string>
-    <string name="navigation_notes">Изоҳлар</string>
-    <string name="navigation_data_entry">Маълумот киритиш</string>
-    <string name="navigation_tei_data">Тафсилотлари</string>
     <string name="show_bar_graph">Панел сифатида кўриш</string>
     <string name="show_line_graph">Қатор сифатида кўриш</string>
     <string name="show_table_graph">Жадвал сифатида кўриш</string>

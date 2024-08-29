@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.R
+import org.dhis2.commons.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.NavigationBarUIState
@@ -144,7 +144,7 @@ class DashboardViewModel(
                     id = TEIDashboardItems.RELATIONSHIPS,
                     icon = Icons.Outlined.Hub,
                     selectedIcon = Icons.Filled.Hub,
-                    label = resourcesManager.getString(R.string.navigation_relationships),
+                    label = resourcesManager.getString(R.string.navigation_relations),
                 ),
             )
         }
