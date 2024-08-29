@@ -286,7 +286,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                 onInitializationFinished = {
                     presenter.getMapData()
                     viewModel.filterVisibleMapItems(
-                        it?.mapLayerManager?.mapLayers?.toMap() ?: emptyMap(),
+                        it.mapLayerManager.mapLayers.toMap(),
                     )
                 },
                 onMissingPermission = { permissionsManager ->
