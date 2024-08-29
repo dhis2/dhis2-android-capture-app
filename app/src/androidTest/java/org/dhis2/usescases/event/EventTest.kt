@@ -68,6 +68,8 @@ class EventTest : BaseTest() {
         val completion = 92
         val email = "mail@mail.com"
 
+//TODO: eventCaptureRepositoryimpl getCurrentEvent blockingGet seems to be the problem
+
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot {

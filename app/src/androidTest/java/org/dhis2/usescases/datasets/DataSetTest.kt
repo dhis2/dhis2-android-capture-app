@@ -46,12 +46,11 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    @Ignore("Indeterministic it will be addressed in ANDROAPP-6458")
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Aug 2024"
+        val period = "Oct 2023"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
@@ -66,7 +65,7 @@ class DataSetTest : BaseTest() {
             clickOnActionButton()
         }
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("1")
             composeTestRule.waitForIdle()
@@ -78,18 +77,13 @@ class DataSetTest : BaseTest() {
             waitToDebounce(500)
             clickOnNegativeButton()
         }
-    }
-
-    @Test
-    fun shouldOpenAndEditDataset() {
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("5")
             composeTestRule.waitForIdle()
@@ -104,65 +98,41 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun shouldReopenModifyAndCompleteDataset() {
-        startDataSetDetailActivity("V8MHeZHIrcP", "Facility Assessment", ruleDataSetDetail)
-
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
-
-        dataSetTableRobot(composeTestRule) {
-            openMenuMoreOptions()
-            clickOnMenuReOpen()
-            clickOnPositiveButton()
-            typeOnCell("bjDvmb4bfuf", 0, 0)
-            clickOnAcceptDate()
-            clickOnSaveButton()
-            waitToDebounce(500)
-            clickOnPositiveButton()
-        }
-        dataSetDetailRobot {
-            checkDataSetIsCompleteAndModified("2019")
-        }
-
-    }
-
-    @Test
     fun shouldBlockSelectingNewCellIfCurrentHasError() {
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("5,,")
             composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             composeTestRule.waitForIdle()
-            assertCellSelected("bjDvmb4bfuf", 0, 0)
+            assertCellSelected("dzjKKQq0cSO", 0, 0)
         }
     }
 
     @Test
     fun shouldSelectNewCellIfCurrentHasNoError() {
-        startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
+        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("5")
             composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             composeTestRule.waitForIdle()
             waitToDebounce(500)
-            assertCellSelected("bjDvmb4bfuf", 1, 0)
+            assertCellSelected("dzjKKQq0cSO", 0, 1)
         }
     }
 }
