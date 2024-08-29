@@ -54,17 +54,29 @@ fun teiDashboardRobot(
 class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun goToNotes() {
-        onView(withId(R.id.navigation_notes)).perform(click())
+        composeTestRule.onNodeWithText(
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(
+                R.string.navigation_notes
+            )
+        ).performClick()
         Thread.sleep(500)
     }
 
     fun goToRelationships() {
-        onView(withId(R.id.navigation_relationships)).perform(click())
+        composeTestRule.onNodeWithText(
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(
+                R.string.navigation_relations
+            )
+        ).performClick()
         Thread.sleep(500)
     }
 
     fun goToAnalytics() {
-        onView(withId(R.id.navigation_analytics)).perform(click())
+        composeTestRule.onNodeWithText(
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(
+                R.string.navigation_analytics
+            )
+        ).performClick()
         Thread.sleep(500)
     }
 
@@ -450,7 +462,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEnrollmentDate(enrollmentDate: DateRegistrationUIModel) {
         composeTestRule.onNode(
-            hasText("Date of enrollment:  0${enrollmentDate.day}/0${enrollmentDate.month}/${enrollmentDate.year}", true),
+            hasText(
+                "Date of enrollment:  0${enrollmentDate.day}/0${enrollmentDate.month}/${enrollmentDate.year}",
+                true
+            ),
             useUnmergedTree = true
         ).assertIsDisplayed()
     }
