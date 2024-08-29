@@ -111,7 +111,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -122,7 +122,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("location", location() ?: "indicators"),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -133,7 +133,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("location", location()!!),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -178,7 +178,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     values = mutableMapOf(
                         Pair("field", field),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        (displayContent() ?: content())?.let { map["content"] = it }
                     },
                 )
             }
@@ -190,7 +190,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             values = mutableMapOf(
                 Pair("field", field),
             ).also { map ->
-                content()?.let { map["content"] = it }
+                (displayContent() ?: content())?.let { map["content"] = it }
             },
         )
 
@@ -200,7 +200,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             values = mutableMapOf(
                 Pair("field", field),
             ).also { map ->
-                content()?.let { map["content"] = it }
+                (displayContent() ?: content())?.let { map["content"] = it }
             },
         )
 
@@ -211,7 +211,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -222,7 +222,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -234,7 +234,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     values = mutableMapOf(
                         Pair("programStage", stageUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        (displayContent() ?: content())?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -249,7 +249,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    (displayContent() ?: content())?.let { map["content"] = it }
                 },
             )
 
@@ -262,7 +262,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("option", optionUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        (displayContent() ?: content())?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -279,7 +279,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("optionGroup", optionGroupUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        (displayContent() ?: content())?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -296,7 +296,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("optionGroup", optionGroupUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        (displayContent() ?: content())?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
