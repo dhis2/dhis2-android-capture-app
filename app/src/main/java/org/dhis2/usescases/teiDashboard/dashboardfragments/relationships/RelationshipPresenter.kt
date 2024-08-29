@@ -234,8 +234,7 @@ class RelationshipPresenter internal constructor(
                             relationshipFeatures = featureCollection.first,
                             boundingBox = featureCollection.second,
                         )
-                    } 
-                    else {
+                    } else {
                         RelationshipMapData(
                             mapItems = mapItems,
                             relationshipFeatures = featureCollection.first,
