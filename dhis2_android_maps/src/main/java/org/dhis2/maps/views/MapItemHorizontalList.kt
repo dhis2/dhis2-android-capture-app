@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,10 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -148,18 +152,33 @@ fun MapItemHorizontalListPreview() {
 
                 ListCard(
                     modifier = Modifier.fillParentMaxWidth(),
+                    listCardState = rememberListCardState(
+                        title = ListCardTitleModel(text = item.title),
+                        description = item.description?.let {
+                            ListCardDescriptionModel(
+                                text = it,
+                            )
+                        },
+                        lastUpdated = item.lastUpdated,
+                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                            additionalInfoList = item.additionalInfoList,
+                            syncProgressItem = AdditionalInfoItem(
+                                key = stringResource(id = R.string.sync),
+                                value = "",
+                            ),
+                            expandLabelText = stringResource(id = R.string.show_more),
+                            shrinkLabelText = stringResource(id = R.string.show_less),
+                            scrollableContent = true,
+                        ),
+                    ),
+                    onCardClick = {
+                    },
                     listAvatar = {
                         AvatarProvider(
                             avatarProviderConfiguration = item.avatarProviderConfiguration,
                             onImageClick = {
                             },
                         )
-                    },
-                    title = ListCardTitleModel(
-                        text = item.title,
-                    ),
-                    additionalInfoList = item.additionalInfoList,
-                    onCardClick = {
                     },
                 )
             }

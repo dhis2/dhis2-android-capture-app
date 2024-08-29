@@ -228,11 +228,20 @@ class RelationshipPresenter internal constructor(
             relationshipRepository.mapRelationships()
                 .map { mapItems ->
                     val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
-                    RelationshipMapData(
-                        mapItems = mapItems.filterRelationshipsByLayerVisibility(layersVisibility),
-                        relationshipFeatures = featureCollection.first,
-                        boundingBox = featureCollection.second,
-                    )
+                    if (::layersVisibility.isInitialized) {
+                        RelationshipMapData(
+                            mapItems = mapItems.filterRelationshipsByLayerVisibility(layersVisibility),
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    } 
+                    else {
+                        RelationshipMapData(
+                            mapItems = mapItems,
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    }
                 }
                 .defaultSubscribe(
                     schedulerProvider,

@@ -51,11 +51,14 @@ import org.dhis2.usescases.teiDashboard.ui.NoRelationships
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import javax.inject.Inject
 
 class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
@@ -234,24 +237,33 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             onItem = { item ->
                 ListCard(
                     modifier = Modifier.fillParentMaxWidth(),
+                    listCardState = rememberListCardState(
+                        title = ListCardTitleModel(text = item.title),
+                        description = item.description?.let {
+                            ListCardDescriptionModel(
+                                text = it,
+                            )
+                        },
+                        lastUpdated = item.lastUpdated,
+                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                            additionalInfoList = item.additionalInfoList,
+                            syncProgressItem = AdditionalInfoItem(
+                                key = stringResource(id = R.string.syncing),
+                                value = "",
+                            ),
+                            expandLabelText = stringResource(id = R.string.show_more),
+                            shrinkLabelText = stringResource(id = R.string.show_less),
+                            scrollableContent = true,
+                        ),
+                    ),
+                    onCardClick = {
+                        openDashboardFor(item.uid)
+                    },
                     listAvatar = {
                         AvatarProvider(
                             avatarProviderConfiguration = item.avatarProviderConfiguration,
                             onImageClick = ::launchImageDetail,
                         )
-                    },
-                    title = ListCardTitleModel(text = item.title),
-                    description = item.description?.let {
-                        ListCardDescriptionModel(
-                            text = it,
-                        )
-                    },
-                    lastUpdated = item.lastUpdated,
-                    additionalInfoList = item.additionalInfoList,
-                    expandLabelText = stringResource(id = R.string.show_more),
-                    shrinkLabelText = stringResource(id = R.string.show_less),
-                    onCardClick = {
-                        openDashboardFor(item.uid)
                     },
                 )
             },
