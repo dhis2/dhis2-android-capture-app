@@ -203,7 +203,8 @@ class MapSelectorActivity :
 
     @SuppressLint("MissingPermission")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        mapManager = DefaultMapManager(mapView, locationType).also {
+        mapManager = DefaultMapManager(mapView, MapLocationEngine(this), locationType)
+        mapManager.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
             it.onMapClickListener = OnMapClickListener(it) { point ->

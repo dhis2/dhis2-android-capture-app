@@ -28,20 +28,23 @@ import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.ui.SyncButtonProvider
 import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.layer.MapLayerDialog
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
-import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import javax.inject.Inject
 
 class EventMapFragment :
@@ -69,13 +72,12 @@ class EventMapFragment :
         programEventsViewModel.setProgress(true)
 
         return ComposeView(requireContext()).apply {
-
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 Dhis2Theme {
                     val listState = rememberLazyListState()
                     val eventMapData by presenter.eventMapData.observeAsState(initial = null)
-                    val items by remember {
+                    val items by remember(eventMapData) {
                         derivedStateOf { eventMapData?.mapItems ?: emptyList() }
                     }
 
@@ -161,30 +163,39 @@ class EventMapFragment :
                                 modifier = Modifier
                                     .fillParentMaxWidth()
                                     .testTag("MAP_ITEM"),
-                                listAvatar = {
-                                    AvatarProvider(
-                                        avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                        onImageClick = ::launchImageDetail,
-                                    )
-                                },
-                                title = ListCardTitleModel(text = item.title),
-                                description = item.description?.let {
-                                    ListCardDescriptionModel(
-                                        text = it,
-                                    )
-                                },
-                                lastUpdated = item.lastUpdated,
-                                additionalInfoList = item.additionalInfoList,
+                                listCardState = rememberListCardState(
+                                    title = ListCardTitleModel(text = item.title),
+                                    description = item.description?.let {
+                                        ListCardDescriptionModel(
+                                            text = it,
+                                        )
+                                    },
+                                    lastUpdated = item.lastUpdated,
+                                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                                        additionalInfoList = item.additionalInfoList,
+                                        syncProgressItem = AdditionalInfoItem(
+                                            key = stringResource(id = R.string.syncing),
+                                            value = "",
+                                        ),
+                                        expandLabelText = stringResource(id = R.string.show_more),
+                                        shrinkLabelText = stringResource(id = R.string.show_less),
+                                        scrollableContent = true,
+                                    ),
+                                ),
                                 actionButton = {
                                     SyncButtonProvider(state = item.state) {
                                         programEventsViewModel.eventSyncClicked.value = item.uid
                                     }
                                 },
-                                expandLabelText = stringResource(id = R.string.show_more),
-                                shrinkLabelText = stringResource(id = R.string.show_less),
                                 onCardClick = {
                                     programEventsViewModel.eventClicked.value =
                                         Pair(item.uid, "")
+                                },
+                                listAvatar = {
+                                    AvatarProvider(
+                                        avatarProviderConfiguration = item.avatarProviderConfiguration,
+                                        onImageClick = ::launchImageDetail,
+                                    )
                                 },
                             )
                         },
@@ -238,7 +249,8 @@ class EventMapFragment :
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        eventMapManager = EventMapManager(mapView).also {
+        eventMapManager = EventMapManager(mapView, MapLocationEngine(requireContext()))
+        eventMapManager?.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
             it.featureType = presenter.programFeatureType()

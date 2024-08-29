@@ -262,7 +262,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        teiMapManager = TeiMapManager(binding.mapView, MapLocationEngine(requireContext())).also {
+        teiMapManager = TeiMapManager(mapView, MapLocationEngine(requireContext())).also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
             it.teiFeatureType = presenter.getTrackedEntityType(tEType).featureType()

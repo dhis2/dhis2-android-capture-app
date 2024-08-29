@@ -113,19 +113,23 @@ class RelationshipRepositoryImpl(
                     .build(),
             ).filter { it.to()?.trackedEntityInstance() != null }.forEach { relationship ->
 
-                mapTeiRelationshipItemToMapItemModel(
-                    relationship.from()!!.trackedEntityInstance()!!.trackedEntityInstance(),
-                    relationship,
-                    programUid,
-                )?.let {
-                    add(it)
+                relationship.from()?.trackedEntityInstance()?.trackedEntityInstance()?.let { tei ->
+                    mapTeiRelationshipItemToMapItemModel(
+                        tei,
+                        relationship,
+                        programUid,
+                    )?.let {
+                        add(it)
+                    }
                 }
-                mapTeiRelationshipItemToMapItemModel(
-                    relationship.to()!!.trackedEntityInstance()!!.trackedEntityInstance(),
-                    relationship,
-                    programUid,
-                )?.let {
-                    add(it)
+                relationship.to()?.trackedEntityInstance()?.trackedEntityInstance()?.let { tei ->
+                    mapTeiRelationshipItemToMapItemModel(
+                        tei,
+                        relationship,
+                        programUid,
+                    )?.let {
+                        add(it)
+                    }
                 }
             }
         }

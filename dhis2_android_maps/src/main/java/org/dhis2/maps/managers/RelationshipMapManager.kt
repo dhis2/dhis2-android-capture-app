@@ -9,15 +9,14 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection.Companion.RELATIONSHIP_UID
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.layer.LayerType
 

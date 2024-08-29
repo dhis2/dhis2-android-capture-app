@@ -102,7 +102,7 @@ class EventInfoProvider(
             it.second.isNotEmpty() && it.second != "-"
         }.map {
             AdditionalInfoItem(
-                key = "${it.first}:",
+                key = it.first,
                 value = it.second,
             )
         }.toMutableList()
@@ -237,7 +237,7 @@ class EventInfoProvider(
             }?.let { displayName ->
                 list.add(
                     AdditionalInfoItem(
-                        key = "${categoryCombo.displayName()}:",
+                        key = categoryCombo.displayName(),
                         value = displayName,
                         isConstantItem = true,
                     ),

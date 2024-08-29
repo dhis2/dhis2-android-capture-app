@@ -266,7 +266,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        relationshipMapManager = RelationshipMapManager(mapView).also {
+        relationshipMapManager = RelationshipMapManager(mapView, MapLocationEngine(requireContext()))
+        relationshipMapManager?.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
             it.onMapClickListener = OnMapClickListener(
