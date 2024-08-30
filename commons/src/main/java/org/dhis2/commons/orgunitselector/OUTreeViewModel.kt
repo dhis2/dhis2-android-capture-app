@@ -60,7 +60,7 @@ class OUTreeViewModel(
     fun searchByName(name: String) {
         if (name.isEmpty()) {
             fetchInitialOrgUnits()
-        } else if (name.length >= 3) {
+        } else if (name.length >= 2) {
             fetchInitialOrgUnits(name)
         }
     }
