@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.R;
-import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
@@ -63,7 +63,9 @@ import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
+import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
+import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -123,7 +125,6 @@ public class SearchTEModule {
     MapTeisToFeatureCollection provideMapTeisToFeatureCollection() {
         return new MapTeisToFeatureCollection(new BoundsGeometry(),
                 new MapPointToFeature(), new MapPolygonToFeature(), new MapPolygonPointToFeature(),
-                new MapRelationshipToRelationshipMapModel(),
                 new MapRelationshipsToFeatureCollection(
                         new MapLineRelationshipToFeature(),
                         new MapPointToFeature(),
@@ -176,14 +177,29 @@ public class SearchTEModule {
             D2 d2,
             DispatcherProvider dispatcherProvider,
             FieldViewModelFactory fieldViewModelFactory,
-            MetadataIconProvider metadataIconProvider
+            MetadataIconProvider metadataIconProvider,
+            ColorUtils colorUtils
     ) {
+        ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
+        DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
+
         return new SearchRepositoryImplKt(
                 searchRepository,
                 d2,
                 dispatcherProvider,
                 fieldViewModelFactory,
-                metadataIconProvider
+                metadataIconProvider,
+                new TrackedEntityInstanceInfoProvider(
+                        d2,
+                        resourceManager,
+                        dateLabelProvider
+                ),
+                new EventInfoProvider(
+                        d2,
+                        resourceManager,
+                        dateLabelProvider,
+                        metadataIconProvider
+                )
         );
     }
 
@@ -271,12 +287,6 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    CarouselViewAnimations animations() {
-        return new CarouselViewAnimations();
-    }
-
-    @Provides
-    @PerActivity
     FiltersAdapter provideNewFiltersAdapter() {
         return new FiltersAdapter();
     }
@@ -326,18 +336,17 @@ public class SearchTEModule {
     @Provides
     @PerActivity
     MapDataRepository mapDataRepository(
-            SearchRepository searchRepository,
+            SearchRepositoryKt searchRepositoryKt,
             MapTeisToFeatureCollection mapTeisToFeatureCollection,
             MapTeiEventsToFeatureCollection mapTeiEventsToFeatureCollection,
             MapCoordinateFieldToFeatureCollection mapCoordinateFieldToFeatureCollection,
             DhisMapUtils mapUtils
     ) {
         return new MapDataRepository(
-                searchRepository,
+                searchRepositoryKt,
                 mapTeisToFeatureCollection,
                 mapTeiEventsToFeatureCollection,
                 mapCoordinateFieldToFeatureCollection,
-                new EventToEventUiComponent(),
                 mapUtils);
     }
 

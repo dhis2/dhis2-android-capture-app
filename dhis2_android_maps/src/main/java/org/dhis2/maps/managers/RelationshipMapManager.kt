@@ -1,9 +1,15 @@
 package org.dhis2.maps.managers
 
+import android.graphics.Color
+import android.graphics.PointF
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
@@ -70,8 +76,34 @@ class RelationshipMapManager(
             )!!,
             true,
         )
+        addDynamicIcons()
         setSource()
         setLayer()
+    }
+
+    private fun addDynamicIcons() {
+        featureCollections.entries.forEach {
+            style?.addImage(
+                "${RELATIONSHIP_ICON}_${it.key}",
+                getTintedDrawable(it.key),
+            )
+        }
+    }
+
+    private fun getTintedDrawable(sourceId: String): Drawable {
+        val (drawable, color) = mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
+            R.drawable.map_marker,
+            Color.parseColor("#E71409"),
+        )
+
+        val initialDrawable = AppCompatResources.getDrawable(
+            mapView.context,
+            drawable,
+        )?.mutate()
+        val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
+        DrawableCompat.setTint(wrappedDrawable, color)
+
+        return wrappedDrawable
     }
 
     private fun updateStyleSources() {
@@ -124,5 +156,59 @@ class RelationshipMapManager(
             }
         }
         return featureToReturn
+    }
+
+    override fun findFeatures(
+        source: String,
+        propertyName: String,
+        propertyValue: String,
+    ): List<Feature> {
+        return mutableListOf<Feature>().apply {
+            featureCollections.map { (key, collection) ->
+                collection.features()?.filter {
+                    mapLayerManager.getLayer(key)?.visible == true &&
+                        it.getStringProperty(propertyName) == propertyValue
+                }?.map {
+                    mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                    it
+                }?.let {
+                    mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                    addAll(it)
+                }
+            }
+        }
+    }
+
+    override fun findFeatures(propertyValue: String): List<Feature>? {
+        val mainProperties = arrayListOf(
+            MapTeisToFeatureCollection.TEI_UID,
+            MapTeisToFeatureCollection.ENROLLMENT_UID,
+            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+            MapEventToFeatureCollection.EVENT,
+        )
+        return mainProperties.map { property ->
+            findFeatures("", property, propertyValue)
+        }.flatten().distinct()
+    }
+
+    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+        val pointf: PointF = map?.projection?.toScreenLocation(point)!!
+        val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+
+        return selectedFeature(rectF)
+    }
+
+    private fun selectedFeature(rectF: RectF): Feature? {
+        var selectedFeature: Feature? = null
+        val sourcesAndLayers = mapLayerManager.sourcesAndLayersForSearch()
+        sourcesAndLayers.filter { it.value.isNotEmpty() }.forEach { (_, layers) ->
+            val features = map?.queryRenderedFeatures(rectF, *layers) ?: emptyList()
+            if (features.isNotEmpty()) {
+                mapLayerManager.selectFeature(null)
+                selectedFeature = features.first()
+                map
+            }
+        }
+        return selectedFeature
     }
 }

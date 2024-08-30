@@ -1,12 +1,20 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.mapbox.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
+import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
@@ -35,16 +43,22 @@ class RelationshipPresenter internal constructor(
     private val mapStyleConfig: MapStyleConfiguration,
 ) {
 
+    private lateinit var layersVisibility: Map<String, MapLayer>
+
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val teiType: String? =
         d2.trackedEntityModule().trackedEntityInstances()
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
             .blockingGet()?.trackedEntityType()
-    private val programStageUid =
-        d2.eventModule().events().uid(eventUid).blockingGet()?.programStage()
-
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+
+    private val _relationshipsModels = MutableLiveData<List<RelationshipViewModel>>()
+    val relationshipModels: LiveData<List<RelationshipViewModel>> = _relationshipsModels
+    private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
+    val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
+    private val _mapItemClicked = MutableLiveData<String>()
+    val mapItemClicked: LiveData<String> = _mapItemClicked
 
     fun init() {
         compositeDisposable.add(
@@ -54,13 +68,7 @@ class RelationshipPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        view.setRelationships(it)
-                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
-                        view.setFeatureCollection(
-                            teiUid,
-                            relationshipModel,
-                            mapRelationshipsToFeatureCollection.map(relationshipModel),
-                        )
+                        _relationshipsModels.postValue(it)
                     },
                     { Timber.d(it) },
                 ),
@@ -199,11 +207,58 @@ class RelationshipPresenter internal constructor(
                 ownerUid,
                 relationshipRepository.getEventProgram(ownerUid),
             )
+
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun fetchMapData() {
+        val relationshipModel =
+            mapRelationshipToRelationshipMapModel.mapList(_relationshipsModels.value ?: emptyList())
+        view.setFeatureCollection(
+            teiUid,
+            relationshipModel,
+            mapRelationshipsToFeatureCollection.mapLegacy(relationshipModel),
+        )
+        compositeDisposable.add(
+            relationshipRepository.mapRelationships()
+                .map { mapItems ->
+                    val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
+                    if (::layersVisibility.isInitialized) {
+                        RelationshipMapData(
+                            mapItems = mapItems.filterRelationshipsByLayerVisibility(layersVisibility),
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    } else {
+                        RelationshipMapData(
+                            mapItems = mapItems,
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    }
+                }
+                .defaultSubscribe(
+                    schedulerProvider,
+                    onSuccess = { data ->
+                        _relationshipMapData.postValue(data)
+                    },
+                ),
+        )
+    }
+
+    fun onFeatureClicked(feature: Feature) {
+        feature.toStringProperty()?.let {
+            _mapItemClicked.postValue(it)
+        }
+    }
+
+    fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
+        this.layersVisibility = layersVisibility
+        fetchMapData()
     }
 }
