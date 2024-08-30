@@ -1,8 +1,6 @@
 package org.dhis2.usescases.flow.syncFlow
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -13,6 +11,7 @@ import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTableRobot
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
+import org.dhis2.usescases.development.ConflictGenerator
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
@@ -20,6 +19,9 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.hisp.dhis.android.core.D2Manager
+import org.hisp.dhis.android.core.imports.ImportStatus
+import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.GET
 import org.junit.Ignore
 import org.junit.Rule
@@ -46,6 +48,9 @@ class SyncFlowTest : BaseTest() {
 
     private lateinit var workInfoStatusLiveData: MutableLiveData<List<WorkInfo>>
 
+    private val d2 = D2Manager.getD2()
+    private val conflictGenerator = ConflictGenerator(d2)
+
     override fun setUp() {
         super.setUp()
         setupMockServer()
@@ -53,7 +58,7 @@ class SyncFlowTest : BaseTest() {
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
     }
 
-    @Ignore("Flaky test, will be fixed in next release")
+    @Ignore("failing by a bug - ANDROAPP-6154")
     @Test
     fun shouldShowErrorWhenTEISyncFails() {
         mockWebServerRobot.addResponse(GET, "/api/system/ping", API_PING_RESPONSE_OK)
@@ -70,7 +75,7 @@ class SyncFlowTest : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiLastName, composeTestRule)
+            clickOnTEI(teiName)
         }
 
         teiDashboardRobot(composeTestRule) {
@@ -78,17 +83,13 @@ class SyncFlowTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            fillRadioButtonForm(4)
+//            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
 
-        teiDashboardRobot(composeTestRule) {
-            composeTestRule.onNodeWithText("Sync").performClick()
-        }
-
         syncFlowRobot(composeTestRule) {
-            waitToDebounce(500)
+            clickOnEventToSync()
             clickOnSyncButton()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
@@ -116,6 +117,7 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot(composeTestRule) {
             clickOnEventToSync()
             clickOnSyncButton()
+            conflictGenerator.generateConflictInEvent(ANTENATAL_CARE_EVENT_UID, ImportStatus.SUCCESS)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
             checkSyncWasSuccessfully()
@@ -142,6 +144,7 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot(composeTestRule) {
             clickOnEventToSync()
             clickOnSyncButton()
+            conflictGenerator.generateConflictInEvent(ANTENATAL_CARE_EVENT_UID, ImportStatus.ERROR)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
@@ -178,12 +181,10 @@ class SyncFlowTest : BaseTest() {
         syncFlowRobot(composeTestRule) {
             clickOnDataSetToSync(0)
             clickOnSyncButton()
+            conflictGenerator.generateStatusConflictInDataSet(ImportStatus.SUCCESS)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
-            composeTestRule.waitForIdle()
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.SUCCEEDED)))
-            composeTestRule.waitForIdle()
-            waitToDebounce(3000)
-            checkSyncWasSuccessfully() //sync failed
+            checkSyncWasSuccessfully()
         }
         cleanLocalDatabase()
     }
@@ -194,7 +195,7 @@ class SyncFlowTest : BaseTest() {
         prepareFacilityDataSetIntentAndLaunchActivity(ruleDataSet)
 
         dataSetRobot {
-            clickOnDataSetAtPosition(1)
+            clickOnDataSetAtPosition(0)
         }
 
         dataSetTableRobot(composeTestRule) {
@@ -213,8 +214,9 @@ class SyncFlowTest : BaseTest() {
         }
 
         syncFlowRobot(composeTestRule) {
-            clickOnDataSetToSync(1)
+            clickOnDataSetToSync(0)
             clickOnSyncButton()
+            conflictGenerator.generateStatusConflictInDataSet(ImportStatus.ERROR)
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.RUNNING)))
             workInfoStatusLiveData.postValue(arrayListOf(mockedGranularWorkInfo(WorkInfo.State.FAILED)))
             checkSyncFailed()
@@ -230,11 +232,12 @@ class SyncFlowTest : BaseTest() {
             arrayListOf("GRANULAR"),
             Data.EMPTY,
             0,
-            0
+            0,
         )
     }
 
     companion object {
+        const val ANTENATAL_CARE_EVENT_UID = "onXW2DQHRGS"
         const val LAB_MONITORING_EVENT_DATE = "28/6/2020"
         const val API_PING_RESPONSE_OK = "mocks/systeminfo/ping.txt"
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="no_data">Маълумот йўқ</string>
     <string name="change_calendar_view">Тақвим кўринишини ўзгартириш</string>
     <string name="clear">аниқ</string>
@@ -15,6 +16,7 @@
     <string name="navigation_analytics">Аналитика</string>
     <string name="navigation_tasks">Вазифалар</string>
     <string name="navigation_programs">Дастурлар</string>
+    <string name="navigation_events">Ҳодиса/Тадбирлар</string>
     <string name="navigation_relationships">Ўзаро алоқалар</string>
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>
@@ -22,8 +24,6 @@
     <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Вариант танланг</string>
     <string name="search">Қидириш</string>
-    <string name="jira_issue_sent">Муаммо юборилди</string>
-    <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
     <string name="events">ҳодиса/тадбирлар</string>
     <string name="data_sets">Маълумотлар тўплами</string>
     <string name="tei">TEI</string>

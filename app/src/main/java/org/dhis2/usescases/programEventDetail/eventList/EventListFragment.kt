@@ -62,6 +62,46 @@ class EventListFragment : FragmentGlobalAbstract() {
 
     override fun onResume() {
         super.onResume()
+        programEventsViewModel.setProgress(true)
+        presenter.init()
         eventListViewModel.refreshData()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.clear()
+    }
+
+    override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
+        if (isUserLoggedIn()) {
+            liveDataList?.removeObservers(viewLifecycleOwner)
+            this.liveDataList = pagedListLiveData
+            liveDataList?.observe(viewLifecycleOwner) { pagedList: PagedList<EventViewModel> ->
+                programEventsViewModel.setProgress(false)
+                liveAdapter?.submitList(pagedList) {
+                    if ((binding.recycler.adapter?.itemCount ?: 0) == 0) {
+                        binding.emptyTeis.text = getString(R.string.empty_tei_add)
+                        binding.emptyTeis.visibility = View.VISIBLE
+                        binding.recycler.visibility = View.GONE
+                    } else {
+                        binding.emptyTeis.visibility = View.GONE
+                        binding.recycler.visibility = View.VISIBLE
+                    }
+                    EventListIdlingResourceSingleton.decrement()
+                }
+            }
+        }
+    }
+
+    private fun configureWorkingList() {
+        binding.filterLayout.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+            )
+            setContent {
+                val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
+                WorkingListChipGroup(Modifier.padding(top = Spacing.Spacing16), workingListViewModel)
+            }
+        }
     }
 }

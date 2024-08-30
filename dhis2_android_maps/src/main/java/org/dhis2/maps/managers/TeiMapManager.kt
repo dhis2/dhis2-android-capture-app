@@ -14,6 +14,7 @@ import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
@@ -30,9 +31,11 @@ import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
-import java.util.HashMap
 
-class TeiMapManager(mapView: MapView) : MapManager(mapView) {
+class TeiMapManager(
+    mapView: MapView,
+    locationEngine: LocationEngine,
+) : MapManager(mapView, locationEngine) {
 
     private var fieldFeatureCollections: Map<String, FeatureCollection> = emptyMap()
     private var teiFeatureCollections: HashMap<String, FeatureCollection>? = null
@@ -43,9 +46,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
     var enrollmentFeatureType: FeatureType? = FeatureType.POINT
     private var boundingBox: BoundingBox? = null
 
-    init {
-        numberOfUiIcons = 3
-    }
+    override var numberOfUiIcons: Int = 3
 
     companion object {
         const val TEIS_SOURCE_ID = "TEIS_SOURCE_ID"
@@ -234,7 +235,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                 eventsFeatureCollection?.keys?.toList() ?: emptyList(),
             ).updateLayers(
                 LayerType.FIELD_COORDINATE_LAYER,
-                fieldFeatureCollections.keys.toList() ?: emptyList(),
+                fieldFeatureCollections.keys.toList(),
             )
     }
 
@@ -349,7 +350,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                     ENROLLMENT_SOURCE_ID,
                 )?.visible == true
             }
-                ?.map { (key, collection) ->
+                ?.map { (_, collection) ->
                     collection.features()?.filter {
                         it.getStringProperty(propertyName) == propertyValue
                     }?.map {
@@ -374,7 +375,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
         }
     }
 
-    override fun findFeatures(propertyValue: String): List<Feature>? {
+    override fun findFeatures(propertyValue: String): List<Feature> {
         val mainProperties = arrayListOf(
             TEI_UID,
             RELATIONSHIP_UID,
@@ -431,6 +432,7 @@ class TeiMapManager(mapView: MapView) : MapManager(mapView) {
                             RELATIONSHIP_UID,
                             features.first().getStringProperty(RELATIONSHIP_UID),
                         )
+
                         else -> features.first()
                     }
                 }

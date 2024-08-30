@@ -4,16 +4,12 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
 
     val uid: String
-
-    val layoutId: Int
 
     val value: String?
 
@@ -33,8 +29,6 @@ interface FieldUiModel {
 
     val programStageSection: String?
 
-    val style: FormUiModelStyle?
-
     val hint: String?
 
     val description: String?
@@ -51,15 +45,9 @@ interface FieldUiModel {
 
     val displayName: String?
 
-    val textColor: Int?
-
-    val backGroundColor: Pair<Array<Int>, Int?>?
-
     val renderingType: UiRenderType?
 
     var optionSetConfiguration: OptionSetConfiguration?
-
-    val hasImage: Boolean
 
     val keyboardActionType: KeyboardActionType?
 
@@ -87,19 +75,9 @@ interface FieldUiModel {
 
     fun onItemClick()
 
-    fun onNext()
-
-    fun onTextChange(value: CharSequence?)
-
-    fun onDescriptionClick()
-
     fun onClear()
 
     fun onSave(value: String?)
-
-    fun onSaveBoolean(boolean: Boolean)
-
-    fun onSaveOption(option: Option)
 
     fun invokeUiEvent(uiEventType: UiEventType)
 

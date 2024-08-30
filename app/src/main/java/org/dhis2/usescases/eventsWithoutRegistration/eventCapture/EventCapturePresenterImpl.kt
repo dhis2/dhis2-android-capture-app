@@ -310,4 +310,11 @@ class EventCapturePresenterImpl(
         get() = eventCaptureRepository.eventStatus().blockingFirst()
 
     override fun programStage(): String = eventCaptureRepository.programStage().blockingFirst()
+
+    override fun getEnrollmentUid(): String? {
+        return eventCaptureRepository.getEnrollmentUid()
+    }
+    override fun getTeiUid(): String? {
+        return eventCaptureRepository.getTeiUid()
+    }
 }

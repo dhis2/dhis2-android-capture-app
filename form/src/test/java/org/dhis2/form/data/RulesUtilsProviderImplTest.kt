@@ -11,10 +11,8 @@ import org.dhis2.form.ui.provider.AutoCompleteProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
-import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -44,8 +42,6 @@ class RulesUtilsProviderImplTest {
     private lateinit var fieldFactory: FieldViewModelFactory
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val valueStore: FormValueStore = mock()
-    private val uiStyleProvider: UiStyleProvider = mock()
-    private val layoutProvider: LayoutProvider = mock()
     private val hintProvider: HintProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock {
         on {
@@ -68,8 +64,6 @@ class RulesUtilsProviderImplTest {
     fun setUp() {
         ruleUtils = RulesUtilsProviderImpl(d2, optionsRepository)
         fieldFactory = FieldViewModelFactoryImpl(
-            uiStyleProvider,
-            layoutProvider,
             hintProvider,
             displayNameProvider,
             uiEventTypesProvider,
@@ -682,7 +676,6 @@ class RulesUtilsProviderImplTest {
 
         testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
-            1,
             "label",
             false,
             null,
@@ -691,7 +684,6 @@ class RulesUtilsProviderImplTest {
             true,
             "label",
             "section",
-            null,
             null,
             "description",
             ValueType.TEXT,
@@ -747,7 +739,6 @@ class RulesUtilsProviderImplTest {
 
         testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
-            1,
             "label",
             false,
             null,
@@ -756,7 +747,6 @@ class RulesUtilsProviderImplTest {
             true,
             "label",
             "section",
-            null,
             null,
             "description",
             ValueType.TEXT,
@@ -820,7 +810,6 @@ class RulesUtilsProviderImplTest {
 
         testFieldViewModels["field"] = FieldUiModelImpl(
             "field",
-            1,
             "label",
             false,
             null,
@@ -829,7 +818,6 @@ class RulesUtilsProviderImplTest {
             true,
             "label",
             "section",
-            null,
             null,
             "description",
             ValueType.TEXT,

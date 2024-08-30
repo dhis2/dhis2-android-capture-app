@@ -145,8 +145,6 @@
     <string name="delete">حذف</string>
     <string name="total">الإجمالي</string>
     <string name="most_recent_event_date">تاريخ أحدث حدث</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">قائمة التسجيل</string>
     <string name="active_programs">البرامج النشطة</string>
     <string name="to_enroll_programs">برامج للتسجيل</string>
     <string name="enroll">تسجيل</string>
@@ -309,7 +307,6 @@
     <string name="qr_error_attr">هذه السمة لايمكن إضافتها</string>
     <string name="qr_error_enrollment">هذا التسجيل لايمكن إضافته</string>
 
-    <string name="jira_report">ابلاغ مشكلة إلى Jira</string>
     <string name="about">حول التطبيق</string>
     <string name="programs_to_enroll">برامج للتسجيل</string>
     <string name="select_all">تحديد الكل</string>
@@ -373,10 +370,6 @@
     <string name="date_dialog_tigle">حدد التواريخ للتصفية</string>
     <string name="select_option">تحديد الخيار</string>
     <string name="issue_reported">تم الإبلاغ عن المشكلة</string>
-    <string name="jira_credential_error">تحقق من صحة مستخدم وكلمة مرور Jira الخاصين بك</string>
-    <string name="jira_issue_error">حدث خطأ أثناء الإبلاغ عن المشكلة</string>
-    <string name="jira_fields_error">كل الحقول إلزامية</string>
-    <string name="dialog_generate_new_event">توليد حدث جديد</string>
     <string name="message_generate_new_event">هل تريد إنشاء حدث جديد</string>
     <string name="event_completed_title">اكتملت الأحداث</string>
     <string name="event_completed_message">اكتمال جميع الأحداث في هذا البرنامج. هل ترغب أيضاً في تعيين البرنامج كمغلق؟</string>
@@ -689,12 +682,9 @@
     <string name="download_tei_error">تعذر تنزيل %s المحددة</string>
     <string name="completed_by">تم الإكمال من قبل %s:%s</string>
     <string name="updated_time">تم التحديث: %s</string>
-    <string name="action_done">تم الإنتهاء!</string>
     <string name="validation_internal_error_datasets">لم نتمكن من التحقق من جودة البيانات. تواصل مع مديرك</string>
     <string name="are_you_sure">هل أنت متأكد؟</string>
     <string name="reopen_question">هل تريد إعادة فتح حزمة البيانات؟</string>
-    <string name="group_events_by_stage">تجميع الأحداث حسب المرحلة</string>
-    <string name="show_events_timeline">عرض الخط الزمني للأحداث</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="filters_title_event_date">بيانات الحدث</string>
     <string name="tei_type_has_no_attributes">%s لا يملك أي سمات عامة، يرجى تحديد برنامج</string>
@@ -717,8 +707,6 @@
     <string name="metada_first_sync_error">وجدنا خطأ عند المزامنة مع الخادم الخاص بك. شارك الخطأ مع مسؤول النظام إن أمكن.</string>
     <string name="error_init_session">لم نتمكن من بدء الجلسة مع المستخدم الخاص بك</string>
     <string name="enrollment_date_edition_warning">هناك أحداث مخطط لها لن تتم إعادة جدولتها</string>
-    <string name="jira_issue_sent">تم إرسال المشكلة</string>
-    <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="navigation_list_view">عرض قائمة</string>
     <string name="navigation_table_view">عرض جدول</string>

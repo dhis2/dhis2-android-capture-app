@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
@@ -28,6 +29,7 @@ import java.util.Locale
 class SchedulingViewModel(
     val d2: D2,
     val resourceManager: ResourceManager,
+    val eventResourcesProvider: EventResourcesProvider,
     val periodUtils: DhisPeriodUtils,
 ) : ViewModel() {
 
@@ -67,6 +69,7 @@ class SchedulingViewModel(
                 enrollment.program().orEmpty(),
                 programStage.value?.uid(),
                 resourceManager,
+                eventResourcesProvider,
             ),
             repository = repository,
             periodType = programStage.value?.periodType(),

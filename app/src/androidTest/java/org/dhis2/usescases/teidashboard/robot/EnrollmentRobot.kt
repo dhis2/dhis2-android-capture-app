@@ -5,6 +5,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
@@ -18,14 +19,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.containsString
 
 fun enrollmentRobot(
     composeTestRule: ComposeTestRule,
@@ -50,30 +47,6 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnSaveEnrollment() {
         onView(withId(R.id.save)).perform(click())
-    }
-
-    fun clickOnPersonAttributes(attribute: String) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<FormViewHolder>(
-                    hasDescendant(withText(containsString(attribute))),
-                    clickChildViewWithId(R.id.section_details)
-                )
-            )
-    }
-
-    fun scrollToBottomProgramForm() {
-        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
-    }
-
-    fun clickOnCalendarItem() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItem<DashboardProgramViewHolder>(
-                    hasDescendant(withText(containsString(DATE_OF_BIRTH))),
-                    clickChildViewWithId(R.id.inputEditText)
-                )
-            )
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
@@ -139,9 +112,25 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    fun openFormSection(personAttribute: String) {
+        composeTestRule.onNodeWithText(personAttribute).performClick()
+    }
+
+    fun typeOnInputDateField(dateValue: String, title: String) {
+        composeTestRule.apply {
+            onNode(
+                hasTestTag(
+                    "INPUT_DATE_TIME_TEXT_FIELD"
+                ) and hasAnySibling(
+                    hasText(title)
+                ),
+                useUnmergedTree = true,
+            ).performTextReplacement(dateValue)
+        }
+    }
+
     companion object {
         const val ACTIVE_PROGRAMS = "Active programs"
         const val PAST_PROGRAMS = "Past programs"
-        const val DATE_OF_BIRTH = "Date of birth"
     }
 }

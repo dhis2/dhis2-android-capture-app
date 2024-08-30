@@ -66,4 +66,5 @@
     <string name="error_invalid_program">No tiene permiso para acceder al programa %s</string>
     <string name="error_invalid_attribute">No tiene permiso para acceder al atributo %s</string>
     <string name="error_unsupported_aggregation_type">El tipo de agregación %s no está soportado</string>
+    <string name="line_listing_max_results">Tabla limitada a %1$s entradas. Filtre para refinar el resultado.</string>
 </resources>

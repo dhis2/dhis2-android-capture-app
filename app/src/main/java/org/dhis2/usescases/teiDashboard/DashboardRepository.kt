@@ -105,7 +105,7 @@ interface DashboardRepository {
         teiUid: String,
     ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
 
-    fun getDashboardModel(): DashboardModel
+    fun getDashboardModel(): DashboardModel?
 
     fun getGrouping(): Boolean
 

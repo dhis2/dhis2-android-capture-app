@@ -35,7 +35,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
@@ -339,7 +338,7 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = getSaveIntent(it)
+                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
                 val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
@@ -391,16 +390,6 @@ class FormViewModel(
                 it.valueType == ValueType.DATE ||
                 it.valueType == ValueType.TIME
             )
-    }
-
-    private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
-        ValueType.COORDINATE -> FormIntent.SaveCurrentLocation(
-            field.uid,
-            field.value,
-            getFeatureType(field.renderingType).name,
-        )
-
-        else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
     }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
@@ -781,7 +770,7 @@ class FormViewModel(
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(getSaveIntent(it))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
         }
         submitIntent(FormIntent.OnFinish())
     }

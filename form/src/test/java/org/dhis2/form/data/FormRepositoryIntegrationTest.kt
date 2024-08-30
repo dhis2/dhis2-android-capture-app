@@ -9,10 +9,8 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
-import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.provider.UiStyleProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -152,8 +150,6 @@ class FormRepositoryIntegrationTest {
     }
 
     private fun mockFormRepository(enrollmentMode: EnrollmentMode = EnrollmentMode.NEW): FormRepositoryImpl {
-        val styleProvider: UiStyleProvider = mock()
-        val layoutProvider: LayoutProvider = mock()
         val hintProvider: HintProvider = mock()
         val displayNameProvider: DisplayNameProvider = mock()
         val uiEventTypesProvider: UiEventTypesProvider = mock()
@@ -162,8 +158,6 @@ class FormRepositoryIntegrationTest {
         val autoCompleteProvider: AutoCompleteProvider = mock()
 
         val fieldFactory = FieldViewModelFactoryImpl(
-            styleProvider,
-            layoutProvider,
             hintProvider,
             displayNameProvider,
             uiEventTypesProvider,

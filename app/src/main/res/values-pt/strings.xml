@@ -137,8 +137,6 @@
     <string name="delete">Apagar</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Data do evento mais recente</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
     <string name="to_enroll_programs">Programas para inscrição</string>
     <string name="enroll">Registrar</string>
@@ -297,7 +295,6 @@
     <string name="qr_error_attr">Este atributo não pode ser adicionado</string>
     <string name="qr_error_enrollment">Esta inscrição não pode ser adicionada</string>
 
-    <string name="jira_report">Relatar problema de Jira</string>
     <string name="about">Acerca</string>
     <string name="programs_to_enroll">Programas para inscrição</string>
     <string name="select_all">selecionar tudo</string>
@@ -361,10 +358,6 @@
     <string name="date_dialog_tigle">Selecione as datas para filtrar</string>
     <string name="select_option">Selecionar opção</string>
     <string name="issue_reported">Problema relatado</string>
-    <string name="jira_credential_error">Verifique se seu usuário e senha do jira estão corretos</string>
-    <string name="jira_issue_error">Erro ao relatar o problema</string>
-    <string name="jira_fields_error">Todos os campos são obrigatórios</string>
-    <string name="dialog_generate_new_event">Gerar novo evento</string>
     <string name="message_generate_new_event">Deseja criar outro evento?</string>
     <string name="event_completed_title">Eventos Concluídos</string>
     <string name="event_completed_message">Todos os eventos deste programa estão concluídos. Deseja encerrar o programa também?</string>
@@ -671,12 +664,9 @@
     <string name="download_tei_error">O selecionado %s não pôde ser baixado.</string>
     <string name="completed_by">Completado por %s: %s</string>
     <string name="updated_time">Atualizado: %s</string>
-    <string name="action_done">Feito!</string>
     <string name="validation_internal_error_datasets">Não foi possível verificar a qualidade dos dados. Contate seu administrador</string>
     <string name="are_you_sure">Tem certeza?</string>
     <string name="reopen_question">Você deseja reabrir o conjunto de dados?</string>
-    <string name="group_events_by_stage">Eventos de grupo por estágio</string>
-    <string name="show_events_timeline">Mostrar cronograma de eventos</string>
     <string name="filters_title_date">Data</string>
     <string name="filters_title_event_date">Data de incidente</string>
     <string name="tei_type_has_no_attributes">%s não tem atributos públicos. Selecione um programa</string>
@@ -699,8 +689,6 @@
     <string name="metada_first_sync_error">Encontramos um erro ao sincronizar com seu servidor. Compartilhe o erro com o administrador do sistema, se for possível.</string>
     <string name="error_init_session">Não foi possível fazer login com seu nome de usuário</string>
     <string name="enrollment_date_edition_warning">Existem eventos planejados que não serão reprogramados</string>
-    <string name="jira_issue_sent">Problema Enviado</string>
-    <string name="jira_issue_sent_error">Erro ao enviar Problema</string>
     <string name="section_charts">Gráficos</string>
     <string name="navigation_list_view">Vista de lista</string>
     <string name="navigation_table_view">Vista de tabela</string>

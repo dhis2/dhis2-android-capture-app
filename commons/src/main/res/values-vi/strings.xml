@@ -23,8 +23,6 @@
     <string name="event_overview">Chi tiết</string>
     <string name="select_option">Chọn</string>
     <string name="search">Tìm kiếm</string>
-    <string name="jira_issue_sent">Vấn đề đã được gửi</string>
-    <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="events">sự kiện</string>
     <string name="data_sets">Biểu nhập</string>
     <string name="tei">Đối Tượng Theo Dõi</string>

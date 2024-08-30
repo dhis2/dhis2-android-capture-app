@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:id="@+id/visualization">
+    <group>
         <item
             android:id="@+id/back_monthly"
             android:icon="@drawable/ic_arrowback_chart"
             android:title="@string/monthly"/>
     </group>
-    <group android:id="@+id/filters">
+    <group>
         <item
             android:id="@+id/thismonth"
             android:icon="@drawable/ic_check_chart_white"

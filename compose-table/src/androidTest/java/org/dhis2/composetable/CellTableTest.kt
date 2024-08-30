@@ -1,7 +1,6 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.espresso.Espresso
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -40,7 +39,7 @@ class CellTableTest {
         }
     }
 
-    @Ignore("Flaky test, to be resolved in a separate ticket")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6397")
     @Test
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
@@ -54,7 +53,6 @@ class CellTableTest {
         }
     }
 
-    @Ignore("Flaky test, to be resolved in a separate ticket")
     @Test
     fun shouldSaveValue() {
         var savedValue: TableCell? = null
@@ -72,6 +70,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6408")
     @Test
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
@@ -94,7 +93,6 @@ class CellTableTest {
         }
     }
 
-    @Ignore("Flaky test, to be resolved in a separate ticket")
     @Test
     fun shouldMoveToNextRowWhenClickingNext() {
         tableRobot(composeTestRule) {
@@ -108,14 +106,14 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
-            Espresso.pressBack()
             assertCellSelected(firstId, 1, 0)
             clickOnCell(firstId, 1, 0)
             assertInputComponentInfo(
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =
                 fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: ""
+                    ?.joinToString(separator = ",") { it.cells[0].value } ?: ""
+
             )
         }
     }

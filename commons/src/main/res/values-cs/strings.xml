@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Událost</string>
     <string name="no_data">Nejsou data</string>
     <string name="feature_configuration">Konfigurace funkcí</string>
     <string name="change_calendar_view">Změnit zobrazení kalendáře</string>
@@ -16,6 +17,7 @@
     <string name="navigation_analytics">Analytika</string>
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
+    <string name="navigation_events">Události</string>
     <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
@@ -23,8 +25,6 @@
     <string name="event_overview">Detaily</string>
     <string name="select_option">Vybrat možnost</string>
     <string name="search">Hledat</string>
-    <string name="jira_issue_sent">Problém odeslán</string>
-    <string name="jira_issue_sent_error">Chyba při odesílání problému</string>
     <string name="events">události</string>
     <string name="data_sets">Datové sady</string>
     <string name="tei">TEI</string>

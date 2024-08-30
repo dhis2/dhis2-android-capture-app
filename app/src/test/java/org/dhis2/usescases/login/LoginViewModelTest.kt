@@ -52,7 +52,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import retrofit2.Response
 import java.io.File
 
 class LoginViewModelTest {
@@ -360,7 +359,7 @@ class LoginViewModelTest {
     @Test
     fun `Should handle successfull response`() {
         instantiateLoginViewModel()
-        val response = Response.success(
+        val response = Result.success(
             User.builder()
                 .uid("userUid")
                 .build(),

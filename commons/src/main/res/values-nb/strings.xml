@@ -22,8 +22,6 @@
     <string name="event_overview">Detaljer</string>
     <string name="select_option">Velg et alternativ</string>
     <string name="search">Søk</string>
-    <string name="jira_issue_sent">Sak sendt</string>
-    <string name="jira_issue_sent_error">Feil ved sending av sak</string>
     <string name="events">hendelser</string>
     <string name="data_sets">Datasett</string>
     <string name="tei">TEI</string>

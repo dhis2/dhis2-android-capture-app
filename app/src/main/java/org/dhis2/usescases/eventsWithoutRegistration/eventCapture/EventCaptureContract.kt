@@ -62,6 +62,8 @@ class EventCaptureContract {
         fun getCompletionPercentageVisibility(): Boolean
         fun emitAction(onBack: EventCaptureAction)
         fun programStage(): String
+        fun getTeiUid(): String?
+        fun getEnrollmentUid(): String?
     }
 
     interface EventCaptureRepository {
@@ -85,5 +87,7 @@ class EventCaptureContract {
         fun hasAnalytics(): Boolean
         fun hasRelationships(): Boolean
         fun validationStrategy(): ValidationStrategy
+        fun getTeiUid(): String?
+        fun getEnrollmentUid(): String?
     }
 }

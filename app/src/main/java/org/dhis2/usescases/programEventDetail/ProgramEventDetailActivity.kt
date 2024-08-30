@@ -169,7 +169,7 @@ class ProgramEventDetailActivity :
             ?.plus(
                 ProgramEventDetailModule(
                     this,
-                    programUid,
+                   this, programUid,
                     OrgUnitSelectorScope.ProgramCaptureScope(programUid),
                 ),
             )
@@ -251,14 +251,15 @@ class ProgramEventDetailActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.setOpeningFilterToNone()
-        presenter.onDettach()
-        FilterManager.getInstance().clearEventStatus()
-        FilterManager.getInstance().clearCatOptCombo()
-        FilterManager.getInstance().clearWorkingList(true)
-        FilterManager.getInstance().clearAssignToMe()
-        FilterManager.getInstance().clearFlow()
-        presenter.clearOtherFiltersIfWebAppIsConfig()
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.setOpeningFilterToNone()
+            presenter.onDettach()
+            FilterManager.getInstance().clearEventStatus()
+            FilterManager.getInstance().clearCatOptCombo()
+            FilterManager.getInstance().clearWorkingList(true)
+            FilterManager.getInstance().clearAssignToMe()
+            FilterManager.getInstance().clearFlow()
+        presenter.clearOtherFiltersIfWebAppIsConfig()}
     }
 
     override fun setProgram(programModel: Program) {
@@ -342,7 +343,6 @@ class ProgramEventDetailActivity :
             }
         } else {
             OUTreeFragment.Builder()
-                .showAsDialog()
                 .singleSelection()
                 .withPreselectedOrgUnits(
                     listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
@@ -414,7 +414,6 @@ class ProgramEventDetailActivity :
 
     override fun openOrgUnitTreeSelector() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
             .onSelection { selectedOrgUnits ->
                 presenter.setOrgUnitFilters(selectedOrgUnits)

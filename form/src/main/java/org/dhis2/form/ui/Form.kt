@@ -105,17 +105,15 @@ fun Form(
                         focusManager.clearFocus()
                     }
                 }
-
-                val completedAndTotalFields = totalAndCompletedFields(section)
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
-                    description = sectionDescription(section),
-                    completedFields = completedAndTotalFields.second,
-                    totalFields = completedAndTotalFields.first,
+                    description = if (section.fields.isNotEmpty()) section.description else null,
+                    completedFields = section.completeFields,
+                    totalFields = section.totalFields,
                     state = section.state,
-                    errorCount = section.errorCount(),
-                    warningCount = section.warningCount(),
+                    errorCount = section.errors,
+                    warningCount = section.warnings,
                     warningMessage = section.warningMessage?.let { resources.getString(it) },
                     onNextSection = onNextSection,
                     onSectionClick = {

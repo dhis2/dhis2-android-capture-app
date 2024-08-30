@@ -7,6 +7,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
@@ -52,6 +53,7 @@ class EventDetailsIntegrationTest {
     // Needs context
     private val locationProvider: LocationProvider = mock()
     private val resourceManager: ResourceManager = mock()
+    private val eventResourcesProvider: EventResourcesProvider = mock()
     private val periodUtils: DhisPeriodUtils = mock()
     private val preferencesProvider: PreferenceProvider = mock()
 
@@ -184,7 +186,12 @@ class EventDetailsIntegrationTest {
         metadataIconProvider = metadataIconProvider,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(
+        PROGRAM_UID,
+        programStage.uid(),
+        resourceManager,
+        eventResourcesProvider,
+    )
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,

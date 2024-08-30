@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -17,7 +20,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.sdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,16 +51,14 @@ android {
         dataBinding = true
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
-
     configurations.all {
         resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -82,14 +83,10 @@ dependencies {
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)
-    api(libs.androidx.liveDataKtx)
     api(libs.androidx.viewModelKtx)
-    api(libs.androidx.lifecycleExtensions)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
     api(libs.androidx.compose)
-    api(libs.androidx.compose.constraintlayout)
-    api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
     api(libs.androidx.compose.paging)
@@ -111,7 +108,6 @@ dependencies {
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
-    api(libs.rx.binding)
     api(libs.rx.binding.compat)
     testApi(libs.test.junit)
     androidTestApi(libs.test.mockitoCore)

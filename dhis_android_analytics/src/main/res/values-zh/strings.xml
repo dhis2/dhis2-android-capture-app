@@ -66,4 +66,4 @@
     <string name="error_invalid_program">您无权访问项目%s</string>
     <string name="error_invalid_attribute">您无权访问属性 %s</string>
     <string name="error_unsupported_aggregation_type">不支持的汇总类型 %s</string>
-</resources>
+    </resources>

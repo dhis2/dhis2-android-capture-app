@@ -8,8 +8,8 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.GeometryController
@@ -18,16 +18,12 @@ import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
-import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.provider.UiStyleProviderImpl
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
@@ -60,8 +56,14 @@ class EventDetailsModule(
     @PerFragment
     fun provideEventDetailResourceProvider(
         resourceManager: ResourceManager,
+        eventResourcesProvider: EventResourcesProvider,
     ): EventDetailResourcesProvider {
-        return EventDetailResourcesProvider(programUid, programStageUid, resourceManager)
+        return EventDetailResourcesProvider(
+            programUid,
+            programStageUid,
+            resourceManager,
+            eventResourcesProvider,
+        )
     }
 
     @Provides
@@ -75,7 +77,6 @@ class EventDetailsModule(
     fun provideEventDetailsRepository(
         d2: D2,
         resourceManager: ResourceManager,
-        colorUtils: ColorUtils,
         periodUtils: DhisPeriodUtils,
     ): EventDetailsRepository {
         return EventDetailsRepository(
@@ -85,12 +86,6 @@ class EventDetailsModule(
             programStageUid = programStageUid,
             eventCreationType = eventCreationType,
             fieldFactory = FieldViewModelFactoryImpl(
-                UiStyleProviderImpl(
-                    FormUiModelColorFactoryImpl(context, colorUtils),
-                    LongTextUiColorFactoryImpl(context, colorUtils),
-                    true,
-                ),
-                LayoutProviderImpl(),
                 HintProviderImpl(context),
                 DisplayNameProviderImpl(
                     OptionSetConfiguration(d2),

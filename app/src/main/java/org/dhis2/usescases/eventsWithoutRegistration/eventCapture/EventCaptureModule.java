@@ -14,18 +14,15 @@ import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
-import org.dhis2.data.forms.EventRepository;
-import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.mobileProgramRules.EvaluationType;
-import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.data.FileController;
 import org.dhis2.form.data.FormValueStore;
-import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.UniqueAttributeController;
 import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.mobileProgramRules.EvaluationType;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
@@ -42,9 +39,12 @@ public class EventCaptureModule {
     private final String eventUid;
     private final EventCaptureContract.View view;
 
-    public EventCaptureModule(EventCaptureContract.View view, String eventUid) {
+    private final boolean isPortrait;
+
+    public EventCaptureModule(EventCaptureContract.View view, String eventUid, boolean isPortrait) {
         this.view = view;
         this.eventUid = eventUid;
+        this.isPortrait = isPortrait;
     }
 
     @Provides
@@ -76,25 +76,12 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(@NonNull D2 d2) {
-        return new RulesRepository(d2);
-    }
-
-    @Provides
-    @PerActivity
     RuleEngineHelper ruleEngineRepository(D2 d2) {
-        if(eventUid == null) return null;
+        if (eventUid == null) return null;
         return new RuleEngineHelper(
                 new EvaluationType.Event(eventUid),
                 new org.dhis2.mobileProgramRules.RulesRepository(d2)
         );
-    }
-
-    @Provides
-    @PerActivity
-    FormRepository formRepository(@NonNull RulesRepository rulesRepository,
-                                  @NonNull D2 d2) {
-        return new EventRepository(rulesRepository, eventUid, d2);
     }
 
     @Provides
@@ -138,7 +125,7 @@ public class EventCaptureModule {
     NavigationPageConfigurator pageConfigurator(
             EventCaptureContract.EventCaptureRepository repository
     ) {
-        return new EventPageConfigurator(repository);
+        return new EventPageConfigurator(repository, isPortrait);
     }
 
     @Provides

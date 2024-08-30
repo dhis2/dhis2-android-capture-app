@@ -237,11 +237,11 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
-
-        presenter.init()
-        presenter.initFilters()
-
-        binding.totalFilters = FilterManager.getInstance().totalFilters
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.init()
+            presenter.initFilters()
+            binding.totalFilters = FilterManager.getInstance().totalFilters
+        }
     }
 
     override fun onPause() {
@@ -484,11 +484,6 @@ class MainActivity :
             R.id.qr_scan -> {
                 presenter.trackQRScanner()
                 mainNavigator.openQR()
-            }
-
-            R.id.menu_jira -> {
-                presenter.trackJiraReport()
-                mainNavigator.openJira()
             }
 
             R.id.menu_about -> {

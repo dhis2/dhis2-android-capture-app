@@ -36,7 +36,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
@@ -74,6 +73,8 @@ import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
@@ -357,14 +358,12 @@ fun ProgramDescriptionDialog(description: String, onDismiss: () -> Unit) {
             Text(text = description)
         },
         confirmButton = {
-            TextButton(
+            Button(
+                modifier = Modifier.padding(bottom = 16.dp, end = 16.dp),
+                text = stringResource(id = R.string.action_close).uppercase(),
                 onClick = { onDismiss() },
-            ) {
-                Text(
-                    text = stringResource(id = R.string.action_close).uppercase(),
-                    color = colorResource(id = R.color.black_de0),
-                )
-            }
+                style = ButtonStyle.TEXT,
+            )
         },
     )
 }

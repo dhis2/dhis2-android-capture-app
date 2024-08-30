@@ -63,6 +63,7 @@ class DhisPeriodUtils(
                     SimpleDateFormat(MONTHLY_FORMAT_EXPRESSION, locale).format(period.startDate()!!)
             PeriodType.BiMonthly,
             PeriodType.Quarterly,
+            PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.FinancialApril,

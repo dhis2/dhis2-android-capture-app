@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
 
 import org.dhis2.R
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.event.EventNonEditableReason
 
@@ -8,12 +9,14 @@ class EventDetailResourcesProvider(
     private val programUid: String,
     private val programStage: String?,
     private val resourceManager: ResourceManager,
+    private val eventResourcesProvider: EventResourcesProvider,
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
 
-    fun provideEventDate() = resourceManager.formatWithEventLabel(
+    fun provideEventDate() = eventResourcesProvider.formatWithProgramStageEventLabel(
         R.string.event_label_date,
         programStage,
+        programUid,
     )
 
     fun provideEditionStatus(reason: EventNonEditableReason): String {
@@ -45,14 +48,16 @@ class EventDetailResourcesProvider(
 
     fun provideButtonCheck() = resourceManager.getString(R.string.check_event)
 
-    fun provideEventCreatedMessage() = resourceManager.formatWithEventLabel(
+    fun provideEventCreatedMessage() = eventResourcesProvider.formatWithProgramStageEventLabel(
         R.string.event_label_updated,
         programStage,
+        programUid,
     )
 
-    fun provideEventCreationError() = resourceManager.formatWithEventLabel(
+    fun provideEventCreationError() = eventResourcesProvider.formatWithProgramStageEventLabel(
         R.string.failed_insert_event_label,
         programStage,
+        programUid,
     )
 
     fun provideReOpened() = resourceManager.getString(R.string.re_opened)

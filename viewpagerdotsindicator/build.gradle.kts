@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.sdk.get().toInt()
     }
     namespace = "com.tbuonomo.viewpagerdotsindicator"
     buildTypes {

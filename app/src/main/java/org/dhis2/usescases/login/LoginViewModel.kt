@@ -45,7 +45,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import retrofit2.Response
 import timber.log.Timber
 import java.io.File
 
@@ -197,9 +196,7 @@ class LoginViewModel(
         try {
             view.hideKeyboard()
             analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-            increment()
             logIn()
-            decrement()
         } catch (throwable: Throwable) {
             Timber.e(throwable)
             handleError(throwable)
@@ -208,6 +205,7 @@ class LoginViewModel(
 
     private fun logIn() {
         _loginProgressVisible.postValue(true)
+        increment()
         disposable.add(
             Observable.just(view.initLogin())
                 .flatMap { userManager ->
@@ -223,11 +221,14 @@ class LoginViewModel(
                                     setValue(SESSION_LOCKED, false)
                                 }
                                 deletePin()
-                                Response.success<Any>(null)
+                                Result.success(null)
                             }
                         }
                 }
-                .doOnTerminate { _loginProgressVisible.postValue(false) }
+                .doOnTerminate {
+                    decrement()
+                    _loginProgressVisible.postValue(false)
+                }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
@@ -266,13 +267,13 @@ class LoginViewModel(
         userManager?.let { userManager ->
             disposable.add(
                 userManager.handleAuthData(serverUrl, data, requestCode)
-                    .map<Response<Any>> {
+                    .map {
                         run {
                             with(preferenceProvider) {
                                 setValue(SESSION_LOCKED, false)
                             }
                             deletePin()
-                            Response.success(null)
+                            Result.success(null)
                         }
                     }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
@@ -318,8 +319,8 @@ class LoginViewModel(
     }
 
     @VisibleForTesting
-    fun handleResponse(userResponse: Response<*>) {
-        if (userResponse.isSuccessful) {
+    fun handleResponse(userResponse: Result<*>) {
+        if (userResponse.isSuccess) {
             updateServerUrls()
             updateLoginUsers()
             val displayTrackingMessage = hasToDisplayTrackingMessage()

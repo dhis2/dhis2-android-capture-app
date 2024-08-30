@@ -11,8 +11,6 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programStage
-import org.dhis2.commons.rules.toRuleEngineInstant
-import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

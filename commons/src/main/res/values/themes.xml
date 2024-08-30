@@ -90,10 +90,6 @@
         <item name="toast_bg">@drawable/toast_bg_red</item>
     </style>
 
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-    </style>
-
     <style name="GreenTheme" parent="AppTheme">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryGreen</item>

@@ -29,5 +29,7 @@ public interface TeiDashboardComponent {
     @NonNull
     TEIDataComponent plus(TEIDataModule teiDataModule);
 
+    DashboardViewModelFactory dashboardViewModelFactory();
+
     void inject(TeiDashboardMobileActivity mobileActivity);
 }

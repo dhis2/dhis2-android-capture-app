@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentTransaction
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import org.dhis2.R
 import org.dhis2.usescases.about.AboutFragment
-import org.dhis2.usescases.jira.JiraFragment
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
@@ -32,7 +31,6 @@ class MainNavigator(
         QR(R.string.QR_SCANNER, R.id.qr_scan),
         SETTINGS(R.string.SYNC_MANAGER, R.id.sync_manager),
         TROUBLESHOOTING(R.string.main_menu_troubleshooting, R.id.menu_troubleshooting),
-        JIRA(R.string.jira_report, R.id.menu_jira),
         ABOUT(R.string.about, R.id.menu_about),
     }
 
@@ -85,7 +83,6 @@ class MainNavigator(
             MainScreen.VISUALIZATIONS -> openVisualizations()
             MainScreen.QR -> openQR()
             MainScreen.SETTINGS -> openSettings()
-            MainScreen.JIRA -> openJira()
             MainScreen.ABOUT -> openAbout()
             MainScreen.TROUBLESHOOTING -> openTroubleShooting(languageSelectorOpened)
         }
@@ -120,13 +117,6 @@ class MainNavigator(
         beginTransaction(
             QrReaderFragment(),
             MainScreen.QR,
-        )
-    }
-
-    fun openJira() {
-        beginTransaction(
-            JiraFragment(),
-            MainScreen.JIRA,
         )
     }
 

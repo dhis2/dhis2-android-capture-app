@@ -1,14 +1,14 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,47 +28,51 @@ import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramViewModel
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
 fun EnrollToProgram(programViewModel: ProgramViewModel, onEnrollClickListener: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .height(86.dp)
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(horizontal = 21.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        MetadataIcon(
+    Column {
+        Row(
             modifier = Modifier
-                .width(56.dp)
-                .height(56.dp)
-                .alpha(0.5f),
-            metadataIconData = programViewModel.metadataIconData,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            modifier = Modifier
-                .weight(2f, true)
-                .padding(end = 12.dp),
-            text = programViewModel.title,
-            fontSize = 14.sp,
-        )
-        Button(
-            modifier = Modifier
-                .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) }
-                .height(36.dp)
-                .weight(1.2f, true)
-                .padding(end = 16.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.DarkGray,
-                contentColor = Color.White,
-            ),
-            enabled = !programViewModel.isDownloading(),
-            onClick = onEnrollClickListener,
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(id = R.string.enroll).uppercase())
+            MetadataIcon(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(56.dp)
+                    .alpha(0.5f),
+                metadataIconData = programViewModel.metadataIconData,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                modifier = Modifier
+                    .weight(2f, true)
+                    .padding(end = 12.dp),
+                text = programViewModel.title,
+                fontSize = 14.sp,
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth(),
+        ) {
+            Spacer(modifier = Modifier.width(68.dp).height(0.dp))
+
+            Button(
+                text = stringResource(id = R.string.enroll),
+                modifier = Modifier.fillMaxWidth()
+                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programViewModel.title) },
+                enabled = !programViewModel.isDownloading(),
+                onClick = onEnrollClickListener,
+                style = ButtonStyle.TONAL,
+            )
         }
     }
 }

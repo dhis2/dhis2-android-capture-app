@@ -27,6 +27,8 @@ class DashboardViewModel(
 
     private val eventUid = MutableLiveData<String>()
 
+    private val selectedEventUid = MutableLiveData<String>()
+
     val showStatusErrorMessages = MutableLiveData(StatusChangeResultCode.CHANGED)
 
     private var _showFollowUpBar = MutableStateFlow(false)
@@ -41,8 +43,8 @@ class DashboardViewModel(
     private var _state = MutableStateFlow<State?>(null)
     val state = _state.asStateFlow()
 
-    private val _dashboardModel = MutableLiveData<DashboardModel>()
-    var dashboardModel: LiveData<DashboardModel> = _dashboardModel
+    private val _dashboardModel = MutableLiveData<DashboardModel?>()
+    var dashboardModel: LiveData<DashboardModel?> = _dashboardModel
 
     private val _groupByStage = MutableLiveData<Boolean>()
     val groupByStage: LiveData<Boolean> = _groupByStage
@@ -64,7 +66,7 @@ class DashboardViewModel(
                 try {
                     val model = result.await()
                     _dashboardModel.postValue(model)
-                    if (model is DashboardEnrollmentModel) {
+                    if (model is DashboardEnrollmentModel && model != null) {
                         _showFollowUpBar.value =
                             model.currentEnrollment.followUp() ?: false
                         _syncNeeded.value =
@@ -167,6 +169,16 @@ class DashboardViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             }
+        }
+    }
+
+    fun selectedEventUid(): LiveData<String> {
+        return selectedEventUid
+    }
+
+    fun updateSelectedEventUid(uid: String?) {
+        if (selectedEventUid.value != uid) {
+            this.selectedEventUid.value = uid
         }
     }
 }

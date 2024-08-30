@@ -189,20 +189,19 @@ class VisualizationToGraph(
                 is TrackerLineListItem.EventStatusItem,
                 is TrackerLineListItem.IncidentDate,
                 is TrackerLineListItem.LastUpdated,
-                TrackerLineListItem.LastUpdatedBy,
+                is TrackerLineListItem.LastUpdatedBy,
                 is TrackerLineListItem.OrganisationUnitItem,
                 is TrackerLineListItem.ProgramStatusItem,
                 is TrackerLineListItem.ScheduledDate,
                 -> category.id
 
-                is TrackerLineListItem.ProgramAttribute -> metadata[category.uid]?.displayName
-                    ?: category.uid
-
                 is TrackerLineListItem.ProgramDataElement -> metadata[category.dataElement]?.displayName
                     ?: category.dataElement
 
-                is TrackerLineListItem.ProgramIndicator -> metadata[category.uid]?.displayName
-                    ?: category.uid
+                is TrackerLineListItem.ProgramAttribute,
+                is TrackerLineListItem.ProgramIndicator,
+                is TrackerLineListItem.Category,
+                -> metadata[category.id]?.displayName ?: category.id
             }
         }
     }

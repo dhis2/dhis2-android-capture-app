@@ -1,6 +1,10 @@
 package org.dhis2.usescases.teidashboard.dialogs.scheduling
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -113,7 +117,7 @@ class SchedulingDialogUiTest {
         composeTestRule.onNodeWithText("Done").assertExists()
     }
 
-    @Ignore("Not working")
+    @OptIn(ExperimentalTestApi::class)
     @Test
     fun selectProgramStage() {
         val programStages = listOf(
@@ -130,7 +134,8 @@ class SchedulingDialogUiTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Program stage").performClick()
+        composeTestRule.onAllNodesWithTag("INPUT_DROPDOWN").onFirst().performClick()
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(
             testTag = "INPUT_DROPDOWN_MENU_ITEM_1",

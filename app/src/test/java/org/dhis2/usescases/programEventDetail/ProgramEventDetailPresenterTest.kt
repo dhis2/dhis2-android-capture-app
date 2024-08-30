@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -68,7 +69,12 @@ class ProgramEventDetailPresenterTest {
 
         whenever(repository.getAccessDataWrite()) doReturn true
         whenever(repository.program()) doReturn Single.just(program)
-
+        whenever(
+            repository.filteredProgramEvents(),
+        ) doReturn events
+        whenever(
+            repository.filteredEventsForMap(any()),
+        ) doReturn Flowable.just(mapData)
         presenter.init()
         verify(view).setWritePermission(true)
         verify(view).setProgram(program)

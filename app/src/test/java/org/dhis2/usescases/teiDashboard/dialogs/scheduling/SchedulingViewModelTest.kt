@@ -24,6 +24,7 @@ class SchedulingViewModelTest {
         schedulingViewModel = SchedulingViewModel(
             d2 = mock(),
             resourceManager = mock(),
+            eventResourcesProvider = mock(),
             periodUtils = mock(),
         )
     }

@@ -10,10 +10,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.mapbox.geojson.Feature
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
@@ -30,6 +34,8 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.maps.extensions.toStringProperty
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -44,7 +50,7 @@ import timber.log.Timber
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
 class SearchTEIViewModel(
-    private val initialProgramUid: String?,
+    val initialProgramUid: String?,
     initialQuery: MutableMap<String, String>?,
     private val searchRepository: SearchRepository,
     private val searchRepositoryKt: SearchRepositoryKt,
@@ -57,6 +63,8 @@ class SearchTEIViewModel(
     private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
 ) : ViewModel() {
+
+    private var layersVisibility: Map<String, MapLayer> = emptyMap()
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
     val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
@@ -71,8 +79,11 @@ class SearchTEIViewModel(
     private val _refreshData = MutableLiveData(Unit)
     val refreshData: LiveData<Unit> = _refreshData
 
-    private val _mapResults = MutableLiveData<TrackerMapData>()
-    val mapResults: LiveData<TrackerMapData> = _mapResults
+    private val _mapResults = Channel<TrackerMapData>()
+    val mapResults: Flow<TrackerMapData> = _mapResults.receiveAsFlow()
+
+    private val _mapItemClicked = MutableSharedFlow<String>()
+    val mapItemClicked: Flow<String> = _mapItemClicked
 
     private val _screenState = MutableLiveData<SearchTEScreenState>()
     val screenState: LiveData<SearchTEScreenState> = _screenState
@@ -303,6 +314,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
+        SearchIdlingResourceSingleton.increment()
         viewModelScope.launch(dispatchers.io()) {
             val resultPagedList = async {
                 when {
@@ -311,7 +323,13 @@ class SearchTEIViewModel(
                     else -> null
                 }
             }
-            onPagedListReady(resultPagedList.await())
+            try {
+                onPagedListReady(resultPagedList.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                SearchIdlingResourceSingleton.decrement()
+            }
         }
     }
 
@@ -416,17 +434,23 @@ class SearchTEIViewModel(
     }
 
     fun fetchMapResults() {
+        SearchIdlingResourceSingleton.increment()
         viewModelScope.launch {
             val result = async(context = dispatchers.io()) {
                 mapDataRepository.getTrackerMapData(
                     searchRepository.getProgram(initialProgramUid),
                     queryData,
+                    layersVisibility,
                 )
             }
+
             try {
-                _mapResults.postValue(result.await())
+                val data = result.await()
+                _mapResults.send(data)
             } catch (e: Exception) {
                 Timber.e(e)
+            } finally {
+                SearchIdlingResourceSingleton.decrement()
             }
             searching = false
         }
@@ -439,45 +463,51 @@ class SearchTEIViewModel(
 
     private fun performSearch() {
         viewModelScope.launch(dispatchers.io()) {
-            if (canPerformSearch()) {
-                searching = queryData.isNotEmpty()
-                uiState = uiState.copy(
-                    clearSearchEnabled = queryData.isNotEmpty(),
-                    searchedItems = getFriendlyQueryData(),
-                )
-                when (_screenState.value?.screenState) {
-                    SearchScreenState.LIST -> {
-                        SearchIdlingResourceSingleton.increment()
-                        setListScreen()
-                        fetchListResults { flow ->
+            try {
+                if (canPerformSearch()) {
+                    searching = queryData.isNotEmpty()
+                    uiState = uiState.copy(
+                        clearSearchEnabled = queryData.isNotEmpty(),
+                        searchedItems = getFriendlyQueryData(),
+                    )
+
+                    when (_screenState.value?.screenState) {
+                        SearchScreenState.LIST -> {
+                            setListScreen()
+                            fetchListResults { flow ->
+                                flow?.let {
+                                    fetchListResults { flow ->
                             flow?.let {
                                 _refreshData.postValue(Unit)
                                 SearchIdlingResourceSingleton.decrement()
                             }
                         }
-                    }
+                    }}
+                        }
 
-                    SearchScreenState.MAP -> {
-                        SearchIdlingResourceSingleton.increment()
-                        _refreshData.postValue(Unit)
-                        setMapScreen()
-                        fetchMapResults()
-                    }
+                        SearchScreenState.MAP -> {
+                            _refreshData.postValue(Unit)
+                            setMapScreen()
+                            fetchMapResults()
+                        }
 
-                    else -> searching = false
+                        else -> searching = false
+                    }
+                } else {
+                    val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
+                        ?.minAttributesRequiredToSearch()
+                        ?: 0
+                    val message = resourceManager.getString(
+                        R.string.search_min_num_attr,
+                        minAttributesToSearch,
+                    )
+                    uiState = uiState.copy(minAttributesMessage = message)
+                    uiState.updateMinAttributeWarning(true)
+                    setSearchScreen()
+                    _refreshData.postValue(Unit)
                 }
-            } else {
-                val minAttributesToSearch = searchRepository.getProgram(initialProgramUid)
-                    ?.minAttributesRequiredToSearch()
-                    ?: 0
-                val message = resourceManager.getString(
-                    R.string.search_min_num_attr,
-                    minAttributesToSearch,
-                )
-                uiState = uiState.copy(minAttributesMessage = message)
-                uiState.updateMinAttributeWarning(true)
-                setSearchScreen()
-                _refreshData.postValue(Unit)
+            } catch (e: Exception) {
+                Timber.d(e.message)
             }
         }
     }
@@ -589,8 +619,6 @@ class SearchTEIViewModel(
         } else {
             handleInitWithoutData()
         }
-
-        SearchIdlingResourceSingleton.decrement()
     }
 
     private fun handleDisplayInListResult(hasProgramResults: Boolean) {
@@ -715,10 +743,6 @@ class SearchTEIViewModel(
         return _screenState.value?.let {
             it is SearchList
         } ?: false
-    }
-
-    fun mapDataFetched() {
-        SearchIdlingResourceSingleton.decrement()
     }
 
     fun onProgramSelected(
@@ -974,5 +998,18 @@ class SearchTEIViewModel(
                 }
             }
         return map
+    }
+
+    fun onFeatureClicked(feature: Feature) {
+        feature.toStringProperty()?.let {
+            viewModelScope.launch {
+                _mapItemClicked.emit(it)
+            }
+        }
+    }
+
+    fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
+        this.layersVisibility = layersVisibility
+        fetchMapResults()
     }
 }
