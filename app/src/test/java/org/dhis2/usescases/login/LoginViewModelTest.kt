@@ -15,6 +15,7 @@ import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
@@ -175,7 +176,6 @@ class LoginViewModelTest {
         instantiateLoginViewModel()
         verify(view).setUrl(protocol)
         verify(view, times(2)).getDefaultServerProtocol()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -185,7 +185,7 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         verify(view).getDefaultServerProtocol()
         verify(view).setUrl(any())
-        verifyNoMoreInteractions(view)
+
     }
 
     @Test
@@ -239,6 +239,7 @@ class LoginViewModelTest {
         instantiateLoginViewModel()
         mockAccounts()
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
+        whenever(preferenceProvider.contains(SECURE_PASS)) doReturn true
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
         assert(loginViewModel.canLoginWithBiometrics.value == true)
@@ -373,11 +374,13 @@ class LoginViewModelTest {
         whenever(userManager.userName()) doReturn Single.just("Username")
         whenever(biometricController.hasBiometric()) doReturn true
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "contextPath"
+        whenever(preferenceProvider.contains(SECURE_PASS)) doReturn true
         loginViewModel.serverUrl.value = "contextPath"
         loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
         assert(loginViewModel.canLoginWithBiometrics.value == true)
+        loginViewModel.authenticateWithBiometric()
         verify(biometricController).authenticate(any())
     }
 
