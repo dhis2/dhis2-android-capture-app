@@ -185,7 +185,6 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         verify(view).getDefaultServerProtocol()
         verify(view).setUrl(any())
-
     }
 
     @Test
