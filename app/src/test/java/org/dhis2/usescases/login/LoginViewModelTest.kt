@@ -231,7 +231,7 @@ class LoginViewModelTest {
     fun `Should log in with biometric successfully`() {
         instantiateLoginViewModel()
         loginViewModel.authenticateWithBiometric()
-        verify(biometricController).authenticate(any(), any())
+        verify(biometricController).authenticate(any())
     }
 
     @Test
@@ -378,7 +378,7 @@ class LoginViewModelTest {
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
         assert(loginViewModel.canLoginWithBiometrics.value == true)
-        verify(biometricController).authenticate(any(), any())
+        verify(biometricController).authenticate(any())
     }
 
     @Test(expected = Throwable::class)
