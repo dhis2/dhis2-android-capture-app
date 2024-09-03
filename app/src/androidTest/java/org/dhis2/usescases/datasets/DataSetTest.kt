@@ -46,10 +46,9 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky test, will be addressed in ANDROAPP-6443")
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Oct 2023"
+        val period = "Aug 2024"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 
