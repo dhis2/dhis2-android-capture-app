@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import org.dhis2.R;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
-import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterManager;
@@ -59,8 +58,6 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollecti
 import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
-import org.dhis2.maps.mapper.EventToEventUiComponent;
-import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
