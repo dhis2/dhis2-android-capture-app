@@ -1,11 +1,12 @@
 package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
@@ -22,46 +23,48 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
-import org.dhis2.maps.carousel.CarouselAdapter
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 
 abstract class MapManager(
     val mapView: MapView,
     val locationEngine: LocationEngine?,
-) : LifecycleObserver {
+) : LifecycleEventObserver {
 
     var map: MapboxMap? = null
     lateinit var mapLayerManager: MapLayerManager
-    var markerViewManager: MarkerViewManager? = null
-    var symbolManager: SymbolManager? = null
+    private var markerViewManager: MarkerViewManager? = null
+    private var symbolManager: SymbolManager? = null
     var onMapClickListener: MapboxMap.OnMapClickListener? = null
-    var carouselAdapter: CarouselAdapter? = null
     var style: Style? = null
     var permissionsManager: PermissionsManager? = null
     private var mapStyles: List<BaseMapStyle> = emptyList()
 
     private val colorUtils: ColorUtils = ColorUtils()
 
-    var numberOfUiIcons: Int = 2
-    val defaultUiIconLeftMargin = 8.dp
-    val defaultUiIconTopMargin = 9.dp
-    val defaultUiIconRightMargin = 9.dp
-    val defaultUiIconBottomMargin = 0.dp
-    val defaultUiIconSize = 40.dp
+    open var numberOfUiIcons: Int = 2
+    private val defaultUiIconLeftMargin = 8.dp
+    private val defaultUiIconTopMargin = 9.dp
+    private val defaultUiIconRightMargin = 9.dp
+    private val defaultUiIconBottomMargin = 0.dp
+    private val defaultUiIconSize = 40.dp
 
     fun init(
         mapStyles: List<BaseMapStyle>,
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
+        OnMapReadyIdlingResourceSingleton.countingIdlingResource.increment()
         this.mapStyles = mapStyles.ifEmpty { listOf(internalBaseMap()) }
         if (style == null) {
             mapView.getMapAsync { mapLoaded ->
@@ -69,6 +72,7 @@ abstract class MapManager(
                 this.map = mapLoaded
                 val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
+                OnMapReadyIdlingResourceSingleton.countingIdlingResource.decrement()
                 map?.setStyle(
                     baseMapManager.styleJson(
                         this.mapStyles.find { it.isDefault }
@@ -139,13 +143,26 @@ abstract class MapManager(
         map?.initCameraToViewAllElements(bounds)
     }
 
-    fun pointToLatLn(point: Point): LatLng {
+    private fun pointToLatLn(point: Point): LatLng {
         return LatLng(point.latitude(), point.longitude())
     }
 
-    fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
+    fun onLocationButtonClicked(
+        isLocationEnabled: Boolean,
+        context: Activity,
+    ) {
+        if (isLocationEnabled) {
+            centerCameraOnMyPosition { permissionManager ->
+                permissionManager?.requestLocationPermissions(context)
+            }
+        } else {
+            LocationSettingLauncher.requestEnableLocationSetting(context)
+        }
+    }
+
+    private fun centerCameraOnMyPosition(onMissingPermission: (PermissionsManager?) -> Unit) {
         val isLocationActivated =
-            map?.locationComponent?.let { it.isLocationComponentActivated } ?: false
+            map?.locationComponent?.isLocationComponentActivated ?: false
         if (isLocationActivated) {
             val isLocationEnabled = map?.locationComponent?.isLocationComponentEnabled ?: false
             if (isLocationEnabled) {
@@ -165,36 +182,6 @@ abstract class MapManager(
 
     fun onSaveInstanceState(outState: Bundle) {
         mapView.onSaveInstanceState(outState)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onStart() {
-        mapView.onStart()
-        map?.locationComponent?.onStart()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
-        mapView.onResume()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
-        mapView.onPause()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onStop() {
-        mapView.onStop()
-    }
-
-    @SuppressLint("MissingPermission")
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
-        mapView.onDestroy()
-        markerViewManager?.onDestroy()
-        symbolManager?.onDestroy()
-        map?.locationComponent?.onStop()
     }
 
     fun onLowMemory() {
@@ -297,6 +284,51 @@ abstract class MapManager(
             mapLayerManager
         } else {
             null
+        }
+    }
+
+    fun updateLayersVisibility(layerVisibility: HashMap<String, Boolean>): HashMap<String, MapLayer> {
+        layerVisibility.forEach { (sourceId, visible) ->
+            mapLayerManager.handleLayer(sourceId, visible)
+        }
+        return mapLayerManager.mapLayers
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> {
+                mapView.onCreate(null)
+            }
+
+            Lifecycle.Event.ON_START -> {
+                mapView.onStart()
+            }
+
+            Lifecycle.Event.ON_RESUME -> {
+                mapView.onResume()
+            }
+
+            Lifecycle.Event.ON_PAUSE -> {
+                mapView.onPause()
+            }
+
+            Lifecycle.Event.ON_STOP -> {
+                mapView.onPause()
+            }
+
+            Lifecycle.Event.ON_DESTROY -> {
+                markerViewManager?.onDestroy()
+                symbolManager?.onDestroy()
+                map?.locationComponent?.isLocationComponentEnabled = false
+                if (!mapView.isDestroyed) {
+                    mapView.onDestroy()
+                }
+            }
+
+            Lifecycle.Event.ON_ANY -> {
+                // no-op
+            }
         }
     }
 }

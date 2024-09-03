@@ -97,6 +97,11 @@ class EventListFragment : FragmentGlobalAbstract(), EventListFragmentView {
         presenter.init()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.clear()
+    }
+
     override fun setLiveData(pagedListLiveData: LiveData<PagedList<EventViewModel>>) {
         if (isUserLoggedIn()) {
             liveDataList?.removeObservers(viewLifecycleOwner)

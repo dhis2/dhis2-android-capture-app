@@ -14,19 +14,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.location.engine.MapboxFusedLocationEngineImpl
-import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.commons.bindings.clipWithAllRoundedCorners
 import org.dhis2.commons.bindings.dp
 import org.dhis2.commons.locationprovider.LocationProviderImpl
@@ -46,12 +49,13 @@ import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import androidx.compose.ui.unit.dp as DP
 
 class MapSelectorActivity :
     AppCompatActivity(),
-    MapActivityLocationCallback.OnLocationChanged,
-    MapboxMap.OnMapClickListener {
+    MapActivityLocationCallback.OnLocationChanged {
 
     private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -102,7 +106,6 @@ class MapSelectorActivity :
 
     private lateinit var mapboxLocationProvider: MapboxFusedLocationEngineImpl
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map_selector)
@@ -114,56 +117,50 @@ class MapSelectorActivity :
         fieldUid = intent.getStringExtra(FIELD_UID)
         initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES)
 
-        binding.mapView.clipWithAllRoundedCorners(8.dp)
+        binding.mapViewComposable.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(this@MapSelectorActivity))
+            setContent {
+                Dhis2Theme {
+                    val mapData by mapSelectorViewModel.featureCollection.collectAsState(null)
 
-        mapManager = DefaultMapManager(binding.mapView, MapLocationEngine(this), locationType)
-        mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
-        mapSelectorViewModel.featureCollection.asLiveData().observe(this) { featureCollection ->
-            mapManager.update(
-                featureCollection = featureCollection,
-                boundingBox = GetBoundingBox().getEnclosingBoundingBox(
-                    featureCollection.features()?.getLatLngPointList() ?: emptyList(),
-                ),
-            )
-            if (locationType == FeatureType.POLYGON) {
-                polygonAdapter.updateWithFeatureCollection(featureCollection)
+                    LaunchedEffect(mapData) {
+                        mapData?.let { featureCollection ->
+                            mapManager.update(
+                                featureCollection = featureCollection,
+                                boundingBox = GetBoundingBox().getEnclosingBoundingBox(
+                                    featureCollection.features()?.getLatLngPointList()
+                                        ?: emptyList(),
+                                ),
+                            )
+                            if (locationType == FeatureType.POLYGON) {
+                                polygonAdapter.updateWithFeatureCollection(featureCollection)
+                            }
+                        }
+                    }
+
+                    MapScreen(
+                        actionButtons = {
+                            IconButton(style = IconButtonStyle.TONAL, icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_my_location),
+                                    contentDescription = "",
+                                )
+                            }, onClick = ::onLocationButtonClicked)
+                        },
+                        map = {
+                            AndroidView(factory = { context ->
+                                val map = MapView(context)
+                                loadMap(map, savedInstanceState)
+                                map
+                            }) {
+                            }
+                        },
+                    )
+                }
             }
         }
 
-        lifecycle.addObserver(mapManager)
-        mapManager.onMapClickListener = this
-        mapManager.init(
-            mapStyles = mapSelectorViewModel.fetchMapStyles(),
-            onInitializationFinished = {
-                mapSelectorViewModel.init()
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        permission.ACCESS_FINE_LOCATION,
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    initLocationUpdates()
-                } else {
-                    requestLocationPermission.launch(permission.ACCESS_FINE_LOCATION)
-                }
-            },
-            onMissingPermission = { permissionsManager ->
-                if (locationProvider.hasLocationEnabled()) {
-                    permissionsManager?.requestLocationPermissions(this)
-                } else {
-                    LocationSettingLauncher.requestEnableLocationSetting(this)
-                }
-            },
-        )
-
-        binding.mapPositionButton.setOnClickListener {
-            if (locationProvider.hasLocationEnabled()) {
-                mapManager.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(this)
-                }
-            } else {
-                LocationSettingLauncher.requestEnableLocationSetting(this)
-            }
-        }
+        binding.mapViewComposable.clipWithAllRoundedCorners(8.dp)
 
         binding.saveButton.setContent {
             Button(
@@ -202,6 +199,48 @@ class MapSelectorActivity :
             binding.recycler.adapter = polygonAdapter
             binding.recycler.layoutManager = GridLayoutManager(this, 2)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
+        mapManager = DefaultMapManager(mapView, MapLocationEngine(this), locationType)
+        mapManager.also {
+            lifecycle.addObserver(it)
+            it.onCreate(savedInstanceState)
+            it.onMapClickListener = OnMapClickListener(it) { point ->
+                mapSelectorViewModel.updateSelectedGeometry(point)
+            }
+            mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
+            mapManager.init(
+                mapStyles = mapSelectorViewModel.fetchMapStyles(),
+                onInitializationFinished = {
+                    mapSelectorViewModel.init()
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            permission.ACCESS_FINE_LOCATION,
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        initLocationUpdates()
+                    } else {
+                        requestLocationPermission.launch(permission.ACCESS_FINE_LOCATION)
+                    }
+                },
+                onMissingPermission = { permissionsManager ->
+                    if (locationProvider.hasLocationEnabled()) {
+                        permissionsManager?.requestLocationPermissions(this)
+                    } else {
+                        LocationSettingLauncher.requestEnableLocationSetting(this)
+                    }
+                },
+            )
+        }
+    }
+
+    private fun onLocationButtonClicked() {
+        mapManager.onLocationButtonClicked(
+            locationProvider.hasLocationEnabled(),
+            this,
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -277,10 +316,5 @@ class MapSelectorActivity :
         intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
         setResult(RESULT_OK, intent)
         finish()
-    }
-
-    override fun onMapClick(point: LatLng): Boolean {
-        mapSelectorViewModel.updateSelectedGeometry(point)
-        return true
     }
 }
