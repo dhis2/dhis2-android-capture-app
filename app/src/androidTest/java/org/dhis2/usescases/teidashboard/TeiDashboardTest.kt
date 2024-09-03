@@ -78,7 +78,9 @@ class TeiDashboardTest : BaseTest() {
         }
 
         noteRobot {
-            clickOnNoteWithPosition(0)
+            clickOnFabAddNewNote()
+            typeNote(NOTE_VALID)
+            clickOnSaveButton()
             checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
@@ -153,7 +155,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("To fix in ANDROAPP-6109")
+    //@Ignore("To fix in ANDROAPP-6109")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
