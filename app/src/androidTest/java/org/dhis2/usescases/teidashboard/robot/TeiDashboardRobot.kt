@@ -14,7 +14,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -451,7 +450,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEnrollmentDate(enrollmentDate: DateRegistrationUIModel) {
         composeTestRule.onNode(
-            hasText("Date of enrollment:  ${enrollmentDate.day}/${enrollmentDate.month}/${enrollmentDate.year}", true),
+            hasText("Date of enrollment:  0${enrollmentDate.day}/0${enrollmentDate.month}/${enrollmentDate.year}", true),
             useUnmergedTree = true
         ).assertIsDisplayed()
     }
