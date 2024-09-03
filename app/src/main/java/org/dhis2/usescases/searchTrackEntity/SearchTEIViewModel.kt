@@ -477,12 +477,13 @@ class SearchTEIViewModel(
                             fetchListResults { flow ->
                                 flow?.let {
                                     fetchListResults { flow ->
-                            flow?.let {
-                                _refreshData.postValue(Unit)
-                                SearchIdlingResourceSingleton.decrement()
+                                        flow?.let {
+                                            _refreshData.postValue(Unit)
+                                            SearchIdlingResourceSingleton.decrement()
+                                        }
+                                    }
+                                }
                             }
-                        }
-                    }}
                         }
 
                         SearchScreenState.MAP -> {

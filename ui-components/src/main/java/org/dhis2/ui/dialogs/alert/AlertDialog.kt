@@ -181,7 +181,7 @@ fun Dhis2AlertDialogUi(
             },
             confirmButton = {
                 Button(
-                text = confirmButton.text,
+                    text = confirmButton.text,
                     modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
                     onClick = {
                         confirmButtonClick.value = true
@@ -196,11 +196,11 @@ fun Dhis2AlertDialogUi(
                         } ?: confirmButton.onClick.invoke()
                     },
                 )
-                    },
-                dismissButton = {
-            Button(
-            text = dismissButton.text,
-                onClick = dismissButton.onClick,
+            },
+            dismissButton = {
+                Button(
+                    text = dismissButton.text,
+                    onClick = dismissButton.onClick,
                 )
             },
         )

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import androidx.core.app.ActivityCompat
 
 private const val FUSED_LOCATION_PROVIDER = "fused"
@@ -17,9 +18,8 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
     private val locationManager: LocationManager by lazy {
         context.getSystemService(LOCATION_SERVICE) as LocationManager
     }
-    private val locationProvider: String? by lazy {
-        locationManager.getProviders(true).find { it == "fused" }
-    }
+
+    private val locationProvider: String by lazy { initLocationProvider() }
 
     private fun initLocationProvider(): String {
         return FUSED_LOCATION_PROVIDER
@@ -88,7 +88,7 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
 
     override fun hasLocationEnabled(): Boolean {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     override fun stopLocationUpdates() {

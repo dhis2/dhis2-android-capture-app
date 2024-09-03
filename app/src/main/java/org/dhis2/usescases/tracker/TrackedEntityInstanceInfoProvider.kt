@@ -70,7 +70,7 @@ class TrackedEntityInstanceInfoProvider(
                         attribute.value,
                         attribute.valueType,
                         attribute.optionSet,
-                    )
+                    ) ?: ""
                 } else {
                     ""
                 },

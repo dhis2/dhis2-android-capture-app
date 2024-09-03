@@ -3,13 +3,6 @@ package org.dhis2.usescases.searchte
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.IdlingResourceTimeoutException
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.Until
 import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
@@ -30,11 +23,9 @@ import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
-import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -215,7 +206,6 @@ class SearchTETest : BaseTest() {
             API_OLD_EVENTS_PATH,
             API_OLD_EVENTS_RESPONSE,
         )
-        enableComposeForms()
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
         val registerTeiDetails = createRegisterTEI()

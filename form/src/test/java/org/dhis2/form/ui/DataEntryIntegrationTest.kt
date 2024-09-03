@@ -235,14 +235,12 @@ class DataEntryIntegrationTest {
         return listOf(
             SectionUiModelImpl(
                 uid = "EVENT_DETAILS_SECTION_UID",
-                layoutId = 0,
                 label = "Event details",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "EVENT_REPORT_DATE_UID",
-                layoutId = 0,
                 label = "Report date",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -253,7 +251,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_ORG_UNIT_UID",
-                layoutId = 0,
                 label = "Org unit",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -264,7 +261,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_COORDINATE_UID",
-                layoutId = 0,
                 label = "Coordinates",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -274,14 +270,12 @@ class DataEntryIntegrationTest {
             ),
             SectionUiModelImpl(
                 uid = "EVENT_DATA_SECTION_UID",
-                layoutId = 0,
                 label = "Event data",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "qrur9Dvnyt5",
-                layoutId = 0,
                 label = "Age (years)",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -292,7 +286,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "oZg33kd9taw",
-                layoutId = 0,
                 label = "Gender",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -321,7 +314,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "F3ogKBuviRA",
-                layoutId = 0,
                 label = "Household location",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),

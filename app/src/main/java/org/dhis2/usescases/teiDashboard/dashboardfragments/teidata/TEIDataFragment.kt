@@ -167,9 +167,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
             setFragmentResultListener(SCHEDULING_DIALOG_RESULT) { _, bundle ->
                 showToast(
-                    resourceManager.formatWithEventLabel(
+                    eventResourcesProvider.formatWithProgramStageEventLabel(
                         R.string.event_label_created,
                         bundle.getString(PROGRAM_STAGE_UID),
+                        programUid,
                     ),
                 )
                 presenter.fetchEvents()
@@ -401,16 +402,6 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             SchedulingDialog.newInstance(
                 enrollment = model.currentEnrollment,
                 programStages = presenter.filterAvailableStages(model.programStages),
-                onScheduled = { programStageUid ->
-                    showToast(
-                        eventResourcesProvider.formatWithProgramStageEventLabel(
-                            R.string.event_label_created,
-                            programStageUid,
-                            programUid,
-                        ),
-                    )
-                    presenter.fetchEvents()
-                },
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
     }
@@ -593,9 +584,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     }
 
     override fun showProgramRuleErrorMessage() {
-        dashboardActivity.runOnUiThread {
-            showDescription(getString(R.string.error_applying_rule_effects))
-        }
+        dashboardActivity.executeOnUIThread()
     }
 
     companion object {

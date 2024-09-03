@@ -44,16 +44,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         val program = program().blockingGet() ?: throw NullPointerException()
         return filterPresenter
             .filteredEventProgram(program)
-            .dataSource
-            .map(mapper::eventToEventViewModel)
-        return LivePagedListBuilder(
-            object : DataSource.Factory<Event, EventViewModel>() {
-                override fun create(): DataSource<Event, EventViewModel> {
-                    return dataSource
-                }
-            },
-            20,
-        ).build()
+            .getPagingData(10)
     }
 
     override fun filteredEventsForMap(

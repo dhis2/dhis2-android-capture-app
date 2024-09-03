@@ -169,7 +169,7 @@ class ProgramEventDetailActivity :
             ?.plus(
                 ProgramEventDetailModule(
                     this,
-                   this, programUid,
+                    this, programUid,
                     OrgUnitSelectorScope.ProgramCaptureScope(programUid),
                 ),
             )
@@ -259,7 +259,8 @@ class ProgramEventDetailActivity :
             FilterManager.getInstance().clearWorkingList(true)
             FilterManager.getInstance().clearAssignToMe()
             FilterManager.getInstance().clearFlow()
-        presenter.clearOtherFiltersIfWebAppIsConfig()}
+            presenter.clearOtherFiltersIfWebAppIsConfig()
+        }
     }
 
     override fun setProgram(programModel: Program) {

@@ -12,13 +12,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.commons.R
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
-import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
-import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
+import org.dhis2.commons.R
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
 import javax.inject.Inject
@@ -106,9 +103,6 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
-        showAsDialog().let { showAsDialog ->
-            showsDialog = showAsDialog
-        }
         lifecycleScope.launch {
             viewmodel.finalSelectedOrgUnits.collect {
                 if (it.isNotEmpty()) {
@@ -127,15 +121,15 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val list by presenter.treeNodes.collectAsState()
+                val list by viewmodel.treeNodes.collectAsState()
                 OrgBottomSheet(
                     clearAllButtonText = stringResource(id = R.string.action_clear_all),
                     orgTreeItems = list,
-                    onSearch = presenter::searchByName,
+                    onSearch = viewmodel::searchByName,
                     onDismiss = { cancelOuSelection() },
-                    onItemClick = presenter::onOpenChildren,
-                    onItemSelected = presenter::onOrgUnitCheckChanged,
-                    onClearAll = presenter::clearAll,
+                    onItemClick = viewmodel::onOpenChildren,
+                    onItemSelected = viewmodel::onOrgUnitCheckChanged,
+                    onClearAll = viewmodel::clearAll,
                     onDone = { confirmOuSelection() },
                 )
             }

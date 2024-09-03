@@ -48,6 +48,8 @@ class SearchRepositoryImplKt(
 
     private lateinit var trackedEntityInstanceQuery: TrackedEntitySearchCollectionRepository
 
+    private val fetchedTeiUids = HashSet<String>()
+
     override fun searchTrackedEntities(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
@@ -75,24 +77,18 @@ class SearchRepositoryImplKt(
             allowCache = true
         }
 
-        val allowCache = !(
-            searchParametersModel != searchRepositoryJava.savedSearchParameters ||
-                !FilterManager.getInstance().sameFilters(searchRepositoryJava.savedFilters)
-            )
-
-        if (
-            searchRepositoryJava.fetchedTeiUIDs.isNotEmpty() &&
-            searchParametersModel.selectedProgram == null
-        ) {
-            trackedEntityInstanceQuery = trackedEntityInstanceQuery.excludeUids()
-                .`in`(searchRepositoryJava.fetchedTeiUIDs.toList())
+        if (fetchedTeiUids.isNotEmpty() && searchParametersModel.selectedProgram == null) {
+            trackedEntityInstanceQuery =
+                trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
         }
 
-        return if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
+        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isNotEmpty()) {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
         } else {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
         }
+
+        return pagerFlow
     }
 
     override suspend fun searchParameters(

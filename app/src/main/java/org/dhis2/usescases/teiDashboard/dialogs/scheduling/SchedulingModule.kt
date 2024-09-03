@@ -21,7 +21,7 @@ class SchedulingModule {
         SchedulingViewModelFactory(
             d2,
             resourceManager,
-           eventResourcesProvider,
+            eventResourcesProvider,
             periodUtils,
         )
 }

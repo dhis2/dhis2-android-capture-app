@@ -16,7 +16,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.SingleEventEnforcerImpl
 import org.dhis2.databinding.ActivityEventInitialBinding
@@ -53,7 +53,7 @@ class EventInitialActivity :
     lateinit var presenter: EventInitialPresenter
 
     @Inject
-    lateinit var resourceManager: ResourceManager
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     private lateinit var binding: ActivityEventInitialBinding
 
@@ -110,7 +110,6 @@ class EventInitialActivity :
                     this,
                     eventUid,
                     programStageUid,
-                    context,
                 ),
             )
         eventInitialComponent!!.inject(this)
@@ -231,9 +230,10 @@ class EventInitialActivity :
             getString(R.string.referral)
         } else {
             if (eventUid == null) {
-                resourceManager.formatWithEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                     R.string.new_event_label,
                     programStageUid,
+                    programUid,
                     1,
                     false,
                 )
@@ -246,9 +246,10 @@ class EventInitialActivity :
 
     override fun onEventCreated(eventUid: String) {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_created,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -349,15 +350,17 @@ class EventInitialActivity :
     fun confirmDeleteEvent() {
         CustomDialog(
             this,
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.delete_event_label,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.confirm_delete_event_label,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -379,9 +382,10 @@ class EventInitialActivity :
 
     override fun showEventWasDeleted() {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_was_deleted,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -391,9 +395,10 @@ class EventInitialActivity :
 
     override fun showDeleteEventError() {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.delete_event_label_error,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
