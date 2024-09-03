@@ -1,5 +1,6 @@
 package org.dhis2.usescases.orgunitselector
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -21,6 +22,7 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         composeTestRule.onNodeWithTag("ORG_TREE_ITEM_$orgUnitName")
             .performScrollTo()
             .performClick()
+        composeTestRule.onNodeWithText("Done").assertIsDisplayed()
         composeTestRule.onNodeWithText("Done").performClick()
     }
 }
