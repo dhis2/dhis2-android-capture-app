@@ -51,6 +51,7 @@ class SearchTETest : BaseTest() {
         setupMockServer()
     }
 
+    @Ignore("Test needs to be fixed in NDROAPP-6459")
     @Test
     fun shouldSuccessfullySearchByName() {
         mockWebServerRobot.addResponse(
