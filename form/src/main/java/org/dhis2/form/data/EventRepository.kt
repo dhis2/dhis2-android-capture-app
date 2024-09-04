@@ -54,10 +54,7 @@ class EventRepository(
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
 
-    private val event by lazy {
-        d2.eventModule().events().uid(eventUid)
-            .blockingGet()
-    }
+    private var event = d2.eventModule().events().uid(eventUid).blockingGet()
 
     private val programStage by lazy {
         d2.programModule()
@@ -141,7 +138,7 @@ class EventRepository(
 
     override fun list(): Flowable<List<FieldUiModel>> {
         return d2.programModule().programStageSections()
-            .byProgramStageUid().eq(event?.programStage())
+            .byProgramStageUid().eq(programStage?.uid())
             .withDataElements()
             .get()
             .flatMap { programStageSection ->
@@ -169,7 +166,7 @@ class EventRepository(
                 sectionUid = EVENT_DATA_SECTION_UID,
                 sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                     stringResource = R.string.event_data_section_title,
-                    programStageUid = event?.programStage(),
+                    programStageUid = programStage?.uid(),
                     programUid = programUid,
                 ),
                 description = null,
@@ -186,6 +183,7 @@ class EventRepository(
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {
+        event = d2.eventModule().events().uid(eventUid).blockingGet()
         val eventDataItems = mutableListOf<FieldUiModel>()
         eventDataItems.apply {
             add(createEventDetailsSection())
@@ -464,7 +462,7 @@ class EventRepository(
             sectionUid = EVENT_DETAILS_SECTION_UID,
             sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                 stringResource = R.string.event_details_section_title,
-                programStageUid = event?.programStage(),
+                programStageUid = programStage?.uid(),
                 programUid = programUid,
             ),
             description = programStage?.description(),
@@ -493,7 +491,7 @@ class EventRepository(
         return Single.fromCallable {
             val stageDataElements =
                 d2.programModule().programStageDataElements().withRenderType()
-                    .byProgramStage().eq(event?.programStage())
+                    .byProgramStage().eq(programStage?.uid())
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .blockingGet()
 
@@ -516,7 +514,7 @@ class EventRepository(
                 )
                 programStageSection.dataElements()?.forEach { dataElement ->
                     d2.programModule().programStageDataElements().withRenderType()
-                        .byProgramStage().eq(event?.programStage())
+                        .byProgramStage().eq(programStage?.uid())
                         .byDataElement().eq(dataElement.uid())
                         .one().blockingGet()?.let {
                             fields.add(
@@ -552,7 +550,8 @@ class EventRepository(
             else -> null
         }
         val friendlyValue = dataValue?.let {
-            valueRepository.blockingGetValueCheck(d2, uid).userFriendlyValue(d2)
+            valueRepository.blockingGetValueCheck(d2, uid)
+                .userFriendlyValue(d2, addPercentageSymbol = false)
         }
         val allowFutureDates = programStageDataElement.allowFutureDate() ?: false
         val formName = de?.displayFormName()

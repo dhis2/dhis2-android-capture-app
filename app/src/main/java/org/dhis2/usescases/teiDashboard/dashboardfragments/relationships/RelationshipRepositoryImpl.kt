@@ -23,7 +23,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.Relationship
-import org.hisp.dhis.android.core.relationship.RelationshipEntityType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
@@ -209,7 +208,7 @@ class RelationshipRepositoryImpl(
 
         return d2.relationshipModule().relationshipTypes()
             .withConstraints()
-            .byConstraint(RelationshipEntityType.TRACKED_ENTITY_INSTANCE, teTypeUid)
+            .byAvailableForTrackedEntityInstance(config.teiUid)
             .get().map { relationshipTypes ->
                 relationshipTypes.mapNotNull { relationshipType ->
                     val secondaryTeTypeUid = when {

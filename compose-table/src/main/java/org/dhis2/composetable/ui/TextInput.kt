@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
@@ -64,9 +65,11 @@ fun TextInput(
     textInputInteractions: TextInputInteractions,
     focusRequester: FocusRequester,
 ) {
+    val tableDimensions = LocalTableDimensions.current
     Column(
         modifier = Modifier
             .testTag(INPUT_TEST_TAG)
+            .onSizeChanged { tableDimensions.textInputHeight = it.height }
             .fillMaxWidth()
             .background(
                 color = Color.White,

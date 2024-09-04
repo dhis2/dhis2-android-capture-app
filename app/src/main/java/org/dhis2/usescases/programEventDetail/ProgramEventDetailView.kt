@@ -10,7 +10,6 @@ interface ProgramEventDetailView : AbstractActivityContracts.View {
     fun renderError(message: String)
     fun showHideFilter()
     fun setWritePermission(canWrite: Boolean)
-    fun showFilterProgress()
     fun updateFilters(totalFilters: Int)
     fun openOrgUnitTreeSelector()
     fun showPeriodRequest(periodRequest: PeriodRequest)

@@ -1,6 +1,7 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import kotlinx.coroutines.test.runTest
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -48,9 +49,7 @@ class CellTableTest {
             )
             val firstId = fakeModel.first().id!!
             clickOnCell(firstId, 1, 0)
-            composeTestRule.waitForIdle()
             typeOnInputComponent("check")
-            composeTestRule.waitForIdle()
             assertCellHasText(firstId, 1, 0, "check")
         }
     }
@@ -121,7 +120,7 @@ class CellTableTest {
     }
 
     @Test
-    fun shouldClearSelectionWhenClickingNextOnLastCell() {
+    fun shouldClearSelectionWhenClickingNextOnLastCell() = runTest {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
                 FakeModelType.MANDATORY_TABLE

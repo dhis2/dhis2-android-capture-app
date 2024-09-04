@@ -454,6 +454,7 @@ class LoginViewModelTest {
         val mockedDatabase: File = mock()
 
         instantiateLoginViewModel()
+        whenever(resourceManager.getString(any())) doReturn "Import successful"
         whenever(
             userManager.d2.maintenanceModule().databaseImportExport()
                 .importDatabase(mockedDatabase),
@@ -469,6 +470,7 @@ class LoginViewModelTest {
         testingDispatcher.scheduler.advanceUntilIdle()
         verify(view).setUrl("serverUrl")
         verify(view).setUser("userName")
+        verify(view).displayMessage("Import successful")
         verify(view).onDbImportFinished(true)
     }
 

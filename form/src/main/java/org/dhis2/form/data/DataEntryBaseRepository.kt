@@ -81,7 +81,7 @@ abstract class DataEntryBaseRepository(
         return conf.dateFormatConfiguration()
     }
 
-    fun transformSection(
+    internal fun transformSection(
         sectionUid: String,
         sectionName: String?,
         sectionDescription: String? = null,

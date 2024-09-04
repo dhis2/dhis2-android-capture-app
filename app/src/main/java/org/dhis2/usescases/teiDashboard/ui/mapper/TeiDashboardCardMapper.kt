@@ -148,7 +148,7 @@ class TeiDashboardCardMapper(
                     if (item.currentProgram().displayIncidentDate() == true) {
                         addIncidentDate(
                             list,
-                            item.currentProgram().incidentDateLabel(),
+                            item.currentProgram().displayIncidentDateLabel(),
                             item.currentEnrollment.incidentDate(),
                         )
                     }
@@ -156,7 +156,7 @@ class TeiDashboardCardMapper(
                     addEnrollmentDate(
                         item.currentProgram().uid(),
                         list,
-                        item.currentProgram().enrollmentDateLabel(),
+                        item.currentProgram().displayEnrollmentDateLabel(),
                         item.currentEnrollment.enrollmentDate(),
                     )
                 }.also { list ->
@@ -247,5 +247,4 @@ class TeiDashboardCardMapper(
         this.filter { it.first.valueType() != ValueType.IMAGE }
             .filter { it.first.valueType() != ValueType.COORDINATE }
             .filter { it.first.valueType() != ValueType.FILE_RESOURCE }
-            .filter { it.second.value()?.isNotEmpty() == true }
 }

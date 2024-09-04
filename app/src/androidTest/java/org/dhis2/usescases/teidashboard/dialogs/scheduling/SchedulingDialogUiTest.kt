@@ -18,6 +18,7 @@ import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingViewModel
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -55,7 +56,8 @@ class SchedulingDialogUiTest {
 
     @Test
     fun programStageInputNotDisplayedForOneStage() {
-        val programStages = listOf(ProgramStage.builder().uid("stageUid").displayName("PS A").build())
+        val programStages =
+            listOf(ProgramStage.builder().uid("stageUid").displayName("PS A").build())
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
         composeTestRule.setContent {
             SchedulingDialogUi(
@@ -65,7 +67,8 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
-        composeTestRule.onNodeWithText("Schedule next " + programStages.first().displayName() + "?").assertExists()
+        composeTestRule.onNodeWithText("Schedule next " + programStages.first().displayName() + "?")
+            .assertExists()
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertExists()
         composeTestRule.onNodeWithText("CatCombo *").assertExists()
@@ -133,7 +136,11 @@ class SchedulingDialogUiTest {
 
         composeTestRule.onAllNodesWithTag("INPUT_DROPDOWN").onFirst().performClick()
         composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
-        composeTestRule.onNodeWithTag("INPUT_DROPDOWN_MENU_ITEM_1").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(
+            testTag = "INPUT_DROPDOWN_MENU_ITEM_1",
+            useUnmergedTree = true
+        ).performClick()
 
         verify(viewModel).updateStage(programStages[1])
     }

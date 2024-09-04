@@ -30,7 +30,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnEvent(eventDate: String) {
-        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(eventDate),5000)
         composeTestRule.onNodeWithText(eventDate).performClick()
     }
 

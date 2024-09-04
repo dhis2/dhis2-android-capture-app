@@ -19,7 +19,7 @@ class ProgramEventDetailViewModel(
     val dispatcher: DispatcherProvider,
     val createEventUseCase: CreateEventUseCase,
 ) : ViewModel() {
-    private val progress = MutableLiveData(true)
+    private val progress = MutableLiveData(false)
     val writePermission = MutableLiveData(false)
     val eventSyncClicked = MutableLiveData<String?>(null)
     val eventClicked = MutableLiveData<Pair<String, String>?>(null)
@@ -75,10 +75,6 @@ class ProgramEventDetailViewModel(
 
     fun isEditable(eventUid: String): Boolean {
         return eventRepository.isEventEditable(eventUid)
-    }
-
-    fun displayOrganisationUnit(programUid: String): Boolean {
-        return eventRepository.displayOrganisationUnit(programUid)
     }
 
     fun onOrgUnitForNewEventSelected(

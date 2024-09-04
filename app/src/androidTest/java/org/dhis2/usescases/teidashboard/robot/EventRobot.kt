@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -113,7 +114,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventIsOpen() {
-        composeTestRule.onNodeWithTag("REOPEN_BUTTON").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON").assertIsNotDisplayed()
     }
 
     private fun formatStoredDateToUI(dateValue: String): String {

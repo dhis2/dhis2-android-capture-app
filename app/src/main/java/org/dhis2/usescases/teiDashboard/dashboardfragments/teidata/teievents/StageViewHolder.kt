@@ -45,7 +45,6 @@ internal class StageViewHolder(
         val stage = eventItem.stage!!
 
         val resourceManager = ResourceManager(itemView.context, colorUtils)
-
         composeView.setContent {
             Row(
                 modifier = Modifier

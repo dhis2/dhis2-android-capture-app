@@ -24,16 +24,15 @@ class SearchFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-    fun checkSearchCounters(filterAtPositionCount: String, filter: String, filterTotalCount: String) {
+    fun checkSearchCounters(
+        filterAtPositionCount: String,
+        filter: String,
+        filterTotalCount: String
+    ) {
         filterRobot(composeTestRule) {
             checkFilterCounter(filterTotalCount)
             checkCountAtFilter(filter, filterAtPositionCount)
             clickOnFilter()
         }
     }
-
-    fun checkTEIEnrollment() {
-
-    }
-
 }

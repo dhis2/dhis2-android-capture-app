@@ -36,6 +36,7 @@ fun enrollmentRobot(
 class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
             .performClick()
     }

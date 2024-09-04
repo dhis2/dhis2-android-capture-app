@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.extensions.autocompleteList
@@ -79,14 +80,16 @@ fun FieldProvider(
         .onSizeChanged { intSize ->
             visibleArea = Rect(
                 size = Size(intSize.width.toFloat(), intSize.height.toFloat()),
-                offset = Offset(0f, 20f),
+                offset = Offset(0f, 200f),
             )
         }
         .onFocusChanged {
             if (it.isFocused && !fieldUiModel.focused) {
                 scope.launch {
-                    bringIntoViewRequester.bringIntoView(visibleArea)
                     fieldUiModel.onItemClick()
+
+                    delay(10)
+                    bringIntoViewRequester.bringIntoView(visibleArea)
                 }
             }
         }

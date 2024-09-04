@@ -11,11 +11,9 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withChild
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -39,16 +37,6 @@ fun filterRobot(
 }
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
-
-    fun clickOnEnrollmentDateFilter() {
-        val tag = "DATE OF ENROLLMENT"
-        onView(allOf(withId(R.id.filterLayout), hasDescendant(withText(tag)))).perform(click())
-    }
-
-    fun clickOnTodayEnrollmentDate(){
-        onView(allOf(withId(R.id.today),
-            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).perform(click())
-    }
 
     fun clickOnFilter() {
         onView(withId(R.id.search_filter_general)).perform(click())

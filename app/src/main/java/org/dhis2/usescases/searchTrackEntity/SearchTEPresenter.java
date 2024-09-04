@@ -14,7 +14,6 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +21,6 @@ import androidx.annotation.RestrictTo;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.dhis2.R;
-import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
-import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
@@ -37,6 +34,8 @@ import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.schedulers.SingleEventEnforcer;
+import org.dhis2.commons.schedulers.SingleEventEnforcerImpl;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
@@ -47,12 +46,9 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +76,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final CompositeDisposable compositeDisposable;
     private final TrackedEntityType trackedEntity;
+
+    SingleEventEnforcer singleEventEnforcer = new SingleEventEnforcerImpl();
 
     private final String trackedEntityType;
 
@@ -270,6 +268,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(HashMap<String, String> queryData) {
+        singleEventEnforcer.processEvent(() -> {
+            manageEnrollClick(queryData);
+            return Unit.INSTANCE;
+        });
+    }
+
+    public void manageEnrollClick(HashMap<String, String> queryData) {
         if (selectedProgram != null)
             if (canCreateTei())
                 enroll(selectedProgram.uid(), null, queryData);
@@ -278,6 +283,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
     }
+
 
     private boolean canCreateTei() {
         boolean programAccess = selectedProgram.access().data().write() != null && selectedProgram.access().data().write();

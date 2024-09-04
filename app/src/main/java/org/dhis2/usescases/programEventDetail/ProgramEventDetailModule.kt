@@ -15,6 +15,8 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -33,6 +35,7 @@ class ProgramEventDetailModule(
     private val context: Context,
     private val view: ProgramEventDetailView,
     private val programUid: String,
+    private val orgUnitSelectorScope: OrgUnitSelectorScope,
 ) {
     @Provides
     @PerActivity
@@ -170,4 +173,9 @@ class ProgramEventDetailModule(
     @Provides
     @PerActivity
     fun provideDateUtils() = DateUtils.getInstance()
+
+    @Provides
+    @PerActivity
+    fun provideOURepositoryConfiguration(d2: D2) =
+        OURepositoryConfiguration(d2, orgUnitSelectorScope)
 }

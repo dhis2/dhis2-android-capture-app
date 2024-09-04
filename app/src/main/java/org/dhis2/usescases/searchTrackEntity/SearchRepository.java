@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.data.search.SearchParametersModel;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
@@ -17,14 +18,16 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollec
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import kotlin.Deprecated;
 
+@Deprecated(message = "Use SearchRepositoryKt instead")
 public interface SearchRepository {
 
     Observable<List<Program>> programsWithRegistration(String programTypeId);
@@ -82,4 +85,10 @@ public interface SearchRepository {
     List<String> trackedEntityTypeFields();
 
     boolean filtersApplyOnGlobalSearch();
+
+    @NotNull HashSet<String> getFetchedTeiUIDs();
+
+    SearchParametersModel getSavedSearchParameters();
+
+    FilterManager getSavedFilters();
 }

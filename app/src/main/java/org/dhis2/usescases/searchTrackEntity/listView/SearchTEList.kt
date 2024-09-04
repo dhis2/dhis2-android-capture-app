@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -29,6 +30,7 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
+import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -62,6 +64,8 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
+
+    private val KEY_SCROLL_POSITION = "scroll_position"
 
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
@@ -137,20 +141,38 @@ class SearchTEList : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?,
     ): View {
         return FragmentSearchListBinding.inflate(inflater, container, false).apply {
-            configureList(scrollView)
+            configureList(scrollView, savedInstanceState?.getInt(KEY_SCROLL_POSITION))
             configureOpenSearchButton(openSearchButton)
             configureCreateButton(createButton)
-        }.root.also {
+        }.also {
             observeNewData()
+        }.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val layoutManager = recycler.layoutManager as? LinearLayoutManager
+        layoutManager?.let {
+            outState.putInt(KEY_SCROLL_POSITION, it.findFirstCompletelyVisibleItemPosition())
         }
     }
 
-    private fun configureList(scrollView: RecyclerView) {
+    private fun configureList(
+        scrollView: RecyclerView,
+        currentVisiblePosition: Int?,
+    ) {
+        var currentPosition = currentVisiblePosition
+        val layoutManager = scrollView.layoutManager as? LinearLayoutManager
         scrollView.apply {
             adapter = listAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        SearchIdlingResourceSingleton.decrement()
+                    } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        SearchIdlingResourceSingleton.increment()
+                    }
                     if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
                         viewModel.isScrollingDown.value = false
                     }
@@ -160,11 +182,18 @@ class SearchTEList : FragmentGlobalAbstract() {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         viewModel.isScrollingDown.value = true
+                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
                     } else if (dy < 0) {
                         viewModel.isScrollingDown.value = false
+                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
                     }
                 }
             })
+            lifecycleScope.launch {
+                liveAdapter.loadStateFlow.collectLatest {
+                    scrollToPosition(currentPosition ?: 0)
+                }
+            }
         }.also {
             recycler = it
         }

@@ -84,6 +84,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
                         activity.hideProgress();
                     }
                     return Unit.INSTANCE;
+                }).onItemChangeListener(action -> {
+                    if (action.isEventDetailsRow()) {
+                        presenter.showOrHideSaveButton();
+                    }
+                    return Unit.INSTANCE;
+
                 })
                 .onFocused(() -> {
                     activity.hideNavigationBar();
@@ -178,6 +184,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void showNonEditableMessage(@NonNull String reason, boolean canBeReOpened) {
+        binding.editableReasonContainer.setVisibility(View.VISIBLE);
+
         showNonEditableReasonMessage(
                 binding.editableReasonContainer,
                 reason,
@@ -191,6 +199,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
 
     @Override
     public void hideNonEditableMessage() {
-        binding.editableReasonContainer.removeAllViews();
+        binding.editableReasonContainer.setVisibility(View.GONE);
     }
 }
