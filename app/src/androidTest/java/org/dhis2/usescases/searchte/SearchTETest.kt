@@ -193,7 +193,6 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         mockWebServerRobot.addResponse(
