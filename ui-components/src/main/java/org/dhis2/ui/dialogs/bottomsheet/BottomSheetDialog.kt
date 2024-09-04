@@ -81,7 +81,9 @@ class BottomSheetDialog(
                                         onSecondaryButtonClicked()
                                         dismiss()
                                     },
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag(SECONDARY_BUTTON_TAG),
                                 )
                             },
                             secondaryButton = {
@@ -94,7 +96,9 @@ class BottomSheetDialog(
                                         onMainButtonClicked()
                                         dismiss()
                                     },
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag(MAIN_BUTTON_TAG),
                                 )
                             },
                         )
