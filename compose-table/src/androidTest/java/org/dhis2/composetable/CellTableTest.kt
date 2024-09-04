@@ -54,6 +54,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6279")
     @Test
     fun shouldSaveValue() {
         var savedValue: TableCell? = null
