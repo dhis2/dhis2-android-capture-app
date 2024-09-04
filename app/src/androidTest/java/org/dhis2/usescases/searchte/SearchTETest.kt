@@ -68,9 +68,7 @@ class SearchTETest : BaseTest() {
             clickOnOpenSearch()
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(firstName)
-            waitToDebounce(1000)
             clickOnSearch()
-            composeTestRule.waitForIdle()
             checkListOfSearchTEI(
                 title = "First name: $firstName",
                 attributes = mapOf("Last name" to lastName),
