@@ -106,12 +106,13 @@ class BottomSheetDialog(
                     onDismiss = {
                         dismiss()
                     },
-                    content = {
-                        bottomSheetDialogUiModel.clickableWord?.let {
-                            ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
-                        }
+                    content = bottomSheetDialogUiModel.clickableWord?.let {
+                        { ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it) }
                     },
-                    showSectionDivider = false,
+                    showSectionDivider = when (bottomSheetDialogUiModel.clickableWord) {
+                        null -> true
+                        else -> false
+                    },
                 )
             }
         }
