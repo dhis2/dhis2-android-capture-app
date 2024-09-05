@@ -87,7 +87,7 @@ class SearchTETest : BaseTest() {
 
         val firstName = "asdssds"
 
-        prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
