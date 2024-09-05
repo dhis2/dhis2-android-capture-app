@@ -77,6 +77,12 @@ class DataEntryIntegrationTest {
         on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
     }
 
+    private val legendValueItem: LegendValue = LegendValue(
+        color = 0,
+        label = "Legend",
+        emptyList(),
+    )
+
     private val ruleEngineRepository: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
 
@@ -134,12 +140,8 @@ class DataEntryIntegrationTest {
                 "INPUT_NUMBER_WITH_LEGEND_UID",
                 "25",
             ),
-        ).thenAnswer { invocationOnMock ->
-            LegendValue(
-                color = 0,
-                label = "Legend",
-                emptyList(),
-            )
+        ).thenAnswer {
+            legendValueItem
         }
 
         formViewModel = FormViewModel(
@@ -251,7 +253,7 @@ class DataEntryIntegrationTest {
             observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
         )
         assert(
-            observedItems.last().find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == LegendValue(0, "Legend", emptyList()),
+            observedItems.last().find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
         )
         assert(
             observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
