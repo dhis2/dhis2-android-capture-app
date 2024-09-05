@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
@@ -262,6 +263,7 @@ class TeiDashboardTest : BaseTest() {
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
         val firstANCVisitEvent = "ANC 1st visit"
+        val orgUnit = "Ngelehun CHC"
 
         setDatePicker()
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
@@ -276,6 +278,11 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
+        }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+        enrollmentRobot(composeTestRule) {
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()
