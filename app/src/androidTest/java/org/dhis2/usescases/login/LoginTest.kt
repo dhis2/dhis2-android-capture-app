@@ -36,7 +36,6 @@ class LoginTest : BaseTest() {
         D2Manager.removeCredentials()
     }
 
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6455")
     @Test
     fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
@@ -75,6 +74,7 @@ class LoginTest : BaseTest() {
 
             // Test case - [ANDROAPP-4121](https://dhis2.atlassian.net/browse/ANDROAPP-4121)
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
+            selectUsernameField()
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clickLoginButton()

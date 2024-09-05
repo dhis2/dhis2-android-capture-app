@@ -54,6 +54,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.server_url_edit)).perform(clearText())
     }
 
+    fun selectUsernameField() {
+        onView(withId(R.id.user_name_edit)).perform(click())
+    }
+
     fun typeUsername(username: String) {
         onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
         pressImeActionButton()
