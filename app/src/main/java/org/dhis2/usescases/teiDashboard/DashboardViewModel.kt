@@ -160,7 +160,7 @@ class DashboardViewModel(
 
         _navigationBarUIState.value = _navigationBarUIState.value.copy(items = enrollmentItems)
 
-        if (navigationBarUIState.value.items.find { it.id == navigationBarUIState.value.selectedItem } == null) {
+        if (navigationBarUIState.value.items.none { it.id == navigationBarUIState.value.selectedItem }) {
             onNavigationItemSelected(navigationBarUIState.value.items.first().id)
         }
     }
