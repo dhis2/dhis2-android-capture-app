@@ -8,5 +8,6 @@ interface SyncComponentProvider {
         syncContext: SyncContext,
         dismissListener: OnDismissListener? = null,
         onSyncNavigationListener: OnSyncNavigationListener? = null,
+        onNoConnectionListener: OnNoConnectionListener? = null,
     )
 }

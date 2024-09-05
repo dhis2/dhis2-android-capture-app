@@ -1,8 +1,6 @@
 package org.dhis2.bindings
 
 import android.graphics.Outline
-import android.os.Build
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.inputmethod.EditorInfo
@@ -11,15 +9,7 @@ import android.widget.ListPopupWindow
 import android.widget.Spinner
 import android.widget.TextView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.tbuonomo.viewpagerdotsindicator.R
 import org.dhis2.commons.extensions.closeKeyboard
-import java.lang.Exception
-
-fun View.getThemePrimaryColor(): Int {
-    val value = TypedValue()
-    context.theme.resolveAttribute(R.attr.colorPrimary, value, true)
-    return value.data
-}
 
 fun View.onFocusRemoved(onFocusRemovedCallback: () -> Unit) {
     setOnFocusChangeListener { view, hasFocus ->
@@ -42,37 +32,33 @@ fun TextView.clearFocusOnDone() {
 }
 
 fun View.clipWithRoundedCorners(curvedRadio: Int = 16.dp) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(
-                    0,
-                    0,
-                    view.width,
-                    view.height + curvedRadio,
-                    curvedRadio.toFloat(),
-                )
-            }
+    outlineProvider = object : ViewOutlineProvider() {
+        override fun getOutline(view: View, outline: Outline) {
+            outline.setRoundRect(
+                0,
+                0,
+                view.width,
+                view.height + curvedRadio,
+                curvedRadio.toFloat(),
+            )
         }
-        clipToOutline = true
     }
+    clipToOutline = true
 }
 
-fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(
-                    0,
-                    0,
-                    view.width,
-                    view.height,
-                    curvedRadio.toFloat(),
-                )
-            }
+fun View.clipWithTopRightRoundedCorner(curvedRadio: Int = 16.dp) {
+    outlineProvider = object : ViewOutlineProvider() {
+        override fun getOutline(view: View, outline: Outline) {
+            outline.setRoundRect(
+                0 - curvedRadio,
+                0,
+                view.width,
+                view.height + curvedRadio,
+                curvedRadio.toFloat(),
+            )
         }
-        clipToOutline = true
     }
+    clipToOutline = true
 }
 
 fun Spinner.overrideHeight(desiredHeight: Int) {

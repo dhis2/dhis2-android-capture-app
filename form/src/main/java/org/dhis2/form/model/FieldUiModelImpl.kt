@@ -7,6 +7,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import java.io.File
 
 data class FieldUiModelImpl(
@@ -36,6 +37,9 @@ data class FieldUiModelImpl(
     override var optionSetConfiguration: OptionSetConfiguration?,
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+    override val selectableDates: SelectableDates? = null,
+    override val eventCategories: List<EventCategory>? = null,
+    override val periodSelector: PeriodSelector? = null,
     override val url: String? = null,
 ) : FieldUiModel {
 
@@ -135,6 +139,8 @@ data class FieldUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
+    override fun setSelectableDates(selectableDates: SelectableDates?) = this.copy(selectableDates = selectableDates)
+
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
@@ -178,6 +184,8 @@ data class FieldUiModelImpl(
         if (optionSet != item.optionSet) return false
         if (allowFutureDates != item.allowFutureDates) return false
         if (callback != item.callback) return false
+        if (selectableDates != item.selectableDates) return false
+        if (eventCategories != item.eventCategories) return false
 
         return true
     }

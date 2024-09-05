@@ -1,10 +1,30 @@
 package org.dhis2.ui
 
-import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+
+const val FILE_NOT_LOADED = "FILE_NOT_LOADED"
 
 data class MetadataIconData(
-    @ColorInt val programColor: Int,
-    @DrawableRes val iconResource: Int,
-    val sizeInDp: Int = 40,
-)
+    val imageCardData: ImageCardData,
+    val color: Color,
+) {
+    fun isFileLoaded(): Boolean {
+        return when (imageCardData) {
+            is ImageCardData.CustomIconData -> true
+            is ImageCardData.IconCardData -> imageCardData.iconRes != FILE_NOT_LOADED
+        }
+    }
+
+    companion object {
+        fun defaultIcon() = MetadataIconData(
+            imageCardData = ImageCardData.IconCardData(
+                "",
+                "",
+                "",
+                Color.Unspecified,
+            ),
+            color = Color.Unspecified,
+        )
+    }
+}

@@ -4,32 +4,28 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
-import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.databinding.ActivityEventScheduledBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.willShowCalendar
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventMode
-import org.dhis2.utils.customviews.PeriodDialog
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
@@ -98,7 +94,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     override fun setStage(programStage: ProgramStage, event: Event) {
         this.stage = programStage
         binding.programStage = programStage
-
         binding.scheduledEventFieldContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -108,32 +103,73 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                             ?: getString(R.string.report_date),
                         dateValue = "",
                     )
-
-                    ProvideInputDate(
-                        EventInputDateUiModel(
-                            eventDate = eventDate,
-                            allowsManualInput = false,
-                            detailsEnabled = true,
-                            onDateClick = { setEvenDateListener(programStage.periodType()) },
-                            onDateSet = {},
-                            onClear = {},
-                        ),
-
+                    val dueDate = EventDate(
+                        label = programStage.dueDateLabel() ?: getString(R.string.due_date),
+                        dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
                     )
-                    if (programStage.hideDueDate() == false) {
-                        val dueDate = EventDate(
-                            label = programStage.dueDateLabel() ?: getString(R.string.due_date),
-                            dateValue = DateUtils.uiDateFormat().format(event.dueDate() ?: ""),
-                        )
+
+                    if (willShowCalendar(programStage.periodType())) {
                         ProvideInputDate(
                             EventInputDateUiModel(
-                                eventDate = dueDate,
+                                eventDate = eventDate,
+                                allowsManualInput = false,
                                 detailsEnabled = true,
-                                onDateClick = { setDueDateListener(programStage.periodType()) },
-                                onDateSet = {},
-                                onClear = {},
+                                onDateClick = {},
+                                onDateSelected = { date ->
+                                    presenter.setEventDate(
+                                        presenter.formatDateValues(
+                                            date,
+                                        ),
+                                    )
+                                },
+                                selectableDates = presenter.getSelectableDates(program, false),
                             ),
                         )
+
+                        if (programStage.hideDueDate() == false) {
+                            ProvideInputDate(
+                                EventInputDateUiModel(
+                                    eventDate = dueDate,
+                                    allowsManualInput = false,
+                                    detailsEnabled = true,
+                                    onDateClick = {},
+                                    onDateSelected = { date ->
+                                        presenter.setDueDate(presenter.formatDateValues(date))
+                                    },
+                                    selectableDates = presenter.getSelectableDates(program, true),
+                                ),
+                            )
+                        }
+                    } else {
+                        ProvidePeriodSelector(
+                            uiModel = EventInputDateUiModel(
+                                eventDate = eventDate,
+                                detailsEnabled = true,
+                                onDateClick = { showEventDatePeriodDialog(programStage.periodType()) },
+                                onDateSelected = {},
+                                onClear = { },
+                                required = true,
+                                showField = true,
+                                selectableDates = presenter.getSelectableDates(program, false),
+                            ),
+                            modifier = Modifier,
+                        )
+
+                        if (programStage.hideDueDate() == false) {
+                            ProvidePeriodSelector(
+                                uiModel = EventInputDateUiModel(
+                                    eventDate = dueDate,
+                                    detailsEnabled = true,
+                                    onDateClick = { showDueDatePeriodDialog(programStage.periodType()) },
+                                    onDateSelected = {},
+                                    onClear = { },
+                                    required = true,
+                                    showField = true,
+                                    selectableDates = presenter.getSelectableDates(program, false),
+                                ),
+                                modifier = Modifier,
+                            )
+                        }
                     }
                 }
             }
@@ -145,10 +181,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding.name = program.displayName()
     }
 
-    private fun setEvenDateListener(periodType: PeriodType?) {
-        if (periodType == null) {
-            showCustomCalendar(false)
-        } else {
+    private fun showEventDatePeriodDialog(periodType: PeriodType?) {
+        if (periodType != null) {
             var minDate =
                 DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
             val lastPeriodDate =
@@ -174,10 +208,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         }
     }
 
-    private fun setDueDateListener(periodType: PeriodType?) {
-        if (periodType == null) {
-            showCustomCalendar(true)
-        } else {
+    private fun showDueDatePeriodDialog(periodType: PeriodType?) {
+        if (periodType != null) {
             var minDate =
                 DateUtils.getInstance().expDate(null, program.expiryDays()!!, periodType)
             val lastPeriodDate =
@@ -203,73 +235,11 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         }
     }
 
-    private fun showCustomCalendar(isDueDate: Boolean) {
-        val dialog = CalendarPicker(this)
-
-        if (isDueDate) {
-            dialog.setInitialDate(event.dueDate())
-            dialog.setScheduleInterval(stage.standardInterval() ?: 0)
-        }
-
-        if (program.expiryPeriodType() != null) {
-            val minDate = DateUtils.getInstance().expDate(
-                null,
-                program.expiryDays() ?: 0,
-                program.expiryPeriodType(),
-            )
-            dialog.setMinDate(minDate)
-        }
-
-        if (!isDueDate) {
-            dialog.setMaxDate(Date(System.currentTimeMillis() - 1000))
-        }
-        dialog.setListener(object : OnDatePickerListener {
-            override fun onNegativeClick() {
-                dialog.dismiss()
-            }
-
-            override fun onPositiveClick(datePicker: DatePicker) {
-                val date = Calendar.getInstance().apply {
-                    set(Calendar.YEAR, datePicker.year)
-                    set(Calendar.MONTH, datePicker.month)
-                    set(Calendar.DAY_OF_MONTH, datePicker.dayOfMonth)
-                    set(Calendar.HOUR, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time
-                if (isDueDate) {
-                    presenter.setDueDate(date)
-                } else {
-                    presenter.setEventDate(date)
-                }
-            }
-        })
-        dialog.show()
-    }
-
-    override fun openInitialActivity() {
-        val bundle = EventInitialActivity.getBundle(
-            program.uid(),
-            event.uid(),
-            EventCreationType.DEFAULT.name,
-            presenter.getEventTei(),
-            stage.periodType(),
-            presenter.getEnrollment()?.organisationUnit(),
-            stage.uid(),
-            event.enrollment(),
-            stage.standardInterval() ?: 0,
-            presenter.getEnrollment()?.status(),
-        )
-        startActivity(Intent(this, EventInitialActivity::class.java).apply { putExtras(bundle) })
-        finish()
-    }
-
     override fun openFormActivity() {
         val bundle = EventCaptureActivity.getActivityBundle(
             event.uid(),
             program.uid(),
-            EventMode.CHECK,
+            EventMode.SCHEDULE,
         )
         Intent(activity, EventCaptureActivity::class.java).apply {
             putExtras(bundle)

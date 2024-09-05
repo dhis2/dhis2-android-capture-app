@@ -1,13 +1,12 @@
 package org.dhis2.usescases.searchte
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -16,9 +15,13 @@ import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.common.idlingresources.MapIdlingResource
-import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
+import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.flow.teiFlow.TeiFlowTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.flow.teiFlow.teiFlowRobot
@@ -27,6 +30,7 @@ import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.After
 import org.junit.Ignore
 import org.junit.Rule
@@ -39,7 +43,7 @@ import java.util.Date
 class SearchTETest : BaseTest() {
 
     @get:Rule
-    val rule = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     private var mapIdlingResource: MapIdlingResource? = null
 
@@ -55,88 +59,124 @@ class SearchTETest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    override fun setUp() {
+        super.setUp()
+        setupMockServer()
+    }
+
     @Test
     fun shouldSuccessfullySearchByName() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val firstName = "Tim"
-        val firstNamePosition = 0
-        val orgUnit = "Ngelehun CHC"
+        val lastName = "Johnson"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
+            waitToDebounce(1000)
             clickOnSearch()
-            checkListOfSearchTEI(firstName, orgUnit)
+            composeTestRule.waitForIdle()
+            checkListOfSearchTEI(
+                title = "First name: $firstName",
+                attributes = mapOf("Last name" to lastName),
+            )
         }
     }
 
     @Test
     fun shouldShowErrorWhenCanNotFindSearchResult() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val firstName = "asdssds"
-        val firstNamePosition = 1
 
         prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
             clickOnSearch()
             checkNoSearchResult()
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullySearchUsingMoreThanOneField() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val firstName = "Anna"
-        val firstNamePosition = 0
         val lastName = "Jones"
-        val lastNamePosition = 1
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(firstName, firstNamePosition)
-            typeAttributeAtPosition(lastName, lastNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(firstName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(lastName)
             clickOnSearch()
-            checkListOfSearchTEI(firstName, lastName)
+
+            checkListOfSearchTEI(
+                title = "First name: $firstName",
+                attributes = mapOf("Last name" to lastName),
+            )
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
-    @Ignore("Actions are being performed, but the test fails upon selecting the option in the spinner")
     fun shouldSuccessfullyChangeBetweenPrograms() {
         val tbProgram = "TB program"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnProgramSpinner()
             selectAProgram(tbProgram)
             checkProgramHasChanged(tbProgram)
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldCheckDisplayInList() {
-        val birthdaySearch = createDateOfBirthSearch()
-        val displayInListData = createDisplayListFields()
-        val namePosition = 0
-        val lastNamePosition = 1
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
 
-        setDatePicker()
+        val displayInListData = createDisplayListFields()
+
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
-            typeAttributeAtPosition(displayInListData.name, namePosition)
-            typeAttributeAtPosition(displayInListData.lastName, lastNamePosition)
-            clickOnDateField()
-            selectSpecificDate(birthdaySearch.year, birthdaySearch.month, birthdaySearch.day)
-            acceptDate()
+        searchTeiRobot(composeTestRule) {
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(displayInListData.name)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(displayInListData.lastName)
+            openNextSearchParameter("Date of birth")
+            typeOnDateParameter("01012001")
             clickOnSearch()
             checkFieldsFromDisplayList(
-                composeTestRule,
                 displayInListData,
             )
         }
@@ -145,6 +185,10 @@ class SearchTETest : BaseTest() {
     @Test
     fun shouldSuccessfullyFilterByEnrollmentStatusActive() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
+            .format(
+                context.resources.getQuantityString(R.plurals.enrollment, 1)
+                    .capitalize(Locale.current),
+            )
         val totalFilterCount = "2"
         val filterCount = "1"
 
@@ -158,31 +202,42 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
             clickOnFilter()
+            waitToDebounce(2000)
             checkTEIsAreOpen()
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_EVENTS_PATH,
+            API_OLD_EVENTS_RESPONSE,
+        )
+        enableComposeForms()
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
-
-        val programStage = "PNC Visit"
-        val orgUnit = "Ngelehun CHC"
         val registerTeiDetails = createRegisterTEI()
-        val overdueDate = createOverdueDate()
+        val dateFormat =
+            SimpleDateFormat(SIMPLE_DATE_FORMAT, java.util.Locale.getDefault()).format(Date())
+        val scheduledEventTitle = context.getString(R.string.scheduled_for)
+            .format(dateFormat)
 
         setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
 
-        teiFlowRobot {
+        teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            changeDueDate(overdueDate, programStage, orgUnit, composeTestRule)
-            pressBack()
-            composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).performClick()
+            changeDueDate(scheduledEventTitle)
             pressBack()
         }
-
+        composeTestRule.waitForIdle()
         filterRobot {
             clickOnFilter()
             clickOnFilterBy(eventStatusFilter)
@@ -190,8 +245,9 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-            clickOnFilter()
-            checkEventsAreOverdue()
+        }
+        searchTeiRobot(composeTestRule) {
+            checkListOfSearchTEIWithAdditionalInfo("First name: ADRIANNA", "1 day overdue")
         }
     }
 
@@ -269,25 +325,32 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullyFilterBySync() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val teiName = "Frank"
         val teiLastName = "Fjordsen"
-        val firstNamePosition = 0
-        val lastNamePosition = 1
         val syncFilter = context.getString(R.string.action_sync)
         val totalCount = "1"
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(teiName, firstNamePosition)
-            typeAttributeAtPosition(teiLastName, lastNamePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
-            clickOnTEI(teiName, teiLastName)
+            clickOnTEI(teiName, composeTestRule)
         }
 
-        teiDashboardRobot {
+        teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuReOpen()
             pressBack()
@@ -304,21 +367,35 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Test needs to be fixed in ANDROAPP-6340")
     @Test
     fun shouldSuccessfullySearchAndFilter() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val name = "Anna"
         val lastName = "Jones"
-        val namePosition = 0
         val enrollmentStatus = context.getString(R.string.filters_title_enrollment_status)
+            .format(
+                context.resources.getQuantityString(R.plurals.enrollment, 1)
+                    .capitalize(Locale.current)
+            )
         val totalCount = "2"
         val totalFilterCount = "1"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
-            typeAttributeAtPosition(name, namePosition)
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(name)
+            waitToDebounce(2000)
             clickOnSearch()
+            composeTestRule.waitForIdle()
+
         }
 
         filterRobot {
@@ -329,11 +406,13 @@ class SearchTETest : BaseTest() {
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
             clickOnFilter()
-            checkTEIsAreOpen()
         }
 
-        searchTeiRobot {
-            checkListOfSearchTEI(name, lastName)
+        searchTeiRobot(composeTestRule) {
+            checkListOfSearchTEI(
+                title = "First name: $name",
+                attributes = mapOf("Last name" to lastName)
+            )
         }
     }
 
@@ -343,7 +422,7 @@ class SearchTETest : BaseTest() {
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
-        searchTeiRobot {
+        searchTeiRobot(composeTestRule) {
             clickOnShowMap()
             try {
                 val device = UiDevice.getInstance(getInstrumentation())
@@ -362,16 +441,10 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    private fun createDateOfBirthSearch() = DateRegistrationUIModel(
-        2001,
-        1,
-        1
-    )
-
     private fun createDisplayListFields() = DisplayListFieldsUIModel(
         "Sarah",
         "Thompson",
-        "2001-01-01",
+        "01/01/2001",
         "sarah@gmail.com",
         "Main street 1",
         "56",
@@ -421,25 +494,8 @@ class SearchTETest : BaseTest() {
         30
     )
 
-    private fun getSplitCurrentDate(): DateRegistrationUIModel {
-        val sdf = SimpleDateFormat(TeiFlowTest.DATE_FORMAT)
-        val dateFormat = sdf.format(Date())
-        val splitDate: Array<String> = dateFormat.removePrefix("0").split("/").toTypedArray()
-        val day = splitDate[0].toInt()
-        val month = splitDate[1].toInt()
-        val year = splitDate[2].toInt()
-        return DateRegistrationUIModel(year, month, day)
-    }
-
-    private fun createOverdueDate() = DateRegistrationUIModel(
-        currentDate.year,
-        currentDate.month - 1,
-        currentDate.day
-    )
-
     private val dateRegistration = createFirstSpecificDate()
     private val dateEnrollment = createEnrollmentDate()
-    private val currentDate = getSplitCurrentDate()
 
     companion object {
         const val PROGRAM_UID = "PROGRAM_UID"

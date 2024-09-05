@@ -5,21 +5,18 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.maps.model.StageStyle;
-import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
+import org.dhis2.maps.model.StageStyle;
+import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -76,9 +73,9 @@ public class SearchTEContractsModule {
 
         void setProgram(Program programSelected);
 
-        void onBackClick();
-
         void onClearClick();
+
+        void onBackClick();
 
         void onEnrollClick(HashMap<String, String> queryData);
 

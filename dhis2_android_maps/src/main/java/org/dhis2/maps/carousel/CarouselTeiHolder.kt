@@ -4,6 +4,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton.OnVisibilityChangedListener
 import org.dhis2.bindings.getEnrollmentIconsData
 import org.dhis2.bindings.hasFollowUp
 import org.dhis2.bindings.paintAllEnrollmentIcons
@@ -57,7 +59,7 @@ class CarouselTeiHolder(
             mapNavigateFab.visibility = if (data.shouldShowNavigationButton()) {
                 View.VISIBLE
             } else {
-                View.GONE
+                View.INVISIBLE
             }
             executePendingBindings()
         }
@@ -66,10 +68,8 @@ class CarouselTeiHolder(
             binding.setFollowUp(enrollments.hasFollowUp())
             val enrollmentIconDataList: List<EnrollmentIconData> =
                 programInfo.getEnrollmentIconsData(
-                    itemView.context,
                     if (selectedEnrollment != null) selectedEnrollment.program() else null,
-                    colorUtils,
-                )
+                ) { programUid -> getMetadataIconData(programUid) }
             enrollmentIconDataList.paintAllEnrollmentIcons(
                 binding.composeProgramList,
             )
@@ -159,6 +159,11 @@ class CarouselTeiHolder(
 
     override fun hideNavigateButton() {
         dataModel?.setShowNavigationButton(false)
-        binding.mapNavigateFab.hide()
+        binding.mapNavigateFab.hide(object : OnVisibilityChangedListener() {
+            override fun onHidden(fab: FloatingActionButton?) {
+                super.onHidden(fab)
+                binding.mapNavigateFab.visibility = View.INVISIBLE
+            }
+        })
     }
 }

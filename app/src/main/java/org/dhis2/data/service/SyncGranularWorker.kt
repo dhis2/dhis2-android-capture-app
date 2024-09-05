@@ -25,10 +25,18 @@
 
 package org.dhis2.data.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ServiceInfo
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.work.ForegroundInfo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import org.dhis2.App
+import org.dhis2.R
 import org.dhis2.commons.Constants.ATTRIBUTE_OPTION_COMBO
 import org.dhis2.commons.Constants.CATEGORY_OPTION_COMBO
 import org.dhis2.commons.Constants.CONFLICT_TYPE
@@ -36,9 +44,10 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.sync.ConflictType
-import java.util.Objects
 import javax.inject.Inject
 
+private const val GRANULAR_CHANNEL = "sync_granular_notification"
+private const val SYNC_GRANULAR_ID = 8071988
 class SyncGranularWorker(
     context: Context,
     workerParams: WorkerParameters,
@@ -48,11 +57,17 @@ class SyncGranularWorker(
     internal lateinit var presenter: SyncPresenter
 
     override fun doWork(): Result {
-        Objects.requireNonNull((applicationContext as App).userComponent())!!
-            .plus(SyncGranularRxModule()).inject(this)
+        (applicationContext as App).userComponent()
+            ?.plus(SyncGranularRxModule())?.inject(this)
 
         val uid = inputData.getString(UID) ?: return Result.failure()
         val conflictType = inputData.getString(CONFLICT_TYPE)?.let { ConflictType.valueOf(it) }
+
+        triggerNotification(
+            title = applicationContext.getString(R.string.app_name),
+            content = applicationContext.getString(R.string.syncing_data),
+            progress = 0,
+        )
 
         val result = when (conflictType) {
             ConflictType.PROGRAM -> {
@@ -79,6 +94,47 @@ class SyncGranularWorker(
                 )
             else -> Result.failure()
         }
+
+        cancelNotification()
         return result
+    }
+
+    private fun triggerNotification(title: String, content: String, progress: Int) {
+        val notificationManager =
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mChannel = NotificationChannel(
+                GRANULAR_CHANNEL,
+                "GranularSync",
+                NotificationManager.IMPORTANCE_HIGH,
+            )
+            notificationManager.createNotificationChannel(mChannel)
+        }
+        val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(
+            applicationContext,
+            GRANULAR_CHANNEL,
+        )
+            .setSmallIcon(R.drawable.ic_sync)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setAutoCancel(false)
+            .setProgress(100, progress, true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        setForegroundAsync(
+            ForegroundInfo(
+                SYNC_GRANULAR_ID,
+                notificationBuilder.build(),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0,
+            ),
+        )
+    }
+
+    private fun cancelNotification() {
+        val notificationManager = NotificationManagerCompat.from(
+            applicationContext,
+        )
+        notificationManager.cancel(SYNC_GRANULAR_ID)
     }
 }

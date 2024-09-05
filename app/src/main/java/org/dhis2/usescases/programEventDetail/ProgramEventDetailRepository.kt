@@ -1,22 +1,19 @@
 package org.dhis2.usescases.programEventDetail
 
-import androidx.lifecycle.LiveData
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.commons.filters.data.TextFilter
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 
 interface ProgramEventDetailRepository {
-    fun filteredProgramEvents(textFilter: TextFilter?): LiveData<PagedList<EventViewModel>>
+    fun filteredProgramEvents(): Flow<PagingData<Event>>
     fun filteredEventsForMap(): Flowable<ProgramEventMapData>
     fun program(): Single<Program?>
     fun getAccessDataWrite(): Boolean
@@ -28,5 +25,5 @@ interface ProgramEventDetailRepository {
     fun programHasCoordinates(): Boolean
     fun programHasAnalytics(): Boolean
     fun isEventEditable(eventUid: String): Boolean
-    fun textTypeDataElements(): Observable<List<DataElement>>
+    fun displayOrganisationUnit(programUid: String): Boolean
 }

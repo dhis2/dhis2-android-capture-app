@@ -51,6 +51,7 @@ val isNonStable: (String) -> Boolean = { version ->
 allprojects {
     configurations.all {
         resolutionStrategy {
+            cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
             eachDependency {
                 if (requested.group == "org.jacoco")
                     useVersion("0.8.10")

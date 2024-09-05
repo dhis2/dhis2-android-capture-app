@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -11,8 +12,8 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
@@ -47,6 +48,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.MetadataIconData
+import org.mockito.kotlin.any
 
 @ExperimentalCoroutinesApi
 class EventInitialTest {
@@ -75,6 +79,10 @@ class EventInitialTest {
 
     }
 
+    private val metadataIconProvider:MetadataIconProvider = mock{
+        on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
+    }
+
     private lateinit var viewModel: EventDetailsViewModel
 
 
@@ -91,6 +99,7 @@ class EventInitialTest {
         on { displayName() } doReturn PROGRAM_STAGE_NAME
         on { executionDateLabel() } doReturn EXECUTION_DATE
         on { generatedByEnrollmentDate() } doReturn true
+        on { uid() } doReturn "programStage"
     }
     private val catCombo: CategoryCombo = mock {
         on { uid() } doReturn CAT_COMBO_UID
@@ -152,9 +161,10 @@ class EventInitialTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
+        metadataIconProvider = metadataIconProvider
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
@@ -223,8 +233,8 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick = { viewModel.onDateClick() },
-                    onDateSet = { dateValues ->
+                    onDateClick =  {} ,
+                    onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
@@ -256,8 +266,8 @@ class EventInitialTest {
                 EventInputDateUiModel(
                     eventDate = date,
                     detailsEnabled = details.enabled,
-                    onDateClick = { viewModel.onDateClick() },
-                    onDateSet = { dateValues ->
+                    onDateClick =  {},
+                    onDateSelected = { dateValues ->
                         viewModel.onDateSet(dateValues.year, dateValues.month, dateValues.day)
                     },
                     onClear = { viewModel.onClearEventReportDate() },
@@ -286,15 +296,13 @@ class EventInitialTest {
             val catCombo by viewModel.eventCatCombo.collectAsState()
 
             ProvideCategorySelector(
-                modifier = Modifier,
+                modifier = Modifier.testTag(EMPTY_CATEGORY_SELECTOR),
                 eventCatComboUiModel = EventCatComboUiModel(
                     EventCategory("UID", "NO OPTIONS ", 0, emptyList()),
                     eventCatCombo = catCombo,
                     detailsEnabled = details.enabled,
                     currentDate = date.currentDate,
                     selectedOrgUnit = details.selectedOrgUnit,
-                    onShowCategoryDialog = {
-                    },
                     onClearCatCombo = {
                     },
                     onOptionSelected = {

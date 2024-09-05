@@ -13,6 +13,7 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -34,6 +35,7 @@ import org.dhis2.usescases.settings.GatewayValidator.Companion.max_size
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
+import org.dhis2.usescases.settings.models.ExportDbModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
@@ -48,7 +50,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.settings.LimitScope
 import timber.log.Timber
 import java.util.Locale
-import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 class SyncManagerPresenter internal constructor(
@@ -87,6 +88,12 @@ class SyncManagerPresenter internal constructor(
     val versionToUpdate: LiveData<String?> =
         versionRepository.newAppVersion.asLiveData(coroutineContext)
 
+    private val _exportedDb = MutableLiveData<ExportDbModel>()
+    val exportedDb: LiveData<ExportDbModel> = _exportedDb
+
+    private val _exporting = MutableLiveData(false)
+    val exporting: LiveData<Boolean> = _exporting
+
     init {
         checkData = PublishProcessor.create()
         compositeDisposable = CompositeDisposable()
@@ -106,11 +113,12 @@ class SyncManagerPresenter internal constructor(
                         settingsRepository.syncParameters(),
                         settingsRepository.reservedValues(),
                         settingsRepository.sms(),
-                    ) { metadataSettingsViewModel: MetadataSettingsViewModel?,
-                        dataSettingsViewModel: DataSettingsViewModel?,
-                        syncParametersViewModel: SyncParametersViewModel?,
-                        reservedValueSettingsViewModel: ReservedValueSettingsViewModel?,
-                        smsSettingsViewModel: SMSSettingsViewModel?,
+                    ) {
+                            metadataSettingsViewModel: MetadataSettingsViewModel?,
+                            dataSettingsViewModel: DataSettingsViewModel?,
+                            syncParametersViewModel: SyncParametersViewModel?,
+                            reservedValueSettingsViewModel: ReservedValueSettingsViewModel?,
+                            smsSettingsViewModel: SMSSettingsViewModel?,
                         ->
                         SettingsViewModel(
                             metadataSettingsViewModel!!,
@@ -124,13 +132,14 @@ class SyncManagerPresenter internal constructor(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { (
-                        metadataSettingsViewModel,
-                        dataSettingsViewModel,
-                        syncParametersViewModel,
-                        reservedValueSettingsViewModel,
-                        smsSettingsViewModel1,
-                    ): SettingsViewModel,
+                    {
+                            (
+                                metadataSettingsViewModel,
+                                dataSettingsViewModel,
+                                syncParametersViewModel,
+                                reservedValueSettingsViewModel,
+                                smsSettingsViewModel1,
+                            ): SettingsViewModel,
                         ->
                         view.setMetadataSettings(
                             metadataSettingsViewModel,
@@ -282,6 +291,7 @@ class SyncManagerPresenter internal constructor(
                     Constants.META_NOW -> view.onMetadataSyncInProgress()
                     Constants.DATA_NOW -> view.onDataSyncInProgress()
                 }
+
                 else -> when (workerTag) {
                     Constants.META_NOW -> view.onMetadataFinished()
                     Constants.DATA_NOW -> view.onDataFinished()
@@ -464,5 +474,33 @@ class SyncManagerPresenter internal constructor(
                 syncMeta()
             },
         )
+    }
+
+    fun onExportAndShareDB() {
+        exportDB(download = true, share = false)
+    }
+
+    fun onExportAndDownloadDB() {
+        exportDB(download = false, share = true)
+    }
+
+    private fun exportDB(download: Boolean, share: Boolean) {
+        _exporting.value = true
+        launch(context = dispatcherProvider.ui()) {
+            try {
+                val db = async(dispatcherProvider.io()) {
+                    d2.maintenanceModule().databaseImportExport()
+                        .exportLoggedUserDatabase()
+                }.await()
+                _exportedDb.postValue(ExportDbModel(file = db, share = share, download = download))
+            } catch (e: Exception) {
+                view.displayMessage(resourceManager.parseD2Error(e))
+                onExportEnd()
+            }
+        }
+    }
+
+    fun onExportEnd() {
+        _exporting.postValue(false)
     }
 }

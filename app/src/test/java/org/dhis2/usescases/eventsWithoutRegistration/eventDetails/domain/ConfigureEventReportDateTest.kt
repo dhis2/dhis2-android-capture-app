@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.event.Event
@@ -45,7 +45,7 @@ class ConfigureEventReportDateTest {
         )
 
         // And has a concrete date
-        val expectedDate = "14/2/2022"
+        val expectedDate = "14/02/2022"
 
         val event: Event = mock {
             on { eventDate() } doReturn DateUtils.uiDateFormat().parse(expectedDate)
@@ -97,7 +97,7 @@ class ConfigureEventReportDateTest {
             periodUtils = periodUtils,
         )
 
-        val tomorrow = "16/2/2022"
+        val tomorrow = "16/02/2022"
 
         whenever(
             periodUtils.getPeriodUIString(any(), any(), any()),
@@ -122,8 +122,8 @@ class ConfigureEventReportDateTest {
             scheduleInterval = 6,
         )
 
-        val lastEventDate = "13/2/2022"
-        val nextEventDate = "19/2/2022"
+        val lastEventDate = "13/02/2022"
+        val nextEventDate = "19/02/2022"
         whenever(
             repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn DateUtils.uiDateFormat().parse(lastEventDate)
@@ -147,8 +147,8 @@ class ConfigureEventReportDateTest {
             scheduleInterval = 6,
         )
 
-        val lastEventDate = "13/2/2022"
-        val nextEventDate = "19/2/2022"
+        val lastEventDate = "13/02/2022"
+        val nextEventDate = "19/02/2022"
         whenever(
             repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn null
@@ -180,8 +180,8 @@ class ConfigureEventReportDateTest {
             enrollmentId = ENROLLMENT_ID,
         )
 
-        val lastEventDate = "13/2/2022"
-        val nextEventDate = "15/2/2022"
+        val lastEventDate = "13/02/2022"
+        val nextEventDate = "15/02/2022"
         whenever(
             repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn null

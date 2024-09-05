@@ -4,14 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailRepository
@@ -20,11 +22,9 @@ import timber.log.Timber
 
 class DataSetListViewModel(
     private val dataSetDetailRepository: DataSetDetailRepository,
-    schedulerProvider: SchedulerProvider,
     val filterManager: FilterManager,
     val matomoAnalyticsController: MatomoAnalyticsController,
-    private val dispatcher: DispatcherProvider,
-
+    dispatcher: DispatcherProvider,
 ) : ViewModel() {
 
     private val _datasets = MutableLiveData<List<DataSetDetailModel>>()
@@ -38,37 +38,34 @@ class DataSetListViewModel(
     val selectedSync = MutableLiveData<Action<DataSetDetailModel>>()
 
     init {
-
         viewModelScope.launch(dispatcher.io()) {
 
-            val datasets = async {
-                filterManager.asFlowable()
-                    .startWith(filterManager)
-                    .flatMap { filterManager: FilterManager ->
-
-                        dataSetDetailRepository.dataSetGroups(
-                            filterManager.orgUnitUidsFilters,
-                            filterManager.periodFilters,
-                            filterManager.stateFilters,
-                            filterManager.catOptComboFilters,
-                        )
-                    }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe({
+            filterManager.asFlowable()
+                .startWith(filterManager)
+                .flatMap { filterManager: FilterManager ->
+                    dataSetDetailRepository.dataSetGroups(
+                        filterManager.orgUnitUidsFilters,
+                        filterManager.periodFilters,
+                        filterManager.stateFilters,
+                        filterManager.catOptComboFilters,
+                    )
+                }
+                .asFlow()
+                .catch { Timber.d(it) }
+                .collectLatest {
+                    withContext(dispatcher.ui()) {
                         _datasets.value = it
-                    }) { t: Throwable? -> Timber.d(t) }
-            }
-            val permissions = async {
-                dataSetDetailRepository.canWriteAny()
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe({
+                    }
+                }
+
+            dataSetDetailRepository.canWriteAny()
+                .asFlow()
+                .catch { Timber.d(it) }
+                .collectLatest {
+                    withContext(dispatcher.ui()) {
                         _canWrite.value = it
-                    }) { t: Throwable? -> Timber.e(t) }
-            }
-            datasets.await()
-            permissions.await()
+                    }
+                }
         }
     }
 

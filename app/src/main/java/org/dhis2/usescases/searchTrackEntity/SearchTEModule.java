@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.animations.CarouselViewAnimations;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
+import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.data.FilterRepository;
@@ -19,10 +21,12 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.reporting.CrashReportController;
 import org.dhis2.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
-import org.dhis2.data.dhislogic.DhisPeriodUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
@@ -35,6 +39,7 @@ import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.form.ui.FieldViewModelFactoryImpl;
 import org.dhis2.form.ui.LayoutProviderImpl;
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl;
+import org.dhis2.form.ui.provider.DisplayNameProvider;
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
@@ -63,7 +68,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -143,17 +147,48 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(@NonNull D2 d2, FilterPresenter filterPresenter,
+    SearchRepository searchRepository(@NonNull D2 d2,
+                                      FilterPresenter filterPresenter,
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
-                                      DhisPeriodUtils periodUtils, Charts charts,
+                                      DhisPeriodUtils periodUtils,
+                                      Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
                                       SearchTEIRepository searchTEIRepository,
-                                      ThemeManager themeManager) {
-        return new SearchRepositoryImpl(teiType, initialProgram, d2, filterPresenter, resources,
-                searchSortingValueSetter, periodUtils, charts, crashReportController, networkUtils, searchTEIRepository,
-                themeManager);
+                                      ThemeManager themeManager,
+                                      MetadataIconProvider metadataIconProvider) {
+        return new SearchRepositoryImpl(teiType,
+                initialProgram,
+                d2,
+                filterPresenter,
+                resources,
+                searchSortingValueSetter,
+                periodUtils,
+                charts,
+                crashReportController,
+                networkUtils,
+                searchTEIRepository,
+                themeManager,
+                metadataIconProvider);
+    }
+
+    @Provides
+    @PerActivity
+    SearchRepositoryKt searchRepositoryKt(
+            SearchRepository searchRepository,
+            D2 d2,
+            DispatcherProvider dispatcherProvider,
+            FieldViewModelFactory fieldViewModelFactory,
+            MetadataIconProvider metadataIconProvider
+    ) {
+        return new SearchRepositoryImplKt(
+                searchRepository,
+                d2,
+                dispatcherProvider,
+                fieldViewModelFactory,
+                metadataIconProvider
+        );
     }
 
     @Provides
@@ -168,13 +203,13 @@ public class SearchTEModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            ColorUtils colorUtils
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
     ) {
         return new FieldViewModelFactoryImpl(
-                true,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(moduleContext, false, colorUtils),
-                        new LongTextUiColorFactoryImpl(moduleContext, false, colorUtils),
+                        new FormUiModelColorFactoryImpl(moduleContext, colorUtils),
+                        new LongTextUiColorFactoryImpl(moduleContext, colorUtils),
                         false
                 ),
                 new LayoutProviderImpl(),
@@ -182,7 +217,8 @@ public class SearchTEModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -217,11 +253,23 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchSortingValueSetter searchSortingValueSetter(Context context, D2 d2, EnrollmentUiDataHelper enrollmentUiDataHelper) {
+    SearchSortingValueSetter searchSortingValueSetter(
+            Context context,
+            D2 d2,
+            EnrollmentUiDataHelper enrollmentUiDataHelper,
+            ResourceManager resourceManager) {
         String unknownLabel = context.getString(R.string.unknownValue);
         String eventDateLabel = context.getString(R.string.most_recent_event_date);
-        String enrollmentStatusLabel = context.getString(R.string.filters_title_enrollment_status);
-        String enrollmentDateDefaultLabel = context.getString(R.string.enrollment_date);
+        String enrollmentStatusLabel = resourceManager.formatWithEnrollmentLabel(
+                initialProgram,
+                R.string.filters_title_enrollment_status,
+                1,
+                false);
+        String enrollmentDateDefaultLabel = resourceManager.formatWithEnrollmentLabel(
+                initialProgram,
+                R.string.enrollment_date_V2,
+                1,
+                false);
         String uiDateFormat = DateUtils.SIMPLE_DATE_FORMAT;
         return new SearchSortingValueSetter(d2,
                 unknownLabel,
@@ -248,20 +296,41 @@ public class SearchTEModule {
     @PerActivity
     SearchTeiViewModelFactory providesViewModelFactory(
             SearchRepository searchRepository,
+            SearchRepositoryKt searchRepositoryKt,
             MapDataRepository mapDataRepository,
             NetworkUtils networkUtils,
             D2 d2,
-            FilterRepository filterRepository
+            ResourceManager resourceManager,
+            DisplayNameProvider displayNameProvider,
+            FilterManager filterManager
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
+                searchRepositoryKt,
                 new SearchPageConfigurator(searchRepository),
                 initialProgram,
                 initialQuery,
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2)
+                new MapStyleConfiguration(d2),
+                resourceManager,
+                displayNameProvider,
+                filterManager
+        );
+    }
+
+    @Provides
+    @PerActivity
+    DisplayNameProvider provideDisplayNameProvider(
+            D2 d2,
+            DhisPeriodUtils periodUtils
+    ) {
+        return new DisplayNameProviderImpl(
+                new OptionSetConfiguration(d2),
+                new OrgUnitConfiguration(d2),
+                new FileResourceConfiguration(d2),
+                periodUtils
         );
     }
 

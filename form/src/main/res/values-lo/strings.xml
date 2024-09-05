@@ -36,7 +36,6 @@
     <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
     <string name="enter_text">ຂຽນຄໍາຕອບ</string>
     <string name="due_date">ວັນທີຕ້ອງແລ້ວ</string>
-    <string name="event_date">ວັນທີເຫດການ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
     <string name="review">ທົບທວນຄືນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
@@ -51,9 +50,6 @@
     <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
-    <string name="enrollment_data_section_label">ຂໍ້ມູນການລົງທະບຽນ</string>
-    <string name="enrolling_ou">ລົງທະບຽນໜ່ວຍງານ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>
-    <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
     <string name="incident_date">ວັນທີເດືອນປີທີ່ເຫດການເກີດຂື້ນ</string>
     </resources>

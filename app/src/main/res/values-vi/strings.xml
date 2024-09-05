@@ -119,9 +119,6 @@
     <string name="latitude">Vĩ độ</string>
     <string name="longitude">Kinh độ</string>
     <string name="new_event">Sự kiện mới</string>
-    <string name="failed_insert_event">Lỗi khi thêm Sự Kiện mới</string>
-    <string name="event_created">Sự kiện đã tạo</string>
-    <string name="event_updated">Sự kiện đã cập nhật</string>
     <string name="one_time">Một lần</string>
     <string name="permanent">Cố định</string>
 
@@ -134,18 +131,13 @@
     <string name="datavalue_saved">Giá trị đã được lưu!</string>
     <string name="there_is_no_available_period">Không có thời điểm để chọn.</string>
     <!--Event Detail-->
-    <string name="event_date">Ngày sự kiện</string>
     <string name="due_date">Ngày đến hạn</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
-    <string name="delete_event">Xóa sự kiện</string>
-    <string name="confirm_delete_event">Bạn có chắc chắn muốn xóa sự kiện này?</string>
-    <string name="event_was_deleted">Sự kiện đã được xóa</string>
     <string name="total">Tổng số</string>
     <string name="most_recent_event_date">Ngày sự kiện gần nhất</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Danh sách đăng ký</string>
     <string name="active_programs">Các chương trình đang hoạt động</string>
@@ -157,20 +149,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Xem Chi Tiết</string>
     <string name="view_more">XEM THÊM</string>
-    <string name="enrolling_ou">Đơn Vị Đăng Ký:</string>
     <string name="follow_up">Theo dõi</string>
     <string name="follow_up_enabled">Đã bật theo dõi</string>
     <string name="follow_up_disabled">Đã tắt theo dõi</string>
     <string name="deactivate">Không hoạt động</string>
     <string name="program_not_allow_events">Chương trình này không cho phép thêm sự kiện</string>
 
-    <!--DONE TASKS-->
     <string name="events">sự kiện</string>
     <string name="done_task">Trang chủ</string>
     <string name="app_info">Thông Tin Ứng Dụng</string>
     <string name="log_out">Đăng Xuất</string>
     <string name="block_session">Khóa Phiên</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Phút</string>
     <string name="fifteen_minute">15 Phút</string>
@@ -241,18 +230,15 @@
     <string name="add_note">Thêm ghi chú</string>
     <string name="revert">Hoàn tác</string>
     <string name="activated">Đã hoạt động</string>
-    <string name="enroll_in">Đăng ký vào %s</string>
     <string name="missing_mandatory_fields_title">Thiếu trường dữ liệu bắt buộc</string>
     <string name="missing_mandatory_fields_text">Một số trường bắt buộc bị thiếu. Nếu bạn muốn quay lại, tất cả các thông tin đã lưu sẽ bị xóa.</string>
     <string name="missing_mandatory_fields_text_not_delete">Một số trường bắt buộc nhập bị thiếu. Nếu bạn muốn quay lại, vui lòng nhập giá trị cho chúng</string>
     <string name="missing_mandatory_fields_events">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="title_delete_go_back">Dữ liệu của bạn chưa được lưu</string>
     <string name="delete_go_back">Nếu bạn quay lại bây giờ, tất cả thông tin đã nhập sẽ bị xóa.</string>
-    <string name="missing_mandatory_fields_events_2.0">Một số trường bắt buộc nhập bị thiếu:\n %s\n Bạn có thể quay trở lại bây giờ, nhưng sự kiện này sẽ không thể hoàn tất.</string>
     <string name="missing_mandatory_fields_go_back">Xóa và quay lại</string>
     <string name="error_fields">Một vài trường dữ liệu có lỗi:\n %s\nVui lòng kiểm tra.</string>
     <string name="missing_mandatory_fields_finish">Một số trường bắt buộc bị thiếu. Bạn có thể lưu biểu nhập và tắt, nhưng sự kiện chưa hoàn tất.</string>
-    <string name="enrollment_coordinates">Tọa độ đăng ký</string>
     <string name="tei_coordinates">Tọa độ của </string>
 
     <!--EVENT SUMMARY-->
@@ -310,7 +296,6 @@
     <string name="qr_error_id">Mã QR không hợp lệ</string>
     <string name="qr_error_attr">Không thể thêm thuộc tính này</string>
     <string name="qr_error_enrollment">Không thể đăng ký</string>
-    <string name="qr_error_event">Không thể thêm sự kiện này</string>
 
     <string name="jira_report">Báo cáo vấn đề lên Jira</string>
     <string name="about">Giới thiệu</string>
@@ -457,17 +442,14 @@
     <string name="finish">Lưu</string>
     <string name="error_fields_title">Các trường dữ liệu có lỗi</string>
     <string name="error_fields_events">Một số trường dữ liệu có lỗi. Chúng chưa được lưu. Xin vui lòng kiểm tra lại.</string>
-    <string name="event_reopened">Bây giờ sự kiện này có thể chỉnh sửa</string>
     <string name="unique_warning">Giá trị phải là duy nhất, có một giá trị bị trùng. Nó chưa được lưu lại. Xin vui lòng kiểm tra. </string>
     <string name="unique_coincidence_found">Có một sự trùng lặp trong trường duy nhất. Xin vui lòng kiểm tra lại biểu nhập để lưu Đăng ký này. </string>
     <string name="please_wait">Xin vui lòng đợi</string>
     <string name="skip">Bỏ qua</string>
     <string name="reschedule">Sửa lịch hẹn</string>
-    <string name="event_was_skipped">Sự kiện đã được đánh dấu là đã bỏ qua</string>
     <string name="no_intructions">Không có thông tin cho màn hình này</string>
     <string name="event_overdue">Quá hạn</string>
     <string name="unsupported_program_rule">Có một quy tắc chương trình không được hỗ trợ. Vui lòng kiểm tra tài liệu.</string>
-    <string name="delete_event_error">Sự kiện này chưa được tạo.</string>
     <string name="empty_description">Không có thông tin cho trường dữ liệu này</string>
     <string name="biometrics_dialog_title">Xóa hết thông tin đăng nhập</string>
     <string name="biometrics_first_use_text">Để có thể đăng nhập bằng cách sử dụng máy quét dấu vân tay, trước tiên bạn cần phải sử dụng cách mặc định.</string>
@@ -521,10 +503,8 @@
     <string name="relationship_without_enrollment">Hồ sơ bạn đang truy suất không có đăng ký. Bạn không thể mở bảng trình bày dữ liệu</string>
     <string name="formatting_error">Lỗi định dạng</string>
     <string name="dashboard_menu_delete_tei_v2">Xóa %s</string>
-    <string name="dashboard_menu_delete_enrollment">Chỉ xóa đăng ký</string>
     <string name="delete_authority_error">Bạn không có quyền để xóa dữ liệu này</string>
     <string name="validation_url">Đường dẫn liên kết không đúng</string>
-    <string name="uncomplete_authority_error">Bạn không có quyền để mở-lại sự kiện này.</string>
     <string name="adjusting_form">Đang điều chỉnh biểu nhập...</string>
 
     <string name="sms_receiver_number">Số người nhận</string>
@@ -616,7 +596,6 @@
     <string name="event_tei_limits_v2">Cài đặt bị giới hạn %s\n Sự kiện: %s/%s Đối tượng theo dõi: %s/%s</string>
     <string name="enrollment_data_hide">Ẩn dữ liệu đăng ký</string>
     <string name="enrollment_data_show">Hiển thị dữ liệu đăng ký</string>
-    <string name="enrollment_data_section_label">Dữ liệu đăng ký</string>
     <string name="sms_enabled">Mô đun SMS đã bật</string>
     <string name="sms_disabled">Mô đun SMS đã tắt</string>
     <string name="sms_downloading_data">Đang tải xuống dữ liệu cho mô đun SMS. Vui lòng đợi</string>
@@ -626,7 +605,6 @@
     <string name="disable_pin_locked">Không hiển thị lại màn hình khóa</string>
     <string name="set_pin">Cài đặt mã pin</string>
     <string name="conflict">Xung đột</string>
-    <string name="event_date_in_future_message">Sự kiện này không thể có ngày trong tương lai. Vui lòng thay đổi nó.</string>
     <string name="change_event_date">Thay đổi ngày</string>
     <string name="go_back">Trở lại</string>
     <string name="data_sets">Biểu nhập</string>
@@ -640,7 +618,6 @@
     <string name="interval_hour_ago">%d giờ trước</string>
     <string name="interval_yesterday">Hôm Qua</string>
     <string name="enrollment_single_section_label">Thuộc tính - %s</string>
-    <string name="program_selector">Các chương trình đăng ký</string>
     <string name="select_time">Chọn thời gian</string>
     <string name="enter_letter">Nhập ký tự</string>
     <string name="enter_unit_interval">Nhập số từ 0 đến 1</string>
@@ -686,7 +663,6 @@
     <string name="complete_anyway">Hoàn tất luôn</string>
     <string name="fk_message">Thiếu %s %s từ %s %s</string>
     <string name="filters_title_event_status">Trạng thái sự kiện</string>
-    <string name="filters_title_enrollment_status">Trạng thái đăng ký</string>
     <string name="enrollment_date">Ngày đăng ký</string>
     <string name="dataset_empty_list_can_create">Không có dữ liệu. Bấm \"+\" để tạo hồ sơ mới.</string>
     <string name="dataset_emtpy_list_can_not_create">Không có dữ liệu. Bạn không có quyền để tạo hồ sơ mới.</string>
@@ -739,7 +715,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Quan hệ với bệnh nhân</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
@@ -786,8 +761,6 @@
     <string name="from_gallery">Chọn từ thư viện ảnh</string>
     <string name="data_set_quality_check_done">Hoàn thành!</string>
     <string name="break_glass_dialog_title">Chương trình này đã được bảo vệ</string>
-    <string name="break_glass_dialog_description">Bạn phải cung cấp lý do để kiểm tra đăng ký trong chương trình được bảo vệ này. Tất cả các thay đổi sẽ được lưu lại. </string>
-    <string name="break_glass_reason">Lý do để kiểm tra đăng ký</string>
     <string name="break_glass_hint">Mô tả lý do ở đây</string>
     <string name="authenticating">Đang xác thực</string>
     <string name="login_error_no_dhis_instance">Đường dẫn liên kết đã cung cấp không phải là đường dẫn đến máy chủ DHIS2</string>
@@ -812,7 +785,6 @@
     <string name="edition_no_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
     <string name="event_date_not_in_orgunit_range">Dữ liệu này không thể sửa bởi vì đơn vị đã bị đóng</string>
     <string name="edition_no_catcombo_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    <string name="edition_enrollment_is_no_open">Dữ liệu này không thể chỉnh sửa vì các đăng ký đã hoàn tất hoặc đã hủy. </string>
     <string name="edition_orgunit_capture_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
     <string name="reload_list">Đặt lại Tìm Kiếm</string>
     <string name="error_tei_online_search_title">Tìm kiếm trực tuyến trả về tin nhắn sau: </string>
@@ -857,7 +829,6 @@
     <string name="account_disable_title">Tài khoản đã bị vô hiệu hóa</string>
     <string name="account_disable_message">Tài khoản của bạn đã bị vô hiệu hóa bởi quản lý chương trình.</string>
     <string name="search_unable_search_outside">Để tìm kiếm bên ngoài chương trình này, mở biểu tìm kiếm và điền một trong những trường %ssau:</string>
-    <string name="enrollment_org_unit">Đơn vị đăng ký</string>
     <string name="customactivityoncrash_error_activity_build_version">Phiên bản cài đặt: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Ngày cài đặt: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Ngày hiện tại: %s</string>

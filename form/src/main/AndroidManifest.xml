@@ -15,6 +15,7 @@
         </provider>
 
         <activity android:name=".data.scan.ScanCaptureActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:exported="false"/>
 
     </application>

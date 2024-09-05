@@ -33,15 +33,26 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
 import kotlin.collections.CollectionsKt;
+import kotlinx.coroutines.CoroutineScope;
+import kotlinx.coroutines.flow.Flow;
+import kotlinx.coroutines.flow.MutableSharedFlow;
+import kotlinx.coroutines.flow.MutableStateFlow;
 
 public class FilterManager implements Serializable {
 
     public void publishData() {
         filterProcessor.onNext(this);
+        if (scope != null) {
+            FilterManagerExtensionsKt.emit(this, scope, filterFlow);
+        }
     }
 
     public void setCatComboAdapter(CatOptCombFilterAdapter adapter) {
         this.catComboAdapter = adapter;
+    }
+
+    public void clearFlow() {
+        this.scope = null;
     }
 
     public enum PeriodRequest {
@@ -91,6 +102,9 @@ public class FilterManager implements Serializable {
     );
 
     private FlowableProcessor<FilterManager> filterProcessor;
+    private MutableSharedFlow<Integer> filterFlow;
+
+    private CoroutineScope scope;
     private FlowableProcessor<Boolean> ouTreeProcessor;
     private FlowableProcessor<Pair<PeriodRequest, Filters>> periodRequestProcessor;
     private FlowableProcessor<String> catOptComboRequestProcessor;
@@ -137,7 +151,7 @@ public class FilterManager implements Serializable {
         eventStatusFilters = new ArrayList<>();
         enrollmentStatusFilters = new ArrayList<>();
         assignedFilter = false;
-        followUpFilter =false;
+        followUpFilter = false;
         sortingItem = null;
 
         ouFiltersApplied = new ObservableField<>(0);
@@ -151,6 +165,7 @@ public class FilterManager implements Serializable {
         followUpFilterApplied = new ObservableField<>(0);
 
         filterProcessor = PublishProcessor.create();
+        filterFlow = FilterManagerExtensionsKt.initFlow(this);
         ouTreeProcessor = PublishProcessor.create();
         periodRequestProcessor = PublishProcessor.create();
         catOptComboRequestProcessor = PublishProcessor.create();
@@ -258,7 +273,7 @@ public class FilterManager implements Serializable {
         boolean changed = true;
         if (remove) {
             enrollmentStatusFilters.remove(enrollmentStatus);
-        } else if (!enrollmentStatusFilters.contains(enrollmentStatus)){
+        } else if (!enrollmentStatusFilters.contains(enrollmentStatus)) {
             enrollmentStatusFilters.clear();
             enrollmentStatusFilters.add(enrollmentStatus);
             observableEnrollmentStatus.set(enrollmentStatus);
@@ -296,7 +311,7 @@ public class FilterManager implements Serializable {
         publishData();
     }
 
-    public void addOrgUnits(List<OrganisationUnit> ouList){
+    public void addOrgUnits(List<OrganisationUnit> ouList) {
         ouFilters.clear();
         ouFilters.addAll(ouList);
         liveDataOUFilter.setValue(ouFilters);
@@ -352,7 +367,13 @@ public class FilterManager implements Serializable {
     }
 
     public Flowable<FilterManager> asFlowable() {
+        this.scope = null;
         return filterProcessor;
+    }
+
+    public Flow<Integer> asFlow(CoroutineScope scope) {
+        this.scope = scope;
+        return filterFlow;
     }
 
     public FlowableProcessor<Pair<PeriodRequest, Filters>> getPeriodRequest() {

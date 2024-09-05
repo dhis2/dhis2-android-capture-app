@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Випадок</string>
     <string name="no_data">Немає даних</string>
     <string name="feature_configuration">Конфігурація функції</string>
     <string name="change_calendar_view">Змінити вид календаря</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Аналітика</string>
     <string name="navigation_tasks">Завдання</string>
     <string name="navigation_programs">Програми</string>
-    <string name="navigation_events">Випадки</string>
     <string name="navigation_relationships">Зв\'язки</string>
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>
@@ -74,6 +72,8 @@
     <string name="enrollment_status_completed">Завершити</string>
     <string name="enrollment_status_cancelled">Скасовано</string>
     <string name="record_marked_for_deletion">Цей запис позначено для видалення. Ви не можете отримати до нього доступ.</string>
+
+    <string name="enrollment_org_unit">Організаційний підрозділ, який здійснює реєстрацію</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Сьогодні</string>
@@ -206,6 +206,7 @@
     <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
     <string name="unsupported_field_description">Це поле недоступне в мобільній версії</string>
     <string name="add_image">Додати зображення</string>
+    <string name="add_file">Додати файл</string>
     <string name="action_ok">OK</string>
     <string name="enable_location_message">Розташування Вашого пристрою відключено. Будь ласка, увімкніть його для отримання координат</string>
     <string name="keep_editing">Продовжити редагування</string>
@@ -214,4 +215,24 @@
     <string name="complete">Завершити</string>
     <string name="default_table_header_label">Значення</string>
     <string name="discard_changes">Відхилити внесені зміни</string>
-    </resources>
+    <string name="default_empty_dataset_section_label">Дані</string>
+    <string name="overdue_today">Сьогодні</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d день прострочення</item>
+        <item quantity="few">%d днів прострочення</item>
+        <item quantity="many">%d днів прострочення</item>
+        <item quantity="other">%d днів прострочено</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d прострочено на місяць</item>
+        <item quantity="few">%d прострочено на кілька місяців</item>
+        <item quantity="many">%d прострочено на кілька місяців</item>
+        <item quantity="other">%d місяців прострочено</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d прострочено на рік</item>
+        <item quantity="few">%d роками прострочені</item>
+        <item quantity="many">%d роками прострочені</item>
+        <item quantity="other">%d років прострочено</item>
+    </plurals>
+</resources>

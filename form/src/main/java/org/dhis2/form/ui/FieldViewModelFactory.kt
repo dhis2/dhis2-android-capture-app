@@ -1,15 +1,16 @@
 package org.dhis2.form.ui
 
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
+import org.dhis2.form.model.PeriodSelector
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRendering
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldViewModelFactory {
     fun create(
@@ -31,15 +32,10 @@ interface FieldViewModelFactory {
         featureType: FeatureType? = null,
         autoCompleteList: List<String>? = null,
         orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+        selectableDates: SelectableDates? = null,
+        eventCategories: List<EventCategory>? = null,
+        periodSelector: PeriodSelector? = null,
         url: String?,
-    ): FieldUiModel
-
-    fun createForAttribute(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        value: String?,
-        editable: Boolean,
-        optionSetConfiguration: OptionSetConfiguration?,
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

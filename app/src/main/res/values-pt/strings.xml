@@ -118,9 +118,6 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">Novo evento</string>
-    <string name="failed_insert_event">Falha ao inserir novo Evento</string>
-    <string name="event_created">Evento criado</string>
-    <string name="event_updated">Evento atualizado</string>
     <string name="one_time">Um tempo</string>
     <string name="permanent">Permanente</string>
 
@@ -133,18 +130,13 @@
     <string name="datavalue_saved">O valor é salvo!</string>
     <string name="there_is_no_available_period">Não há períodos disponíveis para seleção.</string>
     <!--Event Detail-->
-    <string name="event_date">Data de incidente</string>
     <string name="due_date">Data de vencimento</string>
     <string name="cat_combo">Combinação de categoria</string>
     <string name="date_default">DD/MM/AAAA</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Apagar</string>
-    <string name="delete_event">Suprimir evento</string>
-    <string name="confirm_delete_event">Tem certeza de que deseja excluir este evento?</string>
-    <string name="event_was_deleted">Evento excluído com sucesso</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Data do evento mais recente</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Lista de Inscrições</string>
     <string name="active_programs">Programas activos</string>
@@ -156,20 +148,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Veja detalhes</string>
     <string name="view_more">VEJA MAIS</string>
-    <string name="enrolling_ou">Inscrição UO:</string>
     <string name="follow_up">Acompanhamento</string>
     <string name="follow_up_enabled">Acompanhamento ativado</string>
     <string name="follow_up_disabled">Acompanhamento desativado</string>
     <string name="deactivate">Desactivar</string>
     <string name="program_not_allow_events">Este programa não permite mais eventos</string>
 
-    <!--DONE TASKS-->
     <string name="events">eventos</string>
     <string name="done_task">Início</string>
     <string name="app_info">Informações do aplicativo</string>
     <string name="log_out">Sair</string>
     <string name="block_session">Bloquear Sessão</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Minuto</string>
     <string name="fifteen_minute">15 Minutos</string>
@@ -242,17 +231,14 @@
     <string name="add_note">Adicionar uma nota</string>
     <string name="revert">Reverter</string>
     <string name="activated">Ativado</string>
-    <string name="enroll_in">Inscreva-se %s</string>
     <string name="missing_mandatory_fields_title">Faltam campos obrigatórios</string>
     <string name="missing_mandatory_fields_text">Alguns campos obrigatórios estão ausentes. Se você quiser voltar agora, todas as informações salvas serão excluídas.</string>
     <string name="missing_mandatory_fields_text_not_delete">Alguns campos obrigatórios estão ausentes. Se você quiser voltar, por favor preencha-os. </string>
     <string name="title_delete_go_back">Seus dados não são salvos</string>
     <string name="delete_go_back">Se você voltar agora, todas as informações inseridas serão excluídas.</string>
-    <string name="missing_mandatory_fields_events_2.0">Alguns campos obrigatórios estão ausentes:/n%s/nVocê pode voltar agora, mas este evento não poderá ser concluído.</string>
     <string name="missing_mandatory_fields_go_back">Suprimir e voltar</string>
     <string name="error_fields">Alguns campos têm erros:/n%s/nPor favor, verifique-os.</string>
     <string name="missing_mandatory_fields_finish">Alguns campos obrigatórios estão ausentes. Você pode concluir a entrada e saída de dados, mas o evento não pode ser concluído.</string>
-    <string name="enrollment_coordinates">Coordenadas de inscrição</string>
     <string name="tei_coordinates">Coordenadas para o</string>
 
     <!--EVENT SUMMARY-->
@@ -310,7 +296,6 @@
     <string name="qr_error_id">Código QR inválido</string>
     <string name="qr_error_attr">Este atributo não pode ser adicionado</string>
     <string name="qr_error_enrollment">Esta inscrição não pode ser adicionada</string>
-    <string name="qr_error_event">Este evento não pode ser adicionado</string>
 
     <string name="jira_report">Relatar problema de Jira</string>
     <string name="about">Acerca</string>
@@ -454,17 +439,14 @@
     <string name="finish">Terminar</string>
     <string name="error_fields_title">Campos com erros</string>
     <string name="error_fields_events">Alguns campos possuem erros. Eles não foram salvos. Por favor, verifique-os.</string>
-    <string name="event_reopened">Este evento agora pode ser editado</string>
     <string name="unique_warning">O valor deve ser único, uma coincidência foi encontrada. Não foi salvo. Por favor verifique isto.</string>
     <string name="unique_coincidence_found">Foi encontrada uma coincidência em um campo único. Verifique o formulário para salvar a Inscrição.</string>
     <string name="please_wait">Por favor aguarde...</string>
     <string name="skip">Saltar</string>
     <string name="reschedule">Reprogramar</string>
-    <string name="event_was_skipped">O evento foi marcado como ignorado</string>
     <string name="no_intructions">Não há informações para esta tela</string>
     <string name="event_overdue">Atrasado</string>
     <string name="unsupported_program_rule">There is one program rule which is not supported. Por favor verifique a documentação</string>
-    <string name="delete_event_error">Este evento ainda não foi criado</string>
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="biometrics_dialog_title">Credenciais Vazias</string>
     <string name="biometrics_first_use_text">Para poder fazer login usando o scanner de impressão digital você precisa primeiro usar a maneira padrão</string>
@@ -515,10 +497,8 @@
     <string name="sync_setting">Configuração de sincronização: %s</string>
     <string name="relationship_without_enrollment">O registro que você está tentando acessar não tem inscrição. Você não pode acessar o painel.</string>
     <string name="formatting_error">Erro de formatação</string>
-    <string name="dashboard_menu_delete_enrollment">Suprimir somente inscrição</string>
     <string name="delete_authority_error">Você não tem autoridade para suprimir este registro</string>
     <string name="validation_url">Este url não é válido</string>
-    <string name="uncomplete_authority_error">Você não tem autoridade para reabrir este evento</string>
     <string name="adjusting_form">Ajustando formulário...</string>
 
     <string name="sms_receiver_number">Número do receptor</string>
@@ -610,7 +590,6 @@
     <string name="event_tei_limits_v2">Configurações limitadas %s \nEventos: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Ocultar dados de inscrição</string>
     <string name="enrollment_data_show">Mostrar dados de inscrição</string>
-    <string name="enrollment_data_section_label">Dados de inscrição</string>
     <string name="sms_enabled">Módulo SMS ativado</string>
     <string name="sms_disabled">Módulo SMS desativado</string>
     <string name="sms_downloading_data">Baixando dados para o módulo SMS. Por favor espere.</string>
@@ -620,7 +599,6 @@
     <string name="disable_pin_locked">Não mostrar novamente a tela de bloqueio</string>
     <string name="set_pin">Definir pino</string>
     <string name="conflict">Conflito</string>
-    <string name="event_date_in_future_message">Este evento não pode ter uma data no futuro. Por favor mude.</string>
     <string name="change_event_date">Mudar data</string>
     <string name="go_back">Voltar</string>
     <string name="data_sets">Agregação de Dados</string>
@@ -634,7 +612,6 @@
     <string name="interval_hour_ago">%d horas atrás</string>
     <string name="interval_yesterday">Ontém</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="program_selector">Inscrições no programa</string>
     <string name="select_time">Selecionar hora</string>
     <string name="enter_letter">Inserir letra</string>
     <string name="enter_unit_interval">Digite o número de 0 a 1</string>
@@ -680,7 +657,6 @@
     <string name="complete_anyway">Completar mesmo assim</string>
     <string name="fk_message">Ausência de %s %s de %s %s</string>
     <string name="filters_title_event_status">Estado do evento </string>
-    <string name="filters_title_enrollment_status">Status da inscrição</string>
     <string name="enrollment_date">Data de inscrição</string>
     <string name="dataset_empty_list_can_create">Não existem dados. Clique em \"+\" para adicionar um novo registro</string>
     <string name="dataset_emtpy_list_can_not_create">Não existem dados. Você não tem permissão para adicionar novos registros.</string>
@@ -732,7 +708,6 @@
     <string name="navigation_analytics">Google Analytics</string>
     <string name="navigation_tasks">Tarefas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relacionamentos</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>

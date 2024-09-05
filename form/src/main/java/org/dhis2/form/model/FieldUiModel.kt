@@ -7,6 +7,7 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
 
@@ -74,6 +75,12 @@ interface FieldUiModel {
 
     val orgUnitSelectorScope: OrgUnitSelectorScope?
 
+    val selectableDates: SelectableDates?
+
+    val eventCategories: List<EventCategory>?
+
+    val periodSelector: PeriodSelector?
+
     val url: String?
 
     fun setCallback(callback: Callback)
@@ -101,6 +108,8 @@ interface FieldUiModel {
     fun invokeIntent(intent: FormIntent)
 
     fun setValue(value: String?): FieldUiModel
+
+    fun setSelectableDates(selectableDates: SelectableDates?): FieldUiModel
 
     fun setIsLoadingData(isLoadingData: Boolean): FieldUiModel
 

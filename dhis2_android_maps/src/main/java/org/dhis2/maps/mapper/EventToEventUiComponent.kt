@@ -37,6 +37,7 @@ class EventToEventUiComponent {
             tei.profilePicturePath,
             tei.defaultTypeIcon,
             eventViewModel.orgUnitName,
+            eventViewModel.metadataIconData,
         )
     }
 }

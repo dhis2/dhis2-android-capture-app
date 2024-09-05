@@ -1,15 +1,26 @@
 package org.dhis2.commons.date;
 
+import android.content.Context;
+import android.widget.DatePicker;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.hisp.dhis.android.core.dataset.DataInputPeriod;
+import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
+import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
+import org.dhis2.commons.filters.FilterManager;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.DatePeriod;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +37,8 @@ public class DateUtils {
     }
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String DATABASE_FORMAT_EXPRESSION_NO_ZULU = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String DATABASE_FORMAT_NO_TIME = "yyyy-MM-dd";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_SECONDS = "yyyy-MM-dd'T'HH:mm";
     public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
@@ -33,8 +46,10 @@ public class DateUtils {
     public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
     public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
-    public static final String SIMPLE_DATE_FORMAT = "d/M/yyyy";
+    public static final String SIMPLE_DATE_FORMAT = "dd/MM/yyyy";
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
+    public static final String UI_LIBRARY_FORMAT = "ddMMyyyy";
+    public static final String SIMPLE_DATE_TIME_FORMAT = "dd/MM/yyyy - HH:mm";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -175,6 +190,11 @@ public class DateUtils {
     }
 
     @NonNull
+    public static SimpleDateFormat uiLibraryFormat() {
+        return new SimpleDateFormat(UI_LIBRARY_FORMAT, Locale.US);
+    }
+
+    @NonNull
     public static SimpleDateFormat timeFormat() {
         return new SimpleDateFormat("HH:mm", Locale.US);
     }
@@ -187,6 +207,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat databaseDateFormatNoZulu() {
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_ZULU, Locale.US);
     }
 
     @NonNull
@@ -212,6 +237,11 @@ public class DateUtils {
     @NonNull
     public static SimpleDateFormat twelveHourTimeFormat() {
         return new SimpleDateFormat(TIME_12H_EXPRESSION, Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat uiDateTimeFormat() {
+        return new SimpleDateFormat(SIMPLE_DATE_TIME_FORMAT, Locale.US);
     }
 
 
@@ -309,6 +339,178 @@ public class DateUtils {
 
         return completedDay != null && compExpDays > 0 &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+    }
+
+    /**
+     * @param currentDate      Date from which calculation will be carried out. Default value is today.
+     * @param expiryDays       Number of extra days to add events on previous period
+     * @param expiryPeriodType Expiry Period
+     * @return Min date to select
+     */
+    public Date expDate(@Nullable Date currentDate, int expiryDays, @Nullable PeriodType expiryPeriodType) {
+
+        Calendar calendar = getCalendar();
+
+        if (currentDate != null)
+            calendar.setTime(currentDate);
+
+        Date date = calendar.getTime();
+
+        if (expiryPeriodType == null) {
+            return null;
+        } else {
+            switch (expiryPeriodType) {
+                case Daily:
+                    calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
+                    return calendar.getTime();
+                case Weekly:
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                    Date firstDateOfWeek = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfWeek.getTime()) >= expiryDays) {
+                        return firstDateOfWeek;
+                    } else {
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                    }
+                    break;
+                case WeeklyWednesday:
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY); //moves to current week wednesday
+                    Date wednesday = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - wednesday.getTime()) >= expiryDays)
+                        return wednesday;
+                    else
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                    break;
+                case WeeklyThursday:
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY); //moves to current week wednesday
+                    Date thursday = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - thursday.getTime()) >= expiryDays)
+                        return thursday;
+                    else
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                    break;
+                case WeeklySaturday:
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY); //moves to current week wednesday
+                    Date saturday = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - saturday.getTime()) >= expiryDays)
+                        return saturday;
+                    else
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                    break;
+                case WeeklySunday:
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); //moves to current week wednesday
+                    Date sunday = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - sunday.getTime()) >= expiryDays)
+                        return sunday;
+                    else
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                    break;
+                case BiWeekly:
+                    if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) //if true, we are in the 2nd week of the period
+                        calendar.add(Calendar.WEEK_OF_YEAR, -1);//Moved to first week
+                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                    Date firstDateOfBiWeek = calendar.getTime();
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfBiWeek.getTime()) >= expiryDays) {
+                        return firstDateOfBiWeek;
+                    } else {
+                        calendar.add(Calendar.WEEK_OF_YEAR, -2);
+                    }
+                    break;
+                case Monthly:
+                    Date firstDateOfMonth = getFirstDayOfMonth(calendar.getTime());
+                    calendar.setTime(firstDateOfMonth);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfMonth.getTime()) >= expiryDays) {
+                        return firstDateOfMonth;
+                    } else {
+                        calendar.add(Calendar.MONTH, -1);
+                    }
+                    break;
+                case BiMonthly:
+                    if (calendar.get(Calendar.MONTH) % 2 != 0) //January is 0, December is 11
+                        calendar.add(Calendar.MONTH, -1); //Moved to first month
+                    Date firstDateOfBiMonth = getFirstDayOfMonth(calendar.getTime());
+                    calendar.setTime(firstDateOfBiMonth);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfBiMonth.getTime()) >= expiryDays) {
+                        return firstDateOfBiMonth;
+                    } else {
+                        calendar.add(Calendar.MONTH, -2);
+                    }
+                    break;
+                case Quarterly:
+                    while (calendar.get(Calendar.MONTH) % 4 != 0) //January is 0, December is 11
+                        calendar.add(Calendar.MONTH, -1); //Moved to first month
+                    Date firstDateOfQMonth = getFirstDayOfMonth(calendar.getTime());
+                    calendar.setTime(firstDateOfQMonth);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfQMonth.getTime()) >= expiryDays) {
+                        return firstDateOfQMonth;
+                    } else {
+                        calendar.add(Calendar.MONTH, -4);
+                    }
+                    break;
+                case SixMonthly:
+                    while (calendar.get(Calendar.MONTH) % 6 != 0) //January is 0, December is 11
+                        calendar.add(Calendar.MONTH, -1); //Moved to first month
+                    Date firstDateOfSixMonth = getFirstDayOfMonth(calendar.getTime());
+                    calendar.setTime(firstDateOfSixMonth);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfSixMonth.getTime()) >= expiryDays) {
+                        return firstDateOfSixMonth;
+                    } else {
+                        calendar.add(Calendar.MONTH, -6);
+                    }
+                    break;
+                case SixMonthlyApril:
+                    while ((calendar.get(Calendar.MONTH) - 3) % 6 != 0) //April is 0, December is 8
+                        calendar.add(Calendar.MONTH, -1); //Moved to first month
+                    Date firstDateOfSixMonthApril = getFirstDayOfMonth(calendar.getTime());
+                    calendar.setTime(firstDateOfSixMonthApril);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfSixMonthApril.getTime()) >= expiryDays) {
+                        return firstDateOfSixMonthApril;
+                    } else {
+                        calendar.add(Calendar.MONTH, -6);
+                    }
+                    break;
+                case Yearly:
+                    Date firstDateOfYear = getFirstDayOfYear(calendar.getTime());
+                    calendar.setTime(firstDateOfYear);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfYear.getTime()) >= expiryDays) {
+                        return firstDateOfYear;
+                    } else {
+                        calendar.add(Calendar.YEAR, -1);
+                    }
+                    break;
+                case FinancialApril:
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);//Moved to April
+                    Date firstDateOfAprilYear = getFirstDayOfMonth(calendar.getTime()); //first day of April
+                    calendar.setTime(firstDateOfAprilYear);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfAprilYear.getTime()) >= expiryDays) {
+                        return firstDateOfAprilYear;
+                    } else {
+                        calendar.add(Calendar.YEAR, -1); //Moved to April last year
+                    }
+                    break;
+                case FinancialJuly:
+                    calendar.set(Calendar.MONTH, Calendar.JULY);//Moved to July
+                    Date firstDateOfJulyYear = getFirstDayOfMonth(calendar.getTime()); //first day of July
+                    calendar.setTime(firstDateOfJulyYear);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfJulyYear.getTime()) >= expiryDays) {
+                        return firstDateOfJulyYear;
+                    } else {
+                        calendar.add(Calendar.YEAR, -1); //Moved to July last year
+                    }
+                    break;
+                case FinancialOct:
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);//Moved to October
+                    Date firstDateOfOctYear = getFirstDayOfMonth(calendar.getTime()); //first day of October
+                    calendar.setTime(firstDateOfOctYear);
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfOctYear.getTime()) >= expiryDays) {
+                        return firstDateOfOctYear;
+                    } else {
+                        calendar.add(Calendar.YEAR, -1); //Moved to October last year
+                    }
+                    break;
+            }
+
+            return calendar.getTime();
+        }
     }
 
     /**
@@ -584,5 +786,124 @@ public class DateUtils {
     public static int[] getDifference(Date startDate, Date endDate) {
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+    }
+
+    public void fromCalendarSelector(Context context, OnFromToSelector fromToListener) {
+        Date startDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle(null);
+        dialog.setInitialDate(startDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                //Do nothing
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                toCalendarSelector(datePicker, context, fromToListener);
+            }
+        });
+        dialog.show();
+    }
+
+    public interface OnFromToSelector {
+        void onFromToSelected(List<DatePeriod> datePeriods);
+    }
+
+    public interface OnNextSelected {
+        void onNextSelector();
+    }
+
+    private void toCalendarSelector(DatePicker datePicker, Context context, OnFromToSelector fromToListener) {
+        Calendar fromDate = Calendar.getInstance();
+        fromDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+
+        Date endDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            endDate = FilterManager.getInstance().getPeriodFilters().get(0).endDate();
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle(null);
+        dialog.setInitialDate(endDate);
+        dialog.setMinDate(fromDate.getTime());
+        dialog.isFutureDatesAllowed(true);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                //Do nothing
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar toDate = Calendar.getInstance();
+                toDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                List<DatePeriod> dates = new ArrayList<>();
+                dates.add(DatePeriod.builder().startDate(fromDate.getTime()).endDate(toDate.getTime()).build());
+                fromToListener.onFromToSelected(dates);
+            }
+        });
+        dialog.show();
+    }
+
+    public void showPeriodDialog(Context context, OnFromToSelector fromToListener, boolean fromOtherPeriod, OnNextSelected onNextSelected ) {
+        Date startDate = null;
+        if (!FilterManager.getInstance().getPeriodFilters().isEmpty())
+            startDate = FilterManager.getInstance().getPeriodFilters().get(0).startDate();
+
+
+        CalendarPicker dialog = new CalendarPicker(context);
+        dialog.setTitle("Daily");
+        dialog.setInitialDate(startDate);
+        dialog.isFutureDatesAllowed(true);
+        dialog.isFromOtherPeriods(fromOtherPeriod);
+        dialog.setListener(new OnDatePickerListener() {
+            @Override
+            public void onNegativeClick() {
+                onNextSelected.onNextSelector();
+            }
+
+            @Override
+            public void onPositiveClick(@NotNull DatePicker datePicker) {
+                Calendar chosenDate = Calendar.getInstance();
+                chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                List<Date> dates = new ArrayList<>();
+                dates.add(chosenDate.getTime());
+                fromToListener.onFromToSelected(getDatePeriodListFor(dates, Period.DAILY));
+            }
+        });
+        dialog.show();
+    }
+
+
+    public  List<DatePeriod> getDatePeriodListFor(List<Date> selectedDates, Period period) {
+        List<DatePeriod> datePeriods = new ArrayList<>();
+        for (Date date : selectedDates) {
+            Date[] startEndDates = getDateFromDateAndPeriod(date, period);
+            datePeriods.add(DatePeriod.builder().startDate(startEndDates[0]).endDate(startEndDates[1]).build());
+        }
+        return datePeriods;
+    }
+
+    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
+        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
+    }
+
+    public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
+            return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+
+        if (dataInputPeriodModel.openingDate() != null && dataInputPeriodModel.closingDate() == null)
+            return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime();
+
+        if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() == null)
+            return true;
+
+        return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
+                && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
 }

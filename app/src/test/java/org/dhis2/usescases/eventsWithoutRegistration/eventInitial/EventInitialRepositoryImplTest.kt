@@ -1,13 +1,16 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 
 import io.reactivex.Single
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
@@ -19,10 +22,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.ArrayList
 
 class EventInitialRepositoryImplTest {
     private lateinit var repository: EventInitialRepositoryImpl
@@ -30,16 +33,37 @@ class EventInitialRepositoryImplTest {
     private val stageUid = "stageUid"
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val fieldFactory: FieldViewModelFactory = mock()
-    private val ruleEngineRepository: RuleEngineRepository = mock()
+    private val ruleEngineHelper: RuleEngineHelper = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock()
+
+    private val mockedStage: ProgramStage = mock {
+        on { program() } doReturn ObjectWithUid.create("programUid")
+    }
+
+    private val mockedProgram: Program = mock {
+        on { style() } doReturn ObjectStyle.builder().build()
+    }
 
     @Before
     fun setUp() {
+        whenever(
+            d2.programModule().programStages()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(mockedStage)
+        whenever(
+            d2.programModule().programs()
+                .uid(any())
+                .blockingGet(),
+        )doReturn mockedProgram
+
         repository = EventInitialRepositoryImpl(
             eventUid,
             stageUid,
             d2,
             fieldFactory,
-            ruleEngineRepository,
+            ruleEngineHelper,
+            metadataIconProvider,
         )
     }
 

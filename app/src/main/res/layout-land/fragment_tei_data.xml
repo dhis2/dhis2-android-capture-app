@@ -7,38 +7,12 @@
 
         <import type="android.view.View" />
 
-        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
+        <variable
+            name="header"
+            type="java.lang.String" />
 
         <variable
-            name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
-
-        <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
-
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter" />
-
-        <variable
-            name="dashboardModel"
-            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
-
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.Program" />
-
-        <variable
-            name="followup"
-            type="androidx.databinding.ObservableBoolean" />
-
-        <variable
-            name="isGrouping"
-            type="java.lang.Boolean" />
-
-        <variable
-            name="canAddEvents"
+            name="noEnrollmentSelected"
             type="java.lang.Boolean" />
 
     </data>
@@ -75,6 +49,7 @@
                         android:id="@+id/tei_data"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="@{ noEnrollmentSelected == true ? View.VISIBLE : View.GONE}"
                         app:cardElevation="4dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -83,26 +58,8 @@
                         <include
                             android:id="@+id/card_front"
                             layout="@layout/fragment_tei_data_card_front"
-                            android:visibility="@{ program != null ? View.GONE : View.VISIBLE}"
-                            app:dashboardModel="@{dashboardModel}"
-                            app:enrollment="@{enrollment}"
-                            app:followup="@{followup}"
-                            app:presenter="@{presenter}"
-                            app:program="@{program}"
-                            app:trackEntity="@{trackEntity}" />
+                            app:header="@{header}" />
                     </androidx.cardview.widget.CardView>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/filterLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?colorPrimary"
-                        android:visibility="gone"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:listitem="@layout/item_header_filter" />
 
                 </LinearLayout>
 
@@ -149,15 +106,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
-
-        <org.dhis2.utils.dialFloatingActionButton.DialFloatingActionButtonLayout
-            android:id="@+id/dialFabLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_extra_bottom_margin="@{52}"
-            app:fab_visibility="@{enrollment==null || enrollment.status() != EnrollmentStatus.ACTIVE || isGrouping || !canAddEvents}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

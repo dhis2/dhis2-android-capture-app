@@ -77,6 +77,8 @@
 
     <!-- Input hints -->
     <string name="search">Пошук</string>
+    <string name="search_add_new_te_type">Пошук / Додати нового \'%s\'</string>
+    <string name="search_te_type">Пошук \'%s\'</string>
     <string name="enter_text">Введіть текст</string>
     <string name="enter_long_text">Введіть довгий текст</string>
     <string name="enter_number">Введіть номер</string>
@@ -124,9 +126,6 @@
     <string name="latitude">Широта</string>
     <string name="longitude">Довгота</string>
     <string name="new_event">Нова подія</string>
-    <string name="failed_insert_event">Не вдалося додати новий випадок</string>
-    <string name="event_created">Випадок створено</string>
-    <string name="event_updated">Випадок оновлено</string>
     <string name="one_time">Одноразово</string>
     <string name="permanent">Постійно</string>
 
@@ -139,17 +138,14 @@
     <string name="datavalue_saved">Значення збережено!</string>
     <string name="there_is_no_available_period">Немає доступних періодів для вибору.</string>
     <!--Event Detail-->
-    <string name="event_date">Дата події</string>
     <string name="due_date">Дата виконання</string>
     <string name="cat_combo">Комбінація категорій</string>
     <string name="date_default">ДД/ММ/РРРР</string>
     <string name="cancel">Скасувати</string>
     <string name="delete">Видалити</string>
-    <string name="delete_event">Видалити випадок</string>
-    <string name="confirm_delete_event">Ви впевнені, що хочете видалити цей випадок?</string>
-    <string name="event_was_deleted">Випадок успішно видалено</string>
     <string name="total">Підсумок</string>
     <string name="most_recent_event_date">Дата останнього випадку</string>
+    <string name="no_options">Немає доступних опцій</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Список реєстрацій</string>
@@ -162,7 +158,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Подивитись подробиці</string>
     <string name="view_more">ДИВИТИСЬ БІЛЬШЕ</string>
-    <string name="enrolling_ou">Організаційний підрозділ, який здійснює реєстрацію:</string>
+    <string name="edit">Редагувати</string>
     <string name="follow_up">Подальші дії</string>
     <string name="follow_up_enabled">Подальші дії увімкнено</string>
     <string name="follow_up_disabled">Подальші дії вимкнено</string>
@@ -170,11 +166,14 @@
     <string name="program_not_allow_events">Ця програма не дозволяє мати більше випадків</string>
 
     <!--DONE TASKS-->
+    <string name="events_no_data">Немає даних</string>
     <string name="events">випадки</string>
     <string name="done_task">Головна</string>
     <string name="app_info">Інформація про додаток</string>
     <string name="log_out">Вийти з системи</string>
     <string name="block_session">Заблокувати сесію</string>
+    <string name="show_more_events">Показати %s більше...</string>
+    <string name="show_less_events">Показати менше...</string>
 
     <!-- SYNC -->
     <string name="a_minute">1 хвилина</string>
@@ -235,6 +234,7 @@
     <string name="settingsReset_descr">Вашу конфігурацію та дані додатку, що зберігаються на пристрої, буде видалено. Вас потрібно увійти знову, і дані, які не синхронізовані із сервером, будуть втрачені.</string>
     <string name="settingsSms">Налаштування SMS</string>
     <string name="settingsSms_descr">Перевірте та відредагуйте параметри, що стосуються SMS-шлюзу</string>
+    <string name="settingsCheckVersion">Оновлення додатку</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Дата реєстрації</string>
@@ -249,18 +249,15 @@
     <string name="add_note">Додати нотатку</string>
     <string name="revert">Повернути</string>
     <string name="activated">Активовано</string>
-    <string name="enroll_in">Реєстрація в %s</string>
     <string name="missing_mandatory_fields_title">Не заповнено обов\'язкові поля</string>
     <string name="missing_mandatory_fields_text">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися зараз, уся збережена інформація буде видалена.</string>
     <string name="missing_mandatory_fields_text_not_delete">Деякі обов’язкові поля не заповнено. Якщо Ви хочете повернутися, заповніть їх. </string>
     <string name="missing_mandatory_fields_events">Деякі поля потребують Вашої уваги. Бажаєте переглянути форму?</string>
     <string name="title_delete_go_back">Ваші дані не збережено</string>
     <string name="delete_go_back">Якщо Ви зараз повернетеся назад, уся введена інформація буде видалена.</string>
-    <string name="missing_mandatory_fields_events_2.0">Деякі обов’язкові поля не заповнено:%s Ви можете повернутися назад зараз, але цей випадок не можна буде завершити.</string>
     <string name="missing_mandatory_fields_go_back">Видалити та повернутися назад</string>
     <string name="error_fields">У деяких полях є помилки:%s Будь ласка, перевірте їх.</string>
     <string name="missing_mandatory_fields_finish">Деякі обов’язкові поля не заповнено. Ви можете завершити введення даних і вийти, але випадок не може бути завершений.</string>
-    <string name="enrollment_coordinates">Координати реєстрації</string>
     <string name="tei_coordinates">Координати для</string>
 
     <!--EVENT SUMMARY-->
@@ -318,7 +315,6 @@
     <string name="qr_error_id">Невірний QR-код</string>
     <string name="qr_error_attr">Цей атрибут не можна додати</string>
     <string name="qr_error_enrollment">Цю реєстрацію не можна додати</string>
-    <string name="qr_error_event">Цей випадок неможливо додати</string>
 
     <string name="jira_report">Повідомити про проблему Jira</string>
     <string name="about">Про</string>
@@ -465,17 +461,14 @@
     <string name="finish">Закінчити</string>
     <string name="error_fields_title">Поля з помилками</string>
     <string name="error_fields_events">У деяких полях є помилки. Вони не збереглися. Будь ласка, перевірте їх.</string>
-    <string name="event_reopened">Цей випадок тепер можна редагувати</string>
     <string name="unique_warning">Значення має бути унікальним, знайдено збіг. Значення не збереглось. Будь ласка, перевірте це.</string>
     <string name="unique_coincidence_found">Виявлено збіг в унікальному полі. Будь ласка, перевірте форму, щоб зберегти реєстрацію.</string>
     <string name="please_wait">Будь ласка, почекайте</string>
     <string name="skip">Пропустити</string>
     <string name="reschedule">Перепланувати</string>
-    <string name="event_was_skipped">Випадок позначено як пропущений</string>
     <string name="no_intructions">Для цієї частини немає інформації</string>
     <string name="event_overdue">Прострочене</string>
     <string name="unsupported_program_rule">Є одне правило програми, яке не підтримується. Будь ласка, зверніться до інструкції</string>
-    <string name="delete_event_error">Цей випадок ще не зареєстровано</string>
     <string name="empty_description">Немає інформації для цього поля</string>
     <string name="biometrics_dialog_title">Порожні облікові дані</string>
     <string name="biometrics_first_use_text">Щоб мати можливість увійти за допомогою сканера відбитків пальців, спочатку потрібно використовувати спосіб за замовчуванням</string>
@@ -529,10 +522,8 @@
     <string name="relationship_without_enrollment">Запис, до якого Ви намагаєтеся отримати доступ, не зареєстрований. Ви не можете отримати доступ до інформаційної панелі.</string>
     <string name="formatting_error">Помилка форматування</string>
     <string name="dashboard_menu_delete_tei_v2">Видалити %s</string>
-    <string name="dashboard_menu_delete_enrollment">Видалити лише реєстрацію</string>
     <string name="delete_authority_error">Ви не маєте повноважень видаляти цей запис</string>
     <string name="validation_url">Це недійсна URL-адреса</string>
-    <string name="uncomplete_authority_error">Ви не маєте повноважень повторно відкривати цей випадок</string>
     <string name="adjusting_form">Коригування форми…</string>
 
     <string name="sms_receiver_number">Номер одержувача</string>
@@ -624,7 +615,6 @@
     <string name="event_tei_limits_v2">Налаштування обмежено%sВипадки: %s/%s Об\'єкти: %s/%s</string>
     <string name="enrollment_data_hide">Приховати дані реєстрації</string>
     <string name="enrollment_data_show">Показати дані реєстрації</string>
-    <string name="enrollment_data_section_label">Дані реєстрації</string>
     <string name="sms_enabled">SMS-модуль включений</string>
     <string name="sms_disabled">SMS-модуль відключений</string>
     <string name="sms_downloading_data">Завантаження даних для модуля SMS. Будь ласка, зачекайте</string>
@@ -634,7 +624,6 @@
     <string name="disable_pin_locked">Більше не показувати екран блокування</string>
     <string name="set_pin">Встановити PIN</string>
     <string name="conflict">Помилка</string>
-    <string name="event_date_in_future_message">Цей випадок не може мати дату в майбутньому. Будь ласка, виправте це.</string>
     <string name="change_event_date">Змінити дату</string>
     <string name="go_back">Повернутися</string>
     <string name="data_sets">Набори даних</string>
@@ -648,7 +637,6 @@
     <string name="interval_hour_ago">%d годин тому</string>
     <string name="interval_yesterday">Вчора</string>
     <string name="enrollment_single_section_label">Атрибути - %s</string>
-    <string name="program_selector">Програми реєстрації</string>
     <string name="select_time">Оберіть час</string>
     <string name="enter_letter">Введіть літеру</string>
     <string name="enter_unit_interval">Введіть число від 0 до 1</string>
@@ -694,7 +682,6 @@
     <string name="complete_anyway">Все одно завершити</string>
     <string name="fk_message">Відсутній %s %s від %s %s</string>
     <string name="filters_title_event_status">Статус випадку</string>
-    <string name="filters_title_enrollment_status">Статус реєстрації</string>
     <string name="enrollment_date">Дата реєстрації</string>
     <string name="dataset_empty_list_can_create">Немає даних. Натисніть «+», щоб додати новий запис</string>
     <string name="dataset_emtpy_list_can_not_create">Немає даних. Ви не маєте дозволу додавати нові записи.</string>
@@ -709,12 +696,10 @@
     <string name="download_tei_error">Не вдалося завантажити вибраний %s.</string>
     <string name="completed_by">Виконано з %s: %s</string>
     <string name="updated_time">Оновлено: %s</string>
-    <string name="action_done">Готово!</string>
+    <string name="action_done">Обрати</string>
     <string name="validation_internal_error_datasets">Ми не змогли перевірити якість даних. Зверніться до свого адміністратора</string>
     <string name="are_you_sure">Чи Ви впевнені?</string>
     <string name="reopen_question">Хочете знову відкрити набір даних?</string>
-    <string name="group_events_by_stage">Згрупуйте випадки за етапами</string>
-    <string name="show_events_timeline">Показати хронологію випадків</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_date">Дата випадку</string>
     <string name="tei_type_has_no_attributes">%s не має публічних атрибутів. Виберіть програму</string>
@@ -747,7 +732,6 @@
     <string name="navigation_analytics">Аналітика</string>
     <string name="navigation_tasks">Завдання</string>
     <string name="navigation_programs">Програми</string>
-    <string name="navigation_events">Випадки</string>
     <string name="navigation_relationships">Зв\'язки</string>
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>
@@ -794,8 +778,6 @@
     <string name="from_gallery">Обрати з галереї</string>
     <string name="data_set_quality_check_done">Готово!</string>
     <string name="break_glass_dialog_title">Ця програма закрита для Вас</string>
-    <string name="break_glass_dialog_description">Ви повинні вказати причину для перевірки реєстрації в цій програмі, яка є для Вас закритою. Уся активність буде зареєстрована.</string>
-    <string name="break_glass_reason">Причина для перевірки реєстрації</string>
     <string name="break_glass_hint">Опишіть причину тут</string>
     <string name="authenticating">Автентифікація</string>
     <string name="login_error_no_dhis_instance">Надана URL-адреса сервера не є екземпляром dhis</string>
@@ -820,7 +802,6 @@
     <string name="edition_no_write_access">Ви не маєте дозволу редагувати ці дані</string>
     <string name="event_date_not_in_orgunit_range">Ці дані не можна редагувати, оскільки організаційний підрозділ закрито</string>
     <string name="edition_no_catcombo_access">Ви не маєте дозволу редагувати ці дані</string>
-    <string name="edition_enrollment_is_no_open">Ці дані не можна редагувати, оскільки реєстрацію завершено або скасовано</string>
     <string name="edition_orgunit_capture_scope">Ви не можете редагувати дані з цього організаційного підрозділу</string>
     <string name="reload_list">Скинути пошук</string>
     <string name="error_tei_online_search_title">Онлайн-пошук дав таке повідомлення:</string>
@@ -865,7 +846,6 @@
     <string name="account_disable_title">Обліковий запис вимкнено</string>
     <string name="account_disable_message">Ваш обліковий запис було вимкнено адміністратором.</string>
     <string name="search_unable_search_outside">Для пошуку за межами цієї програми відкрийте форму пошуку та заповніть одне з наступних %s полів:</string>
-    <string name="enrollment_org_unit">Організаційний підрозділ, який здійснює реєстрацію</string>
     <string name="customactivityoncrash_error_activity_build_version">Версія збірки: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Дата збірки: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Поточна дата: %s</string>
@@ -881,4 +861,24 @@
     <string name="sms_sync_opening_app">Відкриття програми SMS. Будь ласка, не змінюйте повідомлення.</string>
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
+    <string name="sync_dialog_title_synced">Синхронізовано</string>
+    <string name="sync_dialog_action_send">Надіслати</string>
+    <string name="sync_dialog_action_not_now">Не зараз</string>
+    <string name="software_update">Оновлення додатку</string>
+    <string name="check_for_updates">Перевірити оновлення</string>
+    <string name="checking_for_updates">Перевірка оновлень</string>
+    <string name="no_updates">Оновлення відсутні</string>
+    <string name="not_synced">Не синхронізовано</string>
+    <string name="overdue">Прострочений %s</string>
+    <string name="view_only">Тільки перегляд</string>
+    <string name="skipped">Пропущено</string>
+    <string name="programs">Програми</string>
+    <string name="sync_error">Помилка синхронізації</string>
+    <string name="mark_follow_up">Позначити для подальших дій</string>
+    <string name="remove">Видалити</string>
+    <string name="schedule_next">Запланувати наступний</string>
+    <string name="schedule">Запланувати</string>
+    <string name="program_stage">Етап програми</string>
+    <string name="clear_search">Очистити пошук</string>
+    <string name="optional">Необов\'язково</string>
     </resources>

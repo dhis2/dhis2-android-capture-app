@@ -27,6 +27,7 @@
     <string name="longitude">Арз</string>
     <!--DataSet initial-->
     <string name="report_period">Давраи ҳисобот</string>
+    <!--Event Detail-->
     <string name="due_date">Санаи пешбинишуда</string>
     <string name="cancel">Бекор кардан</string>
     <string name="delete">Нест кардан</string>

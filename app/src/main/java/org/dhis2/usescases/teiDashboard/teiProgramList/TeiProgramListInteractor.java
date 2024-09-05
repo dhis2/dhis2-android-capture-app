@@ -165,9 +165,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid, enrollmentDate)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
-                                },
+                        .subscribe(enrollmentUid -> view.goToEnrollmentScreen(enrollmentUid, programUid),
                                 Timber::d)
         );
     }

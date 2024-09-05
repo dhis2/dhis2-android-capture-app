@@ -12,10 +12,22 @@ interface ChartsRepository {
     fun getHomeVisualization(groupUid: String?): List<Graph>
     fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup>
     fun getDataSetVisualization(groupUid: String?, dataSetUid: String): List<Graph>
-    fun setVisualizationPeriods(visualizationUid: String, periods: List<RelativePeriod>)
+    fun setVisualizationPeriods(
+        visualizationUid: String,
+        lineListingColumnId: Int?,
+        periods: List<RelativePeriod>,
+    )
+
     fun setVisualizationOrgUnits(
         visualizationUid: String,
+        lineListingColumnId: Int?,
         orgUnits: List<OrganisationUnit>,
         orgUnitFilterType: OrgUnitFilterType,
+    )
+
+    fun setLineListingFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String?,
     )
 }

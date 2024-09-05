@@ -9,7 +9,10 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.login.auth.OpenIdProviders
@@ -24,9 +27,17 @@ class LoginModule(
 
     @Provides
     @PerActivity
+    fun provideResourceManager(
+        colorUtils: ColorUtils,
+    ) = ResourceManager(view.context, colorUtils)
+
+    @Provides
+    @PerActivity
     fun providePresenter(
         preferenceProvider: PreferenceProvider,
+        resourceManager: ResourceManager,
         schedulerProvider: SchedulerProvider,
+        dispatcherProvider: DispatcherProvider,
         fingerPrintController: FingerPrintController,
         analyticsHelper: AnalyticsHelper,
         crashReportController: CrashReportController,
@@ -37,7 +48,9 @@ class LoginModule(
             LoginViewModelFactory(
                 view,
                 preferenceProvider,
+                resourceManager,
                 schedulerProvider,
+                dispatcherProvider,
                 fingerPrintController,
                 analyticsHelper,
                 crashReportController,

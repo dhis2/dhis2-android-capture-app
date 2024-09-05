@@ -6,8 +6,9 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
@@ -64,6 +65,7 @@ class EventDetailsIntegrationTest {
     private val programStage: ProgramStage = mock {
         on { displayName() } doReturn PROGRAM_STAGE_NAME
         on { executionDateLabel() } doReturn EXECUTION_DATE
+        on { uid() } doReturn PROGRAM_STAGE
     }
     private val catCombo: CategoryCombo = mock {
         on { uid() } doReturn CAT_COMBO_UID
@@ -88,6 +90,8 @@ class EventDetailsIntegrationTest {
         on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
         on { getEditableStatus() } doReturn EventEditableStatus.Editable()
     }
+
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     private lateinit var viewModel: EventDetailsViewModel
 
@@ -177,9 +181,10 @@ class EventDetailsIntegrationTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
+        metadataIconProvider = metadataIconProvider,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(PROGRAM_UID, programStage.uid(), resourceManager)
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
@@ -199,5 +204,6 @@ class EventDetailsIntegrationTest {
         const val COORDINATES = "coordinates"
         const val CAT_COMBO_UID = "CatComboUid"
         const val CAT_OPTION_COMBO_UID = "CategoryOptionComboUid"
+        const val PROGRAM_STAGE = "programStage"
     }
 }

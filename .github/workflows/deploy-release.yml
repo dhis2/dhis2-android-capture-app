@@ -1,0 +1,94 @@
+name: Deploy Release
+
+env:
+  main_project_module: app
+
+on:
+  workflow_dispatch:
+    inputs:
+      github_release:
+        description: 'enable github release'
+        required: true
+        type: boolean
+      google_play_release:
+        description: 'enable google play release'
+        required: true
+        type: boolean
+      release_tag_name:
+        description: 'tag'
+        required: true
+        type: string
+      is_patch:
+        description: 'Is the new version a patch'
+        required: true
+        type: boolean
+        default: false
+  
+jobs:
+  Build-Apk:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set repository name as env variable
+      run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+    - name: Read version name from file
+      working-directory: ./gradle
+      id: read-version
+      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+    - name: Set Up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu' # See 'Supported distributions' for available options
+        java-version: '17'
+        cache: 'gradle'
+    - name: Change wrapper permissions
+      run: chmod +x ./gradlew
+    - name: Decode Keystore
+      id: decode_keystore
+      uses: timheuer/base64-to-file@v1
+      with:
+        fileName: 'dhis_keystore.jks'
+        encodedString: ${{ secrets.KEYSTORE }}
+    - name: Build release apk
+      run: ./gradlew app:assembleRelease app:assembleDhisDebug
+      env:
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+
+    - name: Upload to Play Store
+      if: ${{ inputs.google_play_release }}
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        packageName: com.dhis2
+        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
+        track: production
+        status: inProgress
+        whatsNewDirectory: whatsnew
+        userFraction: 0.99
+
+
+    - name: Github Patch Release
+      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        draft: true
+        generateReleaseNotes: true
+        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
+        tag: ${{ inputs.release_tag_name }}
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
+
+    - name: Github New Release
+      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        draft: true
+        bodyFile: "RELEASE.md"
+        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
+        tag: ${{ inputs.release_tag_name }}
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

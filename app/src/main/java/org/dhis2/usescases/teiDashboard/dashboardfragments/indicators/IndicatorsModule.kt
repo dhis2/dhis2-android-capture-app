@@ -6,7 +6,7 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -30,14 +30,14 @@ class IndicatorsModule(
     @PerFragment
     fun provideRepository(
         d2: D2,
-        ruleEngineRepository: RuleEngineRepository,
+        ruleEngineHelper: RuleEngineHelper?,
         charts: Charts?,
         resourceManager: ResourceManager,
     ): IndicatorRepository {
         return if (visualizationType == VisualizationType.TRACKER) {
             TrackerAnalyticsRepository(
                 d2,
-                ruleEngineRepository,
+                ruleEngineHelper,
                 charts,
                 programUid,
                 recordUid,
@@ -46,7 +46,7 @@ class IndicatorsModule(
         } else {
             EventIndicatorRepository(
                 d2,
-                ruleEngineRepository,
+                ruleEngineHelper,
                 programUid,
                 recordUid,
                 resourceManager,

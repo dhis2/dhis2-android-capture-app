@@ -88,20 +88,13 @@
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Ny händelse</string>
-    <string name="failed_insert_event">Det gick inte att spara ny händelse</string>
-    <string name="event_created">Händelse skapad</string>
-    <string name="event_updated">Händelse uppdaterad</string>
     <string name="one_time">En gång</string>
     <!--Event Detail-->
-    <string name="event_date">Händelse datum</string>
     <string name="due_date">Förfallodatum</string>
     <string name="cat_combo">Kategori kombination</string>
     <string name="date_default">DD/MM/ÅÅÅÅ</string>
     <string name="cancel">Avbryt</string>
     <string name="delete">Radera</string>
-    <string name="delete_event">Ta bort händelse</string>
-    <string name="confirm_delete_event">Är du säker på att du vill radera den här händelsen?</string>
-    <string name="event_was_deleted">Händelse raderats</string>
     <string name="total">Totalt</string>
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inskrivningslista</string>
@@ -114,19 +107,16 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VISA MER</string>
-    <string name="enrolling_ou">Inskrivningsorganisationsenhet</string>
     <string name="follow_up">Följ upp</string>
     <string name="follow_up_enabled">Uppföljning aktiverad</string>
     <string name="follow_up_disabled">Uppföljning avaktiverad</string>
     <string name="deactivate">Inaktivera</string>
     <string name="program_not_allow_events">Det här programmet tillåter inte fler händelser</string>
 
-    <!--DONE TASKS-->
     <string name="events">händelser</string>
     <string name="done_task">Hem</string>
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minut</string>
     <string name="fifteen_minute">15 minuter</string>
@@ -161,7 +151,6 @@
     <string name="add_note">Lägg till anteckning</string>
     <string name="revert">Återställ</string>
     <string name="activated">Aktiverad</string>
-    <string name="enroll_in">Registreras %s</string>
     <string name="missing_mandatory_fields_title">Obligatoriska fält saknas</string>
     <string name="missing_mandatory_fields_text">Några obligatoriska fält saknas. Om du vill gå tillbaka nu raderas alla sparade uppgifter.</string>
     <string name="missing_mandatory_fields_go_back">Ta bort och gå tillbaka</string>
@@ -218,7 +207,6 @@
     <string name="qr_error_id">Ogiltig QR-kod</string>
     <string name="qr_error_attr">Det här attributet kan inte läggas till</string>
     <string name="qr_error_enrollment">Denna inskrivning kan inte läggas till</string>
-    <string name="qr_error_event">Den här händelsen kan inte läggas till</string>
 
     <string name="jira_report">Rapportera ett problem i JIRA</string>
     <string name="about">Handla om</string>

@@ -69,7 +69,7 @@ class GraphToLineChart {
                 val padding = ceil((graph.maxValue() - minValue) * 0.05f)
                 axisMaximum = graph.maxValue() + padding
                 axisMinimum = minValue - padding
-                if (graph.isSingleValue() && graph.series[0].coordinates[0].fieldValue < 0) {
+                if (graph.isSingleValue() && graph.series[0].coordinates[0].numericValue() < 0) {
                     axisMaximum = minValue - padding
                     axisMinimum = graph.maxValue() + padding
                 }

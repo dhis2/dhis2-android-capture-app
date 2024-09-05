@@ -1,0 +1,70 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Головна</string>
+    <string name="title_activity_review">Перегляд</string>
+    <string name="action_settings">Налаштування</string>
+
+    <string name="discard">Ігнорувати</string>
+    <string name="sign_in">Увійти</string>
+    <string name="username">Ім\'я користувача</string>
+    <string name="password">Пароль</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Продовжити</string>
+    <string name="review">Перегляд</string>
+
+    <string name="search">Пошуковий елемент</string>
+    <string name="search_placeholder">Пошук...</string>
+    <string name="delete">Видалити</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Скасувати</string>
+    <string name="from">Від</string>
+    <string name="language">Мова</string>
+    <string name="logout">Вийти</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Елемент</string>
+    <string name="prompt_email">Електронна пошта</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in_short">Увійти</string>
+    <string name="content_desc_search">Пошук</string>
+    <string name="confirm_transaction_label">Підтвердити</string>
+    <string name="invalid_quantity">Невірне</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Сталася помилка. Будь ласка, перевірте правильність URL-адреси серверу, імені користувача та пароля і повторіть спробу.</string>
+    <string name="login_error_unknown_host">Невідомий сервер</string>
+    <string name="online_search_parsing_error">Помилка аналізу результатів</string>
+    <string name="error_many_requests">На даний момент сервер трохи зайнятий. Будь ласка, спробуйте пізніше.</string>
+    <string name="error_already_authenticated">Користувач уже авторизований.</string>
+    <string name="error_already_executed">Запит уже виконано.</string>
+    <string name="error_api_invalid_query">Запит на сервер недійсний.</string>
+    <string name="error_create_existing_error">Створення перервано. Об\'єкт вже існує.</string>
+    <string name="error_export_login">Увійдіть в систему, щоб експортувати базу даних.</string>
+    <string name="error_export_encrypted">Експорт зашифрованої бази даних не підтримується.</string>
+    <string name="error_import_exist">Ви імпортуєте вже існуючу базу даних.</string>
+    <string name="error_import_logout">Вийдіть з системи, щоб імпортувати нову базу даних.</string>
+    <string name="error_import_version">Версія імпортованої бази даних новіша за підтримувану.</string>
+    <string name="error_user_no_authenticated">Немає автентифікованого користувача.</string>
+    <string name="error_user_no_authenticated_offline">Немає користувача автентифікованого офлайн.</string>
+    <string name="error_different_offline_user">Ви намагаєтесь увійти в систему, перебуваючи офлайн, під іншим користувачем.</string>
+    <string name="error_object_update">Об\'єкт не вдалося оновити.</string>
+    <string name="error_object_insert">Не вдалося вставити об’єкт.</string>
+    <string name="error_null_url">Відсутня URL-адреса сервера. Будь ласка, введіть URL-адресу.</string>
+    <string name="error_server_malformed">URL-адреса сервера неправильно сформована. Будь ласка, перевірте її.</string>
+    <string name="error_settings_app_not_supported">Ця версія налаштувань веб-програми не підтримується.</string>
+    <string name="error_settings_app_not_intalled">Налаштування веб-програми не встановлено на сервері.</string>
+    <string name="error_socket_timeout">Сервер надто довго відповідав. Ми скасували запит.</string>
+    <string name="error_url_not_found">Не вдалося знайти URL-адресу. Будь ласка, перевірте це.</string>
+    <string name="error_account_disabled">Ваш обліковий запис користувача вимкнено. Якщо це помилка, зверніться до адміністратора.</string>
+    <string name="error_account_locked">Ваш обліковий запис користувача заблоковано. Якщо це помилка, зверніться до адміністратора.</string>
+    <string name="error_set_value">Не вдалося встановити значення.</string>
+    <string name="error_ssl">Виникла проблема із сертифікатами сервера. Будь ласка, зверніться до свого адміністратора.</string>
+    <string name="done_task">Головна</string>
+    <string name="back">Назад</string>
+    <string name="no_conflicts_message">Для цієї програми немає конфліктів</string>
+    <string name="action_sync">Надіслати</string>
+    <string name="not_saved">Не збережено</string>
+    <string name="count">Підрахунок</string>
+    <string name="formatting_error">Помилка форматування</string>
+    <string name="invalid_possitive_zero">Дозволені лише додатні числа або нуль</string>
+    <string name="leading_zero_error">Нульові цифри на початку не допускаються</string>
+</resources>

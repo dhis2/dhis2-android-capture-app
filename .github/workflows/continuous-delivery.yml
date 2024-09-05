@@ -1,0 +1,59 @@
+name: Continuous Delivery
+
+env:
+
+  main_project_module: app
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - release/*
+  pull_request:
+    branches:
+      - main
+      - develop
+      - release/*
+
+jobs:
+  deployment_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set Current Date
+      - name: Set current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      # Set Repository Name As Env Variable
+      - name: Set repository name as env variable
+        run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Create APK Debug
+      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assembleDhisDebug
+
+      - name: Read version name from file
+        working-directory: ./gradle
+        id: read-version
+        run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> "$GITHUB_OUTPUT"
+
+      # Upload Artifact Build
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
+          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

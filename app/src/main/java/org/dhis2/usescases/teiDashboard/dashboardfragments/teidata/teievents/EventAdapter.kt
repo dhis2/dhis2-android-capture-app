@@ -1,7 +1,16 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,33 +20,40 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.EventViewModelType.EVENT
 import org.dhis2.commons.data.EventViewModelType.STAGE
-import org.dhis2.commons.data.EventViewModelType.values
+import org.dhis2.commons.data.EventViewModelType.TOGGLE_BUTTON
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemEventBinding
-import org.dhis2.databinding.ItemStageSectionBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
-import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
     val presenter: TEIDataPresenter,
     val program: Program,
     val colorUtils: ColorUtils,
+    private val cardMapper: TEIEventCardMapper,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
     object : DiffUtil.ItemCallback<EventViewModel>() {
         override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-            val oldItemId = if (oldItem.type == STAGE) {
-                oldItem.stage!!.uid()
-            } else {
+            val oldItemId = if (oldItem.type == EVENT) {
                 oldItem.event!!.uid()
-            }
-            val newItemId = if (newItem.type == STAGE) {
-                newItem.stage!!.uid()
             } else {
+                oldItem.stage!!.uid()
+            }
+            val newItemId = if (newItem.type == EVENT) {
                 newItem.event!!.uid()
+            } else {
+                newItem.stage!!.uid()
             }
             return oldItemId == newItemId
         }
@@ -48,8 +64,6 @@ class EventAdapter(
     },
 ) {
 
-    private lateinit var enrollment: Enrollment
-
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
 
     fun stageSelector(): Flowable<StageSection> {
@@ -57,20 +71,16 @@ class EventAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (values()[viewType]) {
+        return when (EventViewModelType.entries[viewType]) {
             STAGE -> {
-                val binding = ItemStageSectionBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false,
-                )
                 StageViewHolder(
-                    binding,
+                    ComposeView(parent.context),
                     stageSelector,
                     presenter,
                     colorUtils,
                 )
             }
+
             EVENT -> {
                 val binding = DataBindingUtil.inflate<ItemEventBinding>(
                     LayoutInflater.from(parent.context),
@@ -92,6 +102,13 @@ class EventAdapter(
                     },
                 )
             }
+
+            TOGGLE_BUTTON -> {
+                ToggleStageEventsButtonHolder(
+                    ComposeView(parent.context),
+                    stageSelector,
+                )
+            }
         }
     }
 
@@ -102,15 +119,85 @@ class EventAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is EventViewHolder -> {
-                holder.bind(
-                    getItem(position),
-                    enrollment,
-                ) {
-                    getItem(holder.getAdapterPosition()).toggleValueList()
-                    notifyItemChanged(holder.getAdapterPosition())
+                getItem(position)?.let {
+                    val materialView = holder.itemView.findViewById<ConstraintLayout>(R.id.materialView)
+                    materialView.visibility = View.GONE
+                    val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
+                    composeView.setContent {
+                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
+                        val bottomSpacing = if (it.showBottomShadow) {
+                            Spacing.Spacing16
+                        } else {
+                            Spacing.Spacing4
+                        }
+                        val card = cardMapper.map(
+                            event = it,
+                            editable = it.editable,
+                            displayOrgUnit = it.displayOrgUnit,
+                            onCardClick = {
+                                it.event?.let { event ->
+                                    when (event.status()) {
+                                        EventStatus.SCHEDULE, EventStatus.OVERDUE, EventStatus.SKIPPED -> {
+                                            presenter.onScheduleSelected(
+                                                event.uid(),
+                                                composeView,
+                                            )
+                                        }
+
+                                        else -> {
+                                            presenter.onEventSelected(
+                                                event.uid(),
+                                                event.status()!!,
+                                            )
+                                        }
+                                    }
+                                }
+                            },
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(
+                                    start = leftSpacing,
+                                    end = Spacing.Spacing16,
+                                    bottom = bottomSpacing,
+                                ),
+                        ) {
+                            ListCard(
+                                listAvatar = card.avatar,
+                                title = ListCardTitleModel(
+                                    text = card.title,
+                                    style = LocalTextStyle.current.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight(500),
+                                        lineHeight = 20.sp,
+                                    ),
+                                    color = TextColor.OnSurface,
+                                ),
+                                description = ListCardDescriptionModel(
+                                    text = card.description,
+                                ),
+                                lastUpdated = card.lastUpdated,
+                                additionalInfoList = card.additionalInfo,
+                                actionButton = card.actionButton,
+                                expandLabelText = card.expandLabelText,
+                                shrinkLabelText = card.shrinkLabelText,
+                                onCardClick = card.onCardCLick,
+                            )
+                        }
+                    }
+
+                    holder.bind(it, null) {
+                        getItem(holder.bindingAdapterPosition)?.toggleValueList()
+                        notifyItemChanged(holder.bindingAdapterPosition)
+                    }
                 }
             }
+
             is StageViewHolder -> {
+                holder.bind(getItem(position))
+            }
+
+            is ToggleStageEventsButtonHolder -> {
                 holder.bind(getItem(position))
             }
         }
@@ -118,10 +205,5 @@ class EventAdapter(
 
     override fun getItemId(position: Int): Long {
         return getItem(position).hashCode().toLong()
-    }
-
-    fun setEnrollment(enrollment: Enrollment) {
-        this.enrollment = enrollment
-        this.notifyDataSetChanged()
     }
 }

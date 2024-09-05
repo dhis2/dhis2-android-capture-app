@@ -14,14 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.R;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.databinding.ItemFieldValueBinding;
-import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
-import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.ui.MetadataIconData;
 import org.dhis2.ui.MetadataIconKt;
-import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.utils.DhisTextUtils;
-import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -66,7 +63,6 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
-        ProgramStage programStage = eventModel.getStage();
         Event event = eventModel.getEvent();
         binding.setEvent(eventModel.getEvent());
         binding.setStage(eventModel.getStage());
@@ -88,7 +84,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             binding.composeStageIcon.setVisibility(View.VISIBLE);
             binding.stageIconStatusImage.setVisibility(View.VISIBLE);
             binding.eventStatus.setVisibility(View.GONE);
-            renderStageIcon(programStage.style());
+            renderStageIcon(eventModel.getMetadataIconData());
         }
 
         String date = eventModel.getDisplayDate();
@@ -142,24 +138,10 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         binding.showValuesButton.setOnClickListener(null);
     }
 
-    private void renderStageIcon(ObjectStyle style) {
-        int color = colorUtils.getColorFrom(
-                style.color(),
-                colorUtils.getPrimaryColor(itemView.getContext(), ColorType.PRIMARY_LIGHT)
-        );
-
-        int imageResource = new ResourceManager(itemView.getContext(), colorUtils).getObjectStyleDrawableResource(
-                style.icon(),
-                R.drawable.ic_default_outline
-        );
-
+    private void renderStageIcon(MetadataIconData metadataIconData) {
         MetadataIconKt.setUpMetadataIcon(
                 binding.composeStageIcon,
-                new MetadataIconData(
-                        color,
-                        imageResource,
-                        40
-                ),
+                metadataIconData,
                 false
         );
     }

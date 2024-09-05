@@ -4,7 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
@@ -15,7 +19,9 @@ import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.FingerPrintResult
 import org.dhis2.data.fingerprint.Type
@@ -29,11 +35,13 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.hisp.dhis.android.core.arch.db.access.DatabaseExportMetadata
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -46,6 +54,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import retrofit2.Response
+import java.io.File
+
 class LoginViewModelTest {
 
     @get:Rule
@@ -67,12 +77,29 @@ class LoginViewModelTest {
     private val network: NetworkUtils = mock()
     private lateinit var loginViewModel: LoginViewModel
     private val openidconfig: OpenIDConnectConfig = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val testingDispatcher = StandardTestDispatcher()
+    private val dispatcherProvider = object : DispatcherProvider {
+        override fun io(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun computation(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun ui(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+    }
 
     private fun instantiateLoginViewModel() {
         loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
+            resourceManager,
             schedulers,
+            dispatcherProvider,
             goldfinger,
             analyticsHelper,
             crashReportController,
@@ -80,17 +107,26 @@ class LoginViewModelTest {
             userManager,
         )
     }
+
     private fun instantiateLoginViewModelWithNullUserManager() {
         loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
+            resourceManager,
             schedulers,
+            dispatcherProvider,
             goldfinger,
             analyticsHelper,
             crashReportController,
             network,
             null,
         )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
     }
 
     @Test
@@ -346,6 +382,24 @@ class LoginViewModelTest {
             userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
                 .blockingExists(),
         ) doReturn false
+
+        whenever(
+            userManager.d2.userModule(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user().blockingGet(),
+        )doReturn null
+        whenever(
+            userManager.d2.userModule().accountManager(),
+        )doReturn mock()
+
+        whenever(
+            userManager.d2.userModule().accountManager().getAccounts(),
+        )doReturn listOf()
+
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
     }
@@ -354,8 +408,8 @@ class LoginViewModelTest {
     fun `Should set server and username if user is logged`() {
         instantiateLoginViewModel()
         mockSystemInfo()
-        whenever(userManager.userName())doReturn Single.just("Username")
-        whenever(goldfinger.hasFingerPrint())doReturn true
+        whenever(userManager.userName()) doReturn Single.just("Username")
+        whenever(goldfinger.hasFingerPrint()) doReturn true
         whenever(preferenceProvider.contains(SECURE_SERVER_URL)) doReturn true
         loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
@@ -390,12 +444,38 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         val openidconfig: OpenIDConnectConfig = mock()
         val it: IntentWithRequestCode = mock()
-        whenever(view.initLogin())doReturn userManager
+        whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(openidconfig)) doReturn Observable.just(it)
         instantiateLoginViewModelWithNullUserManager()
         loginViewModel.openIdLogin(openidconfig)
         verify(view).openOpenIDActivity(it)
     }
+
+    @Test
+    fun `Should import database`() {
+        val mockedDatabase: File = mock()
+
+        instantiateLoginViewModel()
+        whenever(resourceManager.getString(any())) doReturn "Import successful"
+        whenever(
+            userManager.d2.maintenanceModule().databaseImportExport()
+                .importDatabase(mockedDatabase),
+        ) doReturn DatabaseExportMetadata(
+            0,
+            "2024-01-01",
+            "serverUrl",
+            "userName",
+            false,
+        )
+
+        loginViewModel.onImportDataBase(mockedDatabase)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        verify(view).setUrl("serverUrl")
+        verify(view).setUser("userName")
+        verify(view).displayMessage("Import successful")
+        verify(view).onDbImportFinished(true)
+    }
+
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
         if (isUserLoggedIn) {

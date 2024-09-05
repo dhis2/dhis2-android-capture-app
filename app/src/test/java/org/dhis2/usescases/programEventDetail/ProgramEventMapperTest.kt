@@ -1,9 +1,11 @@
 package org.dhis2.usescases.programEventDetail
 
-import org.dhis2.commons.reporting.CrashReportController
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
@@ -25,11 +27,13 @@ class ProgramEventMapperTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
-    private val crashReportController: CrashReportController = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock {
+        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
+    }
 
     @Before
     fun setUp() {
-        mapper = ProgramEventMapper(d2, periodUtil, crashReportController)
+        mapper = ProgramEventMapper(d2, periodUtil, metadataIconProvider)
     }
 
     @Test
@@ -134,6 +138,7 @@ class ProgramEventMapperTest {
             d2.programModule().programStages().uid("programStage").blockingGet(),
         ) doReturn ProgramStage.builder()
             .uid("programStage")
+            .style(ObjectStyle.builder().build())
             .build()
     }
 

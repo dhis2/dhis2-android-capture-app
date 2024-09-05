@@ -1,20 +1,21 @@
 package org.dhis2.usescases.enrollment
 
+import io.reactivex.Single
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.EnrollmentRepository
+import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.CHECK
+import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.NEW
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
-import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -22,7 +23,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import org.junit.Before
@@ -66,30 +66,6 @@ class EnrollmentPresenterImplTest {
             eventCollectionRepository,
             teiAttributesProvider,
         )
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is false and needsCoordinates is false`() {
-        checkCatCombo(true, FeatureType.NONE)
-        assert(!presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is true and needsCoordinates is false`() {
-        checkCatCombo(false, FeatureType.NONE)
-        assert(presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is false and needsCoordinates is true`() {
-        checkCatCombo(true, FeatureType.POINT)
-        assert(presenter.openInitial(""))
-    }
-
-    @Test
-    fun `Open initial when needsCatCombo is true and needsCoordinates is true`() {
-        checkCatCombo(false, FeatureType.POINT)
-        assert(presenter.openInitial(""))
     }
 
     @Test
@@ -233,31 +209,38 @@ class EnrollmentPresenterImplTest {
         assert(!presenter.isEventScheduleOrSkipped("uid"))
     }
 
-    private fun checkCatCombo(catCombo: Boolean, featureType: FeatureType) {
-        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
-            .categoryCombo(ObjectWithUid.create("")).build()
+    @Test
+    fun `should create an event right after enrollment creation`() {
+        whenever(enrollmentFormRepository.generateEvents()) doReturn Single.just(
+            Pair(
+                "enrollmentUid",
+                "eventUid",
+            ),
+        )
 
-        whenever(d2.eventModule()) doReturn mock()
-        whenever(d2.eventModule().events()) doReturn mock()
-        whenever(d2.eventModule().events().uid("")) doReturn mock()
-        whenever(d2.eventModule().events().uid("").blockingGet()) doReturn Event.builder()
-            .uid("").programStage("").build()
+        presenter.finish(NEW)
 
-        whenever(d2.programModule()) doReturn mock()
-        whenever(d2.programModule().programStages()) doReturn mock()
-        whenever(d2.programModule().programStages().uid("")) doReturn mock()
-        whenever(
-            d2.programModule().programStages().uid("").blockingGet(),
-        ) doReturn ProgramStage.builder().uid("").featureType(featureType).build()
+        verify(enrollmentView).openEvent("eventUid")
+    }
 
-        whenever(d2.categoryModule()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos()) doReturn mock()
-        whenever(d2.categoryModule().categoryCombos().uid("")) doReturn mock()
-        whenever(
-            d2.categoryModule().categoryCombos().uid("").blockingGet(),
-        ) doReturn CategoryCombo.builder()
-            .isDefault(catCombo)
-            .uid("")
-            .build()
+    @Test
+    fun `should navigate to enrollment dashboard after enrollment creation`() {
+        whenever(enrollmentFormRepository.generateEvents()) doReturn Single.just(
+            Pair(
+                "enrollmentUid",
+                null,
+            ),
+        )
+
+        presenter.finish(NEW)
+
+        verify(enrollmentView).openDashboard("enrollmentUid")
+    }
+
+    @Test
+    fun `should close enrollment screen if it already exists`() {
+        presenter.finish(CHECK)
+
+        verify(enrollmentView).setResultAndFinish()
     }
 }

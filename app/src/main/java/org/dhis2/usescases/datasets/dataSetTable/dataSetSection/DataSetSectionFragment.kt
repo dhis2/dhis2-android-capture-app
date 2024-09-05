@@ -209,6 +209,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onCellClick = presenterFragment::onCellClick,
                             onEdition = presenter::editingCellValue,
                             onSaveValue = presenterFragment::onSaveValueChange,
+                            emptyTablesText = getString(R.string.section_misconfigured),
                         )
                     }
                 }

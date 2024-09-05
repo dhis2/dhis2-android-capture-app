@@ -90,22 +90,15 @@
     <string name="latitude">រយៈទទឹង</string>
     <string name="longitude">រយៈបណ្តោយ</string>
     <string name="new_event">ព្រឹត្តិការណ៏ថ្មី</string>
-    <string name="failed_insert_event">បរាជ័យក្នុងការបន្ថែមព្រឹត្តិការណ៏ថ្មី</string>
-    <string name="event_created">ព្រឹត្តិការណ៏ត្រូវបានបង្កើត</string>
-    <string name="event_updated">ព្រឹត្តិការណ៏ត្រូវបានធ្វើបច្ចុប្បន្នភាព</string>
     <string name="one_time">មួយពេល</string>
     <string name="permanent">អចិន្ត្រៃយ៍</string>
 
     <!--Event Detail-->
-    <string name="event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
     <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
     <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
     <string name="date_default">ថ្ងៃថ្ងៃ/ខែខែ/ឆ្នាំឆ្នាំឆ្នាំឆ្នាំ</string>
     <string name="cancel">បោះបង់</string>
     <string name="delete">​លុប​</string>
-    <string name="delete_event">លុបចោលព្រឹត្តិការណ៏</string>
-    <string name="confirm_delete_event">តើអ្នកច្បាស់ទេថាចង់លុបចោលព្រឹត្តិការណ៏នេះ?</string>
-    <string name="event_was_deleted">ព្រឹត្តិការណ៏បានលុបជោគជ័យ</string>
     <!--TEI Enrollment list-->
     <string name="enrollment_list">បញ្ជីចុះឈ្មោះ</string>
     <string name="active_programs">កម្មវិធីដំណើរការ</string>
@@ -117,19 +110,16 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">មើលលំអិត</string>
     <string name="view_more">មើលច្រើនទៀត</string>
-    <string name="enrolling_ou">ចុះឈ្មោះអង្គភាព</string>
     <string name="follow_up">តាមដាន</string>
     <string name="follow_up_enabled">ការតាមដានដំណើរការ</string>
     <string name="follow_up_disabled">ការតាមដានមិនដំណើរការ</string>
     <string name="deactivate">ធ្វើអោយអសកម្ម</string>
     <string name="program_not_allow_events">កម្មវិធីនេះមិនអនុញ្ញាតអោយមានព្រឹត្តិការណ៏ច្រើនទេ</string>
 
-    <!--DONE TASKS-->
     <string name="events">ព្រឹត្តិការណ៏</string>
     <string name="app_info">ព័ត៌មានកម្មវិធី</string>
     <string name="log_out">ចាកចេញ</string>
     <string name="block_session">ការទប់ស្កាត់</string>
-
     <!-- SYNC -->
     <string name="a_minute">១នាទី</string>
     <string name="fifteen_minute">១៥នាទី</string>
@@ -164,7 +154,6 @@
     <string name="add_note">បន្ថែមការកត់ចំណាំ</string>
     <string name="revert">ត្រលប់ក្រោយ</string>
     <string name="activated">បានដាក់អោយដំណើរការ</string>
-    <string name="enroll_in">ចុះឈ្មោះក្នុង %s</string>
     <string name="missing_mandatory_fields_title">ទិន្នន័យចាំបាច់មិនមាន</string>
     <string name="missing_mandatory_fields_text">ឈ្មោះទិន្នន័យចាំបាច់ខ្លះមិនមាន, ប្រសិនបើអ្នកចង់ត្រឡប់ទៅវិញ រាល់ពត៏មាននិងត្រូវលុយចោល</string>
     <string name="missing_mandatory_fields_go_back">លុប ហើយត្រឡប់ទៅវិញ</string>
@@ -221,7 +210,6 @@
     <string name="qr_error_id">លេខកូដ QR មិនត្រឹមត្រូវ</string>
     <string name="qr_error_attr">Attribute (លក្ខណៈនេះ) មិនអាចត្រូវបានបន្ថែមទេ</string>
     <string name="qr_error_enrollment">ការចុះឈ្មោះនេះមិនអាចបន្ថែមបានឡើយ</string>
-    <string name="qr_error_event">ព្រឹត្តិការណ៏នេះមិនអាចបន្ថែមបានឡើយ</string>
 
     <string name="jira_report">រាយការណ៏បញ្ហា Jira</string>
     <string name="about">អំពី</string>

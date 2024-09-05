@@ -64,7 +64,7 @@ class GraphToBarChart {
                 } else {
                     minValue - padding
                 }
-                if (graph.isSingleValue() && graph.series[0].coordinates[0].fieldValue < 0) {
+                if (graph.isSingleValue() && graph.series[0].coordinates[0].numericValue() < 0) {
                     axisMaximum = minValue
                     axisMinimum = graph.maxValue() + padding
                 }

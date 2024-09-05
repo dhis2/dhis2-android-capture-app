@@ -1,16 +1,21 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import static android.view.View.GONE;
+import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
+import static org.dhis2.usescases.searchTrackEntity.searchparameters.SearchParametersScreenKt.initSearchScreen;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.compose.animation.ExperimentalAnimationApi;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,31 +28,32 @@ import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.date.DateUtils;
+import org.dhis2.commons.date.Period;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.Filters;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
+import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.databinding.ActivitySearchBinding;
-import org.dhis2.databinding.SnackbarMinAttrBinding;
-import org.dhis2.form.model.SearchRecords;
-import org.dhis2.form.ui.FormView;
+import org.dhis2.form.ui.intent.FormIntent;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList;
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap;
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrientationUtilsKt;
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog;
+import org.dhis2.utils.customviews.RxDateDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.io.Serializable;
@@ -58,6 +64,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -89,6 +96,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Inject
     FeatureConfigRepository featureConfig;
 
+    @Inject
+    ResourceManager resourceManager;
+
     private static final String INITIAL_PAGE = "initialPage";
 
     private String initialProgram;
@@ -102,7 +112,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchTEIViewModel viewModel;
 
     private boolean initSearchNeeded = true;
-    private FormView formView;
     public SearchTEComponent searchComponent;
     private int initialPage = 0;
 
@@ -130,6 +139,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private Content currentContent = null;
 
+    private String CURRENT_SCREEN = "current_screen";
+
     public static Intent getIntent(Context context, String programUid, String teiTypeToAdd, String teiUid, boolean fromRelationship) {
         Intent intent = new Intent(context, SearchTEActivity.class);
         Bundle extras = new Bundle();
@@ -143,7 +154,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @OptIn(markerClass = ExperimentalAnimationApi.class)
+    protected void  onCreate(@Nullable Bundle savedInstanceState) {
 
         initializeVariables(savedInstanceState);
         inject();
@@ -155,9 +167,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         viewModel = new ViewModelProvider(this, viewModelFactory).get(SearchTEIViewModel.class);
 
-        initSearchForm();
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+        if(savedInstanceState!=null && savedInstanceState.getString(CURRENT_SCREEN)!=null){
+            currentContent = Content.valueOf(savedInstanceState.getString(CURRENT_SCREEN));
+        }
+        initSearchParameters();
 
         searchScreenConfigurator = new SearchScreenConfigurator(
                 binding,
@@ -171,21 +185,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
         binding.setPresenter(presenter);
         binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
-        ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
-        binding.searchButton.setOnClickListener(v -> {
-            if (OrientationUtilsKt.isPortrait()) searchScreenConfigurator.closeBackdrop();
-            formView.onEditionFinish();
-            viewModel.onSearchClick(minNumberOfAttributes -> {
-                showSnackbar(
-                        v,
-                        String.format(getString(R.string.search_min_num_attr),
-                                minNumberOfAttributes),
-                        getString(R.string.button_ok)
 
-                );
-                return Unit.INSTANCE;
+        if (OrientationUtilsKt.isLandscape()) {
+            viewModel.getFiltersOpened().observe(this, isOpened -> {
+                if (Boolean.TRUE.equals(isOpened)) {
+                    ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
+                } else {
+                    ViewExtensionsKt.clipWithTopRightRoundedCorner(binding.mainComponent, ExtensionsKt.getDp(16));
+                }
             });
-        });
+        } else {
+            ViewExtensionsKt.clipWithRoundedCorners(binding.mainComponent, ExtensionsKt.getDp(16));
+        }
 
         binding.filterRecyclerLayout.setAdapter(filtersAdapter);
 
@@ -234,26 +245,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                         initialQuery
                 ));
         searchComponent.inject(this);
-    }
-
-    private void showSnackbar(View view, String message, String actionText) {
-        Snackbar snackbar = Snackbar.make(
-                view,
-                actionText,
-                BaseTransientBottomBar.LENGTH_LONG
-        );
-        SnackbarMinAttrBinding snackbarBinding = SnackbarMinAttrBinding.inflate(getLayoutInflater());
-        snackbarBinding.message.setText(message);
-        snackbarBinding.actionButton.setOnClickListener(v -> {
-            if (snackbar.isShown()) snackbar.dismiss();
-        });
-        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-        snackbarLayout.setPadding(0, 0, 0, 0);
-
-        snackbarLayout.addView(snackbarBinding.getRoot(), 0);
-
-        snackbar.show();
     }
 
     @Override
@@ -329,9 +320,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onSaveInstanceState(outState);
         outState.putSerializable(Constants.QUERY_DATA, (Serializable) viewModel.getQueryData());
         outState.putInt(INITIAL_PAGE, binding.navigationBar.currentPage());
+        outState.putString(CURRENT_SCREEN, currentContent.name());
     }
 
     private void openSyncDialog() {
+        View contextView = findViewById(R.id.navigationBar);
         new SyncStatusDialog.Builder()
                 .withContext(this, null)
                 .withSyncContext(
@@ -339,7 +332,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                }).show("PROGRAM_SYNC");
+                })
+                .onNoConnectionListener(() ->
+                        Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT
+                        ).show()
+                )
+                .show("PROGRAM_SYNC");
     }
 
     @Override
@@ -350,29 +351,45 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         viewModel.refreshData();
     }
 
-    private void initSearchForm() {
-        formView = new FormView.Builder()
-                .locationProvider(locationProvider)
-                .onItemChangeListener(action -> {
-                    viewModel.updateQueryData(action);
+    private void initSearchParameters() {
+        initSearchScreen(
+                binding.searchContainer,
+                viewModel,
+                initialProgram,
+                tEType,
+                resourceManager,
+                (uid, preselectedOrgUnits, orgUnitScope, label) -> {
+                    new OUTreeFragment.Builder()
+                            .showAsDialog()
+                            .withPreselectedOrgUnits(preselectedOrgUnits)
+                            .singleSelection()
+                            .onSelection(selectedOrgUnits -> {
+                                String selectedOrgUnit = null;
+                                if (!selectedOrgUnits.isEmpty()) {
+                                    selectedOrgUnit = selectedOrgUnits.get(0).uid();
+                                }
+                                viewModel.onParameterIntent(
+                                        new FormIntent.OnSave(
+                                                uid,
+                                                selectedOrgUnit,
+                                                ValueType.ORGANISATION_UNIT,
+                                                null,
+                                                true
+                                        )
+                                );
+                                return Unit.INSTANCE;
+                            })
+                            .orgUnitScope(orgUnitScope)
+                            .build()
+                            .show(getSupportFragmentManager(), label);
                     return Unit.INSTANCE;
-                })
-                .activityForResultListener(() -> {
-                    initSearchNeeded = false;
+                },
+                () -> {
+                    closeKeyboard(binding.root);
+                    presenter.onClearClick();
                     return Unit.INSTANCE;
-                })
-                .onFieldItemsRendered(isEmpty -> Unit.INSTANCE)
-                .needToForceUpdate(true)
-                .setActionIconsActivation(false)
-                .factory(getSupportFragmentManager())
-                .setRecords(new SearchRecords(
-                        initialProgram,
-                        tEType,
-                        initialQuery
-                ))
-                .build();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.formViewContainer, formView).commit();
+                }
+        );
     }
 
     private void configureBottomNavigation() {
@@ -382,36 +399,32 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
             binding.mainComponent.setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
-                case R.id.navigation_list_view:
+                case R.id.navigation_list_view -> {
                     viewModel.setListScreen();
                     showList();
                     showSearchAndFilterButtons();
-                    break;
-                case R.id.navigation_map_view:
-                    networkUtils.performIfOnline(
-                            this,
-                            () -> {
-                                presenter.trackSearchMapVisualization();
-                                viewModel.setMapScreen();
-                                showMap();
-                                showSearchAndFilterButtons();
-                                return null;
-                            },
-                            () -> {
-                                binding.navigationBar.selectItemAt(0);
-                                return null;
-                            },
-                            getString(R.string.msg_network_connection_maps)
-                    );
-
-                    break;
-                case R.id.navigation_analytics:
+                }
+                case R.id.navigation_map_view -> networkUtils.performIfOnline(
+                        this,
+                        () -> {
+                            presenter.trackSearchMapVisualization();
+                            showMap();
+                            showSearchAndFilterButtons();
+                            return null;
+                        },
+                        () -> {
+                            binding.navigationBar.selectItemAt(0);
+                            return null;
+                        },
+                        getString(R.string.msg_network_connection_maps)
+                );
+                case R.id.navigation_analytics -> {
                     presenter.trackSearchAnalytics();
                     viewModel.setAnalyticsScreen();
                     fromAnalytics = true;
                     showAnalytics();
                     hideSearchAndFilterButtons();
-                    break;
+                }
             }
             return true;
         });
@@ -438,6 +451,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainComponent, SearchTEList.Companion.get(fromRelationship)).commit();
         }
+        viewModel.getRefreshData().observe(this, refresh -> {
+            closeKeyboard(binding.root);
+        });
     }
 
     private void showMap() {
@@ -460,9 +476,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private void hideSearchAndFilterButtons() {
         binding.searchFilterGeneral.setVisibility(GONE);
         binding.filterCounter.setVisibility(GONE);
-        if (OrientationUtilsKt.isLandscape()) {
-            binding.searchButton.setVisibility(GONE);
-        }
     }
 
     private void showSearchAndFilterButtons() {
@@ -470,7 +483,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             fromAnalytics = false;
             binding.searchFilterGeneral.setVisibility(View.VISIBLE);
             binding.filterCounter.setVisibility(binding.getTotalFilters() > 0 ? View.VISIBLE : View.GONE);
-            binding.searchButton.setVisibility(OrientationUtilsKt.isLandscape() ? View.VISIBLE : GONE);
         }
     }
 
@@ -504,12 +516,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     private void observeLegacyInteractions() {
+
         viewModel.getLegacyInteraction().observe(this, legacyInteraction -> {
             if (legacyInteraction != null) {
                 switch (legacyInteraction.getId()) {
                     case ON_ENROLL_CLICK -> {
                         LegacyInteraction.OnEnrollClick interaction = (LegacyInteraction.OnEnrollClick) legacyInteraction;
                         presenter.onEnrollClick(new HashMap<>(interaction.getQueryData()));
+
                     }
                     case ON_ADD_RELATIONSHIP -> {
                         LegacyInteraction.OnAddRelationship interaction = (LegacyInteraction.OnAddRelationship) legacyInteraction;
@@ -582,6 +596,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void showSyncDialog(String enrollmentUid) {
+        View contextView = findViewById(R.id.navigationBar);
         new SyncStatusDialog.Builder()
                 .withContext(this, null)
                 .withSyncContext(
@@ -589,7 +604,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 )
                 .onDismissListener(hasChanged -> {
                     if (hasChanged) viewModel.refreshData();
-                }).show("TEI_SYNC");
+                })
+                .onNoConnectionListener(() ->
+                        Snackbar.make(
+                                contextView,
+                                R.string.sync_offline_check_connection,
+                                Snackbar.LENGTH_SHORT
+                        ).show()
+                ).show("TEI_SYNC");
     }
 
     private void setInitialProgram(List<ProgramSpinnerModel> programs) {
@@ -633,10 +655,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         if (viewModel.filterIsOpen()) {
             filtersAdapter.notifyDataSetChanged();
             FilterManager.getInstance().clearAllFilters();
-        } else {
-            formView.onEditionFinish();
-            formView.clearValues();
-            presenter.onClearClick();
         }
     }
 
@@ -666,14 +684,29 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 }
             });
         } else {
-            DateUtils.getInstance().showPeriodDialog(this, datePeriods -> {
-                        if (periodRequest.getSecond() == Filters.PERIOD) {
-                            FilterManager.getInstance().addPeriod(datePeriods);
-                        } else {
-                            FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
-                        }
-                    },
-                    true);
+
+            DateUtils.OnFromToSelector onFromToSelector = datePeriods -> {
+                if (periodRequest.getSecond() == Filters.PERIOD) {
+                    FilterManager.getInstance().addPeriod(datePeriods);
+                } else {
+                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods);
+                }
+            };
+
+            DateUtils.OnNextSelected onNextSelected = () -> {
+                Disposable disposable = new RxDateDialog(this, Period.WEEKLY)
+                        .createForFilter().show()
+                        .subscribe(
+                                selectedDates -> onFromToSelector.onFromToSelected(DateUtils.getInstance().getDatePeriodListFor(
+                                        selectedDates.val1(),
+                                        selectedDates.val0())
+                                ),
+                                Timber::e
+                        );
+            };
+
+            DateUtils.getInstance().showPeriodDialog(this,onFromToSelector,
+                    true, onNextSelected);
         }
     }
 
@@ -694,6 +727,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void showBreakTheGlass(String teiUid, String enrollmentUid) {
         new BreakTheGlassBottomDialog()
+                .setProgram(presenter.getProgram().uid())
                 .setPositiveButton(reason -> {
                     viewModel.onDownloadTei(teiUid, enrollmentUid, reason);
                     return Unit.INSTANCE;

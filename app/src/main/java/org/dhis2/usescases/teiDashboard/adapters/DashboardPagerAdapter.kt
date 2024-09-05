@@ -98,7 +98,6 @@ class DashboardPagerAdapter(
             R.id.navigation_analytics -> DashboardPageType.ANALYTICS
             R.id.navigation_relationships -> DashboardPageType.RELATIONSHIPS
             R.id.navigation_notes -> DashboardPageType.NOTES
-            R.id.navigation_events -> null
             else -> null
         }
 

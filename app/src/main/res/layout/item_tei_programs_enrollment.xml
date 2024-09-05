@@ -16,8 +16,8 @@
             type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
 
         <variable
-            name="style"
-            type="org.hisp.dhis.android.core.common.ObjectStyle" />
+            name="metadataIconData"
+            type="org.dhis2.ui.MetadataIconData" />
     </data>
 
     <LinearLayout
@@ -48,7 +48,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_centerInParent="true"
-                    app:set_metadata_icon="@{style}" />
+                    app:set_metadata_icon="@{metadataIconData}" />
             </RelativeLayout>
 
             <LinearLayout

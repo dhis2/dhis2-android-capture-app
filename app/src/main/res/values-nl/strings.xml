@@ -122,9 +122,6 @@
     <string name="latitude">Breedtegraad</string>
     <string name="longitude">Lengtegraad</string>
     <string name="new_event">Nieuw evenement</string>
-    <string name="failed_insert_event">Kan geen nieuwe gebeurtenis invoegen</string>
-    <string name="event_created">Evenement gemaakt</string>
-    <string name="event_updated">Evenement bijgewerkt</string>
     <string name="one_time">Een keer</string>
     <string name="permanent">permanent</string>
 
@@ -137,18 +134,13 @@
     <string name="datavalue_saved">Waarde is opgeslagen!</string>
     <string name="there_is_no_available_period">Er zijn geen beschikbare periodes om te selecteren.</string>
     <!--Event Detail-->
-    <string name="event_date">Evenement datum</string>
     <string name="due_date">Deadline</string>
     <string name="cat_combo">Katten combinatie</string>
     <string name="date_default">DD/MM/JJJJ</string>
     <string name="cancel">Annuleren</string>
     <string name="delete">Verwijder</string>
-    <string name="delete_event">evenement verwijderen</string>
-    <string name="confirm_delete_event">Weet je zeker dat je dit evenement wilt verwijderen?</string>
-    <string name="event_was_deleted">Evenement succesvol verwijderd</string>
     <string name="total">Totaal</string>
     <string name="most_recent_event_date">Datum meest recente evenement</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Inschrijvingslijst</string>
     <string name="active_programs">Actieve programma\'s</string>
@@ -160,20 +152,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Zie de details</string>
     <string name="view_more">BEKIJK MEER</string>
-    <string name="enrolling_ou">OU inschrijven:</string>
     <string name="follow_up">Volg op</string>
     <string name="follow_up_enabled">Vervolg ingeschakeld</string>
     <string name="follow_up_disabled">Opvolging uitgeschakeld</string>
     <string name="deactivate">Deactiveren</string>
     <string name="program_not_allow_events">Dit programma staat niet meer evenementen toe</string>
 
-    <!--DONE TASKS-->
     <string name="events">evenementen</string>
     <string name="done_task">Thuis</string>
     <string name="app_info">App informatie</string>
     <string name="log_out">Uitloggen</string>
     <string name="block_session">Sessie blokkeren</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 minuut</string>
     <string name="fifteen_minute">15 minuten</string>
@@ -248,18 +237,15 @@
     <string name="add_note">Notitie toevoegen</string>
     <string name="revert">Terugdraaien</string>
     <string name="activated">Geactiveerd</string>
-    <string name="enroll_in">Schrijf je in bij %s</string>
     <string name="missing_mandatory_fields_title">Verplichte velden ontbreken</string>
     <string name="missing_mandatory_fields_text">Sommige verplichte velden ontbreken. Als u nu terug wilt gaan, wordt alle opgeslagen informatie verwijderd.</string>
     <string name="missing_mandatory_fields_text_not_delete">Sommige verplichte velden ontbreken. Als je terug wilt gaan, vul ze dan in.</string>
     <string name="missing_mandatory_fields_events">Sommige velden hebben uw aandacht nodig.\Wilt u het formulier bekijken?</string>
     <string name="title_delete_go_back">Uw gegevens worden niet bewaard</string>
     <string name="delete_go_back">Als u nu teruggaat, wordt alle ingevoerde informatie verwijderd.</string>
-    <string name="missing_mandatory_fields_events_2.0">Er ontbreken enkele verplichte velden:\n%s\nJe kunt nu teruggaan, maar dit evenement kan niet worden voltooid.</string>
     <string name="missing_mandatory_fields_go_back">Verwijderen en teruggaan</string>
     <string name="error_fields">Sommige velden bevatten fouten:\n%s\nControleer ze alsjeblieft.</string>
     <string name="missing_mandatory_fields_finish">Sommige verplichte velden ontbreken. U kunt het invoeren en afsluiten van gegevens voltooien, maar de gebeurtenis kan niet worden voltooid.</string>
-    <string name="enrollment_coordinates">Inschrijving coördinaten</string>
     <string name="tei_coordinates">Coördinaten voor de</string>
 
     <!--EVENT SUMMARY-->
@@ -317,7 +303,6 @@
     <string name="qr_error_id">Ongeldige QR-code</string>
     <string name="qr_error_attr">Dit kenmerk kan niet worden toegevoegd</string>
     <string name="qr_error_enrollment">Deze inschrijving kan niet worden toegevoegd</string>
-    <string name="qr_error_event">Dit evenement kan niet worden toegevoegd</string>
 
     <string name="jira_report">Rapporteer Jira-probleem</string>
     <string name="about">Over</string>
@@ -464,17 +449,14 @@
     <string name="finish">Finish</string>
     <string name="error_fields_title">Velden met fouten</string>
     <string name="error_fields_events">Sommige velden bevatten fouten. Ze zijn niet opgeslagen. Controleer ze alsjeblieft.</string>
-    <string name="event_reopened">Dit evenement kan nu worden bewerkt</string>
     <string name="unique_warning">De waarde moet uniek zijn, er is een toeval gevonden. Het is niet opgeslagen. Controleer het alstublieft.</string>
     <string name="unique_coincidence_found">Er is een toeval gevonden in een uniek veld. Controleer het formulier om de inschrijving op te slaan.</string>
     <string name="please_wait">Even geduld alstublieft</string>
     <string name="skip">Overslaan</string>
     <string name="reschedule">Opnieuw plannen</string>
-    <string name="event_was_skipped">Het evenement is gemarkeerd als overgeslagen</string>
     <string name="no_intructions">Er is geen informatie voor dit scherm</string>
     <string name="event_overdue">Verlopen</string>
     <string name="unsupported_program_rule">Er is één programmaregel die niet wordt ondersteund. Controleer de documentatie</string>
-    <string name="delete_event_error">Dit evenement is nog niet aangemaakt</string>
     <string name="empty_description">Geen info voor dit veld</string>
     <string name="biometrics_dialog_title">Lege inloggegevens</string>
     <string name="biometrics_first_use_text">Om in te kunnen loggen met de vingerafdrukscanner moet je eerst de standaardmanier gebruiken</string>
@@ -531,10 +513,8 @@
     <string name="relationship_without_enrollment">Het record dat u probeert te openen heeft geen inschrijving. U heeft geen toegang tot het dashboard.</string>
     <string name="formatting_error">Formatteringsfout</string>
     <string name="dashboard_menu_delete_tei_v2">Verwijder %s</string>
-    <string name="dashboard_menu_delete_enrollment">Alleen inschrijving verwijderen</string>
     <string name="delete_authority_error">U bent niet bevoegd om dit record te verwijderen</string>
     <string name="validation_url">Dit is geen geldige URL</string>
-    <string name="uncomplete_authority_error">Je hebt niet de bevoegdheid om dit evenement opnieuw te openen</string>
     <string name="adjusting_form">Formulier aanpassen…</string>
 
     <string name="sms_receiver_number">Ontvanger nummer</string>
@@ -625,7 +605,6 @@
     <string name="event_tei_limits_v2">Instellingen beperkt %s\nevenementen: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Inschrijvingsgegevens verbergen</string>
     <string name="enrollment_data_show">Toon inschrijvingsgegevens</string>
-    <string name="enrollment_data_section_label">Inschrijving gegevens</string>
     <string name="sms_enabled">SMS-module ingeschakeld</string>
     <string name="sms_disabled">SMS-module uitgeschakeld</string>
     <string name="sms_downloading_data">Gegevens downloaden voor SMS-module. Even geduld aub</string>
@@ -635,7 +614,6 @@
     <string name="disable_pin_locked">Vergrendelscherm niet meer weergeven</string>
     <string name="set_pin">Speld instellen</string>
     <string name="conflict">Conflict</string>
-    <string name="event_date_in_future_message">Dit evenement kan geen datum in de toekomst hebben. Wijzig het alstublieft.</string>
     <string name="change_event_date">Verander de datum</string>
     <string name="go_back">Ga terug</string>
     <string name="data_sets">Gegevensreeksen</string>
@@ -649,7 +627,6 @@
     <string name="interval_hour_ago">%d uur geleden</string>
     <string name="interval_yesterday">Gisteren</string>
     <string name="enrollment_single_section_label">Kenmerken - %s</string>
-    <string name="program_selector">Programma inschrijvingen</string>
     <string name="select_time">Selecteer tijd</string>
     <string name="enter_letter">Voer brief in</string>
     <string name="enter_unit_interval">Voer een getal in van 0 tot 1</string>
@@ -695,7 +672,6 @@
     <string name="complete_anyway">In ieder geval compleet</string>
     <string name="fk_message">Ontbrekende %s %s van %s %s</string>
     <string name="filters_title_event_status">Gebeurtenisstatus</string>
-    <string name="filters_title_enrollment_status">Inschrijving Status</string>
     <string name="enrollment_date">Inschrijvingsdatum</string>
     <string name="dataset_empty_list_can_create">Er zijn geen gegevens. Klik op \"+\" om een nieuw record toe te voegen</string>
     <string name="dataset_emtpy_list_can_not_create">Er zijn geen gegevens. U heeft geen rechten om nieuwe records toe te voegen.</string>
@@ -748,7 +724,6 @@
     <string name="navigation_analytics">Analyse</string>
     <string name="navigation_tasks">Taken</string>
     <string name="navigation_programs">Programma\'s</string>
-    <string name="navigation_events">Gebeurtenissen</string>
     <string name="navigation_relationships">Relaties</string>
     <string name="navigation_notes">Notities</string>
     <string name="navigation_data_entry">Gegevensinvoer</string>
@@ -795,8 +770,6 @@
     <string name="from_gallery">Kies uit gallerij</string>
     <string name="data_set_quality_check_done">Klaar!</string>
     <string name="break_glass_dialog_title">Dit programma is beveiligd</string>
-    <string name="break_glass_dialog_description">U moet een reden opgeven om te controleren op inschrijving voor dit beschermde programma. Alle activiteiten worden geregistreerd.</string>
-    <string name="break_glass_reason">Reden om te controleren op inschrijving</string>
     <string name="break_glass_hint">Omschrijf hier de reden</string>
     <string name="authenticating">Verificatie</string>
     <string name="login_error_no_dhis_instance">De opgegeven server-URL is geen dhis-instantie</string>
@@ -821,7 +794,6 @@
     <string name="edition_no_write_access">U heeft geen toestemming om deze gegevens te bewerken</string>
     <string name="event_date_not_in_orgunit_range">Deze gegevens zijn niet bewerkbaar omdat de organisatie-eenheid gesloten is</string>
     <string name="edition_no_catcombo_access">U heeft geen toestemming om deze gegevens te bewerken</string>
-    <string name="edition_enrollment_is_no_open">Deze gegevens kunnen niet worden bewerkt omdat de inschrijving is voltooid of geannuleerd</string>
     <string name="edition_orgunit_capture_scope">U kunt gegevens van deze organisatie-eenheid niet bewerken</string>
     <string name="reload_list">Zoeken resetten</string>
     <string name="error_tei_online_search_title">De online zoekopdracht leverde het volgende bericht op:</string>
@@ -866,7 +838,6 @@
     <string name="account_disable_title">Account ongebruikelijk gemaakt</string>
     <string name="account_disable_message">Uw account is uitgeschakeld door een beheerder.</string>
     <string name="search_unable_search_outside">Om buiten dit programma te zoeken, opent u het zoekformulier en vult u een van de volgende %s-velden in:</string>
-    <string name="enrollment_org_unit">Inschrijvingsorganisatie-eenheid</string>
     <string name="customactivityoncrash_error_activity_build_version">Bouw versie: %s</string>
     <string name="customactivityoncrash_error_activity_buid_date">Bouwjaar: %s</string>
     <string name="customactivityoncrash_error_activity_current_date">Huidige datum: %s</string>

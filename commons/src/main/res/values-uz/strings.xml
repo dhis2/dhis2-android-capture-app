@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Ҳодиса/Тадбир</string>
     <string name="no_data">Маълумот йўқ</string>
     <string name="change_calendar_view">Тақвим кўринишини ўзгартириш</string>
     <string name="clear">аниқ</string>
@@ -16,7 +15,6 @@
     <string name="navigation_analytics">Аналитика</string>
     <string name="navigation_tasks">Вазифалар</string>
     <string name="navigation_programs">Дастурлар</string>
-    <string name="navigation_events">Ҳодиса/Тадбирлар</string>
     <string name="navigation_relationships">Ўзаро алоқалар</string>
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>

@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
@@ -23,7 +24,10 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.extensions.autocompleteList
@@ -49,12 +53,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.internal.RegExValidations
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun FieldProvider(
+fun FieldProvider(
     modifier: Modifier,
+    inputStyle: InputStyle = InputStyle.DataInputStyle(),
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
@@ -74,14 +80,16 @@ internal fun FieldProvider(
         .onSizeChanged { intSize ->
             visibleArea = Rect(
                 size = Size(intSize.width.toFloat(), intSize.height.toFloat()),
-                offset = Offset(0f, 20f),
+                offset = Offset(0f, 200f),
             )
         }
         .onFocusChanged {
             if (it.isFocused && !fieldUiModel.focused) {
                 scope.launch {
-                    bringIntoViewRequester.bringIntoView(visibleArea)
                     fieldUiModel.onItemClick()
+
+                    delay(10)
+                    bringIntoViewRequester.bringIntoView(visibleArea)
                 }
             }
         }
@@ -98,343 +106,428 @@ internal fun FieldProvider(
         }
     }
 
-    if (fieldUiModel.optionSet == null) {
-        when (fieldUiModel.valueType) {
-            ValueType.TEXT -> {
-                ProvideInputsForValueTypeText(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
-                )
-            }
+    when {
+        fieldUiModel.optionSet != null -> ProvideByOptionSet(
+            modifier = modifierWithFocus,
+            inputStyle = inputStyle,
+            fieldUiModel = fieldUiModel,
+            intentHandler = intentHandler,
+            context = context,
+        )
 
-            ValueType.INTEGER_POSITIVE -> {
-                ProvideIntegerPositive(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
-                )
-            }
+        fieldUiModel.eventCategories != null -> ProvideCategorySelectorInput(
+            modifier = modifierWithFocus,
+            inputStyle = inputStyle,
+            fieldUiModel = fieldUiModel,
+        )
 
-            ValueType.INTEGER_ZERO_OR_POSITIVE -> {
-                ProvideIntegerPositiveOrZero(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+        else -> ProvideByValueType(
+            modifier = modifierWithFocus,
+            inputStyle = inputStyle,
+            fieldUiModel = fieldUiModel,
+            intentHandler = intentHandler,
+            uiEventHandler = uiEventHandler,
+            resources = resources,
+            focusRequester = focusRequester,
+            onNextClicked = onNextClicked,
+            focusManager = focusManager,
+        )
+    }
+}
 
-                )
-            }
+@Composable
+fun ProvideByValueType(
+    modifier: Modifier,
+    inputStyle: InputStyle,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    resources: ResourceManager,
+    focusRequester: FocusRequester,
+    onNextClicked: () -> Unit,
+    focusManager: FocusManager,
+) {
+    when (fieldUiModel.valueType) {
+        ValueType.TEXT -> {
+            ProvideInputsForValueTypeText(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
+            )
+        }
 
-            ValueType.PERCENTAGE -> {
-                ProvidePercentage(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+        ValueType.INTEGER_POSITIVE -> {
+            ProvideIntegerPositive(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.INTEGER_ZERO_OR_POSITIVE -> {
+            ProvideIntegerPositiveOrZero(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.NUMBER -> {
-                ProvideNumber(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.PERCENTAGE -> {
+            ProvidePercentage(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.INTEGER_NEGATIVE -> {
-                ProvideIntegerNegative(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.NUMBER -> {
+            ProvideNumber(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.LONG_TEXT -> {
-                ProvideLongText(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.INTEGER_NEGATIVE -> {
+            ProvideIntegerNegative(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.LETTER -> {
-                ProvideLetter(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.LONG_TEXT -> {
+            ProvideLongText(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.INTEGER -> {
-                ProvideInteger(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.LETTER -> {
+            ProvideLetter(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.ORGANISATION_UNIT -> {
-                ProvideOrgUnitInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    uiEventHandler = uiEventHandler,
-                    intentHandler = intentHandler,
-                    focusRequester = focusRequester,
-                )
-            }
+            )
+        }
 
-            ValueType.UNIT_INTERVAL -> {
-                ProvideUnitIntervalInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    onNextClicked = onNextClicked,
-                )
-            }
+        ValueType.INTEGER -> {
+            ProvideInteger(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-            ValueType.EMAIL -> {
-                ProvideEmail(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+            )
+        }
 
-                )
-            }
+        ValueType.ORGANISATION_UNIT -> {
+            ProvideOrgUnitInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                uiEventHandler = uiEventHandler,
+                intentHandler = intentHandler,
+            )
+        }
 
-            ValueType.FILE_RESOURCE -> {
-                ProvideInputFileResource(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    resources = resources,
-                    uiEventHandler = uiEventHandler,
-                )
-            }
+        ValueType.UNIT_INTERVAL -> {
+            ProvideUnitIntervalInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                onNextClicked = onNextClicked,
+            )
+        }
 
-            ValueType.URL -> {
-                ProvideInputLink(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
+        ValueType.EMAIL -> {
+            ProvideEmail(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
 
-                )
-            }
+            )
+        }
 
-            ValueType.BOOLEAN -> {
-                when (fieldUiModel.renderingType) {
-                    UiRenderType.HORIZONTAL_CHECKBOXES,
-                    UiRenderType.VERTICAL_CHECKBOXES,
-                    -> {
-                        ProvideYesNoCheckBoxInput(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            resources = resources,
-                            focusRequester = focusRequester,
-                        )
-                    }
+        ValueType.FILE_RESOURCE -> {
+            ProvideInputFileResource(
+                modifier = modifier,
+                fieldUiModel = fieldUiModel,
+                resources = resources,
+                uiEventHandler = uiEventHandler,
+            )
+        }
 
-                    else -> {
-                        ProvideYesNoRadioButtonInput(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            resources = resources,
-                            focusRequester = focusRequester,
-                        )
-                    }
+        ValueType.URL -> {
+            ProvideInputLink(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
+
+            )
+        }
+
+        ValueType.BOOLEAN -> {
+            when (fieldUiModel.renderingType) {
+                UiRenderType.HORIZONTAL_CHECKBOXES,
+                UiRenderType.VERTICAL_CHECKBOXES,
+                -> {
+                    ProvideYesNoCheckBoxInput(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        resources = resources,
+                    )
                 }
-            }
 
-            ValueType.TRUE_ONLY -> {
-                when (fieldUiModel.renderingType) {
-                    UiRenderType.TOGGLE -> {
-                        ProvideYesOnlySwitchInput(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                        )
-                    }
-
-                    else -> {
-                        ProvideYesOnlyCheckBoxInput(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            focusRequester = focusRequester,
-                        )
-                    }
+                else -> {
+                    ProvideYesNoRadioButtonInput(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        resources = resources,
+                    )
                 }
-            }
-
-            ValueType.PHONE_NUMBER -> {
-                ProvideInputPhoneNumber(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    focusManager = focusManager,
-                    onNextClicked = onNextClicked,
-
-                )
-            }
-
-            ValueType.DATE,
-            ValueType.DATETIME,
-            ValueType.TIME,
-            -> {
-                ProvideInputDate(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    onNextClicked = onNextClicked,
-                )
-            }
-
-            ValueType.IMAGE -> {
-                when (fieldUiModel.renderingType) {
-                    UiRenderType.CANVAS -> {
-                        ProvideInputSignature(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            uiEventHandler = uiEventHandler,
-                        )
-                    }
-
-                    else -> {
-                        ProvideInputImage(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            uiEventHandler = uiEventHandler,
-                            resources = resources,
-                        )
-                    }
-                }
-            }
-
-            ValueType.COORDINATE -> {
-                when (fieldUiModel.renderingType) {
-                    UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
-                        ProvidePolygon(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                        )
-                    }
-                    else -> {
-                        ProvideInputCoordinate(
-                            modifier = modifierWithFocus,
-                            fieldUiModel = fieldUiModel,
-                            intentHandler = intentHandler,
-                            uiEventHandler = uiEventHandler,
-                            resources = resources,
-                            focusRequester = focusRequester,
-                        )
-                    }
-                }
-            }
-
-            ValueType.AGE -> {
-                ProvideInputAge(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    uiEventHandler = uiEventHandler,
-                    resources = resources,
-                )
-            }
-            ValueType.REFERENCE,
-            ValueType.GEOJSON,
-            ValueType.USERNAME,
-            ValueType.TRACKER_ASSOCIATE,
-            ValueType.MULTI_TEXT,
-            null,
-            -> {
-                InputNotSupported(title = fieldUiModel.label)
             }
         }
-    } else {
-        when (fieldUiModel.renderingType) {
-            UiRenderType.HORIZONTAL_RADIOBUTTONS,
-            UiRenderType.VERTICAL_RADIOBUTTONS,
-            -> {
-                ProvideRadioButtonInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusRequester = focusRequester,
-                )
-            }
 
-            UiRenderType.HORIZONTAL_CHECKBOXES,
-            UiRenderType.VERTICAL_CHECKBOXES,
-            -> {
-                ProvideCheckBoxInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    focusRequester = focusRequester,
-                )
-            }
+        ValueType.TRUE_ONLY -> {
+            when (fieldUiModel.renderingType) {
+                UiRenderType.TOGGLE -> {
+                    ProvideYesOnlySwitchInput(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                    )
+                }
 
-            UiRenderType.MATRIX -> {
-                ProvideMatrixInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    context = context,
-                )
+                else -> {
+                    ProvideYesOnlyCheckBoxInput(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                    )
+                }
             }
+        }
 
-            UiRenderType.SEQUENCIAL -> {
-                ProvideSequentialInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                    intentHandler = intentHandler,
-                    context = context,
-                )
+        ValueType.PHONE_NUMBER -> {
+            ProvideInputPhoneNumber(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
+                focusManager = focusManager,
+                onNextClicked = onNextClicked,
+
+            )
+        }
+
+        ValueType.DATE,
+        ValueType.DATETIME,
+        ValueType.TIME,
+        -> {
+            when (fieldUiModel.periodSelector) {
+                null -> {
+                    ProvideInputDate(
+                        modifier = modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        onNextClicked = onNextClicked,
+                    )
+                }
+
+                else -> {
+                    ProvidePeriodSelector(
+                        modifier = Modifier,
+                        inputStyle = inputStyle,
+                        fieldUiModel = fieldUiModel,
+                        focusRequester = focusRequester,
+                        uiEventHandler = uiEventHandler,
+                    )
+                }
             }
+        }
 
-            // "Remaining option sets" are in fun getLayoutForOptionSet
+        ValueType.IMAGE -> {
+            when (fieldUiModel.renderingType) {
+                UiRenderType.CANVAS -> {
+                    ProvideInputSignature(
+                        modifier = modifier,
+                        fieldUiModel = fieldUiModel,
+                    )
+                }
 
-            else -> {
-                ProvideDropdownInput(
-                    modifier = modifierWithFocus,
-                    fieldUiModel = fieldUiModel,
-                )
+                else -> {
+                    ProvideInputImage(
+                        modifier = modifier,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        uiEventHandler = uiEventHandler,
+                        resources = resources,
+                    )
+                }
             }
+        }
+
+        ValueType.COORDINATE -> {
+            when (fieldUiModel.renderingType) {
+                UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
+                    ProvidePolygon(
+                        modifier = modifier,
+                        fieldUiModel = fieldUiModel,
+                    )
+                }
+
+                else -> {
+                    ProvideInputCoordinate(
+                        modifier = modifier,
+                        fieldUiModel = fieldUiModel,
+                        intentHandler = intentHandler,
+                        uiEventHandler = uiEventHandler,
+                        resources = resources,
+                    )
+                }
+            }
+        }
+
+        ValueType.AGE -> {
+            ProvideInputAge(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                resources = resources,
+            )
+        }
+
+        ValueType.MULTI_TEXT -> {
+            ProvideMultiSelectionInput(
+                modifier = modifier,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        ValueType.REFERENCE,
+        ValueType.GEOJSON,
+        ValueType.USERNAME,
+        ValueType.TRACKER_ASSOCIATE,
+        null,
+        -> {
+            InputNotSupported(title = fieldUiModel.label)
+        }
+    }
+}
+
+@Composable
+fun ProvideByOptionSet(
+    modifier: Modifier,
+    inputStyle: InputStyle,
+    fieldUiModel: FieldUiModel,
+    intentHandler: (FormIntent) -> Unit,
+    context: Context,
+) {
+    when (fieldUiModel.renderingType) {
+        UiRenderType.HORIZONTAL_RADIOBUTTONS,
+        UiRenderType.VERTICAL_RADIOBUTTONS,
+        -> {
+            ProvideRadioButtonInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        UiRenderType.HORIZONTAL_CHECKBOXES,
+        UiRenderType.VERTICAL_CHECKBOXES,
+        -> {
+            ProvideCheckBoxInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+            )
+        }
+
+        UiRenderType.MATRIX -> {
+            ProvideMatrixInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                context = context,
+            )
+        }
+
+        UiRenderType.SEQUENCIAL -> {
+            ProvideSequentialInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                context = context,
+            )
+        }
+
+        // "Remaining option sets" are in fun getLayoutForOptionSet
+
+        else -> {
+            ProvideDropdownInput(
+                modifier = modifier,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+            )
         }
     }
 }
@@ -442,30 +535,35 @@ internal fun FieldProvider(
 @Composable
 private fun ProvideIntegerPositive(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -480,31 +578,36 @@ private fun ProvideIntegerPositive(
 @Composable
 private fun ProvideIntegerPositiveOrZero(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPositiveIntegerOrZero(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -519,31 +622,36 @@ private fun ProvideIntegerPositiveOrZero(
 @Composable
 private fun ProvidePercentage(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPercentage(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -558,31 +666,36 @@ private fun ProvidePercentage(
 @Composable
 private fun ProvideNumber(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputNumber(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -598,31 +711,35 @@ private fun ProvideNumber(
 @Composable
 private fun ProvideIntegerNegative(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value?.replace("-", ""))
+        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: "", textSelection))
     }
 
     InputNegativeInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -637,31 +754,36 @@ private fun ProvideIntegerNegative(
 @Composable
 private fun ProvideLongText(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLongText(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -677,31 +799,35 @@ private fun ProvideLongText(
 @Composable
 private fun ProvideLetter(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLetter(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -716,31 +842,35 @@ private fun ProvideLetter(
 @Composable
 private fun ProvideInteger(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputInteger(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -755,31 +885,36 @@ private fun ProvideInteger(
 @Composable
 private fun ProvideEmail(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputEmail(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -788,7 +923,7 @@ private fun ProvideEmail(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SENDTO,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -803,6 +938,7 @@ private fun ProvideEmail(
 @Composable
 private fun ProvideInputPhoneNumber(
     fieldUiModel: FieldUiModel,
+    inputStyle: InputStyle,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
@@ -810,25 +946,29 @@ private fun ProvideInputPhoneNumber(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputPhoneNumber(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -837,7 +977,7 @@ private fun ProvideInputPhoneNumber(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -852,6 +992,7 @@ private fun ProvideInputPhoneNumber(
 @Composable
 private fun ProvideInputLink(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -859,25 +1000,29 @@ private fun ProvideInputLink(
     onNextClicked: () -> Unit,
 
 ) {
+    val textSelection =
+        TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputLink(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -886,7 +1031,7 @@ private fun ProvideInputLink(
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_VIEW,
-                    value,
+                    value.text,
                     fieldUiModel.uid,
                 ),
             )
@@ -901,10 +1046,10 @@ private fun ProvideInputLink(
 @Composable
 private fun ProvideOrgUnitInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
 ) {
     var inputFieldValue by remember(
         fieldUiModel,
@@ -914,6 +1059,7 @@ private fun ProvideOrgUnitInput(
 
     InputOrgUnit(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
@@ -922,7 +1068,6 @@ private fun ProvideOrgUnitInput(
         isRequiredField = fieldUiModel.mandatory,
         onValueChanged = {
             inputFieldValue = it
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -932,7 +1077,6 @@ private fun ProvideOrgUnitInput(
             )
         },
         onOrgUnitActionCLicked = {
-            focusRequester.requestFocus()
             uiEventHandler.invoke(
                 RecyclerViewUiEvents.OpenOrgUnitDialog(
                     fieldUiModel.uid,

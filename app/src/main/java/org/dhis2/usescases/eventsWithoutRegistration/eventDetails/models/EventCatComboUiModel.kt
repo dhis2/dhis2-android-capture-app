@@ -9,7 +9,6 @@ data class EventCatComboUiModel(
     val detailsEnabled: Boolean,
     val currentDate: Date?,
     val selectedOrgUnit: String?,
-    val onShowCategoryDialog: (EventCategory) -> Unit,
     val onClearCatCombo: (EventCategory) -> Unit,
     val onOptionSelected: (CategoryOption?) -> Unit,
     val required: Boolean = false,

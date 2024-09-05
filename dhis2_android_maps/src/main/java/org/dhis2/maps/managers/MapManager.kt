@@ -65,7 +65,10 @@ abstract class MapManager(val mapView: MapView) : LifecycleObserver {
                 val baseMapManager = BaseMapManager(mapView.context, this.mapStyles)
                 setUi()
                 map?.setStyle(
-                    baseMapManager.styleJson(this.mapStyles.first()),
+                    baseMapManager.styleJson(
+                        this.mapStyles.find { it.isDefault }
+                            ?: mapStyles.first(),
+                    ),
                 ) { styleLoaded ->
                     this.style = styleLoaded
                     mapLayerManager = MapLayerManager(mapLoaded, baseMapManager, colorUtils).apply {
