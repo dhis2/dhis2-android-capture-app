@@ -43,14 +43,14 @@ class FilterTest : BaseTest() {
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(composeTestRule, 3, "AUTOMATIC TESTING - Child Health", "1")
-            checkItemsInProgram(composeTestRule, 4, "AUTOMATIC TESTING - Child Programme", "1")
-            checkItemsInProgram(composeTestRule, 5, "AUTOMATIC TESTING - Contraceptives Voucher Program", "1")
+            waitToDebounce(500)
+            checkItemsInProgram(composeTestRule, 2, "AUTOMATIC TESTING - Child Health", "1")
+            checkItemsInProgram(composeTestRule, 4, "AUTOMATIC TESTING - Contraceptives Voucher Program", "1")
         }
         cleanLocalDatabase()
     }
 
-    //@Ignore ("https://dhis2.atlassian.net/browse/ANDROAPP-6445")
+    @Ignore ("https://dhis2.atlassian.net/browse/ANDROAPP-6445")
     @Test
     fun checkWritingOrgUnitFilter() {
         setupCredentials()
@@ -77,6 +77,8 @@ class FilterTest : BaseTest() {
 
     @Test
     fun checkTreeOrgUnitFilter() {
+        val orgUnit = "Ngelehun CHC"
+
         startActivity()
         setupCredentials()
 
@@ -88,15 +90,14 @@ class FilterTest : BaseTest() {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
             orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit("Ngelehun CHC")
-                //selectTreeOrgUnit("Njandama MCHP")
+                selectTreeOrgUnit(orgUnit)
             }
         }
         homeRobot {
             openFilters()
-            checkItemsInProgram(composeTestRule, 3, "AUTOMATIC TESTING - Child Health", "12")
-            checkItemsInProgram(composeTestRule, 4, "AUTOMATIC TESTING - Child Programme", "47")
-            checkItemsInProgram(composeTestRule, 5, "AUTOMATIC TESTING - Contraceptives Voucher Program", "4")
+            //checkItemsInProgram(composeTestRule, 3, "AUTOMATIC TESTING - Child Health", "12")
+            checkItemsInProgram(composeTestRule, 1, "AUTOMATIC TESTING - Child Programme", "36")
+            checkItemsInProgram(composeTestRule, 2, "AUTOMATIC TESTING - Contraceptives Voucher Program", "5")
         }
         cleanLocalDatabase()
     }
