@@ -29,6 +29,7 @@ android {
     flavorDimensions += listOf("default")
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -50,4 +51,6 @@ dependencies {
     testImplementation(libs.test.mockitoCore)
     testImplementation(libs.test.mockitoInline)
     testImplementation(libs.test.mockitoKotlin)
+
+    coreLibraryDesugaring(libs.desugar)
 }
