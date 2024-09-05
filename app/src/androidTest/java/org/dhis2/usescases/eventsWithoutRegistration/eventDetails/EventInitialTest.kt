@@ -241,7 +241,7 @@ class EventInitialTest {
             )
         }
         composeTestRule.onNodeWithTag(INPUT_EVENT_INITIAL_DATE).assertIsDisplayed()
-        assert(viewModel.eventDate.value.dateValue == "9/9/2023")
+        assert(viewModel.eventDate.value.dateValue == "09/09/2023")
     }
 
     @Test
@@ -271,7 +271,7 @@ class EventInitialTest {
             )
         }
         composeTestRule.onNodeWithTag(INPUT_EVENT_INITIAL_DATE).assertIsDisplayed()
-        assert(viewModel.eventDate.value.dateValue == "20/8/2023")
+        assert(viewModel.eventDate.value.dateValue == "20/08/2023")
     }
 
     @Test

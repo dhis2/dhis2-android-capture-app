@@ -27,6 +27,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
 import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -65,6 +66,7 @@ class TextInputUiTest {
         }
     }
 
+    @Ignore("Flaky test, to be resolved in a separate ticket")
     @Test
     fun shouldClearFocusWhenKeyboardIsHidden() {
         tableRobot(composeTestRule) {

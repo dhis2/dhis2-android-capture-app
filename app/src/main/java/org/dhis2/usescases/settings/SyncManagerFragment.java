@@ -119,6 +119,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     private boolean dataWorkRunning;
     private SettingItem settingOpened = null;
 
+    private AlertDialog deleteLocalDataDialog;
+
     public SyncManagerFragment() {
         // Required empty public constructor
     }
@@ -232,6 +234,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onPause() {
         super.onPause();
+        if (deleteLocalDataDialog != null && deleteLocalDataDialog.isVisible()) {
+            deleteLocalDataDialog.dismiss();
+        }
         context.unregisterReceiver(networkReceiver);
         presenter.dispose();
     }
@@ -272,7 +277,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void deleteLocalData() {
-        new AlertDialog(
+        deleteLocalDataDialog = new AlertDialog(
                 getString(R.string.delete_local_data),
                 getString(R.string.delete_local_data_message),
                 null,
@@ -287,11 +292,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         getString(R.string.action_accept),
                         true,
                         () -> {
-                            analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
-                            presenter.deleteLocalData();
+                            if (deleteLocalDataDialog.isAdded()) {
+                                analyticsHelper().setEvent(CONFIRM_DELETE_LOCAL_DATA, CLICK, CONFIRM_DELETE_LOCAL_DATA);
+                                presenter.deleteLocalData();
+                            }
                             return null;
                         })
-        ).show(requireActivity().getSupportFragmentManager());
+        );
+        deleteLocalDataDialog.show(requireActivity().getSupportFragmentManager());
     }
 
     @Override

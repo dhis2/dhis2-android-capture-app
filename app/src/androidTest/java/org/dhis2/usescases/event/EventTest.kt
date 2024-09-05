@@ -120,7 +120,6 @@ class EventTest : BaseTest() {
         val atenatalCare = "lxAQ7Zs9VYR"
 
         prepareProgramAndLaunchActivity(atenatalCare)
-        disableRecyclerViewAnimations()
 
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
@@ -172,15 +171,5 @@ class EventTest : BaseTest() {
         Intent().apply {
             putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
         }.also { eventListRule.launch(it) }
-    }
-
-    private fun disableRecyclerViewAnimations() {
-        eventListRule.getScenario().onActivity {
-            it.runOnUiThread {
-                it.supportFragmentManager.findFragmentByTag("EVENT_LIST").apply {
-                    (this as EventListFragment).binding.recycler.itemAnimator = null
-                }
-            }
-        }
     }
 }

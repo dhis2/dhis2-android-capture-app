@@ -83,6 +83,7 @@ class EventCaptureFormPresenter(
         when (isEditable) {
             is EventEditableStatus.Editable -> {
                 view.showSaveButton()
+                view.hideNonEditableMessage()
             }
 
             is EventEditableStatus.NonEditable -> {

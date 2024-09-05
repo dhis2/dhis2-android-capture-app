@@ -18,6 +18,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTableModelMapper.Companion.INDICATORS_TABLE_ID
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -381,7 +382,7 @@ class DataValuePresenterTest {
         }
 
         val mockedIndicatorTableModel = mock<TableModel> {
-            on { id } doReturn null
+            on { id } doReturn INDICATORS_TABLE_ID
         }
 
         val mockedUpdatedTableModel = mock<TableModel> {
@@ -422,6 +423,72 @@ class DataValuePresenterTest {
 
         assertTrue(presenter.currentState().value.tables.size == 2)
         assertTrue(presenter.currentState().value.tables[0].id == "tableId_updated")
+        assertTrue(presenter.currentState().value.tables.last().id == "updated_indicator")
+        verify(view).onValueProcessed()
+    }
+
+    @Test
+    fun shouldUpdateValueWhenSavedForTwoTablesAndIndicators() {
+        val mockedTableCell = mock<TableCell> {
+            on { id } doReturn "mocked_id"
+            on { column } doReturn 1
+            on { row } doReturn 0
+            on { value } doReturn "valueToSave"
+        }
+
+        val mockedTableModelA = mock<TableModel> {
+            on { id } doReturn "tableIdA"
+            on { hasCellWithId(any()) } doReturn true
+        }
+
+        val mockedTableModelB = mock<TableModel> {
+            on { id } doReturn "tableIdB"
+            on { hasCellWithId(any()) } doReturn true
+        }
+
+        val mockedIndicatorTableModel = mock<TableModel> {
+            on { id } doReturn INDICATORS_TABLE_ID
+        }
+
+        val mockedUpdatedTableModel = mock<TableModel> {
+            on { id } doReturn "tableIdA_updated"
+            on { hasCellWithId(any()) } doReturn true
+        }
+
+        val mockedUpdatedIndicatorTableModel = mock<TableModel> {
+            on { id } doReturn "updated_indicator"
+        }
+
+        val tableStateValue = presenter.mutableTableData()
+        tableStateValue.value = TableScreenState(
+            listOf(mockedTableModelA, mockedTableModelB, mockedIndicatorTableModel),
+        )
+
+        whenever(valueStore.save(any(), any(), any(), any(), any(), any())) doReturn Flowable.just(
+            StoreResult(
+                uid = "id",
+                valueStoreResult = ValueStoreResult.VALUE_CHANGED,
+                valueStoreResultMessage = null,
+            ),
+        )
+
+        whenever(dataValueRepository.getDataTableModel(any<String>())) doReturn Observable.just(
+            mockedDataTableModel,
+        )
+        whenever(dataValueRepository.setTableData(any(), any())) doReturn mockedTableData
+        whenever(mapper.invoke(any())) doReturn mockedUpdatedTableModel
+        whenever(
+            mockedUpdatedTableModel.copy(overwrittenValues = mockedTableModel.overwrittenValues),
+        ) doReturn mockedUpdatedTableModel
+
+        whenever(dataValueRepository.getDataSetIndicators()) doReturn Single.just(mockedIndicators)
+        whenever(mapper.map(any())) doReturn mockedUpdatedIndicatorTableModel
+
+        presenter.onSaveValueChange(mockedTableCell)
+
+        assertTrue(presenter.currentState().value.tables.size == 3)
+        assertTrue(presenter.currentState().value.tables[0].id == "tableIdA_updated")
+        assertTrue(presenter.currentState().value.tables[1].id == "tableIdB")
         assertTrue(presenter.currentState().value.tables.last().id == "updated_indicator")
         verify(view).onValueProcessed()
     }

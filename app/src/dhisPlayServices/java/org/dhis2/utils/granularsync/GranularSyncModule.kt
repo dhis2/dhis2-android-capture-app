@@ -74,6 +74,15 @@ class GranularSyncModule(
     }
 
     @Provides
+    fun provideDispatchers() = object : DispatcherProvider {
+        override fun io() = Dispatchers.IO
+
+        override fun computation() = Dispatchers.Default
+
+        override fun ui() = Dispatchers.Main
+    }
+
+    @Provides
     fun granularSyncRepository(
         d2: D2,
         dhisProgramUtils: DhisProgramUtils,
@@ -87,6 +96,7 @@ class GranularSyncModule(
         dhisProgramUtils,
         periodUtils,
         resourceManager,
+        provideDispatchers(),
     )
 
     @Provides

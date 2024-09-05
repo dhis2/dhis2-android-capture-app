@@ -450,7 +450,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEnrollmentDate(enrollmentDate: DateRegistrationUIModel) {
         composeTestRule.onNode(
-            hasText("Date of enrollment:  ${enrollmentDate.day}/${enrollmentDate.month}/${enrollmentDate.year}", true),
+            hasText("Date of enrollment:  0${enrollmentDate.day}/0${enrollmentDate.month}/${enrollmentDate.year}", true),
             useUnmergedTree = true
         ).assertIsDisplayed()
     }

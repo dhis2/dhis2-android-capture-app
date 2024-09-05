@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import org.dhis2.composetable.model.DropdownOption
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TableHeader
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
@@ -20,7 +21,7 @@ fun ItemValues(
     cellValues: Map<Int, TableCell>,
     overridenValues: Map<Int, TableCell>,
     tableHeaderModel: TableHeader,
-    options: List<String>,
+    options: List<DropdownOption>,
     headerLabel: String,
 ) {
     Row(

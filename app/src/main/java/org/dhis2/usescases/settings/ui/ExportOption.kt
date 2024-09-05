@@ -1,11 +1,13 @@
 package org.dhis2.usescases.settings.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -19,8 +21,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,17 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.ui.dialogs.alert.Dhis2AlertDialogUi
 import org.dhis2.ui.model.ButtonUiModel
@@ -48,6 +45,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun ExportOption(
@@ -62,9 +61,7 @@ fun ExportOption(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
-        if (isGranted) {
-            onPermissionGrantedCallback()
-        } else {
+        onPermissionGrantedCallback.takeIf { isGranted }?.invoke() ?: run {
             showPermissionDialog = true
         }
     }
@@ -95,38 +92,29 @@ fun ExportOption(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
+                    .height(Spacing.Spacing72)
                     .padding(
-                        start = 72.dp,
-                        top = 16.dp,
-                        end = 16.dp,
-                        bottom = 16.dp,
+                        start = Spacing.Spacing48,
+                        top = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                        bottom = Spacing.Spacing16,
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+                horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU ||
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            onDownload()
-                        } else {
-                            onPermissionGrantedCallback = onDownload
-                            launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
+                        onDownloadCLick(context, onDownload, launcher)
+                        onPermissionGrantedCallback = onDownload
                     },
                     style = ButtonStyle.TEXT,
                     text = stringResource(id = R.string.download),
                     icon = {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_file_download),
+                            imageVector = Icons.Filled.Download,
                             contentDescription = "Download",
-                            tint = MaterialTheme.colors.primary,
+                            tint = SurfaceColor.Primary,
                         )
                     },
                 )
@@ -134,17 +122,8 @@ fun ExportOption(
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU ||
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            onShare()
-                        } else {
-                            onPermissionGrantedCallback = onShare
-                            launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
+                        onShareClick(context, onShare, launcher)
+                        onPermissionGrantedCallback = onShare
                     },
                     style = ButtonStyle.TEXT,
                     text = stringResource(id = R.string.share),
@@ -152,7 +131,7 @@ fun ExportOption(
                         Icon(
                             imageVector = Icons.Filled.Share,
                             contentDescription = "Share",
-                            tint = MaterialTheme.colors.primary,
+                            tint = SurfaceColor.Primary,
                         )
                     },
                 )
@@ -161,10 +140,10 @@ fun ExportOption(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(16.dp),
+                    .height(Spacing.Spacing72)
+                    .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (displayProgress) Arrangement.Center else spacedBy(16.dp),
+                horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
             }
@@ -192,20 +171,42 @@ fun ExportOption(
     }
 }
 
+private fun onDownloadCLick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+    if (checkPermissionAndAndroidVersion(context)) {
+        onSuccess()
+    } else {
+        launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+}
+
+private fun onShareClick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+    if (checkPermissionAndAndroidVersion(context)) {
+        onSuccess()
+    } else {
+        launcher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+}
+
+private fun checkPermissionAndAndroidVersion(context: Context) =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
+        ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        ) == PackageManager.PERMISSION_GRANTED
+
+private fun getHorizontalArrangement(displayProgress: Boolean) =
+    if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16)
+
 @Preview
 @Composable
 fun PreviewExportOption() {
-    Mdc3Theme {
-        ExportOption(onDownload = { }, onShare = { }, false)
-    }
+    ExportOption(onDownload = { }, onShare = { }, false)
 }
 
 @Preview
 @Composable
 fun PreviewExportOptionProgress() {
-    Mdc3Theme {
-        ExportOption(onDownload = { }, onShare = { }, true)
-    }
+    ExportOption(onDownload = { }, onShare = { }, true)
 }
 
 fun ComposeView.setExportOption(
@@ -215,8 +216,6 @@ fun ComposeView.setExportOption(
 ) {
     setContent {
         val displayProgress by displayProgressProvider().observeAsState(false)
-        MdcTheme {
-            ExportOption(onShare, onDownload, displayProgress)
-        }
+        ExportOption(onShare, onDownload, displayProgress)
     }
 }

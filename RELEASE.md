@@ -1,69 +1,89 @@
-Android Capture App for DHIS 2 (v2.9.1) - Patch version
-<table>
-<tr> 
-<td> 
-<img src="https://s3-eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/android-chrome-384x384.png" width="800"> 
-</td> 
-<td>
-This is a patch version of the <strong>DHIS2 Android App</strong> It builds upon the last version including bug fixes that couldn't wait to the next version. 
-It includes no functional improvements neither changes in the User Interface. It means that yours users can update without experiencing any change in the UI. 
-</td>
-</tr> 
-<tr> 
-<td colspan="2" bgcolor="white">
+# Release notes - Android App for DHIS2 - 3.0.1
 
-## Bugs fixed
-* [ANDROAPP-5895](https://dhis2.atlassian.net/browse/ANDROAPP-5895) Correct misalignment when entering text for inputShell
-* [ANDROAPP-5885](https://dhis2.atlassian.net/browse/ANDROAPP-5885) [Data set] indicators don't update until the user moves to a different cell
-* [ANDROAPP-5881](https://dhis2.atlassian.net/browse/ANDROAPP-5881) Input with virtual keyboard not working correctly
-* [ANDROAPP-5872](https://dhis2.atlassian.net/browse/ANDROAPP-5872) [LMIS] Search in stock management is not updating the list
-* [ANDROAPP-5871](https://dhis2.atlassian.net/browse/ANDROAPP-5871) App Not Responding when local db is encrypted
-* [ANDROAPP-5856](https://dhis2.atlassian.net/browse/ANDROAPP-5856) ANR ReadableStoreImpl.addObjectsToCollection in DataSetDetailRepositoryImpl
-* [ANDROAPP-5825](https://dhis2.atlassian.net/browse/ANDROAPP-5825) Input date value changes on click in schedule new event screen
-* [ANDROAPP-5821](https://dhis2.atlassian.net/browse/ANDROAPP-5821) NoSuchElementException: List is empty.
-* [ANDROAPP-5807](https://dhis2.atlassian.net/browse/ANDROAPP-5807) Crash when parsing value to input in InputDateTime
-* [ANDROAPP-5804](https://dhis2.atlassian.net/browse/ANDROAPP-5804) Incorrect label on bar codes, QR codes and GS1
-* [ANDROAPP-5803](https://dhis2.atlassian.net/browse/ANDROAPP-5803) On schedule event due date incorrect when last previous event does not have a report date
-* [ANDROAPP-5788](https://dhis2.atlassian.net/browse/ANDROAPP-5788) Keyboard hides helper text if the selected field is near the bottom of the screen
-* [ANDROAPP-5773](https://dhis2.atlassian.net/browse/ANDROAPP-5773) Analytics are not being displayed as tables.
-* [ANDROAPP-5770](https://dhis2.atlassian.net/browse/ANDROAPP-5770) IllegalStateException: Expected BringIntoViewRequester to not be used before parents are placed.
-* [ANDROAPP-5769](https://dhis2.atlassian.net/browse/ANDROAPP-5769) ApplicationNotResponding: ANR for at least 5000 ms.
-* [ANDROAPP-5767](https://dhis2.atlassian.net/browse/ANDROAPP-5767) RuntimeException in teidashboardActivity Sentry issue
-* [ANDROAPP-5764](https://dhis2.atlassian.net/browse/ANDROAPP-5764) BottomSheetDialog shows barcode expanded with old form 
-* [ANDROAPP-5749](https://dhis2.atlassian.net/browse/ANDROAPP-5749) Incorrect behavior when tapping on Next on sections that are too long
-* [ANDROAPP-5746](https://dhis2.atlassian.net/browse/ANDROAPP-5746) Exception when trying to add a file from downloads directory
-* [ANDROAPP-5743](https://dhis2.atlassian.net/browse/ANDROAPP-5743) [Bug?] Calculated variables save integer values with ".0"
-* [ANDROAPP-5742](https://dhis2.atlassian.net/browse/ANDROAPP-5742) [Local Analytics] App isn't plotting all the points (per event), only the first one.
-* [ANDROAPP-5741](https://dhis2.atlassian.net/browse/ANDROAPP-5741) [Local Analytics] App crashes if charts are empty
-* [ANDROAPP-5740](https://dhis2.atlassian.net/browse/ANDROAPP-5740) Display error correctly when date or time is incomplete
-* [ANDROAPP-5726](https://dhis2.atlassian.net/browse/ANDROAPP-5726) RTS workflow needs to allow for translating the 3 transaction types
-* [ANDROAPP-5716](https://dhis2.atlassian.net/browse/ANDROAPP-5716) Filters not responsive to rapid changes when there are many programs
-* [ANDROAPP-5710](https://dhis2.atlassian.net/browse/ANDROAPP-5710) Keyboard not showing for certain fields
-* [ANDROAPP-5704](https://dhis2.atlassian.net/browse/ANDROAPP-5704) Overdue date in patient line list follows inconsistent format
-* [ANDROAPP-5700](https://dhis2.atlassian.net/browse/ANDROAPP-5700) User can select out-of-scope OUs on the enrollment form
-* [ANDROAPP-5698](https://dhis2.atlassian.net/browse/ANDROAPP-5698) Incorrect list of points in a polygon
-* [ANDROAPP-5663](https://dhis2.atlassian.net/browse/ANDROAPP-5663) Tei dashboard event list scrolling
-* [ANDROAPP-5662](https://dhis2.atlassian.net/browse/ANDROAPP-5662) Search button is behind the nav bar
-* [ANDROAPP-5630](https://dhis2.atlassian.net/browse/ANDROAPP-5630) Due date in Tracker program does not follow standard interval days
-* [ANDROAPP-5606](https://dhis2.atlassian.net/browse/ANDROAPP-5606) Active filter counter mismatched with workinglist's filters
-* [ANDROAPP-5604](https://dhis2.atlassian.net/browse/ANDROAPP-5604) App crashes when one attempts to synchronise TEI and events imported via QR code
-* [ANDROAPP-5570](https://dhis2.atlassian.net/browse/ANDROAPP-5570) Changes to enrollment date not respected by program rules
-* [ANDROAPP-5567](https://dhis2.atlassian.net/browse/ANDROAPP-5567) DHIS2-RTS Capture app limited to 60 TEIs
-* [ANDROAPP-5484](https://dhis2.atlassian.net/browse/ANDROAPP-5484) Images block creating relationships (Capture Android)
-* [ANDROAPP-5294](https://dhis2.atlassian.net/browse/ANDROAPP-5294) Filter by ACCESSIBLE org units
-* [ANDROAPP-5261](https://dhis2.atlassian.net/browse/ANDROAPP-5261) The animation of the input bottom bar is not smooth.
-* [ANDROAPP-5249](https://dhis2.atlassian.net/browse/ANDROAPP-5249) Resizing for all columns difficult use
-* [ANDROAPP-5130](https://dhis2.atlassian.net/browse/ANDROAPP-5130) Follow-up clicks can be skipped by the app when entering data into tables.
-* This patch release updates the [Android SDK](https://github.com/dhis2/dhis2-android-sdk) to version 1.9.1-20240109.100903-15.
-    
-You can find in Jira details on the [bugs fixed](https://dhis2.atlassian.net/issues/?filter=10554) in this version.
+### Bug
 
-Remember to check the [documentation](https://www.dhis2.org/android-documentation) for detailed 
-information of the features included in the App and how to configure DHIS2 to use it. 
+[ANDROAPP-5753](https://dhis2.atlassian.net/browse/ANDROAPP-5753) Formatting Issues with Attribute Values on TEI Card Dashboard
 
-Please create a [Jira](https://dhis2.atlassian.net) Issue if you find a bug or
-you want to propose a new functionality. [Project: Android App for DHIS2 | Component: 
-AndroidApp].
-</td>
-</tr>
-</table>
+[ANDROAPP-5808](https://dhis2.atlassian.net/browse/ANDROAPP-5808) GS1 QR code input does not display popup if Scanned QR code is not GS1 type
+
+[ANDROAPP-5873](https://dhis2.atlassian.net/browse/ANDROAPP-5873) Thread lock when app is unable to download reserved values
+
+[ANDROAPP-5953](https://dhis2.atlassian.net/browse/ANDROAPP-5953) Option set not working well in data set if the code of option constains character "\_"
+
+[ANDROAPP-6051](https://dhis2.atlassian.net/browse/ANDROAPP-6051) No feedback is received after the database import is complete
+
+[ANDROAPP-6057](https://dhis2.atlassian.net/browse/ANDROAPP-6057) Form scrolling improvement to prevent overlap with save button
+
+[ANDROAPP-6088](https://dhis2.atlassian.net/browse/ANDROAPP-6088) Turning off a working list does not scroll user back to top of screen
+
+[ANDROAPP-6094](https://dhis2.atlassian.net/browse/ANDROAPP-6094) Data set duplicates records in unavailable capture OUs
+
+[ANDROAPP-6101](https://dhis2.atlassian.net/browse/ANDROAPP-6101) User is allowed to save errors when the event is with status "complete"
+
+[ANDROAPP-6116](https://dhis2.atlassian.net/browse/ANDROAPP-6116) App doesn't respect program specification constraints when displaying the list of available relationship types
+
+[ANDROAPP-6131](https://dhis2.atlassian.net/browse/ANDROAPP-6131) Event program displays no events created message on intial load
+
+[ANDROAPP-6132](https://dhis2.atlassian.net/browse/ANDROAPP-6132) Double tap on event/enrollment creation could generate duplicates
+
+[ANDROAPP-6137](https://dhis2.atlassian.net/browse/ANDROAPP-6137) Category Combo section shows incorrect number of fields
+
+[ANDROAPP-6146](https://dhis2.atlassian.net/browse/ANDROAPP-6146) Incomplete "Download" label when exporting a DB
+
+[ANDROAPP-6158](https://dhis2.atlassian.net/browse/ANDROAPP-6158) Data set - Sections without DE's never stops displaying the loading icon
+
+[ANDROAPP-6174](https://dhis2.atlassian.net/browse/ANDROAPP-6174) When same day \(eg. 20 June\) is chosen for a future month, the scheduled date always shows "Today"
+
+[ANDROAPP-6181](https://dhis2.atlassian.net/browse/ANDROAPP-6181) ConcurrentModificationException
+
+[ANDROAPP-6182](https://dhis2.atlassian.net/browse/ANDROAPP-6182) \(RuntimeException\) Crash when rotating device in schedule screen
+
+[ANDROAPP-6183](https://dhis2.atlassian.net/browse/ANDROAPP-6183) \(UnsupportedOperationException\) crash when opening a map
+
+[ANDROAPP-6184](https://dhis2.atlassian.net/browse/ANDROAPP-6184) \(RuntimeException\) crash when rotating device in settings activity
+
+[ANDROAPP-6185](https://dhis2.atlassian.net/browse/ANDROAPP-6185) Event report date is not updated when changing the due date \(keeping the overdue status\)
+
+[ANDROAPP-6187](https://dhis2.atlassian.net/browse/ANDROAPP-6187) Form is not refreshed when changing from closed org unit to open one
+
+[ANDROAPP-6193](https://dhis2.atlassian.net/browse/ANDROAPP-6193) App asks device location permission after granting location permission
+
+[ANDROAPP-6197](https://dhis2.atlassian.net/browse/ANDROAPP-6197) Incorrect header in TEI Dashboard card
+
+[ANDROAPP-6198](https://dhis2.atlassian.net/browse/ANDROAPP-6198) Android adding '.0' to Data Element causing sync error
+
+[ANDROAPP-6209](https://dhis2.atlassian.net/browse/ANDROAPP-6209) NaN displayed in program indicators
+
+[ANDROAPP-6212](https://dhis2.atlassian.net/browse/ANDROAPP-6212) Cannot share database due to device permissions
+
+[ANDROAPP-6225](https://dhis2.atlassian.net/browse/ANDROAPP-6225) RuntimeException: Unable to start activity ComponentInfo\{com.dhis2/org.dhis2.usescases.searchTrackEntity.SearchTEAc...
+
+[ANDROAPP-6272](https://dhis2.atlassian.net/browse/ANDROAPP-6272) ApplicationNotResponding: ANR for at least 5000 ms.
+
+[ANDROAPP-6273](https://dhis2.atlassian.net/browse/ANDROAPP-6273) ApplicationNotResponding: ANR for at least 5000 ms.
+
+[ANDROAPP-6277](https://dhis2.atlassian.net/browse/ANDROAPP-6277) Working lists aren't applied even when active
+
+[ANDROAPP-6315](https://dhis2.atlassian.net/browse/ANDROAPP-6315) Fix Mobile ui breaking changes in capture app
+
+[ANDROAPP-6318](https://dhis2.atlassian.net/browse/ANDROAPP-6318) Order of TEIs change when moving between landscape and portrait
+
+[ANDROAPP-6332](https://dhis2.atlassian.net/browse/ANDROAPP-6332) \[DEFECT\] Incorrect workflow of Org unit when creating event
+
+[ANDROAPP-6345](https://dhis2.atlassian.net/browse/ANDROAPP-6345) Keyboard malfunction after stock distribution
+
+[ANDROAPP-6346](https://dhis2.atlassian.net/browse/ANDROAPP-6346) \[ANR\]  jdk.internal.misc.Unsafe in park
+
+[ANDROAPP-6379](https://dhis2.atlassian.net/browse/ANDROAPP-6379) Time recorded when creating notes
+
+[ANDROAPP-6380](https://dhis2.atlassian.net/browse/ANDROAPP-6380) Keyboard navigation
+
+[ANDROAPP-6407](https://dhis2.atlassian.net/browse/ANDROAPP-6407) \[Defect\] Data entry not saving more than one value
+
+[ANDROAPP-6414](https://dhis2.atlassian.net/browse/ANDROAPP-6414) Clicking save, not now or sync several times
+
+[ANDROAPP-6415](https://dhis2.atlassian.net/browse/ANDROAPP-6415) Login error in landscape
+
+[ANDROAPP-6416](https://dhis2.atlassian.net/browse/ANDROAPP-6416) Percentage input is showing %  twice
+
+[ANDROAPP-6417](https://dhis2.atlassian.net/browse/ANDROAPP-6417) Cannot navigate to event details or sync event after navigating back from details 

@@ -24,6 +24,7 @@ sealed class FormIntent {
         val value: String?,
         val valueType: ValueType?,
         val fieldMask: String? = null,
+        val allowFutureDates: Boolean? = false,
     ) : FormIntent()
 
     data class OnQrCodeScanned(
@@ -42,7 +43,6 @@ sealed class FormIntent {
         val uid: String,
         val value: String?,
         val valueType: ValueType?,
-        val allowFutureDates: Boolean? = false,
     ) : FormIntent()
 
     data class ClearValue(

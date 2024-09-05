@@ -7,14 +7,9 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.program.ProgramStage
 
 @Module
-class SchedulingModule(
-    val enrollment: Enrollment,
-    val programStages: List<ProgramStage>,
-) {
+class SchedulingModule {
     @Provides
     @PerFragment
     fun provideSchedulingViewModelFactory(
@@ -24,8 +19,6 @@ class SchedulingModule(
         periodUtils: DhisPeriodUtils,
     ): SchedulingViewModelFactory =
         SchedulingViewModelFactory(
-            enrollment,
-            programStages,
             d2,
             resourceManager,
             eventResourcesProvider,

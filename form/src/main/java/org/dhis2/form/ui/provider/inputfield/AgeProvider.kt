@@ -102,13 +102,17 @@ fun ProvideInputAge(
                     }
 
                     is AgeInputType.DateOfBirth -> {
-                        saveValue(
-                            intentHandler,
-                            fieldUiModel.uid,
-                            formatUIDateToStored(type.value.text),
-                            fieldUiModel.valueType,
-                            fieldUiModel.allowFutureDates,
-                        )
+                        formatUIDateToStored(type.value.text)
+                            .takeIf { it != fieldUiModel.value }
+                            ?.let {
+                                saveValue(
+                                    intentHandler,
+                                    fieldUiModel.uid,
+                                    it,
+                                    fieldUiModel.valueType,
+                                    fieldUiModel.allowFutureDates,
+                                )
+                            }
                     }
 
                     AgeInputType.None -> {
@@ -135,14 +139,23 @@ private fun saveValue(
     valueType: ValueType?,
     allowFutureDates: Boolean?,
 ) {
-    intentHandler.invoke(
-        FormIntent.OnTextChange(
-            uid,
-            value,
-            valueType,
-            allowFutureDates ?: false,
-        ),
-    )
+    when (value?.length) {
+        null, 10 -> intentHandler.invoke(
+            FormIntent.OnSave(
+                uid,
+                value,
+                valueType,
+                allowFutureDates = allowFutureDates,
+            ),
+        )
+        else -> intentHandler.invoke(
+            FormIntent.OnTextChange(
+                uid,
+                value,
+                valueType,
+            ),
+        )
+    }
 }
 
 private fun formatStoredDateToUI(inputDateString: String): String {

@@ -105,6 +105,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
         (context as SearchTEActivity).searchComponent.plus(
             SearchTEMapModule(),
         ).inject(this)
+        viewModel.setMapScreen()
     }
 
     override fun onCreateView(

@@ -52,8 +52,7 @@ abstract class BaseIndicatorRepository(
                             null
                         }
                         Pair.create(indicator, indicatorValue ?: "")
-                    }.filter { it.val1().isNotEmpty() }
-                    .flatMap {
+                    }.flatMap {
                         getLegendColorForIndicator(it.val0(), it.val1())
                     }.map {
                         IndicatorModel(

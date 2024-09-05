@@ -113,29 +113,38 @@ class EventCapturePresenterImpl(
         warningFields: List<FieldWithIssue>,
         eventMode: EventMode?,
     ) {
-        val eventStatus = eventStatus
-        if (eventStatus != EventStatus.ACTIVE) {
-            setUpActionByStatus(eventStatus)
-        } else {
-            val canSkipErrorFix = canSkipErrorFix(
-                hasErrorFields = errorFields.isNotEmpty(),
-                hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
-                hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
-                    containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
-                        containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
-                },
-                eventMode = eventMode,
-                validationStrategy = eventCaptureRepository.validationStrategy(),
-            )
-            val eventCompletionDialog = configureEventCompletionDialog.invoke(
-                errorFields,
-                emptyMandatoryFields,
-                warningFields,
-                canComplete,
-                onCompleteMessage,
-                canSkipErrorFix,
-            )
-            view.showCompleteActions(eventCompletionDialog)
+        when (eventStatus) {
+            EventStatus.ACTIVE, EventStatus.COMPLETED -> {
+                var canSkipErrorFix = canSkipErrorFix(
+                    hasErrorFields = errorFields.isNotEmpty(),
+                    hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
+                    hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
+                        containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
+                            containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
+                    },
+                    eventMode = eventMode,
+                    validationStrategy = eventCaptureRepository.validationStrategy(),
+                )
+                if (eventStatus == EventStatus.COMPLETED) canSkipErrorFix = false
+                val eventCompletionDialog = configureEventCompletionDialog.invoke(
+                    errorFields,
+                    emptyMandatoryFields,
+                    warningFields,
+                    canComplete,
+                    onCompleteMessage,
+                    canSkipErrorFix,
+                    eventStatus,
+                )
+
+                if (eventStatus == EventStatus.COMPLETED && eventCompletionDialog.fieldsWithIssues.isEmpty()) {
+                    finishCompletedEvent()
+                } else {
+                    view.showCompleteActions(eventCompletionDialog)
+                }
+            }
+            else -> {
+                setUpActionByStatus(eventStatus)
+            }
         }
         view.showNavigationBar()
     }
@@ -158,18 +167,19 @@ class EventCapturePresenterImpl(
 
     private fun setUpActionByStatus(eventStatus: EventStatus) {
         when (eventStatus) {
-            EventStatus.COMPLETED ->
-                if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
-                    view.saveAndFinish()
-                } else {
-                    view.finishDataEntry()
-                }
-
             EventStatus.OVERDUE -> view.attemptToSkip()
             EventStatus.SKIPPED -> view.attemptToReschedule()
             else -> {
                 // No actions for the remaining cases
             }
+        }
+    }
+
+    private fun finishCompletedEvent() {
+        if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
+            view.saveAndFinish()
+        } else {
+            view.finishDataEntry()
         }
     }
 

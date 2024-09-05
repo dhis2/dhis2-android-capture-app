@@ -12,7 +12,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import org.dhis2.commons.R
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
@@ -31,7 +33,7 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         private var orgUnitScope: OrgUnitSelectorScope = OrgUnitSelectorScope.UserSearchScope()
 
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
-            if (singleSelection && preselectedOrgUnits.size > 1) {
+            require(!(singleSelection && preselectedOrgUnits.size > 1)) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -40,7 +42,7 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         }
 
         fun singleSelection() = apply {
-            if (preselectedOrgUnits.size > 1) {
+            require(preselectedOrgUnits.size <= 1) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -72,7 +74,7 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
     @Inject
     lateinit var viewModelFactory: OUTreeViewModelFactory
 
-    private val presenter: OUTreeViewModel by viewModels { viewModelFactory }
+    private val viewmodel: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
 
@@ -101,6 +103,14 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+        lifecycleScope.launch {
+            viewmodel.finalSelectedOrgUnits.collect {
+                if (it.isNotEmpty()) {
+                    selectionCallback(it)
+                    exitOuSelection()
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -111,15 +121,15 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val list by presenter.treeNodes.collectAsState()
+                val list by viewmodel.treeNodes.collectAsState()
                 OrgBottomSheet(
                     clearAllButtonText = stringResource(id = R.string.action_clear_all),
                     orgTreeItems = list,
-                    onSearch = presenter::searchByName,
+                    onSearch = viewmodel::searchByName,
                     onDismiss = { cancelOuSelection() },
-                    onItemClick = presenter::onOpenChildren,
-                    onItemSelected = presenter::onOrgUnitCheckChanged,
-                    onClearAll = presenter::clearAll,
+                    onItemClick = viewmodel::onOpenChildren,
+                    onItemSelected = viewmodel::onOrgUnitCheckChanged,
+                    onClearAll = viewmodel::clearAll,
                     onDone = { confirmOuSelection() },
                 )
             }
@@ -127,8 +137,7 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
     }
 
     private fun confirmOuSelection() {
-        selectionCallback(presenter.getOrgUnits())
-        exitOuSelection()
+        viewmodel.confirmSelection()
     }
 
     private fun cancelOuSelection() {

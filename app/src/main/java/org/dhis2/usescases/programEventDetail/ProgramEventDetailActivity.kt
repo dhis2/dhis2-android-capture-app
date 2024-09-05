@@ -22,14 +22,19 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.date.DateUtils.OnFromToSelector
+import org.dhis2.commons.date.Period
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
@@ -40,15 +45,17 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
+import org.dhis2.utils.customviews.RxDateDialog
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
 
 class ProgramEventDetailActivity :
@@ -75,6 +82,9 @@ class ProgramEventDetailActivity :
 
     @Inject
     lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
+
+    @Inject
+    lateinit var ouRepositoryConfiguration: OURepositoryConfiguration
 
     private var backDropActive = false
     private var programUid: String = ""
@@ -156,7 +166,13 @@ class ProgramEventDetailActivity :
 
     private fun initInjection() {
         component = app().userComponent()
-            ?.plus(ProgramEventDetailModule(this, this, programUid))
+            ?.plus(
+                ProgramEventDetailModule(
+                    this,
+                    this, programUid,
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                ),
+            )
         component?.inject(this)
     }
 
@@ -242,16 +258,13 @@ class ProgramEventDetailActivity :
             FilterManager.getInstance().clearCatOptCombo()
             FilterManager.getInstance().clearWorkingList(true)
             FilterManager.getInstance().clearAssignToMe()
+            FilterManager.getInstance().clearFlow()
             presenter.clearOtherFiltersIfWebAppIsConfig()
         }
     }
 
     override fun setProgram(programModel: Program) {
         binding.name = programModel.displayName()
-    }
-
-    override fun showFilterProgress() {
-        programEventsViewModel.setProgress(true)
     }
 
     override fun renderError(message: String) {
@@ -320,27 +333,40 @@ class ProgramEventDetailActivity :
     }
 
     override fun selectOrgUnitForNewEvent() {
-        enableAddEventButton(false)
-        OUTreeFragment.Builder()
-            .singleSelection()
-            .orgUnitScope(
-                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
-            )
-            .onSelection { selectedOrgUnits ->
-                if (selectedOrgUnits.isNotEmpty()) {
-                    presenter.stageUid?.let {
-                        programEventsViewModel.onOrgUnitForNewEventSelected(
-                            programUid = programUid,
-                            orgUnitUid = selectedOrgUnits.first().uid(),
-                            programStageUid = it,
-                        )
-                    }
-                } else {
-                    enableAddEventButton(true)
-                }
+        val orgUnitList = ouRepositoryConfiguration.orgUnitRepository(null)
+        if (orgUnitList.size == 1) {
+            presenter.stageUid?.let {
+                programEventsViewModel.onOrgUnitForNewEventSelected(
+                    programUid = programUid,
+                    orgUnitUid = orgUnitList.first().uid(),
+                    programStageUid = it,
+                )
             }
-            .build()
-            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+        } else {
+            OUTreeFragment.Builder()
+                .singleSelection()
+                .withPreselectedOrgUnits(
+                    listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
+                )
+                .orgUnitScope(
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                )
+                .onSelection { selectedOrgUnits ->
+                    if (selectedOrgUnits.isNotEmpty()) {
+                        presenter.stageUid?.let {
+                            programEventsViewModel.onOrgUnitForNewEventSelected(
+                                programUid = programUid,
+                                orgUnitUid = selectedOrgUnits.first().uid(),
+                                programStageUid = it,
+                            )
+                        }
+                    } else {
+                        enableAddEventButton(true)
+                    }
+                }
+                .build()
+                .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+        }
     }
 
     private fun enableAddEventButton(enable: Boolean) {
@@ -358,17 +384,32 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this) { datePeriod: List<DatePeriod?>? ->
+            DateUtils.getInstance().fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
                 FilterManager.getInstance().addPeriod(datePeriod)
             }
         } else {
+            val onFromToSelector =
+                OnFromToSelector { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) }
+
             DateUtils.getInstance().showPeriodDialog(
                 this,
-                { datePeriods: List<DatePeriod?>? ->
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                },
+                onFromToSelector,
                 true,
-            )
+            ) {
+                val disposable = RxDateDialog(activity, Period.WEEKLY)
+                    .createForFilter().show()
+                    .subscribe(
+                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
+                            onFromToSelector.onFromToSelected(
+                                DateUtils.getInstance().getDatePeriodListFor(
+                                    selectedDates.val1(),
+                                    selectedDates.val0(),
+                                ),
+                            )
+                        },
+                        { t: Throwable? -> Timber.e(t) },
+                    )
+            }
         }
     }
 

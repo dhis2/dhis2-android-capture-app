@@ -24,8 +24,8 @@ import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.reporting.CrashReportController;
-import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.DhisPeriodUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
@@ -43,7 +43,6 @@ import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.call.D2Progress;
-import org.hisp.dhis.android.core.arch.helpers.Result;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -57,7 +56,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventCollectionRepository;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.hisp.dhis.android.core.program.ProgramStage;
@@ -79,7 +77,6 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollec
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper;
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -371,7 +368,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         String value = attribute.getValue();
         String transformedValue;
         if (value != null) {
-            transformedValue = ValueUtils.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
+            transformedValue =  ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
         } else {
             transformedValue = sortingValueSetter.getUnknownLabel();
         }
@@ -412,8 +409,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (count > 0) {
             tei.setHasOverdue(true);
-            Date scheduleDate = scheduleList.size() > 0 ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = overdueList.size() > 0 ? overdueList.get(0).dueDate() : null;
+            Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
+            Date overdueDate = !overdueList.isEmpty()  ? overdueList.get(0).dueDate() : null;
             Date dateToShow = null;
             if (scheduleDate != null && overdueDate != null) {
                 if (scheduleDate.before(overdueDate)) {
@@ -533,8 +530,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private int getTeiDefaultRes(TrackedEntityInstance tei) {
-        TrackedEntityType teiType = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
-        return resources.getObjectStyleDrawableResource(teiType.style().icon(), R.drawable.photo_temp_gray);
+        TrackedEntityType teiTypeValues = d2.trackedEntityModule().trackedEntityTypes().uid(tei.trackedEntityType()).blockingGet();
+        return resources.getObjectStyleDrawableResource(teiTypeValues.style().icon(), R.drawable.photo_temp_gray);
     }
 
     private List<TrackedEntityAttributeValue> getTrackedEntityAttributesForRelationship(TrackedEntityInstance tei, Program selectedProgram) {
@@ -604,6 +601,21 @@ public class SearchRepositoryImpl implements SearchRepository {
         return FilterManager.getInstance().getTotalFilters() == 0 ||
                 !FilterManager.getInstance().getOrgUnitFilters().isEmpty() ||
                 !FilterManager.getInstance().getStateFilters().isEmpty();
+    }
+
+    @Override
+    public @NotNull HashSet<String> getFetchedTeiUIDs() {
+        return fetchedTeiUids;
+    }
+
+    @Override
+    public SearchParametersModel getSavedSearchParameters() {
+        return savedSearchParameters;
+    }
+
+    @Override
+    public FilterManager getSavedFilters() {
+        return savedFilters;
     }
 
     @Override
@@ -697,17 +709,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         return teiDownloader.download(teiUid, enrollmentUid, reason);
     }
 
-    public SearchTeiModel transformResult(Result<TrackedEntitySearchItem, D2Error> result, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
-        try {
-            return transform(result.getOrThrow(), selectedProgram, offlineOnly, sortingItem);
-        } catch (Exception e) {
-            SearchTeiModel errorModel = new SearchTeiModel();
-            errorModel.onlineErrorMessage = resources.parseD2Error(e);
-            errorModel.onlineErrorCode = ((D2Error) e).errorCode();
-            return errorModel;
-        }
-    }
-
     @Override
     public SearchTeiModel transform(TrackedEntitySearchItem searchItem, @Nullable Program selectedProgram, boolean offlineOnly, SortingItem sortingItem) {
         if (!fetchedTeiUids.contains(searchItem.uid())) {
@@ -796,7 +797,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .trackedEntityInstance(searchTei.getTei().uid())
                 .build();
 
-        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attributeValue, d2);
+        String friendlyValue = ValueExtensionsKt.userFriendlyValue(attributeValue, d2, true);
 
         TrackedEntityAttributeValue friendlyAttributeValue = attributeValue.toBuilder()
                 .value(friendlyValue)

@@ -68,7 +68,7 @@ class SearchTeiLiveAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            getItem(position)?.onlineErrorMessage != null -> SearchItem.ONLINE_ERROR.ordinal
+            snapshot()[position]?.onlineErrorMessage != null -> SearchItem.ONLINE_ERROR.ordinal
             fromRelationship -> SearchItem.RELATIONSHIP_TEI.ordinal
             else -> SearchItem.TEI.ordinal
         }
