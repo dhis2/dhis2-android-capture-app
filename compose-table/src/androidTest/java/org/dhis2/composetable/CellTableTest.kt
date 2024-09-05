@@ -135,7 +135,7 @@ class CellTableTest {
         }
     }
 
-    @Ignore("indeterminate test")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6464")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"
