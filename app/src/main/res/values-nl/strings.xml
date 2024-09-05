@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -466,7 +466,6 @@
     <string name="send_user_name_title">Verstuur data</string>
     <string name="send_user_name_mesage">Help DHIS2 deze app te verbeteren door foutenlogboeken te delen die zijn gekoppeld aan uw gebruikers-ID.</string>
     <string name="improve_app_msg_title">Wil je ons helpen deze app te verbeteren?</string>
-    <string name="improve_app_msg_text">Als u ja zegt, stuurt de app anonieme statistieken en foutlogboeken die ons helpen de gebruikerservaring en prestaties te verbeteren.\n\nRaadpleeg ons privacybeleid voor meer informatie.</string>
     <string name="improve_app_msg_clickable_word">privacybeleid</string>
     <string name="check_mandatory_field">Velden controleren</string>
     <string name="error_no_network_during_sync">Je internetverbinding is verbroken tijdens het uitvoeren van je configuratiesynchronisatie. Probeer het later opnieuw</string>
@@ -867,7 +866,6 @@
         <item quantity="one">%s waarschuwing</item>
         <item quantity="other">%s waarschuwingen</item>
     </plurals>
-    <string name="new_version_message">App-versie <b> %s </b> is nu beschikbaar.\nWilt u deze downloaden?</string>
     <string name="software_update">Software-update</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download nu</string>
