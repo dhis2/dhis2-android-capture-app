@@ -22,6 +22,7 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         composeTestRule.onNodeWithTag("ORG_TREE_ITEM_$orgUnitName")
             .performScrollTo()
             .performClick()
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Done").assertIsDisplayed()
         composeTestRule.onNodeWithText("Done").performClick()
     }
