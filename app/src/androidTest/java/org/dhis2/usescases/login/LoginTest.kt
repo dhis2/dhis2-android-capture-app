@@ -36,7 +36,6 @@ class LoginTest : BaseTest() {
         D2Manager.removeCredentials()
     }
 
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6455")
     @Test
     fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
