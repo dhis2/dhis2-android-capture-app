@@ -134,7 +134,7 @@ fun ProgramList(
                         }
                     },
                     onItemClick = onItemClick
-                        .takeIf { downLoadState?.running == false }
+                        .takeIf { downLoadState?.running != true }
                         ?: run { {} },
                     onGranularSyncClick = onGranularSyncClick
                         .takeIf { downLoadState?.running == false }
@@ -404,6 +404,7 @@ fun ProgramItem(
                                     AdditionalInfoItem(
                                         value = description,
                                         color = TextColor.OnSurfaceLight,
+                                        truncate = false,
                                     ),
                                 )
                             }
@@ -457,6 +458,7 @@ fun ProgramItem(
                                     AdditionalInfoItem(
                                         value = description,
                                         color = TextColor.OnSurfaceLight,
+                                        truncate = false,
                                     ),
                                 )
                             }
