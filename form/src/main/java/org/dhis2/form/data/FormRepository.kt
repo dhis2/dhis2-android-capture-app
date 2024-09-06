@@ -27,4 +27,5 @@ interface FormRepository {
     fun clearFocusItem()
     fun storeFile(id: String, filePath: String?): StoreResult?
     fun areSectionCollapsable(): Boolean
+    fun hasLegendSet(dataElementUid: String): Boolean
 }

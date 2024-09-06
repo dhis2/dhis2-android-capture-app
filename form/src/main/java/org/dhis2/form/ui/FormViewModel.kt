@@ -1,5 +1,7 @@
 package org.dhis2.form.ui
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -93,6 +95,8 @@ class FormViewModel(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
+    private val handler = Handler(Looper.getMainLooper())
+
     init {
         viewModelScope.launch {
             _pendingIntents
@@ -161,6 +165,12 @@ class FormViewModel(
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
                         _queryData.value = it
+                    }
+                    if (repository.hasLegendSet(result.first.id)) {
+                        handler.removeCallbacksAndMessages(null)
+                        handler.postDelayed({
+                            processCalculatedItems(skipProgramRules = true)
+                        }, 500L)
                     }
                 }
 
@@ -358,7 +368,9 @@ class FormViewModel(
 
     private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) =
         getLastFocusedTextItem()?.let {
-            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
+            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE &&
+                !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0
+            ) {
                 val autoCompleteValues =
                     getListFromPreference(fieldUidModel.uid)
                 if (!autoCompleteValues.contains(fieldUidModel.value)) {
