@@ -269,7 +269,7 @@ class TeiDashboardMobileActivity :
                     ),
                 )
                 .factory(supportFragmentManager)
-                .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.NEW))
+                .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.CHECK))
                 .build()
 
             supportFragmentManager.beginTransaction()
