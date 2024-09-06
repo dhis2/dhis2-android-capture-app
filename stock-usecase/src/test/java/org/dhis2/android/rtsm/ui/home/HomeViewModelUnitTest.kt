@@ -10,11 +10,10 @@ import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants
@@ -63,7 +62,6 @@ class HomeViewModelUnitTest {
     private lateinit var viewModel: HomeViewModel
     private lateinit var schedulerProvider: BaseSchedulerProvider
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Mock
     private lateinit var testSchedulerProvider: TestCoroutineScheduler
     private lateinit var facilities: List<OrganisationUnit>
@@ -81,7 +79,11 @@ class HomeViewModelUnitTest {
         TransactionType.CORRECTION,
         TransactionType.CORRECTION.name,
     )
-    private val discardItem = TransactionItem(R.drawable.ic_discard, TransactionType.DISCARD, TransactionType.DISCARD.name)
+    private val discardItem = TransactionItem(
+        R.drawable.ic_discard,
+        TransactionType.DISCARD,
+        TransactionType.DISCARD.name,
+    )
 
     private val transactionItems = mutableListOf(distributionItem, correctionItem, discardItem)
 
@@ -101,8 +103,8 @@ class HomeViewModelUnitTest {
     @Mock
     private lateinit var destinationsObserver: Observer<OperationState<List<Option>>>
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val mainThreadSurrogate = UnconfinedTestDispatcher()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -127,7 +129,8 @@ class HomeViewModelUnitTest {
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
 
-        val distributionDataSet = DataElementFactory.create(appConfig.stockDistribution, DISTRIBUTION_LABEL)
+        val distributionDataSet =
+            DataElementFactory.create(appConfig.stockDistribution, DISTRIBUTION_LABEL)
         val correctionDataSet = DataElementFactory.create(appConfig.stockCount, CORRECTION_lABEL)
         val discardDataSet = DataElementFactory.create(appConfig.stockDiscarded, DISCARD_LABEL)
         val deliverToDataSet = DataElementFactory.create(appConfig.stockDiscarded, DELIVER_TO_LABEL)
@@ -197,21 +200,30 @@ class HomeViewModelUnitTest {
     fun init_shouldLoadDistributionLabel() {
         verify(metadataManager).transactionType(appConfig.stockDistribution)
 
-        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label, DISTRIBUTION_LABEL)
+        assertEquals(
+            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label,
+            DISTRIBUTION_LABEL,
+        )
     }
 
     @Test
     fun init_shouldLoadCorrectLabel() {
         verify(metadataManager).transactionType(appConfig.stockCount)
 
-        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.CORRECTION }?.label, CORRECTION_lABEL)
+        assertEquals(
+            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.CORRECTION }?.label,
+            CORRECTION_lABEL,
+        )
     }
 
     @Test
     fun init_shouldLoadDiscardLabel() {
         verify(metadataManager).transactionType(appConfig.stockDiscarded)
 
-        assertEquals(viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISCARD }?.label, DISCARD_LABEL)
+        assertEquals(
+            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISCARD }?.label,
+            DISCARD_LABEL,
+        )
     }
 
     @Test
@@ -232,7 +244,10 @@ class HomeViewModelUnitTest {
     @Test
     fun isDistributionIsPositive_whenDistributionIsSet() {
         viewModel.selectTransaction(distributionItem)
-        assertEquals(viewModel.settingsUiState.value.selectedTransactionItem.type, TransactionType.DISTRIBUTION)
+        assertEquals(
+            viewModel.settingsUiState.value.selectedTransactionItem.type,
+            TransactionType.DISTRIBUTION,
+        )
     }
 
     @Test
