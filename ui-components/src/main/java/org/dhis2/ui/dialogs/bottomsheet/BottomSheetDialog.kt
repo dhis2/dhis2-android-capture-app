@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,7 +32,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.Border
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
@@ -61,6 +66,7 @@ class BottomSheetDialog(
                         null -> bottomSheetDialogUiModel.message
                         else -> null
                     },
+                    headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
                     icon = {
                         Icon(
                             modifier = Modifier.size(Spacing.Spacing24),
@@ -104,6 +110,7 @@ class BottomSheetDialog(
                         )
                     },
                     onDismiss = {
+                        onSecondaryButtonClicked()
                         dismiss()
                     },
                     content = bottomSheetDialogUiModel.clickableWord?.let {
@@ -122,30 +129,38 @@ class BottomSheetDialog(
 
     @Composable
     private fun ClickableTextContent(originalText: String, clickableText: String) {
-        ClickableText(
-            modifier = Modifier
-                .testTag(CLICKABLE_TEXT_TAG)
-                .fillMaxWidth(),
-            text = buildAnnotatedString {
-                val clickableWordIndex = originalText.indexOf(clickableText)
-                append(originalText)
-                addStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline,
-                    ),
-                    start = clickableWordIndex,
-                    end = clickableWordIndex + clickableText.length,
-                )
-            },
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = TextColor.OnSurfaceLight,
-                textAlign = TextAlign.Center,
-            ),
-            onClick = {
-                onMessageClick()
-            },
-        )
+        Column {
+            ClickableText(
+                modifier = Modifier
+                    .testTag(CLICKABLE_TEXT_TAG)
+                    .fillMaxWidth(),
+                text = buildAnnotatedString {
+                    val clickableWordIndex = originalText.indexOf(clickableText)
+                    append(originalText)
+                    addStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                        start = clickableWordIndex,
+                        end = clickableWordIndex + clickableText.length,
+                    )
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = TextColor.OnSurfaceLight,
+                    textAlign = TextAlign.Start,
+                ),
+                onClick = {
+                    onMessageClick()
+                },
+            )
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing24),
+                color = TextColor.OnDisabledSurface,
+                thickness = Border.Thin,
+            )
+        }
+
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape

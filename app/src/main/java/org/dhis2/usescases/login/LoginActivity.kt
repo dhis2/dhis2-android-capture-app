@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
@@ -415,8 +416,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 message = getString(R.string.improve_app_msg_text),
                 clickableWord = getString(R.string.improve_app_msg_clickable_word),
                 iconResource = R.drawable.ic_line_chart,
+                headerTextAlignment = TextAlign.Start,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
