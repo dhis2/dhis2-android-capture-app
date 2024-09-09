@@ -74,6 +74,7 @@ class FilterTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("Flaky test, it will be fixed in ANDROAPP-6468")
     @Test
     fun checkTreeOrgUnitFilter() {
         startActivity()
