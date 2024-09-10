@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
@@ -79,6 +80,6 @@ class NoteRobot : BaseRobot() {
 
     fun checkNoteDetails(user: String, noteText: String) {
         onView(withId(R.id.storeBy)).check(matches(withText(user)))
-        onView(withId(R.id.note)).check(matches(withText(noteText)))
+        onView(withId(R.id.note_text)).check(matches(withText(noteText)))
     }
 }
