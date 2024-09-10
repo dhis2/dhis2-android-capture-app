@@ -20,7 +20,7 @@ fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
 
 class FiltersRobot : BaseRobot() {
     fun openFilterAtPosition(position: Int) {
-        onView(withId(R.id.filterRecycler)).perform(
+        onView(withId(R.id.filterRecyclerLayout)).perform(
             RecyclerViewActions.actionOnItemAtPosition<FilterHolder>(position, click())
         )
     }

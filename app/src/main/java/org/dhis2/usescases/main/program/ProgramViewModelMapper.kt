@@ -5,6 +5,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
 import org.hisp.dhis.android.core.program.Program
+import java.util.Date
 
 class ProgramViewModelMapper() {
     fun map(
@@ -12,11 +13,9 @@ class ProgramViewModelMapper() {
         recordCount: Int,
         recordLabel: String,
         state: State,
-        hasOverdue: Boolean,
-        filtersAreActive: Boolean,
         metadataIconData: MetadataIconData,
-    ): ProgramViewModel {
-        return ProgramViewModel(
+    ): ProgramUiModel {
+        return ProgramUiModel(
             uid = program.uid(),
             title = program.displayName()!!,
             metadataIconData = metadataIconData,
@@ -32,10 +31,9 @@ class ProgramViewModelMapper() {
             onlyEnrollOnce = program.onlyEnrollOnce() == true,
             accessDataWrite = program.access().data().write(),
             state = State.valueOf(state.name),
-            hasOverdueEvent = hasOverdue,
-            filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = program.lastUpdated() ?: Date(),
         )
     }
 
@@ -44,10 +42,9 @@ class ProgramViewModelMapper() {
         dataSetInstanceSummary: DataSetInstanceSummary,
         recordCount: Int,
         dataSetLabel: String,
-        filtersAreActive: Boolean,
         metadataIconData: MetadataIconData,
-    ): ProgramViewModel {
-        return ProgramViewModel(
+    ): ProgramUiModel {
+        return ProgramUiModel(
             uid = dataSetInstanceSummary.dataSetUid(),
             title = dataSetInstanceSummary.dataSetDisplayName(),
             metadataIconData = metadataIconData,
@@ -59,18 +56,17 @@ class ProgramViewModelMapper() {
             onlyEnrollOnce = false,
             accessDataWrite = dataSet.access().data().write(),
             state = dataSetInstanceSummary.state(),
-            hasOverdueEvent = false,
-            filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = dataSet.lastUpdated() ?: Date(),
         )
     }
 
     fun map(
-        programViewModel: ProgramViewModel,
+        programUiModel: ProgramUiModel,
         downloadState: ProgramDownloadState,
-    ): ProgramViewModel {
-        return programViewModel.copy(
+    ): ProgramUiModel {
+        return programUiModel.copy(
             downloadState = downloadState,
         )
     }

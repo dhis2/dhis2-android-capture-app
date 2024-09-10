@@ -89,21 +89,7 @@ class MainNavigator(
     }
 
     fun openVisualizations() {
-        val visualizationFragment = GroupAnalyticsFragment.forHome()
-        val sharedView = if (isPrograms()) {
-            (currentFragment as ProgramFragment).sharedView()
-        } else {
-            null
-        }
-        if (sharedView != null) {
-            visualizationFragment.sharedElementEnterTransition = ChangeBounds()
-            visualizationFragment.sharedElementReturnTransition = ChangeBounds()
-        }
-        beginTransaction(
-            visualizationFragment,
-            MainScreen.VISUALIZATIONS,
-            sharedView,
-        )
+        beginTransaction(GroupAnalyticsFragment.forHome(), MainScreen.VISUALIZATIONS)
     }
 
     fun openSettings() {

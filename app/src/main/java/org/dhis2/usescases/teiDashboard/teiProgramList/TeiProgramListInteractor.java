@@ -11,7 +11,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.service.SyncStatusData;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.Program;
 import org.jetbrains.annotations.NotNull;
@@ -202,8 +202,8 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 refreshData.startWith(Unit.INSTANCE)
                         .flatMap(unit -> teiProgramListRepository.allPrograms(trackedEntityId))
                         .map(programViewModels -> {
-                            List<ProgramViewModel> programModels = new ArrayList<>();
-                            for (ProgramViewModel programModel : programViewModels) {
+                            List<ProgramUiModel> programModels = new ArrayList<>();
+                            for (ProgramUiModel programModel : programViewModels) {
                                 programModels.add(
                                         teiProgramListRepository.updateProgramViewModel(
                                                 programModel,
@@ -221,18 +221,18 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private ProgramDownloadState getSyncState(ProgramViewModel programViewModel) {
+    private ProgramDownloadState getSyncState(ProgramUiModel programUiModel) {
         ProgramDownloadState programDownloadState;
         if (syncStatusController.observeDownloadProcess().getValue().isProgramDownloading(
-                programViewModel.getUid()
+                programUiModel.getUid()
         )) {
             programDownloadState = ProgramDownloadState.DOWNLOADING;
         } else if (syncStatusController.observeDownloadProcess().getValue().wasProgramDownloading(
                 lastSyncData,
-                programViewModel.getUid())
+                programUiModel.getUid())
         ) {
             programDownloadState = ProgramDownloadState.DOWNLOADED;
-        } else if (programViewModel.getDownloadState() == ProgramDownloadState.ERROR) {
+        } else if (programUiModel.getDownloadState() == ProgramDownloadState.ERROR) {
             programDownloadState = ProgramDownloadState.ERROR;
         } else {
             programDownloadState = ProgramDownloadState.NONE;
@@ -240,7 +240,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         return programDownloadState;
     }
 
-    private void getAlreadyEnrolledPrograms(List<ProgramViewModel> programs) {
+    private void getAlreadyEnrolledPrograms(List<ProgramUiModel> programs) {
         compositeDisposable.add(teiProgramListRepository.alreadyEnrolledPrograms(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -250,19 +250,19 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<Program> alreadyEnrolledPrograms) {
-        ArrayList<ProgramViewModel> programListToPrint = new ArrayList<>();
-        for (ProgramViewModel programViewModel : allPrograms) {
+    private void deleteRepeatedPrograms(List<ProgramUiModel> allPrograms, List<Program> alreadyEnrolledPrograms) {
+        ArrayList<ProgramUiModel> programListToPrint = new ArrayList<>();
+        for (ProgramUiModel programUiModel : allPrograms) {
             boolean isAlreadyEnrolled = false;
             boolean onlyEnrollOnce = false;
             for (Program program : alreadyEnrolledPrograms) {
-                if (programViewModel.getUid().equals(program.uid())) {
+                if (programUiModel.getUid().equals(program.uid())) {
                     isAlreadyEnrolled = true;
                     onlyEnrollOnce = program.onlyEnrollOnce();
                 }
             }
             if (!isAlreadyEnrolled || !onlyEnrollOnce) {
-                programListToPrint.add(programViewModel);
+                programListToPrint.add(programUiModel);
             }
         }
         Collections.sort(programListToPrint, (program1, program2) -> program1.getTitle().compareToIgnoreCase(program2.getTitle()));
