@@ -8,13 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
@@ -32,7 +27,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Date
 import java.util.Date
 
 @ExperimentalCoroutinesApi
