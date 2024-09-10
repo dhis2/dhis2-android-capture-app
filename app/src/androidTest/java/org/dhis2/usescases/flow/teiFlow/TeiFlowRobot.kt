@@ -4,6 +4,8 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -27,8 +29,11 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     ) {
         val registrationDate = registrationModel.firstSpecificDate
         val incidentDate = getCurrentDate()
+        val day = incidentDate.substring(0, 2)
+        val orgUnit = "Ngelehun CHC"
 
         searchTeiRobot(composeTestRule) {
+            clickOnOpenSearch()
             openNextSearchParameter("First name")
             typeOnNextSearchTextParameter(registrationModel.name)
             openNextSearchParameter("Last name")
@@ -39,6 +44,10 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             clickOnEnroll()
         }
 
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
         enrollmentRobot(composeTestRule) {
             typeOnDateParameterWithLabel("LMP Date *", incidentDate)
             clickOnSaveEnrollment()
@@ -46,6 +55,8 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun enrollToProgram(program: String) {
+        val orgUnit = "Ngelehun CHC"
+
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
             clickOnMenuProgramEnrollments()
@@ -53,6 +64,17 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, program)
+        }
+
+        filterRobotCommon {
+            changeCalendarView()
+            selectDate(2024, 7, 7)
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+        enrollmentRobot(composeTestRule){
             clickOnAcceptInDatePicker()
             clickOnSaveEnrollment()
         }
