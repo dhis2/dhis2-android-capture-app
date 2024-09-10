@@ -8,11 +8,11 @@ class OUTreeRepository(
     private var availableOrgUnits: List<OrganisationUnit> = emptyList()
 
     fun orgUnits(name: String? = null): List<OrganisationUnit> {
-        availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name)
-        return availableOrgUnits.withParents().sortedBy { it.displayNamePath()?.joinToString(" ") }
+        availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name).sortedBy { it.displayNamePath()?.joinToString(" ") }
+        return availableOrgUnits.order()
     }
 
-    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = orgUnitRepositoryConfiguration.orgUnitRepository(null).withParents()
+    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
         .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
         .sortedBy { it.displayNamePath()?.joinToString(" ") }
     fun orgUnit(uid: String): OrganisationUnit? = availableOrgUnits.firstOrNull { it.uid() == uid }
@@ -29,14 +29,19 @@ class OUTreeRepository(
             selectedOrgUnits,
         )
     }
-    private fun List<OrganisationUnit>.withParents(): List<OrganisationUnit> {
+
+    private fun List<OrganisationUnit>.order(): List<OrganisationUnit> {
         val listWithParents = this.toMutableList()
         this.forEach { organisationUnit ->
-            organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() }?.forEach { parentUid ->
-                if (!listWithParents.any { it.uid() == parentUid }) {
-                    orgUnitRepositoryConfiguration.orgUnit(parentUid)
-                        ?.let { listWithParents.add(it) }
+            var isParentInParentList = false
+            organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() && it != organisationUnit.uid() }?.forEach { parentUid ->
+                if (listWithParents.any { it.uid() == parentUid }) {
+                    isParentInParentList = true
                 }
+            }
+            if (!isParentInParentList && listWithParents.indexOf(organisationUnit) != 0) {
+                listWithParents.remove(organisationUnit)
+                listWithParents.add(0, organisationUnit)
             }
         }
         return listWithParents
