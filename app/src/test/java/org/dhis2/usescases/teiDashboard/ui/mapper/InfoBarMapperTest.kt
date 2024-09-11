@@ -114,6 +114,7 @@ class InfoBarMapperTest {
             emptyList<OrganisationUnit>(),
             null,
             null,
+            null
         )
 
         return model
@@ -149,7 +150,7 @@ class InfoBarMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<kotlin.Pair<Program, MetadataIconData>>(
+    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
         Pair(
             Program.builder()
                 .uid("Program1Uid")
