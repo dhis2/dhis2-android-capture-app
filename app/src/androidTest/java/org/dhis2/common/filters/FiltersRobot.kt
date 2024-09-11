@@ -38,6 +38,9 @@ class FiltersRobot : BaseRobot() {
             PickerActions.setDate(year, monthOfYear, dayOfMonth)
         )
     }
+    fun changeCalendarView() {
+        onView(withId(R.id.changeCalendarBtn)).perform(click())
+    }
 
     fun typeOrgUnit(orgUnitName: String) {
         onView(withId(R.id.orgUnitSearchEditText)).perform(TypeTextAction(orgUnitName))
