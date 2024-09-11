@@ -160,7 +160,11 @@ class TeiDashboardCardMapper(
                         item.currentEnrollment.enrollmentDate(),
                     )
                 }.also { list ->
-                    if (item.orgUnits.isNotEmpty()) {
+                    addOwnedBy(
+                        list,
+                        item.ownerOrgUnit,
+                    )
+                    if (item.getCurrentOrgUnit() != item.ownerOrgUnit) {
                         addEnrollIn(
                             list,
                             item.getCurrentOrgUnit(),
@@ -205,6 +209,19 @@ class TeiDashboardCardMapper(
             AdditionalInfoItem(
                 key = resourceManager.getString(R.string.enrolledIn),
                 value = currentOrgUnit?.displayName() ?: "-",
+                isConstantItem = true,
+            ),
+        )
+    }
+
+    private fun addOwnedBy(
+        list: MutableList<AdditionalInfoItem>,
+        ownedByOrgUnit: OrganisationUnit?,
+    ) {
+        list.add(
+            AdditionalInfoItem(
+                key = resourceManager.getString(R.string.ownedBy),
+                value = ownedByOrgUnit?.displayName() ?: "-",
                 isConstantItem = true,
             ),
         )

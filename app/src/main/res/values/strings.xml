@@ -894,6 +894,7 @@
     <string name="program_description">Program description</string>
     <string name="wrong_pin">Wrong pin</string>
     <string name="enrolledIn">Enrolled in</string>
+    <string name="ownedBy">Owned by</string>
     <string name="sync_dialog_title_not_synced">Sync needed</string>
     <string name="sync_dialog_title_error">Sync error</string>
     <string name="sync_dialog_title_synced">Synced</string>
