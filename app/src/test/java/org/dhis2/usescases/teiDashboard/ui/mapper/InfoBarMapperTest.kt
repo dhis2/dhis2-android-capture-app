@@ -114,7 +114,7 @@ class InfoBarMapperTest {
             emptyList<OrganisationUnit>(),
             null,
             null,
-            null
+            null,
         )
 
         return model

@@ -84,7 +84,7 @@ class TEIDetailMapperTest {
             listOf(orgUnit()),
             "header",
             "avatarFilepath",
-            ownerOrgUnit
+            ownerOrgUnit,
         )
 
         return model
