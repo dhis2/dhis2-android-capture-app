@@ -548,6 +548,8 @@ class TeiDashboardMobileActivity :
             supportFragmentManager.beginTransaction()
                 .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
                 .commitAllowingStateLoss()
+        } else {
+            navigateToFragment(TEIDashboardItems.DETAILS)
         }
     }
 
