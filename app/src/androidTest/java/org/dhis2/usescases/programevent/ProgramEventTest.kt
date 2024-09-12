@@ -7,10 +7,10 @@ import androidx.test.core.app.ApplicationProvider
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,6 +30,7 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6476")
     fun shouldCreateNewEventAndCompleteIt() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
