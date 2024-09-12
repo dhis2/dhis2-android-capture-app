@@ -257,19 +257,21 @@ class MainActivity :
                         }
                     }
                 }
-                NavigationBar(
-                    items = pageConfigurator.navigationItems(),
-                    selectedItemIndex = selectedItemIndex ?: 0,
-                ) { navigationPage ->
-                    when (navigationPage) {
-                        NavigationPage.ANALYTICS -> {
-                            presenter.trackHomeAnalytics()
-                            mainNavigator.openVisualizations()
-                        }
+                if (pageConfigurator.navigationItems().size > 1) {
+                    NavigationBar(
+                        items = pageConfigurator.navigationItems(),
+                        selectedItemIndex = selectedItemIndex ?: 0,
+                    ) { navigationPage ->
+                        when (navigationPage) {
+                            NavigationPage.ANALYTICS -> {
+                                presenter.trackHomeAnalytics()
+                                mainNavigator.openVisualizations()
+                            }
 
-                        NavigationPage.PROGRAMS -> mainNavigator.openPrograms()
-                        else -> {
-                            /*no-op*/
+                            NavigationPage.PROGRAMS -> mainNavigator.openPrograms()
+                            else -> {
+                                /*no-op*/
+                            }
                         }
                     }
                 }
