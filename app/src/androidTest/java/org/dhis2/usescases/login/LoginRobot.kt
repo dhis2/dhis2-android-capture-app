@@ -28,7 +28,6 @@ import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
-import androidx.compose.ui.test.hasText
 
 
 fun loginRobot(
@@ -61,10 +60,6 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun typeUsername(username: String) {
         onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
         pressImeActionButton()
-    }
-
-    fun selectUsernameField() {
-        onView(withId(R.id.user_name_edit)).perform(click())
     }
 
     fun clearUsernameField() {
