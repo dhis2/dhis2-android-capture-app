@@ -8,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
@@ -53,7 +52,6 @@ class MainPresenterTest {
     private val view: MainView = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
-    private val filterManager: FilterManager = mock()
     private val filterRepository: FilterRepository = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
@@ -66,6 +64,8 @@ class MainPresenterTest {
         on { io() } doReturn testingDispatcher
         on { ui() } doReturn testingDispatcher
     }
+
+    private val forceToNotSynced: Boolean = false
 
     @Rule
     @JvmField
@@ -90,6 +90,7 @@ class MainPresenterTest {
                 syncStatusController,
                 versionRepository,
                 dispatcherProvider,
+                forceToNotSynced,
             )
     }
 
