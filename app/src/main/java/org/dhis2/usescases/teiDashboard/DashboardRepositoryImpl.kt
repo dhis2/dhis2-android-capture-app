@@ -374,6 +374,17 @@ class DashboardRepositoryImpl(
         }
     }
 
+    private fun getOwnerOrgUnit(teiUid: String): OrganisationUnit? {
+        val orgUnitId = d2.trackedEntityModule()
+            .trackedEntityInstances().withProgramOwners()
+            .uid(teiUid).blockingGet()
+            ?.programOwners()?.first { it.trackedEntityInstance() == teiUid }?.ownerOrgUnit()
+
+        return d2.organisationUnitModule().organisationUnits()
+            .uid(orgUnitId)
+            .blockingGet()
+    }
+
     override fun getDashboardModel(): DashboardModel {
         return if (programUid.isNullOrEmpty()) {
             DashboardTEIModel(
@@ -384,6 +395,7 @@ class DashboardRepositoryImpl(
                 getTeiOrgUnits(teiUid, null).blockingFirst(),
                 getTeiHeader(),
                 getTeiProfilePath(),
+                getOwnerOrgUnit(teiUid),
             )
         } else {
             DashboardEnrollmentModel(
@@ -396,6 +408,7 @@ class DashboardRepositoryImpl(
                 getTeiOrgUnits(teiUid, programUid).blockingFirst(),
                 getTeiHeader(),
                 getTeiProfilePath(),
+                getOwnerOrgUnit(teiUid),
             )
         }
     }
