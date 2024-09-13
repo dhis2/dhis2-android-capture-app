@@ -156,7 +156,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //@Ignore("To fix in ANDROAPP-6109")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
@@ -345,6 +344,6 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
-        const val LAB_MONITORING_SCHEDULE_DATE = "10/9/2019"
+        const val LAB_MONITORING_SCHEDULE_DATE = "10/09/2023"
     }
 }
