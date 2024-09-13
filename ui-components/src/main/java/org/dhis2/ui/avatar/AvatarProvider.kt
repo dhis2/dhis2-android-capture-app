@@ -9,6 +9,7 @@ import androidx.compose.ui.res.painterResource
 import org.dhis2.ui.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import java.io.File
@@ -24,9 +25,12 @@ fun AvatarProvider(
                 avatarProviderConfiguration,
                 onImageClick,
             )
-
         is AvatarProviderConfiguration.Metadata ->
             MetadataIconAvatar(
+                avatarProviderConfiguration,
+            )
+        is AvatarProviderConfiguration.MainValueLabel ->
+            MainValueLabelAvatar(
                 avatarProviderConfiguration,
             )
     }
@@ -81,6 +85,15 @@ private fun ProfilePicAvatar(
             style = AvatarStyle.TEXT,
         )
     }
+}
+
+@Composable
+private fun MainValueLabelAvatar(
+    config: AvatarProviderConfiguration.MainValueLabel,
+) {
+    Avatar(
+        style = AvatarStyleData.Text(getTitleFirstLetter(config.firstMainValue)),
+    )
 }
 
 private fun getTitleFirstLetter(firstMainValue: String?): String {

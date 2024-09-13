@@ -90,7 +90,8 @@ public class RelationshipModule {
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         resourceManager,
-                        dateLabelProvider
+                        dateLabelProvider,
+                        metadataIconProvider
                 ),
                 new EventInfoProvider(
                         d2,

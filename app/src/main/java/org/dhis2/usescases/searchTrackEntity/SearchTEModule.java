@@ -111,11 +111,12 @@ public class SearchTEModule {
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SyncStatusController syncStatusController,
                                                        ResourceManager resourceManager,
-                                                       ColorUtils colorUtils) {
+                                                       ColorUtils colorUtils,
+                                                       MetadataIconProvider metadataIconProvider) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils);
+                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils, metadataIconProvider);
     }
 
     @Provides
@@ -190,7 +191,8 @@ public class SearchTEModule {
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         resourceManager,
-                        dateLabelProvider
+                        dateLabelProvider,
+                        metadataIconProvider
                 ),
                 new EventInfoProvider(
                         d2,

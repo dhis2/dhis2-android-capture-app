@@ -17,10 +17,12 @@ internal fun Feature?.addTeiInfo(mapItemModel: MapItemModel): Feature? {
             MapTeisToFeatureCollection.TEI_UID,
             mapItemModel.uid,
         )
-        addStringProperty(
-            MapTeisToFeatureCollection.TEI_IMAGE,
-            mapItemModel.profilePicturePath(),
-        )
+        if (mapItemModel.isProfilePictureAvailable()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.profilePicturePath(),
+            )
+        }
         if (mapItemModel.relatedInfo?.enrollment != null) {
             addStringProperty(
                 MapTeisToFeatureCollection.ENROLLMENT_UID,

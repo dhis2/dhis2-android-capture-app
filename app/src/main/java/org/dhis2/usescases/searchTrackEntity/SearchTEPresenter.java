@@ -31,6 +31,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -72,6 +73,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final PreferenceProvider preferences;
     private final FilterRepository filterRepository;
     private final ResourceManager resourceManager;
+    private final MetadataIconProvider metadataIconProvider;
     private Program selectedProgram;
 
     private final CompositeDisposable compositeDisposable;
@@ -100,7 +102,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MatomoAnalyticsController matomoAnalyticsController,
                              SyncStatusController syncStatusController,
                              ResourceManager resourceManager,
-                             ColorUtils colorUtils) {
+                             ColorUtils colorUtils,
+                             MetadataIconProvider metadataIconProvider) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -118,6 +121,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.trackedEntityType = teTypeUid;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
         this.colorUtils = colorUtils;
+        this.metadataIconProvider = metadataIconProvider;
     }
 
     //-----------------------------------
