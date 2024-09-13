@@ -92,10 +92,6 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
-    fun checkEventsAreOverdue() {
-        composeTestRule.onAllNodesWithText("overdue", substring = true, useUnmergedTree = true).assertCountEquals(4)
-    }
-
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
             .check(matches(allElementsWithHolderTypeHave(SearchTEViewHolder::class.java,hasDescendant(withText(orgUnit)))))
