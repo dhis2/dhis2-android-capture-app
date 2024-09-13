@@ -152,34 +152,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventWasCreatedWithDate(eventName: String, eventDate: String) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(),
-                        isNotEmpty(),
-                        atPosition(
-                            1,
-                            hasDescendant(
-                                allOf(
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.programStageName),
-                                            withText(eventName),
-                                        ),
-                                    ),
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.event_date),
-                                            withText(eventDate),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            )
+        composeTestRule.onNode(
+            hasAnySibling(hasText(eventDate, true))
+                    and hasText(eventName, true), useUnmergedTree = true
+        ).assertIsDisplayed()
     }
 
     fun clickOnMenuDeactivate() {
