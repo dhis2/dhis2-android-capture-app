@@ -89,6 +89,7 @@ dependencies {
     implementation(project(":commons"))
     implementation(project(":compose-table"))
     implementation(project(":dhis2-mobile-program-rules"))
+    implementation(project(":dhis_android_analytics"))
 
     implementation(libs.bundles.stock.implementation)
     coreLibraryDesugaring(libs.bundles.stock.core)

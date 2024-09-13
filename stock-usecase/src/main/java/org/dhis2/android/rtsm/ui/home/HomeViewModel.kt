@@ -4,12 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
@@ -25,8 +28,10 @@ import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +39,8 @@ class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val metadataManager: MetadataManager,
+    private val charts: Charts,
+    private val d2: D2,
     savedState: SavedStateHandle,
 ) : BaseViewModel(schedulerProvider) {
 
@@ -44,6 +51,16 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
     val facilities: StateFlow<OperationState<List<OrganisationUnit>>>
         get() = _facilities
+
+    private val _analytics =
+        MutableStateFlow<List<AnalyticsDhisVisualizationsGroup>>(emptyList())
+    val analytics: StateFlow<List<AnalyticsDhisVisualizationsGroup>>
+        get() = _analytics
+
+    private val _programDisplayName =
+        MutableStateFlow<String>("")
+    val programDisplayName: StateFlow<String>
+        get() = _programDisplayName
 
     var transactionItems by mutableStateOf(mapTransaction())
 
@@ -59,9 +76,23 @@ class HomeViewModel @Inject constructor(
     val helperText = _helperText.asStateFlow()
 
     init {
+        loadAnalytics()
         loadFacilities()
         loadDestinations()
         loadTransactionTypeLabels()
+    }
+
+    private fun loadAnalytics() {
+        viewModelScope.launch {
+            val result = charts.getVisualizationGroups(config.program)
+            if (result.isNotEmpty()) {
+                _analytics.value = result
+            }
+            val programName = d2.programModule().programs().uid(config.program).blockingGet()?.displayName()
+            if (programName != null) {
+                _programDisplayName.value = programName
+            }
+        }
     }
 
     private fun loadDestinations() {

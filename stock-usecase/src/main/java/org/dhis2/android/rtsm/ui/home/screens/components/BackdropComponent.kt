@@ -2,8 +2,10 @@ package org.dhis2.android.rtsm.ui.home.screens.components
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -23,8 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentManager
 import com.journeyapps.barcodescanner.ScanOptions
+import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,6 +38,8 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
+import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
+import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -50,6 +57,7 @@ fun Backdrop(
     supportFragmentManager: FragmentManager,
     barcodeLauncher: ActivityResultLauncher<ScanOptions>,
     scaffoldState: ScaffoldState,
+    selectedHomeIndex: Int,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
 ) {
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
@@ -58,7 +66,8 @@ fun Backdrop(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = manageStockViewModel.bottomSheetState.collectAsState()
-
+    val selectedIndex by remember(selectedHomeIndex) { mutableStateOf(selectedHomeIndex) }
+    val programName by viewModel.programDisplayName.collectAsState()
     if (bottomSheetState.value) {
         launchBottomSheet(
             activity.getString(R.string.not_saved),
@@ -83,94 +92,137 @@ fun Backdrop(
     BackdropScaffold(
         modifier = modifier,
         appBar = {
-            Toolbar(
-                settingsUiState.selectedTransactionItem.label,
-                settingsUiState.fromFacilitiesLabel().asString(),
-                settingsUiState.deliverToLabel()?.asString(),
-                themeColor,
-                launchBottomSheet = {
-                    manageStockViewModel.onHandleBackNavigation()
-                },
-                backdropState,
-                scaffoldState,
-                syncAction,
-                settingsUiState.hasFacilitySelected(),
-                settingsUiState.hasDestinationSelected(),
-            )
+            if (selectedIndex == BottomNavigation.ANALYTICS.id) {
+                AnalyticsToolbar(
+                    title = programName,
+                    themeColor = themeColor,
+                    launchBottomSheet = {
+                        manageStockViewModel.onHandleBackNavigation()
+                    },
+                    scaffoldState = scaffoldState,
+                    syncAction = syncAction,
+                )
+            } else {
+                Toolbar(
+                    settingsUiState.selectedTransactionItem.label,
+                    settingsUiState.fromFacilitiesLabel().asString(),
+                    settingsUiState.deliverToLabel()?.asString(),
+                    themeColor,
+                    launchBottomSheet = {
+                        manageStockViewModel.onHandleBackNavigation()
+                    },
+                    backdropState,
+                    scaffoldState,
+                    syncAction,
+                    settingsUiState.hasFacilitySelected(),
+                    settingsUiState.hasDestinationSelected(),
+                )
+            }
         },
         backLayerBackgroundColor = themeColor,
         backLayerContent = {
-            FilterList(
-                viewModel,
-                dataEntryUiState,
-                themeColor,
-                supportFragmentManager,
-                launchDialog = { msg, result ->
-                    launchBottomSheet(
-                        activity.getString(R.string.not_saved),
-                        activity.getString(msg),
-                        supportFragmentManager,
-                        onKeepEdition = {
-                            result.invoke(EditionDialogResult.KEEP)
-                        },
-                        onDiscard = {
-                            manageStockViewModel.cleanItemsFromCache()
-                            result.invoke(EditionDialogResult.DISCARD)
-                            manageStockViewModel.onHandleBackNavigation()
-                        },
-                    )
-                },
-                onTransitionSelected = {
-                    viewModel.selectTransaction(it)
-                },
-                onFacilitySelected = {
-                    viewModel.setFacility(it)
-                },
-            ) {
-                viewModel.setDestination(it)
+            if (selectedIndex != BottomNavigation.ANALYTICS.id) {
+                FilterList(
+                    viewModel,
+                    dataEntryUiState,
+                    themeColor,
+                    supportFragmentManager,
+                    launchDialog = { msg, result ->
+                        launchBottomSheet(
+                            activity.getString(R.string.not_saved),
+                            activity.getString(msg),
+                            supportFragmentManager,
+                            onKeepEdition = {
+                                result.invoke(EditionDialogResult.KEEP)
+                            },
+                            onDiscard = {
+                                manageStockViewModel.cleanItemsFromCache()
+                                result.invoke(EditionDialogResult.DISCARD)
+                                manageStockViewModel.onHandleBackNavigation()
+                            },
+                        )
+                    },
+                    onTransitionSelected = {
+                        viewModel.selectTransaction(it)
+                    },
+                    onFacilitySelected = {
+                        viewModel.setFacility(it)
+                    },
+                ) {
+                    viewModel.setDestination(it)
+                }
             }
         },
         frontLayerElevation = 5.dp,
         frontLayerContent = {
-            MainContent(
-                backdropState,
-                isFrontLayerDisabled,
-                themeColor,
-                viewModel,
-                manageStockViewModel,
-                barcodeLauncher,
-            )
+            if (selectedIndex == BottomNavigation.ANALYTICS.id) {
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = { context ->
+                        FrameLayout(context).apply {
+                            id = ViewCompat.generateViewId()
+                        }
+                    },
+                    update = {
+                        supportFragmentManager.beginTransaction().add(it.id, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
+                            .commit()
+                    },
+                )
+            } else {
+                MainContent(
+                    backdropState,
+                    isFrontLayerDisabled,
+                    themeColor,
+                    viewModel,
+                    manageStockViewModel,
+                    barcodeLauncher,
+                )
+            }
         },
         scaffoldState = backdropState,
         gesturesEnabled = false,
         frontLayerBackgroundColor = Color.White,
-        frontLayerScrimColor = if (
-            settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
-        ) {
-            if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
-                isFrontLayerDisabled = false
-                Color.Unspecified
-            } else {
-                isFrontLayerDisabled = true
-                MaterialTheme.colors.surface.copy(alpha = 0.60f)
-            }
-        } else {
-            if (!settingsUiState.hasFacilitySelected()) {
-                isFrontLayerDisabled = true
-                MaterialTheme.colors.surface.copy(alpha = 0.60f)
-            } else {
-                isFrontLayerDisabled = false
-                Color.Unspecified
-            }
-        },
+        frontLayerScrimColor = getScrimColor(selectedIndex, settingsUiState),
     )
-
+    isFrontLayerDisabled = getBackdropState(selectedIndex, settingsUiState)
     if (dataEntryUiState.step == DataEntryStep.COMPLETED) {
         scope.launch {
             backdropState.reveal()
         }
         manageStockViewModel.updateStep(DataEntryStep.START)
         viewModel.resetSettings()
+    }
+}
+
+@Composable
+private fun getScrimColor(selectedHomeIndex: Int, settingsUiState: SettingsUiState): Color {
+    return if (selectedHomeIndex == BottomNavigation.ANALYTICS.id) {
+        Color.Unspecified
+    } else if (settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION) {
+        if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
+            Color.Unspecified
+        } else {
+            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+        }
+    } else {
+        if (!settingsUiState.hasFacilitySelected()) {
+            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+        } else {
+            Color.Unspecified
+        }
+    }
+}
+
+@Composable
+private fun getBackdropState(selectedHomeIndex: Int, settingsUiState: SettingsUiState): Boolean {
+    return if (selectedHomeIndex == BottomNavigation.ANALYTICS.id) {
+        false
+    } else if (
+        settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
+    ) {
+        !(settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected())
+    } else {
+        !settingsUiState.hasFacilitySelected()
     }
 }
 
