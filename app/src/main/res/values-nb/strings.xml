@@ -686,16 +686,6 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasjon om feil</string>
     <string name="enrollment_date_edition_warning">Det er planlagte arrangementer som ikke vil bli planlagt på nytt</string>
     <string name="section_charts">Diagrammer</string>
-    <string name="navigation_list_view">Listevisning</string>
-    <string name="navigation_table_view">Tabellvisning</string>
-    <string name="navigation_map_view">Kartvisning</string>
-    <string name="navigation_analytics">Analyser</string>
-    <string name="navigation_tasks">Oppgaver</string>
-    <string name="navigation_programs">Programmer</string>
-    <string name="navigation_relationships">Relasjoner</string>
-    <string name="navigation_notes">Notater</string>
-    <string name="navigation_data_entry">Dataregistrering</string>
-    <string name="navigation_tei_data">Detaljer</string>
     <string name="show_table_graph">Vis som tabell</string>
     <string name="filter_period_this_year">Dette året</string>
     <string name="filter_period_this_bimonth">Denne tomåned</string>

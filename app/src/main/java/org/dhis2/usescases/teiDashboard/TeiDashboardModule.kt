@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobileProgramRules.EvaluationType
@@ -102,7 +103,15 @@ class TeiDashboardModule(
         repository: DashboardRepository,
         analyticsHelper: AnalyticsHelper,
         dispatcher: DispatcherProvider,
+        pageConfigurator: NavigationPageConfigurator,
+        resourcesManager: ResourceManager,
     ): DashboardViewModelFactory {
-        return DashboardViewModelFactory(repository, analyticsHelper, dispatcher)
+        return DashboardViewModelFactory(
+            repository,
+            analyticsHelper,
+            dispatcher,
+            pageConfigurator,
+            resourcesManager,
+        )
     }
 }

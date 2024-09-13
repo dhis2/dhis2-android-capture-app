@@ -708,16 +708,6 @@
     <string name="error_init_session">لم نتمكن من بدء الجلسة مع المستخدم الخاص بك</string>
     <string name="enrollment_date_edition_warning">هناك أحداث مخطط لها لن تتم إعادة جدولتها</string>
     <string name="section_charts">المخططات البيانية</string>
-    <string name="navigation_list_view">عرض قائمة</string>
-    <string name="navigation_table_view">عرض جدول</string>
-    <string name="navigation_map_view">عرض خريطة</string>
-    <string name="navigation_analytics">التحليلات</string>
-    <string name="navigation_tasks">المهام</string>
-    <string name="navigation_programs">البرامج</string>
-    <string name="navigation_relationships">العلاقات</string>
-    <string name="navigation_notes">الملاحظات</string>
-    <string name="navigation_data_entry">إدخال البيانات</string>
-    <string name="navigation_tei_data">التفاصيل</string>
     <string name="show_bar_graph">عرض كشريط</string>
     <string name="show_line_graph">مشاهدة على شكل خطي</string>
     <string name="show_table_graph">عرض كجدول</string>

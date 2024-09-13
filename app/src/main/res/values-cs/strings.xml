@@ -705,16 +705,6 @@
     <string name="error_init_session">Nemohli jsme zahájit relaci s vaším uživatelem</string>
     <string name="enrollment_date_edition_warning">Jsou plánované události, které nebudou znovu naplánovány</string>
     <string name="section_charts">Grafy</string>
-    <string name="navigation_list_view">Zobrazení seznamu</string>
-    <string name="navigation_table_view">Zobrazení tabulky</string>
-    <string name="navigation_map_view">Zobrazení mapy</string>
-    <string name="navigation_analytics">Analýza</string>
-    <string name="navigation_tasks">Úkoly</string>
-    <string name="navigation_programs">Programy</string>
-    <string name="navigation_relationships">Vztahy</string>
-    <string name="navigation_notes">Poznámky</string>
-    <string name="navigation_data_entry">Vstup dat</string>
-    <string name="navigation_tei_data">Detaily</string>
     <string name="show_bar_graph">Zobrazit jako lištu</string>
     <string name="show_line_graph">Zobrazit jako čáru</string>
     <string name="show_table_graph">Zobrazit jako tabulku</string>

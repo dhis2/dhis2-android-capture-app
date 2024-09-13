@@ -341,9 +341,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     }
 
     override fun goToAddRelationship(teiUid: String, teiTypeUidToAdd: String) {
-        if (activity is TeiDashboardMobileActivity) {
-            (activity as TeiDashboardMobileActivity?)?.toRelationships()
-        }
         addRelationshipLauncher.launch(
             RelationshipInput(
                 teiUid,

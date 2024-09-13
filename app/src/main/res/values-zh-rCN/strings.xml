@@ -687,16 +687,6 @@
     <string name="error_init_session">我们无法与您的用户发起会话</string>
     <string name="enrollment_date_edition_warning">已经计划的事件不会重新安排</string>
     <string name="section_charts">图表</string>
-    <string name="navigation_list_view">列表显示</string>
-    <string name="navigation_table_view">表格检视</string>
-    <string name="navigation_map_view">地图检视</string>
-    <string name="navigation_analytics">分析</string>
-    <string name="navigation_tasks">任务</string>
-    <string name="navigation_programs">项目</string>
-    <string name="navigation_relationships">关系</string>
-    <string name="navigation_notes">笔记</string>
-    <string name="navigation_data_entry">数据输入</string>
-    <string name="navigation_tei_data">详情</string>
     <string name="show_bar_graph">查看柱状图</string>
     <string name="show_line_graph">查看折线图</string>
     <string name="show_table_graph">查看表格</string>

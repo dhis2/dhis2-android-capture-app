@@ -647,14 +647,6 @@
     <string name="customactivityoncrash_error_activity_error_details_title">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
-    <string name="navigation_list_view">ເບີ່ງລາຍການ</string>
-    <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
-    <string name="navigation_analytics">ການວິເຄາະ</string>
-    <string name="navigation_programs">ສາຍງານ</string>
-    <string name="navigation_relationships">ສາຍພົວພັນ</string>
-    <string name="navigation_notes">ຂໍ້ຄວາມ</string>
-    <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
-    <string name="navigation_tei_data">ລາຍລະອຽດ</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">ເບິ່ງເປັນແຖວ</string>
     <string name="show_table_graph">ເບິ່ງເປັນຕາຕະລາງ</string>
