@@ -2,10 +2,10 @@ package org.dhis2.usescases.flow.teiFlow
 
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import org.dhis2.common.BaseRobot
+import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
-import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -29,7 +29,6 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     ) {
         val registrationDate = registrationModel.firstSpecificDate
         val incidentDate = getCurrentDate()
-        val day = incidentDate.substring(0, 2)
         val orgUnit = "Ngelehun CHC"
 
         searchTeiRobot(composeTestRule) {
@@ -54,8 +53,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-    fun enrollToProgram(program: String) {
-        val orgUnit = "Ngelehun CHC"
+    fun enrollToProgram(program: String, enrollmentDetails: EnrollmentListUIModel) {
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
@@ -67,15 +65,16 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
 
         filterRobotCommon {
-            changeCalendarView()
-            selectDate(2024, 7, 7)
+            val day = enrollmentDetails.currentEnrollmentDate.substring(0, 2)
+            val month = enrollmentDetails.currentEnrollmentDate.substring(3, 5)
+            val year = enrollmentDetails.currentEnrollmentDate.substring(6)
+            selectDate(year.toInt(), month.toInt(), day.toInt())
         }
 
         orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
+            selectTreeOrgUnit(enrollmentDetails.orgUnit)
         }
         enrollmentRobot(composeTestRule){
-            clickOnAcceptInDatePicker()
             clickOnSaveEnrollment()
         }
     }
@@ -87,7 +86,6 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
 
         enrollmentRobot(composeTestRule) {
-            waitToDebounce(1000)
             checkActiveAndPastEnrollmentDetails(enrollmentDetails)
         }
     }
