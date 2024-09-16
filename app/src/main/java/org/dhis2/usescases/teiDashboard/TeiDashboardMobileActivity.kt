@@ -689,6 +689,7 @@ class TeiDashboardMobileActivity :
                         showTutorial(true)
                     }
 
+                    R.id.transferTei -> presenter.onTransferClick()
                     R.id.markForFollowUp -> dashboardViewModel.onFollowUp()
                     R.id.deleteTei -> showDeleteTEIConfirmationDialog()
                     R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()

@@ -982,4 +982,6 @@
     <string name="hide_description">Hide description</string>
     <string name="biometric_title">Verify It\'s You</string>
     <string name="use_password">Use Password</string>
+    <string name="transfer">Transfer</string>
+    <string name="successfully_transferred">Successfully transferred</string>
 </resources>
