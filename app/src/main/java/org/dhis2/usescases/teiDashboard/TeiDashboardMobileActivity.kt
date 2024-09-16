@@ -32,6 +32,8 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -194,6 +196,7 @@ class TeiDashboardMobileActivity :
         setFormViewForLandScape()
         setEditButton()
         observeErrorMessages()
+        observeProgressBar()
         observeDashboardModel()
         showLoadingProgress(false)
     }
@@ -201,6 +204,12 @@ class TeiDashboardMobileActivity :
     private fun observeErrorMessages() {
         dashboardViewModel.showStatusErrorMessages.observe(this) {
             displayStatusError(it)
+        }
+    }
+
+    private fun observeProgressBar() {
+        dashboardViewModel.isLoading.observe(this) {
+            showLoadingProgress(it)
         }
     }
 
@@ -742,6 +751,33 @@ class TeiDashboardMobileActivity :
                 /*No message needed to be displayed*/
             }
         }
+    }
+
+    override fun showOrgUnitSelector(
+        programUid: String,
+    ) {
+        OUTreeFragment.Builder()
+            .singleSelection()
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+            )
+            .onSelection { selectedOrgUnits ->
+                if (selectedOrgUnits.isNotEmpty())
+                    dashboardViewModel.transferTei(
+                        selectedOrgUnits.first().uid()
+                    ) { isSuccess ->
+                        if (isSuccess) {
+                            val contextView = findViewById<View>(R.id.navigationBar)
+                            Snackbar.make(
+                                contextView,
+                                R.string.successfully_transferred,
+                                Snackbar.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
+            }
+            .build()
+            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
     private fun showDeleteTEIConfirmationDialog() {
