@@ -19,6 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.R
 import org.dhis2.commons.resources.ResourceManager
@@ -62,6 +63,9 @@ class DashboardViewModel(
 
     private var _state = MutableStateFlow<State?>(null)
     val state = _state.asStateFlow()
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _dashboardModel = MutableLiveData<DashboardModel?>()
     var dashboardModel: LiveData<DashboardModel?> = _dashboardModel
@@ -276,5 +280,27 @@ class DashboardViewModel(
 
     fun onNavigationItemSelected(itemId: TEIDashboardItems) {
         _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = itemId)
+    }
+
+    fun transferTei(
+        newOrgUnitId: String,
+        onCompletion: (Boolean) -> Unit,
+    ) {
+        _isLoading.value = true
+        viewModelScope.launch(dispatcher.io()) {
+            try {
+                repository.transferTei(newOrgUnitId).await()
+                withContext(dispatcher.ui()) {
+                    updateDashboard()
+                    onCompletion(true)
+                }
+            } catch (ex: Exception) {
+                Timber.e(ex)
+            } finally {
+                withContext(dispatcher.ui()) {
+                    _isLoading.value = false
+                }
+            }
+        }
     }
 }

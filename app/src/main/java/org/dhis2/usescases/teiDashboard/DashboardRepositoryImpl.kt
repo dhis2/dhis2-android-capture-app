@@ -587,6 +587,14 @@ class DashboardRepositoryImpl(
         )
     }
 
+
+    override fun transferTei(newOrgUnitId: String): Single<Boolean> {
+        return d2.trackedEntityModule()
+            .ownershipManager()
+            .transfer(teiUid, programUid!!, newOrgUnitId)
+            .andThen(Single.just(true))
+    }
+
     private fun getGroupingOptions(): HashMap<String, Boolean> {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
             object : TypeToken<HashMap<String, Boolean>>() {}

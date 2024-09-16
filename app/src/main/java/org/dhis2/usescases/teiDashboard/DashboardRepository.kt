@@ -110,4 +110,6 @@ interface DashboardRepository {
     fun getGrouping(): Boolean
 
     fun setGrouping(groupEvent: Boolean)
+
+    fun transferTei(newOrgUnitId: String): Single<Boolean>
 }
