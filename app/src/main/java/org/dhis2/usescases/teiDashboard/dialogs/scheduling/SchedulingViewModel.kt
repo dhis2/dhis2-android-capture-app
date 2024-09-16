@@ -124,7 +124,10 @@ class SchedulingViewModel(
     }
 
     fun onClearEventReportDate() {
-        _eventDate.value = eventDate.value.copy(currentDate = null)
+        _eventDate.value = eventDate.value.copy(
+            currentDate = null,
+            dateValue = null,
+        )
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
