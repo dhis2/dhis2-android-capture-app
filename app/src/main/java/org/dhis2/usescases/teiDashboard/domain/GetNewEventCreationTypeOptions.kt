@@ -17,11 +17,9 @@ class GetNewEventCreationTypeOptions(
     ): List<EventCreationType> {
         val options: MutableList<EventCreationType> = mutableListOf()
 
-        programStage?.let {
-            if (shouldShowScheduleEvents(it)) {
-                options.add(SCHEDULE)
-            }
-        } ?: options.add(SCHEDULE)
+        if (programStage == null || shouldShowScheduleEvents(programStage)) {
+            options.add(SCHEDULE)
+        }
 
         options.add(ADDNEW)
 
