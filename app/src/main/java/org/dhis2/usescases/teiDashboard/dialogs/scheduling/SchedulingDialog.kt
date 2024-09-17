@@ -31,16 +31,19 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         fun newInstance(
             enrollment: Enrollment,
             programStages: List<ProgramStage>,
+            showYesNoOptions: Boolean,
         ): SchedulingDialog {
             return SchedulingDialog().apply {
                 this.enrollment = enrollment
                 this.programStages = programStages
+                this.showYesNoOptions = showYesNoOptions
             }
         }
     }
 
     var enrollment: Enrollment? = null
     var programStages: List<ProgramStage>? = null
+    var showYesNoOptions: Boolean = true
 
     @Inject
     lateinit var factory: SchedulingViewModelFactory
@@ -90,6 +93,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                     viewModel = viewModel,
                     programStages = viewModel.programStages,
                     orgUnitUid = viewModel.enrollment.organisationUnit(),
+                    showYesNoOptions = showYesNoOptions,
                     onDismiss = { dismiss() },
                 )
             }

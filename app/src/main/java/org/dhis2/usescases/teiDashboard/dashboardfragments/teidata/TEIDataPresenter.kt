@@ -152,8 +152,8 @@ class TEIDataPresenter(
             val enrollment = d2.enrollment(enrollmentUid)
             val showButton =
                 enrollment != null &&
-                    !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
-                    canAddNewEvents()
+                        !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
+                        canAddNewEvents()
             _shouldDisplayEventCreationButton.postValue(showButton)
         }
     }
@@ -207,7 +207,7 @@ class TEIDataPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe({ programStage ->
                     if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
-                        view.displayScheduleEvent()
+                        view.displayScheduleEvent(showYesNoOptions = true)
                     } else if (programStage.remindCompleted() == true) {
                         view.showDialogCloseProgram()
                     }
@@ -359,11 +359,18 @@ class TEIDataPresenter(
         }
     }
 
-    private fun manageAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
+    private fun manageAddNewEventOptionSelected(
+        eventCreationType: EventCreationType,
+        stage: ProgramStage?
+    ) {
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
                     checkOrgUnitCount(program, stage.uid())
+                }
+
+                EventCreationType.SCHEDULE -> {
+                    view.displayScheduleEvent(showYesNoOptions = false)
                 }
 
                 else -> view.goToEventInitial(eventCreationType, stage)
@@ -392,10 +399,10 @@ class TEIDataPresenter(
             .filter { !stagesToHide.contains(it.uid()) }
             .filter { stage ->
                 stage.repeatable() == true ||
-                    events.value?.none { event ->
-                        event.stage?.uid() == stage.uid() &&
-                            event.type == EventViewModelType.EVENT
-                    } == true
+                        events.value?.none { event ->
+                            event.stage?.uid() == stage.uid() &&
+                                    event.type == EventViewModelType.EVENT
+                        } == true
             }.sortedBy { stage -> stage.sortOrder() }
 
     fun checkOrgUnitCount(programUid: String, programStageUid: String) {
