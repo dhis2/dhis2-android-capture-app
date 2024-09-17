@@ -12,6 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import org.dhis2.R
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
@@ -40,6 +42,7 @@ fun SchedulingDialogUi(
     programStages: List<ProgramStage>,
     viewModel: SchedulingViewModel,
     orgUnitUid: String?,
+    showYesNoOptions: Boolean = true,
     onDismiss: () -> Unit,
 ) {
     val date by viewModel.eventDate.collectAsState()
@@ -72,8 +75,8 @@ fun SchedulingDialogUi(
                 modifier = Modifier.fillMaxWidth(),
                 style = ButtonStyle.FILLED,
                 enabled = !scheduleNew ||
-                    !date.dateValue.isNullOrEmpty() &&
-                    catCombo.isCompleted,
+                        !date.dateValue.isNullOrEmpty() &&
+                        catCombo.isCompleted,
                 text = buttonTitle(scheduleNew),
                 onClick = onButtonClick,
             )
@@ -83,15 +86,20 @@ fun SchedulingDialogUi(
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                RadioButtonBlock(
-                    modifier = Modifier.padding(bottom = Spacing.Spacing8),
-                    orientation = Orientation.HORIZONTAL,
-                    content = yesNoOptions,
-                    itemSelected = optionSelected,
-                    onItemChange = {
-                        optionSelected = it
-                    },
-                )
+                if (showYesNoOptions) {
+                    RadioButtonBlock(
+                        modifier = Modifier
+                            .padding(bottom = Spacing.Spacing8)
+                            .semantics { testTag = "YES_NO_OPTIONS" },
+                        orientation = Orientation.HORIZONTAL,
+                        content = yesNoOptions,
+                        itemSelected = optionSelected,
+                        onItemChange = {
+                            optionSelected = it
+                        },
+                    )
+                }
+
                 if (scheduleNew) {
                     ProvideScheduleNewEventForm(
                         programStages = programStages,
@@ -111,10 +119,10 @@ fun SchedulingDialogUi(
 @Composable
 fun bottomSheetTitle(programStages: List<ProgramStage>): String =
     stringResource(id = R.string.schedule_next) + " " +
-        when (programStages.size) {
-            1 -> programStages.first().displayName()
-            else -> stringResource(id = R.string.event)
-        } + "?"
+            when (programStages.size) {
+                1 -> programStages.first().displayName()
+                else -> stringResource(id = R.string.event)
+            } + "?"
 
 @Composable
 fun buttonTitle(scheduleNew: Boolean): String = when (scheduleNew) {
