@@ -152,8 +152,8 @@ class TEIDataPresenter(
             val enrollment = d2.enrollment(enrollmentUid)
             val showButton =
                 enrollment != null &&
-                        !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
-                        canAddNewEvents()
+                    !isGrouping && enrollment.status() == EnrollmentStatus.ACTIVE &&
+                    canAddNewEvents()
             _shouldDisplayEventCreationButton.postValue(showButton)
         }
     }
@@ -361,7 +361,7 @@ class TEIDataPresenter(
 
     private fun manageAddNewEventOptionSelected(
         eventCreationType: EventCreationType,
-        stage: ProgramStage?
+        stage: ProgramStage?,
     ) {
         if (stage != null) {
             when (eventCreationType) {
@@ -399,10 +399,10 @@ class TEIDataPresenter(
             .filter { !stagesToHide.contains(it.uid()) }
             .filter { stage ->
                 stage.repeatable() == true ||
-                        events.value?.none { event ->
-                            event.stage?.uid() == stage.uid() &&
-                                    event.type == EventViewModelType.EVENT
-                        } == true
+                    events.value?.none { event ->
+                        event.stage?.uid() == stage.uid() &&
+                            event.type == EventViewModelType.EVENT
+                    } == true
             }.sortedBy { stage -> stage.sortOrder() }
 
     fun checkOrgUnitCount(programUid: String, programStageUid: String) {
