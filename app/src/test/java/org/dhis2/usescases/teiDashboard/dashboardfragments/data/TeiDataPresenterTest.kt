@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.resources.D2ErrorUtils
@@ -202,7 +203,7 @@ class TeiDataPresenterTest {
             dashboardRepository.displayGenerateEvent("eventUid"),
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
-        verify(view).displayScheduleEvent()
+        verify(view).displayScheduleEvent(showYesNoOptions = true)
     }
 
     @Test
@@ -324,6 +325,19 @@ class TeiDataPresenterTest {
         )
 
         verify(view).displayMessage(errorMessage)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `should display schedule event without yes and no options, when schedule event option is selected`() {
+        // when
+        teiDataPresenter.onAddNewEventOptionSelected(
+            eventCreationType = EventCreationType.SCHEDULE,
+            stage = ProgramStage.builder().uid("stage").build(),
+        )
+
+        // then
+        verify(view).displayScheduleEvent(showYesNoOptions = false)
         verifyNoMoreInteractions(view)
     }
 
