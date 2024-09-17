@@ -18,7 +18,6 @@ import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingViewModel
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -143,5 +142,26 @@ class SchedulingDialogUiTest {
         ).performClick()
 
         verify(viewModel).updateStage(programStages[1])
+    }
+
+    @Test
+    fun yesNoFieldsShouldNotBeShownWhenTurnedOff() {
+        val programStages = listOf(
+            ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
+            ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
+        )
+        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+
+        composeTestRule.setContent {
+            SchedulingDialogUi(
+                programStages = programStages,
+                viewModel = viewModel,
+                orgUnitUid = "orgUnitUid",
+                showYesNoOptions = false,
+            ) {
+            }
+        }
+
+        composeTestRule.onNodeWithTag("YES_NO_OPTIONS").assertDoesNotExist()
     }
 }
