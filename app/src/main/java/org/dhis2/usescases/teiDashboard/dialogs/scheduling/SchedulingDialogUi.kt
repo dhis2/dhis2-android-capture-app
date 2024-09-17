@@ -75,8 +75,8 @@ fun SchedulingDialogUi(
                 modifier = Modifier.fillMaxWidth(),
                 style = ButtonStyle.FILLED,
                 enabled = !scheduleNew ||
-                        !date.dateValue.isNullOrEmpty() &&
-                        catCombo.isCompleted,
+                    !date.dateValue.isNullOrEmpty() &&
+                    catCombo.isCompleted,
                 text = buttonTitle(scheduleNew),
                 onClick = onButtonClick,
             )
@@ -119,10 +119,10 @@ fun SchedulingDialogUi(
 @Composable
 fun bottomSheetTitle(programStages: List<ProgramStage>): String =
     stringResource(id = R.string.schedule_next) + " " +
-            when (programStages.size) {
-                1 -> programStages.first().displayName()
-                else -> stringResource(id = R.string.event)
-            } + "?"
+        when (programStages.size) {
+            1 -> programStages.first().displayName()
+            else -> stringResource(id = R.string.event)
+        } + "?"
 
 @Composable
 fun buttonTitle(scheduleNew: Boolean): String = when (scheduleNew) {
