@@ -781,7 +781,7 @@ class TeiDashboardMobileActivity :
                 )
             )
             .orgUnitScope(
-                OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                OrgUnitSelectorScope.ProgramSearchScope(programUid),
             )
             .onSelection { selectedOrgUnits ->
                 if (selectedOrgUnits.isNotEmpty())

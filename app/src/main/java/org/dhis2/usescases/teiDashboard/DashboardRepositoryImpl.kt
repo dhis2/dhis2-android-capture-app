@@ -598,11 +598,12 @@ class DashboardRepositoryImpl(
     override fun teiCanBeTransferred(): Single<Boolean> {
         return if (programUid != null) {
             d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
                 .byProgramUids(listOf(programUid)).get()
                 .toObservable()
                 .map { orgUnits ->
-                    orgUnits.size > 1
+                    orgUnits.size > 1 ||
+                        orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
                 }
                 .defaultIfEmpty(false)
                 .first(false)
