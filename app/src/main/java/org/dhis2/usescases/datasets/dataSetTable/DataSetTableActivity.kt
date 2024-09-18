@@ -172,6 +172,14 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                     if (hasChanged) presenter.updateData()
                 }
             })
+            .onNoConnectionListener {
+                val contextView = findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
             .show(DATAVALUE_SYNC)
     }
 

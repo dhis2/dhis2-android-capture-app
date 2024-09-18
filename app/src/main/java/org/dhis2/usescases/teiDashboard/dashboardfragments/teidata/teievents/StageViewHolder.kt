@@ -1,96 +1,115 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
-import android.view.View
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.composethemeadapter.MdcTheme
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
-import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.databinding.ItemStageSectionBinding
+import org.dhis2.commons.schedulers.get
+import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.setUpMetadataIcon
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.Description
+import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class StageViewHolder(
-    private val binding: ItemStageSectionBinding,
+    val composeView: ComposeView,
     private val stageSelector: FlowableProcessor<StageSection>,
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils,
-) : RecyclerView.ViewHolder(binding.root) {
-
-    init {
-        binding.composeProgramStageIcon.setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-        )
-    }
+) : RecyclerView.ViewHolder(composeView) {
 
     fun bind(eventItem: EventViewModel) {
         val stage = eventItem.stage!!
 
-        binding.programStageName.text = stage.displayName()
-        binding.programStageName.post {
-            binding.programStageName.isSelected = true
-        }
-
-        val color = colorUtils.getColorFrom(
-            stage.style().color(),
-            colorUtils.getPrimaryColor(
-                itemView.context,
-                ColorType.PRIMARY_LIGHT,
-            ),
-        )
-
-        val iconResource = ResourceManager(itemView.context, colorUtils)
-            .getObjectStyleDrawableResource(
-                stage.style().icon(),
-                R.drawable.ic_default_outline,
-            )
-
-        binding.composeProgramStageIcon.setUpMetadataIcon(
-            MetadataIconData(
-                programColor = color,
-                iconResource = iconResource,
-                sizeInDp = 40,
-            ),
-            false,
-        )
-
-        binding.lastUpdatedEvent.text = eventItem.lastUpdate.toDateSpan(itemView.context)
-
-        binding.addStageButton.visibility =
-            if (eventItem.canShowAddButton()) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        binding.lastUpdatedEvent.visibility = when (binding.addStageButton.visibility) {
-            View.VISIBLE -> View.GONE
-            else -> View.VISIBLE
-        }
-        binding.addStageButton.setContent {
-            MdcTheme {
-                NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
-                    presenter.onAddNewEventOptionSelected(it, stage)
+        val resourceManager = ResourceManager(itemView.context, colorUtils)
+        composeView.setContent {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White)
+                    .padding(
+                        start = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                        top = Spacing.Spacing16,
+                        bottom = if (eventItem.eventCount < 1) {
+                            Spacing.Spacing16
+                        } else {
+                            Spacing.Spacing8
+                        },
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ProvideAvatar(
+                    metadataIconData = eventItem.metadataIconData,
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                ) {
+                    Title(text = stage.displayName() ?: "")
+                    if (eventItem.eventCount < 1) {
+                        Description(
+                            text = resourceManager.getString(R.string.no_data),
+                            textColor = TextColor.OnSurfaceLight,
+                        )
+                    }
+                }
+                if (eventItem.canShowAddButton()) {
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                stageSelector.onNext(
+                                    StageSection(
+                                        stageUid = stage.uid(),
+                                        showOptions = true,
+                                        showAllEvents = false,
+                                    ),
+                                )
+                            },
+                    ) {
+                        NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
+                            presenter.onAddNewEventOptionSelected(it, stage)
+                        }
+                    }
                 }
             }
         }
-        binding.addStageButton.setOnClickListener {
-            stageSelector.onNext(StageSection(stage.uid(), true))
-        }
-        binding.programStageCount.text =
-            "${eventItem.eventCount} ${itemView.context.getString(R.string.events)}"
+    }
 
-        itemView.setOnClickListener { stageSelector.onNext(StageSection(stage.uid(), false)) }
-
-        if (eventItem.isSelected) {
-            eventItem.isSelected = false
-        }
+    @Composable
+    private fun ProvideAvatar(
+        metadataIconData: MetadataIconData,
+    ) {
+        Avatar(
+            metadataAvatar = {
+                MetadataIcon(metadataIconData = metadataIconData, size = AvatarSize.Large)
+            },
+            style = AvatarStyle.METADATA,
+        )
     }
 }

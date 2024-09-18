@@ -89,7 +89,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 holder.bind(presenter, null, null);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT:
-                holder.bind(presenter, listItems.get(position).getEnrollmentModel(), null);
+                holder.bind(presenter, listItems.get(position).getEnrollmentModel(), listItems.get(position).getProgramModel());
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.PROGRAM:
                 holder.bind(presenter, null, listItems.get(position).getProgramModel());

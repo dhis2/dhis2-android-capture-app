@@ -11,11 +11,12 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
+import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.form.data.RulesRepository;
 import org.dhis2.form.data.RulesUtilsProvider;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
@@ -33,8 +34,9 @@ import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.form.ui.provider.UiStyleProviderImpl;
 import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl;
 import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl;
+import org.dhis2.mobileProgramRules.EvaluationType;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventRuleEngineRepository;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
@@ -88,12 +90,17 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    FieldViewModelFactory fieldFactory(Context context, D2 d2, ResourceManager resourceManager, ColorUtils colorUtils) {
+    FieldViewModelFactory fieldFactory(
+            Context context,
+            D2 d2,
+            ResourceManager resourceManager,
+            ColorUtils colorUtils,
+            DhisPeriodUtils periodUtils
+    ) {
         return new FieldViewModelFactoryImpl(
-                false,
                 new UiStyleProviderImpl(
-                        new FormUiModelColorFactoryImpl(activityContext, true, colorUtils),
-                        new LongTextUiColorFactoryImpl(activityContext, true, colorUtils),
+                        new FormUiModelColorFactoryImpl(activityContext, colorUtils),
+                        new LongTextUiColorFactoryImpl(activityContext, colorUtils),
                         true
                 ),
                 new LayoutProviderImpl(),
@@ -101,7 +108,8 @@ public class EventInitialModule {
                 new DisplayNameProviderImpl(
                         new OptionSetConfiguration(d2),
                         new OrgUnitConfiguration(d2),
-                        new FileResourceConfiguration(d2)
+                        new FileResourceConfiguration(d2),
+                        periodUtils
                 ),
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
@@ -123,15 +131,28 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(D2 d2,
-                                                 @NonNull FieldViewModelFactory fieldViewModelFactory,
-                                                 RuleEngineRepository ruleEngineRepository) {
-        return new EventInitialRepositoryImpl(eventUid, stageUid, d2, fieldViewModelFactory, ruleEngineRepository);
+    EventInitialRepository eventDetailRepository(
+            D2 d2,
+            @NonNull FieldViewModelFactory fieldViewModelFactory,
+            @Nullable RuleEngineHelper ruleEngineHelper,
+            MetadataIconProvider metadataIconProvider
+    ) {
+        return new EventInitialRepositoryImpl(eventUid,
+                stageUid,
+                d2,
+                fieldViewModelFactory,
+                ruleEngineHelper,
+                metadataIconProvider);
     }
 
     @Provides
     @PerActivity
-    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
-        return new EventRuleEngineRepository(d2, formRepository, eventUid);
+    @Nullable
+    RuleEngineHelper ruleEngineRepository(D2 d2) {
+        if (eventUid == null) return null;
+        return new RuleEngineHelper(
+                new EvaluationType.Event(eventUid),
+                new org.dhis2.mobileProgramRules.RulesRepository(d2)
+        );
     }
 }

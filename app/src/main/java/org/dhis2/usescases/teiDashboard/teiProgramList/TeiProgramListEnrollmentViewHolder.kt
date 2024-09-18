@@ -6,7 +6,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
 import org.dhis2.usescases.main.program.ProgramViewModel
-import org.hisp.dhis.android.core.common.ObjectStyle
 
 class TeiProgramListEnrollmentViewHolder(
     private val binding: ViewDataBinding,
@@ -28,11 +27,7 @@ class TeiProgramListEnrollmentViewHolder(
         binding.setVariable(BR.enrollment, enrollment)
         binding.setVariable(BR.program, programModel)
         binding.setVariable(BR.presenter, presenter)
-        val style = ObjectStyle.builder()
-            .color(enrollment?.color())
-            .icon(enrollment?.icon())
-            .build()
-        binding.setVariable(BR.style, style)
+        binding.setVariable(BR.metadataIconData, enrollment?.metadataIconData())
         binding.executePendingBindings()
     }
 }

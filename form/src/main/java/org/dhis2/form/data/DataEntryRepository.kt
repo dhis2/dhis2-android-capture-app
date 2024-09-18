@@ -5,6 +5,7 @@ import org.dhis2.form.model.FieldUiModel
 
 interface DataEntryRepository {
     fun list(): Flowable<List<FieldUiModel>>
+    fun firstSectionToOpen(): String?
     fun sectionUids(): Flowable<List<String>>
     fun updateSection(
         sectionToUpdate: FieldUiModel,
@@ -25,5 +26,9 @@ interface DataEntryRepository {
 
     fun isEvent(): Boolean
 
+    fun dateFormatConfiguration(): String?
+
     fun disableCollapsableSections(): Boolean?
+
+    fun getSpecificDataEntryItems(uid: String): List<FieldUiModel>
 }

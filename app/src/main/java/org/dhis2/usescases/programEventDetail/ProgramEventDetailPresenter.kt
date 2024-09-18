@@ -15,6 +15,8 @@ import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.schedulers.SingleEventEnforcer
+import org.dhis2.commons.schedulers.get
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
@@ -38,6 +40,7 @@ class ProgramEventDetailPresenter(
     val stageUid: String?
         get() = eventRepository.programStage().blockingGet()?.uid()
 
+    private val singleEventEnforcer = SingleEventEnforcer.get()
     fun init() {
         compositeDisposable.add(
             Observable.fromCallable {
@@ -94,7 +97,6 @@ class ProgramEventDetailPresenter(
         )
         compositeDisposable.add(
             filterManager.asFlowable().onBackpressureLatest()
-                .doOnNext { view.showFilterProgress() }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -123,7 +125,7 @@ class ProgramEventDetailPresenter(
     }
 
     fun addEvent() {
-        view.startNewEvent()
+        singleEventEnforcer.processEvent { view.selectOrgUnitForNewEvent() }
     }
 
     fun onBackClick() {

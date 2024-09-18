@@ -22,7 +22,7 @@ class AnalyticsFilterProviderTest {
     @Test
     fun `Should not add org unit filter`() {
         val repo = mockLocalStore()
-        analyticsFilterProvider.addOrgUnitFilter("uid", OrgUnitFilterType.NONE, listOf())
+        analyticsFilterProvider.addOrgUnitFilter("uid", null, OrgUnitFilterType.NONE, listOf())
         verify(repo, times(0)).blockingSet(any())
         verify(repo, times(0)).blockingDeleteIfExist()
     }
@@ -31,7 +31,7 @@ class AnalyticsFilterProviderTest {
     fun `Should add all org unit filter`() {
         val repo = mockLocalStore()
 
-        analyticsFilterProvider.addOrgUnitFilter("uid", OrgUnitFilterType.ALL, listOf())
+        analyticsFilterProvider.addOrgUnitFilter("uid", null, OrgUnitFilterType.ALL, listOf())
         verify(repo).blockingSet(any())
         verify(repo).blockingDeleteIfExist()
     }
@@ -39,28 +39,28 @@ class AnalyticsFilterProviderTest {
     @Test
     fun `Should add selection org unit filter`() {
         val repo = mockLocalStore()
-        analyticsFilterProvider.addOrgUnitFilter("uid", OrgUnitFilterType.SELECTION, listOf())
+        analyticsFilterProvider.addOrgUnitFilter("uid", null, OrgUnitFilterType.SELECTION, listOf())
         verify(repo, times(2)).blockingSet(any())
     }
 
     @Test
     fun `Should remove org unit filter`() {
         val repo = mockLocalStore()
-        analyticsFilterProvider.removeOrgUnitFilter("uid")
+        analyticsFilterProvider.removeOrgUnitFilter("uid", null)
         verify(repo, times(2)).blockingDeleteIfExist()
     }
 
     @Test
     fun `Should add period filter`() {
         val repo = mockLocalStore()
-        analyticsFilterProvider.addPeriodFilter("uid", listOf())
+        analyticsFilterProvider.addPeriodFilter("uid", null, listOf())
         verify(repo).blockingSet(any())
     }
 
     @Test
     fun `Should remove period filter`() {
         val repo = mockLocalStore()
-        analyticsFilterProvider.removePeriodFilter("uid")
+        analyticsFilterProvider.removePeriodFilter("uid", null)
         verify(repo).blockingDeleteIfExist()
     }
 

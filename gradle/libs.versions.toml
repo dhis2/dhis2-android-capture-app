@@ -2,17 +2,19 @@
 ndk = "21.4.7075529"
 sdk = "34"
 minSdk = "21"
-vCode = "132"
-vName = "2.9.1.1-psi-fork-1"
+vCode = "136"
+vName = "3.0.1-psi-fork-1"
 kotlinCompilerExtensionVersion = "1.5.6"
-gradle = "8.2.0"
+dhis2AndroidSdkCode = "294"
+gradle = "8.2.2"
 kotlin = '1.9.21'
 hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
-designSystem = "0.1-SNAPSHOT"
-dhis2sdk = "1.9.1"
-ruleEngine = "2.1.9"
+designSystem = "0.3.0"
+dhis2sdk = "1.10.1"
+ruleEngine = "3.0.0"
+expressionParser = "1.1.0"
 appcompat = "1.6.1"
 annotation = "1.6.0"
 cardview = "1.0.0"
@@ -29,6 +31,8 @@ dynamicanimation = "1.0.0"
 viewpager2 = "1.0.0"
 recyclerview = "1.3.1"
 compose = "1.5.4"
+composePaging = "3.3.0"
+composeLifecycle ="2.8.1"
 composeTheme = "1.2.1"
 composeConstraintLayout = "1.0.1"
 activityCompose = "1.8.2"
@@ -102,12 +106,12 @@ ktlint = "11.5.1"
 #jacoco = "0.8.10"
 sonarqube = "3.3"
 detekt = "1.18.0"
-dokka = "1.9.10"
+dokka = "1.9.20"
 targetSdkVersion = "34"
 minSdkVersion = "21"
 libraryDesugaring = "2.0.4"
 #annotation = "1.6.0"
-paging = "2.1.2"
+paging = "3.2.1"
 jackson = "2.13.4"
 autoValueSDK = "1.10.2"
 autoValueCursor = "2.0.1"
@@ -117,8 +121,9 @@ rxJava = "2.2.21"
 #rxAndroid = "2.1.1"
 sqlCipher = "4.5.5"
 sqlLite = "2.2.0"
+zip4j = "2.11.5"
 smsCompression = "0.2.0"
-expressionParser = "1.0.33"
+expressionParserSDK = "1.0.36"
 kotlinxDatetime = "0.4.1"
 coroutines = "1.6.4"
 koin = "3.5.0"
@@ -148,8 +153,9 @@ kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serializa
 hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
-dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine", version.ref = "ruleEngine" }
-dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem", version.ref = "designSystem" }
+dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
+dhis2-expressionparser = { group = "org.hisp.dhis.lib.expression", name = "expression-parser-jvm", version.ref = "expressionParser" }
+dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem-android", version.ref = "designSystem" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -167,6 +173,8 @@ androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtim
 androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
 androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
 androidx-compose-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding", version.ref = "compose" }
+androidx-compose-paging = {group = "androidx.paging", name="paging-compose", version.ref="composePaging"}
+androidx-compose-lifecycle = {group= "androidx.lifecycle", name ="lifecycle-runtime-compose", version.ref="composeLifecycle"}
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
@@ -284,7 +292,9 @@ desugaring = { group = "com.android.tools", name = "desugar_jdk_libs", version.r
 #rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxJava" }
 #rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxAndroid" }
 #androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
-androidx-paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
+
 google-auto-value-annotation = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueSDK" }
 google-auto-value = { group = "com.google.auto.value", name = "auto-value", version.ref = "autoValueSDK" }
 google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
@@ -306,9 +316,10 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-rx2 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-rx2", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 dhis2-compression = { group = "com.github.dhis2", name = "sms-compression", version.ref = "smsCompression" }
-dhis2-antlr-parser = { group = "org.hisp.dhis.parser", name = "dhis-antlr-expression-parser", version.ref = "expressionParser" }
+dhis2-antlr-parser = { group = "org.hisp.dhis.parser", name = "dhis-antlr-expression-parser", version.ref = "expressionParserSDK" }
 sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlCipher" }
 sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlLite" }
+zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j"}
 openid-appauth = { group = "net.openid", name = "appauth", version.ref = "appauth" }
 listenablefuture-empty = { group = "com.google.guava", name = "listenablefuture", version.ref = "listenablefuture" }
 junit = { group = "junit", name = "junit", version.ref = "jUnit" }
@@ -345,7 +356,7 @@ uicomponents-androidtest = ["test-junit-ext", "test-espresso"]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]
 analytics-api = ["github-charts"]
 analytics-kapt = ["dagger-compiler"]
-analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]
+analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]
 form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-testCore", "test-rules", "test-archCoreTesting", "test-kotlinCoroutines"]
 form-androidTest = ["test-espresso-idlingresource"]
 map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin"]

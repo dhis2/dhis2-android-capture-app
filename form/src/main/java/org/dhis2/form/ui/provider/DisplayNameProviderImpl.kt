@@ -1,26 +1,31 @@
 package org.dhis2.form.ui.provider
 
-import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.extensions.toDate
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Locale
 
 class DisplayNameProviderImpl(
     private val optionSetConfiguration: OptionSetConfiguration,
     private val orgUnitConfiguration: OrgUnitConfiguration,
     private val fileResourceConfiguration: FileResourceConfiguration,
+    private val periodUtils: DhisPeriodUtils,
 ) : DisplayNameProvider {
 
     override fun provideDisplayName(
         valueType: ValueType?,
         value: String?,
         optionSet: String?,
+        periodType: PeriodType?,
     ): String? {
         return value?.let {
             optionSet?.let { optionSetUid ->
                 return getOptionSetValue(value, optionSetUid)
-            } ?: getValueTypeValue(value, valueType)
+            } ?: getValueTypeValue(value, valueType, periodType)
         }
     }
 
@@ -30,7 +35,11 @@ class DisplayNameProviderImpl(
             ?: value
     }
 
-    private fun getValueTypeValue(value: String, valueType: ValueType?): String? {
+    private fun getValueTypeValue(
+        value: String,
+        valueType: ValueType?,
+        periodType: PeriodType?,
+    ): String {
         return when (valueType) {
             ValueType.ORGANISATION_UNIT ->
                 orgUnitConfiguration.orgUnitByUid(value)
@@ -40,32 +49,13 @@ class DisplayNameProviderImpl(
             ValueType.IMAGE, ValueType.FILE_RESOURCE ->
                 fileResourceConfiguration.getFilePath(value) ?: value
 
-            ValueType.DATE ->
-                if (value.length == 8) {
-                    DateUtils.uiDateFormat().format(
-                        DateUtils.oldUiDateFormat().parse(value) ?: "",
-                    )
-                } else {
-                    value
-                }
-
-            ValueType.DATETIME ->
-                if (value.length == 12) {
-                    DateUtils.dateTimeFormat().format(
-                        DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
-                    )
-                } else {
-                    value
-                }
-
-            ValueType.TIME ->
-                if (value.length == 4) {
-                    DateUtils.timeFormat().format(
-                        DateUtils.timeFormat().parse(value) ?: "",
-                    )
-                } else {
-                    value
-                }
+            ValueType.DATE -> {
+                value.toDate()?.let { date ->
+                    periodType?.let {
+                        periodUtils.getPeriodUIString(it, date, Locale.getDefault())
+                    } ?: value
+                } ?: value
+            }
 
             else -> value
         }

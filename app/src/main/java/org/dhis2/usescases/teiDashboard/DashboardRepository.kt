@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -20,11 +21,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 interface DashboardRepository {
 
+    fun getTeiHeader(): String?
+
+    fun getTeiProfilePath(): String?
+
     fun getProgramStages(programStages: String): Observable<List<ProgramStage>>
 
     fun getEnrollment(): Observable<Enrollment>
-
-    fun getTEIEnrollmentEvents(programUid: String?, teiUid: String): Observable<List<Event>>
 
     fun getEnrollmentEventsWithDisplay(
         programUid: String?,
@@ -66,7 +69,7 @@ interface DashboardRepository {
     fun getTeiActivePrograms(
         teiUid: String,
         showOnlyActive: Boolean,
-    ): Observable<List<Program>>
+    ): Observable<List<kotlin.Pair<Program, MetadataIconData>>>
 
     fun getTEIEnrollments(
         teiUid: String,
@@ -74,9 +77,13 @@ interface DashboardRepository {
 
     fun saveCatOption(eventUid: String?, catOptionComboUid: String?)
 
-    fun deleteTeiIfPossible(): Single<Boolean>
+    fun checkIfDeleteTeiIsPossible(): Boolean
 
-    fun deleteEnrollmentIfPossible(enrollmentUid: String): Single<Boolean>
+    fun deleteTei(): Single<Boolean>
+
+    fun checkIfDeleteEnrollmentIsPossible(enrollmentUid: String): Boolean
+
+    fun deleteEnrollment(enrollmentUid: String): Single<Boolean>
 
     fun getNoteCount(): Single<Int>
 
@@ -96,5 +103,11 @@ interface DashboardRepository {
     fun getAttributesMap(
         programUid: String,
         teiUid: String,
-    ): Observable<List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
+    ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>>
+
+    fun getDashboardModel(): DashboardModel
+
+    fun getGrouping(): Boolean
+
+    fun setGrouping(groupEvent: Boolean)
 }

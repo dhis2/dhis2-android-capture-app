@@ -1,10 +1,17 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.hisp.dhis.android.core.common.ValueType
 
-fun generateFieldUiModel(uid: String, value: String, displayName: String = "Test value", valueType: ValueType): FieldUiModel {
+fun generateFieldUiModel(
+    uid: String,
+    value: String,
+    displayName: String = "Test value",
+    valueType: ValueType,
+    eventCategories: List<EventCategory>? = null,
+): FieldUiModel {
 
     return FieldUiModelImpl(
         uid = uid,
@@ -22,5 +29,6 @@ fun generateFieldUiModel(uid: String, value: String, displayName: String = "Test
         displayName = displayName,
         optionSetConfiguration = null,
         autocompleteList = null,
+        eventCategories = eventCategories,
     )
 }

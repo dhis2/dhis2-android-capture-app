@@ -5,7 +5,8 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepositoryImpl
 import org.dhis2.usescases.teiDashboard.dashboardsfragments.enrollment.EnrollmentInfoD2Repository
@@ -72,8 +73,8 @@ class FeedbackModule(
 
     @Provides
     @PerActivity
-    fun provideTeiDataRepository(d2: D2, dhisPeriodUtils: DhisPeriodUtils): TeiDataRepository {
-        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid, dhisPeriodUtils)
+    fun provideTeiDataRepository(d2: D2, dhisPeriodUtils: DhisPeriodUtils, metadataIconProvider: MetadataIconProvider): TeiDataRepository {
+        return TeiDataRepositoryImpl(d2, programUid, teiUid, enrollmentUid, dhisPeriodUtils, metadataIconProvider)
     }
 
     @Provides

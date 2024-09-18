@@ -81,7 +81,12 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun span(): String = resourceManager.getString(R.string.filter_period_from_to)
     fun filterPeriodLabel(): String = resourceManager.getString(R.string.filters_title_period)
     fun filterDateLabel(): String = resourceManager.getString(R.string.filters_title_date)
-    fun filterEnrollmentDateLabel(): String = resourceManager.getString(R.string.enrollment_date)
+    fun filterEnrollmentDateLabel(programUid: String): String = resourceManager.formatWithEnrollmentLabel(
+        programUid,
+        R.string.enrollment_date_V2,
+        1,
+    )
+
     fun filterEventDateLabel(): String =
         resourceManager.getString(R.string.filters_title_event_date)
 
@@ -90,8 +95,12 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun filterAssignedToMeLabel(): String =
         resourceManager.getString(R.string.filters_title_assigned)
 
-    fun filterEnrollmentStatusLabel(): String =
-        resourceManager.getString(R.string.filters_title_enrollment_status)
+    fun filterEnrollmentStatusLabel(programUid: String): String =
+        resourceManager.formatWithEnrollmentLabel(
+            programUid,
+            R.string.filters_title_enrollment_status,
+            1,
+        )
 
     fun filterFollowUpLabel(teTypeName: String): String =
         resourceManager.getString(R.string.filter_follow_up_label).format(teTypeName)
@@ -104,8 +113,10 @@ class FilterResources(val resourceManager: ResourceManager) {
             when (it) {
                 EnrollmentStatus.ACTIVE ->
                     resourceManager.getString(R.string.enrollment_status_active)
+
                 EnrollmentStatus.COMPLETED ->
                     resourceManager.getString(R.string.enrollment_status_completed)
+
                 EnrollmentStatus.CANCELLED ->
                     resourceManager.getString(R.string.enrollment_status_cancelled)
             }
@@ -130,6 +141,7 @@ class FilterResources(val resourceManager: ResourceManager) {
         EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
         EventStatus.COMPLETED ->
             resourceManager.getString(R.string.filter_event_status_completed)
+
         EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
         EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
         EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)

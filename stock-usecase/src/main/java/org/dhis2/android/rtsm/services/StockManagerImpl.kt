@@ -23,9 +23,9 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.hisp.dhis.rules.models.RuleActionAssign
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 import java.util.Collections
@@ -267,11 +267,11 @@ class StockManagerImpl @Inject constructor(
     private fun performRuleActions(ruleEffects: List<RuleEffect>?, eventUid: String) {
         Timber.d("Rule Effects: %s", ruleEffects)
         ruleEffects?.forEach { ruleEffect ->
-            if (ruleEffect.ruleAction() is RuleActionAssign) {
-                val ruleAssign = ruleEffect.ruleAction() as RuleActionAssign
-                val de = ruleAssign.field()
-                val value = ruleEffect.data()
-                if (!de.isEmpty() && !value.isNullOrEmpty()) {
+            if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name) {
+                val ruleAssign = ruleEffect.ruleAction
+                val de = ruleAssign.field()!!
+                val value = ruleEffect.data
+                if (de.isNotEmpty() && !value.isNullOrEmpty()) {
                     Timber.d("++++      Assigning rule actions:")
                     println("Event uid: $eventUid, dvUid: $de, value: $value")
 

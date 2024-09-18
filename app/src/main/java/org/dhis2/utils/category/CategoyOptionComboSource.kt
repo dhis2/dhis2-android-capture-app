@@ -1,7 +1,7 @@
 package org.dhis2.utils.category
 
 import androidx.paging.ItemKeyedDataSource
-import org.dhis2.data.dhislogic.inDateRange
+import org.dhis2.commons.extensions.inDateRange
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOption

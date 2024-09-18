@@ -5,7 +5,6 @@ import org.dhis2.form.bindings.toRuleAttributeValue
 import org.dhis2.form.bindings.toRuleDataValue
 import org.dhis2.form.bindings.toRuleEngineObject
 import org.dhis2.form.bindings.toRuleVariable
-import org.dhis2.form.model.RuleActionError
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -23,7 +22,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -146,7 +144,7 @@ class RuleExtensionsTest {
         )
 
         assertTrue(rules.size == 1)
-        assertTrue(rules[0].value() == "optionName")
+        assertTrue(rules[0].value == "optionName")
     }
 
     @Test
@@ -194,7 +192,7 @@ class RuleExtensionsTest {
         )
 
         assertTrue(rules.size == 1)
-        assertTrue(rules[0].value() == "optionCode")
+        assertTrue(rules[0].value == "optionCode")
     }
 
     @Test
@@ -290,7 +288,7 @@ class RuleExtensionsTest {
             .toRuleAttributeValue(d2, "programUid")
 
         assertTrue(rules.size == 1)
-        assertTrue(rules[0].value() == "optionName")
+        assertTrue(rules[0].value == "optionName")
     }
 
     @Test
@@ -312,8 +310,8 @@ class RuleExtensionsTest {
 
         val rules = getTrackedEntityNumericAttributeValues().toRuleAttributeValue(d2, "programUid")
 
-        assertTrue(rules[0].value() == "123")
-        assertTrue(rules[1].value() == "555.55")
+        assertTrue(rules[0].value == "123")
+        assertTrue(rules[1].value == "555.55")
     }
 
     @Test
@@ -362,7 +360,7 @@ class RuleExtensionsTest {
             .toRuleAttributeValue(d2, "programUid")
 
         assertTrue(rules.size == 1)
-        assertTrue(rules[0].value() == "optionCode")
+        assertTrue(rules[0].value == "optionCode")
     }
 
     @Test
@@ -373,7 +371,7 @@ class RuleExtensionsTest {
             .data("")
             .build()
         val ruleEngineAction = ruleAction.toRuleEngineObject()
-        assertTrue(ruleEngineAction is RuleActionUnsupported)
+        assertTrue(ruleEngineAction.type == "unsupported")
     }
 
     @Test
@@ -383,7 +381,7 @@ class RuleExtensionsTest {
             .programRuleActionType(SHOWERROR)
             .build()
         val ruleActionList = listOf<ProgramRuleAction>(programRuleAction).toRuleActionList()
-        assertTrue(ruleActionList.first() is RuleActionError)
+        assertTrue(ruleActionList.first().type == "error")
     }
 
     @Test
@@ -398,7 +396,7 @@ class RuleExtensionsTest {
             dataElementRepository = dataElementRepository,
             optionRepository = optionRepository,
         )
-        assertEquals(programRuleVariable.name(), ruleVariable.name())
+        assertEquals(programRuleVariable.name(), ruleVariable.name)
     }
 
     private fun getTrackedEntityDataValues(): List<TrackedEntityDataValue> {

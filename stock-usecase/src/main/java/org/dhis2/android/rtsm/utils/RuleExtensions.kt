@@ -24,6 +24,7 @@
  */
 package org.dhis2.android.rtsm.utils
 
+import org.dhis2.commons.rules.toRuleEngineInstant
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
@@ -36,13 +37,9 @@ import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepositor
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
-import org.hisp.dhis.rules.Option
+import org.hisp.dhis.rules.models.Option
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
-import org.hisp.dhis.rules.models.RuleActionAssign
-import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion
-import org.hisp.dhis.rules.models.RuleActionHideField
-import org.hisp.dhis.rules.models.RuleActionShowError
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
@@ -53,6 +50,7 @@ import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import timber.log.Timber
+import java.util.Date
 
 fun List<ProgramRule>.toRuleList(): List<Rule> {
     return map {
@@ -93,13 +91,13 @@ private fun isCalculatedValue(it: ProgramRuleVariable) = it.dataElement() == nul
     it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
 
 fun ProgramRule.toRuleEngineObject(): Rule {
-    return Rule.create(
-        programStage()?.uid(),
-        priority(),
+    return Rule(
         condition() ?: "",
         programRuleActions()?.toRuleActionList() ?: ArrayList(),
-        name(),
         uid(),
+        name(),
+        programStage()?.uid(),
+        priority(),
     )
 }
 
@@ -112,17 +110,49 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
         }
 
     if (programRuleActionType() == ProgramRuleActionType.SHOWERROR) {
-        return RuleActionShowError.create(content(), data(), field)
+        return RuleAction(
+            data = data(),
+            type = ProgramRuleActionType.SHOWERROR.name,
+            values = mutableMapOf(
+                Pair("field", field),
+            ).also { map ->
+                content()?.let { map["content"] = it }
+            },
+        )
     } else if (programRuleActionType() == ProgramRuleActionType.ERRORONCOMPLETE) {
-        return RuleActionErrorOnCompletion.create(content(), data(), field)
+        return RuleAction(
+            data = data(),
+            type = ProgramRuleActionType.ERRORONCOMPLETE.name,
+            values = mutableMapOf(
+                Pair("field", field),
+            ).also { map ->
+                content()?.let { map["content"] = it }
+            },
+        )
     } else if (programRuleActionType() == ProgramRuleActionType.ASSIGN) {
         // Temporarily ignore the missing field as you have above until you create
         // an unsupported rule class (RuleActionUnsupported)
-        return RuleActionAssign.create(content(), data() ?: "", field)
+        return RuleAction(
+            data = data() ?: "",
+            type = ProgramRuleActionType.ASSIGN.name,
+            values = mutableMapOf(
+                Pair("field", field),
+            ).also { map ->
+                content()?.let { map["content"] = it }
+            },
+        )
     }
 
     // Temporarily returns ProgramRuleActionType.HIDEFIELD for the sake of testing
-    return RuleActionHideField.create(content(), field)
+    return RuleAction(
+        data = null,
+        type = ProgramRuleActionType.HIDEFIELD.name,
+        values = mutableMapOf(
+            Pair("field", field),
+        ).also { map ->
+            content()?.let { map["content"] = it }
+        },
+    )
 }
 
 fun ProgramRuleVariable.toRuleVariable(
@@ -162,58 +192,58 @@ fun ProgramRuleVariable.toRuleVariable(
 
     return when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.CALCULATED_VALUE ->
-            RuleVariableCalculatedValue.create(
-                name() ?: "",
-                dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariableCalculatedValue(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = dataElement()?.uid() ?: trackedEntityAttribute()?.uid() ?: "",
+                fieldType = valueType,
             )
 
         ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
-            RuleVariableAttribute.create(
-                name() ?: "",
-                trackedEntityAttribute()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariableAttribute(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = trackedEntityAttribute()?.uid() ?: "",
+                fieldType = valueType,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE ->
-            RuleVariableNewestStageEvent.create(
-                name() ?: "",
-                dataElement()?.uid() ?: "",
-                programStage()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariableNewestStageEvent(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = dataElement()?.uid() ?: "",
+                fieldType = valueType,
+                programStage = programStage()?.uid() ?: "",
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM ->
-            RuleVariableNewestEvent.create(
-                name() ?: "",
-                dataElement()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariableNewestEvent(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = dataElement()?.uid() ?: "",
+                fieldType = valueType,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT ->
-            RuleVariableCurrentEvent.create(
-                name() ?: "",
-                dataElement()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariableCurrentEvent(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = dataElement()?.uid() ?: "",
+                fieldType = valueType,
             )
 
         ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT ->
-            RuleVariablePreviousEvent.create(
-                name() ?: "",
-                dataElement()?.uid() ?: "",
-                valueType,
-                useCodeForOptionSet,
-                options,
+            RuleVariablePreviousEvent(
+                name = name() ?: "",
+                useCodeForOptionSet = useCodeForOptionSet,
+                options = options,
+                field = dataElement()?.uid() ?: "",
+                fieldType = valueType,
             )
 
         else -> throw IllegalArgumentException("Unsupported variable ")
@@ -236,12 +266,12 @@ fun getOptions(
         dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name(), option.code()) } ?: emptyList()
+            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
     } else if (trackedEntityAttributeUid != null) {
         attributeRepository.uid(trackedEntityAttributeUid).blockingGet()?.optionSet()?.uid()
             ?.let { optionSetUid ->
                 optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name(), option.code()) } ?: emptyList()
+            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
     } else {
         emptyList()
     }
@@ -293,11 +323,11 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
                 ""
             }
         }
-        RuleDataValue.create(
-            event.eventDate()!!,
-            event.programStage()!!,
-            it.dataElement()!!,
-            value!!,
+        RuleDataValue(
+            eventDate = (event.eventDate() ?: Date()).toRuleEngineInstant(),
+            programStage = event.programStage()!!,
+            dataElement = it.dataElement()!!,
+            value = value!!,
         )
-    }.filter { it.value().isNotEmpty() }
+    }.filter { it.value.isNotEmpty() }
 }

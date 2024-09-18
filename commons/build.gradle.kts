@@ -79,6 +79,8 @@ dependencies {
         exclude("junit", "junit")
     }
 
+    api(libs.dhis2.expressionparser)
+
     api(libs.autoValue)
     kapt(libs.autoValue)
     api(libs.androidx.coreKtx)
@@ -94,6 +96,7 @@ dependencies {
     api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
+    api(libs.androidx.compose.paging)
 
     api(libs.google.material)
     api(libs.google.gson)

@@ -7,20 +7,28 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.FieldListConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
@@ -29,7 +37,6 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -39,6 +46,8 @@ import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailu
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateTimeFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.TimeFailure
 import timber.log.Timber
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -57,9 +66,11 @@ class FormViewModel(
     val focused = MutableLiveData<Boolean>()
     val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
-
+    var dateFormatConfig: String = "ddMMyyyy"
     private val _items = MutableLiveData<List<FieldUiModel>>()
     val items: LiveData<List<FieldUiModel>> = _items
+
+    var previousActionItem: RowAction? = null
 
     private val _savedValue = MutableLiveData<RowAction>()
     val savedValue: LiveData<RowAction> = _savedValue
@@ -78,6 +89,11 @@ class FormViewModel(
 
     private val _pendingIntents = MutableSharedFlow<FormIntent>()
 
+    private val fieldListChannel = Channel<FieldListConfiguration>(
+        capacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
     init {
         viewModelScope.launch {
             _pendingIntents
@@ -92,6 +108,19 @@ class FormViewModel(
                 .flowOn(dispatcher.io())
                 .collect { result -> displayResult(result) }
         }
+
+        viewModelScope.launch(dispatcher.io()) {
+            fieldListChannel.consumeEach { fieldListConfiguration ->
+                val result = async {
+                    repository.composeList(fieldListConfiguration.skipProgramRules)
+                }
+                _items.postValue(result.await())
+                if (fieldListConfiguration.finish) {
+                    runDataIntegrityCheck()
+                }
+            }
+        }
+
         loadData()
     }
 
@@ -168,142 +197,160 @@ class FormViewModel(
 
     private fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
-            ActionType.ON_SAVE -> {
-                if (action.valueType == ValueType.COORDINATE) {
-                    repository.setFieldRequestingCoordinates(action.id, false)
-                }
+            ActionType.ON_SAVE -> handleOnSaveAction(action)
+            ActionType.ON_FOCUS, ActionType.ON_NEXT -> handleFocusOrNextAction(action)
+            ActionType.ON_TEXT_CHANGE -> handleOnTextChangeAction(action)
+            ActionType.ON_SECTION_CHANGE -> handleOnSectionChangeAction(action)
+            ActionType.ON_FINISH -> handleOnFinishAction(action)
+            ActionType.ON_REQUEST_COORDINATES -> handleOnRequestCoordinatesAction(action)
+            ActionType.ON_CANCEL_REQUEST_COORDINATES -> handleOnCancelRequestCoordinatesAction(
+                action,
+            )
 
-                repository.updateErrorList(action)
-                if (action.error != null) {
-                    StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                    )
-                } else {
-                    val saveResult = repository.save(action.id, action.value, action.extraData)
-                    if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
-                        repository.updateValueOnList(action.id, action.value, action.valueType)
-                    } else {
-                        repository.updateErrorList(
-                            action.copy(
-                                error = Throwable(saveResult.valueStoreResultMessage),
-                            ),
-                        )
-                    }
-                    saveResult ?: StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_CHANGED,
-                    )
-                }
-            }
+            ActionType.ON_ADD_IMAGE_FINISHED -> handleOnAddImageFinishedAction(action)
+            ActionType.ON_STORE_FILE -> handleOnStoreFileAction(action)
+        }
+    }
 
-            ActionType.ON_FOCUS, ActionType.ON_NEXT -> {
-                val storeResult = saveLastFocusedItem(action)
-                repository.setFocusedItem(action)
-                storeResult
-            }
+    private fun handleOnSaveAction(action: RowAction): StoreResult {
+        if (action.valueType == ValueType.COORDINATE) {
+            repository.setFieldRequestingCoordinates(action.id, false)
+        }
 
-            ActionType.ON_TEXT_CHANGE -> {
+        repository.updateErrorList(action)
+        if (action.error != null) {
+            return StoreResult(
+                action.id,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            )
+        }
+
+        val saveResult = repository.save(action.id, action.value, action.extraData)
+        if (saveResult?.valueStoreResult != ValueStoreResult.ERROR_UPDATING_VALUE) {
+            if (action.isEventDetailsRow) {
+                repository.fetchFormItems(openErrorLocation)
+            } else {
                 repository.updateValueOnList(action.id, action.value, action.valueType)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.TEXT_CHANGING,
+            }
+        } else {
+            repository.updateErrorList(
+                action.copy(
+                    error = Throwable(saveResult.valueStoreResultMessage),
+                ),
+            )
+        }
+        return saveResult ?: StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_CHANGED,
+        )
+    }
+
+    private fun handleFocusOrNextAction(action: RowAction): StoreResult {
+        val storeResult = saveLastFocusedItem(action)
+        repository.setFocusedItem(action)
+        previousActionItem = action
+        return storeResult
+    }
+
+    private fun handleOnTextChangeAction(action: RowAction): StoreResult {
+        repository.updateValueOnList(action.id, action.value, action.valueType)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.TEXT_CHANGING,
+        )
+    }
+
+    private fun handleOnSectionChangeAction(action: RowAction): StoreResult {
+        repository.updateSectionOpened(action)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnFinishAction(action: RowAction): StoreResult {
+        repository.setFocusedItem(action)
+        return StoreResult(
+            "",
+            ValueStoreResult.FINISH,
+        )
+    }
+
+    private fun handleOnRequestCoordinatesAction(action: RowAction): StoreResult {
+        repository.setFieldRequestingCoordinates(action.id, true)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnCancelRequestCoordinatesAction(action: RowAction): StoreResult {
+        repository.setFieldRequestingCoordinates(action.id, false)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnAddImageFinishedAction(action: RowAction): StoreResult {
+        repository.setFieldAddingImage(action.id, false)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+    }
+
+    private fun handleOnStoreFileAction(action: RowAction): StoreResult {
+        val saveResult = repository.storeFile(action.id, action.value)
+        return when (saveResult?.valueStoreResult) {
+            ValueStoreResult.FILE_SAVED -> {
+                processUserAction(
+                    rowActionFromIntent(
+                        FormIntent.OnSave(
+                            uid = action.id,
+                            value = saveResult.uid,
+                            valueType = action.valueType,
+                        ),
+                    ),
                 )
             }
 
-            ActionType.ON_SECTION_CHANGE -> {
-                repository.updateSectionOpened(action)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
+            null -> StoreResult(
+                action.id,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            )
 
-            ActionType.ON_CLEAR -> {
-                repository.removeAllValues()
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_CHANGED,
-                )
-            }
-
-            ActionType.ON_FINISH -> {
-                repository.setFocusedItem(action)
-                StoreResult(
-                    "",
-                    ValueStoreResult.FINISH,
-                )
-            }
-
-            ActionType.ON_REQUEST_COORDINATES -> {
-                repository.setFieldRequestingCoordinates(action.id, true)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_CANCEL_REQUEST_COORDINATES -> {
-                repository.setFieldRequestingCoordinates(action.id, false)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_ADD_IMAGE_FINISHED -> {
-                repository.setFieldAddingImage(action.id, false)
-                StoreResult(
-                    action.id,
-                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                )
-            }
-
-            ActionType.ON_STORE_FILE -> {
-                val saveResult = repository.storeFile(action.id, action.value)
-                when (saveResult?.valueStoreResult) {
-                    ValueStoreResult.FILE_SAVED -> {
-                        processUserAction(
-                            rowActionFromIntent(
-                                FormIntent.OnSave(
-                                    uid = action.id,
-                                    value = saveResult.uid,
-                                    valueType = action.valueType,
-                                ),
-                            ),
-                        )
-                    }
-
-                    null -> StoreResult(
-                        action.id,
-                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-                    )
-
-                    else -> saveResult
-                }
-            }
+            else -> saveResult
         }
     }
 
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
-        val error = checkFieldError(it.valueType, it.value, it.fieldMask)
-        if (error != null) {
-            val action = rowActionFromIntent(
-                FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
-            )
-            repository.updateErrorList(action)
+        if (previousActionItem == null) previousActionItem = rowAction
+        if (previousActionItem?.value != it.value && previousActionItem?.id == it.uid) {
+            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
+            if (error != null) {
+                val action = rowActionFromIntent(
+                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
+                )
+                repository.updateErrorList(action)
+                StoreResult(
+                    rowAction.id,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+            } else {
+                checkAutoCompleteForLastFocusedItem(it)
+                val intent = getSaveIntent(it)
+                val action = rowActionFromIntent(intent)
+                val result = repository.save(it.uid, it.value, action.extraData)
+                repository.updateValueOnList(it.uid, it.value, it.valueType)
+                repository.updateErrorList(action)
+                result
+            }
+        } else {
             StoreResult(
                 rowAction.id,
                 ValueStoreResult.VALUE_HAS_NOT_CHANGED,
             )
-        } else {
-            checkAutoCompleteForLastFocusedItem(it)
-            val intent = getSaveIntent(it)
-            val action = rowActionFromIntent(intent)
-            val result = repository.save(it.uid, it.value, action.extraData)
-            repository.updateValueOnList(it.uid, it.value, it.valueType)
-            repository.updateErrorList(action)
-            result
         }
     } ?: StoreResult(
         rowAction.id,
@@ -358,12 +405,6 @@ class FormViewModel(
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
         return when (intent) {
-            is FormIntent.OnClear -> createRowAction(
-                uid = "",
-                value = null,
-                actionType = ActionType.ON_CLEAR,
-            )
-
             is FormIntent.ClearValue -> createRowAction(intent.uid, null)
             is FormIntent.SelectLocationFromCoordinates -> {
                 val error = checkFieldError(
@@ -412,6 +453,21 @@ class FormViewModel(
                     intent.valueType,
                     intent.value,
                     intent.fieldMask,
+                    intent.allowFutureDates,
+                )
+
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = error,
+                    valueType = intent.valueType,
+                )
+            }
+
+            is FormIntent.OnQrCodeScanned -> {
+                val error = checkFieldError(
+                    intent.valueType,
+                    intent.value,
                 )
 
                 createRowAction(
@@ -552,10 +608,10 @@ class FormViewModel(
         }
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-
+        val isValidDateFormat = isValidDate(dateTimeString.substring(0, 10))
         try {
             val date = LocalDateTime.parse(dateTimeString, formatter)
-            if (allowFutureDates == false && date.isAfter(LocalDateTime.now())) {
+            if (allowFutureDates == false && date.isAfter(LocalDateTime.now()) || !isValidDateFormat) {
                 return Result.Failure(DateFailure.ParseException)
             }
             return valueType.validator.validate(dateTimeString)
@@ -585,12 +641,24 @@ class FormViewModel(
 
         try {
             val date = LocalDate.parse(dateString, formatter)
-            if (allowFutureDates == false && date.isAfter(LocalDate.now())) {
-                return Result.Failure(DateFailure.ParseException)
+            val formatDateValid = isValidDate(dateString)
+            if (allowFutureDates == false && date.isAfter(LocalDate.now()) || !formatDateValid) {
+                return Result.Failure(Throwable())
             }
             return valueType.validator.validate(dateString)
         } catch (e: DateTimeParseException) {
             return Result.Failure(DateFailure.ParseException)
+        }
+    }
+
+    private fun isValidDate(text: String): Boolean {
+        val format = SimpleDateFormat(DateUtils.DATABASE_FORMAT_NO_TIME)
+        format.isLenient = false
+        return try {
+            format.parse(text)
+            true
+        } catch (e: ParseException) {
+            false
         }
     }
 
@@ -608,7 +676,14 @@ class FormViewModel(
         error = error,
         type = actionType,
         valueType = valueType,
+        isEventDetailsRow = isEventDetailField(uid),
     )
+
+    private fun isEventDetailField(uid: String): Boolean {
+        val eventDetailsIds =
+            listOf(EVENT_REPORT_DATE_UID, EVENT_ORG_UNIT_UID, EVENT_COORDINATE_UID)
+        return eventDetailsIds.contains(uid)
+    }
 
     fun onItemsRendered() {
         loading.value = false
@@ -647,16 +722,9 @@ class FormViewModel(
     }
 
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
-        FormCountingIdlingResource.increment()
-        viewModelScope.launch(dispatcher.io()) {
-            val result = async {
-                repository.composeList(skipProgramRules)
-            }
-            _items.postValue(result.await())
-            if (finish) {
-                runDataIntegrityCheck()
-            }
-        }
+        fieldListChannel.trySend(
+            FieldListConfiguration(skipProgramRules, finish),
+        )
     }
 
     fun updateConfigurationErrors() {
@@ -724,6 +792,9 @@ class FormViewModel(
             val result = async {
                 repository.fetchFormItems(openErrorLocation)
             }
+            dateFormatConfig = async {
+                repository.getDateFormatConfiguration()
+            }.await()
             try {
                 _items.postValue(result.await())
             } catch (e: Exception) {

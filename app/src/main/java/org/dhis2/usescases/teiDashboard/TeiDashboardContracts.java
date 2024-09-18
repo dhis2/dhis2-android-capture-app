@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.lifecycle.LiveData;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.Program;
@@ -8,17 +10,11 @@ public class TeiDashboardContracts {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setData(DashboardProgramModel program);
-
-        void setDataWithOutProgram(DashboardProgramModel programModel);
-
         void goToEnrollmentList();
 
         void restoreAdapter(String programUid);
 
         void handleTeiDeletion();
-
-        void handleEnrollmentDeletion(Boolean hasMoreEnrollments);
 
         void authorityErrorMessage();
 
@@ -28,14 +24,10 @@ public class TeiDashboardContracts {
 
         void showTabsAndEnableSwipe();
 
-        void updateStatus();
-
         void displayStatusError(StatusChangeResultCode statusCode);
     }
 
     public interface Presenter {
-
-        void init();
 
         void showDescription(String description);
 
@@ -51,15 +43,11 @@ public class TeiDashboardContracts {
 
         void deleteTei();
 
-        void deleteEnrollment();
-
         void initNoteCounter();
 
         void refreshTabCounters();
 
         void prefSaveCurrentProgram(String programUid);
-
-        Boolean getProgramGrouping();
 
         void handleShowHideFilters(boolean showFilter);
 
@@ -74,5 +62,9 @@ public class TeiDashboardContracts {
         void trackDashboardRelationships();
 
         void trackDashboardNotes();
+
+        Boolean checkIfTEICanBeDeleted();
+
+        Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid);
     }
 }

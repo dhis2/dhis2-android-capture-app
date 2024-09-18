@@ -569,7 +569,7 @@ class FilterRepository @Inject constructor(
             observableSortingInject,
             observableOpenFilter,
             program.enrollmentDateLabel() ?: resources
-                .filterEnrollmentDateLabel(),
+                .filterEnrollmentDateLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.ORG_UNIT] = OrgUnitFilter(
             FilterManager.getInstance().observeOrgUnitFilters(),
@@ -588,7 +588,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEnrollmentStatusLabel(),
+            resources.filterEnrollmentStatusLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.EVENT_STATUS] = EventStatusFilter(
             ProgramType.TRACKER,

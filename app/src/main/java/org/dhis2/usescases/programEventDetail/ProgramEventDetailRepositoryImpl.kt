@@ -1,34 +1,25 @@
 package org.dhis2.usescases.programEventDetail
 
-import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import com.mapbox.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.data.FilterPresenter
-import org.dhis2.commons.filters.data.TextFilter
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.utils.DhisMapUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.program.ProgramStageDataElement
 
 class ProgramEventDetailRepositoryImpl internal constructor(
     private val programUid: String,
@@ -47,22 +38,11 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         filterPresenter.filteredEventProgram(it)
     }
 
-    override fun filteredProgramEvents(textFilter: TextFilter?): LiveData<PagedList<EventViewModel>> {
+    override fun filteredProgramEvents(): Flow<PagingData<Event>> {
         val program = program().blockingGet() ?: throw NullPointerException()
-        val dataSource = filterPresenter
-            .filteredEventProgram(program, textFilter)
-            .dataSource
-            .map { event ->
-                mapper.eventToEventViewModel(event)
-            }
-        return LivePagedListBuilder(
-            object : DataSource.Factory<Event, EventViewModel>() {
-                override fun create(): DataSource<Event, EventViewModel> {
-                    return dataSource
-                }
-            },
-            20,
-        ).build()
+        return filterPresenter
+            .filteredEventProgram(program)
+            .getPagingData(10)
     }
 
     override fun filteredEventsForMap(): Flowable<ProgramEventMapData> {
@@ -149,46 +129,16 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     }
 
     override fun programHasAnalytics(): Boolean {
-        return charts != null && charts.getProgramVisualizations(null, programUid).isNotEmpty()
+        return charts?.getVisualizationGroups(programUid)?.isNotEmpty() == true
     }
 
     override fun isEventEditable(eventUid: String): Boolean {
         return d2.eventModule().eventService().blockingIsEditable(eventUid)
     }
 
-    override fun textTypeDataElements(): Observable<List<DataElement>> {
-        val programStageUIds = d2.programModule().programs().uid(programUid).get()
-            .flatMap { program: Program ->
-                d2.programModule().programStages().byProgramUid()
-                    .eq(program.uid()).get()
-            }
-            .toObservable().flatMap { programStages: List<ProgramStage>? ->
-                Observable.fromIterable(programStages)
-                    .map { item: ProgramStage -> item.uid() }
-                    .toList().toObservable()
-            }.blockingFirst()
-
-        val programStagesDataElementsUIds =
-            d2.programModule().programStageDataElements().byProgramStage().`in`(programStageUIds)
-                .get()
-                .toObservable()
-                .flatMap { programStageDataElements: List<ProgramStageDataElement>? ->
-                    Observable.fromIterable(
-                        programStageDataElements
-                    )
-                        .map { item: ProgramStageDataElement ->
-                            item.dataElement()!!
-                                .uid()
-                        }
-                        .toList().toObservable()
-                }.blockingFirst()
-
-
-        return d2.dataElementModule().dataElements()
-            .byValueType().eq(ValueType.TEXT)
-            .byUid().`in`(programStagesDataElementsUIds)
-            .byOptionSetUid().isNull
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-            .get().toObservable()
+    override fun displayOrganisationUnit(programUid: String): Boolean {
+        return d2.organisationUnitModule().organisationUnits()
+            .byProgramUids(listOf(programUid))
+            .blockingGet().size > 1
     }
 }

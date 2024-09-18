@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Evento</string>
     <string name="no_data">Não ha dados</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
     <string name="clear">claro</string>
@@ -16,7 +15,6 @@
     <string name="navigation_analytics">Google Analytics</string>
     <string name="navigation_tasks">Tarefas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relacionamentos</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>

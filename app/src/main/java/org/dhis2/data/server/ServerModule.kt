@@ -1,6 +1,7 @@
 package org.dhis2.data.server
 
 import android.content.Context
+import android.content.ContextWrapper
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
@@ -14,8 +15,10 @@ import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.FileController
@@ -145,6 +148,26 @@ class ServerModule {
             d2,
             crashReportController,
         )
+    }
+
+    @Provides
+    @PerServer
+    fun metadataIconProvider(
+        d2: D2,
+    ): MetadataIconProvider {
+        return MetadataIconProvider(d2)
+    }
+
+    @Provides
+    @PerServer
+    fun provideResourceManager(
+        context: Context,
+        themeManager: ThemeManager,
+        colorUtils: ColorUtils,
+    ): ResourceManager {
+        val contextWrapper = ContextWrapper(context)
+        contextWrapper.setTheme(themeManager.getAppTheme())
+        return ResourceManager(contextWrapper, colorUtils)
     }
 
     companion object {

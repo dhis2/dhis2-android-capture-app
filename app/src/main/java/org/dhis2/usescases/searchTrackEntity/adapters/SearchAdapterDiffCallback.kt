@@ -19,4 +19,12 @@ class SearchAdapterDiffCallback() : DiffUtil.ItemCallback<SearchTeiModel>() {
             oldItem.sortingValue == newItem.sortingValue &&
             oldItem.enrolledOrgUnit == newItem.enrolledOrgUnit
     }
+
+    override fun getChangePayload(oldItem: SearchTeiModel, newItem: SearchTeiModel): Any? {
+        return if (oldItem != newItem) {
+            newItem
+        } else {
+            super.getChangePayload(oldItem, newItem)
+        }
+    }
 }

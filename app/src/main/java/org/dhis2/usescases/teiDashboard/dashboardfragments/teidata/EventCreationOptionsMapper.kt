@@ -12,6 +12,12 @@ import org.dhis2.utils.dialFloatingActionButton.DialItem
 
 class EventCreationOptionsMapper(val resources: ResourceManager) {
 
+    companion object {
+        const val REFERAL_ID = 3
+        const val ADD_NEW_ID = 2
+        const val SCHEDULE_ID = 1
+    }
+
     fun mapToEventsByStage(availableOptions: List<EventCreationType>): List<EventCreationOptions> {
         return availableOptions.map { item ->
             EventCreationOptions(
@@ -40,12 +46,25 @@ class EventCreationOptionsMapper(val resources: ResourceManager) {
         }
     }
 
+    fun getActionType(eventCreationId: Int): EventCreationType {
+        return when (eventCreationId) {
+            SCHEDULE_ID -> SCHEDULE
+            ADD_NEW_ID -> ADDNEW
+            REFERAL_ID -> REFERAL
+            else -> throw UnsupportedOperationException(
+                "id %s is not supported as an event creation".format(
+                    eventCreationId,
+                ),
+            )
+        }
+    }
+
     private fun getItemId(item: EventCreationType): Int {
         return when (item) {
-            SCHEDULE -> TEIDataFragment.SCHEDULE_ID
-            ADDNEW -> TEIDataFragment.ADD_NEW_ID
-            REFERAL -> TEIDataFragment.REFERAL_ID
-            DEFAULT -> TEIDataFragment.ADD_NEW_ID
+            SCHEDULE -> SCHEDULE_ID
+            ADDNEW -> ADD_NEW_ID
+            REFERAL -> REFERAL_ID
+            DEFAULT -> ADD_NEW_ID
         }
     }
 

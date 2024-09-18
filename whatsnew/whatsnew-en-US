@@ -1,8 +1,10 @@
 This is a patch version that fixes:
-- ANDROAPP-5749 Incorrect behavior when tapping on Next on sections that are too long
-- ANDROAPP-5885 Data set indicators don't update until the user moves to a different cell
-- ANDROAPP-5741 [Local Analytics] App crashes if charts are empty
-- ANDROAPP-5604	App crashes when one attempts to synchronise TEI and events imported via QR code
-- ANDROAPP-5872 Search in stock management is not updating the list
+- Working lists aren't applied even when active.
+- Cannot navigate to event details or sync event after navigating back from details.
+- Login error in landscape.
+- Data entry not saving more than one value.
+- Incorrect workflow of Org unit when creating event.
+- Crash when rotating device in settings activity.
+- Option set not working well in data set if the code of option contains character "_".
 
-You can find all the details on Jira and Github.
+Also stability issues. You can find all the details on Github.

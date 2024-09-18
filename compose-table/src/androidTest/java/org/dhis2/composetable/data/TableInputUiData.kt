@@ -39,7 +39,8 @@ val tableData = listOf(
                 ),
                 values = mapOf(
                     Pair(0, TableCell("00", 0, 0, "12")),
-                    Pair(1, TableCell("01", 0, 1, value = "-1", error = input_error_message))
+                    Pair(1, TableCell("01", 0, 1, value = "-1", error = input_error_message)),
+                    Pair(2, TableCell("02", 0, 2, "text")),
                 ),
             ),
             TableRowModel(

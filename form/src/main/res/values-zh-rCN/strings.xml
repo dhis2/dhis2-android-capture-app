@@ -40,7 +40,6 @@
     <string name="enter_long_text">输入长文本</string>
     <string name="enter_text">输入文本</string>
     <string name="due_date">到期日</string>
-    <string name="event_date">事故日期</string>
     <string name="complete">完成</string>
     <string name="saved">已经保存！</string>
     <string name="share">分享</string>
@@ -48,12 +47,8 @@
     <string name="copied_text">副本</string>
     <string name="empty_description">该字段没有相关信息</string>
     <string name="warning_error_on_complete_title">检查</string>
-    <string name="enrollment_data_section_label">注册数据</string>
     <string name="enrollment_single_section_label">属性- %s</string>
-    <string name="enrolling_ou">注册机构</string>
     <string name="tei_coordinates">坐标</string>
-    <string name="enrollment_coordinates">注册坐标</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
-    <string name="enrollmment_date">报名日期</string>
     <string name="incident_date">事件日期</string>
     </resources>

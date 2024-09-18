@@ -1,8 +1,11 @@
 <resources>
     <!-- Warnings and error messages -->
     <string name="error">Ошибка</string>
+    <string name="something_wrong">Что-то пошло не так</string>
     <string name="sync_metadata">Метаданные</string>
     <string name="sync_events">События</string>
+    <string name="sync_tei">Отслеживаемые объекты</string>
+
     <string name="add_new">Добавить новое</string>
     <string name="add">Добавить</string>
     <string name="schedule_new">Распланировать новое</string>
@@ -18,12 +21,17 @@
     <string name="YEARLY">Ежегодно</string>
     <string name="action_accept">Принять</string>
     <string name="action_share_zero_items">Поделиться</string>
+    <string name="action_share_single_item">Поделиться %d элементом</string>
     <!-- Input hints -->
     <string name="search">Поиск</string>
     <string name="event_open">Открыть</string>
+    <string name="event_completed">Событие завершено</string>
     <string name="read_only">Только читать</string>
     <string name="completed">Завершенный</string>
     <string name="cancelled">Отмененный</string>
+    <string name="activate">Активировать</string>
+    <string name="active">Действующий</string>
+
     <string name="state_error">Ошибка</string>
     <!--Completion-->
     <string name="completion">Завершение</string>
@@ -39,14 +47,20 @@
     <!--DataSet initial-->
     <string name="report_period">Отчет за период</string>
     <!--Event Detail-->
-    <string name="event_date">Дата события</string>
     <string name="due_date">Дата выполнения</string>
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>
     <string name="total">Всего</string>
+    <string name="no_options">Нет доступных вариантов</string>
+
     <string name="active_programs">Действующие программы</string>
     <string name="enroll">Регистрировать</string>
+    <string name="edit">Редактировать</string>
+    <string name="follow_up">Отслеживать</string>
     <string name="deactivate">Деактивировать</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">Нет данных</string>
+    <string name="events">события/й</string>
     <string name="done_task">Главная</string>
     <string name="sync_default_parameters">Возвратить в исходное положение по умолчанию</string>
     <string name="wipe_data_ok">Принять</string>
@@ -83,22 +97,30 @@
     <string name="error_on_complete_title">Ошибка</string>
     <string name="save">Сохранить</string>
     <string name="select_option">Выберите опцию</string>
+    <string name="dialog_generate_new_event">Создать новое событие</string>
+    <string name="message_generate_new_event">Хотите создать еще одно событие?</string>
     <string name="menu_home">Главная</string>
     <string name="qr_data_values">Значение данных</string>
     <string name="dashboard_relationships">Зависимости</string>
     <string name="dashboard_indicators">Индикаторы</string>
+    <string name="dashboard_analytics">Аналитика</string>
     <string name="dashboard_notes">Заметки</string>
     <string name="event_overview">Детали</string>
     <string name="event_indicators">Индикаторы</string>
     <string name="event_notes">Заметки</string>
+    <string name="finish">Завершить</string>
     <string name="please_wait">Пожалуйста, подождите</string>
     <string name="skip">Пропустить</string>
     <string name="reschedule">Перепланировать</string>
     <string name="event_overdue">Просроченный</string>
     <string name="table">Таблица</string>
     <string name="local_data_accept">Принять</string>
+    <string name="action_continue">Продолжить</string>
     <string name="state_warning">Предупреждение</string>
+    <string name="state_relationship">Зависимость</string>
     <string name="action_close">Закрыть</string>
+    <string name="data_set_complete">Завершенный</string>
+    <string name="data_set_open">Открыть</string>
     <string name="unsupported_value_type">Неподдерживаемый тип значения</string>
     <string name="data_every_day">Ежедневно</string>
     <string name="data_every_week">Еженедельно</string>
@@ -112,6 +134,7 @@
     <string name="polygon">Полигон</string>
     <string name="filters_title_period">Период</string>
     <string name="filters_title_org_unit">Орг. единица</string>
+    <string name="filters_title_sorting">Сортировка</string>
     <string name="filters_title_status">Статус</string>
     <string name="filter_period_today">Сегодня</string>
     <string name="filter_period_yesterday">Вчера</string>
@@ -120,4 +143,73 @@
     <string name="filter_period_this_month">Этот месяц</string>
     <string name="filter_period_last_month">Последний месяц</string>
     <string name="filter_period_other">Другое</string>
+    <string name="filter_event_status_open">Открыть</string>
+    <string name="filter_event_status_schedule">Расписание</string>
+    <string name="filter_event_status_overdue">Просроченный</string>
+    <string name="filter_event_status_visited">Посещено</string>
+    <string name="filter_event_status_completed">Завершенный</string>
+    <string name="filter_event_status_skipped">Пропущенный</string>
+    <string name="go_back">Вернуться</string>
+    <string name="data_sets">Наборы данных</string>
+    <string name="interval_yesterday">Вчера</string>
+    <string name="dataset_overview">Детали</string>
+    <string name="dataset_comments">Комментарии</string>
+    <string name="name">Название</string>
+    <string name="formula">Формула</string>
+    <string name="filters_title_event_status">Статус события</string>
+    <string name="enrollment_date">Дата зачисления</string>
+    <string name="enrollment_status_active">Открыть</string>
+    <string name="enrollment_status_completed">Завершенный</string>
+    <string name="enrollment_status_cancelled">Отмененный</string>
+    <string name="event_data">Данные</string>
+    <string name="action_done">Готово</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="filters_title_date">Дата</string>
+    <string name="filters_title_event_date">Дата происшествия</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Вернуться</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Закрыть</string>
+    <string name="section_charts">Диаграммы</string>
+    <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_programs">Программы</string>
+    <string name="navigation_relationships">Зависимости</string>
+    <string name="navigation_notes">Заметки</string>
+    <string name="navigation_data_entry">Ввод данных</string>
+    <string name="navigation_tei_data">Детали</string>
+    <string name="filter_period_this_year">Этот год</string>
+    <string name="filter_period_this_bimonth">Этот бимесяц</string>
+    <string name="filter_period_last_bimonth">Прошлый бимесяц</string>
+    <string name="filter_period_this_quarter">Этот квартал</string>
+    <string name="filter_period_last_quarter">Последний квартал</string>
+    <string name="filter_period_weeks_this_year">Недели этого года</string>
+    <string name="filter_period_months_this_year">Месяцы этого года</string>
+    <string name="filter_period_bimonths_this_year">Бимесяцы этого года</string>
+    <string name="filter_period_quarters_this_year">Кварталы этого года</string>
+    <string name="filter_period_months_last_year">Месяцы последнего года</string>
+    <string name="filter_period_last_year">Прошлый год</string>
+    <string name="filter_period_this_financial_year">Этот финансовый год</string>
+    <string name="filter_period_last_financial_year">Прошлый финансовый год</string>
+    <string name="section_feedback">Обратная связь</string>
+    <string name="section_indicators">Индикаторы</string>
+    <string name="value">Значение</string>
+    <string name="break_glass_dialog_title">Данная программа защищена</string>
+    <string name="invalid_integer">Значение должно быть целым числом</string>
+    <string name="available">Доступно</string>
+    <string name="unknown_date">Неизвестный</string>
+    <string name="troubleshooting_language_title">Язык</string>
+    <string name="search_too_many_results">Слишком много результатов</string>
+    <string name="search_create_new">Создать новый</string>
+    <string name="action_ok">Ok</string>
+    <string name="sync_dialog_title_syncing">Синхронизирую...</string>
+    <string name="sync_dialog_action_send">Отправить</string>
+    <string name="sync_dialog_action_refresh">Обновить</string>
+    <string name="view_only">Только просмотр</string>
+    <string name="skipped">Пропущенный</string>
+    <string name="programs">Программы</string>
+    <string name="mark_follow_up">Отметить для последующего наблюдения</string>
+    <string name="remove">Убрать</string>
+    <string name="coordinates">Координаты</string>
+    <string name="schedule">Расписание</string>
+    <string name="program_stage">Этап программы</string>
+    <string name="event">событие</string>
+    <string name="optional">Опционно</string>
     </resources>

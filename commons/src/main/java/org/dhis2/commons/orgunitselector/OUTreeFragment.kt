@@ -16,7 +16,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import kotlinx.coroutines.launch
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
 import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -27,7 +29,7 @@ const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
 const val ARG_SCOPE = "OUTreeFragment.ARG_SCOPE"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
-class OUTreeFragment private constructor() : DialogFragment() {
+class OUTreeFragment() : DialogFragment() {
 
     class Builder {
         private var showAsDialog = false
@@ -40,7 +42,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
 
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
-            if (singleSelection && preselectedOrgUnits.size > 1) {
+            require(!(singleSelection && preselectedOrgUnits.size > 1)) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -49,7 +51,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
         }
 
         fun singleSelection() = apply {
-            if (preselectedOrgUnits.size > 1) {
+            require(preselectedOrgUnits.size <= 1) {
                 throw IllegalArgumentException(
                     "Single selection only admits one pre-selected org. unit",
                 )
@@ -82,7 +84,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
     @Inject
     lateinit var viewModelFactory: OUTreeViewModelFactory
 
-    private val presenter: OUTreeViewModel by viewModels { viewModelFactory }
+    private val viewmodel: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
 
@@ -119,6 +121,14 @@ class OUTreeFragment private constructor() : DialogFragment() {
         showAsDialog().let { showAsDialog ->
             showsDialog = showAsDialog
         }
+        lifecycleScope.launch {
+            viewmodel.finalSelectedOrgUnits.collect {
+                if (it.isNotEmpty()) {
+                    selectionCallback(it)
+                    exitOuSelection()
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -130,24 +140,24 @@ class OUTreeFragment private constructor() : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 Mdc3Theme {
-                    val list by presenter.treeNodes.collectAsState()
+                    val list by viewmodel.treeNodes.collectAsState()
                     OrgUnitSelectorDialog(
                         title = null,
                         items = list,
                         actions = object : OrgUnitSelectorActions {
                             override val onSearch: (String) -> Unit
-                                get() = presenter::searchByName
+                                get() = viewmodel::searchByName
                             override val onOrgUnitChecked:
                                 (orgUnitUid: String, isChecked: Boolean) -> Unit
-                                get() = presenter::onOrgUnitCheckChanged
+                                get() = viewmodel::onOrgUnitCheckChanged
                             override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
-                                get() = presenter::onOpenChildren
+                                get() = viewmodel::onOpenChildren
                             override val onDoneClick: () -> Unit
-                                get() = this@OUTreeFragment::exitOuSelection
+                                get() = this@OUTreeFragment::confirmOuSelection
                             override val onCancelClick: () -> Unit
-                                get() = this@OUTreeFragment::dismiss
+                                get() = this@OUTreeFragment::cancelOuSelection
                             override val onClearClick: () -> Unit
-                                get() = presenter::clearAll
+                                get() = viewmodel::clearAll
                         },
                     )
                 }
@@ -157,6 +167,7 @@ class OUTreeFragment private constructor() : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
+
         showAsDialog().takeIf { it }?.let {
             fixDialogSize(0.9, 0.9)
         }
@@ -164,8 +175,16 @@ class OUTreeFragment private constructor() : DialogFragment() {
 
     private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
+    private fun confirmOuSelection() {
+        viewmodel.confirmSelection()
+    }
+
+    private fun cancelOuSelection() {
+        selectionCallback(emptyList())
+        exitOuSelection()
+    }
+
     private fun exitOuSelection() {
-        selectionCallback(presenter.getOrgUnits())
         if (showAsDialog()) {
             dismiss()
         } else {

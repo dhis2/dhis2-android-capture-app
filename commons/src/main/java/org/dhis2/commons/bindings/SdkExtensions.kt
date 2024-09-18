@@ -116,6 +116,13 @@ fun D2.enrollmentImportConflicts(enrollmentUid: String): List<TrackerImportConfl
         .byEnrollmentUid().eq(enrollmentUid)
         .blockingGet()
 
+fun D2.canCreateEventInEnrollment(enrollmentUid: String, stagesToHide: List<String>): Boolean =
+    enrollmentModule().enrollmentService()
+        .blockingGetAllowEventCreation(
+            enrollmentUid,
+            stagesToHide,
+        )
+
 fun D2.teiAttribute(attributeUid: String) = trackedEntityModule().trackedEntityAttributes()
     .uid(attributeUid).blockingGet()
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.OnDismissListener
@@ -132,7 +133,16 @@ class DataSetListFragment : FragmentGlobalAbstract() {
                         viewModel.updateData()
                     }
                 }
-            }).show(FRAGMENT_TAG)
+            })
+            .onNoConnectionListener {
+                val contextView = activity.findViewById<View>(R.id.navigationBar)
+                Snackbar.make(
+                    contextView,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show(FRAGMENT_TAG)
     }
 
     companion object {

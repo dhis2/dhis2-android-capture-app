@@ -1,3 +1,5 @@
+
+import com.android.build.api.variant.impl.VariantOutputImpl
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -32,6 +34,17 @@ android {
                 standardOutput = stdout
             }
             return stdout.toString().trim()
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            System.getenv("SIGNING_KEYSTORE_PATH")?.let { path ->
+                storeFile = file(path)
+            }
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
         }
     }
 
@@ -75,7 +88,7 @@ android {
         val mapboxAccessToken = System.getenv("MAPBOX_ACCESS_TOKEN") ?: defMapboxToken
         val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
 
-        buildConfigField("String", "SDK_VERSION", "\"" + "1.9.1-eyeseetea-fork-1" + "\"")
+        buildConfigField("String", "SDK_VERSION", "\"" + "3.0.1-eyeseetea-fork-1" + "\"")
         buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"" + mapboxAccessToken + "\"")
         buildConfigField("String", "MATOMO_URL", "\"https://usage.analytics.dhis2.org/matomo.php\"")
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
@@ -143,6 +156,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
             buildConfigField("int", "MATOMO_ID", "1")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -175,14 +189,14 @@ android {
             applicationId = "com.eyeseetea.widp"
             dimension = "default"
             versionCode = libs.versions.vCode.get().toInt()
-            versionName = "2.9.1-widp-fork-1"
+            versionName = "3.0.1-widp-fork-1"
         }
 
         create("psi") {
             applicationId = "org.dhis2.psi"
             dimension = "default"
             versionCode = libs.versions.vCode.get().toInt()
-            versionName = "2.9.1.1-psi-fork-1"
+            versionName = libs.versions.vName.get()
         }
     }
 
@@ -228,6 +242,25 @@ android {
         abortOnError = false
         checkReleaseBuilds = false
     }
+
+    androidComponents {
+        onVariants { variant ->
+            val buildType = variant.buildType
+            val flavorName = variant.flavorName
+            variant.outputs.forEach { output ->
+                if (output is VariantOutputImpl) {
+                    val suffix = when {
+                        buildType == "debug" && flavorName == "dhis" -> "-training"
+                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
+                        else -> ""
+                    }
+
+                    output.outputFileName = "dhis2-v${libs.versions.vName.get()}$suffix.apk"
+                }
+            }
+
+        }
+    }
 }
 
 dependencies {
@@ -239,6 +272,7 @@ dependencies {
     implementation(project(":dhis2_android_maps"))
     implementation(project(":compose-table"))
     implementation(project(":stock-usecase"))
+    implementation(project(":dhis2-mobile-program-rules"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
@@ -268,7 +302,6 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
-    implementation(libs.dhis2.mobile.designsystem)
 
     coreLibraryDesugaring(libs.desugar)
 

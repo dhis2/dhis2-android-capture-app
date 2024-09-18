@@ -5,39 +5,37 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.data.tuples.Pair
-import org.dhis2.commons.reporting.CrashReportController
-import org.dhis2.data.dhislogic.DhisPeriodUtils
-import org.dhis2.utils.DateUtils
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class ProgramEventMapper @Inject constructor(
+class ProgramEventMapper(
     val d2: D2,
     val periodUtils: DhisPeriodUtils,
-    val crashReportController: CrashReportController,
+    val metadataIconProvider: MetadataIconProvider,
 ) {
 
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
             d2.programModule().programStages().uid(event.programStage()).blockingGet()
 
-        crashReportController.addBreadCrumb(
-            "ProgramEventMapper.eventToEventViewModel",
-            "Event: $event",
-        )
-
         val eventDate = event.eventDate() ?: event.dueDate()
+        val program = d2.programModule().programs().uid(event.program()).blockingGet()
 
         return EventViewModel(
             EventViewModelType.EVENT,
@@ -62,6 +60,10 @@ class ProgramEventMapper @Inject constructor(
             },
             nameCategoryOptionCombo =
             getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+            metadataIconData = metadataIconProvider(
+                programStage?.style() ?: ObjectStyle.builder().build(),
+                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+            ),
         )
     }
 

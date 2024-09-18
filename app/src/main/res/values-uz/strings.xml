@@ -118,9 +118,6 @@
     <string name="latitude">Кенглик</string>
     <string name="longitude">Узунлик</string>
     <string name="new_event">Янги тадбир</string>
-    <string name="failed_insert_event">Янги тадбирни киритиш амалга ошмади</string>
-    <string name="event_created">Тадбир яратилди</string>
-    <string name="event_updated">Тадбир янгиланди</string>
     <string name="one_time">Бир марта</string>
     <string name="permanent">Доимий</string>
 
@@ -133,18 +130,13 @@
     <string name="datavalue_saved">Қиймат сақланди!</string>
     <string name="there_is_no_available_period">Танлаш учун яроқли давр мавжуд эмас</string>
     <!--Event Detail-->
-    <string name="event_date">Ҳодиса/Тадбир санаси</string>
     <string name="due_date">Муддати</string>
     <string name="cat_combo">Категория комбинацияси</string>
     <string name="date_default">КК/ОО/ЙЙЙЙ</string>
     <string name="cancel">Бекор қилиш</string>
     <string name="delete">Ўчириб ташлаш</string>
-    <string name="delete_event">Ҳодиса/Тадбирни ўчириб ташлаш</string>
-    <string name="confirm_delete_event">Ҳақиқатдан ҳам ушбу ҳодиса/тадбирни ўчириб ташламоқчимисиз?</string>
-    <string name="event_was_deleted">Тадбир муваффақиятли ўчириб ташланди</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Қайд журнали</string>
     <string name="active_programs">Фаол дастурлар</string>
@@ -156,20 +148,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
-    <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
     <string name="follow_up_disabled">Кузатув ўчирилган</string>
     <string name="deactivate">Фаолсизлантириш</string>
     <string name="program_not_allow_events">Ушбу дастур яна кўпроқ тадбирларни қабул қилмайди</string>
 
-    <!--DONE TASKS-->
     <string name="events">ҳодиса/тадбирлар</string>
     <string name="done_task">Бош саҳифа</string>
     <string name="app_info">Илова ҳақида маълумот</string>
     <string name="log_out">Чиқиш</string>
     <string name="block_session">Сессияни блоклаш</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 дақиқа</string>
     <string name="fifteen_minute">15 дақиқа</string>
@@ -240,17 +229,14 @@
     <string name="add_note">Изоҳ қолдириш</string>
     <string name="revert">Қайтиш</string>
     <string name="activated">Фаоллаштирилди</string>
-    <string name="enroll_in">Қайд қилинган %s</string>
     <string name="missing_mandatory_fields_title">Мажбурий майдонлар қолдириб кетилган</string>
     <string name="missing_mandatory_fields_text">Баъзи мажбурий майдонлар қолдириб кетилган. Агар ҳозир орқага қайтсангиз, барча сақланган маълумотлар ўчиб кетади.</string>
     <string name="missing_mandatory_fields_text_not_delete">Баъзи мажбурий майдонлар қолдириб кетилган. Агар орқага қайтмоқчи бўлсангиз, Илтимос, уларни тўлдиринг.</string>
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
     <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
-    <string name="missing_mandatory_fields_events_2.0">Баъзи мажбурий майдонлар қолдириб кетилган: \n   %sда\n. Ҳозир орқага қайта оласиз, аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="missing_mandatory_fields_go_back">Ўчириб ташлаш ва орқага қайтиш</string>
     <string name="error_fields">Баъзи маълумотларда хатоликлар мавжуд: \n%s\. Илтимос, уларни текширинг.</string>
     <string name="missing_mandatory_fields_finish">Баъзи мажбурий майдонлар қолдириб кетилган. Сиз маълумотларни киритишни якунлаб чиқишингиз мумкин. Аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
-    <string name="enrollment_coordinates">Рўйхатдан ўтиш координаталари</string>
     <string name="tei_coordinates">Учун координаталар</string>
 
     <!--EVENT SUMMARY-->
@@ -308,7 +294,6 @@
     <string name="qr_error_id">QR код яроқсиз</string>
     <string name="qr_error_attr">Ушбу атрибутларрни қўшиб бўлмади</string>
     <string name="qr_error_enrollment">Ушбу қайдларни қўшиб бўлмади</string>
-    <string name="qr_error_event">Ушбу ҳодиса/тадбирни қўшиб бўлмади</string>
 
     <string name="jira_report">Jira нашри учун хабар бериш</string>
     <string name="about">Ҳақида</string>
@@ -452,17 +437,14 @@
     <string name="finish">Тугатиш</string>
     <string name="error_fields_title">Хатоликлар мавжуд бўлган майдонлар</string>
     <string name="error_fields_events">Баъзи майдонларда хатоликлар мавжуд.Улар сақланмади. Илтимос,, уларни текшириб кўринг.</string>
-    <string name="event_reopened">Ушбу ҳодиса/тадбирни энди таҳрир қилиш мумкин</string>
     <string name="unique_warning">Қиймат ноёб бўлиши лозим, бир бирига ўхшаш топилди. У сақланмади. Илтимос, текшириб кўриш.</string>
     <string name="unique_coincidence_found">Ноёб соҳада бир бирига ўхшаш қиймат топилди. Рўйхатдан ўтишни сақлаш учун формани текшириш.</string>
     <string name="please_wait">Илтимос, кутинг</string>
     <string name="skip">Ўтказиб юбориш</string>
     <string name="reschedule">Қайта режаланг</string>
-    <string name="event_was_skipped">Ҳодиса/тадбир ўтказиб юборилган деб белгиланди</string>
     <string name="no_intructions">Ушбу экрандаги ҳақида маълумот йўқ</string>
     <string name="event_overdue">Муддат ўтган</string>
     <string name="unsupported_program_rule">Бу ерда дастурнинг қўллаб қувватланмайдиган бир қоидаси мавжуд. Илтимос, ҳужжатларни текширинг.</string>
-    <string name="delete_event_error">Ушбу ҳодиса/дастур ҳали яратилмаган</string>
     <string name="empty_description">Ушбу майдон учун маълумот йўқ</string>
     <string name="biometrics_dialog_title">Ишонч ёрлиқлари бўш</string>
     <string name="biometrics_first_use_text">Бармоқ излари сканери ёрдамида  тизимга кириш учун аввал стандарт усулдан фойдаланишингиз керак</string>
@@ -515,10 +497,8 @@
     <string name="sync_setting">Синхронизация созланмаси: %s</string>
     <string name="relationship_without_enrollment">Сиз кириб кўрмоқчи бўлган ёзув қайд этилмаган. Сиз бошқарув панелига кира олмайсиз</string>
     <string name="formatting_error">Форматлашда хатолик</string>
-    <string name="dashboard_menu_delete_enrollment">Фақат қайдларни ўчириб ташлаш</string>
     <string name="delete_authority_error">Ҳуқуқингиз чегараланганлиги сабабни ушбу ёзувни ўчириб ташлолмайсиз</string>
     <string name="validation_url">Бу ҳақиқий URL эмас</string>
-    <string name="uncomplete_authority_error">Ушбу ҳодиса/тадбирни қайта очишга ваколатингиз йўқ</string>
     <string name="adjusting_form">Шакл созланмоқда...</string>
 
     <string name="sms_receiver_number">Қабул қилувчининг рақами</string>
@@ -610,7 +590,6 @@
     <string name="event_tei_limits_v2">Созламалар чекланган %s \n  Ҳодиса/тадбирлар: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Қайд қилиш маълумотларини беркитиш</string>
     <string name="enrollment_data_show">Қайд қилиш маълумотларини кўрсатиш</string>
-    <string name="enrollment_data_section_label">Қайд қилиш маълумотлари</string>
     <string name="sms_enabled">СМС модуль ёқиб қўйилган</string>
     <string name="sms_disabled">СМС модуль ўчириб қўйилган</string>
     <string name="sms_downloading_data">СМС модуль учун маълумотлар юкланмоқда. Илтимос, кутинг</string>
@@ -620,7 +599,6 @@
     <string name="disable_pin_locked">Блокланган экранни қайта кўрсатмаслик</string>
     <string name="set_pin">ПИН кодни ўрнатинг</string>
     <string name="conflict">Номутаносиблик</string>
-    <string name="event_date_in_future_message">Ушбу ҳодиса/тадбирнинг санаси келажакда бўлиши мумкин эмас. Илтимос, ўзгартиринг</string>
     <string name="change_event_date">Санани ўзгартириш</string>
     <string name="go_back">Орқага қайтинг</string>
     <string name="data_sets">Маълумотлар тўплами</string>
@@ -634,7 +612,6 @@
     <string name="interval_hour_ago">%d соат олдин</string>
     <string name="interval_yesterday">Кеча</string>
     <string name="enrollment_single_section_label">Атрибатлар - %s</string>
-    <string name="program_selector">Дастур қайдлари</string>
     <string name="select_time">Вақтни танланг</string>
     <string name="enter_letter">Хатни киритинг</string>
     <string name="enter_unit_interval">0 дан 1 гача рақамни киритинг</string>
@@ -680,7 +657,6 @@
     <string name="complete_anyway">Барибир тўлдиринг</string>
     <string name="fk_message">%s %s дан %s %s йўқолган</string>
     <string name="filters_title_event_status">Ҳодиса/Тадбир ҳолати</string>
-    <string name="filters_title_enrollment_status">рўйхатга олиш ҳолати</string>
     <string name="enrollment_date">Қайд қилинган сана</string>
     <string name="dataset_empty_list_can_create">Маълумот йўқ. Янги ёзув қўшиш учун \"+\" тугмасини босинг</string>
     <string name="dataset_emtpy_list_can_not_create">Маълумот йўқ. Сизда янги ёзувларни қўшишга рухсат йўқ.</string>
@@ -732,7 +708,6 @@
     <string name="navigation_analytics">Аналитика</string>
     <string name="navigation_tasks">Вазифалар</string>
     <string name="navigation_programs">Дастурлар</string>
-    <string name="navigation_events">Ҳодиса/Тадбирлар</string>
     <string name="navigation_relationships">Ўзаро алоқалар</string>
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>
@@ -768,8 +743,6 @@
     <string name="from_gallery">Галереядан танлаш</string>
     <string name="data_set_quality_check_done">Бажарилди!</string>
     <string name="break_glass_dialog_title">Ушбу дастур ҳимояланган</string>
-    <string name="break_glass_dialog_description">Ушбу дастурда қайд этишни текшириш учун сабаб кўрсатишингиз керак. Барча ҳаракатлар ёзиб борилади.</string>
-    <string name="break_glass_reason">Қайд этишни текшириш учун сабаб</string>
     <string name="break_glass_hint">Сабабини шу ерда ёзиб қолдиринг</string>
     <string name="authenticating">Аутентификация қилинмоқда</string>
     <string name="login_error_no_dhis_instance">Кўрсатиб ўтилган URL манзил DHIS шаблонида эмас</string>

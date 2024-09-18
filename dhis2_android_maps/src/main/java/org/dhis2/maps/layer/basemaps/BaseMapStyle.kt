@@ -3,7 +3,7 @@ package org.dhis2.maps.layer.basemaps
 import com.google.gson.annotations.SerializedName
 
 object BaseMapStyleBuilder {
-    fun build(id: String, tileUrls: List<String>, attribution: String) = BaseMapStyle(
+    fun build(id: String, tileUrls: List<String>, attribution: String, isDefault: Boolean) = BaseMapStyle(
         version = 8,
         sources = StyleSources(
             rasterTiles = RasterTiles(
@@ -24,18 +24,20 @@ object BaseMapStyleBuilder {
         ),
         id = id,
         glyphs = DEFAULT_GLYPH_URL,
+        isDefault = isDefault,
     )
 
     fun internalBaseMap(): BaseMapStyle {
         return build(
-            OSM_LIGHT,
-            listOf(
+            id = OSM_LIGHT,
+            tileUrls = listOf(
                 DEFAULT_TILE_URL.replace("{s}", "a"),
                 DEFAULT_TILE_URL.replace("{s}", "b"),
                 DEFAULT_TILE_URL.replace("{s}", "c"),
                 DEFAULT_TILE_URL.replace("{s}", "d"),
             ),
-            DEFAULT_ATTRIBUTION,
+            attribution = DEFAULT_ATTRIBUTION,
+            isDefault = true,
         )
     }
 }
@@ -46,6 +48,7 @@ data class BaseMapStyle(
     val layers: List<StyleLayers>,
     val id: String,
     var glyphs: String,
+    val isDefault: Boolean,
 )
 
 data class StyleSources(

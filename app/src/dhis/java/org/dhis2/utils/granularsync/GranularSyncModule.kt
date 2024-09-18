@@ -31,11 +31,11 @@ import dagger.Provides
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
@@ -60,17 +60,20 @@ class GranularSyncModule(
             view,
             repository,
             schedulerProvider,
-            object : DispatcherProvider {
-                override fun io() = Dispatchers.IO
-
-                override fun computation() = Dispatchers.Default
-
-                override fun ui() = Dispatchers.Main
-            },
+            provideDispatchers(),
             syncContext,
             workManagerController,
             smsSyncProvider,
         )
+    }
+
+    @Provides
+    fun provideDispatchers() = object : DispatcherProvider {
+        override fun io() = Dispatchers.IO
+
+        override fun computation() = Dispatchers.Default
+
+        override fun ui() = Dispatchers.Main
     }
 
     @Provides
@@ -87,6 +90,7 @@ class GranularSyncModule(
         dhisProgramUtils,
         periodUtils,
         resourceManager,
+        provideDispatchers(),
     )
 
     @Provides

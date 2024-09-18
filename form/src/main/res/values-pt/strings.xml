@@ -40,7 +40,6 @@
     <string name="enter_long_text">Inserir texto longo</string>
     <string name="enter_text">Inserir texto</string>
     <string name="due_date">Data de Vencimento</string>
-    <string name="event_date">Data de incidente</string>
     <string name="complete">Completo</string>
     <string name="discard_changes">Descartar mudanças</string>
     <string name="saved">Gravado!</string>
@@ -50,12 +49,8 @@
     <string name="copied_text">Copiado</string>
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="warning_error_on_complete_title">Verifique isso!</string>
-    <string name="enrollment_data_section_label">Dados de inscrição</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="enrolling_ou">Inscrição UO:</string>
     <string name="tei_coordinates">Coordenadas para o</string>
-    <string name="enrollment_coordinates">Coordenadas de inscrição</string>
     <string name="no_reserved_values">Não há mais valores reservados. Entre em contato com o administrador do sistema</string>
-    <string name="enrollmment_date">Data de inscrição</string>
     <string name="incident_date">Data do incidente</string>
     </resources>

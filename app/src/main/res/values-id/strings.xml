@@ -118,9 +118,6 @@
     <string name="latitude">Lintang</string>
     <string name="longitude">Bujur</string>
     <string name="new_event">Event baru</string>
-    <string name="failed_insert_event">Gagal menambahkan even baru</string>
-    <string name="event_created">Even dibuat</string>
-    <string name="event_updated">Even diperbarui</string>
     <string name="one_time">Satu kali</string>
     <string name="permanent">Permanen</string>
 
@@ -133,18 +130,13 @@
     <string name="datavalue_saved">Data tersimpan!</string>
     <string name="there_is_no_available_period">Tidak ada periode yang dapat dipilih.</string>
     <!--Event Detail-->
-    <string name="event_date">Tanggal Event</string>
     <string name="due_date">Tanggal jatuh tempo</string>
     <string name="cat_combo">Cat Combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">batal</string>
     <string name="delete">hapus</string>
-    <string name="delete_event">Hapus even</string>
-    <string name="confirm_delete_event">Apakah Anda yakin akan menghapus even ini?</string>
-    <string name="event_was_deleted">Even terhapus</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">hal yang paling terbaru</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Data pendaftaran</string>
     <string name="active_programs">Aktifkan program</string>
@@ -156,20 +148,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Lihat rincian</string>
     <string name="view_more">LIHAT LAINNYA</string>
-    <string name="enrolling_ou">Daftarkan OU:</string>
     <string name="follow_up">Tindak lanjut</string>
     <string name="follow_up_enabled">Tindak lanjut diterapkan</string>
     <string name="follow_up_disabled">Tindak lanjut ditutup</string>
     <string name="deactivate">Deaktivasi</string>
     <string name="program_not_allow_events">Program ini tidak diperbolehkan menambah even</string>
 
-    <!--DONE TASKS-->
     <string name="events">Even</string>
     <string name="done_task">Beranda</string>
     <string name="app_info">Informasi App</string>
     <string name="log_out">Keluar</string>
     <string name="block_session">Tutup sesi</string>
-
     <!-- SYNC -->
     <string name="a_minute">1 Menit</string>
     <string name="fifteen_minute">15 Menit</string>
@@ -240,17 +229,14 @@
     <string name="add_note">Tambah catatan</string>
     <string name="revert">Kembali</string>
     <string name="activated">Diaktifkan</string>
-    <string name="enroll_in">Mendaftar %s</string>
     <string name="missing_mandatory_fields_title">Bidang wajib tidak ada</string>
     <string name="missing_mandatory_fields_text">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali sekarang, semua informasi yang disimpan akan dihapus.</string>
     <string name="missing_mandatory_fields_text_not_delete">Beberapa bidang wajib tidak ada. Jika Anda ingin kembali, silakan isi.</string>
     <string name="title_delete_go_back">Data Anda tidak disimpan</string>
     <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
-    <string name="missing_mandatory_fields_events_2.0">Beberapa bidang wajib tidak ada:\n%s\nAnda dapat kembali sekarang, tetapi even ini tidak akan dapat diselesaikan.</string>
     <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
     <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
     <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
-    <string name="enrollment_coordinates">Koordinat pendaftaran</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
     <!--EVENT SUMMARY-->
@@ -308,7 +294,6 @@
     <string name="qr_error_id">Kode QR tidak valid</string>
     <string name="qr_error_attr">Atribut ini tidak dapat ditambahkan</string>
     <string name="qr_error_enrollment">Pendaftaran ini tidak dapat ditambahkan</string>
-    <string name="qr_error_event">Even ini tidak dapat ditambahkan</string>
 
     <string name="jira_report">Laporkan Masalah Jira</string>
     <string name="about">Tentang</string>
@@ -451,17 +436,14 @@
     <string name="finish">Selesai</string>
     <string name="error_fields_title">Parameter dengan kesalahan</string>
     <string name="error_fields_events">Beberapa parameter terdapat kesalahan. Parameter ini belum disimpan. Mohon periksa kembali</string>
-    <string name="event_reopened">Even ini sekarang dapat diedit</string>
     <string name="unique_warning">Nilai harus unik, kebetulan telah ditemukan. Itu belum disimpan. Tolong diperiksa.</string>
     <string name="unique_coincidence_found">Sebuah kebetulan di bidang yang unik telah ditemukan. Silakan periksa formulir untuk menyimpan Pendaftaran.</string>
     <string name="please_wait">Mohon tunggu</string>
     <string name="skip">Lewati</string>
     <string name="reschedule">Jadwal ulang</string>
-    <string name="event_was_skipped">Even ditandai sebagai dilewati</string>
     <string name="no_intructions">Tidak ada informasi untuk layar ini</string>
     <string name="event_overdue">Lewat waktu</string>
     <string name="unsupported_program_rule">Terdapat satu aturan program yang tidak didukung. Silakan periksa dokumentasi</string>
-    <string name="delete_event_error">Even ini belum dibuat</string>
     <string name="empty_description">Tidak ada info untuk bidang ini</string>
     <string name="biometrics_dialog_title">Kredensial Kosong</string>
     <string name="biometrics_first_use_text">Untuk dapat login menggunakan pemindai sidik jari, Anda terlebih dahulu harus menggunakan cara default</string>
@@ -514,10 +496,8 @@
     <string name="sync_setting">Pengaturan sinkronisasi: %s</string>
     <string name="relationship_without_enrollment">Catatan yang Anda coba akses tidak memiliki pendaftaran. Anda tidak dapat mengakses dasbor.</string>
     <string name="formatting_error">Memformat kesalahan</string>
-    <string name="dashboard_menu_delete_enrollment">Hapus pendaftaran saja</string>
     <string name="delete_authority_error">Anda tidak memiliki wewenang untuk menghapus catatan ini</string>
     <string name="validation_url">Ini bukan url yang valid</string>
-    <string name="uncomplete_authority_error">Anda tidak memiliki wewenang untuk membuka kembali acara ini</string>
     <string name="adjusting_form">Menyesuaikan formulir…</string>
 
     <string name="sms_receiver_number">Nomor penerima</string>
@@ -719,7 +699,6 @@
     <string name="event_tei_limits_v2">Pengaturan terbatas %s\nAcara: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Sembunyikan data pendaftaran</string>
     <string name="enrollment_data_show">Tampilkan data pendaftaran</string>
-    <string name="enrollment_data_section_label">Data pendaftaran</string>
     <string name="sms_enabled">Modul SMS diaktifkan</string>
     <string name="sms_disabled">Modul SMS dinonaktifkan</string>
     <string name="sms_downloading_data">Mengunduh data untuk modul SMS. Mohon tunggu</string>
@@ -729,7 +708,6 @@
     <string name="disable_pin_locked">Jangan tampilkan layar kunci lagi</string>
     <string name="set_pin">Setel pin</string>
     <string name="conflict">Konflik</string>
-    <string name="event_date_in_future_message">Even ini tidak dapat memiliki tanggal di masa mendatang. Silakan ubah.</string>
     <string name="change_event_date">Ganti tanggal</string>
     <string name="go_back">Kembali</string>
     <string name="data_sets">Data set</string>
@@ -743,7 +721,6 @@
     <string name="interval_hour_ago">%d jam yang lalu</string>
     <string name="interval_yesterday">Kemarin</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>
-    <string name="program_selector">Pendaftaran program</string>
     <string name="select_time">Pilih waktu</string>
     <string name="enter_letter">Masukkan huruf</string>
     <string name="enter_unit_interval">Masukkan nomor dari 0 hingga 1</string>
@@ -789,7 +766,6 @@
     <string name="complete_anyway">Lengkap</string>
     <string name="fk_message">Tidak ada %s %s dari %s %s</string>
     <string name="filters_title_event_status">Status even</string>
-    <string name="filters_title_enrollment_status">Status pendaftaran</string>
     <string name="enrollment_date">Tanggal pendaftaran</string>
     <string name="dataset_empty_list_can_create">Tidak ada data. Klik \"+\" untuk menambahkan catatan baru</string>
     <string name="dataset_emtpy_list_can_not_create">Tidak ada data. Anda tidak memiliki izin untuk menambahkan catatan baru.</string>
@@ -841,7 +817,6 @@
     <string name="navigation_analytics">Analitik</string>
     <string name="navigation_tasks">Tugas</string>
     <string name="navigation_programs">Program-program</string>
-    <string name="navigation_events">Even</string>
     <string name="navigation_relationships">Hubungan</string>
     <string name="navigation_notes">Catatan</string>
     <string name="navigation_data_entry">Data entri</string>
@@ -884,8 +859,6 @@
     <string name="from_gallery">Pilih dari galeri</string>
     <string name="data_set_quality_check_done">Selesai!</string>
     <string name="break_glass_dialog_title">Program ini dilindungi</string>
-    <string name="break_glass_dialog_description">Anda harus memberikan alasan untuk memeriksa pendaftaran dalam program yang dilindungi ini. Semua aktivitas akan dicatat.</string>
-    <string name="break_glass_reason">Alasan untuk memeriksa pendaftaran</string>
     <string name="break_glass_hint">Jelaskan alasannya di sini</string>
     <string name="authenticating">Otentikasi</string>
     <string name="login_error_no_dhis_instance">URL server yang disediakan bukan instance dhis</string>

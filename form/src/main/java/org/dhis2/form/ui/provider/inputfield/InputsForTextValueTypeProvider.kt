@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -18,11 +20,13 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputBarCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 
 @Composable
 internal fun ProvideInputsForValueTypeText(
     modifier: Modifier = Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
@@ -33,6 +37,7 @@ internal fun ProvideInputsForValueTypeText(
         UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
             ProvideQRInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
@@ -44,6 +49,7 @@ internal fun ProvideInputsForValueTypeText(
         UiRenderType.BAR_CODE -> {
             ProvideBarcodeInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
@@ -53,6 +59,7 @@ internal fun ProvideInputsForValueTypeText(
         } else -> {
             ProvideDefaultTextInput(
                 modifier = modifier,
+                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 focusManager = focusManager,
@@ -65,14 +72,16 @@ internal fun ProvideInputsForValueTypeText(
 @Composable
 private fun ProvideQRInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputQRCode(
@@ -81,21 +90,22 @@ private fun ProvideQRInput(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
+        inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
         },
         onQRButtonClicked = {
-            if (value.isNullOrEmpty()) {
+            if (value.text.isEmpty()) {
                 uiEventHandler.invoke(
                     RecyclerViewUiEvents.ScanQRCode(
                         fieldUiModel.uid,
@@ -108,7 +118,7 @@ private fun ProvideQRInput(
                     RecyclerViewUiEvents.DisplayQRCode(
                         fieldUiModel.uid,
                         optionSet = fieldUiModel.optionSet,
-                        value = value!!,
+                        value = value.text,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
                         label = fieldUiModel.label,
@@ -126,13 +136,15 @@ private fun ProvideQRInput(
 @Composable
 private fun ProvideDefaultTextInput(
     modifier: Modifier,
+    inputStyle: InputStyle = InputStyle.DataInputStyle(),
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(fieldUiModel.value?.length ?: 0)
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
     InputText(
         modifier = modifier.fillMaxWidth(),
@@ -140,15 +152,16 @@ private fun ProvideDefaultTextInput(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
+        inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
@@ -163,37 +176,41 @@ private fun ProvideDefaultTextInput(
 @Composable
 private fun ProvideBarcodeInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
+    val textSelection = TextRange(if (fieldUiModel.value != null) fieldUiModel.value!!.length else 0)
+
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(fieldUiModel.value)
+        mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
     InputBarCode(
         modifier = modifier.fillMaxWidth(),
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        inputText = value ?: "",
+        inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
         onNextClicked = onNextClicked,
         onValueChanged = {
-            value = it
+            value = it ?: TextFieldValue()
             intentHandler(
                 FormIntent.OnTextChange(
                     fieldUiModel.uid,
-                    value,
+                    value.text,
                     fieldUiModel.valueType,
                 ),
             )
         },
         onActionButtonClicked = {
-            if (value.isNullOrEmpty()) {
+            if (value.text.isEmpty()) {
                 uiEventHandler.invoke(
                     RecyclerViewUiEvents.ScanQRCode(
                         fieldUiModel.uid,
@@ -206,7 +223,7 @@ private fun ProvideBarcodeInput(
                     RecyclerViewUiEvents.DisplayQRCode(
                         fieldUiModel.uid,
                         optionSet = fieldUiModel.optionSet,
-                        value = value!!,
+                        value = value.text,
                         renderingType = fieldUiModel.renderingType,
                         editable = fieldUiModel.editable,
                         label = fieldUiModel.label,

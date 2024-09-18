@@ -9,10 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
+import org.dhis2.usescases.teiDashboard.DashboardModel
+import org.dhis2.usescases.teiDashboard.DashboardTEIModel
 import org.dhis2.usescases.teiDashboard.ui.model.TeiCardUiModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -31,17 +32,18 @@ class TeiDashboardCardMapper(
 ) {
 
     fun map(
-        dashboardModel: DashboardProgramModel,
+        dashboardModel: DashboardModel,
         onImageClick: (File) -> Unit,
         phoneCallback: (String) -> Unit,
         emailCallback: (String) -> Unit,
         programsCallback: () -> Unit,
     ): TeiCardUiModel {
-        val avatar: @Composable (() -> Unit)? = if (dashboardModel.avatarPath.isNotEmpty()) {
-            { ProvideAvatar(item = dashboardModel, onImageClick) }
-        } else {
-            null
-        }
+        val avatar: @Composable (() -> Unit)? =
+            dashboardModel.avatarPath?.takeIf { it.isNotEmpty() }?.let {
+                {
+                    ProvideAvatar(path = it, onImageClick)
+                }
+            }
 
         return TeiCardUiModel(
             avatar = avatar,
@@ -60,8 +62,8 @@ class TeiDashboardCardMapper(
     }
 
     @Composable
-    private fun ProvideAvatar(item: DashboardProgramModel, onImageClick: (File) -> Unit) {
-        val file = File(item.avatarPath)
+    private fun ProvideAvatar(path: String, onImageClick: (File) -> Unit) {
+        val file = File(path)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
         val painter = BitmapPainter(bitmap)
 
@@ -72,97 +74,109 @@ class TeiDashboardCardMapper(
         )
     }
 
-    private fun getTitle(item: DashboardProgramModel): String {
-        return if (item.teiHeader != null) {
-            item.teiHeader!!
-        } else if (item.attributes.isEmpty()) {
-            "-"
-        } else {
-            val attribute = item.attributes.filterAttributes().firstOrNull()
-            val key = attribute?.val0()?.displayFormName()
-            val value = attribute?.val1()?.value()
-            "$key: $value"
+    private fun getTitle(item: DashboardModel): String {
+        return when {
+            item.teiHeader != null -> item.teiHeader!!
+            item is DashboardEnrollmentModel -> item.trackedEntityAttributes.takeIf { it.isNotEmpty() }
+                ?.let {
+                    val attribute = it.filterAttributes().firstOrNull()
+                    val key = attribute?.first?.displayFormName()
+                    val value = attribute?.second?.value()?.takeIf { attrValue ->
+                        attrValue.isNotEmpty()
+                    } ?: "-"
+                    "$key: $value"
+                } ?: "-"
+
+            else -> "-"
         }
     }
 
     private fun getAdditionalInfo(
-        item: DashboardProgramModel,
+        item: DashboardModel,
         phoneCallback: (String) -> Unit,
         emailCallback: (String) -> Unit,
         programsCallback: () -> Unit,
     ): List<AdditionalInfoItem> {
-        val attributesList = item.attributes
-            .filterAttributes()
-            .map {
-                if (it.val0().valueType() == ValueType.PHONE_NUMBER) {
-                    AdditionalInfoItem(
-                        key = "${it.val0().displayFormName()}:",
-                        value = it.val1().value() ?: "",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Filled.PhoneEnabled,
-                                contentDescription = "Icon Button",
-                                tint = SurfaceColor.Primary,
-                            )
-                        },
-                        color = SurfaceColor.Primary,
-                        action = { phoneCallback.invoke(it.val1().value() ?: "") },
-                    )
-                } else if (it.val0().valueType() == ValueType.EMAIL) {
-                    AdditionalInfoItem(
-                        key = "${it.val0().displayFormName()}:",
-                        value = it.val1().value() ?: "",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Filled.MailOutline,
-                                contentDescription = "Icon Button",
-                                tint = SurfaceColor.Primary,
-                            )
-                        },
-                        color = SurfaceColor.Primary,
-                        action = { emailCallback.invoke(it.val1().value() ?: "") },
-                    )
-                } else {
-                    AdditionalInfoItem(
-                        key = "${it.val0().displayFormName()}:",
-                        value = it.val1().value() ?: "",
-                    )
-                }
-            }.toMutableList()
+        val attributesList = when (item) {
+            is DashboardEnrollmentModel -> item.trackedEntityAttributes.filterAttributes()
+            is DashboardTEIModel -> emptyList()
+        }.map {
+            if (it.first.valueType() == ValueType.PHONE_NUMBER) {
+                AdditionalInfoItem(
+                    key = it.first.displayFormName(),
+                    value = it.second.value()?.takeIf { attrValue -> attrValue.isNotEmpty() }
+                        ?: "-",
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.PhoneEnabled,
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
+                    },
+                    color = SurfaceColor.Primary,
+                    action = { phoneCallback.invoke(it.second.value() ?: "") },
+                )
+            } else if (it.first.valueType() == ValueType.EMAIL) {
+                AdditionalInfoItem(
+                    key = it.first.displayFormName(),
+                    value = it.second.value() ?: "-",
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.MailOutline,
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
+                    },
+                    color = SurfaceColor.Primary,
+                    action = { emailCallback.invoke(it.second.value() ?: "") },
+                )
+            } else {
+                AdditionalInfoItem(
+                    key = it.first.displayFormName(),
+                    value = it.second.value() ?: "-",
+                )
+            }
+        }.toMutableList()
 
         if (item.teiHeader == null) {
             attributesList.removeFirstOrNull()
         }
 
-        return attributesList.also { list ->
-            if (item.currentProgram.displayIncidentDate() == true) {
-                addIncidentDate(
-                    list,
-                    item.currentProgram.incidentDateLabel(),
-                    item.currentEnrollment.incidentDate(),
-                )
-            }
-        }.also { list ->
-            addEnrollmentDate(
-                list,
-                item.currentProgram.enrollmentDateLabel(),
-                item.currentEnrollment.enrollmentDate(),
-            )
-        }.also { list ->
-            if (item.orgUnits.isNotEmpty()) {
-                addEnrollIn(
-                    list,
-                    item.currentOrgUnit,
-                )
-            }
-        }.also { list ->
-            if (item.enrollmentActivePrograms.isNotEmpty()) {
-                addEnrollPrograms(
-                    list,
-                    item.enrollmentActivePrograms,
-                    programsCallback,
-                )
-            }
+        return when (item) {
+            is DashboardEnrollmentModel ->
+                attributesList.also { list ->
+                    if (item.currentProgram().displayIncidentDate() == true) {
+                        addIncidentDate(
+                            list,
+                            item.currentProgram().displayIncidentDateLabel(),
+                            item.currentEnrollment.incidentDate(),
+                        )
+                    }
+                }.also { list ->
+                    addEnrollmentDate(
+                        item.currentProgram().uid(),
+                        list,
+                        item.currentProgram().displayEnrollmentDateLabel(),
+                        item.currentEnrollment.enrollmentDate(),
+                    )
+                }.also { list ->
+                    if (item.orgUnits.isNotEmpty()) {
+                        addEnrollIn(
+                            list,
+                            item.getCurrentOrgUnit(),
+                        )
+                    }
+                }.also { list ->
+                    item.getEnrollmentActivePrograms().takeIf { it.isNotEmpty() }?.let {
+                        addEnrollPrograms(
+                            list,
+                            it,
+                            programsCallback,
+                        )
+                    }
+                }
+
+            is DashboardTEIModel -> attributesList
         }
     }
 
@@ -190,7 +204,7 @@ class TeiDashboardCardMapper(
         list.add(
             AdditionalInfoItem(
                 key = resourceManager.getString(R.string.enrolledIn),
-                value = currentOrgUnit?.displayName() ?: "",
+                value = currentOrgUnit?.displayName() ?: "-",
                 isConstantItem = true,
             ),
         )
@@ -203,30 +217,34 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = "${incidentDateLabel ?: resourceManager.getString(R.string.incident_date)}:",
-                value = incidentDate.toUi() ?: "",
+                key = incidentDateLabel ?: resourceManager.getString(R.string.incident_date),
+                value = incidentDate.toUi() ?: "-",
                 isConstantItem = true,
             ),
         )
     }
 
     private fun addEnrollmentDate(
+        programUid: String,
         list: MutableList<AdditionalInfoItem>,
         programLabel: String?,
         enrollmentDate: Date?,
     ) {
         list.add(
             AdditionalInfoItem(
-                key = "${programLabel ?: resourceManager.getString(R.string.enrollment_date)}:",
-                value = enrollmentDate.toUi() ?: "",
+                key = programLabel ?: resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.enrollment_date_V2,
+                    1,
+                ),
+                value = enrollmentDate.toUi() ?: "-",
                 isConstantItem = true,
             ),
         )
     }
 
     private fun List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>.filterAttributes() =
-        this.filter { it.val0().valueType() != ValueType.IMAGE }
-            .filter { it.val0().valueType() != ValueType.COORDINATE }
-            .filter { it.val0().valueType() != ValueType.FILE_RESOURCE }
-            .filter { it.val1().value()?.isNotEmpty() == true }
+        this.filter { it.first.valueType() != ValueType.IMAGE }
+            .filter { it.first.valueType() != ValueType.COORDINATE }
+            .filter { it.first.valueType() != ValueType.FILE_RESOURCE }
 }

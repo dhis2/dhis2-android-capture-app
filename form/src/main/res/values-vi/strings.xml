@@ -46,7 +46,6 @@
     <string name="enter_long_text">Nhập văn bản dài</string>
     <string name="enter_text">Nhập văn bản</string>
     <string name="due_date">Ngày đến hạn</string>
-    <string name="event_date">Ngày sự kiện</string>
     <string name="mandatory_field">Trường bắt buộc</string>
     <string name="form_latitude_prefix">Vĩ độ: </string>
     <string name="form_longitude_prefix">Kinh độ: </string>
@@ -74,12 +73,8 @@
     <string name="from_gallery">Chọn từ thư viện ảnh</string>
     <string name="warning_error_on_complete_title">Kiểm tra cái này!</string>
     <string name="action_do_not_show_again">Không hiển thị lại</string>
-    <string name="enrollment_data_section_label">Dữ liệu đăng ký</string>
     <string name="enrollment_single_section_label">Thuộc tính - %s</string>
-    <string name="enrolling_ou">Đơn vị đăng ký</string>
     <string name="tei_coordinates">Tọa độ của </string>
-    <string name="enrollment_coordinates">Tọa độ đăng ký</string>
     <string name="no_reserved_values">Không có giá trị dành riêng nào nữa. Liên hệ với quản lý của bạn</string>
-    <string name="enrollmment_date">Ngày đăng ký</string>
     <string name="incident_date">Ngày khởi phát</string>
     </resources>

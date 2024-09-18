@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Evento</string>
     <string name="no_data">No hay datos</string>
     <string name="feature_configuration">Configuración de funciones</string>
     <string name="change_calendar_view">Cambiar vista</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Analíticas</string>
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
-    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>
@@ -44,7 +42,69 @@
     <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filters_title_date">Fecha</string>
     <string name="filters_title_event_date">Fecha de evento</string>
-    <string name="enrollment_date">Fecha de inscripción</string>
+    <string name="title_network_connection_unavailable">La conexión de red no está disponible</string>
+    <string name="msg_network_connection_maps">Se requiere conexión a internet para usar mapas.</string>
+    <string name="overdue_today">Hoy</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d día atrasado</item>
+        <item quantity="other">%d días atrasados</item>
+        <item quantity="many">%d días atrasados</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d mes atrasado</item>
+        <item quantity="other">%d meses atrasados</item>
+        <item quantity="many">%d meses atrasados</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d año atrasado</item>
+        <item quantity="other">%d años atrasados</item>
+        <item quantity="many">%d años atrasados</item>
+    </plurals>
+
+    <plurals name="schedule_days">
+        <item quantity="one">En %d día</item>
+        <item quantity="other">En %d días</item>
+        <item quantity="many">En %d días</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="one">En %d mes</item>
+        <item quantity="other">En %d meses</item>
+        <item quantity="many">En %d meses</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="one">En %d año</item>
+        <item quantity="other">En %d años</item>
+        <item quantity="many">En %d años</item>
+    </plurals>
+    <string name="open_with">Abrir con</string>
+    <string name="file_downladed">Archivo descargado con éxito</string>
+    <string name="dialog_layer_enrollment_coordinates_v2">Mostrar coordenadas de %s</string>
+    <string name="enrollment_data_section_label_V2">Datos de %s</string>
+    <string name="enrollment_coordinates_V2">Coordenadas de %s</string>
+    <string name="enrollment_date_V2">Fecha de %s</string>
+    <string name="enrollment_status">Estado de %s</string>
+    <string name="break_glass_dialog_description_V2">Es necesario proveer la razón para consultar este %s en este programa protegido. Toda actividad será registrada.</string>
+    <string name="break_glass_reason_V2">Razón para consultar %s</string>
+    <string name="edition_enrollment_is_no_open_V2">Los datos no son editables por que el %s está completado o cancelado</string>
+    <string name="enrollment_completed_V2">%s completado</string>
+    <string name="enrollment_cancelled_V2">%s cancelado</string>
+    <string name="new_enrollment">Nuevo %s</string>
+    <string name="enrolling_ou">Registrado en:</string>
+    <string name="dashboard_menu_delete_enrollment_V2">Eliminar solo %s</string>
+    <string name="program_selector_V2">%s del programa</string>
+    <string name="event_label_completed">%s completado</string>
+    <string name="event_label_created">%s creado</string>
+    <string name="new_event_label">Nuevo %s</string>
+    <string name="event_label_date">Fecha de %s</string>
+    <string name="delete_event_label">Eliminar %s</string>
+    <string name="event_label_was_deleted">%s eliminado con éxito</string>
+    <string name="delete_event_label_error">Éste %s aún no ha sido creado</string>
+    <string name="event_label_was_skipped">Éste %s ha sido omitido</string>
+    <string name="confirm_delete_event_label">¿Está seguro de que desea eliminar éste %s?</string>
+    <string name="event_label_updated">%s actualizado</string>
+    <string name="event_label_date_in_future_message">Éste %s no puede tener una fecha a futuro. Cámbielo por favor.</string>
+    <string name="failed_insert_event_label">Error al insertar un nuevo %s</string>
+    <string name="week_period_span_default_label">Semana %d %s a %s</string>
     <string name="filters_title_event_status">Estado del evento</string>
     <string name="filters_title_enrollment_status">Estado de la inscripción.</string>
     <string name="filter_follow_up_label">Seguido %s</string>
@@ -204,8 +264,12 @@
     <string name="error_min_attributes">No hay suficientes atributos para realizar la búsqueda. Por favor redefina la búsqueda añadiendo más atributos.</string>
     <string name="error_org_unit_scope">La búsqueda online solo está disponible para las unidades organizativas de búsqueda.</string>
     <string name="error_invalid_characters">El query contiene caracteres invalidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
+    <string name="error_server_unavailable">El servidor no está disponible. Pruebe más tarde.</string>
+    <string name="error_no_internet_connection">Está desconectado. Habilite su conexión a internet y pruebe otra vez.</string>
     <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
     <string name="add_image">Añadir imagen</string>
+    <string name="add_signature">Añadir firma</string>
+    <string name="add_file">Añadir archivo</string>
     <string name="action_ok">De acuerdo</string>
     <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítela para capturar coordenadas. </string>
     <string name="keep_editing">Seguir editando</string>
