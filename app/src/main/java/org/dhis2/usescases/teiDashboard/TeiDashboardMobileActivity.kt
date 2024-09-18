@@ -12,6 +12,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OUTreeModel
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ColorUtils
@@ -647,6 +650,12 @@ class TeiDashboardMobileActivity :
                         )
                     }
 
+                    dashboardViewModel.checkIfTeiCanBeTransferred {
+                        popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
+                            transferTeiItem.isVisible = it
+                        }
+                    }
+
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {
                         popupMenu.menu.findItem(R.id.complete).isVisible = false
@@ -759,6 +768,18 @@ class TeiDashboardMobileActivity :
     ) {
         OUTreeFragment.Builder()
             .singleSelection()
+            .withModel(
+                OUTreeModel(
+                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType),
+                    subtitle = getString(
+                        R.string.transfer_tei_org_sheet_description,
+                        dashboardViewModel.dashboardModel.value?.ownerOrgUnit?.displayName()
+                    ),
+                    showClearButton = false,
+                    doneButtonText = getString(R.string.transfer),
+                    doneButtonIcon = Icons.Outlined.MoveDown
+                )
+            )
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),
             )

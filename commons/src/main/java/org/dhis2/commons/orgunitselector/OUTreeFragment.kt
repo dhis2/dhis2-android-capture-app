@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         private var singleSelection = false
         private var selectionListener: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
         private var orgUnitScope: OrgUnitSelectorScope = OrgUnitSelectorScope.UserSearchScope()
+        private var ouTreeModel: OUTreeModel? = null
 
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
             require(!(singleSelection && preselectedOrgUnits.size > 1)) {
@@ -59,9 +61,14 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
                 this.selectionListener = selectionListener
             }
 
+        fun withModel(model: OUTreeModel) = apply {
+            ouTreeModel = model
+        }
+
         fun build(): OUTreeFragment {
             return OUTreeFragment().apply {
                 selectionCallback = selectionListener
+                model = ouTreeModel
                 arguments = Bundle().apply {
                     putBoolean(ARG_SINGLE_SELECTION, singleSelection)
                     putParcelable(ARG_SCOPE, orgUnitScope)
@@ -77,6 +84,8 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
     private val viewmodel: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
+
+    private var model: OUTreeModel? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -123,6 +132,8 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
             setContent {
                 val list by viewmodel.treeNodes.collectAsState()
                 OrgBottomSheet(
+                    title = model?.title,
+                    subtitle = model?.subtitle,
                     clearAllButtonText = stringResource(id = R.string.action_clear_all),
                     orgTreeItems = list,
                     onSearch = viewmodel::searchByName,
@@ -149,3 +160,11 @@ class OUTreeFragment() : BottomSheetDialogFragment() {
         dismiss()
     }
 }
+
+data class OUTreeModel(
+    val title: String? = null,
+    val subtitle: String? = null,
+    val showClearButton: Boolean = true,
+    val doneButtonText: String? = null,
+    val doneButtonIcon: ImageVector? = null,
+)

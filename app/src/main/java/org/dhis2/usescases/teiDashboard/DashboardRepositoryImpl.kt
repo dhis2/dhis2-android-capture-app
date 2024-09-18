@@ -595,6 +595,20 @@ class DashboardRepositoryImpl(
             .andThen(Single.just(true))
     }
 
+    override fun teiCanBeTransferred(): Single<Boolean> {
+        return if (programUid != null) {
+            d2.organisationUnitModule().organisationUnits()
+                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
+                .byProgramUids(listOf(programUid)).get()
+                .toObservable()
+                .map { orgUnits ->
+                    orgUnits.size > 1
+                }
+                .defaultIfEmpty(false)
+                .first(false)
+        } else Single.just(false)
+    }
+
     private fun getGroupingOptions(): HashMap<String, Boolean> {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
             object : TypeToken<HashMap<String, Boolean>>() {}

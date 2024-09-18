@@ -983,5 +983,7 @@
     <string name="biometric_title">Verify It\'s You</string>
     <string name="use_password">Use Password</string>
     <string name="transfer">Transfer</string>
+    <string name="transfer_tei_org_sheet_title">Transfer %s</string>
+    <string name="transfer_tei_org_sheet_description">From %s to…</string>
     <string name="successfully_transferred">Successfully transferred</string>
 </resources>
