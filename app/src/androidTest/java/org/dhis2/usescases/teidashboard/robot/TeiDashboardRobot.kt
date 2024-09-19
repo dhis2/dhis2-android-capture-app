@@ -32,7 +32,6 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
@@ -110,12 +109,6 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val referalTag = targetContext.resources.getString(R.string.referral)
         composeTestRule.onNodeWithTag(referalTag).performClick()
-    }
-
-    fun clickOnFirstReferralEvent() {
-        onView(withId(R.id.recycler_view))
-            .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
-            .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
     }
 
     fun clickOnReferralOption(oneTime: String) {

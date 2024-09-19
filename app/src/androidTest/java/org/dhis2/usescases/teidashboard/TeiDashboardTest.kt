@@ -147,7 +147,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
-            clickOnFirstReferralEvent()
             clickOnReferralOption(context.getString(R.string.one_time))
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
@@ -164,7 +163,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
-            clickOnFirstReferralEvent()
             clickOnReferralNextButton()
             checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
         }
