@@ -382,7 +382,10 @@ class TEIDataPresenter(
                 else -> view.goToEventInitial(eventCreationType, stage)
             }
         } else {
-            createEventInEnrollment(eventCreationType)
+            view.displayScheduleEvent(
+                programStage = null,
+                showYesNoOptions = false,
+            )
         }
     }
 
