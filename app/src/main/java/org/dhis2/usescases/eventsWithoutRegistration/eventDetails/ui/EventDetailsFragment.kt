@@ -42,14 +42,12 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideEmptyCategorySelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideInputDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvidePeriodSelector
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.ProvideRadioButtons
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -141,7 +139,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             val orgUnit by viewModel.eventOrgUnit.collectAsState()
             val catCombo by viewModel.eventCatCombo.collectAsState()
             val coordinates by viewModel.eventCoordinates.collectAsState()
-            val eventTemp by viewModel.eventTemp.collectAsState()
 
             ProvideNewEventForm(
                 date = date,
@@ -149,7 +146,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 orgUnit = orgUnit,
                 catCombo = catCombo,
                 coordinates = coordinates,
-                eventTemp = eventTemp,
             )
         }
         return binding.root
@@ -229,7 +225,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         orgUnit: EventOrgUnit,
         catCombo: EventCatCombo,
         coordinates: EventCoordinates,
-        eventTemp: EventTemp,
     ) {
         Column {
             if (viewModel.getPeriodType() == null || (viewModel.getPeriodType() != null && viewModel.getPeriodType() == PeriodType.Daily)) {
@@ -312,15 +307,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 detailsEnabled = details.enabled,
                 resources = resourceManager,
                 showField = coordinates.active,
-            )
-            ProvideRadioButtons(
-                eventTemp = eventTemp,
-                detailsEnabled = details.enabled,
-                resources = resourceManager,
-                onEventTempSelected = {
-                    viewModel.setUpEventTemp(it)
-                },
-                showField = eventTemp.active,
             )
         }
     }

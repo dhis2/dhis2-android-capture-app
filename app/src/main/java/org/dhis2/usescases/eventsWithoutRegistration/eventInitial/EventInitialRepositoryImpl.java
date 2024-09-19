@@ -387,34 +387,4 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Flowable<EventEditableStatus> getEditableStatus() {
         return d2.eventModule().eventService().getEditableStatus(eventUid).toFlowable();
     }
-
-    @Override
-    public Observable<String> permanentReferral(
-            String enrollmentUid,
-            @NonNull String teiUid,
-            @NonNull String programUid,
-            @NonNull String programStage,
-            @NonNull Date dueDate,
-            @NonNull String orgUnitUid,
-            @Nullable String categoryOptionsUid,
-            @Nullable String categoryOptionComboUid,
-            @NonNull Geometry geometry
-    ) {
-
-        d2.trackedEntityModule().ownershipManager()
-                .blockingTransfer(teiUid, programUid, orgUnitUid);
-        return scheduleEvent(
-                enrollmentUid,
-                teiUid,
-                programUid,
-                programStage,
-                dueDate,
-                orgUnitUid,
-                categoryOptionsUid,
-                categoryOptionComboUid,
-                geometry
-        );
-
-    }
-
 }
