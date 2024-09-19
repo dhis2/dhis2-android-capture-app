@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
@@ -775,6 +776,7 @@ class TeiDashboardMobileActivity :
                         R.string.transfer_tei_org_sheet_description,
                         dashboardViewModel.dashboardModel.value?.ownerOrgUnit?.displayName()
                     ),
+                    headerAlignment = TextAlign.Start,
                     showClearButton = false,
                     doneButtonText = getString(R.string.transfer),
                     doneButtonIcon = Icons.Outlined.MoveDown
