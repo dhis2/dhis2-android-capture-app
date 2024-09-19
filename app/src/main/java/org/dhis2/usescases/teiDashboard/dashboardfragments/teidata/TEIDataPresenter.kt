@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import android.content.Intent
-import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityOptionsCompat
@@ -13,7 +12,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
@@ -37,7 +35,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
-import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
@@ -45,8 +42,6 @@ import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CREATE_EVENT_TEI
-import org.dhis2.utils.analytics.TYPE_EVENT_TEI
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -236,36 +231,6 @@ class TEIDataPresenter(
             )
         } else {
             view.displayMessage(null)
-        }
-    }
-
-    fun onEventCreationClick(eventCreationId: Int) {
-        createEventInEnrollment(eventCreationOptionsMapper.getActionType(eventCreationId))
-    }
-
-    private fun createEventInEnrollment(
-        eventCreationType: EventCreationType,
-        scheduleIntervalDays: Int = 0,
-    ) {
-        analyticsHelper.setEvent(TYPE_EVENT_TEI, eventCreationType.name, CREATE_EVENT_TEI)
-        val bundle = Bundle()
-        bundle.putString(
-            Constants.PROGRAM_UID,
-            programUid,
-        )
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid)
-        teiDataRepository.getEnrollment().blockingGet()?.organisationUnit()
-            ?.takeIf { enrollmentOrgUnitInCaptureScope(it) }?.let {
-                bundle.putString(Constants.ORG_UNIT, it)
-            }
-
-        bundle.putString(Constants.ENROLLMENT_UID, enrollmentUid)
-        bundle.putString(Constants.EVENT_CREATION_TYPE, eventCreationType.name)
-        bundle.putInt(Constants.EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays)
-        val intent = Intent(view.context, ProgramStageSelectionActivity::class.java)
-        intent.putExtras(bundle)
-        contractHandler.createEvent(intent).observe(view.viewLifecycleOwner()) {
-            fetchEvents()
         }
     }
 

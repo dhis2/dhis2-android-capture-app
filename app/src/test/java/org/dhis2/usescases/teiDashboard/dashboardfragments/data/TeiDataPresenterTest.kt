@@ -1,10 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
@@ -148,25 +144,6 @@ class TeiDataPresenterTest {
     fun `Should not apply effects of hide program stage for events`() {
         val stage = fakeModel(0, EventViewModelType.EVENT)
         assert(stage.applyHideStage(true) == stage)
-    }
-
-    @Test
-    fun shouldSuccessfullyCreateANewEvent() {
-        val lifecycleOwner: LifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
-        val lifecycle = LifecycleRegistry(Mockito.mock(LifecycleOwner::class.java))
-        lifecycle.currentState = Lifecycle.State.RESUMED
-        Mockito.`when`(lifecycleOwner.lifecycle).thenReturn(lifecycle)
-
-        val contractLiveData = MutableLiveData<Unit>()
-        whenever(view.viewLifecycleOwner()) doReturn lifecycleOwner
-        whenever(teiDataContractHandler.createEvent(any())) doReturn contractLiveData
-        val mockedEnrollment: Enrollment = mock {
-            on { organisationUnit() } doReturn "orgUnitUid"
-        }
-        whenever(teiDataRepository.getEnrollment()) doReturn Single.just(mockedEnrollment)
-        whenever(teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")) doReturn false
-        teiDataPresenter.onEventCreationClick(EventCreationOptionsMapper.ADD_NEW_ID)
-        contractLiveData.value = Unit
     }
 
     @Test
