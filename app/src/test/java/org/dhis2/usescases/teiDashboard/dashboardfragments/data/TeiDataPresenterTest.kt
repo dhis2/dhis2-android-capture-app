@@ -203,7 +203,7 @@ class TeiDataPresenterTest {
             dashboardRepository.displayGenerateEvent("eventUid"),
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
-        verify(view).displayScheduleEvent(showYesNoOptions = true)
+        verify(view).displayScheduleEvent(programStage = programStage, showYesNoOptions = true)
     }
 
     @Test
@@ -330,14 +330,17 @@ class TeiDataPresenterTest {
 
     @Test
     fun `should display schedule event without yes and no options, when schedule event option is selected`() {
+        // given
+        val programStage = ProgramStage.builder().uid("stage").build()
+
         // when
         teiDataPresenter.onAddNewEventOptionSelected(
             eventCreationType = EventCreationType.SCHEDULE,
-            stage = ProgramStage.builder().uid("stage").build(),
+            stage = programStage,
         )
 
         // then
-        verify(view).displayScheduleEvent(showYesNoOptions = false)
+        verify(view).displayScheduleEvent(programStage = programStage, showYesNoOptions = false)
         verifyNoMoreInteractions(view)
     }
 
