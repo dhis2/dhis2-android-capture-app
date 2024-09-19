@@ -207,7 +207,10 @@ class TEIDataPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe({ programStage ->
                     if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
-                        view.displayScheduleEvent(showYesNoOptions = true)
+                        view.displayScheduleEvent(
+                            programStage = programStage,
+                            showYesNoOptions = true,
+                        )
                     } else if (programStage.remindCompleted() == true) {
                         view.showDialogCloseProgram()
                     }
@@ -370,7 +373,10 @@ class TEIDataPresenter(
                 }
 
                 EventCreationType.SCHEDULE -> {
-                    view.displayScheduleEvent(showYesNoOptions = false)
+                    view.displayScheduleEvent(
+                        programStage = stage,
+                        showYesNoOptions = false,
+                    )
                 }
 
                 else -> view.goToEventInitial(eventCreationType, stage)
