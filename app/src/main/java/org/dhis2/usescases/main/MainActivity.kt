@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import WebSocketClient
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -102,6 +103,8 @@ class MainActivity :
     private val navigationLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
+    private lateinit var webSocketClient: WebSocketClient
+
     companion object {
         fun intent(
             context: Context,
@@ -193,6 +196,10 @@ class MainActivity :
         checkNotificationPermission()
 
         registerOnBackPressedCallback()
+
+        // Initialize and start the WebSocket client
+        webSocketClient = WebSocketClient(this, "7")
+        webSocketClient.start()
     }
 
     private fun checkNotificationPermission() {
