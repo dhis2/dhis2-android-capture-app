@@ -789,15 +789,13 @@ class TeiDashboardMobileActivity :
                 if (selectedOrgUnits.isNotEmpty())
                     dashboardViewModel.transferTei(
                         selectedOrgUnits.first().uid()
-                    ) { isSuccess ->
-                        if (isSuccess) {
-                            val contextView = findViewById<View>(R.id.navigationBar)
-                            Snackbar.make(
-                                contextView,
-                                R.string.successfully_transferred,
-                                Snackbar.LENGTH_SHORT,
-                            ).show()
-                        }
+                    ) {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.successfully_transferred,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
                     }
             }
             .build()

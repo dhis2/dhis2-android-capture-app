@@ -587,15 +587,13 @@ class DashboardRepositoryImpl(
         )
     }
 
-
-    override fun transferTei(newOrgUnitId: String): Single<Boolean> {
-        return d2.trackedEntityModule()
+    override fun transferTei(newOrgUnitId: String) {
+        d2.trackedEntityModule()
             .ownershipManager()
-            .transfer(teiUid, programUid!!, newOrgUnitId)
-            .andThen(Single.just(true))
+            .blockingTransfer(teiUid, programUid!!, newOrgUnitId)
     }
 
-    override fun teiCanBeTransferred(): Single<Boolean> {
+    override fun teiCanBeTransferred(): Boolean {
         return if (programUid != null) {
             d2.organisationUnitModule().organisationUnits()
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
@@ -606,8 +604,8 @@ class DashboardRepositoryImpl(
                         orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
                 }
                 .defaultIfEmpty(false)
-                .first(false)
-        } else Single.just(false)
+                .blockingFirst()
+        } else false
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {

@@ -19,7 +19,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.R
 import org.dhis2.commons.resources.ResourceManager
@@ -287,7 +286,7 @@ class DashboardViewModel(
     ) {
         viewModelScope.launch(dispatcher.io()) {
             try {
-                val canTransfer = repository.teiCanBeTransferred().blockingGet()
+                val canTransfer = repository.teiCanBeTransferred()
                 onResult(canTransfer)
             } catch (ex: Exception) {
                 Timber.e(ex)
@@ -298,15 +297,15 @@ class DashboardViewModel(
 
     fun transferTei(
         newOrgUnitId: String,
-        onCompletion: (Boolean) -> Unit,
+        onCompletion: () -> Unit,
     ) {
         _isLoading.value = true
         viewModelScope.launch(dispatcher.io()) {
             try {
-                repository.transferTei(newOrgUnitId).await()
+                repository.transferTei(newOrgUnitId)
                 withContext(dispatcher.ui()) {
                     updateDashboard()
-                    onCompletion(true)
+                    onCompletion()
                 }
             } catch (ex: Exception) {
                 Timber.e(ex)
