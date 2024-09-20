@@ -134,4 +134,20 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             }
             .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
     }
+
+    sealed interface LaunchMode {
+
+        val showYesNoOptions: Boolean
+
+        data class NewSchedule(
+            val enrollment: Enrollment,
+            val programStages: List<ProgramStage>,
+            override val showYesNoOptions: Boolean,
+        ) : LaunchMode
+
+        data class EnterEvent(
+            val eventUid: String,
+            override val showYesNoOptions: Boolean,
+        ) : LaunchMode
+    }
 }
