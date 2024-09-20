@@ -282,7 +282,7 @@ class DashboardViewModel(
     }
 
     fun checkIfTeiCanBeTransferred(
-        onResult: (Boolean) -> Unit
+        onResult: (Boolean) -> Unit,
     ) {
         viewModelScope.launch(dispatcher.io()) {
             try {

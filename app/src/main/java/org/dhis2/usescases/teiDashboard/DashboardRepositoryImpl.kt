@@ -605,7 +605,9 @@ class DashboardRepositoryImpl(
                 }
                 .defaultIfEmpty(false)
                 .blockingFirst()
-        } else false
+        } else {
+            false
+        }
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {

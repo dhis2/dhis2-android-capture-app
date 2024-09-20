@@ -774,21 +774,21 @@ class TeiDashboardMobileActivity :
                     title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType),
                     subtitle = getString(
                         R.string.transfer_tei_org_sheet_description,
-                        dashboardViewModel.dashboardModel.value?.ownerOrgUnit?.displayName()
+                        dashboardViewModel.dashboardModel.value?.ownerOrgUnit?.displayName(),
                     ),
                     headerAlignment = TextAlign.Start,
                     showClearButton = false,
                     doneButtonText = getString(R.string.transfer),
-                    doneButtonIcon = Icons.Outlined.MoveDown
-                )
+                    doneButtonIcon = Icons.Outlined.MoveDown,
+                ),
             )
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramSearchScope(programUid),
             )
             .onSelection { selectedOrgUnits ->
-                if (selectedOrgUnits.isNotEmpty())
+                if (selectedOrgUnits.isNotEmpty()) {
                     dashboardViewModel.transferTei(
-                        selectedOrgUnits.first().uid()
+                        selectedOrgUnits.first().uid(),
                     ) {
                         val contextView = findViewById<View>(R.id.navigationBar)
                         Snackbar.make(
@@ -797,6 +797,7 @@ class TeiDashboardMobileActivity :
                             Snackbar.LENGTH_SHORT,
                         ).show()
                     }
+                }
             }
             .build()
             .show(supportFragmentManager, "ORG_UNIT_DIALOG")
