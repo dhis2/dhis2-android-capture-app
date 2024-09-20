@@ -35,16 +35,26 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             showYesNoOptions: Boolean,
         ): SchedulingDialog {
             return SchedulingDialog().apply {
-                this.enrollment = enrollment
-                this.programStages = programStages
-                this.showYesNoOptions = showYesNoOptions
+                this.launchMode = LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = showYesNoOptions,
+                )
             }
+        }
+
+        fun enterEvent(
+            eventUid: String,
+            showYesNoOptions: Boolean,
+        ) = SchedulingDialog().apply {
+            this.launchMode = LaunchMode.EnterEvent(
+                eventUid = eventUid,
+                showYesNoOptions = showYesNoOptions,
+            )
         }
     }
 
-    var enrollment: Enrollment? = null
-    var programStages: List<ProgramStage>? = null
-    var showYesNoOptions: Boolean = true
+    lateinit var launchMode: LaunchMode
 
     @Inject
     lateinit var factory: SchedulingViewModelFactory
@@ -65,13 +75,6 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        enrollment?.let {
-            viewModel.enrollment = it
-        }
-        programStages?.let {
-            viewModel.programStages = it
-            viewModel.setInitialProgramStage(it.first())
-        }
         viewModel.onEventScheduled = {
             setFragmentResult(SCHEDULING_DIALOG_RESULT, bundleOf(PROGRAM_STAGE_UID to it))
             dismiss()
@@ -93,8 +96,8 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                 SchedulingDialogUi(
                     viewModel = viewModel,
                     programStages = viewModel.programStages,
-                    orgUnitUid = viewModel.enrollment.organisationUnit(),
-                    showYesNoOptions = showYesNoOptions,
+                    orgUnitUid = viewModel.enrollment?.organisationUnit(),
+                    showYesNoOptions = launchMode.showYesNoOptions,
                     onDismiss = { dismiss() },
                 )
             }
