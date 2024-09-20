@@ -937,6 +937,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     private boolean displayOrgUnit() {
         return d2.organisationUnitModule().organisationUnits()
                 .byProgramUids(Collections.singletonList(currentProgram))
-                .count().blockingGet() > 1;
+                .blockingCount() > 1;
     }
 }
