@@ -51,10 +51,11 @@ fun MapScreen(
 
 @Composable
 fun MapScreen(
+    modifier: Modifier = Modifier,
     actionButtons: @Composable (ColumnScope.() -> Unit),
     map: @Composable (BoxScope.() -> Unit),
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         map()
         Column(
             modifier = Modifier

@@ -92,6 +92,9 @@ dependencies {
     api(libs.androidx.compose.paging)
 
     api(libs.google.material)
+    api(libs.androidx.material3)
+    api(libs.androidx.material3.window)
+    api(libs.androidx.material3.adaptative.android)
     api(libs.google.gson)
     api(libs.dagger)
     kapt(libs.dagger.compiler)
