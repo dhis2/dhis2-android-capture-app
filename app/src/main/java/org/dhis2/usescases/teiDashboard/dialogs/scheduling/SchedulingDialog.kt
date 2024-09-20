@@ -57,8 +57,11 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     lateinit var launchMode: LaunchMode
 
     @Inject
-    lateinit var factory: SchedulingViewModelFactory
-    val viewModel: SchedulingViewModel by viewModels { factory }
+    lateinit var factory: SchedulingViewModelFactory.Factory
+
+    val viewModel: SchedulingViewModel by viewModels {
+        factory.build(launchMode)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

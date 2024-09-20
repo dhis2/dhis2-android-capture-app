@@ -31,14 +31,12 @@ class SchedulingViewModel(
     val resourceManager: ResourceManager,
     val eventResourcesProvider: EventResourcesProvider,
     val periodUtils: DhisPeriodUtils,
+    private val launchMode: SchedulingDialog.LaunchMode,
 ) : ViewModel() {
 
     lateinit var repository: EventDetailsRepository
     lateinit var configureEventReportDate: ConfigureEventReportDate
     lateinit var configureEventCatCombo: ConfigureEventCatCombo
-
-    lateinit var enrollment: Enrollment
-    lateinit var programStages: List<ProgramStage>
 
     private val _programStage: MutableStateFlow<ProgramStage?> = MutableStateFlow(null)
     val programStage: StateFlow<ProgramStage?> get() = _programStage

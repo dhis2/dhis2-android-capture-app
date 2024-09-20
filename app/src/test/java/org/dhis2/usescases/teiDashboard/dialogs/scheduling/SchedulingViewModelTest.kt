@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
@@ -26,6 +27,11 @@ class SchedulingViewModelTest {
             resourceManager = mock(),
             eventResourcesProvider = mock(),
             periodUtils = mock(),
+            launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                enrollment = any(),
+                programStages = emptyList(),
+                showYesNoOptions = false
+            ),
         )
     }
 
