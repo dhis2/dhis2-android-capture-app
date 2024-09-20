@@ -22,6 +22,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Even
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.LaunchMode
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import java.text.SimpleDateFormat
@@ -47,6 +48,7 @@ class SchedulingViewModel(
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
+    var onEventSkipped: ((String) -> Unit)? = null
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
     val eventDate: StateFlow<EventDate> get() = _eventDate
@@ -240,6 +242,20 @@ class SchedulingViewModel(
                 }
                 is LaunchMode.EnterEvent -> {
                     // TODO: Update event
+                }
+            }
+        }
+    }
+
+    fun onCancelEvent() {
+        viewModelScope.launch {
+            when (launchMode) {
+                is LaunchMode.EnterEvent -> {
+                    d2.eventModule().events().uid(launchMode.eventUid).setStatus(EventStatus.SKIPPED)
+                    onEventSkipped?.invoke(launchMode.eventUid)
+                }
+                is LaunchMode.NewSchedule -> {
+                    // no-op
                 }
             }
         }
