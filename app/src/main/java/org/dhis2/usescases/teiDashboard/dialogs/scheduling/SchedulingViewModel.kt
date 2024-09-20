@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import org.dhis2.commons.bindings.event
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -17,6 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.LaunchMode
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -31,7 +34,7 @@ class SchedulingViewModel(
     val resourceManager: ResourceManager,
     val eventResourcesProvider: EventResourcesProvider,
     val periodUtils: DhisPeriodUtils,
-    private val launchMode: SchedulingDialog.LaunchMode,
+    private val launchMode: LaunchMode,
 ) : ViewModel() {
 
     lateinit var repository: EventDetailsRepository
@@ -51,10 +54,57 @@ class SchedulingViewModel(
     private val _eventCatCombo: MutableStateFlow<EventCatCombo> = MutableStateFlow(EventCatCombo())
     val eventCatCombo: StateFlow<EventCatCombo> get() = _eventCatCombo
 
-    private fun loadConfiguration() {
+    val programStages: List<ProgramStage>
+        get() = when (launchMode) {
+            is LaunchMode.NewSchedule -> launchMode.programStages
+            is LaunchMode.EnterEvent -> emptyList()
+        }
+
+    val enrollment: Enrollment?
+        get() = when (launchMode) {
+            is LaunchMode.NewSchedule -> launchMode.enrollment
+            is LaunchMode.EnterEvent -> null
+        }
+
+    init {
+        viewModelScope.launch {
+            val programStage = when (launchMode) {
+                is LaunchMode.NewSchedule -> launchMode.programStages.first()
+                is LaunchMode.EnterEvent -> {
+                    val eventProgramStageId = d2.event(launchMode.eventUid)?.programStage()
+                    d2.programModule().programStages().uid(eventProgramStageId).blockingGet()
+                }
+            }
+
+            _programStage.value = programStage
+
+            when (launchMode) {
+                is LaunchMode.NewSchedule -> loadNewScheduleConfiguration(launchMode)
+                is LaunchMode.EnterEvent -> loadEventDueDate(launchMode, programStage)
+            }
+        }
+    }
+
+    private fun loadEventDueDate(
+        launchMode: LaunchMode.EnterEvent,
+        programStage: ProgramStage?,
+    ) {
+        val event = d2.event(launchMode.eventUid)
+        val programId = event?.program()
+        val dueDate = event?.dueDate()
+
+        _eventDate.value = EventDate(
+            label = programStage?.dueDateLabel() ?: eventDetailResourcesProvider(programId.orEmpty()).provideDueDate(),
+            dateValue = DateUtils.uiDateFormat().format(dueDate ?: ""),
+        )
+    }
+
+    private fun loadNewScheduleConfiguration(launchMode: LaunchMode.NewSchedule) {
+        val programId = launchMode.enrollment.program().orEmpty()
+
         repository = EventDetailsRepository(
             d2 = d2,
-            programUid = enrollment.program().orEmpty(),
+            programUid = programId,
             eventUid = null,
             programStageUid = programStage.value?.uid(),
             fieldFactory = null,
@@ -63,23 +113,24 @@ class SchedulingViewModel(
         )
         configureEventReportDate = ConfigureEventReportDate(
             creationType = EventCreationType.SCHEDULE,
-            resourceProvider = EventDetailResourcesProvider(
-                enrollment.program().orEmpty(),
-                programStage.value?.uid(),
-                resourceManager,
-                eventResourcesProvider,
-            ),
+            resourceProvider = eventDetailResourcesProvider(programId),
             repository = repository,
             periodType = programStage.value?.periodType(),
             periodUtils = periodUtils,
-            enrollmentId = enrollment.uid(),
+            enrollmentId = launchMode.enrollment.uid(),
             scheduleInterval = programStage.value?.standardInterval() ?: 0,
         )
-        configureEventCatCombo = ConfigureEventCatCombo(
-            repository = repository,
-        )
+        configureEventCatCombo = ConfigureEventCatCombo(repository = repository)
+
         loadProgramStage()
     }
+
+    private fun eventDetailResourcesProvider(programId: String) = EventDetailResourcesProvider(
+        programUid = programId,
+        programStage = programStage.value?.uid(),
+        resourceManager = resourceManager,
+        eventResourcesProvider = eventResourcesProvider,
+    )
 
     private fun loadProgramStage() {
         viewModelScope.launch {
@@ -87,10 +138,9 @@ class SchedulingViewModel(
                 _eventDate.value = it
             }
 
-            configureEventCatCombo()
-                .collect {
-                    _eventCatCombo.value = it
-                }
+            configureEventCatCombo().collect {
+                _eventCatCombo.value = it
+            }
         }
     }
 
@@ -158,29 +208,40 @@ class SchedulingViewModel(
 
     fun updateStage(stage: ProgramStage) {
         _programStage.value = stage
-        loadConfiguration()
-    }
 
-    fun scheduleEvent() {
-        viewModelScope.launch {
-            eventDate.value.currentDate?.let { date ->
-                repository.scheduleEvent(
-                    enrollmentUid = enrollment.uid(),
-                    dueDate = date,
-                    orgUnitUid = enrollment.organisationUnit(),
-                    categoryOptionComboUid = eventCatCombo.value.uid,
-                ).flowOn(Dispatchers.IO)
-                    .collect {
-                        if (it != null) {
-                            onEventScheduled?.invoke(programStage.value?.uid() ?: "")
-                        }
-                    }
+        when (launchMode) {
+            is LaunchMode.NewSchedule -> {
+                loadNewScheduleConfiguration(launchMode = launchMode)
+            }
+
+            is LaunchMode.EnterEvent -> {
+                // no-op
             }
         }
     }
 
-    fun setInitialProgramStage(programStage: ProgramStage) {
-        _programStage.value = programStage
-        loadConfiguration()
+    fun scheduleEvent() {
+        viewModelScope.launch {
+            val eventDate = eventDate.value.currentDate ?: return@launch
+
+            when (launchMode) {
+                is LaunchMode.NewSchedule -> {
+                    repository.scheduleEvent(
+                        enrollmentUid = launchMode.enrollment.uid(),
+                        dueDate = eventDate,
+                        orgUnitUid = launchMode.enrollment.organisationUnit(),
+                        categoryOptionComboUid = eventCatCombo.value.uid,
+                    ).flowOn(Dispatchers.IO)
+                        .collect {
+                            if (it != null) {
+                                onEventScheduled?.invoke(programStage.value?.uid() ?: "")
+                            }
+                        }
+                }
+                is LaunchMode.EnterEvent -> {
+                    // TODO: Update event
+                }
+            }
+        }
     }
 }

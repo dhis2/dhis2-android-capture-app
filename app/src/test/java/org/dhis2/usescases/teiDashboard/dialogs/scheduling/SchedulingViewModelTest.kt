@@ -5,10 +5,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
@@ -28,9 +28,9 @@ class SchedulingViewModelTest {
             eventResourcesProvider = mock(),
             periodUtils = mock(),
             launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                enrollment = any(),
+                enrollment = Enrollment.builder().uid("enrollment").build(),
                 programStages = emptyList(),
-                showYesNoOptions = false
+                showYesNoOptions = false,
             ),
         )
     }
