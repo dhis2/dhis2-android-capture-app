@@ -23,12 +23,13 @@ import java.util.Date
 import javax.inject.Inject
 
 class SchedulingDialog : BottomSheetDialogFragment() {
+
     companion object {
         const val SCHEDULING_DIALOG = "SCHEDULING_DIALOG"
         const val SCHEDULING_DIALOG_RESULT = "SCHEDULING_DIALOG_RESULT"
         const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
 
-        fun newInstance(
+        fun newSchedule(
             enrollment: Enrollment,
             programStages: List<ProgramStage>,
             showYesNoOptions: Boolean,
