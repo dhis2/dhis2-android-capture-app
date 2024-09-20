@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.style.TextAlign
 import org.dhis2.R
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
@@ -70,6 +71,7 @@ fun SchedulingDialogUi(
     }
     BottomSheetShell(
         title = bottomSheetTitle(programStages),
+        headerTextAlignment = TextAlign.Start,
         buttonBlock = {
             Button(
                 modifier = Modifier.fillMaxWidth(),
