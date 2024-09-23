@@ -198,7 +198,7 @@ class MainActivity :
         registerOnBackPressedCallback()
 
         // Initialize and start the WebSocket client
-        webSocketClient = WebSocketClient(this, "7")
+        webSocketClient = WebSocketClient(this, "Pixel5")
         webSocketClient.start()
     }
 
