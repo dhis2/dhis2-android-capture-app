@@ -5,22 +5,9 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.ValueStoreResult
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.rules.models.RuleActionAssign
-import org.hisp.dhis.rules.models.RuleActionCreateEvent
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair
-import org.hisp.dhis.rules.models.RuleActionDisplayText
-import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion
-import org.hisp.dhis.rules.models.RuleActionHideField
-import org.hisp.dhis.rules.models.RuleActionHideOption
-import org.hisp.dhis.rules.models.RuleActionHideOptionGroup
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage
-import org.hisp.dhis.rules.models.RuleActionHideSection
-import org.hisp.dhis.rules.models.RuleActionSetMandatoryField
-import org.hisp.dhis.rules.models.RuleActionShowError
-import org.hisp.dhis.rules.models.RuleActionShowOptionGroup
-import org.hisp.dhis.rules.models.RuleActionShowWarning
-import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion
+import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -69,87 +56,88 @@ class RulesUtilsProviderImpl(
         this.valueStore = valueStore
 
         calcResult.forEach {
-            currentRuleUid = it.ruleId()
-            when (it.ruleAction()) {
-                is RuleActionShowWarning -> showWarning(
-                    it.ruleAction() as RuleActionShowWarning,
+            currentRuleUid = it.ruleId
+
+            when (ProgramRuleActionType.valueOf(it.ruleAction.type)) {
+                ProgramRuleActionType.SHOWWARNING -> showWarning(
+                    it.ruleAction,
                     fieldViewModels,
-                    it.data() ?: "",
+                    it.data ?: "",
                 )
 
-                is RuleActionShowError -> showError(
-                    it.ruleAction() as RuleActionShowError,
+                ProgramRuleActionType.SHOWERROR -> showError(
+                    it.ruleAction,
                     fieldViewModels,
-                    it.data() ?: "",
+                    it.data ?: "",
                 )
 
-                is RuleActionHideField -> hideField(
-                    it.ruleAction() as RuleActionHideField,
+                ProgramRuleActionType.HIDEFIELD -> hideField(
+                    it.ruleAction,
                     fieldViewModels,
                 )
 
-                is RuleActionDisplayText -> displayText(
-                    it.ruleAction() as RuleActionDisplayText,
+                ProgramRuleActionType.DISPLAYTEXT -> displayText(
+                    it.ruleAction,
                     it,
                     fieldViewModels,
                 )
 
-                is RuleActionDisplayKeyValuePair -> displayKeyValuePair(
-                    it.ruleAction() as RuleActionDisplayKeyValuePair,
+                ProgramRuleActionType.DISPLAYKEYVALUEPAIR -> displayKeyValuePair(
+                    it.ruleAction,
                     it,
                     fieldViewModels,
                 )
 
-                is RuleActionHideSection -> hideSection(
+                ProgramRuleActionType.HIDESECTION -> hideSection(
                     fieldViewModels,
-                    it.ruleAction() as RuleActionHideSection,
+                    it.ruleAction,
                 )
 
-                is RuleActionAssign -> assign(
-                    it.ruleAction() as RuleActionAssign,
+                ProgramRuleActionType.ASSIGN -> assign(
+                    it.ruleAction,
                     it,
                     fieldViewModels,
                 )
 
-                is RuleActionCreateEvent -> createEvent(
-                    it.ruleAction() as RuleActionCreateEvent,
+                ProgramRuleActionType.CREATEEVENT -> createEvent(
+                    it.ruleAction,
                     fieldViewModels,
                 )
 
-                is RuleActionSetMandatoryField -> setMandatory(
-                    it.ruleAction() as RuleActionSetMandatoryField,
+                ProgramRuleActionType.SETMANDATORYFIELD -> setMandatory(
+                    it.ruleAction,
                     fieldViewModels,
                 )
 
-                is RuleActionWarningOnCompletion -> warningOnCompletion(
-                    it.ruleAction() as RuleActionWarningOnCompletion,
+                ProgramRuleActionType.WARNINGONCOMPLETE -> warningOnCompletion(
+                    it.ruleAction,
                     fieldViewModels,
-                    it.data() ?: "",
+                    it.data ?: "",
                 )
 
-                is RuleActionErrorOnCompletion -> errorOnCompletion(
-                    it.ruleAction() as RuleActionErrorOnCompletion,
+                ProgramRuleActionType.ERRORONCOMPLETE -> errorOnCompletion(
+                    it.ruleAction,
                     fieldViewModels,
-                    it.data() ?: "",
+                    it.data ?: "",
                 )
 
-                is RuleActionHideProgramStage -> hideProgramStage(
-                    it.ruleAction() as RuleActionHideProgramStage,
+                ProgramRuleActionType.HIDEPROGRAMSTAGE -> hideProgramStage(
+                    it.ruleAction,
                 )
 
-                is RuleActionHideOption -> hideOption(
-                    it.ruleAction() as RuleActionHideOption,
+                ProgramRuleActionType.HIDEOPTION -> hideOption(
+                    it.ruleAction,
                 )
 
-                is RuleActionHideOptionGroup -> hideOptionGroup(
-                    it.ruleAction() as RuleActionHideOptionGroup,
+                ProgramRuleActionType.HIDEOPTIONGROUP -> hideOptionGroup(
+                    it.ruleAction,
                 )
 
-                is RuleActionShowOptionGroup -> showOptionGroup(
-                    it.ruleAction() as RuleActionShowOptionGroup,
+                ProgramRuleActionType.SHOWOPTIONGROUP -> showOptionGroup(
+                    it.ruleAction,
                 )
 
-                else -> it.ruleId()?.let { ruleUid -> unsupportedRuleActions.add(ruleUid) }
+                else -> unsupportedRuleActions.add(it.ruleId)
             }
         }
 
@@ -180,9 +168,11 @@ class RulesUtilsProviderImpl(
         programStages: MutableMap<String, ProgramStage>,
         calcResult: Result<List<RuleEffect>>,
     ) {
-        calcResult.getOrNull()?.filter { it.ruleAction() is RuleActionHideProgramStage }?.forEach {
-            hideProgramStage(programStages, it.ruleAction() as RuleActionHideProgramStage)
-        }
+        calcResult.getOrNull()
+            ?.filter { it.ruleAction.type == ProgramRuleActionType.HIDEPROGRAMSTAGE.name }
+            ?.forEach {
+                hideProgramStage(programStages, it.ruleAction)
+            }
     }
 
     private fun save(uid: String, value: String?): ValueStoreResult {
@@ -217,56 +207,59 @@ class RulesUtilsProviderImpl(
     }
 
     private fun showWarning(
-        showWarning: RuleActionShowWarning,
+        showWarning: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         data: String,
     ) {
-        val model = fieldViewModels[showWarning.field()]
+        val field = showWarning.field() ?: ""
+        val model = fieldViewModels[field]
         val warningMessage = "${showWarning.content()} $data"
         if (model != null) {
-            fieldViewModels[showWarning.field()] = model.setWarning(warningMessage)
+            fieldViewModels[field] = model.setWarning(warningMessage)
             fieldsWithWarnings.add(
-                FieldWithError(showWarning.field(), warningMessage),
+                FieldWithError(field, warningMessage),
             )
         }
     }
 
     private fun showError(
-        showError: RuleActionShowError,
+        showError: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         effectData: String,
     ) {
-        val model = fieldViewModels[showError.field()]
+        val field = showError.field() ?: ""
+        val model = fieldViewModels[field]
         val errorMessage = "${showError.content()} $effectData"
         if (model != null) {
-            fieldViewModels[showError.field()] = model.setError(errorMessage)
+            fieldViewModels[field] = model.setError(errorMessage)
             canComplete = false
             fieldsWithErrors.add(
-                FieldWithError(showError.field(), errorMessage),
+                FieldWithError(field, errorMessage),
             )
         }
     }
 
     private fun hideField(
-        hideField: RuleActionHideField,
+        hideField: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
-        if (fieldViewModels[hideField.field()]?.mandatory != true) {
+        val field = hideField.field() ?: ""
+        if (fieldViewModels[field]?.mandatory != true) {
             fieldViewModels.remove(hideField.field())
-            valuesToChange[hideField.field()] = null
-            hiddenFields.add(hideField.field())
+            valuesToChange[field] = null
+            hiddenFields.add(field)
         }
     }
 
     private fun displayText(
-        displayText: RuleActionDisplayText,
+        displayText: RuleAction,
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
     }
 
     private fun displayKeyValuePair(
-        displayKeyValuePair: RuleActionDisplayKeyValuePair,
+        displayKeyValuePair: RuleAction,
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
@@ -274,20 +267,22 @@ class RulesUtilsProviderImpl(
 
     private fun hideSection(
         fieldViewModels: MutableMap<String, FieldUiModel>,
-        hideSection: RuleActionHideSection,
+        hideSection: RuleAction,
     ) {
+        val programStageSection = hideSection.values["programStageSection"]
         fieldViewModels.filter {
-            it.value.programStageSection == hideSection.programStageSection() &&
+            it.value.programStageSection == programStageSection &&
                 !it.value.mandatory
         }.keys.forEach { fieldViewModels.remove(it) }
     }
 
     private fun assign(
-        assign: RuleActionAssign,
+        assign: RuleAction,
         ruleEffect: RuleEffect,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
-        fieldViewModels[assign.field()]?.let { field ->
+        val fieldUid = assign.field() ?: ""
+        fieldViewModels[fieldUid]?.let { field ->
             val value =
                 if (field.optionSet != null && field.displayName != null) {
                     val valueOption = optionsRepository.getOptionByDisplayName(
@@ -309,16 +304,16 @@ class RulesUtilsProviderImpl(
                     field.value
                 }
 
-            if (value == null || value != ruleEffect.data()) {
-                ruleEffect.data()?.formatData(field.valueType)?.let {
-                    valuesToChange[assign.field()] = it
+            if (value == null || value != ruleEffect.data) {
+                ruleEffect.data?.formatData(field.valueType)?.let {
+                    valuesToChange[fieldUid] = it
                 }
             }
             val valueToShow =
-                if (field.optionSet != null && ruleEffect.data()?.isNotEmpty() == true) {
+                if (field.optionSet != null && ruleEffect.data?.isNotEmpty() == true) {
                     val effectOption = optionsRepository.getOptionByCode(
                         optionSet = field.optionSet!!,
-                        code = ruleEffect.data()!!,
+                        code = ruleEffect.data!!,
                     )
                     if (effectOption == null) {
                         configurationErrors.add(
@@ -328,7 +323,7 @@ class RulesUtilsProviderImpl(
                                 ConfigurationError.VALUE_TO_ASSIGN_NOT_IN_OPTION_SET,
                                 listOf(
                                     currentRuleUid ?: "",
-                                    ruleEffect.data() ?: "",
+                                    ruleEffect.data ?: "",
                                     field.optionSet ?: "",
                                 ),
                             ),
@@ -336,43 +331,44 @@ class RulesUtilsProviderImpl(
                     }
                     effectOption?.displayName()
                 } else {
-                    ruleEffect.data()
+                    ruleEffect.data
                 }
 
-            ruleEffect.data()?.formatData(field.valueType)?.let { formattedValue ->
+            ruleEffect.data?.formatData(field.valueType)?.let { formattedValue ->
                 val updatedField = fieldViewModels[assign.field()]
                     ?.setValue(formattedValue)
                     ?.setDisplayName(valueToShow?.formatData(field.valueType))
                     ?.setEditable(false)
 
                 updatedField?.let {
-                    fieldViewModels[assign.field()] = it
+                    fieldViewModels[fieldUid] = it
                 }
             }
         } ?: {
             if (!hiddenFields.contains(assign.field())) {
-                valuesToChange[assign.field()] = ruleEffect.data()?.formatData()
+                valuesToChange[fieldUid] = ruleEffect.data?.formatData()
             }
         }
     }
 
     private fun createEvent(
-        createEvent: RuleActionCreateEvent,
+        createEvent: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
         // TODO: Create Event
     }
 
     private fun setMandatory(
-        mandatoryField: RuleActionSetMandatoryField,
+        mandatoryField: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
     ) {
-        val model = fieldViewModels[mandatoryField.field()]
+        val fieldUid = mandatoryField.field() ?: ""
+        val model = fieldViewModels[fieldUid]
         if (model != null) {
-            fieldViewModels[mandatoryField.field()] = model.setFieldMandatory()
+            fieldViewModels[fieldUid] = model.setFieldMandatory()
         } else {
             fieldViewModels.filterKeys {
-                it.startsWith(mandatoryField.field())
+                it.startsWith(fieldUid)
             }.forEach { (key, value) ->
                 fieldViewModels[key] = value.setFieldMandatory()
             }
@@ -380,30 +376,32 @@ class RulesUtilsProviderImpl(
     }
 
     private fun warningOnCompletion(
-        warningOnCompletion: RuleActionWarningOnCompletion,
+        warningOnCompletion: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         data: String,
     ) {
-        val model = fieldViewModels[warningOnCompletion.field()]
+        val fieldUid = warningOnCompletion.field() ?: ""
+        val model = fieldViewModels[fieldUid]
         val message = warningOnCompletion.content() + " " + data
         if (model != null) {
-            fieldViewModels[warningOnCompletion.field()] = model.setWarning(message)
+            fieldViewModels[fieldUid] = model.setWarning(message)
         }
 
         messageOnComplete = message
     }
 
     private fun errorOnCompletion(
-        errorOnCompletion: RuleActionErrorOnCompletion,
+        errorOnCompletion: RuleAction,
         fieldViewModels: MutableMap<String, FieldUiModel>,
         data: String,
     ) {
+        val fieldUid = errorOnCompletion.field() ?: ""
         val model = fieldViewModels[errorOnCompletion.field()]
         val message = errorOnCompletion.content() + " " + data
         if (model != null) {
-            fieldViewModels[errorOnCompletion.field()] = model.setError(message)
+            fieldViewModels[fieldUid] = model.setError(message)
             fieldsWithErrors.add(
-                FieldWithError(errorOnCompletion.field(), message),
+                FieldWithError(fieldUid, message),
             )
         }
 
@@ -411,66 +409,75 @@ class RulesUtilsProviderImpl(
         messageOnComplete = message
     }
 
-    private fun hideProgramStage(hideProgramStage: RuleActionHideProgramStage) {
-        stagesToHide.add(hideProgramStage.programStage())
+    private fun hideProgramStage(hideProgramStage: RuleAction) {
+        val stage = hideProgramStage.values["programStage"]
+        stage?.let { stagesToHide.add(stage) }
     }
 
     private fun hideProgramStage(
         programStages: MutableMap<String, ProgramStage>,
-        hideProgramStage: RuleActionHideProgramStage,
+        hideProgramStage: RuleAction,
     ) {
-        programStages.remove(hideProgramStage.programStage())
+        val stage = hideProgramStage.values["programStage"]
+        stage?.let { programStages.remove(stage) }
     }
 
-    private fun hideOption(hideOption: RuleActionHideOption) {
+    private fun hideOption(hideOption: RuleAction) {
+        val fieldUid = hideOption.field() ?: ""
+        val option = hideOption.values["option"]
         if (!optionsToHide.containsKey(hideOption.field())) {
-            optionsToHide[hideOption.field()] = mutableListOf()
+            optionsToHide[fieldUid] = mutableListOf()
         }
-        optionsToHide[hideOption.field()]?.add(hideOption.option())
-
-        valueStore?.let {
-            if (it.deleteOptionValueIfSelected(
-                    hideOption.field(),
-                    hideOption.option(),
-                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
-            ) {
-                fieldsToUpdate.add(FieldWithNewValue(hideOption.field(), null))
+        option?.let {
+            optionsToHide[hideOption.field()]?.add(option)
+            valueStore?.let {
+                if (it.deleteOptionValueIfSelected(
+                        fieldUid,
+                        option,
+                    ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                ) {
+                    fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
+                }
             }
         }
     }
 
-    private fun hideOptionGroup(hideOptionGroup: RuleActionHideOptionGroup) {
+    private fun hideOptionGroup(hideOptionGroup: RuleAction) {
+        val fieldUid = hideOptionGroup.field() ?: ""
+        val optionGroup = hideOptionGroup.values["optionGroup"]
         if (!optionGroupsToHide.containsKey(hideOptionGroup.field())) {
-            optionGroupsToHide[hideOptionGroup.field()] = mutableListOf()
+            optionGroupsToHide[fieldUid] = mutableListOf()
         }
-        optionGroupsToHide[hideOptionGroup.field()]?.add(hideOptionGroup.optionGroup())
+        optionGroup?.let {
+            optionGroupsToHide[hideOptionGroup.field()]?.add(optionGroup)
 
-        valueStore?.let {
-            if (it.deleteOptionValueIfSelectedInGroup(
-                    hideOptionGroup.field(),
-                    hideOptionGroup.optionGroup(),
-                    true,
-                ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
-            ) {
-                fieldsToUpdate.add(FieldWithNewValue(hideOptionGroup.field(), null))
+            valueStore?.let {
+                if (it.deleteOptionValueIfSelectedInGroup(
+                        fieldUid,
+                        optionGroup,
+                        true,
+                    ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                ) {
+                    fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
+                }
             }
         }
     }
 
-    private fun showOptionGroup(showOptionGroup: RuleActionShowOptionGroup) {
-        val fieldUid: String = showOptionGroup.field()
-        val optionGroupUid: String = showOptionGroup.optionGroup()
+    private fun showOptionGroup(showOptionGroup: RuleAction) {
+        val fieldUid: String = showOptionGroup.field() ?: ""
+        val optionGroupUid = showOptionGroup.values["optionGroup"]
 
         if (!optionGroupsToHide.containsKey(fieldUid) ||
-            optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
+            optionGroupUid != null && optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
         ) {
             if (optionGroupsToShow[fieldUid] == null) {
-                optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid)
+                optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid!!)
             } else {
-                optionGroupsToShow[fieldUid]?.add(optionGroupUid)
+                optionGroupsToShow[fieldUid]?.add(optionGroupUid!!)
             }
         }
-        if (valueStore?.deleteOptionValueIfSelectedInGroup(
+        if (optionGroupUid != null && valueStore?.deleteOptionValueIfSelectedInGroup(
                 fieldUid,
                 optionGroupUid,
                 false,

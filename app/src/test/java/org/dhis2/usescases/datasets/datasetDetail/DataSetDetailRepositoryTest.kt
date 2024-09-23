@@ -2,8 +2,8 @@ package org.dhis2.usescases.datasets.datasetDetail
 
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption

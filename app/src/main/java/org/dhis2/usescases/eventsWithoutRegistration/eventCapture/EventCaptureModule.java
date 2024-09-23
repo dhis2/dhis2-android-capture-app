@@ -16,9 +16,10 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
+import org.dhis2.mobileProgramRules.EvaluationType;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
 import org.dhis2.form.data.FileController;
 import org.dhis2.form.data.FormValueStore;
 import org.dhis2.form.data.RulesRepository;
@@ -81,8 +82,12 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    RuleEngineRepository ruleEngineRepository(D2 d2, FormRepository formRepository) {
-        return new EventRuleEngineRepository(d2, formRepository, eventUid);
+    RuleEngineHelper ruleEngineRepository(D2 d2) {
+        if(eventUid == null) return null;
+        return new RuleEngineHelper(
+                new EvaluationType.Event(eventUid),
+                new org.dhis2.mobileProgramRules.RulesRepository(d2)
+        );
     }
 
     @Provides
@@ -106,6 +111,7 @@ public class EventCaptureModule {
                 d2,
                 eventUid,
                 EntryMode.DE,
+                null,
                 null,
                 crashReportController,
                 networkUtils,

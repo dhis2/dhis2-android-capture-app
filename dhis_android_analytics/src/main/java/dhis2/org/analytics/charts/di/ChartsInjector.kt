@@ -25,6 +25,7 @@ import dhis2.org.analytics.charts.providers.PeriodStepProviderImpl
 import dhis2.org.analytics.charts.providers.RuleEngineNutritionDataProviderImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import javax.inject.Singleton
 
@@ -120,8 +121,11 @@ class ChartsModule {
     }
 
     @Provides
-    internal fun periodStepProvider(d2: D2): PeriodStepProvider {
-        return PeriodStepProviderImpl(d2)
+    internal fun periodStepProvider(
+        d2: D2,
+        dispatcherProvider: DispatcherProvider,
+    ): PeriodStepProvider {
+        return PeriodStepProviderImpl(d2, dispatcherProvider)
     }
 
     @Provides

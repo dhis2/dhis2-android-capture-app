@@ -3,13 +3,13 @@ package org.dhis2.usescases.searchTrackEntity.ui
 import android.transition.TransitionManager
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.R
 import org.dhis2.bindings.display
 import org.dhis2.bindings.dp
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
+import org.dhis2.usescases.searchTrackEntity.SearchScreenState
 import org.dhis2.usescases.searchTrackEntity.SearchTEScreenState
 import org.dhis2.usescases.searchTrackEntity.ui.BackdropManager.changeBoundsIf
 import org.dhis2.utils.isPortrait
@@ -25,7 +25,9 @@ class SearchScreenConfigurator(
                 if (isPortrait()) {
                     configureListScreen(screenState)
                 } else {
-                    configureLandscapeAnalyticsScreen(false)
+                    if (screenState.screenState != SearchScreenState.MAP) {
+                        configureLandscapeAnalyticsScreen(false)
+                    }
                     configureLandscapeListScreen(screenState)
                 }
         }
@@ -37,22 +39,10 @@ class SearchScreenConfigurator(
             searchConfiguration.searchForm.isOpened -> openSearch()
             else -> closeBackdrop()
         }
-        binding.searchButton.display(searchConfiguration.displaySearchButton())
-        binding.clearFilterSearchButton.display(searchConfiguration.displayResetSearchButton())
+
         binding.clearFilters?.display(searchConfiguration.displayResetFiltersButton())
         syncButtonVisibility(!searchConfiguration.searchForm.isOpened)
         setFiltersVisibility(!searchConfiguration.searchForm.isOpened)
-        binding.minAttributeMessage.setContent {
-            MdcTheme {
-                if (searchConfiguration.searchForm.minAttributesToSearch > 0 &&
-                    searchConfiguration.searchForm.isOpened
-                ) {
-                    MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
-                    )
-                }
-            }
-        }
     }
 
     private fun configureLandscapeListScreen(searchConfiguration: SearchList) {
@@ -61,26 +51,9 @@ class SearchScreenConfigurator(
         } else {
             openSearch()
         }
-        binding.searchButton.display(
-            searchConfiguration.displaySearchButton() ||
-                !searchConfiguration.searchFilters.isOpened,
-        )
-        binding.clearFilterSearchButton.display(
-            searchConfiguration.displayResetInLandscape(),
-        )
+
         syncButtonVisibility(true)
         setFiltersVisibility(true)
-        binding.minAttributeMessage.setContent {
-            MdcTheme {
-                if (searchConfiguration.searchForm.minAttributesToSearch > 0 &&
-                    !searchConfiguration.searchFilters.isOpened
-                ) {
-                    MinAttributesMessage(
-                        minAttributes = searchConfiguration.searchForm.minAttributesToSearch,
-                    )
-                }
-            }
-        }
     }
 
     private fun configureLandscapeAnalyticsScreen(expanded: Boolean) {
@@ -97,21 +70,29 @@ class SearchScreenConfigurator(
 
     private fun setFiltersVisibility(showFilters: Boolean) {
         binding.filterCounter.visibility =
-            if (showFilters && binding.totalFilters ?: 0 > 0) View.VISIBLE else View.GONE
+            if (showFilters && (binding.totalFilters ?: 0) > 0) View.VISIBLE else View.GONE
         binding.searchFilterGeneral.visibility = if (showFilters) View.VISIBLE else View.GONE
     }
 
     private fun openFilters() {
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.VISIBLE
+            binding.title.visibility = View.GONE
+        }
         binding.filterRecyclerLayout.visibility = View.VISIBLE
-        binding.formViewContainer.visibility = View.GONE
+        binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(true)
         changeBounds(R.id.filterRecyclerLayout, 16.dp)
     }
 
     fun closeBackdrop() {
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.VISIBLE
+            binding.title.visibility = View.GONE
+        }
         binding.filterRecyclerLayout.visibility = View.GONE
-        binding.formViewContainer.visibility = View.GONE
+        binding.searchContainer.visibility = View.GONE
         if (isPortrait()) binding.navigationBar.show()
         filterIsOpenCallback(false)
         changeBounds(R.id.backdropGuideTop, 0)
@@ -119,10 +100,14 @@ class SearchScreenConfigurator(
 
     private fun openSearch() {
         binding.filterRecyclerLayout.visibility = View.GONE
-        binding.formViewContainer.visibility = View.VISIBLE
+        if (isPortrait()) {
+            binding.programSpinner.visibility = View.GONE
+            binding.title.visibility = View.VISIBLE
+        }
+        binding.searchContainer.visibility = View.VISIBLE
         if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(false)
-        changeBounds(R.id.formViewContainer, 0)
+        changeBounds(R.id.searchContainer, 0)
     }
 
     private fun changeBounds(endID: Int, margin: Int) {

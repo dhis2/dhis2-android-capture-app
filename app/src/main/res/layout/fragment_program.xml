@@ -78,16 +78,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/filter" />
 
-        <TextView
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/empty_program_list"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/filter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

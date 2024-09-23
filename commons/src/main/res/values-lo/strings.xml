@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">ເຫດການ</string>
     <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
     <string name="clear">ຈັດມ້ຽນ</string>
@@ -14,7 +13,6 @@
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
     <string name="navigation_analytics">ການວິເຄາະ</string>
     <string name="navigation_programs">ສາຍງານ</string>
-    <string name="navigation_events">ເຫດການ</string>
     <string name="navigation_relationships">ສາຍພົວພັນ</string>
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
@@ -66,7 +64,6 @@
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
-    <string name="enrollment_org_unit">ລົງທະບຽນຫົວໜ່ວຍການຈັດຕັ້ງ</string>
 
     <!-- Periods -->
     <string name="filter_period_today">ມື້ນີ້</string>

@@ -9,6 +9,10 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
+import org.dhis2.form.data.EventRepository.Companion.EVENT_CATEGORY_COMBO_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
+import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
@@ -16,6 +20,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import java.io.File
 
@@ -24,6 +29,7 @@ class FormValueStore(
     private val recordUid: String,
     private val entryMode: EntryMode,
     private val enrollmentRepository: EnrollmentObjectRepository?,
+    private val eventRepository: EventObjectRepository?,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val resourceManager: ResourceManager,
@@ -37,7 +43,7 @@ class FormValueStore(
     fun save(uid: String, value: String?, extraData: String?): StoreResult {
         return when (entryMode) {
             EntryMode.DE ->
-                saveDataElement(uid, value).blockingSingle()
+                checkStoreEventDetail(uid, value, extraData).blockingSingle()
 
             EntryMode.ATTR ->
                 checkStoreEnrollmentDetail(uid, value, extraData).blockingSingle()
@@ -47,6 +53,138 @@ class FormValueStore(
                     resourceManager.getString(R.string.data_values_save_error),
                 )
         }
+    }
+
+    private fun checkStoreEventDetail(
+        uid: String,
+        value: String?,
+        extraData: String?,
+    ): Flowable<StoreResult> {
+        return when (uid) {
+            EVENT_REPORT_DATE_UID -> {
+                val storeResult = value?.toDate()?.let {
+                    eventRepository?.setEventDate(it)
+                    StoreResult(
+                        EVENT_REPORT_DATE_UID,
+                        ValueStoreResult.VALUE_CHANGED,
+                    )
+                } ?: StoreResult(
+                    EVENT_REPORT_DATE_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+
+                Flowable.just(storeResult)
+            }
+
+            EVENT_ORG_UNIT_UID -> {
+                val storeResult = value?.takeIf { it.isNotEmpty() }?.let {
+                    eventRepository?.setOrganisationUnitUid(it)
+                    StoreResult(
+                        EVENT_ORG_UNIT_UID,
+                        ValueStoreResult.VALUE_CHANGED,
+                    )
+                } ?: StoreResult(
+                    EVENT_ORG_UNIT_UID,
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+
+                Flowable.just(storeResult)
+            }
+
+            EVENT_COORDINATE_UID -> {
+                storeEventCoordinateAttribute(value, extraData)
+            }
+
+            else -> {
+                if (uid.contains(EVENT_CATEGORY_COMBO_UID)) {
+                    storeEventCategoryComboAttribute(uid, value)
+                } else {
+                    saveDataElement(uid, value)
+                }
+            }
+        }
+    }
+
+    private fun storeEventCategoryComboAttribute(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> {
+        val categoryOptionComboUid = if (value.isNullOrEmpty()) {
+            null
+        } else {
+            val categoryComboUid = uid.split("-")[1]
+            val categoryOptionsUids = value.split(",")
+            if (categoryOptionsUids.isNotEmpty()) {
+                d2.categoryModule().categoryOptionCombos()
+                    .byCategoryComboUid().eq(categoryComboUid)
+                    .byCategoryOptions(categoryOptionsUids)
+                    .one().blockingGet()?.uid()
+            } else {
+                null
+            }
+        }
+
+        val storeResult = categoryOptionComboUid?.let {
+            eventRepository?.setAttributeOptionComboUid(categoryOptionComboUid)
+            StoreResult(
+                EVENT_CATEGORY_COMBO_UID,
+                ValueStoreResult.VALUE_CHANGED,
+            )
+        } ?: StoreResult(
+            EVENT_CATEGORY_COMBO_UID,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+        )
+
+        return Flowable.just(storeResult)
+    }
+
+    private fun storeEventCoordinateAttribute(
+        value: String?,
+        extraData: String?,
+    ): Flowable<StoreResult> {
+        val featureType =
+            d2.programModule().programStages()
+                .uid(eventRepository?.blockingGet()?.programStage())
+                .blockingGet()?.featureType()
+        return featureType?.let { type ->
+            when (type) {
+                FeatureType.POINT,
+                FeatureType.POLYGON,
+                FeatureType.MULTI_POLYGON,
+                -> {
+                    val geometry = value?.let {
+                        extraData?.let {
+                            Geometry.builder()
+                                .coordinates(value)
+                                .type(FeatureType.valueOf(it))
+                                .build()
+                        }
+                    }
+                    eventRepository?.setGeometry(geometry)
+
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_COORDINATE_UID,
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
+                    )
+                }
+
+                else -> {
+                    Flowable.just(
+                        StoreResult(
+                            EVENT_COORDINATE_UID,
+                            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                        ),
+                    )
+                }
+            }
+        } ?: Flowable.just(
+            StoreResult(
+                EVENT_COORDINATE_UID,
+                ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+            ),
+        )
     }
 
     fun storeFile(uid: String, filePath: String?): StoreResult {
@@ -124,13 +262,22 @@ class FormValueStore(
             }
 
             EnrollmentDetail.ORG_UNIT_UID.name -> {
-                enrollmentRepository?.setOrganisationUnitUid(value)
-                Flowable.just(
-                    StoreResult(
-                        EnrollmentDetail.ORG_UNIT_UID.name,
-                        ValueStoreResult.VALUE_CHANGED,
-                    ),
-                )
+                try {
+                    enrollmentRepository?.setOrganisationUnitUid(value)
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.ORG_UNIT_UID.name,
+                            ValueStoreResult.VALUE_CHANGED,
+                        ),
+                    )
+                } catch (e: Exception) {
+                    Flowable.just(
+                        StoreResult(
+                            EnrollmentDetail.ORG_UNIT_UID.name,
+                            ValueStoreResult.ERROR_UPDATING_VALUE,
+                        ),
+                    )
+                }
             }
 
             EnrollmentDetail.TEI_COORDINATES_UID.name -> {
@@ -207,7 +354,12 @@ class FormValueStore(
                 EntryMode.ATTR -> recordUid
                 EntryMode.DV -> null
             }
-                ?: return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_HAS_NOT_CHANGED))
+                ?: return Flowable.just(
+                    StoreResult(
+                        uid,
+                        ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                    ),
+                )
 
         if (!checkUniqueFilter(uid, value, teiUid)) {
             return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
@@ -215,7 +367,8 @@ class FormValueStore(
 
         val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
             .value(uid, teiUid)
-        val attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
+        val attribute =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
         val valueType = attribute?.valueType()
         val newValue = value.withValueTypeCheck(valueType) ?: ""
 
@@ -400,7 +553,7 @@ class FormValueStore(
                 .uid(optionGroupUid)
                 .blockingGet()
                 ?.options()
-                ?.map { d2.optionModule().options().uid(it.uid()).blockingGet()?.code()!! }
+                ?.mapNotNull { d2.optionModule().options().uid(it.uid()).blockingGet()?.code() }
                 ?: arrayListOf()
         return when (entryMode) {
             EntryMode.DE -> deleteDataElementValueIfNotInGroup(

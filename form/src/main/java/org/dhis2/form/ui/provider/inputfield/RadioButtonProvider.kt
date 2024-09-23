@@ -2,7 +2,6 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -12,26 +11,28 @@ import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
 internal fun ProvideRadioButtonInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    focusRequester: FocusRequester,
 ) {
     val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
         RadioButtonData(
             uid = option.uid(),
             selected = fieldUiModel.displayName == option.displayName(),
             enabled = true,
-            textInput = option.displayName(),
+            textInput = option.displayName() ?: "",
         )
     } ?: emptyList()
 
     InputRadioButton(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
@@ -41,7 +42,6 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            focusRequester.requestFocus()
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
@@ -57,10 +57,10 @@ internal fun ProvideRadioButtonInput(
 @Composable
 internal fun ProvideYesNoRadioButtonInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
-    focusRequester: FocusRequester,
 ) {
     val data = listOf(
         RadioButtonData(
@@ -79,6 +79,7 @@ internal fun ProvideYesNoRadioButtonInput(
 
     InputRadioButton(
         modifier = modifier,
+        inputStyle = inputStyle,
         title = fieldUiModel.label,
         radioButtonData = data,
         orientation = fieldUiModel.orientation(),
@@ -88,7 +89,6 @@ internal fun ProvideYesNoRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            focusRequester.requestFocus()
             when (item?.uid) {
                 "true" -> {
                     intentHandler(

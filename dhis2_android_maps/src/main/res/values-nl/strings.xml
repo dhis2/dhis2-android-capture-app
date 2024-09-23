@@ -12,6 +12,5 @@
     <string name="dialog_layer_satellite">Satellietweergave tonen</string>
     <string name="dialog_layer_event">Toon evenementen</string>
     <string name="dialog_layer_tei_coordinates">Toon tei-coördinaten</string>
-    <string name="dialog_layer_enrollment_coordinates">Toon inschrijvingscoördinaten</string>
     <string name="dialog_layer_heatmap">Warmtebeeld weergeven</string>
-</resources>
+    </resources>

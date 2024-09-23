@@ -6,7 +6,6 @@ interface NavigationPageConfigurator {
     fun pageVisibility(@IdRes pageId: Int): Boolean {
         return when (NavigationPage.values().firstOrNull { it.id == pageId }) {
             NavigationPage.DETAILS -> displayDetails()
-            NavigationPage.EVENTS -> displayEvents()
             NavigationPage.ANALYTICS -> displayAnalytics()
             NavigationPage.RELATIONSHIPS -> displayRelationships()
             NavigationPage.NOTES -> displayNotes()
@@ -21,7 +20,6 @@ interface NavigationPageConfigurator {
     }
 
     fun displayDetails(): Boolean = false
-    fun displayEvents(): Boolean = false
     fun displayAnalytics(): Boolean = false
     fun displayRelationships(): Boolean = false
     fun displayNotes(): Boolean = false

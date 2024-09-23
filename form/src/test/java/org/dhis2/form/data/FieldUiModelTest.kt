@@ -77,12 +77,15 @@ class FieldUiModelTest {
         label = "label",
         valueType = ValueType.TEXT,
         optionSetConfiguration = OptionSetConfiguration.config(5) {
-            listOf(
-                Option.builder().uid("1").build(),
-                Option.builder().uid("2").build(),
-                Option.builder().uid("3").build(),
-                Option.builder().uid("4").build(),
-                Option.builder().uid("5").build(),
+            OptionSetConfiguration.OptionConfigData(
+                listOf(
+                    Option.builder().uid("1").build(),
+                    Option.builder().uid("2").build(),
+                    Option.builder().uid("3").build(),
+                    Option.builder().uid("4").build(),
+                    Option.builder().uid("5").build(),
+                ),
+                emptyMap(),
             )
         },
         autocompleteList = null,

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <group android:id="@+id/visualization">
+            <item
+                android:id="@+id/back"
+                android:icon="@drawable/ic_arrowback_chart"
+                android:title="@string/search"/>
+        </group>
+        <group android:id="@+id/columns"/>
+        <group
+            android:id="@+id/resetcurrent"
+            android:orderInCategory="100">
+            <item
+                android:visible="false"
+                android:icon="@drawable/ic_reset_chart"
+                android:id="@+id/reset_search"
+                android:title="@string/reset" />
+        </group>
+    </menu>

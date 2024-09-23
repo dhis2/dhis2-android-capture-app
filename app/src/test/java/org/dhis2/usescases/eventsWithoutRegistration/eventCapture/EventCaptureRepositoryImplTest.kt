@@ -5,7 +5,6 @@ import io.reactivex.Single
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -180,22 +179,6 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should return event date`() {
-        mockEvent(trackerEventEnrollmentUid)
-        mockEmptySections()
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2,
-        )
-
-        repository.eventDate().test()
-            .assertNoErrors()
-            .assertValue { it == "1/1/2021" }
-    }
-
-    @Test
     fun `Should return event org unit`() {
         mockEvent(trackerEventEnrollmentUid)
         mockEmptySections()
@@ -215,77 +198,6 @@ class EventCaptureRepositoryImplTest {
         repository.orgUnit().test()
             .assertNoErrors()
             .assertValue { it.uid() == testEventOrgUnitUid }
-    }
-
-    @Test
-    fun `Should return attribute option combo name`() {
-        val attrOptionComboUid = "optionComboUid"
-        val attrOptionComboName = "optionComboName"
-        mockEvent(trackerEventEnrollmentUid, attrOptionComboUid)
-        mockEmptySections()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos().uid(attrOptionComboUid).blockingGet(),
-        ) doReturn CategoryOptionCombo.builder()
-            .uid(attrOptionComboUid)
-            .displayName(attrOptionComboName)
-            .build()
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2,
-        )
-
-        repository.catOption().test()
-            .assertNoErrors()
-            .assertValue { it == attrOptionComboName }
-    }
-
-    @Test
-    fun `Should return empty string if attribute option como is default`() {
-        val attrOptionComboUid = "defaultOptionComboUid"
-        val attrOptionComboName = "default"
-        mockEvent(trackerEventEnrollmentUid, attrOptionComboUid)
-        mockEmptySections()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos().uid(attrOptionComboUid).blockingGet(),
-        ) doReturn CategoryOptionCombo.builder()
-            .uid(attrOptionComboUid)
-            .displayName(attrOptionComboName)
-            .build()
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2,
-        )
-
-        repository.catOption().test()
-            .assertNoErrors()
-            .assertValue { it.isEmpty() }
-    }
-
-    @Test
-    fun `Should return empty string if cat combo is null`() {
-        val attrOptionComboUid = "optionComboUid"
-        mockEvent(trackerEventEnrollmentUid, attrOptionComboUid)
-        mockEmptySections()
-
-        whenever(
-            d2.categoryModule().categoryOptionCombos().uid(attrOptionComboUid).blockingGet(),
-        ) doReturn null
-
-        val repository = EventCaptureRepositoryImpl(
-
-            eventUid,
-            d2,
-        )
-
-        repository.catOption().test()
-            .assertNoErrors()
-            .assertValue { it.isEmpty() }
     }
 
     @Ignore("Use EventCaptureFieldProvider in the list method of the repository")

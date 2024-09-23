@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
@@ -53,6 +54,9 @@ class HomeViewModel @Inject constructor(
 
     private val _settingsUiSate = MutableStateFlow(SettingsUiState(programUid = config.program, transactionItems = transactionItems))
     val settingsUiState: StateFlow<SettingsUiState> = _settingsUiSate
+
+    private val _helperText = MutableStateFlow<String?>(null)
+    val helperText = _helperText.asStateFlow()
 
     init {
         loadFacilities()
@@ -100,6 +104,7 @@ class HomeViewModel @Inject constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { dataElement ->
+                        _helperText.value = dataElement.description()
                         transactionItems.find { it.type == TransactionType.CORRECTION }?.label = dataElement.displayName() ?: TransactionType.CORRECTION.name
                         _settingsUiSate.update { currentUiState ->
                             currentUiState.copy(transactionItems = transactionItems)

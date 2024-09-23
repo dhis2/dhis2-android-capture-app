@@ -40,7 +40,6 @@
     <string name="enter_long_text">Узун матн киритинг</string>
     <string name="enter_text">Матн киритинг</string>
     <string name="due_date">Муддати</string>
-    <string name="event_date">Ҳодиса/Тадбир санаси</string>
     <string name="complete">Тўлдириш</string>
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
     <string name="saved">Сақланди!</string>
@@ -53,12 +52,8 @@
     <string name="take_photo">Суратга олиш</string>
     <string name="from_gallery">Галереядан танлаш</string>
     <string name="warning_error_on_complete_title">Буни текширинг!</string>
-    <string name="enrollment_data_section_label">Қайд қилиш маълумотлари</string>
     <string name="enrollment_single_section_label">Атрибатлар - %s</string>
-    <string name="enrolling_ou">OUга рўйхатга олиш</string>
     <string name="tei_coordinates">Учун координаталар</string>
-    <string name="enrollment_coordinates">Рўйхатдан ўтиш координаталари</string>
     <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
-    <string name="enrollmment_date">Қайд этилган сана</string>
     <string name="incident_date">Ҳодиса санаси</string>
     </resources>

@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.GeneralSettings
@@ -214,6 +215,12 @@ class SyncPresenterImpl(
 
         ).andThen(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
+        ).andThen(
+            Completable.fromObservable(
+                d2.fileResourceModule().fileResourceDownloader()
+                    .byDomainType().eq(FileResourceDomainType.ICON)
+                    .download(),
+            ),
         ).blockingAwait()
     }
 
@@ -243,7 +250,9 @@ class SyncPresenterImpl(
         if (d2.systemInfoModule().versionManager().isGreaterThan(DHISVersion.V2_32)) {
             syncStatusController.initDownloadMedia()
             Completable.fromObservable(
-                d2.fileResourceModule().fileResourceDownloader().download(),
+                d2.fileResourceModule().fileResourceDownloader()
+                    .byDomainType().eq(FileResourceDomainType.DATA_VALUE)
+                    .download(),
             ).blockingAwait()
         }
     }
@@ -308,6 +317,7 @@ class SyncPresenterImpl(
             SyncResult.SYNC -> {
                 ListenableWorker.Result.success()
             }
+
             SyncResult.ERROR -> {
                 val trackerImportConflicts = messageTrackerImportConflict(teiUid)
                 val mergeDateConflicts = ArrayList<String>()
@@ -323,6 +333,7 @@ class SyncPresenterImpl(
                     .build()
                 ListenableWorker.Result.failure(data)
             }
+
             SyncResult.INCOMPLETE -> {
                 val data = Data.Builder()
                     .putStringArray("incomplete", arrayOf("INCOMPLETE"))

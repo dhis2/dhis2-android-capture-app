@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +33,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
@@ -63,15 +65,18 @@ fun TextInput(
     textInputInteractions: TextInputInteractions,
     focusRequester: FocusRequester,
 ) {
+    val tableDimensions = LocalTableDimensions.current
     Column(
         modifier = Modifier
             .testTag(INPUT_TEST_TAG)
+            .onSizeChanged { tableDimensions.textInputHeight = it.height }
             .fillMaxWidth()
             .background(
                 color = Color.White,
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             )
             .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
+        verticalArrangement = spacedBy(8.dp),
     ) {
         InputTitle(textInputModel.mainLabel, textInputModel.secondaryLabels)
         TextInputContent(
@@ -252,6 +257,17 @@ private fun TextInputContent(
                 ),
             )
         }
+        if (textInputModel.hasHelperText()) {
+            Text(
+                modifier = Modifier
+                    .testTag(INPUT_HELPER_TEXT_TEST_TAG),
+                text = textInputModel.helperText!!,
+                style = TextStyle(
+                    color = LocalTableColors.current.headerText,
+                ),
+                fontSize = 10.sp,
+            )
+        }
     }
 }
 
@@ -335,6 +351,26 @@ fun DefaultTextInputStatusPreview() {
         id = "",
         mainLabel = "Row",
         secondaryLabels = listOf("header 1", "header 2"),
+        helperText = "description",
+        currentValue = "Test",
+    )
+
+    TextInput(
+        textInputModel = previewTextInput,
+        textInputInteractions = object : TextInputInteractions {},
+        focusRequester = FocusRequester(),
+    )
+}
+
+@Preview
+@Composable
+fun DefaultTextInputErrorStatusPreview() {
+    val previewTextInput = TextInputModel(
+        id = "",
+        mainLabel = "Row",
+        secondaryLabels = listOf("header 1", "header 2"),
+        error = "error message",
+        helperText = "description",
         currentValue = "Test",
     )
 
@@ -349,6 +385,7 @@ const val INPUT_TEST_TAG = "INPUT_TEST_TAG"
 const val INPUT_TEST_FIELD_TEST_TAG = "INPUT_TEST_FIELD_TEST_TAG"
 const val INPUT_ERROR_MESSAGE_TEST_TAG = "INPUT_ERROR_MESSAGE_TEST_TAG"
 const val INPUT_ICON_TEST_TAG = "INPUT_ICON_TEST_TAG"
+const val INPUT_HELPER_TEXT_TEST_TAG = "INPUT_HELPER_TEXT_TEST_TAG"
 
 val DrawableId = SemanticsPropertyKey<Int>("DrawableResId")
 var SemanticsPropertyReceiver.drawableId by DrawableId

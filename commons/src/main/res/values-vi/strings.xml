@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Sự Kiện</string>
     <string name="no_data">Không có dữ liệu</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
     <string name="change_calendar_view">Thay đổi xem lịch</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>

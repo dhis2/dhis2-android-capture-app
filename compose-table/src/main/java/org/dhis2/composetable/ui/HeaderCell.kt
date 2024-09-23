@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.dhis2.composetable.model.ItemColumnHeaderUiState
 import org.dhis2.composetable.ui.semantics.columnBackground
@@ -46,7 +45,8 @@ fun HeaderCell(itemHeaderUiState: ItemColumnHeaderUiState, modifier: Modifier = 
     ) {
         Text(
             modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 11.dp)
+                .padding(itemHeaderUiState.paddingValues)
+                .align(Alignment.Center)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             color = itemHeaderUiState.cellStyle.mainColor(),

@@ -121,9 +121,6 @@
     <string name="latitude">纬度</string>
     <string name="longitude">经度</string>
     <string name="new_event">新事件</string>
-    <string name="failed_insert_event">插入新事件失败</string>
-    <string name="event_created">事件已经创建</string>
-    <string name="event_updated">事件已经更新</string>
     <string name="one_time">一次</string>
     <string name="permanent">永远</string>
 
@@ -136,18 +133,13 @@
     <string name="datavalue_saved">值已被保存</string>
     <string name="there_is_no_available_period">没有可用期间可选</string>
     <!--Event Detail-->
-    <string name="event_date">事故日期</string>
     <string name="due_date">到期日期</string>
     <string name="cat_combo">分类选择框</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
-    <string name="delete_event">删除事件</string>
-    <string name="confirm_delete_event">你确定删除事件</string>
-    <string name="event_was_deleted">事件删除成功</string>
     <string name="total">总共</string>
     <string name="most_recent_event_date">最近事件日期</string>
-
     <!--TEI Enrollment list-->
     <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
@@ -159,20 +151,17 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">查看详情</string>
     <string name="view_more">更多</string>
-    <string name="enrolling_ou">注册机构</string>
     <string name="follow_up">后续跟踪</string>
     <string name="follow_up_enabled">使能后续跟踪</string>
     <string name="follow_up_disabled">后续跟踪关闭</string>
     <string name="deactivate">去活</string>
     <string name="program_not_allow_events">该项目不允许更多事件</string>
 
-    <!--DONE TASKS-->
     <string name="events">事件</string>
     <string name="done_task">主页</string>
     <string name="app_info">应用信息</string>
     <string name="log_out">退出</string>
     <string name="block_session">阻止会话</string>
-
     <!-- SYNC -->
     <string name="a_minute">1分钟</string>
     <string name="fifteen_minute">15分钟</string>
@@ -243,18 +232,15 @@
     <string name="add_note">添加笔记</string>
     <string name="revert">反转</string>
     <string name="activated">激活</string>
-    <string name="enroll_in">注册 %s</string>
     <string name="missing_mandatory_fields_title">强制字段缺失</string>
     <string name="missing_mandatory_fields_text">有些强制字段缺失，如果你后退，所有保存的信息将被删除。</string>
     <string name="missing_mandatory_fields_text_not_delete">有些强制字段缺失，如果你后退，请填充他们</string>
     <string name="missing_mandatory_fields_events">某些字段需要您注意。\n您要查看表单吗？</string>
     <string name="title_delete_go_back">你的数据已经被保存</string>
     <string name="delete_go_back">如果退回，所有输入信息将被删除</string>
-    <string name="missing_mandatory_fields_events_2.0">有些强制字段缺少值：%s。 你现在可以退回，但该事件不能被完成。</string>
     <string name="missing_mandatory_fields_go_back">删除并后退</string>
     <string name="error_fields">有些字段有错误：%s。 \n 请检查。</string>
     <string name="missing_mandatory_fields_finish">有些强制字段缺失。你可以完成数据录入并退出，但不能完成该事件。</string>
-    <string name="enrollment_coordinates">注册坐标</string>
     <string name="tei_coordinates">坐标</string>
 
     <!--EVENT SUMMARY-->
@@ -312,7 +298,6 @@
     <string name="qr_error_id">无效的二维码</string>
     <string name="qr_error_attr">该属性不能被添加</string>
     <string name="qr_error_enrollment">该注册不能添加</string>
-    <string name="qr_error_event">该事件不能添加</string>
 
     <string name="jira_report">报告Jira问题</string>
     <string name="about">关于</string>
@@ -459,17 +444,14 @@
     <string name="finish">保存</string>
     <string name="error_fields_title">有错误的字段</string>
     <string name="error_fields_events">有些字段有错误，他们已经保存，请检查。</string>
-    <string name="event_reopened">该事件可以编辑了。</string>
     <string name="unique_warning">值应该唯一，发现相同的。还没有保存，请检查。</string>
     <string name="unique_coincidence_found">唯一字段发现相同的，请检查表单 以便保存注册</string>
     <string name="please_wait">请等待.....</string>
     <string name="skip">跳过</string>
     <string name="reschedule">重新调度</string>
-    <string name="event_was_skipped">事件被标记为跳过</string>
     <string name="no_intructions">该屏没有信息</string>
     <string name="event_overdue">逾期</string>
     <string name="unsupported_program_rule">存在不支持的项目规则，请检查文档。</string>
-    <string name="delete_event_error">事件还没有创建</string>
     <string name="empty_description">该字段没有相关信息</string>
     <string name="biometrics_dialog_title">空证书</string>
     <string name="biometrics_first_use_text">为了能够使用指纹扫描器，你需要先使用缺省的方法</string>
@@ -523,10 +505,8 @@
     <string name="relationship_without_enrollment">你试图访问的记录还没有注册。你不能访问仪表盘。</string>
     <string name="formatting_error">格式化错误</string>
     <string name="dashboard_menu_delete_tei_v2">删除 %s</string>
-    <string name="dashboard_menu_delete_enrollment">仅仅删除注册</string>
     <string name="delete_authority_error">你没有删除记录的权限</string>
     <string name="validation_url">没有有效的URL</string>
-    <string name="uncomplete_authority_error">你没有打开该事件的权限。</string>
     <string name="adjusting_form">调整表单。。。</string>
 
     <string name="sms_receiver_number">接收号码</string>
@@ -618,7 +598,6 @@
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
     <string name="enrollment_data_hide">隐藏注册数据</string>
     <string name="enrollment_data_show">显示注册数据</string>
-    <string name="enrollment_data_section_label">注册数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
@@ -628,7 +607,6 @@
     <string name="disable_pin_locked">不再显示锁屏</string>
     <string name="set_pin">设置PIN</string>
     <string name="conflict">冲突</string>
-    <string name="event_date_in_future_message">事件不能有将来的时间，请修改</string>
     <string name="change_event_date">改变日期</string>
     <string name="go_back">后退</string>
     <string name="data_sets">数据集</string>
@@ -642,7 +620,6 @@
     <string name="interval_hour_ago">%d小时前</string>
     <string name="interval_yesterday">昨天</string>
     <string name="enrollment_single_section_label">属性- %s</string>
-    <string name="program_selector">项目注册</string>
     <string name="select_time">选择时间</string>
     <string name="enter_letter">输入字符</string>
     <string name="enter_unit_interval">输入0-1之间的数</string>
@@ -688,7 +665,6 @@
     <string name="complete_anyway">任何都要完成</string>
     <string name="fk_message">遗失 %s %s 从%s %s</string>
     <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">登记状态</string>
     <string name="enrollment_date">登记日期</string>
     <string name="dataset_empty_list_can_create">没有数据，点击“+”添加新的记录</string>
     <string name="dataset_emtpy_list_can_not_create">没有数据，您没有权限添加新记录</string>
@@ -741,7 +717,6 @@
     <string name="navigation_analytics">分析工具</string>
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
-    <string name="navigation_events">事件</string>
     <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
@@ -788,8 +763,6 @@
     <string name="from_gallery">从图库中选择</string>
     <string name="data_set_quality_check_done">完成！</string>
     <string name="break_glass_dialog_title">该项目受保护</string>
-    <string name="break_glass_dialog_description">您必须提供一个理由来检查是否注册了该受保护项目。所有活动将被记录。</string>
-    <string name="break_glass_reason">注册原因</string>
     <string name="break_glass_hint">在此说明原因</string>
     <string name="authenticating">验证中</string>
     <string name="login_error_no_dhis_instance">提供的服务器URL不是dhis实例</string>
@@ -814,7 +787,6 @@
     <string name="edition_no_write_access">您无权编辑此数据</string>
     <string name="event_date_not_in_orgunit_range">此数据不可修改，因为单位部门已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
-    <string name="edition_enrollment_is_no_open">此数据不可编辑，因为注册已完成或取消</string>
     <string name="edition_orgunit_capture_scope">您无法编辑此机构的数据</string>
     <string name="reload_list">重置搜索</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
@@ -859,7 +831,6 @@
     <string name="account_disable_title">帐户已禁用</string>
     <string name="account_disable_message">您的帐户已被管理员禁用。</string>
     <string name="search_unable_search_outside">要在此项目之外进行搜索，请打开搜索表单并填写以下 %s 字段之一：</string>
-    <string name="enrollment_org_unit">注册机构</string>
     <string name="customactivityoncrash_error_activity_build_version">构建版本：%s</string>
     <string name="customactivityoncrash_error_activity_buid_date">构建日期：%s</string>
     <string name="customactivityoncrash_error_activity_current_date">当前日期：%s</string>

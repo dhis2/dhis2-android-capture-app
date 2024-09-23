@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.mapper
 
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.FormSection
@@ -13,6 +14,8 @@ class FormSectionMapper {
         if (hasSections(items)) {
             items.forEach { item ->
                 if (item is SectionUiModelImpl) {
+                    val fields = items.filterIsInstance<FieldUiModelImpl>()
+                        .filter { it.programStageSection == item.uid }
                     sections.add(
                         FormSection(
                             uid = item.uid,
@@ -23,8 +26,12 @@ class FormSectionMapper {
                                 false -> SectionState.CLOSE
                                 null -> SectionState.FIXED
                             },
-                            fields = items.filterIsInstance<FieldUiModelImpl>()
-                                .filter { it.programStageSection == item.uid },
+                            fields = fields,
+                            warningMessage = if (fields.isEmpty()) {
+                                R.string.form_without_fields
+                            } else {
+                                null
+                            },
                         ),
                     )
                 }
@@ -40,7 +47,6 @@ class FormSectionMapper {
                 ),
             )
         }
-
         return sections
     }
 

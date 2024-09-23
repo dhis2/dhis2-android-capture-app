@@ -2,6 +2,8 @@ package org.dhis2.usescases.teiDashboard
 
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Unit
@@ -32,6 +34,8 @@ class DashboardRepositoryImplTest {
     private val resources: ResourceManager = mock()
     private val charts: Charts = mock()
     private val teiAttributesProvider: TeiAttributesProvider = mock()
+    private val preferences: PreferenceProvider = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     @Before
     fun setUp() {
@@ -41,8 +45,9 @@ class DashboardRepositoryImplTest {
             "teiUid",
             "programUid",
             "enrollmentUid",
-            resources,
             teiAttributesProvider,
+            preferences,
+            metadataIconProvider,
         )
     }
 

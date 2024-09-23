@@ -14,7 +14,7 @@ import org.dhis2.animations.CarouselViewAnimations
 import org.dhis2.bindings.dp
 import org.dhis2.commons.bindings.clipWithRoundedCorners
 import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
+import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
@@ -33,7 +33,6 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.isPortrait
-import java.io.File
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
@@ -90,6 +89,7 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         (context as SearchTEActivity).searchComponent.plus(
             SearchTEMapModule(),
         ).inject(this)
+        viewModel.setMapScreen()
     }
 
     override fun onCreateView(
@@ -259,14 +259,14 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
                 true
             }
             .addOnProfileImageClickListener { path: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    ImageDetailBottomDialog(
-                        null,
-                        File(path),
-                    ).show(
-                        childFragmentManager,
-                        ImageDetailBottomDialog.TAG,
+                if (binding.mapCarousel.carouselEnabled && !path.isNullOrBlank()) {
+                    val intent = ImageDetailActivity.intent(
+                        context = requireContext(),
+                        title = null,
+                        imagePath = path,
                     )
+
+                    startActivity(intent)
                 }
                 Unit
             }

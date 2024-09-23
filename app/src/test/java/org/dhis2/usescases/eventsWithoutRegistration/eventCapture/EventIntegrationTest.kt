@@ -3,14 +3,20 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.form.data.EventRepository
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.SuccessfulResult
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormPresenter
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormView
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
@@ -38,6 +44,9 @@ class EventIntegrationTest {
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val reOpenUseCase: ReOpenEventUseCase = mock()
+    private val dispatcherProvider: DispatcherProvider = mock()
 
     private val resourceProvider: EventCaptureResourcesProvider = mock {
         on { provideNotSavedText() } doReturn "not_saved"
@@ -67,6 +76,9 @@ class EventIntegrationTest {
         activityPresenter = eventCapturePresenter,
         d2 = d2,
         eventUid = eventUid,
+        resourceManager = resourceManager,
+        reOpenEventUseCase = reOpenUseCase,
+        dispatcherProvider = dispatcherProvider,
     )
 
     @Test
@@ -77,7 +89,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
 
         val mandatoryFields = mapOf("uid" to "message")
         val expectedDialog = EventCompletionDialog(
@@ -110,13 +122,9 @@ class EventIntegrationTest {
             onCompleteMessage = null,
             allowDiscard = false,
         )
-        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult, EventMode.CHECK)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mandatoryFields,
-            expectedDialog,
-        )
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 
     @Test
@@ -127,7 +135,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
 
         val errors = listOf(
             FieldWithIssue("fieldUid", "fieldName", IssueType.ERROR, "message"),
@@ -157,11 +165,41 @@ class EventIntegrationTest {
         )
         eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mapOf(),
-            expectedDialog,
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
+    }
+
+    @Test
+    fun `Should set complete options if there are no errors or mandatory`() {
+        whenever(
+            eventRepository.eventStatus(),
+        ) doReturn Flowable.just(EventStatus.ACTIVE)
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+
+        val expectedDialog = EventCompletionDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = "saved",
+                subtitle = null,
+                message = "event_can_be_completed",
+                clickableWord = null,
+                iconResource = 0,
+                mainButton = DialogButtonStyle.CompleteButton,
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = 0),
+            ),
+            mainButtonAction = FormBottomDialog.ActionType.COMPLETE,
+            secondaryButtonAction = FormBottomDialog.ActionType.FINISH,
+            fieldsWithIssues = emptyList(),
         )
+
+        val dataCheckResult = SuccessfulResult(
+            canComplete = false,
+            onCompleteMessage = null,
+        )
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
+
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 
     @Test
@@ -172,7 +210,7 @@ class EventIntegrationTest {
 
         whenever(
             eventRepository.validationStrategy(),
-        )doReturn ValidationStrategy.ON_COMPLETE
+        ) doReturn ValidationStrategy.ON_COMPLETE
 
         val errors = listOf(
             FieldWithIssue("fieldUid", "fieldName", IssueType.ERROR, "message"),
@@ -202,10 +240,144 @@ class EventIntegrationTest {
         )
         eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult)
 
-        verify(eventCaptureView).showCompleteActions(
-            false,
-            mapOf(),
-            expectedDialog,
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
+    }
+
+    @Test
+    fun `Should not configure secondary action for new event with event mandatory fields`() {
+        whenever(
+            eventRepository.eventStatus(),
+        ) doReturn Flowable.just(EventStatus.ACTIVE)
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_COMPLETE
+
+        val mandatoryFields = mapOf("uid" to EventRepository.EVENT_DETAILS_SECTION_UID)
+        val expectedDialog = EventCompletionDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = "saved",
+                subtitle = null,
+                message = "missing_mandatory_fields_events",
+                clickableWord = null,
+                iconResource = 0,
+                mainButton = DialogButtonStyle.MainButton(textResource = 0),
+                secondaryButton = null,
+            ),
+            mainButtonAction = FormBottomDialog.ActionType.CHECK_FIELDS,
+            secondaryButtonAction = null,
+            fieldsWithIssues = listOf(
+                FieldWithIssue(
+                    fieldUid = "uid",
+                    fieldName = "uid",
+                    issueType = IssueType.MANDATORY,
+                    message = "field_is_mandatory",
+                ),
+            ),
         )
+
+        val dataCheckResult = MissingMandatoryResult(
+            mandatoryFields = mandatoryFields,
+            errorFields = listOf(),
+            warningFields = listOf(),
+            canComplete = false,
+            onCompleteMessage = null,
+            allowDiscard = false,
+        )
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult, EventMode.NEW)
+
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
+    }
+
+    @Test
+    fun `Should configure secondary action for check event with event mandatory fields`() {
+        whenever(
+            eventRepository.eventStatus(),
+        ) doReturn Flowable.just(EventStatus.ACTIVE)
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_COMPLETE
+
+        val mandatoryFields = mapOf("uid" to EventRepository.EVENT_DETAILS_SECTION_UID)
+        val expectedDialog = EventCompletionDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = "saved",
+                subtitle = null,
+                message = "missing_mandatory_fields_events",
+                clickableWord = null,
+                iconResource = 0,
+                mainButton = DialogButtonStyle.MainButton(textResource = 0),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = 0),
+            ),
+            mainButtonAction = FormBottomDialog.ActionType.CHECK_FIELDS,
+            secondaryButtonAction = FormBottomDialog.ActionType.FINISH,
+            fieldsWithIssues = listOf(
+                FieldWithIssue(
+                    fieldUid = "uid",
+                    fieldName = "uid",
+                    issueType = IssueType.MANDATORY,
+                    message = "field_is_mandatory",
+                ),
+            ),
+        )
+
+        val dataCheckResult = MissingMandatoryResult(
+            mandatoryFields = mandatoryFields,
+            errorFields = listOf(),
+            warningFields = listOf(),
+            canComplete = false,
+            onCompleteMessage = null,
+            allowDiscard = false,
+        )
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult, EventMode.CHECK)
+
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
+    }
+
+    @Test
+    fun `Should configure secondary action for check event without event mandatory fields`() {
+        whenever(
+            eventRepository.eventStatus(),
+        ) doReturn Flowable.just(EventStatus.ACTIVE)
+
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_COMPLETE
+
+        val mandatoryFields = mapOf("uid" to EventRepository.EVENT_DETAILS_SECTION_UID)
+        val expectedDialog = EventCompletionDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = "saved",
+                subtitle = null,
+                message = "missing_mandatory_fields_events",
+                clickableWord = null,
+                iconResource = 0,
+                mainButton = DialogButtonStyle.MainButton(textResource = 0),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = 0),
+            ),
+            mainButtonAction = FormBottomDialog.ActionType.CHECK_FIELDS,
+            secondaryButtonAction = FormBottomDialog.ActionType.FINISH,
+            fieldsWithIssues = listOf(
+                FieldWithIssue(
+                    fieldUid = "uid",
+                    fieldName = "uid",
+                    issueType = IssueType.MANDATORY,
+                    message = "field_is_mandatory",
+                ),
+            ),
+        )
+
+        val dataCheckResult = MissingMandatoryResult(
+            mandatoryFields = mandatoryFields,
+            errorFields = listOf(),
+            warningFields = listOf(),
+            canComplete = false,
+            onCompleteMessage = null,
+            allowDiscard = false,
+        )
+        eventCaptureFormPresenter.handleDataIntegrityResult(dataCheckResult, EventMode.CHECK)
+
+        verify(eventCaptureView).showCompleteActions(expectedDialog)
     }
 }

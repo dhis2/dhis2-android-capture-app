@@ -22,6 +22,7 @@
     <string name="conf_error_value_to_assign_option_set">Правило програми %s намагається призначити значення %s, яке не належить до набору параметрів %s</string>
     <string name="conf_error_value_option_set">Значення для поля %s не належить параметру, встановленому в %s</string>
     <string name="field_is_mandatory">Це поле обов\'язкове для заповнення</string>
+    <string name="required">Обов\'язкове поле</string>
     <string name="date">Дата</string>
     <string name="hint_year">Роки</string>
     <string name="hint_month">Місяці</string>
@@ -46,7 +47,6 @@
     <string name="enter_long_text">Введіть довгий текст</string>
     <string name="enter_text">Введіть текст</string>
     <string name="due_date">Запланована дата</string>
-    <string name="event_date">Дата випадку</string>
     <string name="mandatory_field">Обов\'язкове поле</string>
     <string name="form_latitude_prefix">Широта:</string>
     <string name="form_longitude_prefix">Довгота:</string>
@@ -90,12 +90,13 @@
     <string name="error_true_only_one_is_not_true">Недійсний символ 1</string>
     <string name="data_values_save_error">Значення даних не можна зберегти за допомогою цих аргументів. Використовуйте інші.</string>
     <string name="leading_zero_error">Нульові цифри на початку не допускаються</string>
-    <string name="enrollment_data_section_label">Дані реєстрації</string>
     <string name="enrollment_single_section_label">Атрибути - %s</string>
-    <string name="enrolling_ou">Організаційний підрозділ, який здійснює реєстрацію:</string>
     <string name="tei_coordinates">Координати для</string>
-    <string name="enrollment_coordinates">Координати реєстрації</string>
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>
-    <string name="enrollmment_date">Дата реєстрації</string>
     <string name="incident_date">Дата інциденту</string>
-    </resources>
+    <string name="download">Завантажити</string>
+    <string name="org_unit">Організаційний підрозділ</string>
+    <string name="category_combo">Комбінація категорій</string>
+    <string name="no_options">Немає доступних опцій</string>
+    <string name="cat_combo">Комбінація категорій</string>
+</resources>

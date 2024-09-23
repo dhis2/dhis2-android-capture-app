@@ -6,10 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.bindings.setTeiImage
 import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemCarouselEventBinding
 import org.dhis2.maps.model.EventUiComponentModel
 import org.dhis2.ui.MetadataIconData
@@ -64,8 +61,7 @@ class CarouselEventHolder(
         }
 
         setStageStyle(
-            data.programStage?.style()?.color(),
-            data.programStage?.style()?.icon(),
+            data.metadataIconData,
             binding.composeProgramStageIcon,
         )
         SearchTeiModel().apply {
@@ -86,25 +82,8 @@ class CarouselEventHolder(
         }
     }
 
-    private fun setStageStyle(color: String?, icon: String?, target: ComposeView) {
-        val stageColor = colorUtils.getColorFrom(
-            color,
-            colorUtils.getPrimaryColor(
-                target.context,
-                ColorType.PRIMARY_LIGHT,
-            ),
-        )
-        val resource = ResourceManager(target.context, colorUtils).getObjectStyleDrawableResource(
-            icon,
-            R.drawable.ic_default_outline,
-        )
-        target.setUpMetadataIcon(
-            MetadataIconData(
-                stageColor,
-                resource,
-                40,
-            ),
-        )
+    private fun setStageStyle(metadataIconData: MetadataIconData, target: ComposeView) {
+        target.setUpMetadataIcon(metadataIconData)
     }
 
     override fun showNavigateButton() {

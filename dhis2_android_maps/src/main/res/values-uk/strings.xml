@@ -2,10 +2,14 @@
 <resources>
     <string name="select_location">Оберіть місцезнаходження</string>
     <string name="map_layers">Шари карти</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM - подробиці</string>
+    <string name="dialog_layer_base_map_bing_road">Bing - дорога</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing - темний</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing - супутник</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Bing - супутник з мітками</string>
     <string name="action_apply">Застосувати</string>
     <string name="dialog_layer_satellite">Показати як вид із супутника</string>
     <string name="dialog_layer_event">Показати випадки</string>
     <string name="dialog_layer_tei_coordinates">Показати координати об\'єкту, який відстежується</string>
-    <string name="dialog_layer_enrollment_coordinates">Показати координати реєстрації</string>
     <string name="dialog_layer_heatmap">Показати шар теплової карти</string>
     </resources>

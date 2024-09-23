@@ -98,6 +98,7 @@ class OptionSetDialogViewModelTest {
             options = emptyList(),
             optionsToHide = optionsToHide,
             optionsToShow = emptyList(),
+            emptyMap(),
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -117,6 +118,7 @@ class OptionSetDialogViewModelTest {
             options = emptyList(),
             optionsToHide = emptyList(),
             optionsToShow = optionsToShow,
+            emptyMap(),
         )
         viewModel.onSearchingOption("test")
         assertTrue(viewModel.searchValue.value == "test")
@@ -137,6 +139,7 @@ class OptionSetDialogViewModelTest {
             options = emptyList(),
             optionsToHide = optionsToHide,
             optionsToShow = optionsToShow,
+            emptyMap(),
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()

@@ -6,21 +6,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import org.dhis2.R
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemProgramStageBinding
 import org.hisp.dhis.android.core.program.ProgramStage
 
 class ProgramStageSelectionAdapter(
-    val colorUtils: ColorUtils,
     val onItemClick: (ProgramStage) -> Unit,
-) : ListAdapter<ProgramStage, ProgramStageSelectionViewHolder>(object :
-    DiffUtil.ItemCallback<ProgramStage>() {
-    override fun areItemsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
-        return oldItem.uid() == newItem.uid()
+) : ListAdapter<ProgramStageData, ProgramStageSelectionViewHolder>(object :
+    DiffUtil.ItemCallback<ProgramStageData>() {
+    override fun areItemsTheSame(oldItem: ProgramStageData, newItem: ProgramStageData): Boolean {
+        return oldItem.programStage.uid() == newItem.programStage.uid()
     }
 
-    override fun areContentsTheSame(oldItem: ProgramStage, newItem: ProgramStage): Boolean {
-        return oldItem.equals(newItem)
+    override fun areContentsTheSame(oldItem: ProgramStageData, newItem: ProgramStageData): Boolean {
+        return oldItem == newItem
     }
 }) {
     override fun onCreateViewHolder(
@@ -33,7 +31,7 @@ class ProgramStageSelectionAdapter(
             parent,
             false,
         )
-        return ProgramStageSelectionViewHolder(binding, colorUtils, onItemClick)
+        return ProgramStageSelectionViewHolder(binding, onItemClick)
     }
 
     override fun onBindViewHolder(holder: ProgramStageSelectionViewHolder, position: Int) {

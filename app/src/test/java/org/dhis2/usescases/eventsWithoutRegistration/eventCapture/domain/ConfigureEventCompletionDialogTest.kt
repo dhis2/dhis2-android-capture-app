@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider
+import org.hisp.dhis.android.core.event.EventStatus
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -56,6 +57,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = true,
             onCompleteMessage = null,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info
@@ -79,6 +81,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = true,
             onCompleteMessage = null,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info
@@ -101,6 +104,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = true,
             onCompleteMessage = null,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info
@@ -121,6 +125,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = true,
             onCompleteMessage = null,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info
@@ -141,6 +146,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = true,
             onCompleteMessage = WARNING_MESSAGE,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info
@@ -161,6 +167,7 @@ class ConfigureEventCompletionDialogTest {
             canComplete = false,
             onCompleteMessage = ERROR_INFO,
             canSkipErrorFix = true,
+            EventStatus.ACTIVE,
         )
 
         // Then Dialog should has Error info

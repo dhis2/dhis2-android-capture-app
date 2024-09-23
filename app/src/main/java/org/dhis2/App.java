@@ -4,6 +4,7 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_STORE_ANALYTICS_
 
 import android.content.Context;
 import android.os.Looper;
+import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -108,7 +109,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
-
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         appInspector = new AppInspector(this).init();
@@ -116,7 +116,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MapController.Companion.init(this);
 
         setUpAppComponent();
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
 
@@ -131,6 +131,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         if (areTrackingPermissionGranted()) {
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
+                options.setAnrReportInDebug(true);
 
                 // Add a callback that will be used before the event is sent to Sentry.
                 // With this callback, you can modify the event or, when returning null, also discard the event.

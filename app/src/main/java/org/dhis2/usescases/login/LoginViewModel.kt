@@ -6,8 +6,12 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import org.dhis2.R
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
@@ -22,7 +26,9 @@ import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.fingerprint.FingerPrintController
 import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.UserManager
@@ -42,13 +48,16 @@ import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import retrofit2.Response
 import timber.log.Timber
+import java.io.File
 
 const val VERSION = "version"
 
 class LoginViewModel(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
+    private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
+    private val dispatchers: DispatcherProvider,
     private val fingerPrintController: FingerPrintController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
@@ -69,6 +78,12 @@ class LoginViewModel(
     var testingCredentials: MutableMap<String, TestingCredential>? = null
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
+
+    private val _hasAccounts = MutableLiveData<Boolean>()
+    val hasAccounts: LiveData<Boolean> = _hasAccounts
+
+    private val _displayMoreActions = MutableLiveData<Boolean>(true)
+    val displayMoreActions: LiveData<Boolean> = _displayMoreActions
 
     init {
         this.userManager?.let {
@@ -114,6 +129,7 @@ class LoginViewModel(
                     ),
             )
         } ?: view.setUrl(view.getDefaultServerProtocol())
+        displayManageAccount()
     }
 
     private fun trackServerVersion() {
@@ -473,9 +489,9 @@ class LoginViewModel(
         return Pair(urls, users)
     }
 
-    fun displayManageAccount(): Boolean {
+    fun displayManageAccount() {
         val users = userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
-        return users >= 1
+        _hasAccounts.value = (users >= 1)
     }
 
     fun onManageAccountClicked() {
@@ -559,7 +575,41 @@ class LoginViewModel(
         this.userName.value = userName
     }
 
-    fun testCoverage() {
-        view.setUser("Coverage test")
+    fun onImportDataBase(file: File) {
+        userManager?.let {
+            viewModelScope.launch {
+                val resultJob = async {
+                    try {
+                        val importedMetadata =
+                            it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
+                        Result.success(importedMetadata)
+                    } catch (e: Exception) {
+                        Result.failure(e)
+                    }
+                }
+
+                val result = resultJob.await()
+
+                result.fold(
+                    onSuccess = {
+                        setAccountInfo(it.serverUrl, it.username)
+                        view.setUrl(it.serverUrl)
+                        view.setUser(it.username)
+                        displayManageAccount()
+                        view.displayMessage(resourceManager.getString(R.string.importing_successful))
+                    },
+                    onFailure = {
+                        view.displayMessage(resourceManager.parseD2Error(it))
+                    },
+                )
+
+                view.onDbImportFinished(result.isSuccess)
+            }
+        }
+    }
+
+    fun displayMoreActions() = displayMoreActions
+    fun setDisplayMoreActions(shouldDisplayMoreActions: Boolean) {
+        _displayMoreActions.postValue(shouldDisplayMoreActions)
     }
 }

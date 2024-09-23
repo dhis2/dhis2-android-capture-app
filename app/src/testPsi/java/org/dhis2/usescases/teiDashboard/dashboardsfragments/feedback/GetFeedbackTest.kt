@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback
 
 import com.google.gson.GsonBuilder
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
@@ -11,6 +9,7 @@ import org.dhis2.core.types.Tree
 import org.dhis2.core.types.leaf
 import org.dhis2.core.types.node
 import org.dhis2.core.types.root
+import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataRepository
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -19,6 +18,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class GetFeedbackTest {
@@ -401,7 +402,8 @@ class GetFeedbackTest {
                                 leaf(FeedbackHelpItem("Feedback DE 1")),
                                 node(
                                     FeedbackItem(
-                                        "DE 1.1", FeedbackItemValue("86%", "#FFC700", true, false, false),
+                                        "DE 1.1",
+                                        FeedbackItemValue("86%", "#FFC700", true, false, false),
                                         "DE 1.1_UID"
                                     ),
                                     3,
@@ -800,8 +802,8 @@ class GetFeedbackTest {
 
         Assert.assertEquals(
             "AssertionError: \n " +
-                "Expected: \n ${gson.toJson(expectedFeedback)} \n" +
-                "Actual: \n ${gson.toJson(feedback)}  \n",
+                    "Expected: \n ${gson.toJson(expectedFeedback)} \n" +
+                    "Actual: \n ${gson.toJson(feedback)}  \n",
             expectedFeedback, feedback
         )
     }
@@ -809,8 +811,7 @@ class GetFeedbackTest {
     private fun givenThatThereNotEvents() {
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
-                null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
+                null, false, replaceProgramStageName = true
             )
         ).thenReturn(Single.just(listOf()))
     }
@@ -827,16 +828,22 @@ class GetFeedbackTest {
                 Event.builder().uid("EVENT1_UID").build(),
                 0,
                 null,
-                true,
-                true,
-                "",
-                "",
-                listOf(),
-                null,
-                false,
-                false,
-                false,
-                ""
+                isSelected = true,
+                canAddNewEvent = true,
+                orgUnitName = "",
+                catComboName = "",
+                dataElementValues = listOf(),
+                groupedByStage = null,
+                valueListIsOpen = false,
+                showTopShadow = false,
+                showBottomShadow = false,
+                showAllEvents = true,
+                maxEventsToShow = 0,
+                displayDate = "",
+                nameCategoryOptionCombo = "",
+                metadataIconData = MetadataIconData.defaultIcon(),
+                editable = true,
+                displayOrgUnit = true
             ),
             EventViewModel(
                 EventViewModelType.EVENT,
@@ -844,23 +851,28 @@ class GetFeedbackTest {
                 Event.builder().uid("EVENT2_UID").build(),
                 0,
                 null,
-                true,
-                true,
-                "",
-                "",
-                listOf(),
-                null,
-                false,
-                false,
-                false,
-                ""
+                isSelected = true,
+                canAddNewEvent = true,
+                orgUnitName = "",
+                catComboName = "",
+                dataElementValues = listOf(),
+                groupedByStage = null,
+                valueListIsOpen = false,
+                showTopShadow = false,
+                showBottomShadow = false,
+                showAllEvents = true,
+                maxEventsToShow = 0,
+                displayDate = "",
+                nameCategoryOptionCombo = "",
+                metadataIconData = MetadataIconData.defaultIcon(),
+                editable = true,
+                displayOrgUnit = true
             )
         )
 
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
-                null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
+                null, groupedByStage = false, replaceProgramStageName = true
             )
         ).thenReturn(Single.just(events))
 
@@ -876,8 +888,7 @@ class GetFeedbackTest {
 
         whenever(
             teiDataRepository.getTEIEnrollmentEvents(
-                null, false, mutableListOf(), mutableListOf(),
-                mutableListOf(), false, mutableListOf(), mutableListOf(), null, true
+                null, groupedByStage = false, replaceProgramStageName = true
             )
         ).thenReturn(
             Single.just(
@@ -888,16 +899,22 @@ class GetFeedbackTest {
                         Event.builder().uid("$stageName UID").build(),
                         0,
                         null,
-                        true,
-                        true,
-                        "",
-                        "",
-                        listOf(),
-                        null,
-                        false,
-                        false,
-                        false,
-                        ""
+                        isSelected = true,
+                        canAddNewEvent = true,
+                        orgUnitName = "",
+                        catComboName = "",
+                        dataElementValues = listOf(),
+                        groupedByStage = null,
+                        valueListIsOpen = false,
+                        showTopShadow = false,
+                        showBottomShadow = false,
+                        showAllEvents = true,
+                        maxEventsToShow = 0,
+                        displayDate = "",
+                        nameCategoryOptionCombo = "",
+                        metadataIconData = MetadataIconData.defaultIcon(),
+                        editable = true,
+                        displayOrgUnit = true
                     )
                 )
             )

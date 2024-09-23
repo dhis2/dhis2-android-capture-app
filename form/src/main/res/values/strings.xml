@@ -48,7 +48,6 @@
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_text">Enter text</string>
     <string name="due_date">Due date</string>
-    <string name="event_date">Event date</string>
     <string name="mandatory_field">Mandatory field</string>
     <string name="form_latitude_prefix">Lat:</string>
     <string name="form_longitude_prefix">Long:</string>
@@ -59,6 +58,7 @@
     <string name="saved">Saved!</string>
     <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="not_now">Not now</string>
+    <string name="save_anyway">Save anyway</string>
     <string name="keep_editing">Keep editing</string>
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
@@ -92,13 +92,9 @@
     <string name="error_true_only_one_is_not_true">Invalid character 1</string>
     <string name="data_values_save_error">DataValues can\'t be saved using these arguments. Use the other one.</string>
     <string name="leading_zero_error">Leading zero numbers are not allowed</string>
-    <string name="enrollment_data_section_label">Enrollment data</string>
     <string name="enrollment_single_section_label">Attributes - %s</string>
-    <string name="enrolling_ou">Enrolling OU:</string>
     <string name="tei_coordinates">Coordinates for the</string>
-    <string name="enrollment_coordinates">Enrollment coordinates</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
-    <string name="enrollmment_date">Enrollment date</string>
     <string name="incident_date">Incident date</string>
     <string name="location_permission_denied">The location permission is needed for capturing coordinates. Please, enable them in the application settings</string>
     <string name="open_with">Open with</string>
@@ -108,4 +104,12 @@
     <string name="qr_code">QR code</string>
     <string name="bar_code">Bar code</string>
     <string name="add_location">Add location</string>
+    <string name="form_without_fields">This form has no fields configured</string>
+    <string name="event_details_section_title">%s details</string>
+    <string name="event_data_section_title">%s data</string>
+    <string name="org_unit">Org unit</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="category_combo">Category Combo</string>
+    <string name="no_options">No options available</string>
+    <string name="cat_combo">Cat combo</string>
 </resources>

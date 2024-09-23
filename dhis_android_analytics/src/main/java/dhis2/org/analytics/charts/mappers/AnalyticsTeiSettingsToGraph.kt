@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts.mappers
 
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFilters
 import dhis2.org.analytics.charts.data.NutritionGenderData
 import dhis2.org.analytics.charts.data.NutritionSettingsAnalyticsModel
 import dhis2.org.analytics.charts.data.SerieData
@@ -106,8 +107,10 @@ class AnalyticsTeiSettingsToGraph(
                 ),
                 chartType = analyticsSetting.type,
                 visualizationUid = analyticsTeiSettings.uid(),
-                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-                orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+                graphFilters = GraphFilters.Visualization(
+                    periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                    orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+                ),
             )
         }
     }

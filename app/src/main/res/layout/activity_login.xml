@@ -17,41 +17,12 @@
         android:layout_height="match_parent"
         android:background="?colorPrimary">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/logo"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/topbar"
             android:layout_width="match_parent"
-            android:layout_height="92dp"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/logo_banner"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="11dp"
-                android:layout_marginBottom="23dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_dhis_white" />
-
-            <TextView
-                android:id="@+id/app_build_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="12dp"
-                android:textColor="?colorAccent"
-                android:textSize="9sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:text="v2.4.X : 2020-09-03 : whatever" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -59,7 +30,7 @@
             android:background="@color/white"
             app:clipCorners="@{16}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logo">
+            app:layout_constraintTop_toBottomOf="@id/topbar">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -305,8 +276,8 @@
                     android:layout_marginTop="6dp"
                     android:text="@string/manage_accounts"
                     android:onClick="@{() -> presenter.onManageAccountClicked()}"
-                    android:visibility="@{presenter.displayManageAccount() ? View.VISIBLE : View.GONE }"
-                    app:layout_constraintTop_toBottomOf="@id/login"
+                    android:visibility="@{presenter.hasAccounts ? View.VISIBLE : View.GONE }"
+                    app:layout_constraintTop_toBottomOf="@id/loginOpenId"
                     tools:text="Manage Accounts" />
 
                 <com.google.android.material.button.MaterialButton
@@ -316,6 +287,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:visibility="gone"
+                    tools:visibility="visible"
                     app:icon="@drawable/ic_dhis"
                     app:layout_constraintTop_toBottomOf="@id/login"
                     tools:text="Log in with google" />
@@ -363,9 +335,10 @@
             android:paddingEnd="40dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logo">
+            app:layout_constraintTop_toBottomOf="@id/topbar">
 
             <TextView
+                android:id="@+id/progressMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/authenticating"

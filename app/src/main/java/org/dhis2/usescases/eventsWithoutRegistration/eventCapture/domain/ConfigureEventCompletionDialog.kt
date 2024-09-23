@@ -15,6 +15,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCom
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider
 import org.dhis2.utils.customviews.FormBottomDialog
+import org.hisp.dhis.android.core.event.EventStatus
 
 class ConfigureEventCompletionDialog(
     val provider: EventCaptureResourcesProvider,
@@ -27,6 +28,7 @@ class ConfigureEventCompletionDialog(
         canComplete: Boolean,
         onCompleteMessage: String?,
         canSkipErrorFix: Boolean,
+        eventState: EventStatus,
     ): EventCompletionDialog {
         val dialogType = getDialogType(
             errorFields,
@@ -34,8 +36,8 @@ class ConfigureEventCompletionDialog(
             warningFields,
             !canComplete && onCompleteMessage != null,
         )
-        val mainButton = getMainButton(dialogType)
-        val secondaryButton = if (canSkipErrorFix) {
+        val mainButton = getMainButton(dialogType, eventState)
+        val secondaryButton = if (canSkipErrorFix || dialogType == WARNING) {
             EventCompletionButtons(
                 SecondaryButton(provider.provideNotNow()),
                 FormBottomDialog.ActionType.FINISH,
@@ -45,7 +47,7 @@ class ConfigureEventCompletionDialog(
         }
         val bottomSheetDialogUiModel = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
-            message = getSubtitle(dialogType),
+            message = getSubtitle(dialogType, eventState),
             iconResource = getIcon(dialogType),
             mainButton = mainButton.buttonStyle,
             secondaryButton = secondaryButton?.buttonStyle,
@@ -69,10 +71,10 @@ class ConfigureEventCompletionDialog(
         else -> provider.provideSavedText()
     }
 
-    private fun getSubtitle(type: DialogType) = when (type) {
+    private fun getSubtitle(type: DialogType, eventState: EventStatus) = when (type) {
         ERROR -> provider.provideErrorInfo()
         MANDATORY -> provider.provideMandatoryInfo()
-        WARNING -> provider.provideWarningInfo()
+        WARNING -> if (eventState == EventStatus.COMPLETED) provider.provideWarningInfoCompletedEvent() else provider.provideWarningInfo()
         SUCCESSFUL -> provider.provideCompleteInfo()
         COMPLETE_ERROR -> provider.provideOnCompleteErrorInfo()
     }
@@ -84,7 +86,7 @@ class ConfigureEventCompletionDialog(
         SUCCESSFUL -> provider.provideSavedIcon()
     }
 
-    private fun getMainButton(type: DialogType) = when (type) {
+    private fun getMainButton(type: DialogType, eventState: EventStatus) = when (type) {
         ERROR,
         MANDATORY,
         COMPLETE_ERROR,
@@ -93,10 +95,20 @@ class ConfigureEventCompletionDialog(
             FormBottomDialog.ActionType.CHECK_FIELDS,
         )
 
-        WARNING,
+        WARNING -> if (eventState == EventStatus.COMPLETED) {
+            EventCompletionButtons(
+                MainButton(provider.provideReview()),
+                FormBottomDialog.ActionType.CHECK_FIELDS,
+            )
+        } else {
+            EventCompletionButtons(
+                CompleteButton,
+                FormBottomDialog.ActionType.COMPLETE,
+            )
+        }
         SUCCESSFUL,
         -> EventCompletionButtons(
-            CompleteButton(),
+            CompleteButton,
             FormBottomDialog.ActionType.COMPLETE,
         )
     }

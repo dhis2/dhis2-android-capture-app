@@ -37,6 +37,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -70,11 +72,17 @@ import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun ProgramList(
-    programs: List<ProgramViewModel>,
+    programs: List<ProgramViewModel>?,
     onItemClick: (programViewModel: ProgramViewModel) -> Unit,
     onGranularSyncClick: (programViewModel: ProgramViewModel) -> Unit,
     downLoadState: SyncStatusData?,
@@ -96,44 +104,51 @@ fun ProgramList(
             DownloadMedia()
         }
 
-        when (conf.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE ->
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(bottom = 56.dp),
-                ) {
-                    items(items = programs) { program ->
-                        ProgramItem(
-                            programViewModel = program,
-                            onItemClick = onItemClick,
-                            onGranularSyncClick = onGranularSyncClick,
-                        )
-                        Divider(
-                            color = colorResource(id = R.color.divider_bg),
-                            thickness = 1.dp,
-                            startIndent = 72.dp,
-                        )
+        programs?.let {
+            if (programs.isEmpty()) {
+                NoAccessMessage()
+            }
+
+            when (conf.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE ->
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        contentPadding = PaddingValues(bottom = 56.dp),
+                    ) {
+                        items(items = programs) { program ->
+                            ProgramItem(
+                                programViewModel = program,
+                                onItemClick = onItemClick,
+                                onGranularSyncClick = onGranularSyncClick,
+                            )
+                            Divider(
+                                color = colorResource(id = R.color.divider_bg),
+                                thickness = 1.dp,
+                                startIndent = 72.dp,
+                            )
+                        }
                     }
-                }
-            else ->
-                LazyColumn(
-                    modifier = Modifier.testTag(HOME_ITEMS),
-                    contentPadding = PaddingValues(bottom = 56.dp),
-                ) {
-                    itemsIndexed(items = programs) { index, program ->
-                        ProgramItem(
-                            modifier = Modifier.semantics { testTag = HOME_ITEM.format(index) },
-                            programViewModel = program,
-                            onItemClick = onItemClick,
-                            onGranularSyncClick = onGranularSyncClick,
-                        )
-                        Divider(
-                            color = colorResource(id = R.color.divider_bg),
-                            thickness = 1.dp,
-                            startIndent = 72.dp,
-                        )
+
+                else ->
+                    LazyColumn(
+                        modifier = Modifier.testTag(HOME_ITEMS),
+                        contentPadding = PaddingValues(bottom = 56.dp),
+                    ) {
+                        itemsIndexed(items = programs) { index, program ->
+                            ProgramItem(
+                                modifier = Modifier.semantics { testTag = HOME_ITEM.format(index) },
+                                programViewModel = program,
+                                onItemClick = onItemClick,
+                                onGranularSyncClick = onGranularSyncClick,
+                            )
+                            Divider(
+                                color = colorResource(id = R.color.divider_bg),
+                                thickness = 1.dp,
+                                startIndent = 72.dp,
+                            )
+                        }
                     }
-                }
+            }
         }
     }
 }
@@ -159,9 +174,9 @@ fun ProgramItem(
             contentAlignment = Alignment.BottomEnd,
         ) {
             MetadataIcon(
-                modifier = Modifier.alpha(programViewModel.getAlphaValue()),
                 metadataIconData = programViewModel.metadataIconData,
             )
+
             var openDescriptionDialog by remember {
                 mutableStateOf(false) // Initially dialog is closed
             }
@@ -213,6 +228,7 @@ fun ProgramItem(
             ProgramDownloadState.NONE -> StateIcon(programViewModel.state) {
                 onGranularSyncClick(programViewModel)
             }
+
             ProgramDownloadState.ERROR -> DownloadErrorIcon {
                 onGranularSyncClick(programViewModel)
             }
@@ -391,6 +407,26 @@ fun DownloadMedia() {
     }
 }
 
+@Composable
+@Preview
+fun NoAccessMessage() {
+    InfoBar(
+        modifier = Modifier.padding(Spacing.Spacing16),
+        infoBarData = InfoBarData(
+            text = stringResource(id = R.string.no_data_access),
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = "error",
+                    tint = SurfaceColor.Warning,
+                )
+            },
+            color = SurfaceColor.Warning,
+            backgroundColor = SurfaceColor.WarningContainer,
+        ),
+    )
+}
+
 @Preview
 @Composable
 fun ProgramTest() {
@@ -462,8 +498,13 @@ private fun testingProgramModel() = ProgramViewModel(
     uid = "qweqwe",
     title = "Program title",
     metadataIconData = MetadataIconData(
-        programColor = android.graphics.Color.parseColor("#00BCD4"),
-        iconResource = R.drawable.ic_positive_negative,
+        imageCardData = ImageCardData.IconCardData(
+            uid = "",
+            label = "",
+            iconRes = "ic_positive_negative",
+            iconTint = "#00BCD4".toColor(),
+        ),
+        color = "#00BCD4".toColor(),
     ),
     count = 12,
     type = "type",

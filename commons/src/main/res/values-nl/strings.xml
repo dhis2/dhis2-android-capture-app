@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Gebeurtenis</string>
     <string name="no_data">Geen gegevens</string>
     <string name="feature_configuration">Functieconfiguratie</string>
     <string name="change_calendar_view">Agendaweergave wijzigen</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Analyse</string>
     <string name="navigation_tasks">Taken</string>
     <string name="navigation_programs">Programma\'s</string>
-    <string name="navigation_events">Gebeurtenissen</string>
     <string name="navigation_relationships">Relaties</string>
     <string name="navigation_notes">Notities</string>
     <string name="navigation_data_entry">Gegevensinvoer</string>

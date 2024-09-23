@@ -1,6 +1,7 @@
 package org.dhis2.commons.data;
 
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.ui.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.program.Program;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +25,7 @@ public class SearchTeiModel implements CarouselItemModel {
 
     private List<Trio<String, String, String>> enrollmentsInfo;
     private List<Program> programInfo;
+    private HashMap<String, MetadataIconData> metadataIconDataMap;
     private boolean hasOverdue;
     private boolean isOnline;
 
@@ -40,9 +43,13 @@ public class SearchTeiModel implements CarouselItemModel {
     private String sortingValue;
     private String teTypeName;
     private String enrolledOrgUnit;
+
+    private Boolean displayOrgUnit;
     private boolean showNavigationButton = false;
-    @Nullable public String onlineErrorMessage;
-    @Nullable public D2ErrorCode onlineErrorCode;
+    @Nullable
+    public String onlineErrorMessage;
+    @Nullable
+    public D2ErrorCode onlineErrorCode;
 
     public SearchTeiModel() {
         this.tei = null;
@@ -58,15 +65,17 @@ public class SearchTeiModel implements CarouselItemModel {
         this.sortingValue = null;
         this.enrolledOrgUnit = null;
         this.onlineErrorMessage = null;
+        this.metadataIconDataMap = new HashMap<>();
     }
 
     public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
         enrollmentsInfo.add(enrollmentInfo);
     }
 
-    public void addProgramInfo(Program program) {
+    public void addProgramInfo(Program program, MetadataIconData metadataIconData) {
         if (!programInfo.contains(program)) {
             programInfo.add(program);
+            metadataIconDataMap.put(program.uid(), metadataIconData);
         }
     }
 
@@ -107,11 +116,6 @@ public class SearchTeiModel implements CarouselItemModel {
     public void resetEnrollments() {
         this.enrollments.clear();
         this.enrollmentsInfo.clear();
-    }
-
-    public List<Trio<String, String, String>> getEnrollmentInfo() {
-        Collections.sort(enrollmentsInfo, (enrollment1, enrollment2) -> enrollment1.val0().compareToIgnoreCase(enrollment2.val0()));
-        return enrollmentsInfo;
     }
 
     public void setAttributeValues(LinkedHashMap<String, TrackedEntityAttributeValue> attributeValues) {
@@ -184,6 +188,15 @@ public class SearchTeiModel implements CarouselItemModel {
         }
     }
 
+    public MetadataIconData getMetadataIconData(@Nullable String programUid) {
+        MetadataIconData iconData = metadataIconDataMap.get(programUid);
+        if (iconData != null) {
+            return iconData;
+        } else {
+            return MetadataIconData.Companion.defaultIcon();
+        }
+    }
+
     public void setOverdueDate(Date dateToShow) {
         this.overdueDate = dateToShow;
     }
@@ -243,6 +256,14 @@ public class SearchTeiModel implements CarouselItemModel {
 
     public String getEnrolledOrgUnit() {
         return enrolledOrgUnit;
+    }
+
+    public void setDisplayOrgUnit(Boolean display) {
+        displayOrgUnit = display;
+    }
+
+    public Boolean getDisplayOrgUnit() {
+        return displayOrgUnit;
     }
 
     public void setShowNavigationButton(boolean showNavigationButton) {

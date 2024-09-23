@@ -46,7 +46,6 @@
     <string name="enter_long_text">Voer lange tekst in</string>
     <string name="enter_text">Tekst invoeren</string>
     <string name="due_date">Deadline</string>
-    <string name="event_date">Evenement datum</string>
     <string name="mandatory_field">Verplicht veld</string>
     <string name="form_latitude_prefix">Breedte:</string>
     <string name="form_longitude_prefix">Lang:</string>
@@ -90,13 +89,9 @@
     <string name="error_true_only_one_is_not_true">Ongeldig teken 1</string>
     <string name="data_values_save_error">DataValues kunnen niet worden opgeslagen met deze argumenten. Gebruik de andere.</string>
     <string name="leading_zero_error">Voorloopnullen zijn niet toegestaan</string>
-    <string name="enrollment_data_section_label">Inschrijving gegevens</string>
     <string name="enrollment_single_section_label">Kenmerken - %s</string>
-    <string name="enrolling_ou">OU inschrijven:</string>
     <string name="tei_coordinates">Coördinaten voor de</string>
-    <string name="enrollment_coordinates">Inschrijving coördinaten</string>
     <string name="no_reserved_values">Er zijn geen gereserveerde waarden meer. Neem contact op met uw systeembeheerder</string>
-    <string name="enrollmment_date">Inschrijvingsdatum</string>
     <string name="incident_date">Incident datum</string>
     <string name="location_permission_denied">De locatietoestemming is nodig voor het vastleggen van coördinaten. Schakel ze alstublieft in de applicatie-instellingen in</string>
     <string name="open_with">Openen met</string>

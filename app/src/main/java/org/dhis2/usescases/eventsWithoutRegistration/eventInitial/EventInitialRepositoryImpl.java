@@ -3,11 +3,13 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.RuleEngineRepository;
 import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.form.model.OptionSetConfiguration;
 import org.dhis2.form.ui.FieldViewModelFactory;
+import org.dhis2.mobileProgramRules.RuleEngineHelper;
+import org.dhis2.ui.MetadataIconData;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
@@ -38,9 +40,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -48,22 +50,26 @@ import timber.log.Timber;
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final FieldViewModelFactory fieldFactory;
-    private final RuleEngineRepository ruleEngineRepository;
+    @Nullable
+    private final RuleEngineHelper ruleEngineHelper;
 
     private final String eventUid;
     private final D2 d2;
     private final String stageUid;
 
+    private final MetadataIconProvider metadataIconProvider;
     EventInitialRepositoryImpl(String eventUid,
                                String stageUid,
                                D2 d2,
                                FieldViewModelFactory fieldFactory,
-                               RuleEngineRepository ruleEngineRepository) {
+                               @Nullable RuleEngineHelper ruleEngineHelper,
+                               MetadataIconProvider metadataIconProvider) {
         this.eventUid = eventUid;
         this.stageUid = stageUid;
         this.d2 = d2;
         this.fieldFactory = fieldFactory;
-        this.ruleEngineRepository = ruleEngineRepository;
+        this.ruleEngineHelper = ruleEngineHelper;
+        this.metadataIconProvider = metadataIconProvider;
     }
 
     @NonNull
@@ -295,7 +301,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Flowable<Result<RuleEffect>> calculate() {
-        return ruleEngineRepository.calculate();
+        if (ruleEngineHelper != null) {
+            return Flowable.just(ruleEngineHelper.evaluate()).map(Result::success);
+        } else {
+            return Flowable.just(Result.success(new ArrayList<>()));
+        }
     }
 
     @NonNull
@@ -311,15 +321,29 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
 
+
         OptionSetConfiguration optionSetConfig = null;
-        if(optionSet!=null){
+        if (optionSet != null) {
             List<Option> dataValueOptions = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
-            if(!dataValueOptions.isEmpty()){
+            if (!dataValueOptions.isEmpty()) {
                 dataValue = option.get(0).displayName();
             }
             optionSetConfig = OptionSetConfiguration.Companion.config(
                     d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingCount(),
-                    ()-> d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet()
+                    () -> {
+                        List<Option> options = d2.optionModule().options().byOptionSetUid().eq(optionSet).blockingGet();
+                        HashMap<String, MetadataIconData> metadataIconMap = new HashMap<>();
+                        for (Option optionItem : options) {
+                            metadataIconMap.put(
+                                    optionItem.uid(),
+                                    metadataIconProvider.invoke(optionItem.style()));
+                        }
+
+                        return new OptionSetConfiguration.OptionConfigData(
+                                options,
+                                metadataIconMap
+                        );
+                    }
             );
         }
 
@@ -344,6 +368,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 objectStyle,
                 dataElement.fieldMask(),
                 optionSetConfig,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null,

@@ -279,16 +279,6 @@ class MainPresenter(
         checkVersionUpdate()
         workManagerController
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
-        val workerItem = WorkerItem(
-            Constants.RESERVED,
-            WorkerType.RESERVED,
-            null,
-            null,
-            null,
-            null,
-        )
-        workManagerController.cancelAllWorkByTag(workerItem.workerName)
-        workManagerController.syncDataForWorker(workerItem)
     }
 
     fun observeDataSync(): LiveData<SyncStatusData> {
@@ -303,8 +293,10 @@ class MainPresenter(
     }
 
     fun onDataSuccess() {
-        userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
-            .blockingSet(TRUE)
+        launch(dispatcherProvider.io()) {
+            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+                .blockingSet(TRUE)
+        }
     }
 
     fun trackHomeAnalytics() {

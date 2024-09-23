@@ -1,6 +1,7 @@
 package org.dhis2.utils.granularsync
 
 import io.reactivex.Single
+import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
 import org.dhis2.commons.bindings.countEventImportConflicts
@@ -35,12 +36,13 @@ import org.dhis2.commons.bindings.teisBy
 import org.dhis2.commons.bindings.trackedEntityType
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.ConflictType
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -57,6 +59,7 @@ class GranularSyncRepository(
     private val dhisProgramUtils: DhisProgramUtils,
     private val periodUtils: DhisPeriodUtils,
     private val resourceManager: ResourceManager,
+    private val dispatcher: DispatcherProvider,
 ) {
 
     fun getUiState(forcedState: State? = null): SyncUiState {
@@ -554,7 +557,7 @@ class GranularSyncRepository(
 
         val teiMainAttribute = tei.let {
             d2.teiMainAttributes(it.uid(), programUid)
-        } ?: emptyList()
+        }
 
         val label = teiMainAttribute.firstOrNull()?.let { (attributeName, value) ->
             "$attributeName: $value"
@@ -979,6 +982,10 @@ class GranularSyncRepository(
                 d2.dataSetModule().dataSets().uid(syncContext.recordUid()).get()
                     .map { it.displayName() }
         }
+    }
+
+    suspend fun checkServerAvailability() = withContext(dispatcher.io()) {
+        d2.systemInfoModule().ping().blockingGet()
     }
 }
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.GeometryController
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
@@ -24,13 +25,20 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDe
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.TimeZone
 
 class EventDetailsViewModel(
     private val configureEventDetails: ConfigureEventDetails,
@@ -47,7 +55,6 @@ class EventDetailsViewModel(
     private val resourcesProvider: EventDetailResourcesProvider,
 ) : ViewModel() {
 
-    var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
@@ -135,7 +142,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpEventDetails() {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventDetails(
                 selectedDate = eventDate.value.currentDate,
@@ -148,13 +155,13 @@ class EventDetailsViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
                 .flowOn(Dispatchers.IO)
@@ -162,13 +169,13 @@ class EventDetailsViewModel(
                     _eventDate.value = it
                     setUpEventDetails()
                     setUpOrgUnit(selectedDate = it.currentDate)
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun onClearEventReportDate() {
-        _eventDate.value = eventDate.value.copy(currentDate = null)
+        _eventDate.value = eventDate.value.copy(currentDate = null, dateValue = null)
         setUpEventDetails()
     }
 
@@ -189,14 +196,14 @@ class EventDetailsViewModel(
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventCatCombo.value = it
                     setUpEventDetails()
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
@@ -207,7 +214,7 @@ class EventDetailsViewModel(
     }
 
     private fun setUpCoordinates(value: String? = "") {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         viewModelScope.launch {
             configureEventCoordinates(value)
                 .flowOn(Dispatchers.IO)
@@ -227,39 +234,64 @@ class EventDetailsViewModel(
                     )
                     _eventCoordinates.value = eventCoordinates
                     setUpEventDetails()
-                    EventDetailIdlingResourceSingleton.decrement()
+                    EventIdlingResourceSingleton.decrement()
                 }
         }
     }
 
     fun setUpEventTemp(status: EventTempStatus? = null, isChecked: Boolean = true) {
-        EventDetailIdlingResourceSingleton.increment()
+        EventIdlingResourceSingleton.increment()
         if (isChecked) {
             configureEventTemp(status).apply {
                 _eventTemp.value = this
                 setUpEventDetails()
             }
         }
-        EventDetailIdlingResourceSingleton.decrement()
+        EventIdlingResourceSingleton.decrement()
     }
 
-    fun onDateClick() {
+    fun getSelectableDates(eventDate: EventDate): SelectableDates {
+        return if (eventDate.allowFutureDates) {
+            SelectableDates(DEFAULT_MIN_DATE, DEFAULT_MAX_DATE)
+        } else {
+            val currentDate =
+                SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
+            SelectableDates(DEFAULT_MIN_DATE, currentDate)
+        }
+    }
+
+    fun showPeriodDialog() {
         periodType?.let {
             showPeriods?.invoke()
-        } ?: showCalendar?.invoke()
+        }
     }
 
     fun onDateSet(year: Int, month: Int, day: Int) {
         val calendar = Calendar.getInstance()
         calendar[year, month, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
+
+        val currentTimeZone: TimeZone = calendar.getTimeZone()
+        val currentDt: Calendar = GregorianCalendar(currentTimeZone, Locale.getDefault())
+
+        var gmtOffset: Int = currentTimeZone.getOffset(
+            currentDt[Calendar.ERA],
+            currentDt[Calendar.YEAR],
+            currentDt[Calendar.MONTH],
+            currentDt[Calendar.DAY_OF_MONTH],
+            currentDt[Calendar.DAY_OF_WEEK],
+            currentDt[Calendar.MILLISECOND],
+        )
+        gmtOffset /= (60 * 60 * 1000)
+        calendar.add(Calendar.HOUR_OF_DAY, +gmtOffset)
         val selectedDate = calendar.time
+
         setUpEventReportDate(selectedDate)
     }
 
     fun onOrgUnitClick() {
         if (!eventOrgUnit.value.fixed) {
-            if (eventOrgUnit.value.orgUnits.isNullOrEmpty()) {
+            if (eventOrgUnit.value.orgUnits.isEmpty()) {
                 showNoOrgUnits?.invoke()
             } else {
                 showOrgUnits?.invoke()
@@ -323,6 +355,10 @@ class EventDetailsViewModel(
         }
     }
 
+    fun getPeriodType(): PeriodType? {
+        return periodType
+    }
+
     fun onReopenClick() {
         configureEventDetails.reopenEvent().mockSafeFold(
             onSuccess = {
@@ -353,16 +389,16 @@ inline fun <R, reified T> Result<T>.mockSafeFold(
             if ((value as Result<*>).isSuccess) {
                 valueNotNull::class.java.getDeclaredField("value").let {
                     it.isAccessible = true
-                    it.get(value) as T
+                    it[value] as T
                 }.let(onSuccess)
             } else {
                 valueNotNull::class.java.getDeclaredField("value").let {
                     it.isAccessible = true
-                    it.get(value)
+                    it[value]
                 }.let { failure ->
                     failure!!::class.java.getDeclaredField("exception").let {
                         it.isAccessible = true
-                        it.get(failure) as Exception
+                        it[failure] as Exception
                     }
                 }.let(onFailure)
             }

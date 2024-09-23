@@ -15,9 +15,18 @@ class QRImageControllerTest {
     @Test
     fun shouldReturnDataMatrixWriter() {
         val testValue = "]d2\u001D01084700069915412110081996195256\u001D10DXB2005\u001D17220228"
-        controller.getWriterFromRendering(testValue, UiRenderType.QR_CODE).let { (writer, format) ->
+        controller.getWriterFromRendering(testValue, UiRenderType.GS1_DATAMATRIX).let { (writer, format) ->
             assertTrue(writer is DataMatrixWriter)
             assertTrue(format == BarcodeFormat.DATA_MATRIX)
+        }
+    }
+
+    @Test
+    fun shouldReturnQRWriterWhenValueDoesNotHaveGS1Prefix() {
+        val testValue = "01084700069915412110081996195256\u001D10DXB2005\u001D17220228"
+        controller.getWriterFromRendering(testValue, UiRenderType.GS1_DATAMATRIX).let { (writer, format) ->
+            assertTrue(writer is QRCodeWriter)
+            assertTrue(format == BarcodeFormat.QR_CODE)
         }
     }
 

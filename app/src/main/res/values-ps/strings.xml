@@ -35,7 +35,6 @@
     <!--DataSet initial-->
     <string name="report_period">د راپور ورکولو موده</string>
     <!--Event Detail-->
-    <string name="event_date">د پېښې نېټه</string>
     <string name="due_date">ټاکلې نېټه</string>
     <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
     <string name="delete">خذف یې کړئ</string>

@@ -1,29 +1,22 @@
 package org.dhis2.usescases.troubleshooting
 
-import org.dhis2.R
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.bindings.toRuleEngineObject
 import org.dhis2.form.bindings.toRuleVariableList
-import org.dhis2.form.model.RuleActionError
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.lib.expression.Expression
+import org.hisp.dhis.lib.expression.ExpressionMode
 import org.hisp.dhis.lib.expression.spi.ExpressionData
-import org.hisp.dhis.rules.ItemValueType
-import org.hisp.dhis.rules.RuleVariableValue
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.rules.api.EnvironmentVariables.ENV_VARIABLES
+import org.hisp.dhis.rules.api.ItemValueType
+import org.hisp.dhis.rules.engine.RuleVariableValue
 import org.hisp.dhis.rules.models.RuleAction
-import org.hisp.dhis.rules.models.RuleActionHideField
-import org.hisp.dhis.rules.models.RuleActionHideOption
-import org.hisp.dhis.rules.models.RuleActionHideOptionGroup
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage
-import org.hisp.dhis.rules.models.RuleActionHideSection
-import org.hisp.dhis.rules.models.RuleActionSetMandatoryField
-import org.hisp.dhis.rules.models.RuleActionShowOptionGroup
-import org.hisp.dhis.rules.models.RuleActionUnsupported
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariableAttribute
 import org.hisp.dhis.rules.models.RuleVariableCalculatedValue
@@ -31,11 +24,10 @@ import org.hisp.dhis.rules.models.RuleVariableCurrentEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
-import org.hisp.dhis.rules.utils.RuleEngineUtils
 
 class TroubleshootingRepository(
     val d2: D2,
-    val resourceManager: ResourceManager,
+    val metadataIconProvider: MetadataIconProvider,
 ) {
 
     fun validateProgramRules(): List<ProgramRuleValidation> {
@@ -43,25 +35,27 @@ class TroubleshootingRepository(
         programRules().mapNotNull { programAndRule ->
             val rule = programAndRule.second
             val program = program(programAndRule.first?.uid())
-            val valueMap: Map<String, RuleVariableValue?> = ruleVariableMap(program?.uid())
-            var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid()))
+            val valueMap: Map<String, RuleVariableValue> = ruleVariableMap(program?.uid())
+            var ruleValidationItem = RuleValidation(rule, ruleExternalLink(rule.uid))
             val ruleConditionResult = process(
-                rule.condition(),
+                rule.condition,
                 valueMap,
                 null,
-                Expression.Mode.RULE_ENGINE_CONDITION,
+                ExpressionMode.RULE_ENGINE_CONDITION,
             )
             if (ruleConditionResult.isNotEmpty()) {
                 ruleValidationItem = ruleValidationItem.copy(conditionError = ruleConditionResult)
             }
-            val ruleActionConditions = rule.actions().mapNotNull { ruleAction ->
-                when (ruleAction) {
-                    is RuleActionUnsupported -> {
-                        "%s is not supported".format(ruleAction.actionValueType())
+            val ruleActionConditions = rule.actions.mapNotNull { ruleAction ->
+                when (ruleAction.type) {
+                    "unsupported" -> {
+                        "%s is not supported".format(ruleAction.type)
                     }
-                    is RuleActionError -> {
-                        ruleAction.action + " : " + ruleAction.message
+
+                    "error" -> {
+                        ruleAction.type + " : " + ruleAction.data
                     }
+
                     else -> {
                         evaluateAction(ruleAction, valueMap)
                     }
@@ -88,14 +82,7 @@ class TroubleshootingRepository(
             ProgramRuleValidation(
                 programUid = program.uid(),
                 programName = program.displayName() ?: program.uid(),
-                metadataIconData = MetadataIconData(
-                    programColor = resourceManager.getColorOrDefaultFrom(program.style().color()),
-                    iconResource = resourceManager.getObjectStyleDrawableResource(
-                        program.style().icon(),
-                        R.drawable.ic_default_outline,
-                    ),
-                    sizeInDp = 24,
-                ),
+                metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 validations = validationList,
             )
         }.sortedBy { it.programName }
@@ -122,31 +109,26 @@ class TroubleshootingRepository(
                 d2.trackedEntityModule().trackedEntityAttributes(),
                 d2.dataElementModule().dataElements(),
                 d2.optionModule().options(),
-            ).map {
-                val ruleValueType = when (it) {
-                    is RuleVariableCalculatedValue -> it.calculatedValueType()
-                    is RuleVariableAttribute -> it.trackedEntityAttributeType()
-                    is RuleVariableNewestStageEvent -> it.dataElementType()
-                    is RuleVariableNewestEvent -> it.dataElementType()
-                    is RuleVariableCurrentEvent -> it.dataElementType()
-                    is RuleVariablePreviousEvent -> it.dataElementType()
-                    else -> null
-                }
+            ).mapNotNull {
+                val ruleValueType = it.fieldType
                 val valueKey = when (it) {
-                    is RuleVariableCalculatedValue -> it.name()
-                    is RuleVariableAttribute -> it.trackedEntityAttribute()
-                    is RuleVariableNewestStageEvent -> it.dataElement()
-                    is RuleVariableNewestEvent -> it.dataElement()
-                    is RuleVariableCurrentEvent -> it.dataElement()
-                    is RuleVariablePreviousEvent -> it.dataElement()
+                    is RuleVariableCalculatedValue -> it.name
+                    is RuleVariableAttribute,
+                    is RuleVariableNewestStageEvent,
+                    is RuleVariableNewestEvent,
+                    is RuleVariableCurrentEvent,
+                    is RuleVariablePreviousEvent,
+                    -> it.field
+
                     else -> null
                 }
 
                 val value = values?.get(valueKey)
-
-                it.name() to ruleVariableValue(value, ruleValueType, values == null)
+                ruleVariableValue(value, ruleValueType, values == null)?.let { value ->
+                    it.name to value
+                }
             }.toMap().toMutableMap().apply {
-                RuleEngineUtils.ENV_VARIABLES.forEach { (envLabelKey, type) ->
+                ENV_VARIABLES.forEach { (envLabelKey, type) ->
                     val value = values?.get(envLabelKey)
                     val ruleValueType = when (type) {
                         ItemValueType.NUMBER -> RuleValueType.NUMERIC
@@ -154,9 +136,9 @@ class TroubleshootingRepository(
                         ItemValueType.TEXT -> RuleValueType.TEXT
                         ItemValueType.BOOLEAN -> RuleValueType.BOOLEAN
                     }
-                    this[envLabelKey] = RuleVariableValue.create(
-                        value ?: ruleValueType.defaultValue().toString(),
+                    this[envLabelKey] = RuleVariableValue(
                         ruleValueType,
+                        value ?: ruleValueType.defaultValue().toString(),
                     )
                 }
             }
@@ -171,14 +153,19 @@ class TroubleshootingRepository(
         } else {
             value
         }
-        return valueToUse?.let { RuleVariableValue.create(valueToUse, ruleValueType!!) }
+        return valueToUse?.let {
+            RuleVariableValue(
+                ruleValueType!!,
+                valueToUse,
+            )
+        }
     }
 
     private fun process(
         condition: String,
-        valueMap: Map<String, RuleVariableValue?>,
+        valueMap: Map<String, RuleVariableValue>,
         ruleActionType: String? = null,
-        mode: Expression.Mode,
+        mode: ExpressionMode,
     ): String {
         if (condition.isEmpty()) {
             return if (ruleActionType != null) {
@@ -189,16 +176,22 @@ class TroubleshootingRepository(
         }
         return try {
             val expression = Expression(condition, mode)
-            val expressionData = ExpressionData.builder()
-                .supplementaryValues(HashMap())
-                .programRuleVariableValues(valueMap)
-                .build()
+            val values = valueMap.mapValues { (_, value) ->
+                value.toVariableValue()
+            }
+            val expressionData = ExpressionData(
+                values,
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+                emptyMap(),
+            )
             val result = expression.evaluate(
                 { name ->
                     throw UnsupportedOperationException(name)
                 },
                 expressionData,
-            )
+            )!!
             convertInteger(result).toString()
             ""
         } catch (e: ParserExceptionWithoutContext) {
@@ -218,30 +211,29 @@ class TroubleshootingRepository(
 
     private fun RuleAction.ruleActionType() = this.javaClass.simpleName.removePrefix("AutoValue_")
 
-    private fun RuleAction.needsContent() = when (this) {
-        is RuleActionHideField, is RuleActionHideOption,
-        is RuleActionHideOptionGroup, is RuleActionHideProgramStage,
-        is RuleActionHideSection, is RuleActionSetMandatoryField,
-        is RuleActionShowOptionGroup,
+    private fun RuleAction.needsContent() = when (this.type) {
+        ProgramRuleActionType.HIDEFIELD.name, ProgramRuleActionType.HIDEOPTION.name,
+        ProgramRuleActionType.HIDEOPTIONGROUP.name, ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+        ProgramRuleActionType.HIDESECTION.name, ProgramRuleActionType.SETMANDATORYFIELD.name,
+        ProgramRuleActionType.SHOWOPTIONGROUP.name,
         -> false
+
         else -> true
     }
 
     private fun evaluateAction(
         ruleAction: RuleAction,
-        valueMap: Map<String, RuleVariableValue?>,
+        valueMap: Map<String, RuleVariableValue>,
     ): String? {
         return if (ruleAction.needsContent()) {
             val actionConditionResult =
                 process(
-                    ruleAction.data(),
+                    ruleAction.data ?: "",
                     valueMap,
                     ruleAction.ruleActionType(),
-                    Expression.Mode.RULE_ENGINE_ACTION,
+                    ExpressionMode.RULE_ENGINE_ACTION,
                 )
-            if (actionConditionResult.isNotEmpty()) {
-                actionConditionResult
-            } else {
+            actionConditionResult.ifEmpty {
                 null
             }
         } else {
@@ -251,26 +243,39 @@ class TroubleshootingRepository(
 
     private fun checkActionVariables(ruleAction: RuleAction): String? {
         return when {
-            ruleAction is RuleActionHideField && ruleAction.field().isEmpty() ->
+            ruleAction.type == ProgramRuleActionType.HIDEFIELD.name && ruleAction.field()
+                ?.isEmpty() == true ->
                 "Missing field"
-            ruleAction is RuleActionHideOption && (
-                ruleAction.field()
-                    .isEmpty() || ruleAction.option().isEmpty()
-                ) ->
+
+            ruleAction.type == ProgramRuleActionType.HIDEOPTION.name &&
+                (
+                    ruleAction.field()?.isEmpty() == true ||
+                        ruleAction.values["option"].isNullOrEmpty()
+                    ) ->
                 "Missing field or option"
-            ruleAction is RuleActionHideOptionGroup && (
-                ruleAction.field()
-                    .isEmpty() || ruleAction.optionGroup().isEmpty()
+
+            ruleAction.type == ProgramRuleActionType.HIDEOPTIONGROUP.name && (
+                ruleAction.field()?.isEmpty() == true ||
+                    ruleAction.values["optionGroup"].isNullOrEmpty()
                 ) ->
                 "Missing field or option group"
-            ruleAction is RuleActionHideProgramStage && ruleAction.programStage().isEmpty() ->
+
+            ruleAction.type == ProgramRuleActionType.HIDEPROGRAMSTAGE.name &&
+                ruleAction.values["programStage"].isNullOrEmpty() ->
                 "Missing program stage"
-            ruleAction is RuleActionHideSection && ruleAction.programStageSection().isEmpty() ->
+
+            ruleAction.type == ProgramRuleActionType.HIDESECTION.name &&
+                ruleAction.values["programStageSection"].isNullOrEmpty() ->
                 "Missing program stage section"
-            ruleAction is RuleActionSetMandatoryField && ruleAction.field().isEmpty() ->
+
+            ruleAction.type == ProgramRuleActionType.SETMANDATORYFIELD.name &&
+                ruleAction.field().isNullOrEmpty() ->
                 "Missing field"
-            ruleAction is RuleActionShowOptionGroup && ruleAction.optionGroup().isEmpty() ->
+
+            ruleAction.type == ProgramRuleActionType.SHOWOPTIONGROUP.name &&
+                ruleAction.values["optionGroup"].isNullOrEmpty() ->
                 "Missing option group"
+
             else -> null
         }
     }

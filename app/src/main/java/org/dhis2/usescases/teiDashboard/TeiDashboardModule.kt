@@ -6,13 +6,14 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.forms.EnrollmentFormRepository
 import org.dhis2.data.forms.FormRepository
-import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository
-import org.dhis2.data.forms.dataentry.RuleEngineRepository
 import org.dhis2.form.data.RulesRepository
+import org.dhis2.mobileProgramRules.EvaluationType
+import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
@@ -20,7 +21,7 @@ import org.hisp.dhis.android.core.D2
 @Module
 class TeiDashboardModule(
     private val view: TeiDashboardContracts.View,
-    val teiUid: String?,
+    val teiUid: String,
     val programUid: String?,
     private val enrollmentUid: String?,
     private val isPortrait: Boolean,
@@ -42,7 +43,6 @@ class TeiDashboardModule(
     ): TeiDashboardContracts.Presenter {
         return TeiDashboardPresenter(
             view,
-            teiUid,
             programUid,
             dashboardRepository,
             schedulerProvider,
@@ -57,8 +57,9 @@ class TeiDashboardModule(
     fun dashboardRepository(
         d2: D2,
         charts: Charts,
-        resources: ResourceManager,
+        preferenceProvider: PreferenceProvider,
         teiAttributesProvider: TeiAttributesProvider,
+        metadataIconProvider: MetadataIconProvider,
     ): DashboardRepository {
         return DashboardRepositoryImpl(
             d2,
@@ -66,8 +67,9 @@ class TeiDashboardModule(
             teiUid,
             programUid,
             enrollmentUid,
-            resources,
             teiAttributesProvider,
+            preferenceProvider,
+            metadataIconProvider,
         )
     }
 
@@ -95,13 +97,11 @@ class TeiDashboardModule(
     @PerActivity
     fun ruleEngineRepository(
         d2: D2,
-        formRepository: FormRepository,
-    ): RuleEngineRepository {
-        val enrollmentUidToUse = enrollmentUid ?: ""
-        return EnrollmentRuleEngineRepository(
-            formRepository,
-            enrollmentUidToUse,
-            d2,
+    ): RuleEngineHelper? {
+        if (enrollmentUid.isNullOrEmpty()) return null
+        return RuleEngineHelper(
+            EvaluationType.Enrollment(enrollmentUid),
+            org.dhis2.mobileProgramRules.RulesRepository(d2),
         )
     }
 
@@ -124,7 +124,8 @@ class TeiDashboardModule(
     fun providesViewModelFactory(
         repository: DashboardRepository,
         analyticsHelper: AnalyticsHelper,
+        dispatcher: DispatcherProvider,
     ): DashboardViewModelFactory {
-        return DashboardViewModelFactory(repository, analyticsHelper)
+        return DashboardViewModelFactory(repository, analyticsHelper, dispatcher)
     }
 }

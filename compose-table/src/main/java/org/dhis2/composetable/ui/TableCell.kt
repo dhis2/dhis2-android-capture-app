@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.composetable.R
+import org.dhis2.composetable.model.DropdownOption
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.ui.compositions.LocalCurrentCellValue
 import org.dhis2.composetable.ui.compositions.LocalInteraction
@@ -57,17 +59,19 @@ fun TableCell(
     cell: TableCell,
     maxLines: Int,
     headerExtraSize: Int,
-    options: List<String>,
+    options: List<DropdownOption>,
+    headerLabel: String,
 ) {
     val localInteraction = LocalInteraction.current
     val (dropDownExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val (showMultiSelector, setShowMultiSelector) = remember { mutableStateOf(false) }
 
     var cellValue by remember {
         mutableStateOf<String?>(null)
     }
     cellValue = when {
         LocalUpdatingCell.current?.id == cell.id -> LocalUpdatingCell.current?.value
-        LocalTableSelection.current.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1) ->
+        LocalTableSelection.current.isCellSelected(tableId, cell.column, cell.row ?: -1) ->
             LocalCurrentCellValue.current()
 
         else -> cell.value
@@ -78,10 +82,10 @@ fun TableCell(
     val backgroundColor = TableTheme.colors.disabledCellBackground
     val coroutineScope = rememberCoroutineScope()
     val isSelected =
-        TableTheme.tableSelection.isCellSelected(tableId, cell.column ?: -1, cell.row ?: -1)
+        TableTheme.tableSelection.isCellSelected(tableId, cell.column, cell.row ?: -1)
     val isParentSelected = TableTheme.tableSelection.isCellParentSelected(
         selectedTableId = tableId,
-        columnIndex = cell.column ?: -1,
+        columnIndex = cell.column,
         rowIndex = cell.row ?: -1,
     )
     val colors = TableTheme.colors
@@ -116,9 +120,12 @@ fun TableCell(
         }
     }
 
+    var currentCellHeight = 0
+
     CellLegendBox(
         modifier = Modifier
             .testTag("$tableId$CELL_TEST_TAG${cell.row}${cell.column}")
+            .onSizeChanged { currentCellHeight = it.height }
             .width(cellWidth)
             .fillMaxHeight()
             .defaultMinSize(minHeight = dimensions.defaultCellHeight)
@@ -138,12 +145,15 @@ fun TableCell(
             .fillMaxHeight()
             .clickable(cell.editable) {
                 when {
-                    options.isNotEmpty() -> setExpanded(true)
+                    options.isNotEmpty() -> when {
+                        cell.isMultiText -> setShowMultiSelector(true)
+                        else -> setExpanded(true)
+                    }
                     else -> {
                         localInteraction.onSelectionChange(
                             TableSelection.CellSelection(
                                 tableId = tableId,
-                                columnIndex = cell.column ?: -1,
+                                columnIndex = cell.column,
                                 rowIndex = cell.row ?: -1,
                                 globalIndex = 0,
                             ),
@@ -186,7 +196,7 @@ fun TableCell(
                     localInteraction.onSelectionChange(
                         TableSelection.CellSelection(
                             tableId = tableId,
-                            columnIndex = cell.column ?: -1,
+                            columnIndex = cell.column,
                             rowIndex = cell.row ?: -1,
                             globalIndex = 0,
                         ),
@@ -195,6 +205,29 @@ fun TableCell(
                     cellValue = label
                 },
             )
+            if (showMultiSelector) {
+                MultiOptionSelector(
+                    options = options,
+                    cell = cell,
+                    title = headerLabel,
+                    onSave = { codes, values ->
+                        localInteraction.onSelectionChange(
+                            TableSelection.CellSelection(
+                                tableId = tableId,
+                                columnIndex = cell.column,
+                                rowIndex = cell.row ?: -1,
+                                globalIndex = 0,
+                            ),
+                        )
+                        cellValue = values
+                        localInteraction.onOptionSelected(cell, codes, values)
+                        setShowMultiSelector(false)
+                    },
+                    onDismiss = {
+                        setShowMultiSelector(false)
+                    },
+                )
+            }
         }
 
         if (cell.mandatory == true) {
@@ -236,9 +269,7 @@ fun TableCell(
                 0f,
                 0f,
                 dimensions.defaultCellWidth * 2f,
-                with(localDensity) {
-                    dimensions.defaultCellHeight.toPx() * 3
-                },
+                dimensions.textInputHeight.toFloat() + currentCellHeight,
             )
             coroutineScope.launch {
                 bringIntoViewRequester.bringIntoView(marginCoordinates)
