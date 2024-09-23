@@ -97,6 +97,7 @@ class SchedulingViewModel(
 
         _eventDate.value = EventDate(
             label = programStage?.dueDateLabel() ?: eventDetailResourcesProvider(programId.orEmpty()).provideDueDate(),
+            currentDate = dueDate,
             dateValue = DateUtils.uiDateFormat().format(dueDate ?: ""),
         )
     }
@@ -175,6 +176,7 @@ class SchedulingViewModel(
                 }
                 is LaunchMode.EnterEvent -> {
                     _eventDate.value = _eventDate.value.copy(
+                        currentDate = selectedDate,
                         dateValue = DateUtils.uiDateFormat().format(selectedDate ?: ""),
                     )
                 }
