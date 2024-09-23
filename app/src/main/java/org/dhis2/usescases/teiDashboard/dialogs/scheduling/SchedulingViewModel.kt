@@ -165,11 +165,20 @@ class SchedulingViewModel(
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
         viewModelScope.launch {
-            configureEventReportDate(selectedDate)
-                .flowOn(Dispatchers.IO)
-                .collect {
-                    _eventDate.value = it
+            when (launchMode) {
+                is LaunchMode.NewSchedule -> {
+                    configureEventReportDate(selectedDate)
+                        .flowOn(Dispatchers.IO)
+                        .collect {
+                            _eventDate.value = it
+                        }
                 }
+                is LaunchMode.EnterEvent -> {
+                    _eventDate.value = _eventDate.value.copy(
+                        dateValue = DateUtils.uiDateFormat().format(selectedDate ?: ""),
+                    )
+                }
+            }
         }
     }
 
