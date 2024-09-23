@@ -269,6 +269,8 @@ dependencies {
     implementation(libs.androidx.work)
     implementation(libs.androidx.workrx)
     implementation(libs.androidx.exifinterface)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.material3)
     implementation(libs.google.guava)
     implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
