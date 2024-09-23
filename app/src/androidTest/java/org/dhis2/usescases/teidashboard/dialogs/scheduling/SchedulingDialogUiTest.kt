@@ -13,9 +13,11 @@ import org.dhis2.composetable.test.TestActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialogUi
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingViewModel
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Rule
@@ -30,6 +32,7 @@ class SchedulingDialogUiTest {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private val viewModel: SchedulingViewModel = mock()
+    private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
 
     @Before
     fun setUp() {
@@ -63,6 +66,11 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                )
             ) {
             }
         }
@@ -86,6 +94,11 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                )
             ) {
             }
         }
@@ -105,6 +118,11 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = true,
+                )
             ) {
             }
         }
@@ -129,6 +147,11 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                )
             ) {
             }
         }
@@ -157,7 +180,11 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
-                showYesNoOptions = false,
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                )
             ) {
             }
         }
