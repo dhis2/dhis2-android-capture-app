@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,8 @@ import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.form.R
+import org.dhis2.form.model.EventMode
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
@@ -27,7 +30,10 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     companion object {
         const val SCHEDULING_DIALOG = "SCHEDULING_DIALOG"
         const val SCHEDULING_DIALOG_RESULT = "SCHEDULING_DIALOG_RESULT"
+        const val SCHEDULING_EVENT_SKIPPED = "SCHEDULING_EVENT_SKIPPED"
+        const val SCHEDULING_EVENT_DUE_DATE_UPDATED = "SCHEDULING_EVENT_DUE_DATE_UPDATED"
         const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
+        const val EVENT_UID = "EVENT_UID"
 
         fun newSchedule(
             enrollment: Enrollment,
@@ -80,6 +86,30 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     ): View {
         viewModel.onEventScheduled = {
             setFragmentResult(SCHEDULING_DIALOG_RESULT, bundleOf(PROGRAM_STAGE_UID to it))
+            dismiss()
+        }
+
+        viewModel.onEventSkipped = {
+            setFragmentResult(SCHEDULING_EVENT_SKIPPED, bundleOf(EVENT_UID to it))
+            dismiss()
+        }
+
+        viewModel.onDueDateUpdated = {
+            setFragmentResult(SCHEDULING_EVENT_DUE_DATE_UPDATED, bundleOf())
+            dismiss()
+        }
+
+        viewModel.onEnterEvent = { eventUid, programUid ->
+            val bundle = EventCaptureActivity.getActivityBundle(
+                eventUid,
+                programUid,
+                EventMode.SCHEDULE,
+            )
+            Intent(activity, EventCaptureActivity::class.java).apply {
+                putExtras(bundle)
+                startActivity(this)
+            }
+
             dismiss()
         }
 
