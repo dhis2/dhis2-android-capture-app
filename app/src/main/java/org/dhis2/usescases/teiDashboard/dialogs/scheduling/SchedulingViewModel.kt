@@ -50,6 +50,7 @@ class SchedulingViewModel(
     var showPeriods: (() -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
     var onEventSkipped: ((String) -> Unit)? = null
+    var onDueDateUpdated: (() -> Unit)? = null
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
     val eventDate: StateFlow<EventDate> get() = _eventDate
@@ -164,7 +165,26 @@ class SchedulingViewModel(
                 .flowOn(Dispatchers.IO)
                 .collect {
                     _eventDate.value = it
+
+                    if (launchMode is LaunchMode.EnterEvent) {
+                        updateEventDueDate(
+                            eventUid = launchMode.eventUid,
+                            dueDate = it,
+                        )
+                    }
                 }
+        }
+    }
+
+    private fun updateEventDueDate(eventUid: String, dueDate: EventDate) {
+        viewModelScope.launch {
+            launch(Dispatchers.IO) {
+                d2.eventModule().events().uid(eventUid).run {
+                    setDueDate(dueDate.currentDate)
+                }
+            }
+
+            onDueDateUpdated?.invoke()
         }
     }
 
