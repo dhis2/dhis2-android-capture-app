@@ -257,9 +257,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnSchedule() {
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val scheduleTag = targetContext.resources.getString(R.string.schedule)
-        composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag("SCHEDULE", useUnmergedTree = true).performClick()
     }
 
     fun clickOnMenuProgramEnrollments() {
