@@ -51,6 +51,7 @@ class SchedulingViewModel(
     var onEventScheduled: ((String) -> Unit)? = null
     var onEventSkipped: ((String) -> Unit)? = null
     var onDueDateUpdated: (() -> Unit)? = null
+    var onEnterEvent: ((String, String) -> Unit)? = null
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
     val eventDate: StateFlow<EventDate> get() = _eventDate
@@ -247,8 +248,21 @@ class SchedulingViewModel(
                             }
                         }
                 }
+
                 is LaunchMode.EnterEvent -> {
-                    // TODO: Update event
+                    val event = withContext(Dispatchers.IO) {
+                        d2.event(launchMode.eventUid)
+                    } ?: return@launch
+                    val programUid = event.program() ?: return@launch
+
+                    d2.eventModule().events().uid(launchMode.eventUid).run {
+                        setStatus(EventStatus.ACTIVE)
+                    }
+
+                    onEnterEvent?.invoke(
+                        launchMode.eventUid,
+                        programUid,
+                    )
                 }
             }
         }
