@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
@@ -32,7 +31,6 @@ import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -271,15 +269,10 @@ class TEIDataPresenter(
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {
         uid?.let {
-            val intent = getIntent(view.context, uid)
-            val options = sharedView?.let { it1 ->
-                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    view.abstractActivity,
-                    it1,
-                    "shared_view",
-                )
-            } ?: ActivityOptionsCompat.makeBasic()
-            view.openEventDetails(intent, options)
+            view.displayEnterEvent(
+                eventUid = it,
+                showYesNoOptions = false,
+            )
         }
     }
 

@@ -411,6 +411,13 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
+    override fun displayEnterEvent(eventUid: String, showYesNoOptions: Boolean) {
+        SchedulingDialog.enterEvent(
+            eventUid = eventUid,
+            showYesNoOptions = showYesNoOptions,
+        ).show(parentFragmentManager, SCHEDULING_DIALOG)
+    }
+
     override fun showDialogCloseProgram() {
         dialog = CustomDialog(
             requireContext(),

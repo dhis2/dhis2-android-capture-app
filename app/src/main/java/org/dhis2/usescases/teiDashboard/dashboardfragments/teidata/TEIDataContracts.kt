@@ -19,6 +19,7 @@ class TEIDataContracts {
         fun viewLifecycleOwner(): LifecycleOwner
         fun setEvents(events: List<EventViewModel>)
         fun displayScheduleEvent(programStage: ProgramStage?, showYesNoOptions: Boolean)
+        fun displayEnterEvent(eventUid: String, showYesNoOptions: Boolean)
         fun showDialogCloseProgram()
         fun areEventsCompleted(): Consumer<Single<Boolean>>
         fun displayGenerateEvent(eventUid: String)
