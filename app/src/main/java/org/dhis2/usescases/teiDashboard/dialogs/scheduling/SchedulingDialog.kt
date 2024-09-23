@@ -100,7 +100,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                     viewModel = viewModel,
                     programStages = viewModel.programStages,
                     orgUnitUid = viewModel.enrollment?.organisationUnit(),
-                    showYesNoOptions = launchMode.showYesNoOptions,
+                    launchMode = launchMode,
                     onDismiss = { dismiss() },
                 )
             }

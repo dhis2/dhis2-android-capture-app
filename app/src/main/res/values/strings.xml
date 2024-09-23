@@ -959,6 +959,9 @@
     <string name="remove_enrollment_dialog_message">Data from %s will de deleted. This action cannot be undone.</string>
     <string name="schedule_next">Schedule next</string>
     <string name="schedule">Schedule</string>
+    <string name="scheduled_enter_event">Scheduled</string>
+    <string name="enter_event">Enter event</string>
+    <string name="cancel_event">Cancel event</string>
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
     <string name="timeline">Timeline</string>
