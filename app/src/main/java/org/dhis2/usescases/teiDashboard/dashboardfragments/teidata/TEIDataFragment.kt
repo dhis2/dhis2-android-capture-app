@@ -58,6 +58,8 @@ import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.PROGRAM_STAGE_UID
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG_RESULT
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_EVENT_DUE_DATE_UPDATED
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_EVENT_SKIPPED
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
@@ -173,6 +175,16 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                         programUid,
                     ),
                 )
+                presenter.fetchEvents()
+            }
+
+            setFragmentResultListener(SCHEDULING_EVENT_SKIPPED) { _, _ ->
+                // TODO: Show snackbar
+                presenter.fetchEvents()
+            }
+
+            setFragmentResultListener(SCHEDULING_EVENT_DUE_DATE_UPDATED) { _, _ ->
+                // TODO: Show due date updated snackbar
                 presenter.fetchEvents()
             }
         }.root
