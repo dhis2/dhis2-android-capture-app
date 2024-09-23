@@ -61,7 +61,7 @@ class SchedulingViewModel(
     val programStages: List<ProgramStage>
         get() = when (launchMode) {
             is LaunchMode.NewSchedule -> launchMode.programStages
-            is LaunchMode.EnterEvent -> emptyList()
+            is LaunchMode.EnterEvent -> listOfNotNull(programStage.value)
         }
 
     val enrollment: Enrollment?
