@@ -337,7 +337,9 @@ class TEIDataPresenter(
                     checkOrgUnitCount(program, stage.uid())
                 }
 
-                EventCreationType.SCHEDULE -> {
+                EventCreationType.SCHEDULE,
+                EventCreationType.REFERAL,
+                -> {
                     view.displayScheduleEvent(
                         programStage = stage,
                         showYesNoOptions = false,
