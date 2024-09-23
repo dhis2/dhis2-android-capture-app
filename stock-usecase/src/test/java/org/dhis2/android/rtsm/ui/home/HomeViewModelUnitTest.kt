@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
@@ -30,6 +31,7 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.After
@@ -41,9 +43,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
@@ -55,6 +60,10 @@ class HomeViewModelUnitTest {
 
     @get:Rule
     val countingTaskExecutorRule = CountingTaskExecutorRule()
+
+    private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
+
+    private val charts: Charts = mock()
 
     @Mock
     private lateinit var metadataManager: MetadataManager
@@ -114,7 +123,6 @@ class HomeViewModelUnitTest {
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
-
         appConfig = AppConfig(
             "F5ijs28K4s8",
             "wBr4wccNBj1",
@@ -161,6 +169,8 @@ class HomeViewModelUnitTest {
             disposable,
             schedulerProvider,
             metadataManager,
+            charts,
+            d2,
             getStateHandle(),
         )
 
