@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -22,6 +22,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Even
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.LaunchMode
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
@@ -79,36 +80,28 @@ class SchedulingViewModel(
             }
 
             _programStage.value = programStage
-
-            when (launchMode) {
-                is LaunchMode.NewSchedule -> loadNewScheduleConfiguration(launchMode)
-                is LaunchMode.EnterEvent -> loadEventDueDate(launchMode, programStage)
-            }
+            loadScheduleConfiguration(launchMode)
         }
     }
 
-    private fun loadEventDueDate(
-        launchMode: LaunchMode.EnterEvent,
-        programStage: ProgramStage?,
-    ) {
-        val event = d2.event(launchMode.eventUid)
-        val programId = event?.program()
-        val dueDate = event?.dueDate()
-
-        _eventDate.value = EventDate(
-            label = programStage?.dueDateLabel() ?: eventDetailResourcesProvider(programId.orEmpty()).provideDueDate(),
-            currentDate = dueDate,
-            dateValue = DateUtils.uiDateFormat().format(dueDate ?: ""),
-        )
-    }
-
-    private fun loadNewScheduleConfiguration(launchMode: LaunchMode.NewSchedule) {
-        val programId = launchMode.enrollment.program().orEmpty()
+    private fun loadScheduleConfiguration(launchMode: LaunchMode) {
+        val event = when (launchMode) {
+            is LaunchMode.EnterEvent -> d2.event(launchMode.eventUid)
+            is LaunchMode.NewSchedule -> null
+        }
+        val programId = when (launchMode) {
+            is LaunchMode.NewSchedule -> launchMode.enrollment.program()
+            is LaunchMode.EnterEvent -> event?.program()
+        }.orEmpty()
+        val enrollmentId = when (launchMode) {
+            is LaunchMode.NewSchedule -> launchMode.enrollment.uid()
+            is LaunchMode.EnterEvent -> event?.enrollment().orEmpty()
+        }
 
         repository = EventDetailsRepository(
             d2 = d2,
             programUid = programId,
-            eventUid = null,
+            eventUid = event?.uid(),
             programStageUid = programStage.value?.uid(),
             fieldFactory = null,
             eventCreationType = EventCreationType.SCHEDULE,
@@ -120,12 +113,12 @@ class SchedulingViewModel(
             repository = repository,
             periodType = programStage.value?.periodType(),
             periodUtils = periodUtils,
-            enrollmentId = launchMode.enrollment.uid(),
+            enrollmentId = enrollmentId,
             scheduleInterval = programStage.value?.standardInterval() ?: 0,
         )
         configureEventCatCombo = ConfigureEventCatCombo(repository = repository)
 
-        loadProgramStage()
+        loadProgramStage(event = event)
     }
 
     private fun eventDetailResourcesProvider(programId: String) = EventDetailResourcesProvider(
@@ -135,9 +128,10 @@ class SchedulingViewModel(
         eventResourcesProvider = eventResourcesProvider,
     )
 
-    private fun loadProgramStage() {
+    private fun loadProgramStage(event: Event? = null) {
         viewModelScope.launch {
-            configureEventReportDate().collect {
+            val selectedDate = event?.dueDate()
+            configureEventReportDate(selectedDate = selectedDate).collect {
                 _eventDate.value = it
             }
 
@@ -166,21 +160,11 @@ class SchedulingViewModel(
 
     fun setUpEventReportDate(selectedDate: Date? = null) {
         viewModelScope.launch {
-            when (launchMode) {
-                is LaunchMode.NewSchedule -> {
-                    configureEventReportDate(selectedDate)
-                        .flowOn(Dispatchers.IO)
-                        .collect {
-                            _eventDate.value = it
-                        }
+            configureEventReportDate(selectedDate)
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    _eventDate.value = it
                 }
-                is LaunchMode.EnterEvent -> {
-                    _eventDate.value = _eventDate.value.copy(
-                        currentDate = selectedDate,
-                        dateValue = DateUtils.uiDateFormat().format(selectedDate ?: ""),
-                    )
-                }
-            }
         }
     }
 
@@ -222,15 +206,7 @@ class SchedulingViewModel(
     fun updateStage(stage: ProgramStage) {
         _programStage.value = stage
 
-        when (launchMode) {
-            is LaunchMode.NewSchedule -> {
-                loadNewScheduleConfiguration(launchMode = launchMode)
-            }
-
-            is LaunchMode.EnterEvent -> {
-                // no-op
-            }
-        }
+        loadScheduleConfiguration(launchMode = launchMode)
     }
 
     fun scheduleEvent() {
