@@ -77,6 +77,7 @@ fun SchedulingDialogUi(
             launchMode = launchMode,
             programStages = programStages,
         ),
+        subtitle = viewModel.overdueSubtitle,
         headerTextAlignment = TextAlign.Start,
         buttonBlock = {
             ButtonBlock(

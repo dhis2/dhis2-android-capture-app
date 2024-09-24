@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.event
+import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -68,6 +69,17 @@ class SchedulingViewModel(
         get() = when (launchMode) {
             is LaunchMode.NewSchedule -> launchMode.enrollment
             is LaunchMode.EnterEvent -> null
+        }
+
+    val overdueSubtitle: String?
+        get() {
+            if (launchMode is LaunchMode.NewSchedule) {
+                return null
+            } else {
+                val now = Date()
+                val eventDate = _eventDate.value.currentDate ?: return null
+                return eventDate.toOverdueOrScheduledUiText(resourceManager)
+            }
         }
 
     init {
