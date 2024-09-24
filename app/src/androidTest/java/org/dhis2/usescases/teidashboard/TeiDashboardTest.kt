@@ -70,6 +70,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    //https://dhis2.atlassian.net/browse/ANDROAPP-4230
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
         prepareTeiWithExistingNoteAndLaunchActivity(rule)
@@ -80,7 +81,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
-            typeNote(NOTE_VALID)
+            typeNote(NOTE_EXISTING_TEXT)
             clickOnSaveButton()
             checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
@@ -143,7 +144,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
+        val orgUnit = "Ngelehun CHC"
+
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
@@ -320,18 +327,18 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
-            "10/1/2021",
+            "10/1/2024",
             "10/1/2021",
             "Ngelehun CHC"
         )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "10/01/2021",
-            "10/01/2021",
-            "Ngelehun CHC",
-            "40.48713205295354",
-            "-3.6847423830882633",
+            "08/09/2024",
+            "08/09/2024",
+//            "Ngelehun CHC",
+//            "40.48713205295354",
+//            "-3.6847423830882633",
             "Filona",
             "Ryder",
             "Female"

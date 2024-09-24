@@ -89,10 +89,11 @@ class FilterTest : BaseTest() {
         filterRobotCommon {
             openFilterAtPosition(1)
             clickOnOrgUnitTree()
-            orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit(orgUnit)
-            }
         }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
         homeRobot {
             openFilters()
             //checkItemsInProgram(composeTestRule, 3, "AUTOMATIC TESTING - Child Health", "12")
