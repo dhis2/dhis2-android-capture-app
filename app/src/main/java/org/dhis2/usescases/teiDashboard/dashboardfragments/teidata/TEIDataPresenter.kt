@@ -208,6 +208,7 @@ class TEIDataPresenter(
                         view.displayScheduleEvent(
                             programStage = programStage,
                             showYesNoOptions = true,
+                            eventCreationType = EventCreationType.SCHEDULE,
                         )
                     } else if (programStage.remindCompleted() == true) {
                         view.showDialogCloseProgram()
@@ -272,6 +273,7 @@ class TEIDataPresenter(
             view.displayEnterEvent(
                 eventUid = it,
                 showYesNoOptions = false,
+                eventCreationType = EventCreationType.SCHEDULE,
             )
         }
     }
@@ -369,6 +371,7 @@ class TEIDataPresenter(
                     view.displayScheduleEvent(
                         programStage = stage,
                         showYesNoOptions = false,
+                        eventCreationType = eventCreationType,
                     )
                 }
 
@@ -378,6 +381,7 @@ class TEIDataPresenter(
             view.displayScheduleEvent(
                 programStage = null,
                 showYesNoOptions = false,
+                eventCreationType = eventCreationType,
             )
         }
     }

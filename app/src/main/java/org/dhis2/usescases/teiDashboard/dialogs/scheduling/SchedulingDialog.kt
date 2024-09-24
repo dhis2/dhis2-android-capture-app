@@ -14,6 +14,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.bindings.app
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -39,12 +40,14 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             enrollment: Enrollment,
             programStages: List<ProgramStage>,
             showYesNoOptions: Boolean,
+            eventCreationType: EventCreationType,
         ): SchedulingDialog {
             return SchedulingDialog().apply {
                 this.launchMode = LaunchMode.NewSchedule(
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = showYesNoOptions,
+                    eventCreationType = eventCreationType,
                 )
             }
         }
@@ -52,10 +55,12 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         fun enterEvent(
             eventUid: String,
             showYesNoOptions: Boolean,
+            eventCreationType: EventCreationType,
         ) = SchedulingDialog().apply {
             this.launchMode = LaunchMode.EnterEvent(
                 eventUid = eventUid,
                 showYesNoOptions = showYesNoOptions,
+                eventCreationType = eventCreationType,
             )
         }
     }
@@ -174,16 +179,19 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     sealed interface LaunchMode {
 
         val showYesNoOptions: Boolean
+        val eventCreationType: EventCreationType
 
         data class NewSchedule(
             val enrollment: Enrollment,
             val programStages: List<ProgramStage>,
             override val showYesNoOptions: Boolean,
+            override val eventCreationType: EventCreationType,
         ) : LaunchMode
 
         data class EnterEvent(
             val eventUid: String,
             override val showYesNoOptions: Boolean,
+            override val eventCreationType: EventCreationType,
         ) : LaunchMode
     }
 }

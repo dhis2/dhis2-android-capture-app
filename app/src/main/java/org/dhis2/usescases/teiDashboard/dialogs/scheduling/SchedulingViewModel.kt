@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.event
-import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -106,11 +105,11 @@ class SchedulingViewModel(
             eventUid = event?.uid(),
             programStageUid = programStage.value?.uid(),
             fieldFactory = null,
-            eventCreationType = EventCreationType.SCHEDULE,
+            eventCreationType = launchMode.eventCreationType,
             onError = resourceManager::parseD2Error,
         )
         configureEventReportDate = ConfigureEventReportDate(
-            creationType = EventCreationType.SCHEDULE,
+            creationType = launchMode.eventCreationType,
             resourceProvider = eventDetailResourcesProvider(programId),
             repository = repository,
             periodType = programStage.value?.periodType(),

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.composetable.test.TestActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
@@ -70,6 +71,7 @@ class SchedulingDialogUiTest {
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
             }
@@ -98,6 +100,7 @@ class SchedulingDialogUiTest {
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
             }
@@ -122,6 +125,7 @@ class SchedulingDialogUiTest {
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = true,
+                    eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
             }
@@ -151,6 +155,7 @@ class SchedulingDialogUiTest {
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
             }
@@ -184,6 +189,7 @@ class SchedulingDialogUiTest {
                     enrollment = enrollment,
                     programStages = programStages,
                     showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
             }
