@@ -230,42 +230,41 @@ class SchedulingViewModel(
         loadScheduleConfiguration(launchMode = launchMode)
     }
 
-    fun scheduleEvent() {
+    fun scheduleEvent(launchMode: LaunchMode.NewSchedule) {
         viewModelScope.launch {
             val eventDate = eventDate.value.currentDate ?: return@launch
 
-            when (launchMode) {
-                is LaunchMode.NewSchedule -> {
-                    repository.scheduleEvent(
-                        enrollmentUid = launchMode.enrollment.uid(),
-                        dueDate = eventDate,
-                        orgUnitUid = launchMode.enrollment.organisationUnit(),
-                        categoryOptionComboUid = eventCatCombo.value.uid,
-                    ).flowOn(Dispatchers.IO)
-                        .collect {
-                            if (it != null) {
-                                onEventScheduled?.invoke(programStage.value?.uid() ?: "")
-                            }
-                        }
-                }
-
-                is LaunchMode.EnterEvent -> {
-                    val event = withContext(Dispatchers.IO) {
-                        d2.event(launchMode.eventUid)
-                    } ?: return@launch
-                    val programUid = event.program() ?: return@launch
-
-                    d2.eventModule().events().uid(launchMode.eventUid).run {
-                        setEventDate(eventDate)
-                        setStatus(EventStatus.ACTIVE)
+            repository.scheduleEvent(
+                enrollmentUid = launchMode.enrollment.uid(),
+                dueDate = eventDate,
+                orgUnitUid = launchMode.enrollment.organisationUnit(),
+                categoryOptionComboUid = eventCatCombo.value.uid,
+            ).flowOn(Dispatchers.IO)
+                .collect {
+                    if (it != null) {
+                        onEventScheduled?.invoke(programStage.value?.uid() ?: "")
                     }
-
-                    onEnterEvent?.invoke(
-                        launchMode.eventUid,
-                        programUid,
-                    )
                 }
+        }
+    }
+
+    fun enterEvent(launchMode: LaunchMode.EnterEvent) {
+        viewModelScope.launch {
+            val eventDate = eventDate.value.currentDate ?: return@launch
+            val event = withContext(Dispatchers.IO) {
+                d2.event(launchMode.eventUid)
+            } ?: return@launch
+            val programUid = event.program() ?: return@launch
+
+            d2.eventModule().events().uid(launchMode.eventUid).run {
+                setEventDate(eventDate)
+                setStatus(EventStatus.ACTIVE)
             }
+
+            onEnterEvent?.invoke(
+                launchMode.eventUid,
+                programUid,
+            )
         }
     }
 

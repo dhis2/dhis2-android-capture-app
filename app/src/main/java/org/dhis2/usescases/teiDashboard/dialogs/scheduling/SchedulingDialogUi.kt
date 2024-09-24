@@ -71,12 +71,6 @@ fun SchedulingDialogUi(
         derivedStateOf { optionSelected == yesNoOptions.first() }
     }
 
-    val onButtonClick = {
-        when {
-            scheduleNew -> viewModel.scheduleEvent()
-            else -> onDismiss()
-        }
-    }
     BottomSheetShell(
         title = bottomSheetTitle(
             launchMode = launchMode,
@@ -95,7 +89,12 @@ fun SchedulingDialogUi(
                             !date.dateValue.isNullOrEmpty() &&
                             catCombo.isCompleted,
                         text = buttonTitle(scheduleNew),
-                        onClick = onButtonClick,
+                        onClick = {
+                            when {
+                                scheduleNew -> viewModel.scheduleEvent(launchMode)
+                                else -> onDismiss()
+                            }
+                        },
                     )
                 }
                 is LaunchMode.EnterEvent -> {
@@ -107,7 +106,9 @@ fun SchedulingDialogUi(
                             style = ButtonStyle.FILLED,
                             enabled = !date.dateValue.isNullOrEmpty(),
                             text = stringResource(R.string.enter_event),
-                            onClick = onButtonClick,
+                            onClick = {
+                                viewModel.enterEvent(launchMode)
+                            },
                         )
 
                         Button(
