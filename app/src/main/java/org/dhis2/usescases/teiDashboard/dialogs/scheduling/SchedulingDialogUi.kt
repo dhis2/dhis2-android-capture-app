@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -78,58 +79,14 @@ fun SchedulingDialogUi(
         ),
         headerTextAlignment = TextAlign.Start,
         buttonBlock = {
-            when (launchMode) {
-                is LaunchMode.NewSchedule -> {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("SCHEDULE"),
-                        style = ButtonStyle.FILLED,
-                        enabled = !scheduleNew ||
-                            !date.dateValue.isNullOrEmpty() &&
-                            catCombo.isCompleted,
-                        text = buttonTitle(scheduleNew),
-                        onClick = {
-                            when {
-                                scheduleNew -> viewModel.scheduleEvent(launchMode)
-                                else -> onDismiss()
-                            }
-                        },
-                    )
-                }
-                is LaunchMode.EnterEvent -> {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            style = ButtonStyle.FILLED,
-                            enabled = !date.dateValue.isNullOrEmpty(),
-                            text = stringResource(R.string.enter_event),
-                            onClick = {
-                                viewModel.enterEvent(launchMode)
-                            },
-                        )
-
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            style = ButtonStyle.OUTLINED,
-                            colorStyle = ColorStyle.WARNING,
-                            text = stringResource(R.string.cancel_event),
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.EventBusy,
-                                    contentDescription = null,
-                                    tint = TextColor.OnWarningContainer,
-                                )
-                            },
-                            onClick = {
-                                viewModel.onCancelEvent()
-                            },
-                        )
-                    }
-                }
-            }
+            ButtonBlock(
+                launchMode = launchMode,
+                scheduleNew = scheduleNew,
+                date = date,
+                catCombo = catCombo,
+                viewModel = viewModel,
+                onDismiss = onDismiss,
+            )
         },
         showSectionDivider = false,
         content = {
@@ -165,6 +122,73 @@ fun SchedulingDialogUi(
         },
         onDismiss = onDismiss,
     )
+}
+
+@Composable
+private fun ButtonBlock(
+    launchMode: LaunchMode,
+    scheduleNew: Boolean,
+    date: EventDate,
+    catCombo: EventCatCombo,
+    viewModel: SchedulingViewModel,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier) {
+        when (launchMode) {
+            is LaunchMode.NewSchedule -> {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("SCHEDULE"),
+                    style = ButtonStyle.FILLED,
+                    enabled = !scheduleNew ||
+                        !date.dateValue.isNullOrEmpty() &&
+                        catCombo.isCompleted,
+                    text = buttonTitle(scheduleNew),
+                    onClick = {
+                        when {
+                            scheduleNew -> viewModel.scheduleEvent(launchMode)
+                            else -> onDismiss()
+                        }
+                    },
+                )
+            }
+
+            is LaunchMode.EnterEvent -> {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.FILLED,
+                        enabled = !date.dateValue.isNullOrEmpty(),
+                        text = stringResource(R.string.enter_event),
+                        onClick = {
+                            viewModel.enterEvent(launchMode)
+                        },
+                    )
+
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.OUTLINED,
+                        colorStyle = ColorStyle.WARNING,
+                        text = stringResource(R.string.cancel_event),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = null,
+                                tint = TextColor.OnWarningContainer,
+                            )
+                        },
+                        onClick = {
+                            viewModel.onCancelEvent()
+                        },
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
