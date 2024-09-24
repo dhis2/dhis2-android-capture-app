@@ -378,11 +378,18 @@ class TEIDataPresenter(
                 else -> view.goToEventInitial(eventCreationType, stage)
             }
         } else {
-            view.displayScheduleEvent(
-                programStage = null,
-                showYesNoOptions = false,
-                eventCreationType = eventCreationType,
-            )
+            when (eventCreationType) {
+                EventCreationType.REFERAL -> {
+                    createEventInEnrollment(eventCreationType)
+                }
+                else -> {
+                    view.displayScheduleEvent(
+                        programStage = null,
+                        showYesNoOptions = false,
+                        eventCreationType = eventCreationType,
+                    )
+                }
+            }
         }
     }
 
