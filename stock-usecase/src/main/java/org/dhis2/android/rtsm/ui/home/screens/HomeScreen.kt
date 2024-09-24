@@ -171,12 +171,6 @@ fun HomeScreen(
                 }
             }
         }
-
-        AnimatedVisibility(selectedIndex == BottomNavigation.ANALYTICS.id) {
-        }
-
-        AnimatedVisibility(selectedIndex != BottomNavigation.ANALYTICS.id) {
-        }
     }
 }
 
