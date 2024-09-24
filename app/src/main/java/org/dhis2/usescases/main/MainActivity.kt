@@ -24,8 +24,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -280,22 +282,24 @@ class MainActivity :
     }
 
     private fun observeSyncState() {
-        presenter.observeDataSync().observe(this) {
-            when (it.running) {
-                true -> {
-                    setBottomNavigationVisibility(false)
-                }
-
-                false -> {
-                    setBottomNavigationVisibility(true)
-                    presenter.onDataSuccess()
-                    if (presenter.hasOneHomeItem()) {
-                        navigateToSingleProgram()
+        lifecycleScope.launch {
+            presenter.observeDataSync().collect {
+                when (it.running) {
+                    true -> {
+                        setBottomNavigationVisibility(false)
                     }
-                }
 
-                else -> {
-                    // no action
+                    false -> {
+                        setBottomNavigationVisibility(true)
+                        presenter.onDataSuccess()
+                        if (presenter.hasOneHomeItem()) {
+                            navigateToSingleProgram()
+                        }
+                    }
+
+                    else -> {
+                        // no action
+                    }
                 }
             }
         }
