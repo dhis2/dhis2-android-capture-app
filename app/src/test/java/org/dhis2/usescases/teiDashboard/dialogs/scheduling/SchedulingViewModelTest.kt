@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.data.EventCreationType
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.junit.Before
@@ -31,6 +32,7 @@ class SchedulingViewModelTest {
                 enrollment = Enrollment.builder().uid("enrollment").build(),
                 programStages = emptyList(),
                 showYesNoOptions = false,
+                eventCreationType = EventCreationType.SCHEDULE,
             ),
         )
     }
