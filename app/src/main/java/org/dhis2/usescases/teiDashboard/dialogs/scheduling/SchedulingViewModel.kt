@@ -73,12 +73,11 @@ class SchedulingViewModel(
 
     val overdueSubtitle: String?
         get() {
-            if (launchMode is LaunchMode.NewSchedule) {
-                return null
+            return if (launchMode is LaunchMode.NewSchedule) {
+                null
             } else {
-                val now = Date()
                 val eventDate = _eventDate.value.currentDate ?: return null
-                return eventDate.toOverdueOrScheduledUiText(resourceManager)
+                eventDate.toOverdueOrScheduledUiText(resourceManager)
             }
         }
 
