@@ -1,10 +1,12 @@
 package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.junit.Before
@@ -28,6 +30,19 @@ class SchedulingViewModelTest {
             resourceManager = mock(),
             eventResourcesProvider = mock(),
             periodUtils = mock(),
+            dispatchersProvider = object : DispatcherProvider {
+                override fun io(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun computation(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun ui(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+            },
             launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                 enrollment = Enrollment.builder().uid("enrollment").build(),
                 programStages = emptyList(),

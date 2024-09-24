@@ -8,14 +8,16 @@ import dagger.assisted.AssistedInject
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 
 @Suppress("UNCHECKED_CAST")
 class SchedulingViewModelFactory @AssistedInject constructor(
     private val d2: D2,
     private val resourceManager: ResourceManager,
-    val eventResourcesProvider: EventResourcesProvider,
+    private val eventResourcesProvider: EventResourcesProvider,
     private val periodUtils: DhisPeriodUtils,
+    private val dispatcherProvider: DispatcherProvider,
     @Assisted private val launchMode: SchedulingDialog.LaunchMode,
 ) : ViewModelProvider.Factory {
 
@@ -26,11 +28,12 @@ class SchedulingViewModelFactory @AssistedInject constructor(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SchedulingViewModel(
-            d2,
-            resourceManager,
-            eventResourcesProvider,
-            periodUtils,
-            launchMode,
+            d2 = d2,
+            resourceManager = resourceManager,
+            eventResourcesProvider = eventResourcesProvider,
+            periodUtils = periodUtils,
+            dispatchersProvider = dispatcherProvider,
+            launchMode = launchMode,
         ) as T
     }
 }

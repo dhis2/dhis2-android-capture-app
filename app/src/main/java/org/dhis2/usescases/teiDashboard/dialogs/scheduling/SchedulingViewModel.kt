@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
@@ -13,6 +12,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
@@ -32,10 +32,11 @@ import java.util.Date
 import java.util.Locale
 
 class SchedulingViewModel(
-    val d2: D2,
-    val resourceManager: ResourceManager,
-    val eventResourcesProvider: EventResourcesProvider,
-    val periodUtils: DhisPeriodUtils,
+    private val d2: D2,
+    private val resourceManager: ResourceManager,
+    private val eventResourcesProvider: EventResourcesProvider,
+    private val periodUtils: DhisPeriodUtils,
+    private val dispatchersProvider: DispatcherProvider,
     private val launchMode: LaunchMode,
 ) : ViewModel() {
 
@@ -173,7 +174,7 @@ class SchedulingViewModel(
     fun setUpEventReportDate(selectedDate: Date? = null) {
         viewModelScope.launch {
             configureEventReportDate(selectedDate)
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatchersProvider.io())
                 .collect {
                     _eventDate.value = it
 
@@ -189,7 +190,7 @@ class SchedulingViewModel(
 
     private fun updateEventDueDate(eventUid: String, dueDate: EventDate) {
         viewModelScope.launch {
-            launch(Dispatchers.IO) {
+            launch(dispatchersProvider.io()) {
                 d2.eventModule().events().uid(eventUid).run {
                     setDueDate(dueDate.currentDate)
                 }
@@ -209,7 +210,7 @@ class SchedulingViewModel(
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
         viewModelScope.launch {
             configureEventCatCombo(categoryOption)
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatchersProvider.io())
                 .collect {
                     _eventCatCombo.value = it
                 }
@@ -249,7 +250,7 @@ class SchedulingViewModel(
                 dueDate = eventDate,
                 orgUnitUid = launchMode.enrollment.organisationUnit(),
                 categoryOptionComboUid = eventCatCombo.value.uid,
-            ).flowOn(Dispatchers.IO)
+            ).flowOn(dispatchersProvider.io())
                 .collect {
                     if (it != null) {
                         onEventScheduled?.invoke(programStage.value?.uid() ?: "")
@@ -261,7 +262,7 @@ class SchedulingViewModel(
     fun enterEvent(launchMode: LaunchMode.EnterEvent) {
         viewModelScope.launch {
             val eventDate = eventDate.value.currentDate ?: return@launch
-            val event = withContext(Dispatchers.IO) {
+            val event = withContext(dispatchersProvider.io()) {
                 d2.event(launchMode.eventUid)
             } ?: return@launch
             val programUid = event.program() ?: return@launch
