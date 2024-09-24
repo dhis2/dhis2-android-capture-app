@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LifecycleOwner
@@ -65,6 +66,7 @@ import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
+import org.dhis2.utils.extension.setIcon
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
@@ -179,12 +181,34 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
 
             setFragmentResultListener(SCHEDULING_EVENT_SKIPPED) { _, _ ->
-                // TODO: Show snackbar
+                val snackbar = Snackbar.make(
+                    binding.teiRootView,
+                    requireContext().getString(R.string.event_cacelled),
+                    Snackbar.LENGTH_LONG,
+                )
+
+                snackbar.setIcon(
+                    drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+                ) {
+                    snackbar.dismiss()
+                }
+                snackbar.show()
                 presenter.fetchEvents()
             }
 
             setFragmentResultListener(SCHEDULING_EVENT_DUE_DATE_UPDATED) { _, _ ->
-                // TODO: Show due date updated snackbar
+                val snackbar = Snackbar.make(
+                    binding.teiRootView,
+                    requireContext().getString(R.string.due_date_updated),
+                    Snackbar.LENGTH_LONG,
+                )
+
+                snackbar.setIcon(
+                    drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+                ) {
+                    snackbar.dismiss()
+                }
+                snackbar.show()
                 presenter.fetchEvents()
             }
         }.root
