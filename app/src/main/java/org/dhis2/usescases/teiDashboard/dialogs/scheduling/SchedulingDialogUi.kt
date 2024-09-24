@@ -139,9 +139,7 @@ private fun ButtonBlock(
         when (launchMode) {
             is LaunchMode.NewSchedule -> {
                 Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("SCHEDULE"),
+                    modifier = Modifier.fillMaxWidth(),
                     style = ButtonStyle.FILLED,
                     enabled = !scheduleNew ||
                         !date.dateValue.isNullOrEmpty() &&
