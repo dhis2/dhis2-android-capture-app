@@ -133,12 +133,16 @@ fun ProgramList(
                             onSizeChanged(size)
                         }
                     },
-                    onItemClick = onItemClick
-                        .takeIf { downLoadState?.running != true }
-                        ?: run { {} },
-                    onGranularSyncClick = onGranularSyncClick
-                        .takeIf { downLoadState?.running == false }
-                        ?: run { {} },
+                    onItemClick = {
+                        if (downLoadState?.running != true) {
+                            onItemClick(it)
+                        }
+                    },
+                    onGranularSyncClick ={
+                        if (downLoadState?.running != true) {
+                            onGranularSyncClick(it)
+                        }
+                    },
                 )
             }
         } ?: run {
@@ -289,7 +293,7 @@ fun DownloadedIcon() {
 fun DownloadErrorIcon() {
     Icon(
         modifier = Modifier,
-        painter = painterResource(id = R.drawable.ic_download_error),
+        painter = painterResource(id = R.drawable.ic_download_off),
         contentDescription = "download error",
         tint = Color.Unspecified,
     )
@@ -538,10 +542,7 @@ private fun syncingAdditionalInfoItem(program: ProgramUiModel) = AdditionalInfoI
         ProgramDownloadState.DOWNLOADED ->
             SurfaceColor.CustomGreen
 
-        ProgramDownloadState.ERROR ->
-            TextColor.OnErrorContainer
-
-        ProgramDownloadState.NONE ->
+        else ->
             TextColor.OnSurfaceLight
     },
     isConstantItem = true,
