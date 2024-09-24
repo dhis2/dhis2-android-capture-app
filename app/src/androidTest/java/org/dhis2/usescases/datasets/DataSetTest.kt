@@ -98,26 +98,7 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun shouldBlockSelectingNewCellIfCurrentHasError() {
-        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
-
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
-
-        dataSetTableRobot(composeTestRule) {
-            typeOnCell("dzjKKQq0cSO", 0, 0)
-            clickOnEditValue()
-            typeInput("5,,")
-            composeTestRule.waitForIdle()
-            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
-            composeTestRule.waitForIdle()
-            assertCellSelected("dzjKKQq0cSO", 0, 0)
-        }
-    }
-
-    @Test
-    fun shouldSelectNewCellIfCurrentHasNoError() {
+    fun shouldSelectNewCellIfCurrentHasNoErrorAndBlockSelectingNewCellIfCurrentHasError() {
         startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
 
         dataSetRobot {
@@ -130,8 +111,12 @@ class DataSetTest : BaseTest() {
             typeInput("5")
             composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
+            assertCellSelected("dzjKKQq0cSO", 0, 1)
+
+            clickOnEditValue()
+            typeInput("5,,")
             composeTestRule.waitForIdle()
-            waitToDebounce(500)
+            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             assertCellSelected("dzjKKQq0cSO", 0, 1)
         }
     }
