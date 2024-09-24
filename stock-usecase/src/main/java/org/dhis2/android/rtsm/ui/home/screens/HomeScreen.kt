@@ -2,10 +2,16 @@ package org.dhis2.android.rtsm.ui.home.screens
 
 import android.app.Activity
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -25,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanOptions
@@ -38,6 +45,7 @@ import org.dhis2.ui.buttons.FAButton
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     activity: Activity,
@@ -51,9 +59,9 @@ fun HomeScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
 
-    val scope = rememberCoroutineScope()
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
-
+    val scope = rememberCoroutineScope()
+    var selectedIndex by remember { mutableIntStateOf(0) }
     val analytics by viewModel.analytics.collectAsState()
 
     val homeItems = listOf(
@@ -68,7 +76,6 @@ fun HomeScreen(
             label = activity.getString(R.string.section_charts),
         ),
     )
-    var selectedHomeItemIndex by remember { mutableIntStateOf(0) }
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -102,27 +109,73 @@ fun HomeScreen(
             if (analytics.isNotEmpty()) {
                 NavigationBar(
                     items = homeItems,
-                    selectedItemIndex = selectedHomeItemIndex,
+                    selectedItemIndex = selectedIndex,
                 ) { itemId ->
 
-                    selectedHomeItemIndex = homeItems.indexOfFirst { it.id == itemId }
+                    selectedIndex = homeItems.indexOfFirst { it.id == itemId }
                 }
             }
         },
     ) { paddingValues ->
 
-        Backdrop(
-            activity = activity,
-            viewModel = viewModel,
-            manageStockViewModel = manageStockViewModel,
-            modifier = Modifier.padding(paddingValues),
-            themeColor = themeColor,
-            supportFragmentManager = supportFragmentManager,
-            barcodeLauncher = barcodeLauncher,
-            scaffoldState = scaffoldState,
-            selectedHomeIndex = selectedHomeItemIndex,
-        ) { coroutineScope, scaffold ->
-            syncAction(coroutineScope, scaffold)
+        AnimatedContent(
+            selectedIndex,
+            transitionSpec = {
+                slideIn(
+                    animationSpec = spring(3000F),
+                    initialOffset = {
+                        if (selectedIndex == BottomNavigation.ANALYTICS.id) {
+                            IntOffset(300, 0)
+                        } else {
+                            IntOffset(-300, 0)
+                        }
+                    },
+                ) togetherWith slideOut(
+                    animationSpec = spring(3000F),
+                    targetOffset = {
+                        if (selectedIndex == BottomNavigation.ANALYTICS.id) {
+                            IntOffset(-300, 0)
+                        } else {
+                            IntOffset(300, 0)
+                        }
+                    },
+                )
+            },
+            label = "HomeScreenContent",
+        ) { targetIndex ->
+            when (targetIndex) {
+                BottomNavigation.ANALYTICS.id ->
+                    {
+                        AnalyticsScreen(
+                            viewModel = viewModel,
+                            manageStockViewModel = manageStockViewModel,
+                            themeColor = themeColor,
+                            modifier = Modifier.padding(paddingValues),
+                            scaffoldState = scaffoldState,
+                            supportFragmentManager = supportFragmentManager,
+                        )
+                    }
+                BottomNavigation.DATA_ENTRY.id -> {
+                    Backdrop(
+                        activity = activity,
+                        viewModel = viewModel,
+                        manageStockViewModel = manageStockViewModel,
+                        modifier = Modifier.padding(paddingValues),
+                        themeColor = themeColor,
+                        supportFragmentManager = supportFragmentManager,
+                        barcodeLauncher = barcodeLauncher,
+                        scaffoldState = scaffoldState,
+                    ) { coroutineScope, scaffold ->
+                        syncAction(coroutineScope, scaffold)
+                    }
+                }
+            }
+        }
+
+        AnimatedVisibility(selectedIndex == BottomNavigation.ANALYTICS.id) {
+        }
+
+        AnimatedVisibility(selectedIndex != BottomNavigation.ANALYTICS.id) {
         }
     }
 }

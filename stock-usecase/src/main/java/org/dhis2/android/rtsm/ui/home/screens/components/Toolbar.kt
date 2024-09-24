@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -36,7 +35,7 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Toolbar(
     title: String,
@@ -175,13 +174,12 @@ fun ColumnScope.ProvideToolBarIcons(to: String?, hasFacilitySelected: Boolean, h
 }
 
 @Composable
-fun AnalyticsToolbar(
+fun AnalyticsTopBar(
     title: String,
     themeColor: Color,
     launchBottomSheet: () -> Unit,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
-
 ) {
     val scope = rememberCoroutineScope()
     TopAppBar(
