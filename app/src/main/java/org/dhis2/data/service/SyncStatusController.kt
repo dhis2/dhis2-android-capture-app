@@ -51,7 +51,7 @@ class SyncStatusController {
             downloadStatus.emit(
                 downloadStatus.value.copy(
                     running = false,
-                    programSyncStatusMap = progressStatusMap
+                    programSyncStatusMap = progressStatusMap,
                 ),
             )
         }

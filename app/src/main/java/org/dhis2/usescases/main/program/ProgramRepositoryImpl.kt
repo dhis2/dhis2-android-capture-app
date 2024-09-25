@@ -11,7 +11,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
 import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
@@ -146,15 +145,8 @@ internal class ProgramRepositoryImpl(
                     syncStatusData.isProgramDownloading(programModel.uid) ->
                         ProgramDownloadState.DOWNLOADING
 
-                    syncStatusData.wasProgramDownloading(lastSyncStatus, programModel.uid) ->
-                        when (syncStatusData.programSyncStatusMap[programModel.uid]?.syncStatus) {
-                            D2ProgressSyncStatus.SUCCESS -> ProgramDownloadState.DOWNLOADED
-                            D2ProgressSyncStatus.ERROR,
-                            D2ProgressSyncStatus.PARTIAL_ERROR,
-                            -> ProgramDownloadState.ERROR
-
-                            null -> ProgramDownloadState.DOWNLOADED
-                        }
+                    syncStatusData.isProgramDownloaded(programModel.uid) ->
+                        ProgramDownloadState.DOWNLOADED
 
                     else ->
                         ProgramDownloadState.NONE

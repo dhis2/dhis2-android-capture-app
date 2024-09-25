@@ -5,8 +5,8 @@ import android.os.Looper
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import org.dhis2.R
 import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
@@ -138,7 +139,7 @@ fun ProgramList(
                             onItemClick(it)
                         }
                     },
-                    onGranularSyncClick ={
+                    onGranularSyncClick = {
                         if (downLoadState?.running != true) {
                             onGranularSyncClick(it)
                         }
@@ -170,15 +171,15 @@ private fun DownloadMessage(downLoadState: SyncStatusData?) {
 
     AnimatedVisibility(
         visible = visibility,
-        enter = expandIn(
-            expandFrom = Alignment.Center,
+        enter = expandVertically(
+            expandFrom = Alignment.Top,
             animationSpec = tween(
                 easing = {
                     OvershootInterpolator().getInterpolation(it)
                 },
             ),
         ),
-        exit = shrinkOut(shrinkTowards = Alignment.Center),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
         Box(
             Modifier
@@ -219,6 +220,16 @@ private fun DownloadMessage(downLoadState: SyncStatusData?) {
                     backgroundColor = SurfaceColor.Surface,
                 ),
             )
+            if (downLoadState?.running == true) {
+                ProgressIndicator(
+                    modifier = Modifier
+                        .zIndex(1f)
+                        .align(Alignment.CenterEnd)
+                        .padding(Spacing.Spacing8)
+                        .size(Spacing.Spacing24),
+                    type = ProgressIndicatorType.CIRCULAR_SMALL,
+                )
+            }
         }
     }
 }

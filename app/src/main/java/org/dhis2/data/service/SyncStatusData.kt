@@ -19,12 +19,14 @@ data class SyncStatusData(
 
     fun hasDownloadError(uid: String): Boolean {
         return programSyncStatusMap.isNotEmpty() &&
-            programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.ERROR
+            (
+                programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.ERROR ||
+                    programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.PARTIAL_ERROR
+                )
     }
 
-    fun wasProgramDownloading(lastStatus: SyncStatusData?, uid: String): Boolean {
-        return lastStatus?.programSyncStatusMap?.get(uid)?.isComplete == false &&
-            programSyncStatusMap[uid]?.isComplete == true
+    fun isProgramDownloaded(uid: String): Boolean {
+        return programSyncStatusMap[uid]?.isComplete == true && running == true
     }
 
     fun canDisplayMessage() = when {
