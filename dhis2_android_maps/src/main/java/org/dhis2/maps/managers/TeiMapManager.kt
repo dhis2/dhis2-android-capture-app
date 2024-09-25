@@ -199,9 +199,19 @@ class TeiMapManager(
 
     private fun getImagesAndSetSource(featuresWithImages: List<Feature>) {
         featuresWithImages.forEachIndexed { index, feature ->
+            val imageText = feature.getStringProperty(TEI_IMAGE)
+            val image = if (imageText?.startsWith("dhis2_") == true || imageText?.equals("ic_default_icon") == true) {
+                mapView.context.resources.getIdentifier(
+                    imageText,
+                    "drawable",
+                    mapView.context.packageName,
+                )
+            } else {
+                -1
+            }
             Glide.with(mapView.context)
                 .asBitmap()
-                .load(feature.getStringProperty(TEI_IMAGE))
+                .load(if (image != -1) image else feature.getStringProperty(TEI_IMAGE))
                 .transform(CircleCrop())
                 .into(object : CustomTarget<Bitmap>(30.dp, 30.dp) {
                     override fun onResourceReady(

@@ -102,6 +102,8 @@ class MapTeisToFeatureCollection(
             addStringProperty(TEI_UID, mapItemModel.uid)
             if (mapItemModel.isProfilePictureAvailable()) {
                 addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
+            } else if (mapItemModel.isCustomIcon()) {
+                addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
             }
         }?.also { featureMap[TEI]?.add(it) }
     }

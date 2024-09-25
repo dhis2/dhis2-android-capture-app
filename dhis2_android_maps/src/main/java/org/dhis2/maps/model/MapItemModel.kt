@@ -33,6 +33,8 @@ data class MapItemModel(
         avatarProviderConfiguration.takeIf { it is AvatarProviderConfiguration.Metadata }?.let {
             (it as AvatarProviderConfiguration.Metadata).metadataIconData.getIconRes()
         }
+
+    fun getDefaultIconRes() = "ic_default_icon"
 }
 
 data class RelatedInfo(

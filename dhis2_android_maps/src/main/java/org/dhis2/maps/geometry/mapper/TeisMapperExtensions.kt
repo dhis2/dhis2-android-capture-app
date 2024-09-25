@@ -22,6 +22,16 @@ internal fun Feature?.addTeiInfo(mapItemModel: MapItemModel): Feature? {
                 MapTeisToFeatureCollection.TEI_IMAGE,
                 mapItemModel.profilePicturePath(),
             )
+        } else if (mapItemModel.isCustomIcon()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getCustomIconRes(),
+            )
+        } else {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getDefaultIconRes(),
+            )
         }
         if (mapItemModel.relatedInfo?.enrollment != null) {
             addStringProperty(
@@ -103,10 +113,22 @@ fun Feature?.addRelationshipInfo(
             MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
             mapItemModel.relatedInfo?.relationship?.uid,
         )
-        addStringProperty(
-            MapTeisToFeatureCollection.TEI_IMAGE,
-            mapItemModel.profilePicturePath(),
-        )
+        if (mapItemModel.isProfilePictureAvailable()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.profilePicturePath(),
+            )
+        } else if (mapItemModel.isCustomIcon()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getCustomIconRes(),
+            )
+        } else {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getDefaultIconRes(),
+            )
+        }
     }
     return this
 }
@@ -169,10 +191,22 @@ internal fun Feature?.addTeiEventInfo(mapItemModel: MapItemModel): Feature? {
             MapTeisToFeatureCollection.TEI_UID,
             mapItemModel.relatedInfo.event.teiUid,
         )
-        addStringProperty(
-            MapTeisToFeatureCollection.TEI_IMAGE,
-            mapItemModel.profilePicturePath(),
-        )
+        if (mapItemModel.isProfilePictureAvailable()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.profilePicturePath(),
+            )
+        } else if (mapItemModel.isCustomIcon()) {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getCustomIconRes(),
+            )
+        } else {
+            addStringProperty(
+                MapTeisToFeatureCollection.TEI_IMAGE,
+                mapItemModel.getDefaultIconRes(),
+            )
+        }
         addStringProperty(
             MapTeiEventsToFeatureCollection.EVENT_UID,
             mapItemModel.uid,
