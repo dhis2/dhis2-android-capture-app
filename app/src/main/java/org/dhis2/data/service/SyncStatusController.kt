@@ -1,15 +1,15 @@
 package org.dhis2.data.service
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import timber.log.Timber
 
-class SyncStatusController {
+class SyncStatusController(private val dispatcher: DispatcherProvider) {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
     private val downloadStatus = MutableStateFlow(SyncStatusData(isInitialSync = true))
 
@@ -18,7 +18,7 @@ class SyncStatusController {
     fun initDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
         Timber.tag("SYNC").d("INIT DATA SYNC")
         progressStatusMap = programDownload
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 SyncStatusData(
                     running = true,
@@ -37,7 +37,7 @@ class SyncStatusController {
         progressStatusMap = progressStatusMap.toMutableMap().also {
             it.putAll(programDownload)
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(programSyncStatusMap = progressStatusMap),
             )
@@ -47,7 +47,7 @@ class SyncStatusController {
     fun finishSync() {
         Timber.tag("SYNC").d("FINISH DATA SYNC")
         progressStatusMap = progressStatusMap.toMutableMap()
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(
                     running = false,
@@ -65,7 +65,7 @@ class SyncStatusController {
                 entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
             }
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 SyncStatusData(true, programSyncStatusMap = progressStatusMap),
             )
@@ -73,7 +73,7 @@ class SyncStatusController {
     }
 
     fun startDownloadingEvents() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(running = true, downloadingEvents = true),
             )
@@ -89,7 +89,7 @@ class SyncStatusController {
                 entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
             }
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(
                     downloadingEvents = false,
@@ -100,7 +100,7 @@ class SyncStatusController {
     }
 
     fun startDownloadingTracker() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(downloadingTracker = true),
             )
@@ -117,7 +117,7 @@ class SyncStatusController {
                 entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
             }
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(
                     downloadingTracker = false,
@@ -135,7 +135,7 @@ class SyncStatusController {
                 entry.value.copy(isComplete = true, D2ProgressSyncStatus.SUCCESS)
             }
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 SyncStatusData(false, programSyncStatusMap = progressStatusMap),
             )
@@ -144,7 +144,7 @@ class SyncStatusController {
 
     fun initDownloadMedia() {
         Timber.tag("SYNC").d("INIT FILES")
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(downloadingMedia = true),
             )
@@ -152,13 +152,13 @@ class SyncStatusController {
     }
 
     fun restore() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(SyncStatusData())
         }
     }
 
     fun startDownloadingDataSets() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(downloadingDataSetValues = true),
             )
@@ -166,7 +166,7 @@ class SyncStatusController {
     }
 
     fun finishDownloadingDataSets() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(downloadingDataSetValues = false),
             )
