@@ -281,18 +281,8 @@ class DashboardViewModel(
         _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = itemId)
     }
 
-    fun checkIfTeiCanBeTransferred(
-        onResult: (Boolean) -> Unit,
-    ) {
-        viewModelScope.launch(dispatcher.io()) {
-            try {
-                val canTransfer = repository.teiCanBeTransferred()
-                onResult(canTransfer)
-            } catch (ex: Exception) {
-                Timber.e(ex)
-                onResult(false)
-            }
-        }
+    fun checkIfTeiCanBeTransferred(): Boolean {
+        return repository.teiCanBeTransferred()
     }
 
     fun transferTei(

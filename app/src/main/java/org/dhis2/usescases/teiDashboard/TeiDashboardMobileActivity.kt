@@ -651,10 +651,8 @@ class TeiDashboardMobileActivity :
                         )
                     }
 
-                    dashboardViewModel.checkIfTeiCanBeTransferred {
-                        popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
-                            transferTeiItem.isVisible = it
-                        }
+                    popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
+                        transferTeiItem.isVisible = presenter.checkIfTEICanBeDeleted()
                     }
 
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
