@@ -601,7 +601,9 @@ class DashboardRepositoryImpl(
                 .blockingGet()
 
             return orgUnits.size > 1 || orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
-        } else false
+        } else {
+            false
+        }
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {
