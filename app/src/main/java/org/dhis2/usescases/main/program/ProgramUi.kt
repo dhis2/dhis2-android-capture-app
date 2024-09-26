@@ -139,7 +139,7 @@ fun ProgramList(
                             onItemClick(it)
                         }
                     },
-                    onGranularSyncClick = onGranularSyncClick
+                    onGranularSyncClick = onGranularSyncClick,
                 )
             }
         } ?: run {
