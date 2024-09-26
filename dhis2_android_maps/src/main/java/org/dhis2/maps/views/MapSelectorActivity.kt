@@ -14,10 +14,14 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mapbox.android.gestures.MoveGestureDetector
+import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.location.engine.MapboxFusedLocationEngineImpl
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.MapboxMap.OnMoveListener
 import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
@@ -126,19 +130,54 @@ class MapSelectorActivity :
 
     @SuppressLint("MissingPermission")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        mapManager = DefaultMapManager(mapView, MapLocationEngine(this), mapSelectorViewModel.featureType)
+        mapManager =
+            DefaultMapManager(mapView, MapLocationEngine(this), mapSelectorViewModel.featureType)
         mapManager.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
-            it.onMapClickListener = OnMapClickListener(it) { point ->
-                mapSelectorViewModel.updateSelectedGeometry(
-                    SelectedLocation.ManualResult(point.latitude, point.longitude),
-                )
-            }
+            it.onMapClickListener = OnMapClickListener(
+                mapManager = it,
+                onFeatureClicked = { feature ->
+                    mapSelectorViewModel.updateSelectedGeometry(feature)
+                },
+                onPointClicked = { point ->
+                    mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.MANUAL)
+                    mapSelectorViewModel.updateSelectedGeometry(
+                        SelectedLocation.ManualResult(point.latitude, point.longitude),
+                    )
+                },
+            )
+
             mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    with(it.map) {
+                        this?.addOnMoveListener(object : OnMoveListener {
+                            override fun onMoveBegin(detector: MoveGestureDetector) {
+                            }
+
+                            override fun onMove(detector: MoveGestureDetector) {
+                            }
+
+                            override fun onMoveEnd(detector: MoveGestureDetector) {
+                                updateMapVisibleRegion(this@with)
+                            }
+                        })
+                        this?.addOnScaleListener(object : MapboxMap.OnScaleListener {
+                            override fun onScaleBegin(detector: StandardScaleGestureDetector) {
+                            }
+
+                            override fun onScale(detector: StandardScaleGestureDetector) {
+                            }
+
+                            override fun onScaleEnd(detector: StandardScaleGestureDetector) {
+                                updateMapVisibleRegion(this@with)
+                            }
+                        })
+                        updateMapVisibleRegion(this)
+                    }
+
                     mapSelectorViewModel.init()
                     if (ActivityCompat.checkSelfPermission(
                             this,
@@ -159,6 +198,11 @@ class MapSelectorActivity :
                 },
             )
         }
+    }
+
+    private fun updateMapVisibleRegion(mapboxMap: MapboxMap?) {
+        val mapBounds = mapboxMap?.projection?.visibleRegion?.latLngBounds
+        mapSelectorViewModel.updateCurrentVisibleRegion(mapBounds)
     }
 
     private fun onLocationButtonClicked() {

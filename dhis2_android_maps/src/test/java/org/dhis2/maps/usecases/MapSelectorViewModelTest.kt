@@ -5,7 +5,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -149,7 +154,7 @@ class MapSelectorViewModelTest {
         whenever(
             d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet(),
         ) doReturn null
-        whenever(geocoderApi.searchFor("Address", 10)) doReturn mockedLocationItemSearchResults
+        whenever(geocoderApi.searchFor("Address", maxResults = 10)) doReturn mockedLocationItemSearchResults
 
         mapSelectorViewModel.locationItems.test {
             mapSelectorViewModel.init()
@@ -203,6 +208,30 @@ class MapSelectorViewModelTest {
                 ),
             ),
         )
+    }
+
+    @Test
+    fun combineTest() = runTest {
+        val flow1 = MutableStateFlow(1)
+        val flow2 = MutableSharedFlow<String>(1)
+        val flow3 = MutableStateFlow("A")
+        val combinedFlow = combine(
+            flow1.debounce(1000),
+            flow2.onStart {
+                emit("Q")
+            },
+            flow3,
+        ) { a, b, c ->
+            "$a $b $c"
+        }
+
+        combinedFlow.test {
+            assertTrue(awaitItem() == "1 Q A")
+            flow1.emit(2)
+            assertTrue(awaitItem() == "2 Q A")
+            flow2.emit("W")
+            assertTrue(awaitItem() == "2 W A")
+        }
     }
 
     private val mockedLocationItemSearchResults = listOf(
