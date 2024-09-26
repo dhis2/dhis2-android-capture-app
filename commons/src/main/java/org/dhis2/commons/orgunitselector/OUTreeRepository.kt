@@ -8,8 +8,8 @@ class OUTreeRepository(
     private var availableOrgUnits: List<OrganisationUnit> = emptyList()
 
     fun orgUnits(name: String? = null): List<OrganisationUnit> {
-        availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name).sortedBy { it.displayNamePath()?.joinToString(" ") }
-        return availableOrgUnits.order()
+        availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name)
+        return availableOrgUnits.order().sortedBy { it.displayNamePath()?.joinToString(" ") }
     }
 
     fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
@@ -32,6 +32,7 @@ class OUTreeRepository(
 
     private fun List<OrganisationUnit>.order(): List<OrganisationUnit> {
         val listWithParents = this.toMutableList()
+        val minLevel = minOf { it.level() ?: 0 }
         this.forEach { organisationUnit ->
             var isParentInParentList = false
             organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() && it != organisationUnit.uid() }?.forEach { parentUid ->
@@ -41,7 +42,7 @@ class OUTreeRepository(
             }
             if (!isParentInParentList && listWithParents.indexOf(organisationUnit) != 0) {
                 listWithParents.remove(organisationUnit)
-                listWithParents.add(0, organisationUnit)
+                listWithParents.add(0, organisationUnit.toBuilder().level(minLevel).build())
             }
         }
         return listWithParents
