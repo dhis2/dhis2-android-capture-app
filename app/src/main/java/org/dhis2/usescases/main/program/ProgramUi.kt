@@ -139,11 +139,7 @@ fun ProgramList(
                             onItemClick(it)
                         }
                     },
-                    onGranularSyncClick = {
-                        if (downLoadState?.running != true) {
-                            onGranularSyncClick(it)
-                        }
-                    },
+                    onGranularSyncClick = onGranularSyncClick
                 )
             }
         } ?: run {
