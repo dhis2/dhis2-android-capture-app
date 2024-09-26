@@ -92,8 +92,8 @@ abstract class MapManager(
                         map?.addOnMapClickListener(mapClickListener)
                     }
                     markerViewManager = MarkerViewManager(mapView, map)
-                    loadDataForStyle()
                     enableLocationComponent(styleLoaded, onMissingPermission)
+                    loadDataForStyle()
                     onInitializationFinished()
                 }
             }

@@ -11,9 +11,12 @@ class OnMapClickListener(
     private val onPointClicked: (point: LatLng) -> Unit = {},
 ) : MapboxMap.OnMapClickListener {
     override fun onMapClick(point: LatLng): Boolean {
-        return mapManager.markFeatureAsSelected(point, null)?.let { feature ->
+        val feature = mapManager.markFeatureAsSelected(point, null)
+        if (feature != null) {
             onFeatureClicked(feature)
-            true
-        } ?: false
+        } else {
+            onPointClicked(point)
+        }
+        return true
     }
 }
