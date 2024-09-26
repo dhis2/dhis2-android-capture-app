@@ -12,15 +12,27 @@ class SearchLocationManager(
     private val d2: D2,
     private val maxStoredLocations: Int = 20,
 ) {
+    private var cachedResults = emptyList<LocationItemModel.StoredResult>()
+
     private val gson = Gson()
-    suspend fun getAvailableLocations(): List<LocationItemModel.StoredResult> {
-        return d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet()?.value()
-            ?.let { storedValue ->
-                gson.fromJson(
-                    storedValue,
-                    object : TypeToken<List<LocationItemModel.StoredResult>>() {}.type,
-                )
-            } ?: emptyList()
+
+    suspend fun getAvailableLocations(query: String? = null): List<LocationItemModel.StoredResult> {
+        if (cachedResults.isEmpty()) {
+            cachedResults =
+                d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet()?.value()
+                    ?.let { storedValue ->
+                        gson.fromJson(
+                            storedValue,
+                            object : TypeToken<List<LocationItemModel.StoredResult>>() {}.type,
+                        )
+                    } ?: emptyList()
+        }
+
+        return cachedResults.filter { item ->
+            query?.let {
+                item.title.contains(query) or item.subtitle.contains(query)
+            } ?: true
+        }.reversed()
     }
 
     suspend fun storeLocation(location: LocationItemModel) {

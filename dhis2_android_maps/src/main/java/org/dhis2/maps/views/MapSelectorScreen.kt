@@ -1,5 +1,11 @@
 package org.dhis2.maps.views
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,19 +14,27 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Swipe
+import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,6 +44,8 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
+import kotlinx.coroutines.launch
+import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
 import org.dhis2.maps.model.AccuracyRange
@@ -40,8 +56,11 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
+import org.hisp.dhis.mobile.ui.designsystem.component.SearchBarMode
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
+import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun MapSelectorScreen(
@@ -173,6 +192,11 @@ private fun SearchBar(mapSelectorViewModel: MapSelectorViewModel, onBackClicked:
         },
         onSearchLocation = mapSelectorViewModel::onSearchLocation,
         onLocationSelected = mapSelectorViewModel::onLocationSelected,
+        onModeChanged = {
+            if (it == SearchBarMode.SEARCH) {
+                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.SEARCH)
+            }
+        },
     )
 }
 
@@ -181,31 +205,17 @@ private fun LocationInfoContent(
     mapSelectorViewModel: MapSelectorViewModel,
     configurePolygonInfoRecycler: (RecyclerView) -> Unit,
 ) {
-    val selectedLocation by mapSelectorViewModel.selectedLocation.collectAsState(
-        SelectedLocation.None(),
-    )
+    val selectedLocation by mapSelectorViewModel.selectedLocation.collectAsState()
+
+    val captureMode by mapSelectorViewModel.captureMode.collectAsState()
 
     when {
-        mapSelectorViewModel.shouldDisplayAccuracyIndicator(selectedLocation) -> {
-            val accuracy by mapSelectorViewModel.accuracyRange.collectAsState(
-                AccuracyRange.None(),
-            )
-            Box(
-                modifier = Modifier
-                    .height(64.dp)
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                AccuracyIndicator(accuracyRange = accuracy)
-            }
-        }
-
-        mapSelectorViewModel.shouldDisplayManualResult(selectedLocation) -> {
+        captureMode.isNone() && selectedLocation is SelectedLocation.ManualResult -> {
             with(selectedLocation as SelectedLocation.ManualResult) {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
                         searchedTitle = "Selected location",
-                        searchedSubtitle = "Lat: ${selectedLocation.latitude}, Lon: ${selectedLocation.longitude}",
+                        searchedSubtitle = "Lat: ${selectedLocation.latitude.truncate()}, Lon: ${selectedLocation.longitude.truncate()}",
                         searchedLatitude = selectedLocation.latitude,
                         searchedLongitude = selectedLocation.longitude,
                     ),
@@ -220,35 +230,75 @@ private fun LocationInfoContent(
             }
         }
 
-        mapSelectorViewModel.shouldDisplaySearchResult(selectedLocation) -> {
-            with(selectedLocation as SelectedLocation.SearchResult) {
-                LocationItem(
-                    locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = title,
-                        searchedSubtitle = address,
-                        searchedLatitude = latitude,
-                        searchedLongitude = longitude,
-                    ),
-                    icon = {
-                        LocationItemIcon(
-                            icon = Icons.Outlined.Place,
-                            tintedColor = SurfaceColor.Primary,
-                            bgColor = SurfaceColor.PrimaryContainer,
-                        )
-                    },
-                ) { }
+        captureMode.isGps() -> {
+            val accuracy by mapSelectorViewModel.accuracyRange.collectAsState(
+                AccuracyRange.None(),
+            )
+            Box(
+                modifier = Modifier
+                    .height(64.dp)
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                AccuracyIndicator(accuracyRange = accuracy)
             }
         }
 
-        mapSelectorViewModel.shouldDisplayPolygonInfo() -> {
-            AndroidView(
-                factory = { context ->
-                    RecyclerView(context).also {
-                        configurePolygonInfoRecycler(it)
-                    }
+        captureMode.isManual() && selectedLocation is SelectedLocation.ManualResult -> {
+            LocationItem(
+                locationItemModel = LocationItemModel.SearchResult(
+                    searchedTitle = "Selected location",
+                    searchedSubtitle = "Lat: ${selectedLocation.latitude.truncate()}, Lon: ${selectedLocation.longitude.truncate()}",
+                    searchedLatitude = selectedLocation.latitude,
+                    searchedLongitude = selectedLocation.longitude,
+                ),
+                icon = {
+                    LocationItemIcon(
+                        icon = Icons.Outlined.Place,
+                        tintedColor = SurfaceColor.Primary,
+                        bgColor = SurfaceColor.PrimaryContainer,
+                    )
                 },
-                update = {},
-            )
+            ) { }
+        }
+
+        captureMode.isSearch() -> {
+            if (selectedLocation is SelectedLocation.None) {
+                LocationItem(
+                    locationItemModel = LocationItemModel.SearchResult(
+                        searchedTitle = "Select location",
+                        searchedSubtitle = "by clicking on it",
+                        searchedLatitude = 0.0,
+                        searchedLongitude = 0.0,
+                    ),
+                    icon = {
+                        LocationItemIcon(
+                            icon = Icons.Outlined.TouchApp,
+                            tintedColor = TextColor.OnWarningContainer,
+                            bgColor = SurfaceColor.WarningContainer,
+                        )
+                    },
+                ) {
+                }
+            } else if (selectedLocation is SelectedLocation.SearchResult) {
+                with(selectedLocation as SelectedLocation.SearchResult) {
+                    LocationItem(
+                        locationItemModel = LocationItemModel.SearchResult(
+                            searchedTitle = title,
+                            searchedSubtitle = address,
+                            searchedLatitude = latitude,
+                            searchedLongitude = longitude,
+                        ),
+                        icon = {
+                            LocationItemIcon(
+                                icon = Icons.Outlined.Place,
+                                tintedColor = SurfaceColor.Primary,
+                                bgColor = SurfaceColor.PrimaryContainer,
+                            )
+                        },
+                    ) { }
+                }
+            }
         }
     }
 }
@@ -261,12 +311,12 @@ private fun Map(
     onLocationButtonClicked: () -> Unit,
     loadMap: (MapView) -> Unit,
 ) {
-    val mapData by mapSelectorViewModel.featureCollection.collectAsState(null)
+    val mapData by mapSelectorViewModel.mapFeatures.collectAsState()
+    val swipeToChangeLocationVisible by mapSelectorViewModel.swipeToChangeLocationVisible.collectAsState()
+    val searchOnThisAreaVisible by mapSelectorViewModel.searchOnThisAreaVisible.collectAsState()
 
     LaunchedEffect(mapData) {
-        mapData?.let { featureCollection ->
-            onMapDataUpdated(featureCollection)
-        }
+        onMapDataUpdated(mapData)
     }
 
     Box(
@@ -275,16 +325,31 @@ private fun Map(
     ) {
         MapScreen(
             actionButtons = {
-                IconButton(
-                    style = IconButtonStyle.TONAL,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_my_location),
-                            contentDescription = "",
-                        )
-                    },
-                    onClick = onLocationButtonClicked,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spacedBy(8.dp),
+                    verticalAlignment = CenterVertically,
+                ) {
+                    if (swipeToChangeLocationVisible) {
+                        SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
+                    } else {
+                        Box(modifier = Modifier.weight(1f))
+                    }
+
+                    IconButton(
+                        style = IconButtonStyle.TONAL,
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_my_location),
+                                contentDescription = "",
+                            )
+                        },
+                        onClick = {
+                            mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
+                            onLocationButtonClicked()
+                        },
+                    )
+                }
             },
             map = {
                 AndroidView(factory = { context ->
@@ -294,8 +359,79 @@ private fun Map(
                 }) {
                 }
             },
+            extraContent = {
+                AnimatedVisibility(
+                    searchOnThisAreaVisible,
+                    enter = scaleIn(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow,
+                        ),
+                    ),
+                    exit = scaleOut(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow,
+                        ),
+                    ),
+                ) {
+                    SearchInAreaButton(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .offset(y = 60.dp),
+                        mapSelectorViewModel = mapSelectorViewModel,
+                    )
+                }
+            },
         )
     }
+}
+
+@Composable
+private fun SwipeToChangeLocationInfo(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = Color.White.copy(alpha = 0.6f),
+                shape = Shape.Full,
+            )
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = spacedBy(8.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Swipe,
+            contentDescription = "",
+            tint = SurfaceColor.Primary,
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "Swipe to change location",
+            style = MaterialTheme.typography.labelLarge,
+            color = TextColor.OnSurface,
+        )
+    }
+}
+
+@Composable
+private fun SearchInAreaButton(
+    modifier: Modifier = Modifier,
+    mapSelectorViewModel: MapSelectorViewModel,
+) {
+    val scope = rememberCoroutineScope()
+    Button(
+        modifier = modifier,
+        style = ButtonStyle.TONAL,
+        text = "Search on this area",
+        onClick = {
+            scope.launch {
+                mapSelectorViewModel.performLocationSearch()
+            }
+        },
+    )
 }
 
 @Composable
@@ -303,7 +439,9 @@ private fun DoneButton(
     mapSelectorViewModel: MapSelectorViewModel,
     onDoneClicked: (result: String?) -> Unit,
 ) {
+    val enabled by mapSelectorViewModel.canSave.collectAsState(false)
     Button(
+        enabled = enabled,
         modifier = Modifier.fillMaxWidth(),
         style = ButtonStyle.FILLED,
         text = stringResource(R.string.done),
