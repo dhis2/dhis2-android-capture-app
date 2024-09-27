@@ -10,8 +10,6 @@ import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +22,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.maps.extensions.toLatLng
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.AccuracyRange
@@ -32,9 +29,8 @@ import org.dhis2.maps.model.toAccuracyRance
 import org.dhis2.maps.usecases.GeocoderSearch
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.usecases.SearchLocationManager
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.dhis2.maps.utils.CoordinateUtils
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import java.util.UUID
 import com.mapbox.geojson.Geometry as MapGeometry
@@ -67,17 +63,11 @@ class MapSelectorViewModel(
 
     private var currentUserLocation: LatLng? = null
     private var currentUserLocationAccuracy: Float? = null
-    private val _selectedLocation = MutableStateFlow<SelectedLocation>(
-        SelectedLocation.None(),
-    )
+
+    private val initialSelectedLocation: SelectedLocation
+    private val _selectedLocation = MutableStateFlow<SelectedLocation>(SelectedLocation.None())
     val selectedLocation = _selectedLocation.asStateFlow()
-        .onStart {
-            getInitialLocation()
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            SelectedLocation.None(),
-        )
+
     private var _currentFeature = MutableStateFlow<Feature?>(null)
     val canSave = _currentFeature.map { it != null }
         .onStart { emit(initialCoordinates != null) }
@@ -87,12 +77,11 @@ class MapSelectorViewModel(
             initialCoordinates != null,
         )
 
-    /*   private val _featureCollection =
-           MutableStateFlow<FeatureCollection>(FeatureCollection.fromFeatures(emptyList()))*/
-    private val _accuracyRange = MutableSharedFlow<AccuracyRange>()
-    val accuracyRange: Flow<AccuracyRange> = _accuracyRange
+    private val _accuracyRange = MutableStateFlow<AccuracyRange>(AccuracyRange.None())
+    val accuracyRange = _accuracyRange.asStateFlow()
+
     private val _locationItems = MutableStateFlow<List<LocationItemModel>>(emptyList())
-    val locationItems = _locationItems.asStateFlow()
+    val locationItems = _locationItems
         .onStart { loadAvailableLocations() }
         .stateIn(
             viewModelScope,
@@ -135,64 +124,35 @@ class MapSelectorViewModel(
     )
 
     private val _searchLocationQuery = MutableStateFlow("")
-    private val _swipeToChangeLocationVisible = MutableStateFlow(initialCoordinates != null)
-    val swipeToChangeLocationVisible = _swipeToChangeLocationVisible.asStateFlow()
+
     private val _searchOnThisAreaVisible = MutableStateFlow(false)
     val searchOnThisAreaVisible = _searchOnThisAreaVisible.asStateFlow()
 
-    fun init() {
-        registerSearchListener()
+    init {
+        val initialGeometry =
+            CoordinateUtils.geometryFromStringCoordinates(featureType, initialCoordinates)
+        initialGeometry?.let { updateCurrentGeometry(it) }
+        initialSelectedLocation = if (initialGeometry is Point) {
+            SelectedLocation.ManualResult(
+                initialGeometry.latitude(),
+                initialGeometry.longitude(),
+            )
+        } else {
+            SelectedLocation.None()
+        }
+        updateSelectedLocation(initialSelectedLocation)
     }
 
-    private suspend fun getInitialLocation() {
-        val geometry: MapGeometry? = initialCoordinates?.let {
-            val geometry = Geometry.builder()
-                .type(featureType)
-                .coordinates(initialCoordinates)
-                .build()
-            when (featureType) {
-                FeatureType.POINT -> buildPointGeometry(geometry)
-                FeatureType.POLYGON -> buildPolygonGeometry(geometry)
-                else ->
-                    null
-            }
-        }
-        geometry?.let {
-            updateCurrentGeometry(it)
-            if (it is Point) {
-                updateSelectedLocation(
-                    SelectedLocation.ManualResult(
-                        it.latitude(),
-                        it.longitude(),
-                    ),
-                )
-            }
-        }
+    fun init() {
+        registerSearchListener()
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
     }
 
-    private suspend fun updateCurrentGeometry(geometry: MapGeometry) {
-        _currentFeature.emit(Feature.fromGeometry(geometry))
-    }
-
-    private fun buildPointGeometry(geometry: Geometry): MapGeometry {
-        return with(GeometryHelper.getPoint(geometry).toLatLng()) {
-            Point.fromLngLat(longitude, latitude)
-        }
-    }
-
-    private fun buildPolygonGeometry(geometry: Geometry): MapGeometry {
-        return with(GeometryHelper.getPolygon(geometry)) {
-            val polygonPointList = map { polygon ->
-                polygon.map {
-                    Point.fromLngLat(it[0], it[1])
-                }
-            }
-            Polygon.fromLngLats(polygonPointList)
-        }
+    private fun updateCurrentGeometry(geometry: MapGeometry) {
+        _currentFeature.value = Feature.fromGeometry(geometry)
     }
 
     fun updateSelectedGeometry(feature: Feature) {
@@ -206,7 +166,7 @@ class MapSelectorViewModel(
         )
     }
 
-    fun updateSelectedGeometry(point: SelectedLocation) {
+    private fun updateSelectedGeometry(point: SelectedLocation) {
         viewModelScope.launch(dispatchers.io()) {
             if (point !is SelectedLocation.None) {
                 val newPoint = Point.fromLngLat(point.longitude, point.latitude)
@@ -237,17 +197,12 @@ class MapSelectorViewModel(
         }
     }
 
-    private suspend fun updateSelectedLocation(selectedLocation: SelectedLocation) {
-        _selectedLocation.emit(selectedLocation)
-        if (selectedLocation !is SelectedLocation.None) {
-            _swipeToChangeLocationVisible.emit(true)
-        }
+    private fun updateSelectedLocation(selectedLocation: SelectedLocation) {
+        _selectedLocation.value = selectedLocation
     }
 
     private fun onNewLocationAccuracy(accuracy: Float) {
-        viewModelScope.launch(dispatchers.io()) {
-            _accuracyRange.emit(accuracy.toAccuracyRance())
-        }
+        _accuracyRange.value = accuracy.toAccuracyRance()
     }
 
     fun onSaveCurrentGeometry(onValueReady: (String?) -> Unit) {
@@ -290,7 +245,7 @@ class MapSelectorViewModel(
 
     fun addPointToPolygon(polygonPoint: List<Double>) {
         if (featureType == FeatureType.POLYGON) {
-            viewModelScope.launch {
+            viewModelScope.launch(dispatchers.io()) {
                 _currentFeature.value?.let { feature ->
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
@@ -307,7 +262,7 @@ class MapSelectorViewModel(
 
     fun removePointFromPolygon(index: Int) {
         if (featureType == FeatureType.POLYGON) {
-            viewModelScope.launch {
+            viewModelScope.launch(dispatchers.io()) {
                 _currentFeature.value?.let { feature ->
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
@@ -332,31 +287,24 @@ class MapSelectorViewModel(
             geocoder.getLocationFromName(query, _currentVisibleRegion.value) { searchItems ->
                 updateLocationItems(filteredPreviousLocation + searchItems)
             }
-            _searchOnThisAreaVisible.emit(false)
+            updateSearchOnThisAreaVisible(false)
         }
     }
 
-    private fun loadAvailableLocations() {
-        viewModelScope.launch(dispatchers.io()) {
-            _locationItems.emit(
-                searchLocationManager.getAvailableLocations(),
-            )
-        }
+    private suspend fun loadAvailableLocations() {
+        val availableLocations = searchLocationManager.getAvailableLocations()
+        _locationItems.value = availableLocations
     }
 
     private fun updateLocationItems(locationItems: List<LocationItemModel>) {
-        viewModelScope.launch(dispatchers.io()) {
-            if (locationItems.isNotEmpty() && _currentFeature.value != null) {
-                onClearSelectedLocation()
-            }
-            _locationItems.emit(locationItems)
+        if (locationItems.isNotEmpty() && _currentFeature.value != null) {
+            onClearSelectedLocation()
         }
+        _locationItems.value = locationItems
     }
 
     fun onSearchLocation(searchQuery: String) {
-        viewModelScope.launch(dispatchers.io()) {
-            _searchLocationQuery.emit(searchQuery)
-        }
+        _searchLocationQuery.value = searchQuery
     }
 
     fun onLocationSelected(selectedLocation: LocationItemModel) {
@@ -373,15 +321,31 @@ class MapSelectorViewModel(
         }
     }
 
-    fun onClearSelectedLocation() {
-        updateSelectedGeometry(SelectedLocation.None())
+    fun onClearSearchClicked() {
+        setCaptureMode(CaptureMode.NONE)
+        onSearchLocation("")
+    }
+
+    fun onClickedOnMap(point: LatLng) {
+        setCaptureMode(CaptureMode.MANUAL)
+        updateSelectedGeometry(
+            SelectedLocation.ManualResult(point.latitude, point.longitude),
+        )
+    }
+
+    private fun onClearSelectedLocation() {
+        updateSelectedGeometry(
+            if (initialCoordinates != null) {
+                initialSelectedLocation
+            } else {
+                SelectedLocation.None()
+            },
+        )
     }
 
     fun setCaptureMode(selectedMode: CaptureMode) {
-        viewModelScope.launch(dispatchers.io()) {
-            onClearSelectedLocation()
-            _captureMode.emit(selectedMode)
-        }
+        onClearSelectedLocation()
+        _captureMode.value = selectedMode
     }
 
     fun shouldDisplayAccuracyIndicator(selectedLocation: SelectedLocation) =
@@ -399,10 +363,13 @@ class MapSelectorViewModel(
     fun shouldDisplayPolygonInfo() = featureType == FeatureType.POLYGON
 
     fun updateCurrentVisibleRegion(mapBounds: LatLngBounds?) {
-        viewModelScope.launch(dispatchers.io()) {
-            _currentVisibleRegion.emit(mapBounds)
-            val canSearch = _searchLocationQuery.value.isNotBlank()
-            _searchOnThisAreaVisible.emit(canSearch)
-        }
+        _currentVisibleRegion.value = mapBounds
+        updateSearchOnThisAreaVisible()
+    }
+
+    private fun updateSearchOnThisAreaVisible(
+        canSearch: Boolean = _searchLocationQuery.value.isNotBlank(),
+    ) {
+        _searchOnThisAreaVisible.value = canSearch
     }
 }
