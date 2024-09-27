@@ -36,6 +36,8 @@ class NominatimGeocoderApi(
         bottomCornerLongitude: Double?,
         maxResults: Int,
     ): List<LocationItemModel> {
+        if (query.isEmpty()) return emptyList()
+
         val startTime = System.currentTimeMillis()
         var searchResult = search(
             query = query,

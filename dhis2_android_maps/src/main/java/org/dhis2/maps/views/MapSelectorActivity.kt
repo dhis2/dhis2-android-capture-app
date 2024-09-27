@@ -141,10 +141,7 @@ class MapSelectorActivity :
                     mapSelectorViewModel.updateSelectedGeometry(feature)
                 },
                 onPointClicked = { point ->
-                    mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.MANUAL)
-                    mapSelectorViewModel.updateSelectedGeometry(
-                        SelectedLocation.ManualResult(point.latitude, point.longitude),
-                    )
+                    mapSelectorViewModel.onClickedOnMap(point)
                 },
             )
 
