@@ -73,7 +73,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private final PreferenceProvider preferences;
     private final FilterRepository filterRepository;
     private final ResourceManager resourceManager;
-    private final MetadataIconProvider metadataIconProvider;
     private Program selectedProgram;
 
     private final CompositeDisposable compositeDisposable;
@@ -102,8 +101,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                              MatomoAnalyticsController matomoAnalyticsController,
                              SyncStatusController syncStatusController,
                              ResourceManager resourceManager,
-                             ColorUtils colorUtils,
-                             MetadataIconProvider metadataIconProvider) {
+                             ColorUtils colorUtils) {
         this.view = view;
         this.preferences = preferenceProvider;
         this.searchRepository = searchRepository;
@@ -121,7 +119,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.trackedEntityType = teTypeUid;
         this.trackedEntity = searchRepository.getTrackedEntityType(trackedEntityType).blockingFirst();
         this.colorUtils = colorUtils;
-        this.metadataIconProvider = metadataIconProvider;
     }
 
     //-----------------------------------

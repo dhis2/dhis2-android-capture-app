@@ -111,12 +111,11 @@ public class SearchTEModule {
                                                        MatomoAnalyticsController matomoAnalyticsController,
                                                        SyncStatusController syncStatusController,
                                                        ResourceManager resourceManager,
-                                                       ColorUtils colorUtils,
-                                                       MetadataIconProvider metadataIconProvider) {
+                                                       ColorUtils colorUtils) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,
                 analyticsHelper, initialProgram, teiType, preferenceProvider,
                 filterRepository, new DisableHomeFiltersFromSettingsApp(),
-                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils, metadataIconProvider);
+                matomoAnalyticsController, syncStatusController, resourceManager, colorUtils);
     }
 
     @Provides
