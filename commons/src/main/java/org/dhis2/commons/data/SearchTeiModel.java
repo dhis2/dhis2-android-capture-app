@@ -197,6 +197,11 @@ public class SearchTeiModel implements CarouselItemModel {
         }
     }
 
+    public Boolean isMetadataIconDataAvailable(@Nullable String programUid) {
+        MetadataIconData iconData = metadataIconDataMap.get(programUid);
+        return !iconData.getIconRes().isEmpty();
+    }
+
     public void setOverdueDate(Date dateToShow) {
         this.overdueDate = dateToShow;
     }
