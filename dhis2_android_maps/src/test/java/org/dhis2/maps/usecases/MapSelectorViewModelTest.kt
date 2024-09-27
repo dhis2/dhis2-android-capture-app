@@ -3,14 +3,11 @@ package org.dhis2.maps.usecases
 import android.location.Geocoder
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -55,35 +52,9 @@ class MapSelectorViewModelTest {
 
     private val searchLocationManager = SearchLocationManager(d2)
 
-    private val mapSelectorViewModel = MapSelectorViewModel(
-        featureType = FeatureType.POINT,
-        initialCoordinates = "[1.0,-1.0]",
-        mapStyleConfig = mapStyleConfiguration,
-        geocoder = geocoder,
-        searchLocationManager = searchLocationManager,
-        dispatchers = object : DispatcherProvider {
-            override fun io() = testingDispatcher
+    private lateinit var mapSelectorViewModel: MapSelectorViewModel
 
-            override fun computation() = testingDispatcher
-
-            override fun ui() = testingDispatcher
-        },
-    )
-
-    private val mapSelectorViewModelNoInitialGeometry = MapSelectorViewModel(
-        featureType = FeatureType.POINT,
-        initialCoordinates = null,
-        mapStyleConfig = mapStyleConfiguration,
-        geocoder = geocoder,
-        searchLocationManager = searchLocationManager,
-        dispatchers = object : DispatcherProvider {
-            override fun io() = testingDispatcher
-
-            override fun computation() = testingDispatcher
-
-            override fun ui() = testingDispatcher
-        },
-    )
+    private lateinit var mapSelectorViewModelNoInitialGeometry: MapSelectorViewModel
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -92,12 +63,46 @@ class MapSelectorViewModelTest {
         whenever(
             d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet(),
         ) doReturn null
+
+        mapSelectorViewModel = MapSelectorViewModel(
+            featureType = FeatureType.POINT,
+            initialCoordinates = "[1.0,-1.0]",
+            mapStyleConfig = mapStyleConfiguration,
+            geocoder = geocoder,
+            searchLocationManager = searchLocationManager,
+            dispatchers = object : DispatcherProvider {
+                override fun io() = testingDispatcher
+
+                override fun computation() = testingDispatcher
+
+                override fun ui() = testingDispatcher
+            },
+        )
+
+        mapSelectorViewModelNoInitialGeometry = MapSelectorViewModel(
+            featureType = FeatureType.POINT,
+            initialCoordinates = null,
+            mapStyleConfig = mapStyleConfiguration,
+            geocoder = geocoder,
+            searchLocationManager = searchLocationManager,
+            dispatchers = object : DispatcherProvider {
+                override fun io() = testingDispatcher
+
+                override fun computation() = testingDispatcher
+
+                override fun ui() = testingDispatcher
+            },
+        )
     }
 
     @Test
     fun shouldInit() = runTest {
-        mapSelectorViewModel.init()
-        assertTrue(mapSelectorViewModel.featureCollection.firstOrNull() != null)
+        mapSelectorViewModel.mapFeatures.test {
+            val initialItem = awaitItem()
+            assertTrue(initialItem.features()?.isEmpty() == true)
+            val item = awaitItem()
+            assertTrue(item.features()?.isNotEmpty() == true)
+        }
     }
 
     @Test
@@ -125,15 +130,18 @@ class MapSelectorViewModelTest {
     }
 
     @Test
-    fun shouldUpdateSelectedLocation() = runTest {
-        mapSelectorViewModel.updateSelectedGeometry(mockedSearchResult)
-        assertTrue(mapSelectorViewModel.featureCollection.firstOrNull() != null)
-        assertTrue(mapSelectorViewModel.selectedLocation.firstOrNull() == mockedSearchResult)
-    }
-
-    @Test
     fun shouldSaveSelectedLocation() = runTest {
-        mapSelectorViewModel.updateSelectedGeometry(mockedSearchResult)
+        mapSelectorViewModel.updateSelectedGeometry(
+            Feature.fromGeometry(
+                Point.fromLngLat(
+                    mockedSearchResult.longitude,
+                    mockedSearchResult.latitude,
+                ),
+            ).also {
+                it.addStringProperty("title", mockedSearchResult.title)
+                it.addStringProperty("subtitle", mockedSearchResult.address)
+            },
+        )
         mapSelectorViewModel.onSaveCurrentGeometry { coordinates ->
             assertTrue(coordinates == "[2.0,1.0]")
         }
@@ -142,7 +150,8 @@ class MapSelectorViewModelTest {
     @Test
     fun shouldSetNewLocationFromGps() = runTest {
         mapSelectorViewModelNoInitialGeometry.accuracyRange.test {
-            mapSelectorViewModelNoInitialGeometry.init()
+            val initialItem = awaitItem()
+            assertTrue(initialItem is AccuracyRange.None)
             mapSelectorViewModelNoInitialGeometry.onNewLocation(mockedGpsResult)
             val item = awaitItem()
             assertTrue(item == AccuracyRange.Good(10))
@@ -154,12 +163,18 @@ class MapSelectorViewModelTest {
         whenever(
             d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet(),
         ) doReturn null
-        whenever(geocoderApi.searchFor("Address", maxResults = 10)) doReturn mockedLocationItemSearchResults
+        whenever(
+            geocoderApi.searchFor(
+                "Address",
+                maxResults = 10,
+            ),
+        ) doReturn mockedLocationItemSearchResults
 
         mapSelectorViewModel.locationItems.test {
             mapSelectorViewModel.init()
             val item = awaitItem()
             assertTrue(item.isEmpty())
+            mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.SEARCH)
             mapSelectorViewModel.onSearchLocation("Address")
             val item2 = awaitItem()
             assertTrue(item2 == mockedLocationItemSearchResults)
@@ -178,12 +193,16 @@ class MapSelectorViewModelTest {
 
     @Test
     fun shouldClearSelectedLocation() = runTest {
-        mapSelectorViewModel.onClearSelectedLocation()
-        assertTrue(mapSelectorViewModel.selectedLocation.firstOrNull() is SelectedLocation.None)
+        mapSelectorViewModel.selectedLocation.test {
+            mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.NONE)
+            val result = awaitItem()
+            assertTrue(result is SelectedLocation.ManualResult)
+        }
     }
 
     @Test
     fun shouldDisplayAccuracyIndicator() = runTest {
+        mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
         assertTrue(mapSelectorViewModel.shouldDisplayAccuracyIndicator(SelectedLocation.None()))
     }
 
@@ -211,27 +230,39 @@ class MapSelectorViewModelTest {
     }
 
     @Test
-    fun combineTest() = runTest {
-        val flow1 = MutableStateFlow(1)
-        val flow2 = MutableSharedFlow<String>(1)
-        val flow3 = MutableStateFlow("A")
-        val combinedFlow = combine(
-            flow1.debounce(1000),
-            flow2.onStart {
-                emit("Q")
-            },
-            flow3,
-        ) { a, b, c ->
-            "$a $b $c"
+    fun shouldClearSearch() = runTest {
+        with(mapSelectorViewModel) {
+            onClearSearchClicked()
+            assertTrue(captureMode.value == MapSelectorViewModel.CaptureMode.NONE)
+            assertTrue(selectedLocation.value is SelectedLocation.ManualResult)
         }
 
-        combinedFlow.test {
-            assertTrue(awaitItem() == "1 Q A")
-            flow1.emit(2)
-            assertTrue(awaitItem() == "2 Q A")
-            flow2.emit("W")
-            assertTrue(awaitItem() == "2 W A")
+        with(mapSelectorViewModelNoInitialGeometry) {
+            onClearSearchClicked()
+            assertTrue(captureMode.value == MapSelectorViewModel.CaptureMode.NONE)
+            assertTrue(selectedLocation.value is SelectedLocation.None)
         }
+    }
+
+    @Test
+    fun shouldSetValueFromMapClick() = runTest {
+        with(mapSelectorViewModel) {
+            onClickedOnMap(mockedGpsResult.asLatLng())
+            assertTrue(captureMode.value == MapSelectorViewModel.CaptureMode.MANUAL)
+            assertTrue(selectedLocation.value is SelectedLocation.ManualResult)
+        }
+    }
+
+    @Test
+    fun shouldNotDisplayPolygonInfo() {
+        assertTrue(!mapSelectorViewModel.shouldDisplayPolygonInfo())
+    }
+
+    @Test
+    fun shouldDisplaySearchOnThisArea() = runTest {
+        mapSelectorViewModel.onSearchLocation("Hospital")
+        mapSelectorViewModel.updateCurrentVisibleRegion(LatLngBounds.world())
+        assertTrue(mapSelectorViewModel.searchOnThisAreaVisible.value)
     }
 
     private val mockedLocationItemSearchResults = listOf(

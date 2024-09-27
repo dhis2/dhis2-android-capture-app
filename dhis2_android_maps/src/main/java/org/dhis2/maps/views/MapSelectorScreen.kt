@@ -187,9 +187,7 @@ private fun SearchBar(mapSelectorViewModel: MapSelectorViewModel, onBackClicked:
     LocationBar(
         currentResults = locationItems,
         onBackClicked = onBackClicked,
-        onClearLocation = {
-            mapSelectorViewModel.onClearSelectedLocation()
-        },
+        onClearLocation = mapSelectorViewModel::onClearSearchClicked,
         onSearchLocation = mapSelectorViewModel::onSearchLocation,
         onLocationSelected = mapSelectorViewModel::onLocationSelected,
         onModeChanged = {
@@ -312,7 +310,6 @@ private fun Map(
     loadMap: (MapView) -> Unit,
 ) {
     val mapData by mapSelectorViewModel.mapFeatures.collectAsState()
-    val swipeToChangeLocationVisible by mapSelectorViewModel.swipeToChangeLocationVisible.collectAsState()
     val searchOnThisAreaVisible by mapSelectorViewModel.searchOnThisAreaVisible.collectAsState()
 
     LaunchedEffect(mapData) {
@@ -330,11 +327,7 @@ private fun Map(
                     horizontalArrangement = spacedBy(8.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-                    if (swipeToChangeLocationVisible) {
-                        SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
-                    } else {
-                        Box(modifier = Modifier.weight(1f))
-                    }
+                    SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
 
                     IconButton(
                         style = IconButtonStyle.TONAL,
@@ -361,7 +354,10 @@ private fun Map(
             },
             extraContent = {
                 AnimatedVisibility(
-                    searchOnThisAreaVisible,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = 60.dp),
+                    visible = searchOnThisAreaVisible,
                     enter = scaleIn(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
@@ -376,9 +372,6 @@ private fun Map(
                     ),
                 ) {
                     SearchInAreaButton(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .offset(y = 60.dp),
                         mapSelectorViewModel = mapSelectorViewModel,
                     )
                 }
@@ -418,12 +411,10 @@ private fun SwipeToChangeLocationInfo(
 
 @Composable
 private fun SearchInAreaButton(
-    modifier: Modifier = Modifier,
     mapSelectorViewModel: MapSelectorViewModel,
 ) {
     val scope = rememberCoroutineScope()
     Button(
-        modifier = modifier,
         style = ButtonStyle.TONAL,
         text = "Search on this area",
         onClick = {
