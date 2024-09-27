@@ -413,11 +413,6 @@ class SyncPresenterImpl(
                     d2.trackedEntityModule().trackedEntityInstanceDownloader()
                         .byProgramUid(uid)
                         .download()
-//                        .flatMap {
-//                            d2.fileResourceModule().fileResourceDownloader()
-//                                .byProgramUid().eq(uid)
-//                                .download()
-//                        }
                 } else {
                     Completable.fromObservable(
                         d2.eventModule().events().byProgramUid().eq(uid).upload(),
