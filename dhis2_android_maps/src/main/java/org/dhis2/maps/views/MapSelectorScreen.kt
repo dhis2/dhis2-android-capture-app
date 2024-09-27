@@ -208,6 +208,15 @@ private fun LocationInfoContent(
     val captureMode by mapSelectorViewModel.captureMode.collectAsState()
 
     when {
+        mapSelectorViewModel.shouldDisplayPolygonInfo() -> {
+            AndroidView(
+                factory = { context ->
+                    RecyclerView(context)
+                },
+                update = configurePolygonInfoRecycler,
+            )
+        }
+
         captureMode.isNone() && selectedLocation is SelectedLocation.ManualResult -> {
             with(selectedLocation as SelectedLocation.ManualResult) {
                 LocationItem(
