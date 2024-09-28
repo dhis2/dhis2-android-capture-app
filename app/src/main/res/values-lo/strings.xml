@@ -391,7 +391,6 @@
     <string name="tuto_main_10">Lອອກຈາກໂປຣແກຣມເພື່ອປ່ຽນຜູ້ໃຊ້ຫຼືທີ່ຢູ່ຂອງຄອມພີວເຕີໜ່ວຍແມ່. ທ່ານຈະສາມາດເຂົ້າໂປຣແກຣມຄືນໄດ້ເຖີງແມ່ນວ່າບໍ່ມີການເຊື່ອມຕໍ່ອີນເຕີແນັດກໍ່ຕາມ.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">ສາຍພົວພັນ</string>
-    <string name="empty_relationships">ບໍ່ມີຄວາມສຳພັນ, ຄລິກ \"+\" ເພື່ອເພີ່ມໃໝ່</string>
     <string name="empty_tei_add">ບໍ່ມີເຫດການທີ່ລົງທະບຽນໃວ້, ຄລິກ \"+\" ເພື່ອເພີ່ມເຫດການໃໝ່</string>
     <string name="empty_tei_no_add">ບໍໍມີເຫດການທີ່ລົງທະບຽນ</string>
     <string name="qr_data_values">Data values</string>

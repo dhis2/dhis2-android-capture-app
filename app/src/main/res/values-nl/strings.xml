@@ -407,7 +407,6 @@
     <string name="tuto_main_10">Log uit om gebruiker of server te wijzigen. U kunt opnieuw inloggen, ook als er geen internetverbinding is.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relaties</string>
-    <string name="empty_relationships">Er zijn geen relaties, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="empty_tei_add">Er zijn geen evenementen geregistreerd, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="empty_tei_no_add">Er zijn geen evenementen geregistreerd.</string>
     <string name="qr_data_values">Gegevens waarden</string>

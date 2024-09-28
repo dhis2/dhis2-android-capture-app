@@ -408,7 +408,6 @@
     <string name="tuto_main_10">Odhlaste se a změňte uživatele nebo server. Budete se moci znovu přihlásit, i když nemáte připojení k internetu.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">vztahy</string>
-    <string name="empty_relationships">Neexistují žádné vztahy, kliknutím na „+“ přidáte nový.</string>
     <string name="empty_tei_add">Nejsou zaregistrovány žádné události, kliknutím na „+“ přidáte novou.</string>
     <string name="empty_tei_no_add">Nejsou registrovány žádné události.</string>
     <string name="qr_data_values">Datové hodnoty</string>

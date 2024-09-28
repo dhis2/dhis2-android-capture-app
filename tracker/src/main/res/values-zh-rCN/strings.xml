@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">还没有现存的关系。点击“+”添加一个新的</string>
+</resources>

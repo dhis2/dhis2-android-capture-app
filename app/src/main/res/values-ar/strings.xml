@@ -412,7 +412,6 @@
     <string name="tuto_main_10">قم بتسجيل الخروج لتغيير المستخدم أو الخادم. ستتمكن من تسجيل الدخول مرة أخرى حتى إذا لم يكن هناك اتصال بالإنترنت.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">العلاقات</string>
-    <string name="empty_relationships">لا توجد علاقات ، انقر فوق \"+\" لإضافة علاقة جديدة.</string>
     <string name="empty_tei_add">لا توجد أحداث مسجلة ، انقر على \"+\" لإضافة حدث جديد.</string>
     <string name="empty_tei_no_add">لا توجد أحداث مسجلة</string>
     <string name="qr_data_values">قيم البيانات</string>

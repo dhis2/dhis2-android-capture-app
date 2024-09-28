@@ -398,7 +398,6 @@
     <string name="tuto_main_10">Фойдаланувчини ёки серверни ўзгартириш учун тизимдан чиқинг. Интернетда уланиш бўлмаса ҳам, сиз яна тизимга киришингиз мумкин.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">ўзаро алоқалар</string>
-    <string name="empty_relationships">Ўзаро алоқалар мавжуд эмас, янгисини қўшиш учун \"+\" тугмасини босинг.</string>
     <string name="empty_tei_add">Ҳеч қандай ҳодиса/тадбир рўйхатдан ўтказилмаган, янгисини қўшиш учун \"+\" тугмасини босинг.</string>
     <string name="empty_tei_no_add">Ҳеч қандай ҳодиса/тадбир рўйхатдан ўтказилмаган.</string>
     <string name="qr_data_values">Маълумотларнинг қийматлари</string>
