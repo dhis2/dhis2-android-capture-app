@@ -400,7 +400,6 @@
     <string name="tuto_main_10">Đăng xuất để thay đổi tên đăng nhập hoặc máy chủ. Bạn vẫn sẽ có thể đăng nhập lại thậm chí khi không có kết nối mạng.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">mối quan hệ</string>
-    <string name="empty_relationships">Không có mối quan hệ, bấm vào \"+\" để thêm một mối quan hệ.</string>
     <string name="empty_tei_add">Không có sự kiện đã đăng ký, bấm vào \"+\" để thêm một sự kiện mới.</string>
     <string name="empty_tei_no_add">Không có sự kiện được đăng ký</string>
     <string name="qr_data_values">Giá trị dữ liệu</string>

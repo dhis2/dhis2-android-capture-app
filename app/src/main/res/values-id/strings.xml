@@ -398,7 +398,6 @@
     <string name="tuto_main_10">Logout untuk mengubah pengguna atau server. Anda akan dapat masuk kembali meskipun tidak ada koneksi internet.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">hubungan</string>
-    <string name="empty_relationships">Tidak ada hubungan, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="empty_tei_no_add">Tidak ada even yang terdaftar.</string>
     <string name="qr_data_values">Nilai data</string>

@@ -404,7 +404,6 @@
     <string name="tuto_main_10">Déconnectez-vous pour changer d\'utilisateur ou de serveur. Vous pourrez vous reconnecter même s\'il n\'y a pas de connexion internet</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">Relation</string>
-    <string name="empty_relationships">Il n\'y a pas de relations, cliquez \"+\" pour en ajouter une nouvelle.</string>
     <string name="empty_tei_add">Aucun évènement n\'a été enregistré, cliquez \"+\" pour en ajouter un nouveau.</string>
     <string name="empty_tei_no_add">Aucun évènement enregistré.</string>
     <string name="qr_data_values">Valeurs de données</string>
