@@ -434,7 +434,6 @@
     <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
-    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
     <string name="empty_tei_add">There are no events registered, click "+" to add a new one.</string>
     <string name="empty_tei_no_add">There are no events registered.</string>
     <string name="qr_data_values">Data values</string>

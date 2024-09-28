@@ -1,10 +1,11 @@
-package org.dhis2.usescases.teiDashboard.ui
+package org.dhis2.tracker.relationships
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,12 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.commons.R
+import org.dhis2.tracker.R
 
 @Composable
 fun NoRelationships() {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .background(Color.White)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -40,7 +42,7 @@ fun NoRelationships() {
                 .width(139.dp)
                 .height(125.dp),
             painter = painterResource(id = R.drawable.no_relationships),
-            contentDescription = stringResource(id = org.dhis2.R.string.empty_relationships),
+            contentDescription = stringResource(id = R.string.empty_relationships),
         )
         Spacer(
             modifier = Modifier
@@ -48,7 +50,7 @@ fun NoRelationships() {
                 .fillMaxWidth(),
         )
         Text(
-            text = stringResource(id = org.dhis2.R.string.empty_relationships),
+            text = stringResource(id = R.string.empty_relationships),
             style = TextStyle(
                 fontSize = 17.sp,
                 lineHeight = 24.sp,
