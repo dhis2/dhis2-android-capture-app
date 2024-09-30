@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.geometry.getPointLatLng
+import org.dhis2.maps.geometry.getPolygonPoints
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.toAccuracyRance
@@ -32,7 +34,6 @@ import org.dhis2.maps.usecases.SearchLocationManager
 import org.dhis2.maps.utils.CoordinateUtils
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
-import java.util.UUID
 import com.mapbox.geojson.Geometry as MapGeometry
 
 class MapSelectorViewModel(
@@ -96,12 +97,16 @@ class MapSelectorViewModel(
         _locationItems,
         _captureMode,
     ) { currentFeature, locationItems, captureMode ->
-        val selectedFeatures = currentFeature?.let { feature ->
-            feature.addStringProperty("id", UUID.randomUUID().toString())
-            feature.addBooleanProperty("places", true)
-            feature.addBooleanProperty("selected", true)
-            listOf(feature)
-        } ?: emptyList()
+        val selectedFeatures = buildList {
+            currentFeature?.withPlacesProperties(true)?.let {
+                add(it)
+            }
+        }
+
+        val polygonPointFeatures = currentFeature?.getPolygonPoints() ?: emptyList()
+        polygonPointFeatures.forEach { feature ->
+            feature.withPlacesProperties()
+        }
 
         val locationFeatures = locationItems
             .takeIf { captureMode.isSearch() }
@@ -109,14 +114,10 @@ class MapSelectorViewModel(
                 Feature.fromGeometry(
                     Point.fromLngLat(it.longitude, it.latitude),
                 ).also { feature ->
-                    feature.addStringProperty("id", UUID.randomUUID().toString())
-                    feature.addBooleanProperty("places", true)
-                    feature.addBooleanProperty("selected", false)
-                    feature.addStringProperty("title", it.title)
-                    feature.addStringProperty("subtitle", it.subtitle)
+                    feature.withPlacesProperties(title = it.title, subtitle = it.subtitle)
                 }
             } ?: emptyList()
-        FeatureCollection.fromFeatures(selectedFeatures + locationFeatures)
+        FeatureCollection.fromFeatures(selectedFeatures + polygonPointFeatures + locationFeatures)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000L),
@@ -344,7 +345,7 @@ class MapSelectorViewModel(
     }
 
     fun setCaptureMode(selectedMode: CaptureMode) {
-        onClearSelectedLocation()
+//        onClearSelectedLocation()
         _captureMode.value = selectedMode
     }
 

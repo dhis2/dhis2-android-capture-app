@@ -2,17 +2,12 @@ package org.dhis2.maps.managers
 
 import android.graphics.RectF
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.MapLayerManager
@@ -99,32 +94,10 @@ class DefaultMapManager(
     }
 
     override fun setLayer() {
-        if (featureType == FeatureType.POINT && style?.getLayer(PLACES_LAYER_ID) == null) {
+        if (style?.getLayer(PLACES_LAYER_ID) == null) {
             style?.let {
                 mapLayerManager.mapLayers[PLACES_SOURCE_ID] = PlacesMapLayer(it)
             }
-        }
-
-        if (featureType == FeatureType.POLYGON && style?.getLayer(LAYER_ID) == null) {
-            style?.addLayer(
-                SymbolLayer(LAYER_ID, SOURCE_ID)
-                    .withProperties(
-                        PropertyFactory.iconImage(POLYGON_ICON_ID),
-                    ),
-            )
-
-            style?.addLayerBelow(
-                FillLayer(FILL_LAYER_ID, SOURCE_ID)
-                    .withProperties(
-                        fillColor(
-                            ContextCompat.getColor(
-                                mapView.context,
-                                R.color.green_7ed,
-                            ),
-                        ),
-                    ),
-                "settlement-label",
-            )
         }
     }
 

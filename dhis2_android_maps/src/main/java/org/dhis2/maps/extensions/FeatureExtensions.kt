@@ -5,6 +5,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollect
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import java.util.UUID
 
 fun Feature.source(): FeatureSource? {
     return if (hasProperty(PROPERTY_FEATURE_SOURCE)) {
@@ -38,4 +39,12 @@ fun Feature.toStringProperty(): String? = when (source()) {
             ?: getStringProperty(MapTeiEventsToFeatureCollection.EVENT_UID)
 
     null -> null
+}
+
+fun Feature.withPlacesProperties(selected: Boolean = false, title: String? = null, subtitle: String? = null) = this.apply {
+    addStringProperty("id", UUID.randomUUID().toString())
+    addBooleanProperty("places", true)
+    addBooleanProperty("selected", selected)
+    title?.let { addStringProperty("title", it) }
+    subtitle?.let { addStringProperty("subtitle", it) }
 }
