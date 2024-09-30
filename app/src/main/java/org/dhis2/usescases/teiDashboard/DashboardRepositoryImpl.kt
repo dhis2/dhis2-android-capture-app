@@ -594,16 +594,21 @@ class DashboardRepositoryImpl(
     }
 
     override fun teiCanBeTransferred(): Boolean {
-        return if (programUid != null) {
-            val orgUnits = d2.organisationUnitModule().organisationUnits()
-                .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
-                .byProgramUids(listOf(programUid))
-                .blockingGet()
-
-            return orgUnits.size > 1 || orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
-        } else {
-            false
+        if (programUid == null) {
+            return false
         }
+
+        val orgUnits = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+        if (orgUnits.isEmpty()) {
+            return false
+        }
+
+        return orgUnits.size > 1 ||
+            orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {
