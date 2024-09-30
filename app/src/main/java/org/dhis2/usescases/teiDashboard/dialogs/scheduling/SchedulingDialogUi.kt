@@ -85,6 +85,7 @@ fun SchedulingDialogUi(
                 scheduleNew = scheduleNew,
                 date = date,
                 catCombo = catCombo,
+                selectedProgramStage = selectedProgramStage,
                 viewModel = viewModel,
                 onDismiss = onDismiss,
             )
@@ -131,6 +132,7 @@ private fun ButtonBlock(
     scheduleNew: Boolean,
     date: EventDate,
     catCombo: EventCatCombo,
+    selectedProgramStage: ProgramStage?,
     viewModel: SchedulingViewModel,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
@@ -158,11 +160,12 @@ private fun ButtonBlock(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    val eventLabel = selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
                         enabled = !date.dateValue.isNullOrEmpty(),
-                        text = stringResource(R.string.enter_event),
+                        text = stringResource(R.string.enter_event, eventLabel),
                         onClick = {
                             viewModel.enterEvent(launchMode)
                         },
