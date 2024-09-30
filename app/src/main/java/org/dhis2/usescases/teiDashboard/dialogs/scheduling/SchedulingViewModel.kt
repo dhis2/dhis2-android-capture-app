@@ -78,7 +78,10 @@ class SchedulingViewModel(
                 null
             } else {
                 val eventDate = _eventDate.value.currentDate ?: return null
-                eventDate.toOverdueOrScheduledUiText(resourceManager)
+                eventDate.toOverdueOrScheduledUiText(
+                    resourceManager = resourceManager,
+                    isScheduling = true,
+                )
             }
         }
 
