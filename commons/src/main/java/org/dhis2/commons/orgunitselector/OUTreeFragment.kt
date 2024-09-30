@@ -134,6 +134,12 @@ class OUTreeFragment : BottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val list by viewmodel.treeNodes.collectAsState()
+                val filteredList = model.hideOrgUnits?.let { filterUnits ->
+                    list.filterNot { orgUnit ->
+                        filterUnits.any { filterUnit -> filterUnit.uid() == orgUnit.uid }
+                    }
+                } ?: list
+
                 OrgBottomSheet(
                     title = model.title,
                     subtitle = model.subtitle,
@@ -141,7 +147,7 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                     doneButtonText = model.doneButtonText,
                     doneButtonIcon = model.doneButtonIcon,
                     clearAllButtonText = stringResource(id = R.string.action_clear_all),
-                    orgTreeItems = list,
+                    orgTreeItems = filteredList,
                     onSearch = viewmodel::searchByName,
                     onDismiss = { cancelOuSelection() },
                     onItemClick = viewmodel::onOpenChildren,
@@ -174,4 +180,5 @@ data class OUTreeModel(
     val doneButtonIcon: ImageVector = Icons.Filled.Check,
     val doneButtonText: String? = null,
     val showClearButton: Boolean = true,
+    val hideOrgUnits: List<OrganisationUnit>? = null,
 )

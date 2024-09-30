@@ -652,7 +652,7 @@ class TeiDashboardMobileActivity :
                     }
 
                     popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
-                        transferTeiItem.isVisible = presenter.checkIfTEICanBeDeleted()
+                        transferTeiItem.isVisible = dashboardViewModel.checkIfTeiCanBeTransferred()
                     }
 
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
@@ -765,19 +765,21 @@ class TeiDashboardMobileActivity :
     override fun showOrgUnitSelector(
         programUid: String,
     ) {
+        val ownerOrgUnit = dashboardViewModel.dashboardModel.value?.ownerOrgUnit
         OUTreeFragment.Builder()
             .singleSelection()
             .withModel(
                 OUTreeModel(
-                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType),
+                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType.lowercase()),
                     subtitle = getString(
                         R.string.transfer_tei_org_sheet_description,
-                        dashboardViewModel.dashboardModel.value?.ownerOrgUnit?.displayName(),
+                        ownerOrgUnit?.displayName(),
                     ),
                     headerAlignment = TextAlign.Start,
                     showClearButton = false,
                     doneButtonText = getString(R.string.transfer),
                     doneButtonIcon = Icons.Outlined.MoveDown,
+                    hideOrgUnits = ownerOrgUnit?.let { listOf(it) },
                 ),
             )
             .orgUnitScope(
