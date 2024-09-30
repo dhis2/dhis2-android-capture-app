@@ -10,15 +10,22 @@ import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
-import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -39,7 +46,6 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OUTreeModel
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -66,6 +72,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
+import org.dhis2.usescases.teiDashboard.ui.EnrollmentMenuItem
+import org.dhis2.usescases.teiDashboard.ui.getEnrollmentMenuList
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.CLICK
@@ -79,8 +87,12 @@ import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import javax.inject.Inject
 
 class TeiDashboardMobileActivity :
@@ -204,6 +216,7 @@ class TeiDashboardMobileActivity :
         observeProgressBar()
         observeDashboardModel()
         showLoadingProgress(false)
+        setupMoreMenu(binding.moreOptions)
     }
 
     private fun observeErrorMessages() {
@@ -219,7 +232,6 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setSyncButtonListener() {
-        binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
@@ -398,11 +410,9 @@ class TeiDashboardMobileActivity :
             if (item == TEIDashboardItems.DETAILS && programUid != null) {
                 binding.toolbarTitle?.visibility = View.GONE
                 binding.editButton?.visibility = View.VISIBLE
-                binding.syncButton.visibility = View.GONE
             } else {
                 binding.toolbarTitle?.visibility = View.VISIBLE
                 binding.editButton?.visibility = View.GONE
-                binding.syncButton.visibility = View.VISIBLE
             }
         }
     }
@@ -616,118 +626,6 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    override fun showMoreOptions(view: View?) {
-        val menu: Int = getMenuId()
-
-        AppMenuHelper.Builder()
-            .anchor(view!!)
-            .menu(this, menu)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                val deleteTeiItem = popupMenu.menu.findItem(R.id.deleteTei)
-                val showDeleteTeiItem = presenter.checkIfTEICanBeDeleted()
-                if (showDeleteTeiItem) {
-                    deleteTeiItem.isVisible = true
-                    deleteTeiItem.title =
-                        String.format(deleteTeiItem.title.toString(), presenter.teType)
-                } else {
-                    deleteTeiItem.isVisible = false
-                }
-
-                if (enrollmentUid != null) {
-                    popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
-                        deleteEnrollmentItem.isVisible =
-                            presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
-                        deleteEnrollmentItem.title = resourceManager.formatWithEnrollmentLabel(
-                            programUid!!,
-                            R.string.dashboard_menu_delete_enrollment_V2,
-                            1,
-                        )
-                    }
-
-                    popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
-                        transferTeiItem.isVisible = dashboardViewModel.checkIfTeiCanBeTransferred()
-                    }
-
-                    val status = presenter.getEnrollmentStatus(enrollmentUid)
-                    if (status == EnrollmentStatus.COMPLETED) {
-                        popupMenu.menu.findItem(R.id.complete).isVisible = false
-                    } else if (status == EnrollmentStatus.CANCELLED) {
-                        popupMenu.menu.findItem(R.id.deactivate).isVisible = false
-                    } else {
-                        popupMenu.menu.findItem(R.id.activate).isVisible = false
-                    }
-                    if (dashboardViewModel.showFollowUpBar.value) {
-                        popupMenu.menu.findItem(R.id.markForFollowUp).isVisible = false
-                    }
-                }
-                popupMenu.menu.findItem(R.id.programSelector).let { programSelectorItem ->
-                    programSelectorItem.title = resourceManager.formatWithEnrollmentLabel(
-                        programUid ?: "",
-                        R.string.program_selector_V2,
-                        3,
-                    )
-                }
-                popupMenu.menu.findItem(R.id.groupEvents)?.let { groupEventsItems ->
-                    groupEventsItems.title = eventResourcesProvider.formatWithProgramEventLabel(
-                        R.string.group_event_label_by_stage,
-                        programUid ?: "",
-                        2,
-                    )
-                }
-                popupMenu.menu.findItem(R.id.showTimeline)?.let { showTimelineItems ->
-                    showTimelineItems.title = eventResourcesProvider.formatWithProgramEventLabel(
-                        R.string.show_event_label_timeline,
-                        programUid ?: "",
-                        2,
-                    )
-                }
-                Unit
-            }
-            .onMenuItemClicked { itemId: Int? ->
-                when (itemId) {
-                    R.id.showHelp -> {
-                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(true)
-                    }
-
-                    R.id.transferTei -> presenter.onTransferClick()
-                    R.id.markForFollowUp -> dashboardViewModel.onFollowUp()
-                    R.id.deleteTei -> showDeleteTEIConfirmationDialog()
-                    R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
-                    R.id.programSelector -> presenter.onEnrollmentSelectorClick()
-                    R.id.groupEvents -> dashboardViewModel.setGrouping(true)
-                    R.id.showTimeline -> dashboardViewModel.setGrouping(false)
-                    R.id.complete -> {
-                        dashboardViewModel.updateEnrollmentStatus(
-                            EnrollmentStatus.COMPLETED,
-                        )
-                    }
-
-                    R.id.activate -> dashboardViewModel.updateEnrollmentStatus(
-                        EnrollmentStatus.ACTIVE,
-                    )
-
-                    R.id.deactivate -> dashboardViewModel.updateEnrollmentStatus(
-                        EnrollmentStatus.CANCELLED,
-                    )
-
-                    R.id.share -> startQRActivity()
-                }
-                true
-            }
-            .build().show()
-    }
-
-    private fun getMenuId(): Int {
-        return if (enrollmentUid == null) {
-            R.menu.dashboard_tei_menu
-        } else if (dashboardViewModel.groupByStage.value != false) {
-            R.menu.dashboard_menu_group
-        } else {
-            R.menu.dashboard_menu
-        }
-    }
-
     override fun updateNoteBadge(numberOfNotes: Int) {
         dashboardViewModel.updateNoteCounter(numberOfNotes)
     }
@@ -896,6 +794,79 @@ class TeiDashboardMobileActivity :
             intent.putExtra(Constants.PROGRAM_UID, programUid)
             intent.putExtra(Constants.ENROLLMENT_UID, enrollmentUid)
             return intent
+        }
+    }
+
+    private fun setupMoreMenu(
+        composeView: ComposeView
+    ) {
+        composeView.setContent {
+            var expanded by remember { mutableStateOf(false) }
+
+            val menuItems = getEnrollmentMenuList(
+                enrollmentUid = enrollmentUid,
+                resourceManager = resourceManager,
+                presenter = presenter,
+                dashboardViewModel = dashboardViewModel
+            )
+
+            Box(
+                modifier = Modifier.padding(
+                    end = Spacing.Spacing16
+                )
+            ) {
+                IconButton(
+                    modifier = Modifier.offset(x = Spacing.Spacing16),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.MoreVert,
+                            tint = SurfaceColor.SurfaceBright,
+                            contentDescription = null,
+                        )
+                    }
+                ) {
+                    expanded = !expanded
+                }
+
+                DropDownMenu(
+                    items = menuItems,
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) { itemId ->
+                    expanded = !expanded
+
+                    when (itemId) {
+                        EnrollmentMenuItem.SYNC -> openSyncDialog()
+                        EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
+                        EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
+                        EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
+                        EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
+                        EnrollmentMenuItem.HELP -> {
+                            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                            showTutorial(true)
+                        }
+
+                        EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
+                        EnrollmentMenuItem.SHARE -> startQRActivity()
+                        EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                            EnrollmentStatus.ACTIVE,
+                        )
+
+                        EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                            EnrollmentStatus.CANCELLED,
+                        )
+
+                        EnrollmentMenuItem.COMPLETE -> {
+                            dashboardViewModel.updateEnrollmentStatus(
+                                EnrollmentStatus.COMPLETED,
+                            )
+                        }
+
+                        EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
+                        EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                    }
+                }
+            }
         }
     }
 }
