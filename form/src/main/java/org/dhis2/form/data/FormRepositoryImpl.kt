@@ -137,6 +137,7 @@ class FormRepositoryImpl(
     override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
         runDataIntegrity = true
         val itemsWithErrors = getFieldsWithError()
+        val validationStrategy = dataEntryRepository.validationStrategy()
         val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
             FieldWithIssue(
                 fieldUid = warningField.fieldUid,
@@ -154,6 +155,8 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = allowDiscard,
+                    validationStrategy = validationStrategy,
+
                 )
             }
 
@@ -165,6 +168,8 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = allowDiscard,
+                    validationStrategy = validationStrategy,
+
                 )
             }
 
@@ -173,6 +178,8 @@ class FormRepositoryImpl(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    validationStrategy = validationStrategy,
+
                 )
             }
 
@@ -181,6 +188,8 @@ class FormRepositoryImpl(
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    validationStrategy = validationStrategy,
+
                 )
             }
         }

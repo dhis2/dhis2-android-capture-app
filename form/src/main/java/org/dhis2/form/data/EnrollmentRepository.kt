@@ -16,6 +16,7 @@ import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -92,6 +93,10 @@ class EnrollmentRepository(
 
     override fun isEvent(): Boolean {
         return false
+    }
+
+    override fun validationStrategy(): ValidationStrategy? {
+        return null
     }
 
     private fun getSingleSectionList(): MutableList<FieldUiModel> {

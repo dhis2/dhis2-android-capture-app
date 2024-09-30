@@ -77,7 +77,7 @@ class EventCaptureActivity :
     @Inject
     var themeManager: ThemeManager? = null
     private var isEventCompleted = false
-    private var eventMode: EventMode? = null
+    private lateinit var eventMode: EventMode
 
     @Inject
     lateinit var eventResourcesProvider: EventResourcesProvider
@@ -106,7 +106,7 @@ class EventCaptureActivity :
             this.isLandscape() -> binding.eventViewLandPager
             else -> binding.eventViewPager
         }
-        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
+        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode
         setUpViewPagerAdapter()
         setUpNavigationBar()
         setUpEventCaptureFormLandscape(eventUid ?: "")
@@ -134,8 +134,8 @@ class EventCaptureActivity :
         eventViewPager?.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
-            intent.getStringExtra(Constants.PROGRAM_UID),
-            intent.getStringExtra(Constants.EVENT_UID),
+            intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
+            intent.getStringExtra(Constants.EVENT_UID) ?: "",
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),

@@ -77,7 +77,7 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.ResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
@@ -106,7 +106,7 @@ class FormView : Fragment() {
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-    private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private var resultDialogUiProvider: ResultDialogUiProvider? = null
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
@@ -968,7 +968,7 @@ class FormView : Fragment() {
     internal fun setConfiguration(
         locationProvider: LocationProvider?,
         completionListener: ((percentage: Float) -> Unit)?,
-        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+        resultDialogUiProvider: ResultDialogUiProvider?,
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
     ) {
@@ -1009,7 +1009,7 @@ class FormView : Fragment() {
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-        private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+        private var resultDialogUiProvider: ResultDialogUiProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
 
@@ -1045,7 +1045,7 @@ class FormView : Fragment() {
         /**
          *
          */
-        fun resultDialogUiProvider(resultDialogUiProvider: EnrollmentResultDialogUiProvider) =
+        fun resultDialogUiProvider(resultDialogUiProvider: ResultDialogUiProvider) =
             apply { this.resultDialogUiProvider = resultDialogUiProvider }
 
         /**

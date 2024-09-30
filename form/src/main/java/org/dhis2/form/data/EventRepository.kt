@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -180,6 +181,10 @@ class EventRepository(
 
     override fun isEvent(): Boolean {
         return true
+    }
+
+    override fun validationStrategy(): ValidationStrategy? {
+        return d2.programModule().programStages().uid(programUid).blockingGet()?.validationStrategy() ?: ValidationStrategy.ON_COMPLETE
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {

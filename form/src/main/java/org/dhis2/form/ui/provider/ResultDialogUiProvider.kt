@@ -11,8 +11,9 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
+import org.hisp.dhis.android.core.common.ValidationStrategy
 
-class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
+class ResultDialogUiProvider(val resourceManager: ResourceManager) {
 
     fun provideDataEntryUiModel(
         result: DataIntegrityCheckResult,
@@ -25,10 +26,8 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                         message = getErrorSubtitle(result.allowDiscard),
                         iconResource = R.drawable.ic_error_outline,
                         mainButton = DialogButtonStyle.MainButton(R.string.review),
-                        secondaryButton = when {
-                            result.allowDiscard -> DialogButtonStyle.DiscardButton()
-                            else -> null
-                        },
+                        secondaryButton =
+                        getSecondaryButton(result),
                     )
                     val fieldsWithIssues = getFieldsWithIssues(
                         result.fieldUidErrorList,
@@ -84,6 +83,17 @@ class EnrollmentResultDialogUiProvider(val resourceManager: ResourceManager) {
                 }
                 else -> null
             }
+        }
+    }
+
+    private fun getSecondaryButton(result: FieldsWithErrorResult): DialogButtonStyle? {
+        return if (result.validationStrategy == ValidationStrategy.ON_COMPLETE) {
+            DialogButtonStyle.SecondaryButton(R.string.not_now)
+        } else if (result.validationStrategy == null && result.allowDiscard) {
+            DialogButtonStyle.SecondaryButton(R.string.discard_changes)
+        } 
+        else {
+            null
         }
     }
 

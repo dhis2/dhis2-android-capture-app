@@ -1,204 +1,176 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment
 
-import static org.dhis2.commons.Constants.EVENT_MODE;
-import static org.dhis2.commons.extensions.ViewExtensionsKt.closeKeyboard;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.NonEditableReasonBlockKt.showNonEditableReasonMessage;
-import static org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt.OPEN_ERROR_LOCATION;
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import org.dhis2.R
+import org.dhis2.commons.Constants
+import org.dhis2.commons.extensions.closeKeyboard
+import org.dhis2.databinding.SectionSelectorFragmentBinding
+import org.dhis2.form.model.EventMode
+import org.dhis2.form.model.EventRecords
+import org.dhis2.form.model.RowAction
+import org.dhis2.form.ui.FormView
+import org.dhis2.form.ui.provider.ResultDialogUiProvider
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.showNonEditableReasonMessage
+import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
+import javax.inject.Inject
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentTransaction;
-
-import org.dhis2.R;
-import org.dhis2.commons.Constants;
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
-import org.dhis2.databinding.SectionSelectorFragmentBinding;
-import org.dhis2.form.model.EventMode;
-import org.dhis2.form.model.EventRecords;
-import org.dhis2.form.ui.FormView;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract;
-import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.jetbrains.annotations.NotNull;
-
-import javax.inject.Inject;
-
-import kotlin.Unit;
-
-public class EventCaptureFormFragment extends FragmentGlobalAbstract implements EventCaptureFormView {
+class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView {
+    @Inject
+    lateinit var presenter: EventCaptureFormPresenter
 
     @Inject
-    EventCaptureFormPresenter presenter;
+    lateinit var resultDialogUiProvider: ResultDialogUiProvider
 
-    @Inject
-    FeatureConfigRepository featureConfig;
+    private lateinit var activity: EventCaptureActivity
 
-    private EventCaptureActivity activity;
-    private SectionSelectorFragmentBinding binding;
-    private FormView formView;
+    private lateinit var binding: SectionSelectorFragmentBinding
 
-    public static EventCaptureFormFragment newInstance(
-            String eventUid,
-            Boolean openErrorSection,
-            EventMode eventMode
-    ) {
-        EventCaptureFormFragment fragment = new EventCaptureFormFragment();
-        Bundle args = new Bundle();
-        args.putString(Constants.EVENT_UID, eventUid);
-        args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection);
-        args.putString(EVENT_MODE, eventMode.name());
-        fragment.setArguments(args);
-        return fragment;
+    private var formView: FormView? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        this.activity = context as EventCaptureActivity
+        activity.eventCaptureComponent!!.plus(
+            EventCaptureFormModule(
+                this,
+                arguments?.getString(Constants.EVENT_UID)!!,
+            ),
+        ).inject(this)
     }
 
-    @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-        this.activity = (EventCaptureActivity) context;
-        activity.eventCaptureComponent.plus(
-                new EventCaptureFormModule(
-                        this,
-                        getArguments().getString(Constants.EVENT_UID))
-        ).inject(this);
-    }
-
-    @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        String eventUid = getArguments().getString(Constants.EVENT_UID, "");
-        EventMode eventMode = EventMode.valueOf(getArguments().getString(EVENT_MODE));
-        formView = new FormView.Builder()
-                .locationProvider(locationProvider)
-                .onLoadingListener(loading -> {
-                    if (loading) {
-                        activity.showProgress();
-                    } else {
-                        activity.hideProgress();
-                    }
-                    return Unit.INSTANCE;
-                }).onItemChangeListener(action -> {
-                    if (action.isEventDetailsRow()) {
-                        presenter.showOrHideSaveButton();
-                    }
-                    return Unit.INSTANCE;
-
-                })
-                .onFocused(() -> {
-                    activity.hideNavigationBar();
-                    return Unit.INSTANCE;
-                })
-                .onPercentageUpdate(percentage -> {
-                    activity.updatePercentage(percentage);
-                    return Unit.INSTANCE;
-                })
-                .onDataIntegrityResult(result -> {
-                    presenter.handleDataIntegrityResult(result, eventMode);
-                    return Unit.INSTANCE;
-                })
-                .factory(activity.getSupportFragmentManager())
-                .setRecords(new EventRecords(eventUid, eventMode))
-                .openErrorLocation(getArguments().getBoolean(OPEN_ERROR_LOCATION, false))
-                .build();
-        super.onCreate(savedInstanceState);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false);
-        EventCaptureContract.Presenter activityPresenter = activity.getPresenter();
-        binding.setPresenter(activityPresenter);
-
-        activityPresenter.observeActions().observe(getViewLifecycleOwner(), action ->
-        {
-            if (action == EventCaptureAction.ON_BACK) {
-                formView.onSaveClick();
-                activityPresenter.emitAction(EventCaptureAction.NONE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        val eventUid = requireArguments().getString(Constants.EVENT_UID, "")
+        val eventMode = EventMode.valueOf(arguments?.getString(Constants.EVENT_MODE)!!)
+        formView = FormView.Builder()
+            .locationProvider(locationProvider)
+            .onLoadingListener { loading: Boolean ->
+                if (loading) {
+                    activity.showProgress()
+                } else {
+                    activity.hideProgress()
+                }
+            }.onItemChangeListener { action: RowAction ->
+                if (action.isEventDetailsRow) {
+                    presenter.showOrHideSaveButton()
+                }
+                Unit
             }
-        });
-
-        binding.actionButton.setOnClickListener(view -> {
-            closeKeyboard(view);
-            performSaveClick();
-        });
-
-        return binding.getRoot();
+            .onFocused {
+                activity.hideNavigationBar()
+            }
+            .onPercentageUpdate { percentage: Float? ->
+                activity.updatePercentage(percentage!!)
+            }
+            .resultDialogUiProvider(resultDialogUiProvider = resultDialogUiProvider)
+            .factory(activity.supportFragmentManager)
+            .setRecords(EventRecords(eventUid, eventMode))
+            .openErrorLocation(requireArguments().getBoolean(OPEN_ERROR_LOCATION, false))
+            .build()
+        super.onCreate(savedInstanceState)
     }
 
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.formViewContainer, formView).commit();
-        formView.setScrollCallback(isSectionVisible -> {
-            animateFabButton(isSectionVisible);
-            return Unit.INSTANCE;
-        });
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.section_selector_fragment, container, false)
+        val activityPresenter = activity.presenter
+        binding.setPresenter(activityPresenter)
+
+        activityPresenter.observeActions().observe(
+            viewLifecycleOwner,
+        ) { action: EventCaptureAction ->
+            if (action == EventCaptureAction.ON_BACK) {
+                formView!!.onSaveClick()
+                activityPresenter.emitAction(EventCaptureAction.NONE)
+            }
+        }
+
+        binding.actionButton.setOnClickListener { view ->
+            view.closeKeyboard()
+            performSaveClick()
+        }
+
+        return binding.root
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        presenter.showOrHideSaveButton();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.formViewContainer, formView!!).commit()
+        formView!!.scrollCallback = { isSectionVisible: Boolean ->
+            animateFabButton(isSectionVisible)
+        }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    override fun onResume() {
+        super.onResume()
+        presenter!!.showOrHideSaveButton()
     }
 
-    private void animateFabButton(boolean sectionIsVisible) {
-        int translationX = 1000;
-        if (sectionIsVisible) translationX = 0;
+    private fun animateFabButton(sectionIsVisible: Boolean) {
+        var translationX = 1000
+        if (sectionIsVisible) translationX = 0
 
-        binding.actionButton.animate().translationX(translationX).setDuration(500).start();
+        binding.actionButton.animate().translationX(translationX.toFloat()).setDuration(500)
+            .start()
     }
 
-    @Override
-    public void performSaveClick() {
-        formView.onSaveClick();
+    override fun performSaveClick() {
+        formView?.onSaveClick()
     }
 
-    @Override
-    public void hideSaveButton() {
-        binding.actionButton.setVisibility(View.GONE);
+    override fun hideSaveButton() {
+        binding.actionButton.visibility = View.GONE
     }
 
-    @Override
-    public void showSaveButton() {
-        binding.actionButton.setVisibility(View.VISIBLE);
+    override fun showSaveButton() {
+        binding.actionButton.visibility = View.VISIBLE
     }
 
-    @Override
-    public void onReopen() {
-        formView.reload();
+    override fun onReopen() {
+        formView?.reload()
     }
 
-    @Override
-    public void showNonEditableMessage(@NonNull String reason, boolean canBeReOpened) {
-        binding.editableReasonContainer.setVisibility(View.VISIBLE);
+    override fun showNonEditableMessage(reason: String, canBeReOpened: Boolean) {
+        binding.editableReasonContainer.visibility = View.VISIBLE
 
         showNonEditableReasonMessage(
-                binding.editableReasonContainer,
-                reason,
-                canBeReOpened,
-                () -> {
-                    presenter.reOpenEvent();
-                    return Unit.INSTANCE;
-                }
-        );
+            binding.editableReasonContainer,
+            reason,
+            canBeReOpened,
+        ) {
+            presenter?.reOpenEvent()
+        }
     }
 
-    @Override
-    public void hideNonEditableMessage() {
-        binding.editableReasonContainer.setVisibility(View.GONE);
+    override fun hideNonEditableMessage() {
+        binding.editableReasonContainer.visibility = View.GONE
+    }
+
+    companion object {
+        fun newInstance(
+            eventUid: String?,
+            openErrorSection: Boolean?,
+            eventMode: EventMode,
+        ): EventCaptureFormFragment {
+            val fragment = EventCaptureFormFragment()
+            val args = Bundle()
+            args.putString(Constants.EVENT_UID, eventUid)
+            args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection!!)
+            args.putString(Constants.EVENT_MODE, eventMode.name)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

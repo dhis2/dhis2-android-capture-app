@@ -1,156 +1,130 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
+package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
-import static org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragmentKt.VISUALIZATION_TYPE;
+import android.os.Bundle
+import androidx.annotation.IntegerRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import org.dhis2.R
+import org.dhis2.form.model.EventMode
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
+import org.dhis2.usescases.notes.NotesFragment.Companion.newEventInstance
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VISUALIZATION_TYPE
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.Companion.withArguments
 
-import android.os.Bundle;
+class EventCapturePagerAdapter(
+    private val fragmentActivity: FragmentActivity,
+    private val programUid: String,
+    private val eventUid: String,
+    displayAnalyticScreen: Boolean,
+    displayRelationshipScreen: Boolean,
+    private val shouldOpenErrorSection: Boolean,
+    private val eventMode: EventMode,
 
-import androidx.annotation.IntegerRes;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
+) : FragmentStateAdapter(fragmentActivity) {
+    private val landscapePages: MutableList<EventPageType> = ArrayList()
+    private val portraitPages: MutableList<EventPageType> = ArrayList()
 
-import org.dhis2.R;
-import org.dhis2.form.model.EventMode;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.usescases.notes.NotesFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class EventCapturePagerAdapter extends FragmentStateAdapter {
-
-    private final String programUid;
-    private final String eventUid;
-    private final List<EventPageType> landscapePages;
-    private final List<EventPageType> portraitPages;
-
-    private final FragmentActivity fragmentActivity;
-
-    private final boolean shouldOpenErrorSection;
-
-    private final EventMode eventMode;
-
-    public static final int NO_POSITION = -1;
-
-    public boolean isFormScreenShown(@Nullable Integer currentItem) {
-        return currentItem != null && portraitPages.get(currentItem) == EventPageType.DATA_ENTRY;
+    fun isFormScreenShown(currentItem: Int?): Boolean {
+        return currentItem != null && portraitPages[currentItem] == EventPageType.DATA_ENTRY
     }
 
-    private enum EventPageType {
+    private enum class EventPageType {
         DATA_ENTRY, ANALYTICS, RELATIONSHIPS, NOTES
     }
 
-    public EventCapturePagerAdapter(FragmentActivity fragmentActivity,
-                                    String programUid,
-                                    String eventUid,
-                                    boolean displayAnalyticScreen,
-                                    boolean displayRelationshipScreen,
-                                    boolean openErrorSection,
-                                    EventMode eventMode
+    init {
 
-    ) {
-        super(fragmentActivity);
-        this.programUid = programUid;
-        this.eventUid = eventUid;
-        this.shouldOpenErrorSection = openErrorSection;
-        this.eventMode = eventMode;
-        this.fragmentActivity = fragmentActivity;
-        landscapePages = new ArrayList<>();
-        portraitPages = new ArrayList<>();
-
-        portraitPages.add(EventPageType.DATA_ENTRY);
+        portraitPages.add(EventPageType.DATA_ENTRY)
 
         if (displayAnalyticScreen) {
-            portraitPages.add(EventPageType.ANALYTICS);
-            landscapePages.add(EventPageType.ANALYTICS);
+            portraitPages.add(EventPageType.ANALYTICS)
+            landscapePages.add(EventPageType.ANALYTICS)
         }
 
         if (displayRelationshipScreen) {
-            portraitPages.add(EventPageType.RELATIONSHIPS);
-            landscapePages.add(EventPageType.RELATIONSHIPS);
+            portraitPages.add(EventPageType.RELATIONSHIPS)
+            landscapePages.add(EventPageType.RELATIONSHIPS)
         }
-        portraitPages.add(EventPageType.NOTES);
-        landscapePages.add(EventPageType.NOTES);
+        portraitPages.add(EventPageType.NOTES)
+        landscapePages.add(EventPageType.NOTES)
     }
 
-    public int getDynamicTabIndex(@IntegerRes int tabClicked) {
-        EventPageType pageType = switch (tabClicked) {
-            case R.id.navigation_analytics -> EventPageType.ANALYTICS;
-            case R.id.navigation_relationships -> EventPageType.RELATIONSHIPS;
-            case R.id.navigation_notes -> EventPageType.NOTES;
-            default -> null;
-        };
+    fun getDynamicTabIndex(@IntegerRes tabClicked: Int): Int {
+        val pageType = when (tabClicked) {
+            R.id.navigation_analytics -> EventPageType.ANALYTICS
+            R.id.navigation_relationships -> EventPageType.RELATIONSHIPS
+            R.id.navigation_notes -> EventPageType.NOTES
+            else -> null
+        }
 
-        if (pageType != null) {
-            if (isPortrait()) {
-                return portraitPages.indexOf(pageType);
+        return if (pageType != null) {
+            if (isPortrait) {
+                portraitPages.indexOf(pageType)
             } else {
-                return landscapePages.indexOf(pageType);
+                landscapePages.indexOf(pageType)
             }
         } else {
-            return NO_POSITION;
+            NO_POSITION
         }
     }
 
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
+    override fun createFragment(position: Int): Fragment {
         return createFragmentForPage(
-                isPortrait() ?
-                        portraitPages.get(position) :
-                        landscapePages.get(position)
-        );
+            if (isPortrait) portraitPages[position] else landscapePages[position],
+        )
     }
 
-    private Fragment createFragmentForPage(EventPageType pageType) {
-        switch (pageType) {
-            case ANALYTICS -> {
-                Fragment indicatorFragment = new IndicatorsFragment();
-                Bundle arguments = new Bundle();
-                arguments.putString(VISUALIZATION_TYPE, VisualizationType.EVENTS.name());
-                indicatorFragment.setArguments(arguments);
-                return indicatorFragment;
+    private fun createFragmentForPage(pageType: EventPageType): Fragment {
+        return when (pageType) {
+            EventPageType.ANALYTICS -> {
+                val indicatorFragment: Fragment = IndicatorsFragment()
+                val arguments = Bundle()
+                arguments.putString(VISUALIZATION_TYPE, VisualizationType.EVENTS.name)
+                indicatorFragment.arguments = arguments
+                indicatorFragment
             }
-            case RELATIONSHIPS -> {
-                Fragment relationshipFragment = new RelationshipFragment();
-                relationshipFragment.setArguments(
-                        RelationshipFragment.withArguments(programUid,
-                                null,
-                                null,
-                                eventUid
-                        )
-                );
-                return relationshipFragment;
+
+            EventPageType.RELATIONSHIPS -> {
+                val relationshipFragment: Fragment = RelationshipFragment()
+                relationshipFragment.arguments = withArguments(
+                    programUid,
+                    null,
+                    null,
+                    eventUid,
+                )
+                relationshipFragment
             }
-            case NOTES -> {
-                return NotesFragment.newEventInstance(programUid, eventUid);
+
+            EventPageType.NOTES -> {
+                newEventInstance(programUid, eventUid)
             }
-            default -> {
-                return EventCaptureFormFragment.newInstance(
-                        eventUid,
-                        shouldOpenErrorSection,
-                        eventMode
-                );
+
+            else -> {
+                EventCaptureFormFragment.newInstance(
+                    eventUid,
+                    shouldOpenErrorSection,
+                    eventMode,
+                )
             }
         }
-
     }
 
-    @Override
-    public int getItemCount() {
-        if (isPortrait()) {
-            return portraitPages.size();
+    override fun getItemCount(): Int {
+        return if (isPortrait) {
+            portraitPages.size
         } else {
-            return landscapePages.size();
+            landscapePages.size
         }
     }
 
-    public boolean isPortrait() {
-        return fragmentActivity.getResources().getConfiguration().orientation == 1;
+    val isPortrait: Boolean
+        get() = fragmentActivity.resources.configuration.orientation == 1
+
+    companion object {
+        const val NO_POSITION: Int = -1
     }
 }

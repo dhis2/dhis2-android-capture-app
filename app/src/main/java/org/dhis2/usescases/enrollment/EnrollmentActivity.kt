@@ -24,7 +24,7 @@ import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.ResultDialogUiProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -55,7 +55,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var presenter: EnrollmentPresenterImpl
 
     @Inject
-    lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
+    lateinit var resultDialogUiProvider: ResultDialogUiProvider
 
     @Inject
     lateinit var featureConfig: FeatureConfigRepository
@@ -118,7 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 }
             }
             .onFinishDataEntry { presenter.finish(mode) }
-            .resultDialogUiProvider(enrollmentResultDialogUiProvider)
+            .resultDialogUiProvider(resultDialogUiProvider)
             .factory(supportFragmentManager)
             .setRecords(
                 EnrollmentRecords(
