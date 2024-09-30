@@ -193,6 +193,7 @@ class SchedulingViewModel(
             launch(dispatchersProvider.io()) {
                 d2.eventModule().events().uid(eventUid).run {
                     setDueDate(dueDate.currentDate)
+                    setStatus(EventStatus.SCHEDULE)
                 }
             }
 
