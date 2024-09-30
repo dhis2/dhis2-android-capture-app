@@ -50,7 +50,7 @@ class SchedulingViewModel(
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
-    var onEventSkipped: ((String) -> Unit)? = null
+    var onEventSkipped: ((String?) -> Unit)? = null
     var onDueDateUpdated: (() -> Unit)? = null
     var onEnterEvent: ((String, String) -> Unit)? = null
 
@@ -285,7 +285,7 @@ class SchedulingViewModel(
             when (launchMode) {
                 is LaunchMode.EnterEvent -> {
                     d2.eventModule().events().uid(launchMode.eventUid).setStatus(EventStatus.SKIPPED)
-                    onEventSkipped?.invoke(launchMode.eventUid)
+                    onEventSkipped?.invoke(programStage.value?.displayEventLabel())
                 }
                 is LaunchMode.NewSchedule -> {
                     // no-op

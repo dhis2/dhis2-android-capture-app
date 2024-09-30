@@ -34,7 +34,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         const val SCHEDULING_EVENT_SKIPPED = "SCHEDULING_EVENT_SKIPPED"
         const val SCHEDULING_EVENT_DUE_DATE_UPDATED = "SCHEDULING_EVENT_DUE_DATE_UPDATED"
         const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
-        const val EVENT_UID = "EVENT_UID"
+        const val EVENT_LABEL = "EVENT_LABEL"
 
         fun newSchedule(
             enrollment: Enrollment,
@@ -95,7 +95,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         }
 
         viewModel.onEventSkipped = {
-            setFragmentResult(SCHEDULING_EVENT_SKIPPED, bundleOf(EVENT_UID to it))
+            setFragmentResult(SCHEDULING_EVENT_SKIPPED, bundleOf(EVENT_LABEL to it))
             dismiss()
         }
 

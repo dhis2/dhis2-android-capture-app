@@ -989,6 +989,6 @@
     <string name="transfer_tei_org_sheet_title">Transfer %s</string>
     <string name="transfer_tei_org_sheet_description">From %s to…</string>
     <string name="successfully_transferred">Successfully transferred</string>
-    <string name="event_cacelled">Event cancelled</string>
+    <string name="event_cancelled">%1$s cancelled</string>
     <string name="due_date_updated">Due date updated</string>
 </resources>

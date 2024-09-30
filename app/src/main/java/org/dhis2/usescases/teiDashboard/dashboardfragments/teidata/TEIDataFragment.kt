@@ -56,6 +56,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.EVENT_LABEL
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.PROGRAM_STAGE_UID
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG_RESULT
@@ -180,10 +181,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 presenter.fetchEvents()
             }
 
-            setFragmentResultListener(SCHEDULING_EVENT_SKIPPED) { _, _ ->
+            setFragmentResultListener(SCHEDULING_EVENT_SKIPPED) { _, bundle ->
+                val eventLabel = bundle.getString(EVENT_LABEL) ?: getString(R.string.event)
                 val snackbar = Snackbar.make(
                     binding.teiRootView,
-                    requireContext().getString(R.string.event_cacelled),
+                    requireContext().getString(R.string.event_cancelled, eventLabel.replaceFirstChar { it.uppercaseChar() }),
                     Snackbar.LENGTH_LONG,
                 )
 
