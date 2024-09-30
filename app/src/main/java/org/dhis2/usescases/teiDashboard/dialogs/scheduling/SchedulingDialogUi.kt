@@ -202,9 +202,10 @@ fun bottomSheetTitle(
         is LaunchMode.NewSchedule -> stringResource(id = R.string.schedule_next)
         is LaunchMode.EnterEvent -> stringResource(id = R.string.scheduled_enter_event)
     }
+    val defaultEventName = stringResource(id = R.string.event)
     val programName = when (programStages.size) {
-        1 -> programStages.first().displayName()
-        else -> stringResource(id = R.string.event)
+        1 -> programStages.first().displayEventLabel() ?: defaultEventName
+        else -> defaultEventName
     }
     val terminalSymbol = when (launchMode) {
         is LaunchMode.NewSchedule -> "?"
