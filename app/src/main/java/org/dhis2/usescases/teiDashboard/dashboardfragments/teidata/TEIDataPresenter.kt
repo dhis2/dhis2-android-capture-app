@@ -279,34 +279,37 @@ class TEIDataPresenter(
     }
 
     fun onEventSelected(uid: String, eventStatus: EventStatus) {
-        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
-            val intent = Intent(view.context, EventCaptureActivity::class.java)
-            intent.putExtras(
-                getActivityBundle(
-                    eventUid = uid,
-                    programUid = programUid ?: throw IllegalStateException(),
-                    eventMode = EventMode.CHECK,
-                ),
-            )
-            view.openEventCapture(intent)
-        } else {
-            val event = d2.event(uid)
-            val intent = Intent(view.context, EventInitialActivity::class.java)
-            intent.putExtras(
-                EventInitialActivity.getBundle(
-                    programUid,
-                    uid,
-                    EventCreationType.DEFAULT.name,
-                    teiUid,
-                    null,
-                    event?.organisationUnit(),
-                    event?.programStage(),
-                    enrollmentUid,
-                    0,
-                    teiDataRepository.getEnrollment().blockingGet()?.status(),
-                ),
-            )
-            view.openEventInitial(intent)
+        when (eventStatus) {
+            EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.SKIPPED -> {
+                val intent = Intent(view.context, EventCaptureActivity::class.java)
+                intent.putExtras(
+                    getActivityBundle(
+                        eventUid = uid,
+                        programUid = programUid ?: throw IllegalStateException(),
+                        eventMode = EventMode.CHECK,
+                    ),
+                )
+                view.openEventCapture(intent)
+            }
+            else -> {
+                val event = d2.event(uid)
+                val intent = Intent(view.context, EventInitialActivity::class.java)
+                intent.putExtras(
+                    EventInitialActivity.getBundle(
+                        programUid,
+                        uid,
+                        EventCreationType.DEFAULT.name,
+                        teiUid,
+                        null,
+                        event?.organisationUnit(),
+                        event?.programStage(),
+                        enrollmentUid,
+                        0,
+                        teiDataRepository.getEnrollment().blockingGet()?.status(),
+                    ),
+                )
+                view.openEventInitial(intent)
+            }
         }
     }
 
