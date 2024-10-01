@@ -62,16 +62,20 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
+data class MapSelectorScreenActions(
+    val onBackClicked: () -> Unit,
+    val onMapDataUpdated: (FeatureCollection) -> Unit,
+    val onLocationButtonClicked: () -> Unit,
+    val loadMap: (MapView) -> Unit,
+    val onDoneClicked: (result: String?) -> Unit,
+    val configurePolygonInfoRecycler: (RecyclerView) -> Unit,
+)
+
 @Composable
 fun MapSelectorScreen(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     mapSelectorViewModel: MapSelectorViewModel,
-    onBackClicked: () -> Unit,
-    onMapDataUpdated: (FeatureCollection) -> Unit,
-    onLocationButtonClicked: () -> Unit,
-    loadMap: (MapView) -> Unit,
-    onDoneClicked: (result: String?) -> Unit,
-    configurePolygonInfoRecycler: (RecyclerView) -> Unit,
+    mapSelectorScreenActions: MapSelectorScreenActions,
 ) {
     val useTwoPaneLayout = when (windowSizeClass.windowWidthSizeClass) {
         WindowWidthSizeClass.MEDIUM -> false
@@ -83,22 +87,22 @@ fun MapSelectorScreen(
     if (useTwoPaneLayout) {
         TwoPaneMapSelector(
             mapSelectorViewModel,
-            onBackClicked,
-            onMapDataUpdated,
-            onLocationButtonClicked,
-            loadMap,
-            onDoneClicked,
-            configurePolygonInfoRecycler,
+            mapSelectorScreenActions.onBackClicked,
+            mapSelectorScreenActions.onMapDataUpdated,
+            mapSelectorScreenActions.onLocationButtonClicked,
+            mapSelectorScreenActions.loadMap,
+            mapSelectorScreenActions.onDoneClicked,
+            mapSelectorScreenActions.configurePolygonInfoRecycler,
         )
     } else {
         SinglePaneMapSelector(
             mapSelectorViewModel,
-            onBackClicked,
-            onMapDataUpdated,
-            onLocationButtonClicked,
-            loadMap,
-            onDoneClicked,
-            configurePolygonInfoRecycler,
+            mapSelectorScreenActions.onBackClicked,
+            mapSelectorScreenActions.onMapDataUpdated,
+            mapSelectorScreenActions.onLocationButtonClicked,
+            mapSelectorScreenActions.loadMap,
+            mapSelectorScreenActions.onDoneClicked,
+            mapSelectorScreenActions.configurePolygonInfoRecycler,
         )
     }
 }

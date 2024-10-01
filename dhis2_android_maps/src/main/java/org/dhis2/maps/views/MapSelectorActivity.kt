@@ -101,28 +101,30 @@ class MapSelectorActivity :
             Dhis2Theme {
                 MapSelectorScreen(
                     mapSelectorViewModel = mapSelectorViewModel,
-                    onBackClicked = ::finish,
-                    onMapDataUpdated = { featureCollection ->
-                        mapManager.update(
-                            featureCollection = featureCollection,
-                            boundingBox = GetBoundingBox().getEnclosingBoundingBox(
-                                featureCollection.features()?.getLatLngPointList()
-                                    ?: emptyList(),
-                            ),
-                        )
-                        if (mapSelectorViewModel.shouldDisplayPolygonInfo()) {
-                            polygonAdapter.updateWithFeatureCollection(featureCollection)
-                        }
-                    },
-                    onLocationButtonClicked = ::onLocationButtonClicked,
-                    loadMap = { loadMap(it, savedInstanceState) },
-                    onDoneClicked = { result ->
-                        result?.let(::finishResult)
-                    },
-                    configurePolygonInfoRecycler = {
-                        it.adapter = polygonAdapter
-                        it.layoutManager = GridLayoutManager(this, 2)
-                    },
+                    mapSelectorScreenActions = MapSelectorScreenActions(
+                        onBackClicked = ::finish,
+                        onMapDataUpdated = { featureCollection ->
+                            mapManager.update(
+                                featureCollection = featureCollection,
+                                boundingBox = GetBoundingBox().getEnclosingBoundingBox(
+                                    featureCollection.features()?.getLatLngPointList()
+                                        ?: emptyList(),
+                                ),
+                            )
+                            if (mapSelectorViewModel.shouldDisplayPolygonInfo()) {
+                                polygonAdapter.updateWithFeatureCollection(featureCollection)
+                            }
+                        },
+                        onLocationButtonClicked = ::onLocationButtonClicked,
+                        loadMap = { loadMap(it, savedInstanceState) },
+                        onDoneClicked = { result ->
+                            result?.let(::finishResult)
+                        },
+                        configurePolygonInfoRecycler = {
+                            it.adapter = polygonAdapter
+                            it.layoutManager = GridLayoutManager(this, 2)
+                        },
+                    ),
                 )
             }
         }
@@ -152,9 +154,11 @@ class MapSelectorActivity :
                     with(it.map) {
                         this?.addOnMoveListener(object : OnMoveListener {
                             override fun onMoveBegin(detector: MoveGestureDetector) {
+                                // Nothing to do
                             }
 
                             override fun onMove(detector: MoveGestureDetector) {
+                                // TODO: Handle move and uptade if manual selection is enabled
                             }
 
                             override fun onMoveEnd(detector: MoveGestureDetector) {
@@ -163,9 +167,11 @@ class MapSelectorActivity :
                         })
                         this?.addOnScaleListener(object : MapboxMap.OnScaleListener {
                             override fun onScaleBegin(detector: StandardScaleGestureDetector) {
+                                // Nothing to do
                             }
 
                             override fun onScale(detector: StandardScaleGestureDetector) {
+                                // Nothing to do
                             }
 
                             override fun onScaleEnd(detector: StandardScaleGestureDetector) {
