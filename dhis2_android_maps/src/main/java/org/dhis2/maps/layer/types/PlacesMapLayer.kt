@@ -21,6 +21,13 @@ const val PLACES_LAYER_ID = "PLACES_LAYER_ID"
 const val PLACES_SOURCE_ID = "PLACES_SOURCE_ID"
 const val POLYGON_PLACE_LAYER_ID = "POLYGON_PLACE_LAYER_ID"
 const val POLYGON_PLACE_BORDER_LAYER_ID = "POLYGON_PLACE_BORDER_LAYER_ID"
+const val FEATURE_PROPERTY_PLACES_ID = "id"
+const val FEATURE_PROPERTY_PLACES = "places"
+const val FEATURE_PROPERTY_PLACES_SELECTED = "selected"
+const val FEATURE_PROPERTY_PLACES_TITLE = "title"
+const val FEATURE_PROPERTY_PLACES_SUBTITLE = "subtitle"
+private const val FILL_COLOR = "#66007DEB"
+private const val BORDER_COLOR = "#007DEB"
 
 class PlacesMapLayer(
     val style: Style,
@@ -38,8 +45,14 @@ class PlacesMapLayer(
                 )
                 .withFilter(
                     Expression.all(
-                        Expression.eq(Expression.literal("places"), Expression.literal(true)),
-                        Expression.eq(Expression.literal("selected"), Expression.literal(false)),
+                        Expression.eq(
+                            Expression.literal(FEATURE_PROPERTY_PLACES),
+                            Expression.literal(true),
+                        ),
+                        Expression.eq(
+                            Expression.literal(FEATURE_PROPERTY_PLACES_SELECTED),
+                            Expression.literal(false),
+                        ),
                         isPoint(),
                     ),
                 )
@@ -53,8 +66,14 @@ class PlacesMapLayer(
                     PropertyFactory.iconOffset(arrayOf(0f, -14.5f)),
                 ).withFilter(
                     Expression.all(
-                        Expression.eq(Expression.literal("places"), Expression.literal(true)),
-                        Expression.eq(Expression.literal("selected"), Expression.literal(true)),
+                        Expression.eq(
+                            Expression.literal(FEATURE_PROPERTY_PLACES),
+                            Expression.literal(true),
+                        ),
+                        Expression.eq(
+                            Expression.literal(FEATURE_PROPERTY_PLACES_SELECTED),
+                            Expression.literal(true),
+                        ),
                         isPoint(),
                     ),
                 )
@@ -63,14 +82,14 @@ class PlacesMapLayer(
         get() = style.getLayer(POLYGON_PLACE_LAYER_ID)
             ?: FillLayer(POLYGON_PLACE_LAYER_ID, PLACES_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.fillColor(Color.parseColor("#66007DEB")),
+                    PropertyFactory.fillColor(Color.parseColor(FILL_COLOR)),
                 ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
         get() = style.getLayer(POLYGON_PLACE_BORDER_LAYER_ID)
             ?: LineLayer(POLYGON_PLACE_BORDER_LAYER_ID, PLACES_SOURCE_ID)
                 .withProperties(
-                    PropertyFactory.lineColor(Color.parseColor("#007DEB")),
+                    PropertyFactory.lineColor(Color.parseColor(BORDER_COLOR)),
                     PropertyFactory.lineWidth(2f),
                 ).withFilter(isPolygon())
 
@@ -100,19 +119,19 @@ class PlacesMapLayer(
     }
 
     private fun selectPoint(feature: Feature) {
-        feature.addBooleanProperty("selected", true)
+        feature.addBooleanProperty(FEATURE_PROPERTY_PLACES_SELECTED, true)
         currentFeature = feature
     }
 
     private fun deselectCurrentPoint() {
-        currentFeature?.addBooleanProperty("selected", false)
+        currentFeature?.addBooleanProperty(FEATURE_PROPERTY_PLACES_SELECTED, false)
         currentFeature = null
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
         return style.getSourceAs<GeoJsonSource>(PLACES_SOURCE_ID)
             ?.querySourceFeatures(
-                Expression.eq(Expression.get("title"), featureUidProperty),
+                Expression.eq(Expression.get(FEATURE_PROPERTY_PLACES_TITLE), featureUidProperty),
             )?.firstOrNull()
             .also { setSelectedItem(it) }
     }

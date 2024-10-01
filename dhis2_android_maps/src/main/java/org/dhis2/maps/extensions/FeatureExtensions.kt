@@ -5,6 +5,11 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollect
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_ID
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_SELECTED
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_SUBTITLE
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_TITLE
 import java.util.UUID
 
 fun Feature.source(): FeatureSource? {
@@ -42,9 +47,9 @@ fun Feature.toStringProperty(): String? = when (source()) {
 }
 
 fun Feature.withPlacesProperties(selected: Boolean = false, title: String? = null, subtitle: String? = null) = this.apply {
-    addStringProperty("id", UUID.randomUUID().toString())
-    addBooleanProperty("places", true)
-    addBooleanProperty("selected", selected)
-    title?.let { addStringProperty("title", it) }
-    subtitle?.let { addStringProperty("subtitle", it) }
+    addStringProperty(FEATURE_PROPERTY_PLACES_ID, UUID.randomUUID().toString())
+    addBooleanProperty(FEATURE_PROPERTY_PLACES, true)
+    addBooleanProperty(FEATURE_PROPERTY_PLACES_SELECTED, selected)
+    title?.let { addStringProperty(FEATURE_PROPERTY_PLACES_TITLE, it) }
+    subtitle?.let { addStringProperty(FEATURE_PROPERTY_PLACES_SUBTITLE, it) }
 }
