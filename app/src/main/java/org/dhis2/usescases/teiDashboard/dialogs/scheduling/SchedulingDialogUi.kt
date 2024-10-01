@@ -175,7 +175,7 @@ private fun ButtonBlock(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.OUTLINED,
                         colorStyle = ColorStyle.WARNING,
-                        text = stringResource(R.string.cancel_event),
+                        text = stringResource(R.string.cancel_event, eventLabel),
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.EventBusy,
