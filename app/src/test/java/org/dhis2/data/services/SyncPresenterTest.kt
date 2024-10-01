@@ -11,14 +11,20 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.BaseD2Progress
+import org.hisp.dhis.android.core.arch.call.D2Progress
+import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
+import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.fileresource.FileResourceDomainType
+import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -136,7 +142,7 @@ class SyncPresenterTest {
             d2.fileResourceModule().fileResourceDownloader()
                 .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
-        )doReturn Observable.just(BaseD2Progress.empty(1))
+        ) doReturn Observable.just(BaseD2Progress.empty(1))
 
         presenter.syncMetadata { }
 
@@ -157,12 +163,12 @@ class SyncPresenterTest {
             .build()
         whenever(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        )doReturn Completable.complete()
+        ) doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
                 .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
-        )doReturn Observable.just(BaseD2Progress.empty(1))
+        ) doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }
 
         verifyNoMoreInteractions(analyticsHelper)
@@ -180,15 +186,15 @@ class SyncPresenterTest {
         ) doReturn null
         whenever(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        )doReturn Completable.complete()
+        ) doReturn Completable.complete()
         whenever(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        )doReturn Completable.complete()
+        ) doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
                 .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
-        )doReturn Observable.just(BaseD2Progress.empty(1))
+        ) doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
@@ -206,12 +212,12 @@ class SyncPresenterTest {
         ) doReturn null
         whenever(
             d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        )doReturn Completable.complete()
+        ) doReturn Completable.complete()
         whenever(
             d2.fileResourceModule().fileResourceDownloader()
                 .byDomainType().eq(FileResourceDomainType.ICON)
                 .download(),
-        )doReturn Observable.just(BaseD2Progress.empty(1))
+        ) doReturn Observable.just(BaseD2Progress.empty(1))
         presenter.syncMetadata { }
 
         verify(analyticsHelper, times(0)).updateMatomoSecondaryTracker(any(), any(), any())
@@ -273,6 +279,185 @@ class SyncPresenterTest {
         val syncResult = presenter.checkSyncTEIStatus("uid")
 
         assert(syncResult == SyncResult.ERROR)
+    }
+
+    @Test
+    fun syncGranularEvent() {
+        mockEventUpload()
+        mockEventDownload()
+        mockFileResourceByEventCall()
+
+        val testSubscriber = presenter.syncGranularEvent("uid").test()
+
+        with(testSubscriber) {
+            assertValueCount(5)
+        }
+    }
+
+    @Test
+    fun syncGranularTrackerProgram() {
+        val mockedProgram = mock<Program> {
+            on { programType() } doReturn ProgramType.WITH_REGISTRATION
+        }
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet(),
+        ) doReturn mockedProgram
+
+        mockTeiUploadByProgram()
+        mockTeiDownloadByProgram()
+        mockFileResourceByProgramCall()
+
+        val testSubscriber = presenter.syncGranularProgram("programUid").test()
+
+        with(testSubscriber) {
+            assertValueCount(4)
+        }
+    }
+
+    @Test
+    fun syncGranularEventProgram() {
+        val mockedProgram = mock<Program> {
+            on { programType() } doReturn ProgramType.WITHOUT_REGISTRATION
+        }
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet(),
+        ) doReturn mockedProgram
+
+        mockEventUploadByProgram()
+        mockEventUploadByProgram()
+        mockEventUploadByProgram()
+
+        presenter.syncGranularProgram("programUid").test().assertValueCount(3)
+    }
+
+    @Test
+    fun syncGranularNullProgram() {
+        whenever(
+            d2.programModule().programs().uid("programUid").blockingGet(),
+        ) doReturn null
+
+        val testSubscriber = presenter.syncGranularProgram("programUid").test()
+
+        with(testSubscriber) {
+            assertValueCount(0)
+        }
+    }
+
+    private fun mockTeiUploadByProgram(programUid: String = "programUid") {
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(listOf(programUid)),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(listOf(programUid))
+                .upload(),
+        ) doReturn Observable.empty()
+    }
+
+    private fun mockTeiDownloadByProgram(programUid: String = "programUid") {
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceDownloader().byProgramUid(programUid),
+        ) doReturn mock()
+        whenever(
+            d2.trackedEntityModule().trackedEntityInstanceDownloader().byProgramUid(programUid)
+                .download(),
+        ) doReturn Observable.fromArray(
+            TrackerD2Progress.builder().build(),
+            TrackerD2Progress.builder()
+                .programs(
+                    mapOf(
+                        "programUid" to D2ProgressStatus(
+                            true,
+                            D2ProgressSyncStatus.SUCCESS,
+                        ),
+                    ),
+                )
+                .build(),
+        )
+    }
+
+    private fun mockEventUpload(eventUid: String = "uid") {
+        whenever(
+            d2.eventModule().events().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events().byUid().eq(eventUid),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events().byUid().eq(eventUid).upload(),
+        ) doReturn Observable.empty()
+    }
+
+    private fun mockEventUploadByProgram(programUid: String = "programUid") {
+        whenever(
+            d2.eventModule().events().byProgramUid(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events().byProgramUid().eq(programUid),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events().byProgramUid().eq(programUid).upload(),
+        ) doReturn Observable.empty()
+    }
+
+    private fun mockEventDownload(eventUid: String = "uid", programUid: String = "programUid") {
+        whenever(
+            d2.eventModule().eventDownloader().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().eventDownloader().byUid().eq(eventUid),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().eventDownloader().byUid().eq(eventUid).download(),
+        ) doReturn Observable.fromArray(
+            TrackerD2Progress.builder().build(),
+            TrackerD2Progress.builder()
+                .programs(mapOf(Pair(programUid, D2ProgressStatus(false, null)))).build(),
+            TrackerD2Progress.builder().programs(
+                mapOf(
+                    Pair(
+                        programUid,
+                        D2ProgressStatus(true, D2ProgressSyncStatus.SUCCESS),
+                    ),
+                ),
+            ).build(),
+        )
+    }
+
+    private fun mockFileResourceByEventCall(eventUid: String = "uid") {
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader(),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byEventUid(),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byEventUid().eq(eventUid),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byEventUid().eq(eventUid).download(),
+        ) doReturn Observable.fromArray(
+            D2Progress(false, null, emptyList()),
+            D2Progress(true, null, emptyList()),
+        )
+    }
+
+    private fun mockFileResourceByProgramCall(programUid: String = "programUid") {
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader(),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byProgramUid(),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byProgramUid().eq(programUid),
+        ) doReturn mock()
+        whenever(
+            d2.fileResourceModule().fileResourceDownloader().byProgramUid().eq(programUid)
+                .download(),
+        ) doReturn Observable.fromArray(
+            D2Progress(false, null, emptyList()),
+            D2Progress(true, null, emptyList()),
+        )
     }
 
     private fun mockedProgramSettings(
