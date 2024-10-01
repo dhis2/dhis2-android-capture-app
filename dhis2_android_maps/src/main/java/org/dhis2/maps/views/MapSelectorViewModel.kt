@@ -281,14 +281,16 @@ class MapSelectorViewModel(
         }
     }
 
-    suspend fun performLocationSearch(query: String = _searchLocationQuery.value) {
-        if (_captureMode.value.isSearch()) {
-            val filteredPreviousLocation =
-                searchLocationManager.getAvailableLocations(query)
-            geocoder.getLocationFromName(query, _currentVisibleRegion.value) { searchItems ->
-                updateLocationItems(filteredPreviousLocation + searchItems)
+    fun performLocationSearch(query: String = _searchLocationQuery.value) {
+        viewModelScope.launch(dispatchers.io()) {
+            if (_captureMode.value.isSearch()) {
+                val filteredPreviousLocation =
+                    searchLocationManager.getAvailableLocations(query)
+                geocoder.getLocationFromName(query, _currentVisibleRegion.value) { searchItems ->
+                    updateLocationItems(filteredPreviousLocation + searchItems)
+                }
+                updateSearchOnThisAreaVisible(false)
             }
-            updateSearchOnThisAreaVisible(false)
         }
     }
 
