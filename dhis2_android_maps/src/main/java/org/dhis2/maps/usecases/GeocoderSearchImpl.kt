@@ -42,6 +42,7 @@ class GeocoderSearchImpl(
         return geocoderApi.getLocationFromLatLng(latitude, longitude)
     }
 
+    @Suppress("DEPRECATION")
     private fun defaultSearchLocationProvider(
         name: String,
         onLocationFound: (List<LocationItemModel>) -> Unit,
