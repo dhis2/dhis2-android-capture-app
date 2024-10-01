@@ -76,7 +76,9 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
-        composeTestRule.onNodeWithText("Schedule next " + programStages.first().displayName() + "?")
+
+        val eventLabel = programStages.first().displayEventLabel() ?: "event"
+        composeTestRule.onNodeWithText("Schedule next $eventLabel?")
             .assertExists()
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertExists()
