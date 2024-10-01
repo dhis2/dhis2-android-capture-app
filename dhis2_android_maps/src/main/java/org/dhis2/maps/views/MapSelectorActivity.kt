@@ -158,7 +158,7 @@ class MapSelectorActivity :
                             }
 
                             override fun onMove(detector: MoveGestureDetector) {
-                                // TODO: Handle move and uptade if manual selection is enabled
+                                // Nothing to do yet
                             }
 
                             override fun onMoveEnd(detector: MoveGestureDetector) {

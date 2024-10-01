@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -44,7 +43,6 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
-import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
@@ -225,8 +223,12 @@ private fun LocationInfoContent(
             with(selectedLocation as SelectedLocation.ManualResult) {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = "Selected location",
-                        searchedSubtitle = "Lat: ${selectedLocation.latitude.truncate()}, Lon: ${selectedLocation.longitude.truncate()}",
+                        searchedTitle = stringResource(R.string.selected_location),
+                        searchedSubtitle = stringResource(
+                            R.string.latitude_longitude,
+                            selectedLocation.latitude.truncate(),
+                            selectedLocation.longitude.truncate(),
+                        ),
                         searchedLatitude = selectedLocation.latitude,
                         searchedLongitude = selectedLocation.longitude,
                     ),
@@ -258,8 +260,12 @@ private fun LocationInfoContent(
         captureMode.isManual() && selectedLocation is SelectedLocation.ManualResult -> {
             LocationItem(
                 locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = "Selected location",
-                    searchedSubtitle = "Lat: ${selectedLocation.latitude.truncate()}, Lon: ${selectedLocation.longitude.truncate()}",
+                    searchedTitle = stringResource(R.string.selected_location),
+                    searchedSubtitle = stringResource(
+                        R.string.latitude_longitude,
+                        selectedLocation.latitude.truncate(),
+                        selectedLocation.longitude.truncate(),
+                    ),
                     searchedLatitude = selectedLocation.latitude,
                     searchedLongitude = selectedLocation.longitude,
                 ),
@@ -277,8 +283,8 @@ private fun LocationInfoContent(
             if (selectedLocation is SelectedLocation.None) {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = "Select location",
-                        searchedSubtitle = "by clicking on it",
+                        searchedTitle = stringResource(R.string.select_location_title),
+                        searchedSubtitle = stringResource(R.string.selet_location_subtitle),
                         searchedLatitude = 0.0,
                         searchedLongitude = 0.0,
                     ),
@@ -385,7 +391,7 @@ private fun Map(
                     ),
                 ) {
                     SearchInAreaButton(
-                        mapSelectorViewModel = mapSelectorViewModel,
+                        onClick = mapSelectorViewModel::performLocationSearch,
                     )
                 }
             },
@@ -415,7 +421,7 @@ private fun SwipeToChangeLocationInfo(
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = "Swipe to change location",
+            text = stringResource(R.string.swipe_to_change_location),
             style = MaterialTheme.typography.labelLarge,
             color = TextColor.OnSurface,
         )
@@ -424,17 +430,12 @@ private fun SwipeToChangeLocationInfo(
 
 @Composable
 private fun SearchInAreaButton(
-    mapSelectorViewModel: MapSelectorViewModel,
+    onClick: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
     Button(
         style = ButtonStyle.TONAL,
-        text = "Search on this area",
-        onClick = {
-            scope.launch {
-                mapSelectorViewModel.performLocationSearch()
-            }
-        },
+        text = stringResource(R.string.search_on_this_area),
+        onClick = onClick,
     )
 }
 
