@@ -32,7 +32,7 @@ class OUTreeRepository(
 
     private fun List<OrganisationUnit>.order(): List<OrganisationUnit> {
         val listWithParents = this.toMutableList()
-        val minLevel = minOf { it.level() ?: 0 }
+        val minLevel = minOfOrNull { it.level() ?: 0 }
         this.forEach { organisationUnit ->
             var isParentInParentList = false
             organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() && it != organisationUnit.uid() }?.forEach { parentUid ->
