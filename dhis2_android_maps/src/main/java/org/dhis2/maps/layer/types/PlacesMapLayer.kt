@@ -107,9 +107,6 @@ class PlacesMapLayer(
     private fun deselectCurrentPoint() {
         currentFeature?.addBooleanProperty("selected", false)
         currentFeature = null
-        /*style.getSourceAs<GeoJsonSource>(PLACES_SOURCE_ID)?.apply {
-            setGeoJson(currentFeature)
-        }*/
     }
 
     override fun findFeatureWithUid(featureUidProperty: String): Feature? {
