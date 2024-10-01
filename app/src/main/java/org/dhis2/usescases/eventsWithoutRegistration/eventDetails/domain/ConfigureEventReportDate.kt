@@ -49,6 +49,12 @@ class ConfigureEventReportDate(
 
     private fun getLabel(): String {
         val programStage = getProgramStage()
+        val event = repository.getEvent()
+
+        if (event == null) {
+            return resourceProvider.provideNextEventDate(programStage?.displayEventLabel())
+        }
+
         return when (creationType) {
             SCHEDULE ->
                 programStage?.dueDateLabel() ?: resourceProvider.provideDueDate()
