@@ -24,7 +24,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
@@ -116,10 +115,6 @@ class EventInitialTest {
             .parse("20/8/2023")!!
     }
 
-    private fun createConfigureEventTemp(eventCreationType: EventCreationType) = ConfigureEventTemp(
-        creationType = eventCreationType,
-    )
-
     private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(
         repository = eventDetailsRepository,
     )
@@ -206,7 +201,6 @@ class EventInitialTest {
         configureOrgUnit = createConfigureOrgUnit(eventCreationType),
         configureEventCoordinates = createConfigureEventCoordinates(),
         configureEventCatCombo = createConfigureEventCatCombo(),
-        configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
         eventUid = EVENT_UID,
         geometryController = createGeometryController(),
@@ -268,7 +262,7 @@ class EventInitialTest {
                     required = true,
                 ),
 
-            )
+                )
         }
         composeTestRule.onNodeWithTag(INPUT_EVENT_INITIAL_DATE).assertIsDisplayed()
         assert(viewModel.eventDate.value.dateValue == "20/08/2023")

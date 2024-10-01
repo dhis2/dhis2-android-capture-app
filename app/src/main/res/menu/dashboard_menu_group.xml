@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_help"
         android:title="@string/showHelp" />
     <item
+      android:id="@+id/transferTei"
+      android:icon="@drawable/ic_transfer"
+      android:title="@string/transfer" />
+    <item
         android:id="@+id/markForFollowUp"
         android:icon="@drawable/ic_flag"
         android:title="@string/mark_follow_up" />

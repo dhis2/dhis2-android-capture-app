@@ -84,8 +84,6 @@ public class Constants {
     public static final String PROGRAM_UID = "PROGRAM_UID";
     public static final String ORG_UNIT = "ORG_UNIT";
     public static final String ORG_UNIT_NAME = "ORG_UNIT_NAME";
-    public static final String ONE_TIME = "ONE_TIME";
-    public static final String PERMANENT = "PERMANENT";
     public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
     public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
     public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";

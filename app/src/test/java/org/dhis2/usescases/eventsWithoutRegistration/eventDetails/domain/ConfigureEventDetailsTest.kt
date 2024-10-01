@@ -70,7 +70,6 @@ class ConfigureEventDetailsTest {
             catOptionComboUid = null,
             isCatComboCompleted = isCatComboCompleted,
             coordinates = null,
-            tempCreate = null,
         ).first()
 
         // Then action button should be visible
@@ -100,7 +99,6 @@ class ConfigureEventDetailsTest {
             catOptionComboUid = null,
             isCatComboCompleted = isCatComboCompleted,
             coordinates = null,
-            tempCreate = null,
         ).first()
 
         // Then action button should be invisible
@@ -135,7 +133,6 @@ class ConfigureEventDetailsTest {
             catOptionComboUid = null,
             isCatComboCompleted = isCatComboCompleted,
             coordinates = null,
-            tempCreate = null,
         ).first()
 
         // Then action button should be visible
@@ -165,7 +162,6 @@ class ConfigureEventDetailsTest {
             catOptionComboUid = null,
             isCatComboCompleted = false,
             coordinates = null,
-            tempCreate = null,
         ).first()
 
         // Then action button should be invisible
@@ -196,7 +192,6 @@ class ConfigureEventDetailsTest {
                 catOptionComboUid = null,
                 isCatComboCompleted = false,
                 coordinates = null,
-                tempCreate = null,
             ).first()
 
             // Then reopen button should be visible
@@ -227,7 +222,6 @@ class ConfigureEventDetailsTest {
                 catOptionComboUid = null,
                 isCatComboCompleted = false,
                 coordinates = null,
-                tempCreate = null,
             ).first()
 
             // Then reopen button should be visible

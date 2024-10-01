@@ -12,10 +12,13 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
@@ -32,6 +35,9 @@ import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OUTreeModel
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -194,6 +200,7 @@ class TeiDashboardMobileActivity :
         setFormViewForLandScape()
         setEditButton()
         observeErrorMessages()
+        observeProgressBar()
         observeDashboardModel()
         showLoadingProgress(false)
     }
@@ -201,6 +208,12 @@ class TeiDashboardMobileActivity :
     private fun observeErrorMessages() {
         dashboardViewModel.showStatusErrorMessages.observe(this) {
             displayStatusError(it)
+        }
+    }
+
+    private fun observeProgressBar() {
+        dashboardViewModel.isLoading.observe(this) {
+            showLoadingProgress(it)
         }
     }
 
@@ -638,6 +651,10 @@ class TeiDashboardMobileActivity :
                         )
                     }
 
+                    popupMenu.menu.findItem(R.id.transferTei).let { transferTeiItem ->
+                        transferTeiItem.isVisible = dashboardViewModel.checkIfTeiCanBeTransferred()
+                    }
+
                     val status = presenter.getEnrollmentStatus(enrollmentUid)
                     if (status == EnrollmentStatus.COMPLETED) {
                         popupMenu.menu.findItem(R.id.complete).isVisible = false
@@ -680,6 +697,7 @@ class TeiDashboardMobileActivity :
                         showTutorial(true)
                     }
 
+                    R.id.transferTei -> presenter.onTransferClick()
                     R.id.markForFollowUp -> dashboardViewModel.onFollowUp()
                     R.id.deleteTei -> showDeleteTEIConfirmationDialog()
                     R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
@@ -742,6 +760,47 @@ class TeiDashboardMobileActivity :
                 /*No message needed to be displayed*/
             }
         }
+    }
+
+    override fun showOrgUnitSelector(
+        programUid: String,
+    ) {
+        val ownerOrgUnit = dashboardViewModel.dashboardModel.value?.ownerOrgUnit
+        OUTreeFragment.Builder()
+            .singleSelection()
+            .withModel(
+                OUTreeModel(
+                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType.lowercase()),
+                    subtitle = getString(
+                        R.string.transfer_tei_org_sheet_description,
+                        ownerOrgUnit?.displayName(),
+                    ),
+                    headerAlignment = TextAlign.Start,
+                    showClearButton = false,
+                    doneButtonText = getString(R.string.transfer),
+                    doneButtonIcon = Icons.Outlined.MoveDown,
+                    hideOrgUnits = ownerOrgUnit?.let { listOf(it) },
+                ),
+            )
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramSearchScope(programUid),
+            )
+            .onSelection { selectedOrgUnits ->
+                if (selectedOrgUnits.isNotEmpty()) {
+                    dashboardViewModel.transferTei(
+                        selectedOrgUnits.first().uid(),
+                    ) {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.successfully_transferred,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
+            }
+            .build()
+            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
     private fun showDeleteTEIConfirmationDialog() {

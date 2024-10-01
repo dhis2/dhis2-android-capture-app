@@ -587,6 +587,30 @@ class DashboardRepositoryImpl(
         )
     }
 
+    override fun transferTei(newOrgUnitId: String) {
+        d2.trackedEntityModule()
+            .ownershipManager()
+            .blockingTransfer(teiUid, programUid!!, newOrgUnitId)
+    }
+
+    override fun teiCanBeTransferred(): Boolean {
+        if (programUid == null) {
+            return false
+        }
+
+        val orgUnits = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+        if (orgUnits.isEmpty()) {
+            return false
+        }
+
+        return orgUnits.size > 1 ||
+            orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
+    }
+
     private fun getGroupingOptions(): HashMap<String, Boolean> {
         val typeToken: TypeToken<HashMap<String, Boolean>> =
             object : TypeToken<HashMap<String, Boolean>>() {}
