@@ -48,6 +48,8 @@ kotlin {
 dependencies {
     implementation(project(":commons"))
 
+    implementation(libs.bundles.tracker.implementation)
+
     testImplementation(libs.test.mockitoCore)
     testImplementation(libs.test.mockitoInline)
     testImplementation(libs.test.mockitoKotlin)
