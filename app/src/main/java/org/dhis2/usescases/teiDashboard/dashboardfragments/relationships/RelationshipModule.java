@@ -16,6 +16,8 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.tracker.ProfilePictureProvider;
+import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
+import org.dhis2.tracker.relationships.ui.RelationShipsViewModel;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
@@ -121,5 +123,22 @@ public class RelationshipModule {
     @PerFragment
     TeiAttributesProvider teiAttributesProvider(D2 d2) {
         return new TeiAttributesProvider(d2);
+    }
+
+    @Provides
+    @PerFragment
+    RelationShipsViewModel provideRelationshipsViewModel(
+            GetRelationshipsByType getRelationshipsByType
+    ) {
+        return new RelationShipsViewModel(getRelationshipsByType);
+    }
+
+    @Provides
+    @PerFragment
+    GetRelationshipsByType provideGetRelationshipsByType(
+            D2 d2,
+            DispatcherProvider dispatcherProvider
+    ) {
+        return new GetRelationshipsByType(d2, dispatcherProvider);
     }
 }
