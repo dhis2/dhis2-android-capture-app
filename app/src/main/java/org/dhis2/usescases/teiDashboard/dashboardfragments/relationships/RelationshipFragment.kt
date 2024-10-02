@@ -43,13 +43,15 @@ import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.tracker.relationships.ui.NoRelationships
+import org.dhis2.tracker.relationships.ui.RelationShipsScreen
+import org.dhis2.tracker.relationships.ui.RelationShipsViewModel
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
-import org.dhis2.usescases.teiDashboard.ui.NoRelationships
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -77,8 +79,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     @Inject
     lateinit var colorUtils: ColorUtils
 
+    @Inject
+    lateinit var relationShipsViewModel: RelationShipsViewModel
+
     private lateinit var binding: FragmentRelationshipsBinding
-    private lateinit var relationshipAdapter: RelationshipAdapter
     private var relationshipType: RelationshipType? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private var sources: Set<String>? = null
@@ -133,7 +137,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     }
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
-                        else -> RelationshipListScreen()
+                        else -> RelationShipsScreen(relationShipsViewModel)
                     }
                 }
             }
@@ -279,7 +283,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     }
 
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
-        relationshipMapManager = RelationshipMapManager(mapView, MapLocationEngine(requireContext()))
+        relationshipMapManager =
+            RelationshipMapManager(mapView, MapLocationEngine(requireContext()))
         relationshipMapManager?.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
