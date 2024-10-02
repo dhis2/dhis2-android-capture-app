@@ -14,6 +14,7 @@ import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -319,7 +320,7 @@ class TeiDashboardMobileActivity :
     private fun setUpNavigationBar() {
         binding.navigationBar.setContent {
             DHIS2Theme {
-                val uiState by dashboardViewModel.navigationBarUIState
+                val uiState by dashboardViewModel.navigationBarUIState.collectAsState()
                 var selectedHomeItemIndex by remember(uiState) {
                     mutableIntStateOf(
                         uiState.items.indexOfFirst {
@@ -336,15 +337,6 @@ class TeiDashboardMobileActivity :
                     dashboardViewModel.onNavigationItemSelected(itemId)
                 }
 
-                /*
-                TODO: Next step will be refactor this fragments into composable
-                 when (uiState.selectedItem) {
-                    TEIDashboardItems.DETAILS -> DetailsScreen()
-                    TEIDashboardItems.CHARTS -> ChartsScreen()
-                    TEIDashboardItems.RELATIONSHIPS -> RelationshipScreen()
-                    TEIDashboardItems.NOTES -> NotesScreen()
-                }
-                 */
                 uiState.selectedItem?.let {
                     navigateToFragment(it)
                 }
@@ -519,7 +511,7 @@ class TeiDashboardMobileActivity :
         finish()
     }
 
-    fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
+    private fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
         if (hasMoreEnrollments) {
             startActivity(intent(this, teiUid, null, null))
             finish()
