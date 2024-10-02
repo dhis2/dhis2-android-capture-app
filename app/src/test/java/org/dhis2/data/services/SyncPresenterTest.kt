@@ -2,6 +2,7 @@ package org.dhis2.data.services
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import org.dhis2.commons.bindings.program
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
@@ -299,9 +300,7 @@ class SyncPresenterTest {
         val mockedProgram = mock<Program> {
             on { programType() } doReturn ProgramType.WITH_REGISTRATION
         }
-        whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
-        ) doReturn mockedProgram
+        whenever(d2.program("programUid")) doReturn mockedProgram
 
         mockTeiUploadByProgram()
         mockTeiDownloadByProgram()
@@ -319,22 +318,20 @@ class SyncPresenterTest {
         val mockedProgram = mock<Program> {
             on { programType() } doReturn ProgramType.WITHOUT_REGISTRATION
         }
-        whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
-        ) doReturn mockedProgram
+        whenever(d2.program("programUid")) doReturn mockedProgram
 
         mockEventUploadByProgram()
-        mockEventUploadByProgram()
-        mockEventUploadByProgram()
+        mockEventDownloadByProgram()
+        mockFileResourceByProgramCall()
 
-        presenter.syncGranularProgram("programUid").test().assertValueCount(3)
+        presenter.syncGranularProgram("programUid").test().assertValueCount(4)
     }
 
     @Test
     fun syncGranularNullProgram() {
-        whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
-        ) doReturn null
+        whenever(d2.program("programUid")) doReturn null
+
+        mockFileResourceByProgramCall()
 
         val testSubscriber = presenter.syncGranularProgram("programUid").test()
 
@@ -344,22 +341,12 @@ class SyncPresenterTest {
     }
 
     private fun mockTeiUploadByProgram(programUid: String = "programUid") {
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(listOf(programUid)),
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstances().byProgramUids(listOf(programUid))
-                .upload(),
-        ) doReturn Observable.empty()
+        whenever(syncRepository.uploadTrackerProgram(programUid)) doReturn Observable.empty()
     }
 
     private fun mockTeiDownloadByProgram(programUid: String = "programUid") {
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceDownloader().byProgramUid(programUid),
-        ) doReturn mock()
-        whenever(
-            d2.trackedEntityModule().trackedEntityInstanceDownloader().byProgramUid(programUid)
-                .download(),
+            syncRepository.downloadTrackerProgram(programUid),
         ) doReturn Observable.fromArray(
             TrackerD2Progress.builder().build(),
             TrackerD2Progress.builder()
@@ -376,38 +363,34 @@ class SyncPresenterTest {
     }
 
     private fun mockEventUpload(eventUid: String = "uid") {
-        whenever(
-            d2.eventModule().events().byUid(),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().byUid().eq(eventUid),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().byUid().eq(eventUid).upload(),
-        ) doReturn Observable.empty()
+        whenever(syncRepository.uploadEvent(eventUid)) doReturn Observable.empty()
     }
 
     private fun mockEventUploadByProgram(programUid: String = "programUid") {
+        whenever(syncRepository.uploadEventProgram(programUid)) doReturn Observable.empty()
+    }
+
+    private fun mockEventDownloadByProgram(programUid: String = "programUid") {
         whenever(
-            d2.eventModule().events().byProgramUid(),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().byProgramUid().eq(programUid),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().events().byProgramUid().eq(programUid).upload(),
-        ) doReturn Observable.empty()
+            syncRepository.downloadEventProgram(programUid),
+        ) doReturn Observable.fromArray(
+            TrackerD2Progress.builder().build(),
+            TrackerD2Progress.builder()
+                .programs(
+                    mapOf(
+                        "programUid" to D2ProgressStatus(
+                            true,
+                            D2ProgressSyncStatus.SUCCESS,
+                        ),
+                    ),
+                )
+                .build(),
+        )
     }
 
     private fun mockEventDownload(eventUid: String = "uid", programUid: String = "programUid") {
         whenever(
-            d2.eventModule().eventDownloader().byUid(),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().eventDownloader().byUid().eq(eventUid),
-        ) doReturn mock()
-        whenever(
-            d2.eventModule().eventDownloader().byUid().eq(eventUid).download(),
+            syncRepository.downLoadEvent(eventUid),
         ) doReturn Observable.fromArray(
             TrackerD2Progress.builder().build(),
             TrackerD2Progress.builder()
@@ -425,16 +408,7 @@ class SyncPresenterTest {
 
     private fun mockFileResourceByEventCall(eventUid: String = "uid") {
         whenever(
-            d2.fileResourceModule().fileResourceDownloader(),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byEventUid(),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byEventUid().eq(eventUid),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byEventUid().eq(eventUid).download(),
+            syncRepository.downloadEventFiles(eventUid),
         ) doReturn Observable.fromArray(
             D2Progress(false, null, emptyList()),
             D2Progress(true, null, emptyList()),
@@ -443,17 +417,7 @@ class SyncPresenterTest {
 
     private fun mockFileResourceByProgramCall(programUid: String = "programUid") {
         whenever(
-            d2.fileResourceModule().fileResourceDownloader(),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byProgramUid(),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byProgramUid().eq(programUid),
-        ) doReturn mock()
-        whenever(
-            d2.fileResourceModule().fileResourceDownloader().byProgramUid().eq(programUid)
-                .download(),
+            syncRepository.downloadProgramFiles(programUid),
         ) doReturn Observable.fromArray(
             D2Progress(false, null, emptyList()),
             D2Progress(true, null, emptyList()),
