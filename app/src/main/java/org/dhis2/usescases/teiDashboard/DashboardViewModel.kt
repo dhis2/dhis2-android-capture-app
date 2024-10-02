@@ -9,8 +9,6 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Hub
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -75,11 +73,9 @@ class DashboardViewModel(
     private val _noEnrollmentSelected = MutableLiveData(false)
     val noEnrollmentSelected: LiveData<Boolean> = _noEnrollmentSelected
 
-    private val _navigationBarUIState = mutableStateOf(
-        NavigationBarUIState<TEIDashboardItems>(),
-    )
-    val navigationBarUIState: MutableState<NavigationBarUIState<TEIDashboardItems>> =
-        _navigationBarUIState
+    private val _navigationBarUIState =
+        MutableStateFlow<NavigationBarUIState<TEIDashboardItems>>(NavigationBarUIState())
+    val navigationBarUIState = _navigationBarUIState.asStateFlow()
 
     init {
         fetchDashboardModel()
