@@ -1,4 +1,4 @@
-package org.dhis2.tracker.relationships
+package org.dhis2.tracker.relationships.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
