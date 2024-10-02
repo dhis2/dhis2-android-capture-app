@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import io.reactivex.Single
 import org.dhis2.R
-import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
@@ -12,9 +11,10 @@ import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.maps.model.MapItemModel
+import org.dhis2.tracker.extensions.profilePicturePath
+import org.dhis2.tracker.relationships.data.TeiAttributesProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.events.EventInfoProvider
-import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry

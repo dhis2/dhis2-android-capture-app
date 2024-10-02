@@ -13,11 +13,11 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.tracker.relationships.data.TeiAttributesProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.teiDashboard.DashboardRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
-import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
