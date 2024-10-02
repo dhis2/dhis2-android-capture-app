@@ -5,6 +5,7 @@ import io.reactivex.Single
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.tracker.relationships.data.TeiAttributesProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValueType

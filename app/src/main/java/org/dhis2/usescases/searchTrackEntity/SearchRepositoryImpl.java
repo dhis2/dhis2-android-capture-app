@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.R;
-import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
@@ -37,6 +36,7 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.tracker.extensions.TrackedEntityExtensionsKt;
 import org.dhis2.ui.MetadataIconData;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
@@ -368,7 +368,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         String value = attribute.getValue();
         String transformedValue;
         if (value != null) {
-            transformedValue =  ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
+            transformedValue = ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
         } else {
             transformedValue = sortingValueSetter.getUnknownLabel();
         }
@@ -410,7 +410,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (count > 0) {
             tei.setHasOverdue(true);
             Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = !overdueList.isEmpty()  ? overdueList.get(0).dueDate() : null;
+            Date overdueDate = !overdueList.isEmpty() ? overdueList.get(0).dueDate() : null;
             Date dateToShow = null;
             if (scheduleDate != null && overdueDate != null) {
                 if (scheduleDate.before(overdueDate)) {
@@ -492,7 +492,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private String profilePicturePath(TrackedEntityInstance tei, String programUid) {
         if (!profilePictureCache.containsKey(tei.uid())) {
-            profilePictureCache.put(tei.uid(), ExtensionsKt.profilePicturePath(tei, d2, programUid));
+            profilePictureCache.put(tei.uid(), TrackedEntityExtensionsKt.profilePicturePath(tei, d2, programUid));
         }
         return profilePictureCache.get(tei.uid());
     }
@@ -810,7 +810,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private String profilePicturePath(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
-        return ExtensionsKt.profilePicturePath(tei, d2, selectedProgram != null ? selectedProgram.uid() : null);
+        return TrackedEntityExtensionsKt.profilePicturePath(tei, d2, selectedProgram != null ? selectedProgram.uid() : null);
     }
 
     @Override
