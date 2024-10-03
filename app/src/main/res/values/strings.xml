@@ -147,6 +147,7 @@
     <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
     <string name="due_date">Due date</string>
+    <string name="next_event">Next %1$s</string>
     <string name="cat_combo">Cat combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancel</string>
@@ -959,6 +960,9 @@
     <string name="remove_enrollment_dialog_message">Data from %s will de deleted. This action cannot be undone.</string>
     <string name="schedule_next">Schedule next</string>
     <string name="schedule">Schedule</string>
+    <string name="scheduled_enter_event">Scheduled</string>
+    <string name="enter_event">Enter %1$s</string>
+    <string name="cancel_event">Cancel %1$s</string>
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
     <string name="timeline">Timeline</string>
@@ -986,4 +990,6 @@
     <string name="transfer_tei_org_sheet_title">Transfer %s</string>
     <string name="transfer_tei_org_sheet_description">From %s to…</string>
     <string name="successfully_transferred">Successfully transferred</string>
+    <string name="event_cancelled">%1$s cancelled</string>
+    <string name="due_date_updated">Due date updated</string>
 </resources>

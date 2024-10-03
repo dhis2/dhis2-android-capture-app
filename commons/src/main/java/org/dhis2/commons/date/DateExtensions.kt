@@ -77,6 +77,7 @@ fun Date?.toUiText(context: Context, currentDate: Date = defaultCurrentDate): St
 fun Date?.toOverdueOrScheduledUiText(
     resourceManager: ResourceManager,
     currentDate: Date = defaultCurrentDate,
+    isScheduling: Boolean = false,
 ): String {
     fun getOverdueDaysString(days: Int, isOverdue: Boolean): String {
         return getString(
@@ -105,7 +106,11 @@ fun Date?.toOverdueOrScheduledUiText(
 
     return when {
         period.days == 0 && period.months == 0 && period.years == 0 -> {
-            resourceManager.getString(R.string.overdue_today)
+            if (isScheduling) {
+                resourceManager.getString(R.string.overdue_due_today)
+            } else {
+                resourceManager.getString(R.string.overdue_today)
+            }
         }
         period.years >= 1 -> {
             getString(

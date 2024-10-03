@@ -9,16 +9,18 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.composetable.test.TestActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialogUi
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingViewModel
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -31,6 +33,7 @@ class SchedulingDialogUiTest {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private val viewModel: SchedulingViewModel = mock()
+    private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
 
     @Before
     fun setUp() {
@@ -64,10 +67,18 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
+                )
             ) {
             }
         }
-        composeTestRule.onNodeWithText("Schedule next " + programStages.first().displayName() + "?")
+
+        val eventLabel = programStages.first().displayEventLabel() ?: "event"
+        composeTestRule.onNodeWithText("Schedule next $eventLabel?")
             .assertExists()
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertExists()
@@ -87,6 +98,12 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
+                )
             ) {
             }
         }
@@ -106,6 +123,12 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = true,
+                    eventCreationType = EventCreationType.SCHEDULE,
+                )
             ) {
             }
         }
@@ -130,6 +153,12 @@ class SchedulingDialogUiTest {
                 programStages = programStages,
                 viewModel = viewModel,
                 orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
+                )
             ) {
             }
         }
@@ -143,5 +172,31 @@ class SchedulingDialogUiTest {
         ).performClick()
 
         verify(viewModel).updateStage(programStages[1])
+    }
+
+    @Test
+    fun yesNoFieldsShouldNotBeShownWhenTurnedOff() {
+        val programStages = listOf(
+            ProgramStage.builder().uid("stageUidA").displayName("PS A").build(),
+            ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
+        )
+        whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+
+        composeTestRule.setContent {
+            SchedulingDialogUi(
+                programStages = programStages,
+                viewModel = viewModel,
+                orgUnitUid = "orgUnitUid",
+                launchMode = SchedulingDialog.LaunchMode.NewSchedule(
+                    enrollment = enrollment,
+                    programStages = programStages,
+                    showYesNoOptions = false,
+                    eventCreationType = EventCreationType.SCHEDULE,
+                )
+            ) {
+            }
+        }
+
+        composeTestRule.onNodeWithTag("YES_NO_OPTIONS").assertDoesNotExist()
     }
 }

@@ -19,6 +19,14 @@ class EventDetailResourcesProvider(
         programUid,
     )
 
+    fun provideNextEventDate(label: String?): String {
+        val defaultEventLabel = resourceManager.getString(R.string.event)
+        return resourceManager.getString(
+            R.string.next_event,
+            label ?: defaultEventLabel,
+        )
+    }
+
     fun provideEditionStatus(reason: EventNonEditableReason): String {
         return when (reason) {
             EventNonEditableReason.BLOCKED_BY_COMPLETION ->

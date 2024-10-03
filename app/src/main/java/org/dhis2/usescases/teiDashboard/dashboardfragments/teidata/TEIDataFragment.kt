@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LifecycleOwner
@@ -55,14 +56,18 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.Eve
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventCatComboOptionSelector
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.EVENT_LABEL
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.PROGRAM_STAGE_UID
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_DIALOG_RESULT
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_EVENT_DUE_DATE_UPDATED
+import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_EVENT_SKIPPED
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
+import org.dhis2.utils.extension.setIcon
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
@@ -173,6 +178,39 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                         programUid,
                     ),
                 )
+                presenter.fetchEvents()
+            }
+
+            setFragmentResultListener(SCHEDULING_EVENT_SKIPPED) { _, bundle ->
+                val eventLabel = bundle.getString(EVENT_LABEL) ?: getString(R.string.event)
+                val snackbar = Snackbar.make(
+                    binding.teiRootView,
+                    requireContext().getString(R.string.event_cancelled, eventLabel.replaceFirstChar { it.uppercaseChar() }),
+                    Snackbar.LENGTH_LONG,
+                )
+
+                snackbar.setIcon(
+                    drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+                ) {
+                    snackbar.dismiss()
+                }
+                snackbar.show()
+                presenter.fetchEvents()
+            }
+
+            setFragmentResultListener(SCHEDULING_EVENT_DUE_DATE_UPDATED) { _, _ ->
+                val snackbar = Snackbar.make(
+                    binding.teiRootView,
+                    requireContext().getString(R.string.due_date_updated),
+                    Snackbar.LENGTH_LONG,
+                )
+
+                snackbar.setIcon(
+                    drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+                ) {
+                    snackbar.dismiss()
+                }
+                snackbar.show()
                 presenter.fetchEvents()
             }
         }.root
@@ -396,14 +434,28 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun displayScheduleEvent() {
+    override fun displayScheduleEvent(programStage: ProgramStage?, showYesNoOptions: Boolean, eventCreationType: EventCreationType) {
         val model = dashboardViewModel.dashboardModel.value
         if (model is DashboardEnrollmentModel) {
-            SchedulingDialog.newInstance(
+            SchedulingDialog.newSchedule(
                 enrollment = model.currentEnrollment,
-                programStages = presenter.filterAvailableStages(model.programStages),
+                programStages = if (programStage != null) {
+                    listOf(programStage)
+                } else {
+                    presenter.filterAvailableStages(model.programStages)
+                },
+                showYesNoOptions = showYesNoOptions,
+                eventCreationType = eventCreationType,
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
         }
+    }
+
+    override fun displayEnterEvent(eventUid: String, showYesNoOptions: Boolean, eventCreationType: EventCreationType) {
+        SchedulingDialog.enterEvent(
+            eventUid = eventUid,
+            showYesNoOptions = showYesNoOptions,
+            eventCreationType = eventCreationType,
+        ).show(parentFragmentManager, SCHEDULING_DIALOG)
     }
 
     override fun showDialogCloseProgram() {

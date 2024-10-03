@@ -145,7 +145,7 @@ class EventAdapter(
                             onCardClick = {
                                 it.event?.let { event ->
                                     when (event.status()) {
-                                        EventStatus.SCHEDULE, EventStatus.OVERDUE, EventStatus.SKIPPED -> {
+                                        EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
                                             presenter.onScheduleSelected(
                                                 event.uid(),
                                                 composeView,
