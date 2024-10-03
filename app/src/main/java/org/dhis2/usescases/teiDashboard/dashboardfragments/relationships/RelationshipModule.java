@@ -7,7 +7,6 @@ import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
@@ -16,10 +15,13 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.tracker.ProfilePictureProvider;
+import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
+import org.dhis2.tracker.relationships.data.RelationshipsRepository;
+import org.dhis2.tracker.relationships.data.TeiAttributesProvider;
+import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationShipsViewModel;
 import org.dhis2.usescases.events.EventInfoProvider;
-import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -136,9 +138,33 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
-            D2 d2,
-            DispatcherProvider dispatcherProvider
+            RelationshipsRepository relationshipsRepository
     ) {
-        return new GetRelationshipsByType(d2, dispatcherProvider);
+        return new GetRelationshipsByType(teiUid, enrollmentUid, relationshipsRepository);
     }
+
+    @Provides
+    @PerFragment
+    RelationshipsRepository provideRelationshipsRepository(
+            D2 d2,
+            TeiAttributesProvider attributesProvider,
+            ResourceManager resourceManager,
+            MetadataIconProvider metadataIconProvider
+    ) {
+        if (teiUid != null) {
+            return new TrackerRelationshipsRepository(
+                    d2,
+                    attributesProvider,
+                    resourceManager,
+                    metadataIconProvider);
+        } else {
+            return new EventRelationshipsRepository(
+                    d2,
+                    attributesProvider,
+                    resourceManager,
+                    metadataIconProvider);
+        }
+
+    }
+
 }

@@ -134,13 +134,28 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     }
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
-                        else -> RelationShipsScreen(relationShipsViewModel)
+                        else -> RelationShipsScreen(
+                            viewModel = relationShipsViewModel,
+                            onCreateRelationshipClick = {
+                                goToRelationShip(
+                                    relationshipTypeModel = it.relationshipType,
+                                    teiTypeUid = it.teiTypeUid,
+                                )
+                            },
+                            onRelationshipClick = {
+                                presenter.onRelationshipClicked(
+                                    ownerType = it.ownerType,
+                                    ownerUid = it.ownerUid,
+                                )
+                            },
+                        )
                     }
                 }
             }
         }
     }
 
+    // TODO REMOVE and the adapter and view holder
     @Composable
     private fun RelationshipListScreen() {
         val relationships by presenter.relationshipModels.observeAsState()
