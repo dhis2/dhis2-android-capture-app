@@ -26,12 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -47,8 +47,6 @@ import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
@@ -338,6 +336,9 @@ private fun Map(
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    val locationState by mapSelectorViewModel.locationState.collectAsState()
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp)),
@@ -351,15 +352,14 @@ private fun Map(
                 ) {
                     SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
 
-                    IconButton(
-                        style = IconButtonStyle.TONAL,
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_my_location),
-                                contentDescription = "",
-                            )
+                    LocationIcon(
+                        locationState = locationState,
+                        onLocationButtonClicked = {
+                            scope.launch {
+                                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
+                                onLocationButtonClicked()
+                            }
                         },
-                        onClick = onMyLocationButtonClicked,
                     )
                 }
             },

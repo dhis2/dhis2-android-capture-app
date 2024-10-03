@@ -9,12 +9,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import org.dhis2.maps.R
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.MapItemModel
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun MapScreen(
@@ -67,4 +74,25 @@ fun MapScreen(
         }
         extraContent()
     }
+}
+
+@Composable
+fun LocationIcon(locationState: LocationState, onLocationButtonClicked: () -> Unit) {
+    IconButton(
+        style = IconButtonStyle.TONAL,
+        icon = {
+            Icon(
+                painter = painterResource(
+                    when (locationState) {
+                        LocationState.FIXED -> R.drawable.ic_gps_fixed
+                        LocationState.NOT_FIXED -> R.drawable.ic_gps_not_fixed
+                        LocationState.OFF -> R.drawable.ic_gps_off
+                    },
+                ),
+                contentDescription = "location",
+                tint = TextColor.OnPrimaryContainer,
+            )
+        },
+        onClick = onLocationButtonClicked,
+    )
 }

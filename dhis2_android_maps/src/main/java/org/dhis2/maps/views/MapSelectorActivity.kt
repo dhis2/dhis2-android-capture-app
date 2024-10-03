@@ -1,17 +1,14 @@
 package org.dhis2.maps.views
 
-import android.Manifest.permission
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationListener
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +21,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.MapboxMap.OnMoveListener
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -45,13 +45,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 class MapSelectorActivity :
     AppCompatActivity(),
     MapActivityLocationCallback.OnLocationChanged {
-
-    private val requestLocationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                initLocationUpdates()
-            }
-        }
 
     private val locationProvider = LocationProviderImpl(this)
 
@@ -178,14 +171,10 @@ class MapSelectorActivity :
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     it.map?.addMoveListeners(mapSelectorViewModel::updateCurrentVisibleRegion)
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            permission.ACCESS_FINE_LOCATION,
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        initLocationUpdates()
-                    } else {
-                        requestLocationPermission.launch(permission.ACCESS_FINE_LOCATION)
+                    lifecycleScope.launch {
+                        mapManager.locationState.collect { locationState ->
+                            mapSelectorViewModel.locationState.emit(locationState)
+                        }
                     }
                 },
                 onMissingPermission = { permissionsManager ->
@@ -195,6 +184,7 @@ class MapSelectorActivity :
                         LocationSettingLauncher.requestEnableLocationSetting(this)
                     }
                 },
+                locationListener = locationListener,
             )
         }
     }
@@ -216,15 +206,6 @@ class MapSelectorActivity :
             requestCode,
             permissions,
             grantResults,
-        )
-    }
-
-    @RequiresPermission(permission.ACCESS_FINE_LOCATION)
-    private fun initLocationUpdates() {
-        locationProvider.getLastKnownLocation(
-            { location -> locationListener.onLocationChanged(location) },
-            {},
-            {},
         )
     }
 
