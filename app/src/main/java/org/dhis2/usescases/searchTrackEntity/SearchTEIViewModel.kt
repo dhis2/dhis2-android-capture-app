@@ -180,7 +180,7 @@ class SearchTEIViewModel(
 
         _navigationBarUIState.value = _navigationBarUIState.value.copy(
             items = enrollmentItems,
-            selectedItem = enrollmentItems.firstOrNull()?.id
+            selectedItem = enrollmentItems.firstOrNull()?.id,
         )
 
         if (_navigationBarUIState.value.selectedItem != null) {
