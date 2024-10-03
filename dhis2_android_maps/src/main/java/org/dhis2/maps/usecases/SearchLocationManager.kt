@@ -2,6 +2,7 @@ package org.dhis2.maps.usecases
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.apache.commons.text.similarity.JaroWinklerDistance
 import org.dhis2.commons.bindings.addIf
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
@@ -15,6 +16,8 @@ class SearchLocationManager(
     private var cachedResults = emptyList<LocationItemModel.StoredResult>()
 
     private val gson = Gson()
+    private val jaroWinklerDistance = JaroWinklerDistance()
+    private val jaroWinklerThreshold = 0.8
 
     suspend fun getAvailableLocations(query: String? = null): List<LocationItemModel.StoredResult> {
         if (cachedResults.isEmpty()) {
@@ -28,11 +31,16 @@ class SearchLocationManager(
                     } ?: emptyList()
         }
 
-        return cachedResults.filter { item ->
-            query?.let {
-                item.title.contains(query) or item.subtitle.contains(query)
-            } ?: true
-        }.reversed()
+        return cachedResults.flexibleFilter(query).reversed()
+    }
+
+    private fun List<LocationItemModel.StoredResult>.flexibleFilter(
+        query: String?,
+    ): List<LocationItemModel.StoredResult> = filter { item ->
+        query?.let {
+            (jaroWinklerDistance.apply(item.title, query) >= jaroWinklerThreshold) or
+                (jaroWinklerDistance.apply(item.subtitle, query) >= jaroWinklerThreshold)
+        } ?: true
     }
 
     suspend fun storeLocation(location: LocationItemModel) {
