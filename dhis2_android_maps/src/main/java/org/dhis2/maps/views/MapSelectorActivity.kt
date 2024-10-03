@@ -158,10 +158,12 @@ class MapSelectorActivity :
                             }
 
                             override fun onMove(detector: MoveGestureDetector) {
-                                // Nothing to do yet
+                                val centerPosition = this@with.projection.visibleRegion.latLngBounds
+                                mapSelectorViewModel.onMove(centerPosition.center)
                             }
 
                             override fun onMoveEnd(detector: MoveGestureDetector) {
+                                mapSelectorViewModel.onMoveEnd()
                                 updateMapVisibleRegion(this@with)
                             }
                         })

@@ -46,7 +46,11 @@ fun Feature.toStringProperty(): String? = when (source()) {
     null -> null
 }
 
-fun Feature.withPlacesProperties(selected: Boolean = false, title: String? = null, subtitle: String? = null) = this.apply {
+fun Feature.withPlacesProperties(
+    selected: Boolean = false,
+    title: String? = null,
+    subtitle: String? = null,
+) = this.apply {
     addStringProperty(FEATURE_PROPERTY_PLACES_ID, UUID.randomUUID().toString())
     addBooleanProperty(FEATURE_PROPERTY_PLACES, true)
     addBooleanProperty(FEATURE_PROPERTY_PLACES_SELECTED, selected)

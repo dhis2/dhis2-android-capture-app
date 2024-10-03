@@ -37,7 +37,9 @@ class DefaultMapManager(
         boundingBox: BoundingBox,
     ) {
         this.featureCollection = featureCollection
-        initCameraPosition(boundingBox)
+        if (featureCollection.features()?.isNotEmpty() == true) {
+            initCameraPosition(boundingBox)
+        }
         setSource()
         setIcons()
         setLayer()

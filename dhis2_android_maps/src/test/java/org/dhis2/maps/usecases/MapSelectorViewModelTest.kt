@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -263,6 +264,38 @@ class MapSelectorViewModelTest {
         mapSelectorViewModel.onSearchLocation("Hospital")
         mapSelectorViewModel.updateCurrentVisibleRegion(LatLngBounds.world())
         assertTrue(mapSelectorViewModel.searchOnThisAreaVisible.value)
+    }
+
+    @Test
+    fun shouldUpdateGeometryWhenMapMoves() = runTest {
+        with(mapSelectorViewModel) {
+            selectedLocation.test {
+                awaitItem()
+                onMove(LatLng(4.98075, 110.63242))
+                assertTrue(captureMode.value.isSwipe())
+                assertTrue(mapFeatures.value.features()?.isEmpty() == true)
+                val selectedLocation = awaitItem()
+                assertTrue(selectedLocation is SelectedLocation.ManualResult)
+                assertTrue(selectedLocation.latitude == 4.98075 && selectedLocation.longitude == 110.63242)
+            }
+        }
+    }
+
+    @Test
+    fun shouldSwitchCaptureModeToManual() = runTest {
+        with(mapSelectorViewModel) {
+            onMove(LatLng(4.98075, 110.63242))
+            assertTrue(captureMode.value.isSwipe())
+            onMoveEnd()
+            assertTrue(captureMode.value.isManual())
+        }
+    }
+
+    @Test
+    fun shouldAllowCapturingManually() = runTest {
+        with(mapSelectorViewModel) {
+            assertTrue(canCaptureManually())
+        }
     }
 
     private val mockedLocationItemSearchResults = listOf(

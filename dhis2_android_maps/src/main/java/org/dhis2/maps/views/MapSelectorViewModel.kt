@@ -25,6 +25,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.geometry.getPolygonPoints
+import org.dhis2.maps.geometry.isPoint
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.toAccuracyRance
@@ -49,12 +50,14 @@ class MapSelectorViewModel(
         NONE,
         GPS,
         MANUAL,
+        MANUAL_SWIPE,
         SEARCH,
         ;
 
         fun isNone() = this == NONE
         fun isGps() = this == GPS
         fun isManual() = this == MANUAL
+        fun isSwipe() = this == MANUAL_SWIPE
         fun isSearch() = this == SEARCH
     }
 
@@ -70,7 +73,7 @@ class MapSelectorViewModel(
     val selectedLocation = _selectedLocation.asStateFlow()
 
     private var _currentFeature = MutableStateFlow<Feature?>(null)
-    val canSave = _currentFeature.map { it != null }
+    val canSave = _currentFeature.map { it != null && !_captureMode.value.isSwipe() }
         .onStart { emit(initialCoordinates != null) }
         .stateIn(
             viewModelScope,
@@ -98,9 +101,12 @@ class MapSelectorViewModel(
         _captureMode,
     ) { currentFeature, locationItems, captureMode ->
         val selectedFeatures = buildList {
-            currentFeature?.withPlacesProperties(true)?.let {
-                add(it)
-            }
+            currentFeature
+                ?.takeIf { !captureMode.isSwipe() }
+                ?.withPlacesProperties(true)
+                ?.let {
+                    add(it)
+                }
         }
 
         val polygonPointFeatures = currentFeature?.getPolygonPoints() ?: emptyList()
@@ -330,10 +336,12 @@ class MapSelectorViewModel(
     }
 
     fun onClickedOnMap(point: LatLng) {
-        setCaptureMode(CaptureMode.MANUAL)
-        updateSelectedGeometry(
-            SelectedLocation.ManualResult(point.latitude, point.longitude),
-        )
+        if (mapStyleConfig.isManualCaptureEnabled()) {
+            setCaptureMode(CaptureMode.MANUAL)
+            updateSelectedGeometry(
+                SelectedLocation.ManualResult(point.latitude, point.longitude),
+            )
+        }
     }
 
     private fun onClearSelectedLocation() {
@@ -347,7 +355,6 @@ class MapSelectorViewModel(
     }
 
     fun setCaptureMode(selectedMode: CaptureMode) {
-//        onClearSelectedLocation()
         _captureMode.value = selectedMode
     }
 
@@ -374,5 +381,33 @@ class MapSelectorViewModel(
         canSearch: Boolean = _searchLocationQuery.value.isNotBlank(),
     ) {
         _searchOnThisAreaVisible.value = canSearch
+    }
+
+    fun onMove(point: LatLng) {
+        if (canCaptureWithSwipe()) {
+            if (!_captureMode.value.isSwipe()) {
+                setCaptureMode(CaptureMode.MANUAL_SWIPE)
+            }
+            updateSelectedGeometry(
+                SelectedLocation.ManualResult(
+                    selectedLatitude = point.latitude,
+                    selectedLongitude = point.longitude,
+                ),
+            )
+        }
+    }
+
+    fun onMoveEnd() {
+        if (_captureMode.value.isSwipe()) {
+            _captureMode.value = CaptureMode.MANUAL
+        }
+    }
+
+    private fun canCaptureWithSwipe() = mapStyleConfig.isManualCaptureEnabled() &&
+        _selectedLocation.value !is SelectedLocation.None &&
+        _currentFeature.value.isPoint()
+
+    fun canCaptureManually(): Boolean {
+        return mapStyleConfig.isManualCaptureEnabled()
     }
 }
