@@ -230,7 +230,9 @@ class RelationshipPresenter internal constructor(
                     val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
                     if (::layersVisibility.isInitialized) {
                         RelationshipMapData(
-                            mapItems = mapItems.filterRelationshipsByLayerVisibility(layersVisibility),
+                            mapItems = mapItems.filterRelationshipsByLayerVisibility(
+                                layersVisibility,
+                            ),
                             relationshipFeatures = featureCollection.first,
                             boundingBox = featureCollection.second,
                         )

@@ -24,18 +24,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
-fun RelationShipsScreen(viewModel: RelationShipsViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
+fun RelationShipsScreen(
+    viewModel: RelationShipsViewModel,
+    onCreateRelationshipClick: (RelationshipSection) -> Unit,
+    onRelationshipClick: (RelationshipViewModel) -> Unit,
+) {
+    val uiState by viewModel.relationshipsUiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,8 +73,15 @@ fun RelationShipsScreen(viewModel: RelationShipsViewModel) {
                 LazyColumn {
                     items(currentState.data) { item ->
                         RelationShipTypeSection(
-                            title = item.title,
-                            description = item.description,
+                            title = item.relationshipType.displayName() ?: "",
+                            description = if (item.relationships.isEmpty()) "No data" else null,
+                            relationships = item.relationships,
+                            onCreateRelationshipClick = {
+                                onCreateRelationshipClick(item)
+                            },
+                            onRelationshipClick = {
+                                onRelationshipClick(it)
+                            }
                         )
                     }
                 }
@@ -76,39 +94,65 @@ fun RelationShipsScreen(viewModel: RelationShipsViewModel) {
 fun RelationShipTypeSection(
     modifier: Modifier = Modifier,
     title: String,
-    description: String,
-    onClick: () -> Unit = {},
+    description: String?,
+    relationships: List<RelationshipViewModel>,
+    onCreateRelationshipClick: () -> Unit,
+    onRelationshipClick: (RelationshipViewModel) -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = spacedBy(16.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+    Column {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = spacedBy(16.dp),
         ) {
-            Title(text = title)
-            Description(
-                text = description,
-                textColor = TextColor.OnSurfaceLight,
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) {
+                Title(text = title)
+
+                description?.let {
+                    Description(
+                        text = it,
+                        textColor = TextColor.OnSurfaceLight,
+                    )
+                }
+            }
+            IconButton(
+                modifier = Modifier.testTag(TEST_ADD_RELATIONSHIP_BUTTON),
+                style = IconButtonStyle.FILLED,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "New event",
+                        tint = MaterialTheme.colors.onPrimary,
+                    )
+                },
+                onClick = onCreateRelationshipClick,
             )
         }
-        IconButton(
-            modifier = Modifier.testTag(TEST_ADD_RELATIONSHIP_BUTTON),
-            style = IconButtonStyle.FILLED,
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = "New event",
-                    tint = MaterialTheme.colors.onPrimary,
-                )
-            },
-            onClick = onClick,
-        )
+        relationships.forEach { item ->
+            ListCard(
+                listCardState = rememberListCardState(
+                    title = ListCardTitleModel(text = item.displayRelationshipName()),
+                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                        listOf(),
+                        syncProgressItem = AdditionalInfoItem(
+                            key = "null",
+                            value = "null",
+                        ),
+                        expandLabelText = "null",
+                        shrinkLabelText = "null",
+                        minItemsToShow = 3,
+                        scrollableContent = false,
+                    ),
+                ),
+                onCardClick = { onRelationshipClick(item) }
+            )
+        }
     }
 }
 
@@ -122,6 +166,9 @@ fun RelationShipTypeSectionPreview() {
         RelationShipTypeSection(
             title = "Relationship type",
             description = "No data",
+            relationships = listOf(),
+            onCreateRelationshipClick = {},
+            onRelationshipClick = {},
         )
     }
 }

@@ -1,34 +1,34 @@
 package org.dhis2.tracker.relationships.domain
 
-import kotlinx.coroutines.withContext
-import org.dhis2.commons.viewmodel.DispatcherProvider
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationshipSection
-import org.hisp.dhis.android.core.D2
 
 /*
  * This use case fetches all the relationships that the tei has access to grouped by their type.
  */
 class GetRelationshipsByType(
-    d2: D2,
-    private val dispatcher: DispatcherProvider,
+    private val teiUid: String,
+    private val enrollmentUid: String,
+    private val relationShipRepository: RelationshipsRepository,
 ) {
-    suspend operator fun invoke(teiUid: String): List<RelationshipSection> =
-        withContext(dispatcher.io()) {
-            listOf(
-                RelationshipSection(
-                    title = "Parents",
-                    description = "No data",
-                ),
-                RelationshipSection(
-                    title = "Sisters",
-                    description = "No data",
-                ),
-                RelationshipSection(
-                    title = "Brothers",
-                    description = "No data",
-                ),
-            )
-        }
-
-
+    operator fun invoke(): Flow<List<RelationshipSection>> =
+        relationShipRepository.getRelationshipTypes(teiUid)
+            .combine(
+                relationShipRepository.getRelationships(
+                    teiUid,
+                    enrollmentUid
+                )
+            ) { types, relationships ->
+                types.map { type ->
+                    val relationshipType = type.first
+                    val teiTypeUid = type.second
+                    RelationshipSection(
+                        relationshipType = relationshipType,
+                        relationships = relationships.filter { it.relationshipType.uid() == type.first.uid() },
+                        teiTypeUid = teiTypeUid
+                    )
+                }
+            }
 }
