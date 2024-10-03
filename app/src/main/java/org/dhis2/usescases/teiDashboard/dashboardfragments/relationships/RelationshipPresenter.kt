@@ -8,7 +8,6 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
@@ -54,7 +53,6 @@ class RelationshipPresenter internal constructor(
     var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
     private val _relationshipsModels = MutableLiveData<List<RelationshipViewModel>>()
-    val relationshipModels: LiveData<List<RelationshipViewModel>> = _relationshipsModels
     private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
     val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
     private val _mapItemClicked = MutableLiveData<String>()
@@ -68,28 +66,10 @@ class RelationshipPresenter internal constructor(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
+                        // TODO this is used just to get the relationship maps model, maybe can be used from tracker module
                         _relationshipsModels.postValue(it)
                     },
                     { Timber.d(it) },
-                ),
-        )
-
-        compositeDisposable.add(
-            relationshipRepository.relationshipTypes()
-                .map { list ->
-                    val finalList = ArrayList<Trio<RelationshipType, String, Int>>()
-                    for (rType in list) {
-                        val iconResId =
-                            relationshipRepository.getTeiTypeDefaultRes(rType.second)
-                        finalList.add(Trio.create(rType.first, rType.second, iconResId))
-                    }
-                    finalList
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.initFab(it.toMutableList()) },
-                    { Timber.e(it) },
                 ),
         )
     }

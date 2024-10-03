@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.databinding.DataBindingUtil
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
@@ -28,10 +27,8 @@ import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.bindings.launchImageDetail
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.databinding.FragmentRelationshipsBinding
 import org.dhis2.form.model.EventMode
 import org.dhis2.maps.ExternalMapNavigation
 import org.dhis2.maps.camera.centerCameraOnFeatures
@@ -41,7 +38,6 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
-import org.dhis2.tracker.relationships.ui.NoRelationships
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
 import org.dhis2.tracker.relationships.ui.RelationShipsViewModel
 import org.dhis2.ui.ThemeManager
@@ -51,7 +47,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.OnDialogClickListener
-import org.dhis2.utils.dialFloatingActionButton.DialItem
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -79,7 +74,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     @Inject
     lateinit var relationShipsViewModel: RelationShipsViewModel
 
-    private lateinit var binding: FragmentRelationshipsBinding
     private var relationshipType: RelationshipType? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private var sources: Set<String>? = null
@@ -121,9 +115,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false)
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -152,25 +143,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     }
                 }
             }
-        }
-    }
-
-    // TODO REMOVE and the adapter and view holder
-    @Composable
-    private fun RelationshipListScreen() {
-        val relationships by presenter.relationshipModels.observeAsState()
-
-        if (relationships?.isEmpty() == true) {
-            NoRelationships()
-        } else {
-            AndroidView(factory = { _ ->
-                binding.root
-            }, update = {
-                binding.relationshipRecycler.adapter =
-                    RelationshipAdapter(presenter, colorUtils).also {
-                        it.submitList(relationships)
-                    }
-            })
         }
     }
 
@@ -367,26 +339,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 teiTypeUidToAdd,
             ),
         )
-    }
-
-    override fun initFab(relationshipTypes: MutableList<Trio<RelationshipType, String, Int>>) {
-        val items: MutableList<DialItem> = ArrayList()
-        var dialItemIndex = 1
-        for (trio in relationshipTypes) {
-            val relationshipType = trio.val0()
-            val resource = trio.val2()!!
-            items.add(
-                DialItem(
-                    dialItemIndex++,
-                    relationshipType!!.displayName()!!,
-                    resource,
-                ),
-            )
-        }
-        binding.dialFabLayout.addDialItems(items) { clickedId: Int ->
-            val selectedRelationShip = relationshipTypes[clickedId - 1]
-            goToRelationShip(selectedRelationShip.val0()!!, selectedRelationShip.val1()!!)
-        }
     }
 
     private fun goToRelationShip(relationshipTypeModel: RelationshipType, teiTypeUid: String) {
