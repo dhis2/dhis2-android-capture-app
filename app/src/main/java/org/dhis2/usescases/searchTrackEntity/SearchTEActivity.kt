@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment.Companion.forProgram
@@ -104,7 +104,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     private var fromRelationshipTeiUid: String? = null
     private var fromAnalytics = false
 
-    private var viewModel: SearchTEIViewModel? = null
+    private val viewModel: SearchTEIViewModel by viewModels<SearchTEIViewModel> { viewModelFactory }
 
     private var initSearchNeeded = true
     var searchComponent: SearchTEComponent? = null
@@ -141,8 +141,6 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         }
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this, viewModelFactory)[SearchTEIViewModel::class.java]
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
         if (savedInstanceState?.getString(CURRENT_SCREEN) != null) {
             currentContent = Content.valueOf(
@@ -154,7 +152,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         searchScreenConfigurator = SearchScreenConfigurator(
             binding,
         ) { isOpen: Boolean? ->
-            viewModel!!.setFiltersOpened(isOpen!!)
+            viewModel.setFiltersOpened(isOpen!!)
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(INITIAL_PAGE)) {
             initialPage = savedInstanceState.getInt(INITIAL_PAGE)
@@ -163,7 +161,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         binding.setTotalFilters(FilterManager.getInstance().totalFilters)
 
         if (isLandscape()) {
-            viewModel!!.filtersOpened.observe(this) { isOpened: Boolean ->
+            viewModel.filtersOpened.observe(this) { isOpened: Boolean ->
                 if (java.lang.Boolean.TRUE == isOpened) {
                     binding.mainComponent.clipWithRoundedCorners(16.dp)
                 } else {
@@ -183,9 +181,9 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
         binding.landOpenSearchButton
             .setLandscapeOpenSearchButton(
-                viewModel!!,
+                viewModel,
             ) {
-                viewModel!!.setSearchScreen()
+                viewModel.setSearchScreen()
             }
 
         setupBottomNavigation()
@@ -263,18 +261,18 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun onBackPressed() {
-        viewModel!!.onBackPressed(
+        viewModel.onBackPressed(
             isPortrait(),
-            viewModel!!.searchOrFilterIsOpen(),
+            viewModel.searchOrFilterIsOpen(),
             this.isKeyboardOpened(),
             {
                 super.onBackPressed()
             },
             {
-                if (viewModel!!.filterIsOpen()) {
+                if (viewModel.filterIsOpen()) {
                     showHideFilterGeneral()
                 }
-                viewModel!!.setPreviousScreen()
+                viewModel.setPreviousScreen()
             },
             {
                 hideKeyboard()
@@ -288,7 +286,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable(Constants.QUERY_DATA, viewModel!!.queryData as Serializable)
+        outState.putSerializable(Constants.QUERY_DATA, viewModel.queryData as Serializable)
         //        outState.putInt(INITIAL_PAGE, binding.navigationBar.currentPage());
         outState.putString(CURRENT_SCREEN, currentContent!!.name)
     }
@@ -302,7 +300,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             )
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) viewModel!!.refreshData()
+                    if (hasChanged) viewModel.refreshData()
                 }
             })
             .onNoConnectionListener {
@@ -318,14 +316,14 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     override fun updateFilters(totalFilters: Int) {
         binding.totalFilters = totalFilters
         binding.executePendingBindings()
-        viewModel!!.updateActiveFilters(totalFilters > 0)
-        viewModel!!.refreshData()
+        viewModel.updateActiveFilters(totalFilters > 0)
+        viewModel.refreshData()
     }
 
     private fun initSearchParameters() {
         initSearchScreen(
             binding.searchContainer,
-            viewModel!!,
+            viewModel,
             initialProgram,
             tEType!!,
             resourceManager,
@@ -338,7 +336,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         if (selectedOrgUnits.isNotEmpty()) {
                             selectedOrgUnit = selectedOrgUnits[0].uid()
                         }
-                        viewModel!!.onParameterIntent(
+                        viewModel.onParameterIntent(
                             OnSave(
                                 uid!!,
                                 selectedOrgUnit,
@@ -408,7 +406,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 commit()
             }
         }
-        viewModel!!.refreshData.observe(this) {
+        viewModel.refreshData.observe(this) {
             binding.root.closeKeyboard()
         }
     }
@@ -454,7 +452,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun observeScreenState() {
-        viewModel!!.screenState.observe(this) { screenState: SearchTEScreenState? ->
+        viewModel.screenState.observe(this) { screenState: SearchTEScreenState? ->
             searchScreenConfigurator!!.configure(
                 screenState!!,
             )
@@ -462,7 +460,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun observeDownload() {
-        viewModel!!.downloadResult.observe(this) { result: TeiDownloadResult ->
+        viewModel.downloadResult.observe(this) { result: TeiDownloadResult ->
             result.handleResult(
                 { teiUid: String, programUid: String?, enrollmentUid: String? ->
                     openDashboard(
@@ -485,7 +483,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun observeLegacyInteractions() {
-        viewModel!!.legacyInteraction.observe(this) { legacyInteraction ->
+        viewModel.legacyInteraction.observe(this) { legacyInteraction ->
             if (legacyInteraction != null) {
                 when (legacyInteraction.id) {
                     LegacyInteractionID.ON_ENROLL_CLICK -> {
@@ -525,13 +523,13 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         )
                     }
                 }
-                viewModel!!.onLegacyInteractionConsumed()
+                viewModel.onLegacyInteractionConsumed()
             }
         }
     }
 
     private fun observeMapLoading() {
-        viewModel!!.refreshData.observe(this) {
+        viewModel.refreshData.observe(this) {
             if (currentContent == Content.MAP) {
                 binding.toolbarProgress.show()
             }
@@ -559,7 +557,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
         binding.programSpinner.overrideHeight(500)
         binding.programSpinner.doOnItemSelected { selectedIndex: Int? ->
-            viewModel!!.onProgramSelected(selectedIndex!!, programs) { selectedProgram: String? ->
+            viewModel.onProgramSelected(selectedIndex!!, programs) { selectedProgram: String? ->
                 changeProgram(selectedProgram)
             }
         }
@@ -574,7 +572,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             )
             .onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) viewModel!!.refreshData()
+                    if (hasChanged) viewModel.refreshData()
                 }
             })
             .onNoConnectionListener {
@@ -597,7 +595,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     private fun changeProgram(programUid: String?) {
         searchNavigator.changeProgram(
             programUid,
-            viewModel!!.queryDataByProgram(programUid),
+            viewModel.queryDataByProgram(programUid),
             fromRelationshipTeiUid,
         )
     }
@@ -607,7 +605,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun showHideFilterGeneral() {
-        viewModel!!.onFiltersClick(isLandscape())
+        viewModel.onFiltersClick(isLandscape())
     }
 
     override fun setInitialFilters(filtersToDisplay: List<FilterItem>) {
@@ -620,7 +618,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     @SuppressLint("NotifyDataSetChanged")
     override fun clearFilters() {
-        if (viewModel!!.filterIsOpen()) {
+        if (viewModel.filterIsOpen()) {
             filtersAdapter.notifyDataSetChanged()
             FilterManager.getInstance().clearAllFilters()
         }
@@ -688,7 +686,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     fun refreshData() {
-        viewModel!!.refreshData()
+        viewModel.refreshData()
     }
 
     override fun couldNotDownload(typeName: String) {
@@ -699,7 +697,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         BreakTheGlassBottomDialog()
             .setProgram(presenter.program.uid())
             .setPositiveButton { reason: String? ->
-                viewModel!!.onDownloadTei(teiUid, enrollmentUid, reason)
+                viewModel.onDownloadTei(teiUid, enrollmentUid, reason)
             }
             .show(supportFragmentManager, BreakTheGlassBottomDialog::class.java.name)
     }
