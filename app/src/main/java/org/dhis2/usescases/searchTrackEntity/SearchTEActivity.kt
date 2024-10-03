@@ -639,8 +639,8 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         )
     }
 
-    override fun fromRelationshipTEI(): String {
-        return fromRelationshipTeiUid!!
+    override fun fromRelationshipTEI(): String? {
+        return fromRelationshipTeiUid
     }
 
     override fun showHideFilterGeneral() {
