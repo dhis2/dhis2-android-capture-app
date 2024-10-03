@@ -28,14 +28,12 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
@@ -288,33 +286,6 @@ class EventCaptureActivity :
         binding.completion.setCompletionPercentage(primaryValue)
         if (!presenter.getCompletionPercentageVisibility()) {
             binding.completion.visibility = View.GONE
-        }
-    }
-
-    override fun showCompleteActions(eventCompletionDialog: EventCompletionDialog) {
-        val dialog = BottomSheetDialog(
-            bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-            onMainButtonClicked = {
-                setAction(eventCompletionDialog.mainButtonAction)
-            },
-            onSecondaryButtonClicked = {
-                eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-            },
-            content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                { bottomSheetDialog ->
-                    ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                        bottomSheetDialog.dismiss()
-                    }
-                }
-            } else {
-                null
-            },
-        )
-        if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
-        }
-        if (this.isLandscape()) {
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }
 

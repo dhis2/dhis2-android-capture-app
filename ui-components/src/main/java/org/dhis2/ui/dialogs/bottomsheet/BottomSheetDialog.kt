@@ -61,69 +61,73 @@ class BottomSheetDialog(
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
-                BottomSheetShell(
-                    title = bottomSheetDialogUiModel.title,
-                    description = when (bottomSheetDialogUiModel.clickableWord) {
-                        null -> bottomSheetDialogUiModel.message
-                        else -> null
-                    },
-                    headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
-                    icon = {
-                        Icon(
-                            modifier = Modifier.size(Spacing24),
-                            painter = painterResource(bottomSheetDialogUiModel.iconResource),
-                            contentDescription = "Icon",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    buttonBlock = {
-                        ButtonBlock(
-                            primaryButton = {
-                                Button(
-                                    style = ButtonStyle.OUTLINED,
-                                    text = bottomSheetDialogUiModel.secondaryButton?.let {
-                                        it.textLabel ?: stringResource(id = it.textResource)
-                                    } ?: "",
-                                    onClick = {
-                                        onSecondaryButtonClicked()
-                                        dismiss()
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .testTag(SECONDARY_BUTTON_TAG),
-                                )
-                            },
-                            secondaryButton = {
-                                Button(
-                                    style = ButtonStyle.FILLED,
-                                    text = bottomSheetDialogUiModel.mainButton?.let {
-                                        it.textLabel ?: stringResource(id = it.textResource)
-                                    } ?: "",
-                                    onClick = {
-                                        onMainButtonClicked(this@BottomSheetDialog)
-                                        dismiss()
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .testTag(MAIN_BUTTON_TAG),
-                                )
-                            },
-                        )
-                    },
-                    onDismiss = {
-                        onSecondaryButtonClicked()
-                        dismiss()
-                    },
-                    content = bottomSheetDialogUiModel.clickableWord?.let {
-                        {
-                            ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
-                        }
-                    },
-                    showSectionDivider = when (bottomSheetDialogUiModel.clickableWord) {
-                        null -> true
-                        else -> false
-                    },
-                )
+                    BottomSheetShell(
+                        title = bottomSheetDialogUiModel.title,
+                        description = when (bottomSheetDialogUiModel.clickableWord) {
+                            null -> bottomSheetDialogUiModel.message
+                            else -> null
+                        },
+                        headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(Spacing24),
+                                painter = painterResource(bottomSheetDialogUiModel.iconResource),
+                                contentDescription = "Icon",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        buttonBlock = {
+                            ButtonBlock(
+                                primaryButton = {
+                                    bottomSheetDialogUiModel.secondaryButton.let {
+                                        Button(
+                                            style = ButtonStyle.OUTLINED,
+                                            text = bottomSheetDialogUiModel.secondaryButton?.let {
+                                                it.textLabel ?: stringResource(id = it.textResource)
+                                            } ?: "",
+                                            onClick = {
+                                                onSecondaryButtonClicked()
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(SECONDARY_BUTTON_TAG),
+                                        )
+                                    }
+
+                                },
+                                secondaryButton = {
+                                    bottomSheetDialogUiModel.secondaryButton.let {  }
+                                    Button(
+                                        style = ButtonStyle.FILLED,
+                                        text = bottomSheetDialogUiModel.mainButton?.let {
+                                            it.textLabel ?: stringResource(id = it.textResource)
+                                        } ?: "",
+                                        onClick = {
+                                            onMainButtonClicked(this@BottomSheetDialog)
+                                            dismiss()
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .testTag(MAIN_BUTTON_TAG),
+                                    )
+                                },
+                            )
+                        },
+                        onDismiss = {
+                            onSecondaryButtonClicked()
+                            dismiss()
+                        },
+                        content = bottomSheetDialogUiModel.clickableWord?.let {
+                            {
+                                ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
+                            }
+                        },
+                        showSectionDivider = when (bottomSheetDialogUiModel.clickableWord) {
+                            null -> true
+                            else -> false
+                        },
+                    )
                 }
             }
         }

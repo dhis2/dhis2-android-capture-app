@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
@@ -16,8 +15,6 @@ class EventCaptureContract {
         fun renderInitialInfo(stageName: String)
         val presenter: Presenter
         fun updatePercentage(primaryValue: Float)
-        fun showCompleteActions(eventCompletionDialog: EventCompletionDialog)
-
         fun restartDataEntry()
         fun finishDataEntry()
         fun saveAndFinish()
