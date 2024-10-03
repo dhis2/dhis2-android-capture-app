@@ -49,6 +49,7 @@ import org.dhis2.commons.sync.SyncContext.TrackerProgramTei
 import org.dhis2.data.forms.dataentry.ProgramAdapter
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.form.ui.intent.FormIntent.OnSave
+import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnAddRelationship
@@ -377,42 +378,12 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 }
 
                 LaunchedEffect(uiState.selectedItem) {
-                    when (uiState.selectedItem) {
-                        NavigationPage.LIST_VIEW -> {
-                            viewModel.setListScreen()
-                            showList()
-                            showSearchAndFilterButtons()
-                        }
-
-                        NavigationPage.MAP_VIEW -> {
-                            networkUtils.performIfOnline(
-                                context = this@SearchTEActivity,
-                                action = {
-                                    presenter.trackSearchMapVisualization()
-                                    showMap()
-                                    showSearchAndFilterButtons()
-                                },
-                                onDialogDismissed = {
-                                    selectedItemIndex = 0
-                                },
-                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
-                            )
-                        }
-
-                        NavigationPage.ANALYTICS -> {
-                            if (sessionManagerServiceImpl.isUserLoggedIn()) {
-                                presenter.trackSearchAnalytics()
-                                viewModel.setAnalyticsScreen()
-                                fromAnalytics = true
-                                showAnalytics()
-                                hideSearchAndFilterButtons()
-                            }
-                        }
-
-                        else -> {
-                            // no-op
-                        }
-                    }
+                    handleBottomNavigation(
+                        uiState = uiState,
+                        onDialogDismissed = {
+                            selectedItemIndex = 0
+                        },
+                    )
                 }
 
                 AnimatedVisibility(
@@ -433,6 +404,46 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         viewModel.onNavigationPageChanged(page)
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleBottomNavigation(
+        uiState: NavigationBarUIState<NavigationPage>,
+        onDialogDismissed: () -> Unit,
+    ) {
+        when (uiState.selectedItem) {
+            NavigationPage.LIST_VIEW -> {
+                viewModel.setListScreen()
+                showList()
+                showSearchAndFilterButtons()
+            }
+
+            NavigationPage.MAP_VIEW -> {
+                networkUtils.performIfOnline(
+                    context = this@SearchTEActivity,
+                    action = {
+                        presenter.trackSearchMapVisualization()
+                        showMap()
+                        showSearchAndFilterButtons()
+                    },
+                    onDialogDismissed = onDialogDismissed,
+                    noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                )
+            }
+
+            NavigationPage.ANALYTICS -> {
+                if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                    presenter.trackSearchAnalytics()
+                    viewModel.setAnalyticsScreen()
+                    fromAnalytics = true
+                    showAnalytics()
+                    hideSearchAndFilterButtons()
+                }
+            }
+
+            else -> {
+                // no-op
             }
         }
     }
