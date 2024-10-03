@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
@@ -14,6 +15,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
+import org.dhis2.tracker.GetTeiProfilePicturePathUseCase;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
@@ -71,6 +73,7 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     RelationshipRepository providesRepository(D2 d2,
+                                              DispatcherProvider dispatcherProvider,
                                               ResourceManager resourceManager,
                                               TeiAttributesProvider attributesProvider,
                                               MetadataIconProvider metadataIconProvider) {
@@ -81,6 +84,7 @@ public class RelationshipModule {
             config = new EventRelationshipConfiguration(eventUid);
         }
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, resourceManager);
+        GetTeiProfilePicturePathUseCase teiProfilePicturePathUseCase = new GetTeiProfilePicturePathUseCase(d2);
         return new RelationshipRepositoryImpl(
                 d2,
                 config,
@@ -89,7 +93,7 @@ public class RelationshipModule {
                 metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
-                        resourceManager,
+                        teiProfilePicturePathUseCase,
                         dateLabelProvider,
                         metadataIconProvider
                 ),
