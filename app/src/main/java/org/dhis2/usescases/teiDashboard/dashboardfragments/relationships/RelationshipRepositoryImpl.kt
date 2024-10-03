@@ -26,7 +26,6 @@ import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -39,13 +38,6 @@ class RelationshipRepositoryImpl(
     private val trackedEntityInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
 ) : RelationshipRepository {
-
-    override fun relationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
-        return when (config) {
-            is EventRelationshipConfiguration -> stageRelationshipTypes()
-            is TrackerRelationshipConfiguration -> trackerRelationshipTypes()
-        }
-    }
 
     override fun relationships(): Single<List<RelationshipViewModel>> {
         return when (config) {
@@ -198,70 +190,6 @@ class RelationshipRepositoryImpl(
             )
             trackedEntityInfoProvider.updateRelationshipInfo(model, relationship)
         }
-    }
-
-    private fun trackerRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
-        // TODO: Limit link to only TEI
-        val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
-            .uid((config as TrackerRelationshipConfiguration).teiUid)
-            .blockingGet()?.trackedEntityType() ?: return Single.just(emptyList())
-
-        return d2.relationshipModule().relationshipTypes()
-            .withConstraints()
-            .byAvailableForTrackedEntityInstance(config.teiUid)
-            .get().map { relationshipTypes ->
-                relationshipTypes.mapNotNull { relationshipType ->
-                    val secondaryTeTypeUid = when {
-                        relationshipType.fromConstraint()?.trackedEntityType()
-                            ?.uid() == teTypeUid ->
-                            relationshipType.toConstraint()?.trackedEntityType()?.uid()
-
-                        relationshipType.bidirectional() == true && relationshipType.toConstraint()
-                            ?.trackedEntityType()?.uid() == teTypeUid ->
-                            relationshipType.fromConstraint()?.trackedEntityType()?.uid()
-
-                        else -> null
-                    }
-                    secondaryTeTypeUid?.let {
-                        Pair(relationshipType, secondaryTeTypeUid)
-                    }
-                }
-            }
-    }
-
-    private fun stageRelationshipTypes(): Single<List<Pair<RelationshipType, String>>> {
-        // TODO: Limit links to TEI
-        val event = d2.eventModule().events().uid(
-            (config as EventRelationshipConfiguration).eventUid,
-        ).blockingGet()
-        val programStageUid = event?.programStage() ?: ""
-        val programUid = event?.program() ?: ""
-        return d2.relationshipModule().relationshipTypes()
-            .withConstraints()
-            .byAvailableForEvent(event?.uid() ?: "")
-            .get().map { relationshipTypes ->
-                relationshipTypes.mapNotNull { relationshipType ->
-                    val secondaryUid = when {
-                        relationshipType.fromConstraint()?.programStage()
-                            ?.uid() == programStageUid ->
-                            relationshipType.toConstraint()?.trackedEntityType()?.uid()
-
-                        relationshipType.fromConstraint()?.program()?.uid() == programUid ->
-                            relationshipType.toConstraint()?.trackedEntityType()?.uid()
-
-                        relationshipType.bidirectional() == true && relationshipType.toConstraint()
-                            ?.programStage()?.uid() == programStageUid ->
-                            relationshipType.fromConstraint()?.trackedEntityType()?.uid()
-
-                        relationshipType.bidirectional() == true && relationshipType.toConstraint()
-                            ?.program()?.uid() == programUid ->
-                            relationshipType.fromConstraint()?.trackedEntityType()?.uid()
-
-                        else -> null
-                    }
-                    secondaryUid?.let { Pair(relationshipType, secondaryUid) }
-                }
-            }
     }
 
     fun eventRelationships(): Single<List<RelationshipViewModel>> {
