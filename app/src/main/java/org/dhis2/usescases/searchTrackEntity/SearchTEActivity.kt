@@ -48,7 +48,6 @@ import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnEnroll
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnEnrollClick
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnSyncIconClick
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnTeiClick
-import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList.Companion.get
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap.Companion.get
 import org.dhis2.usescases.searchTrackEntity.searchparameters.initSearchScreen
@@ -201,7 +200,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 viewModel!!.setSearchScreen()
             }
 
-        configureBottomNavigation()
+        setupBottomNavigation()
         observeScreenState()
         observeDownload()
         observeLegacyInteractions()
@@ -372,7 +371,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         )
     }
 
-    private fun configureBottomNavigation() {
+    private fun setupBottomNavigation() {
 //        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
 //            if(sessionManagerServiceImpl.isUserLoggedIn()) {
 //                if (viewModel.searchOrFilterIsOpen()) {
