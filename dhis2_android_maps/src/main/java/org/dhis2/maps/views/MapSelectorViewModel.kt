@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -89,6 +90,8 @@ class MapSelectorViewModel(
     )
 
     val screenState = _screenState.asStateFlow()
+
+    val locationState = MutableStateFlow(LocationState.NOT_FIXED)
 
     init {
         registerSearchListener()
