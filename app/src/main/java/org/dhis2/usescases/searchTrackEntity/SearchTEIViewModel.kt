@@ -180,7 +180,10 @@ class SearchTEIViewModel(
 
         _navigationBarUIState.value = _navigationBarUIState.value.copy(items = enrollmentItems)
 
-        if (navigationBarUIState.value.items.none { it.id == navigationBarUIState.value.selectedItem }) {
+        if (
+            navigationBarUIState.value.items.isNotEmpty() &&
+            navigationBarUIState.value.items.none { it.id == navigationBarUIState.value.selectedItem }
+        ) {
             onNavigationPageChanged(navigationBarUIState.value.items.first().id)
         }
     }
