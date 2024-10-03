@@ -72,37 +72,29 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     private lateinit var binding: ActivitySearchBinding
     private var searchScreenConfigurator: SearchScreenConfigurator? = null
 
-    @JvmField
     @Inject
-    var presenter: SearchTEContractsModule.Presenter? = null
+    lateinit var presenter: SearchTEContractsModule.Presenter
 
-    @JvmField
     @Inject
-    var filtersAdapter: FiltersAdapter? = null
+    lateinit var filtersAdapter: FiltersAdapter
 
-    @JvmField
     @Inject
-    var viewModelFactory: SearchTeiViewModelFactory? = null
+    lateinit var viewModelFactory: SearchTeiViewModelFactory
 
-    @JvmField
     @Inject
-    var searchNavigator: SearchNavigator? = null
+    lateinit var searchNavigator: SearchNavigator
 
-    @JvmField
     @Inject
-    var networkUtils: NetworkUtils? = null
+    lateinit var networkUtils: NetworkUtils
 
-    @JvmField
     @Inject
-    var themeManager: ThemeManager? = null
+    lateinit var themeManager: ThemeManager
 
-    @JvmField
     @Inject
-    var featureConfig: FeatureConfigRepository? = null
+    lateinit var featureConfig: FeatureConfigRepository
 
-    @JvmField
     @Inject
-    var resourceManager: ResourceManager? = null
+    lateinit var resourceManager: ResourceManager
 
     private var initialProgram: String? = null
     private var tEType: String? = null
@@ -138,22 +130,18 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     private var currentContent: Content? = null
 
-    private val CURRENT_SCREEN = "current_screen"
-
-    @kotlin.OptIn(ExperimentalAnimationApi::class)
+    @OptIn(ExperimentalAnimationApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         initializeVariables(savedInstanceState)
         inject()
 
         if (initialProgram != null) {
-            themeManager!!.setProgramTheme(initialProgram!!)
+            themeManager.setProgramTheme(initialProgram!!)
         }
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this, viewModelFactory!!).get(
-            SearchTEIViewModel::class.java,
-        )
+        viewModel = ViewModelProvider(this, viewModelFactory)[SearchTEIViewModel::class.java]
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
         if (savedInstanceState?.getString(CURRENT_SCREEN) != null) {
@@ -191,7 +179,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         binding.executePendingBindings()
 
         binding.syncButton.visibility = if (initialProgram != null) View.VISIBLE else View.GONE
-        binding.syncButton.setOnClickListener { v: View? -> openSyncDialog() }
+        binding.syncButton.setOnClickListener { openSyncDialog() }
 
         binding.landOpenSearchButton
             .setLandscapeOpenSearchButton(
@@ -241,7 +229,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         if (sessionManagerServiceImpl.isUserLoggedIn()) {
             FilterManager.getInstance().clearUnsupportedFilters()
             if (initSearchNeeded) {
-                presenter!!.init()
+                presenter.init()
             } else {
                 initSearchNeeded = true
             }
@@ -251,9 +239,9 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun onPause() {
         if (sessionManagerServiceImpl.isUserLoggedIn()) {
-            presenter!!.setOpeningFilterToNone()
+            presenter.setOpeningFilterToNone()
             if (initSearchNeeded) {
-                presenter!!.onDestroy()
+                presenter.onDestroy()
             }
         }
         super.onPause()
@@ -261,7 +249,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun onDestroy() {
         if (sessionManagerServiceImpl.isUserLoggedIn()) {
-            presenter!!.onDestroy()
+            presenter.onDestroy()
             FilterManager.getInstance().clearEnrollmentStatus()
             FilterManager.getInstance().clearEventStatus()
             FilterManager.getInstance().clearEnrollmentDate()
@@ -269,7 +257,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             FilterManager.getInstance().clearSorting()
             FilterManager.getInstance().clearAssignToMe()
             FilterManager.getInstance().clearFollowUp()
-            presenter!!.clearOtherFiltersIfWebAppIsConfig()
+            presenter.clearOtherFiltersIfWebAppIsConfig()
         }
         super.onDestroy()
     }
@@ -340,7 +328,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             viewModel!!,
             initialProgram,
             tEType!!,
-            resourceManager!!,
+            resourceManager,
             { uid: String?, preselectedOrgUnits: List<String?>?, orgUnitScope: OrgUnitSelectorScope?, label: String? ->
                 OUTreeFragment.Builder()
                     .withPreselectedOrgUnits(preselectedOrgUnits?.filterNotNull().orEmpty())
@@ -366,7 +354,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             },
             {
                 binding.root.closeKeyboard()
-                presenter!!.onClearClick()
+                presenter.onClearClick()
             },
         )
     }
@@ -409,25 +397,6 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 //                }
 //            }
 //            return true;
-//        });
-
-        observePageConfiguration()
-    }
-
-    private fun observePageConfiguration() {
-//        viewModel.getPageConfiguration().observe(this, pageConfigurator -> {
-//            if (initialPage == 0) {
-//                showList();
-//            }
-//            binding.navigationBar.setOnConfigurationFinishListener(() -> {
-//                if (viewModel.searchOrFilterIsOpen()) {
-//                    binding.navigationBar.hide();
-//                } else {
-//                    binding.navigationBar.show();
-//                }
-//                return Unit.INSTANCE;
-//            });
-//            binding.navigationBar.pageConfiguration(pageConfigurator);
 //        });
     }
 
@@ -506,7 +475,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                     showBreakTheGlass(teiUid, enrollmentUid!!)
                 },
                 {
-                    couldNotDownload(presenter!!.trackedEntityName.displayName()!!)
+                    couldNotDownload(presenter.trackedEntityName.displayName()!!)
                 },
                 { errorMessage: String? ->
                     displayMessage(errorMessage)
@@ -521,12 +490,12 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 when (legacyInteraction.id) {
                     LegacyInteractionID.ON_ENROLL_CLICK -> {
                         val interaction = legacyInteraction as OnEnrollClick
-                        presenter!!.onEnrollClick(HashMap(interaction.queryData))
+                        presenter.onEnrollClick(HashMap(interaction.queryData))
                     }
 
                     LegacyInteractionID.ON_ADD_RELATIONSHIP -> {
                         val interaction = legacyInteraction as OnAddRelationship
-                        presenter!!.addRelationship(
+                        presenter.addRelationship(
                             interaction.teiUid,
                             interaction.relationshipTypeUid,
                             interaction.online,
@@ -535,12 +504,12 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
                     LegacyInteractionID.ON_SYNC_CLICK -> {
                         val interaction = legacyInteraction as OnSyncIconClick
-                        presenter!!.onSyncIconClick(interaction.teiUid)
+                        presenter.onSyncIconClick(interaction.teiUid)
                     }
 
                     LegacyInteractionID.ON_ENROLL -> {
                         val interaction = legacyInteraction as OnEnroll
-                        presenter!!.enroll(
+                        presenter.enroll(
                             interaction.initialProgramUid,
                             interaction.teiUid,
                             HashMap(interaction.queryData),
@@ -549,7 +518,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
                     LegacyInteractionID.ON_TEI_CLICK -> {
                         val interaction = legacyInteraction as OnTeiClick
-                        presenter!!.onTEIClick(
+                        presenter.onTEIClick(
                             interaction.teiUid,
                             interaction.enrollmentUid,
                             interaction.online,
@@ -580,7 +549,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             R.layout.spinner_program_layout,
             R.id.spinner_text,
             programs,
-            presenter!!.trackedEntityName.displayName(),
+            presenter.trackedEntityName.displayName(),
         )
         if (initialProgram != null && initialProgram!!.isNotEmpty()) {
             setInitialProgram(programs)
@@ -626,7 +595,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun changeProgram(programUid: String?) {
-        searchNavigator!!.changeProgram(
+        searchNavigator.changeProgram(
             programUid,
             viewModel!!.queryDataByProgram(programUid),
             fromRelationshipTeiUid,
@@ -642,7 +611,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun setInitialFilters(filtersToDisplay: List<FilterItem>) {
-        filtersAdapter!!.submitList(filtersToDisplay)
+        filtersAdapter.submitList(filtersToDisplay)
     }
 
     override fun hideFilter() {
@@ -652,7 +621,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     @SuppressLint("NotifyDataSetChanged")
     override fun clearFilters() {
         if (viewModel!!.filterIsOpen()) {
-            filtersAdapter!!.notifyDataSetChanged()
+            filtersAdapter.notifyDataSetChanged()
             FilterManager.getInstance().clearAllFilters()
         }
     }
@@ -663,7 +632,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 FilterManager.getInstance().orgUnitUidsFilters,
             )
             .onSelection { selectedOrgUnits: List<OrganisationUnit?>? ->
-                presenter!!.setOrgUnitFilters(
+                presenter.setOrgUnitFilters(
                     selectedOrgUnits,
                 )
             }
@@ -715,7 +684,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun openDashboard(teiUid: String, programUid: String, enrollmentUid: String) {
-        searchNavigator!!.openDashboard(teiUid, programUid, enrollmentUid)
+        searchNavigator.openDashboard(teiUid, programUid, enrollmentUid)
     }
 
     fun refreshData() {
@@ -728,7 +697,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun showBreakTheGlass(teiUid: String, enrollmentUid: String) {
         BreakTheGlassBottomDialog()
-            .setProgram(presenter!!.program.uid())
+            .setProgram(presenter.program.uid())
             .setPositiveButton { reason: String? ->
                 viewModel!!.onDownloadTei(teiUid, enrollmentUid, reason)
             }
@@ -736,7 +705,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun goToEnrollment(enrollmentUid: String, programUid: String) {
-        searchNavigator!!.goToEnrollment(enrollmentUid, programUid, fromRelationshipTEI())
+        searchNavigator.goToEnrollment(enrollmentUid, programUid, fromRelationshipTEI())
     }
 
     override fun downloadProgress(): Consumer<D2Progress> {
@@ -751,6 +720,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     companion object {
         private const val INITIAL_PAGE = "initialPage"
+        private const val CURRENT_SCREEN = "current_screen"
 
         fun getIntent(
             context: Context?,
