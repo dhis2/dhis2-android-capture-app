@@ -119,7 +119,6 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     private var initSearchNeeded = true
     var searchComponent: SearchTEComponent? = null
-    private var initialPage = 0
 
     enum class Extra(val key: String) {
         TEI_UID("TRACKED_ENTITY_UID"),
@@ -165,9 +164,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         ) { isOpen: Boolean? ->
             viewModel.setFiltersOpened(isOpen!!)
         }
-        if (savedInstanceState != null && savedInstanceState.containsKey(INITIAL_PAGE)) {
-            initialPage = savedInstanceState.getInt(INITIAL_PAGE)
-        }
+
         binding.setPresenter(presenter)
         binding.setTotalFilters(FilterManager.getInstance().totalFilters)
 
@@ -298,7 +295,6 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable(Constants.QUERY_DATA, viewModel.queryData as Serializable)
-        //        outState.putInt(INITIAL_PAGE, binding.navigationBar.currentPage());
         outState.putString(CURRENT_SCREEN, currentContent!!.name)
     }
 
@@ -760,7 +756,6 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     companion object {
-        private const val INITIAL_PAGE = "initialPage"
         private const val CURRENT_SCREEN = "current_screen"
 
         fun getIntent(
