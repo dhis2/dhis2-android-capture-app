@@ -118,7 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 }
             }
             .onFinishDataEntry { presenter.finish(mode) }
-            .resultDialogUiProvider(enrollmentResultDialogProvider)
+            .enrollmentResultDialogUiProvider(enrollmentResultDialogProvider)
             .factory(supportFragmentManager)
             .setRecords(
                 EnrollmentRecords(

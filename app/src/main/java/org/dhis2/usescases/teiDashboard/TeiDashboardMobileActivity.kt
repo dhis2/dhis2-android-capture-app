@@ -278,7 +278,7 @@ class TeiDashboardMobileActivity :
                 .onFinishDataEntry {
                     dashboardViewModel.updateDashboard()
                 }
-                .resultDialogUiProvider(
+                .enrollmentResultDialogUiProvider(
                     EnrollmentResultDialogProvider(
                         ResourceManager(
                             this.context,

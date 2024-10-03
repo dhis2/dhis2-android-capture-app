@@ -1179,7 +1179,7 @@ class FormView : Fragment() {
         /**
          *
          */
-        fun resultDialogUiProvider(enrollmentResultDialogProvider: EnrollmentResultDialogProvider) =
+        fun enrollmentResultDialogUiProvider(enrollmentResultDialogProvider: EnrollmentResultDialogProvider) =
             apply { this.enrollmentResultDialogProvider = enrollmentResultDialogProvider }
 
         /**
