@@ -178,12 +178,12 @@ class SearchTEIViewModel(
             )
         }
 
-        _navigationBarUIState.value = _navigationBarUIState.value.copy(items = enrollmentItems)
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(
+            items = enrollmentItems,
+            selectedItem = enrollmentItems.firstOrNull()?.id
+        )
 
-        if (
-            navigationBarUIState.value.items.isNotEmpty() &&
-            navigationBarUIState.value.items.none { it.id == navigationBarUIState.value.selectedItem }
-        ) {
+        if (_navigationBarUIState.value.selectedItem != null) {
             onNavigationPageChanged(navigationBarUIState.value.items.first().id)
         }
     }
