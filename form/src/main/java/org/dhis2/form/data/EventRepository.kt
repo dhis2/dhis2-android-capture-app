@@ -183,8 +183,12 @@ class EventRepository(
         return true
     }
 
+    override fun eventMode(): EventMode? {
+        return eventMode
+    }
+
     override fun validationStrategy(): ValidationStrategy? {
-        return d2.programModule().programStages().uid(programUid).blockingGet()?.validationStrategy() ?: ValidationStrategy.ON_COMPLETE
+        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()?.validationStrategy()
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {

@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import io.reactivex.Flowable
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.hisp.dhis.android.core.common.ValidationStrategy
 
@@ -26,6 +27,8 @@ interface DataEntryRepository {
     ): FieldUiModel
 
     fun isEvent(): Boolean
+
+    fun eventMode(): EventMode?
 
     fun validationStrategy(): ValidationStrategy?
 

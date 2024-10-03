@@ -14,7 +14,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.ResultDialogUiProvider
+import org.dhis2.form.ui.provider.EventCompletionDialogProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.showNonEditableReasonMessage
@@ -27,7 +27,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
     lateinit var presenter: EventCaptureFormPresenter
 
     @Inject
-    lateinit var resultDialogUiProvider: ResultDialogUiProvider
+    lateinit var eventResultDialogUiProvider: EventCompletionDialogProvider
 
     private lateinit var activity: EventCaptureActivity
 
@@ -49,6 +49,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
     override fun onCreate(savedInstanceState: Bundle?) {
         val eventUid = requireArguments().getString(Constants.EVENT_UID, "")
         val eventMode = EventMode.valueOf(arguments?.getString(Constants.EVENT_MODE)!!)
+        val eventStatus = presenter.getEventStatus(eventUid)
         formView = FormView.Builder()
             .locationProvider(locationProvider)
             .onLoadingListener { loading: Boolean ->
@@ -62,14 +63,14 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
                     presenter.showOrHideSaveButton()
                 }
                 Unit
-            }
+            }.onFinishDataEntry { presenter.saveAndExit(eventStatus) }
             .onFocused {
                 activity.hideNavigationBar()
             }
             .onPercentageUpdate { percentage: Float? ->
                 activity.updatePercentage(percentage!!)
             }
-            .resultDialogUiProvider(resultDialogUiProvider = resultDialogUiProvider)
+            .eventCompletionResultDialogProvider(eventResultDialogUiProvider = eventResultDialogUiProvider)
             .factory(activity.supportFragmentManager)
             .setRecords(EventRecords(eventUid, eventMode))
             .openErrorLocation(requireArguments().getBoolean(OPEN_ERROR_LOCATION, false))
@@ -91,7 +92,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             viewLifecycleOwner,
         ) { action: EventCaptureAction ->
             if (action == EventCaptureAction.ON_BACK) {
-                formView!!.onSaveClick()
+                formView?.onBackPressed()
                 activityPresenter.emitAction(EventCaptureAction.NONE)
             }
         }
@@ -115,7 +116,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
 
     override fun onResume() {
         super.onResume()
-        presenter!!.showOrHideSaveButton()
+        presenter.showOrHideSaveButton()
     }
 
     private fun animateFabButton(sectionIsVisible: Boolean) {
@@ -150,7 +151,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             reason,
             canBeReOpened,
         ) {
-            presenter?.reOpenEvent()
+            presenter.reOpenEvent()
         }
     }
 

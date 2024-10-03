@@ -6,6 +6,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
@@ -93,6 +94,10 @@ class EnrollmentRepository(
 
     override fun isEvent(): Boolean {
         return false
+    }
+
+    override fun eventMode(): EventMode? {
+        return null
     }
 
     override fun validationStrategy(): ValidationStrategy? {

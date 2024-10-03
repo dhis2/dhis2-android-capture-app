@@ -13,7 +13,7 @@ import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValidationStrategy
 
-class ResultDialogUiProvider(val resourceManager: ResourceManager) {
+open class EnrollmentResultDialogProvider(val resourceManager: ResourceManager) {
 
     fun provideDataEntryUiModel(
         result: DataIntegrityCheckResult,
@@ -53,7 +53,6 @@ class ResultDialogUiProvider(val resourceManager: ResourceManager) {
                         title = getString(R.string.not_saved),
                         message = getMandatorySubtitle(result.allowDiscard),
                         iconResource = R.drawable.ic_error_outline,
-
                         mainButton = DialogButtonStyle.MainButton(
                             when {
                                 result.allowDiscard -> R.string.keep_editing
@@ -87,12 +86,11 @@ class ResultDialogUiProvider(val resourceManager: ResourceManager) {
     }
 
     private fun getSecondaryButton(result: FieldsWithErrorResult): DialogButtonStyle? {
-        return if (result.validationStrategy == ValidationStrategy.ON_COMPLETE) {
+        return if (result.eventResultDetails.validationStrategy == ValidationStrategy.ON_COMPLETE) {
             DialogButtonStyle.SecondaryButton(R.string.not_now)
-        } else if (result.validationStrategy == null && result.allowDiscard) {
+        } else if (result.eventResultDetails.validationStrategy == null && result.allowDiscard) {
             DialogButtonStyle.SecondaryButton(R.string.discard_changes)
-        } 
-        else {
+        } else {
             null
         }
     }

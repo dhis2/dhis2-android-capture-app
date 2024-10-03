@@ -32,10 +32,10 @@ import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
-import org.dhis2.form.ui.provider.ResultDialogUiProvider
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
@@ -217,8 +217,8 @@ class EnrollmentModule(
     @PerActivity
     fun provideDataEntryResultDialogProvider(
         resourceManager: ResourceManager,
-    ): ResultDialogUiProvider {
-        return ResultDialogUiProvider(resourceManager)
+    ): EnrollmentResultDialogProvider {
+        return EnrollmentResultDialogProvider(resourceManager)
     }
 
     @Provides

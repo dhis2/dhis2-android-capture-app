@@ -59,11 +59,16 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
@@ -77,19 +82,23 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.ResultDialogUiProvider
+import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
+import org.dhis2.form.ui.provider.EventCompletionDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
 import java.util.Calendar
@@ -106,7 +115,9 @@ class FormView : Fragment() {
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-    private var resultDialogUiProvider: ResultDialogUiProvider? = null
+    private var enrollmentResultDialogProvider: EnrollmentResultDialogProvider? = null
+    private var eventResultDialogUiProvider: EventCompletionDialogProvider? = null
+
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
@@ -403,12 +414,20 @@ class FormView : Fragment() {
         }
     }
 
+    private fun manageSuccessfulResult(result: SuccessfulResult) {
+        if (result.eventResultDetails.eventStatus != null) {
+            showDataEntryResultDialog(result)
+        } else {
+            onFinishDataEntry?.invoke()
+        }
+    }
+
     private fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
         if (onDataIntegrityCheck != null) {
             onDataIntegrityCheck?.invoke(result)
         } else {
             when (result) {
-                is SuccessfulResult -> onFinishDataEntry?.invoke()
+                is SuccessfulResult -> manageSuccessfulResult(result)
                 else -> showDataEntryResultDialog(result)
             }
         }
@@ -427,7 +446,10 @@ class FormView : Fragment() {
     }
 
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
-        resultDialogUiProvider?.provideDataEntryUiModel(result)
+        eventResultDialogUiProvider?.let {
+            handleEventDataIntegrityResult(result)
+        }
+        enrollmentResultDialogProvider?.provideDataEntryUiModel(result)
             ?.let { (uiModel, fieldsWithIssues) ->
                 BottomSheetDialog(
                     bottomSheetDialogUiModel = uiModel,
@@ -445,6 +467,115 @@ class FormView : Fragment() {
                     },
                 ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
             }
+    }
+
+    private fun handleEventDataIntegrityResult(result: DataIntegrityCheckResult) {
+        val modelAndFieldsWithIssuesList = getDialogModelBasedOnResult(result)
+        manageActionsBasedOnState(modelAndFieldsWithIssuesList, result.eventResultDetails.eventStatus, result.allowDiscard)
+    }
+
+    private fun manageActionsBasedOnState(modelAndFieldsWithIssuesList: Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>?, eventStatus: EventStatus?, backClicked: Boolean) {
+        val dialogModel = modelAndFieldsWithIssuesList?.first
+        val fieldsWithIssues = modelAndFieldsWithIssuesList?.second ?: emptyList()
+        when (eventStatus) {
+            EventStatus.ACTIVE, EventStatus.COMPLETED -> {
+                if (eventStatus == EventStatus.COMPLETED && fieldsWithIssues.isEmpty()) {
+                    onFinishDataEntry?.invoke()
+                } else {
+                    BottomSheetDialog(
+                        bottomSheetDialogUiModel = dialogModel!!,
+                        onSecondaryButtonClicked = {
+                            manageSecondaryButtonAction(backClicked)
+                        },
+                        onMainButtonClicked = {
+                                bottomSheetDialog ->
+                            manageMainButtonAction(fieldsWithIssues.isNotEmpty(), eventStatus == EventStatus.COMPLETED, bottomSheetDialog)
+                        },
+                        content = { bottomSheetDialog ->
+                            ErrorFieldList(
+                                fieldsWithIssues = fieldsWithIssues,
+                                onItemClick = { bottomSheetDialog.dismiss() },
+                            )
+                        },
+                    ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+                }
+            }
+            else -> {
+                onFinishDataEntry?.invoke()
+            }
+        }
+    }
+
+    private fun manageMainButtonAction(fieldsWithErrors: Boolean, isEventCompleted: Boolean, bottomSheetDialog: BottomSheetDialog) {
+        if (fieldsWithErrors) {
+            bottomSheetDialog.dismiss()
+        } else if (isEventCompleted) {
+            onFinishDataEntry?.invoke()
+        } else {
+            viewModel.completeEvent()
+            onFinishDataEntry?.invoke()
+        }
+    }
+
+    private fun manageSecondaryButtonAction(backClicked: Boolean) {
+        if (backClicked) {
+            viewModel.discardChanges()
+            onFinishDataEntry?.invoke()
+        } else {
+            onFinishDataEntry?.invoke()
+        }
+    }
+
+    private fun getDialogModelBasedOnResult(result: DataIntegrityCheckResult): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
+        return when (result) {
+            is FieldsWithErrorResult -> {
+                eventResultDialogUiProvider?.invoke(
+                    canComplete = result.canComplete,
+                    onCompleteMessage = result.onCompleteMessage,
+                    errorFields = result.fieldUidErrorList,
+                    emptyMandatoryFields = result.mandatoryFields,
+                    warningFields = result.warningFields,
+                    eventMode = result.eventResultDetails.eventMode ?: EventMode.NEW,
+                    eventState = result.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+
+                    result = result,
+                )
+            }
+            is FieldsWithWarningResult -> eventResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = result.fieldUidWarningList,
+                eventMode = result.eventResultDetails.eventMode ?: EventMode.NEW,
+                eventState = result.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+                result = result,
+            )
+
+            is MissingMandatoryResult -> eventResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = result.errorFields,
+                emptyMandatoryFields = result.mandatoryFields,
+                warningFields = result.warningFields,
+                eventMode = result.eventResultDetails.eventMode ?: EventMode.NEW,
+                eventState = result.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+                result = result,
+            )
+
+            is SuccessfulResult -> eventResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = emptyList(),
+                eventMode = result.eventResultDetails.eventMode ?: EventMode.NEW,
+                eventState = result.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+                result = result,
+            )
+
+            NotSavedResult -> null
+        }
     }
 
     private fun showLoopWarning() {
@@ -968,13 +1099,15 @@ class FormView : Fragment() {
     internal fun setConfiguration(
         locationProvider: LocationProvider?,
         completionListener: ((percentage: Float) -> Unit)?,
-        resultDialogUiProvider: ResultDialogUiProvider?,
+        enrollmentResultDialogProvider: EnrollmentResultDialogProvider?,
+        eventResultDialogUiProvider: EventCompletionDialogProvider?,
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
     ) {
         this.locationProvider = locationProvider
         this.completionListener = completionListener
-        this.resultDialogUiProvider = resultDialogUiProvider
+        this.enrollmentResultDialogProvider = enrollmentResultDialogProvider
+        this.eventResultDialogUiProvider = eventResultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
     }
@@ -1009,7 +1142,8 @@ class FormView : Fragment() {
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-        private var resultDialogUiProvider: ResultDialogUiProvider? = null
+        private var enrollmentResultDialogProvider: EnrollmentResultDialogProvider? = null
+        private var eventResultDialogUiProvider: EventCompletionDialogProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
 
@@ -1045,8 +1179,14 @@ class FormView : Fragment() {
         /**
          *
          */
-        fun resultDialogUiProvider(resultDialogUiProvider: ResultDialogUiProvider) =
-            apply { this.resultDialogUiProvider = resultDialogUiProvider }
+        fun resultDialogUiProvider(enrollmentResultDialogProvider: EnrollmentResultDialogProvider) =
+            apply { this.enrollmentResultDialogProvider = enrollmentResultDialogProvider }
+
+        /**
+         *
+         */
+        fun eventCompletionResultDialogProvider(eventResultDialogUiProvider: EventCompletionDialogProvider?) =
+            apply { this.eventResultDialogUiProvider = eventResultDialogUiProvider }
 
         /**
          * Listener for the current activity to know if a activityForResult is called
@@ -1091,7 +1231,8 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    resultDialogUiProvider,
+                    enrollmentResultDialogProvider,
+                    eventResultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,
                 )

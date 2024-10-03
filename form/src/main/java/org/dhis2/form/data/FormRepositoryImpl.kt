@@ -12,8 +12,10 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.rules.models.RuleEffect
 
 private const val loopThreshold = 5
@@ -76,6 +78,10 @@ class FormRepositoryImpl(
             .setLastItem()
     }
 
+    override fun completeEvent() {
+        formValueStore.completeEvent()
+    }
+
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
         if (isEmpty()) {
             return this
@@ -134,10 +140,10 @@ class FormRepositoryImpl(
         return ruleEffectsResult?.configurationErrors
     }
 
-    override fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult {
+    override fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult {
         runDataIntegrity = true
         val itemsWithErrors = getFieldsWithError()
-        val validationStrategy = dataEntryRepository.validationStrategy()
+        val isEvent = dataEntryRepository.isEvent()
         val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
             FieldWithIssue(
                 fieldUid = warningField.fieldUid,
@@ -146,6 +152,19 @@ class FormRepositoryImpl(
                 warningField.errorMessage,
             )
         } ?: emptyList()
+
+        return if (isEvent) {
+            getEventResult(itemsWithErrors, itemsWithWarning, backPressed)
+        } else {
+            getEnrollmentResult(itemsWithErrors, itemsWithWarning, backPressed)
+        }
+    }
+
+    private fun getEnrollmentResult(
+        itemsWithErrors: List<FieldWithIssue>,
+        itemsWithWarning: List<FieldWithIssue>,
+        allowDiscard: Boolean,
+    ): DataIntegrityCheckResult {
         val result = when {
             itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
                 FieldsWithErrorResult(
@@ -155,8 +174,7 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = allowDiscard,
-                    validationStrategy = validationStrategy,
-
+                    eventResultDetails = EventResultDetails(null, null, null),
                 )
             }
 
@@ -168,7 +186,7 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = allowDiscard,
-                    validationStrategy = validationStrategy,
+                    eventResultDetails = EventResultDetails(null, null, null),
 
                 )
             }
@@ -178,8 +196,7 @@ class FormRepositoryImpl(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    validationStrategy = validationStrategy,
-
+                    eventResultDetails = EventResultDetails(null, null, null),
                 )
             }
 
@@ -188,12 +205,176 @@ class FormRepositoryImpl(
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    validationStrategy = validationStrategy,
-
+                    eventResultDetails = EventResultDetails(null, null, null),
                 )
             }
         }
         return result
+    }
+
+    private fun getEventResult(
+        itemsWithErrors: List<FieldWithIssue>,
+        itemsWithWarning: List<FieldWithIssue>,
+        backPressed: Boolean,
+    ): DataIntegrityCheckResult {
+        val eventStatus = formValueStore.eventState()
+        val validationStrategy = dataEntryRepository.validationStrategy()
+        return when (eventStatus) {
+            EventStatus.ACTIVE -> getActiveEventResult(
+                itemsWithErrors,
+                itemsWithWarning,
+                validationStrategy,
+                backPressed,
+            )
+            EventStatus.COMPLETED -> getCompletedEventResult(
+                itemsWithErrors,
+                itemsWithWarning,
+                backPressed,
+            )
+            else -> {
+                getGeneralEventResult(
+                    itemsWithErrors,
+                    itemsWithWarning,
+                    validationStrategy,
+                    backPressed,
+                )
+            }
+        }
+    }
+
+    private fun getGeneralEventResult(itemsWithErrors: List<FieldWithIssue>, itemsWithWarning: List<FieldWithIssue>, validationStrategy: ValidationStrategy?, backPressed: Boolean): DataIntegrityCheckResult {
+        return when {
+            (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
+                SuccessfulResult(
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+
+                )
+            }
+            (itemsWithErrors.isNotEmpty()) -> {
+                FieldsWithErrorResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = backPressed,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+            (mandatoryItemsWithoutValue.isNotEmpty()) -> {
+                MissingMandatoryResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = backPressed,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+            else -> {
+                FieldsWithWarningResult(
+                    fieldUidWarningList = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+        }
+    }
+
+    private fun getActiveEventResult(
+        itemsWithErrors: List<FieldWithIssue>,
+        itemsWithWarning: List<FieldWithIssue>,
+        validationStrategy: ValidationStrategy?,
+        backPressed: Boolean,
+    ): DataIntegrityCheckResult {
+        val allowDiscard = backPressed || validationStrategy == ValidationStrategy.ON_COMPLETE
+
+        return when {
+            (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
+                SuccessfulResult(
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+            (itemsWithErrors.isNotEmpty()) -> {
+                FieldsWithErrorResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+            (mandatoryItemsWithoutValue.isNotEmpty()) -> {
+                MissingMandatoryResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = allowDiscard,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+
+                )
+            }
+            else -> {
+                FieldsWithWarningResult(
+                    fieldUidWarningList = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                )
+            }
+        }
+    }
+
+    private fun getCompletedEventResult(itemsWithErrors: List<FieldWithIssue>, itemsWithWarning: List<FieldWithIssue>, backPressed: Boolean): DataIntegrityCheckResult {
+        return when {
+            (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
+                SuccessfulResult(
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                )
+            }
+            (itemsWithErrors.isNotEmpty()) -> {
+                FieldsWithErrorResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    fieldUidErrorList = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = false,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = backPressed,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                )
+            }
+            (mandatoryItemsWithoutValue.isNotEmpty()) -> {
+                MissingMandatoryResult(
+                    mandatoryFields = mandatoryItemsWithoutValue,
+                    errorFields = itemsWithErrors,
+                    warningFields = itemsWithWarning,
+                    canComplete = false,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    allowDiscard = backPressed,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                )
+            }
+            else -> {
+                FieldsWithWarningResult(
+                    fieldUidWarningList = itemsWithWarning,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
+                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                )
+            }
+        }
     }
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float {

@@ -23,8 +23,6 @@ import org.dhis2.form.model.RowAction;
 import org.dhis2.form.ui.FieldViewModelFactory;
 import org.dhis2.mobileProgramRules.EvaluationType;
 import org.dhis2.mobileProgramRules.RuleEngineHelper;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider;
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator;
 import org.hisp.dhis.android.core.D2;
 
@@ -51,15 +49,13 @@ public class EventCaptureModule {
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
                                                     SchedulerProvider schedulerProvider,
-                                                    PreferenceProvider preferences,
-                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+                                                    PreferenceProvider preferences) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
                 eventCaptureRepository,
                 schedulerProvider,
-                preferences,
-                configureEventCompletionDialog);
+                preferences);
     }
 
     @Provides
@@ -128,19 +124,4 @@ public class EventCaptureModule {
         return new EventPageConfigurator(repository, isPortrait);
     }
 
-    @Provides
-    @PerActivity
-    ConfigureEventCompletionDialog provideConfigureEventCompletionDialog(
-            EventCaptureResourcesProvider eventCaptureResourcesProvider
-    ) {
-        return new ConfigureEventCompletionDialog(eventCaptureResourcesProvider);
-    }
-
-    @Provides
-    @PerActivity
-    EventCaptureResourcesProvider provideEventCaptureResourcesProvider(
-            ResourceManager resourceManager
-    ) {
-        return new EventCaptureResourcesProvider(resourceManager);
-    }
 }

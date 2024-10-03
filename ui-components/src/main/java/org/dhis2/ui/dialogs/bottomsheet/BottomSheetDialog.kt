@@ -33,13 +33,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Border
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-    var onMainButtonClicked: () -> Unit = {},
+    var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
     val content: @Composable
@@ -59,6 +60,7 @@ class BottomSheetDialog(
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                DHIS2Theme {
                 BottomSheetShell(
                     title = bottomSheetDialogUiModel.title,
                     description = when (bottomSheetDialogUiModel.clickableWord) {
@@ -98,7 +100,7 @@ class BottomSheetDialog(
                                         it.textLabel ?: stringResource(id = it.textResource)
                                     } ?: "",
                                     onClick = {
-                                        onMainButtonClicked()
+                                        onMainButtonClicked(this@BottomSheetDialog)
                                         dismiss()
                                     },
                                     modifier = Modifier
@@ -122,6 +124,7 @@ class BottomSheetDialog(
                         else -> false
                     },
                 )
+                }
             }
         }
     }
