@@ -21,9 +21,11 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap.OnMoveListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -178,6 +180,22 @@ class MapSelectorActivity :
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     it.map?.addMoveListeners(mapSelectorViewModel::updateCurrentVisibleRegion)
+                    /*it.map?.addOnMoveListener(object : OnMoveListener {
+                        override fun onMoveBegin(detector: MoveGestureDetector) {
+                            // Nothing to do
+                        }
+
+                        override fun onMove(detector: MoveGestureDetector) {
+                            val centerPosition = this@with.projection.visibleRegion.latLngBounds
+                            mapSelectorViewModel.onMove(centerPosition.center)
+                        }
+
+                        override fun onMoveEnd(detector: MoveGestureDetector) {
+                            mapSelectorViewModel.onMoveEnd()
+                            updateMapVisibleRegion(this@with)
+                        }
+                    })*/
+                    //TODO: 6329 - Add to addMoveListeners
                     if (ActivityCompat.checkSelfPermission(
                             this,
                             permission.ACCESS_FINE_LOCATION,

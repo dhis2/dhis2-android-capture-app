@@ -6,6 +6,9 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 
 class MapStyleConfiguration(private val d2: D2) {
+
+    private val canCaptureManually by lazy { true }
+
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()
         return d2.mapsModule().mapLayers().withImageryProviders().blockingGet()
@@ -20,6 +23,8 @@ class MapStyleConfiguration(private val d2: D2) {
                 build(id, tileUrls, attribution, defaultMap == mapLayer.uid())
             }
     }
+
+    fun isManualCaptureEnabled(): Boolean = canCaptureManually
 }
 
 fun String.mapTileUrls(subdomainPlaceholder: String?, subdomains: List<String>?): List<String> {
