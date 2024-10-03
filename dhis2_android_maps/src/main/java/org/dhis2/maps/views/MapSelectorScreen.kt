@@ -301,8 +301,16 @@ private fun LocationInfoContent(
                 with(selectedLocation as SelectedLocation.SearchResult) {
                     LocationItem(
                         locationItemModel = LocationItemModel.SearchResult(
-                            searchedTitle = title,
-                            searchedSubtitle = address,
+                            searchedTitle = title
+                                .takeIf { it.isNotBlank() }
+                                ?: stringResource(R.string.selected_location),
+                            searchedSubtitle = address
+                                .takeIf { it.isNotBlank() }
+                                ?: stringResource(
+                                    R.string.latitude_longitude,
+                                    selectedLocation.latitude.truncate(),
+                                    selectedLocation.longitude.truncate(),
+                                ),
                             searchedLatitude = latitude,
                             searchedLongitude = longitude,
                         ),
