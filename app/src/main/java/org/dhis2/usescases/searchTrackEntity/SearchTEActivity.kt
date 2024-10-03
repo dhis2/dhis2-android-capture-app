@@ -6,7 +6,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -54,6 +62,7 @@ import org.dhis2.usescases.searchTrackEntity.searchparameters.initSearchScreen
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog
 import org.dhis2.utils.customviews.RxDateDialog
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
@@ -62,6 +71,8 @@ import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.Serializable
 import java.util.Date
@@ -358,44 +369,76 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun setupBottomNavigation() {
-//        binding.navigationBar.setOnNavigationItemSelectedListener(item -> {
-//            if(sessionManagerServiceImpl.isUserLoggedIn()) {
-//                if (viewModel.searchOrFilterIsOpen()) {
-//                    searchScreenConfigurator.closeBackdrop();
-//                }
-//                binding.mainComponent.setVisibility(View.VISIBLE);
-//                switch (item.getItemId()) {
-//                    case R.id.navigation_list_view -> {
-//                        viewModel.setListScreen();
-//                        showList();
-//                        showSearchAndFilterButtons();
-//                    }
-//                    case R.id.navigation_map_view -> networkUtils.performIfOnline(
-//                            this,
-//                            () -> {
-//                                presenter.trackSearchMapVisualization();
-//                                showMap();
-//                            showSearchAndFilterButtons();
-//                            return null;
-//                        },
-//                        () -> {
-//                            binding.navigationBar.selectItemAt(0);
-//                            return null;
-//                        },
-//                        getString(R.string.msg_network_connection_maps)
-//                );
-//                case R.id.navigation_analytics -> {if(sessionManagerServiceImpl.isUserLoggedIn()) {
-//                            presenter.trackSearchAnalytics();
-//                            viewModel.setAnalyticsScreen();
-//                            fromAnalytics = true;
-//                            showAnalytics();
-//                            hideSearchAndFilterButtons();
-//                        }
-//                    }
-//                }
-//            }
-//            return true;
-//        });
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by viewModel.navigationBarUIState
+                var selectedItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
+                }
+
+                LaunchedEffect(uiState.selectedItem) {
+                    when (uiState.selectedItem) {
+                        NavigationPage.LIST_VIEW -> {
+                            viewModel.setListScreen()
+                            showList()
+                            showSearchAndFilterButtons()
+                        }
+
+                        NavigationPage.MAP_VIEW -> {
+                            networkUtils.performIfOnline(
+                                context = this@SearchTEActivity,
+                                action = {
+                                    presenter.trackSearchMapVisualization()
+                                    showMap()
+                                    showSearchAndFilterButtons()
+                                },
+                                onDialogDismissed = {
+                                    selectedItemIndex = 0
+                                },
+                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                            )
+                        }
+
+                        NavigationPage.ANALYTICS -> {
+                            if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                                presenter.trackSearchAnalytics()
+                                viewModel.setAnalyticsScreen()
+                                fromAnalytics = true
+                                showAnalytics()
+                                hideSearchAndFilterButtons()
+                            }
+                        }
+
+                        else -> {
+                            // no-op
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = viewModel.searchOrFilterIsOpen().not(),
+                ) {
+                    NavigationBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.items,
+                        selectedItemIndex = selectedItemIndex,
+                    ) { page ->
+                        selectedItemIndex = uiState.items.indexOfFirst { it.id == page }
+                        if (sessionManagerServiceImpl.isUserLoggedIn().not()) return@NavigationBar
+
+                        if (viewModel.searchOrFilterIsOpen()) {
+                            searchScreenConfigurator?.closeBackdrop()
+                        }
+
+                        viewModel.onNavigationPageChanged(page)
+                    }
+                }
+            }
+        }
     }
 
     private fun showList() {
@@ -447,7 +490,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             fromAnalytics = false
             binding.searchFilterGeneral.visibility = View.VISIBLE
             binding.filterCounter.visibility =
-                if (binding.totalFilters > 0) View.VISIBLE else View.GONE
+                if ((binding.totalFilters ?: 0) > 0) View.VISIBLE else View.GONE
         }
     }
 

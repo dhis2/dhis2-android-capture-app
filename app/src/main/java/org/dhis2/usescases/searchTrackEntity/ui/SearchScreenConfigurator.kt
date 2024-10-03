@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import org.dhis2.R
 import org.dhis2.bindings.display
 import org.dhis2.bindings.dp
+import org.dhis2.commons.animations.hide
+import org.dhis2.commons.animations.show
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
