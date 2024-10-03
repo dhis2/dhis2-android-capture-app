@@ -94,10 +94,8 @@ class BottomSheetDialog(
                                                 .testTag(SECONDARY_BUTTON_TAG),
                                         )
                                     }
-
                                 },
                                 secondaryButton = {
-                                    bottomSheetDialogUiModel.secondaryButton.let {  }
                                     Button(
                                         style = ButtonStyle.FILLED,
                                         text = bottomSheetDialogUiModel.mainButton?.let {

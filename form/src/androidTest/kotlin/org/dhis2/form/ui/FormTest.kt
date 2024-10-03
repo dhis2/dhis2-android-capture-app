@@ -27,12 +27,22 @@ class FormTest {
     }
 
 
+    @Inject
+    lateinit var locationProvider: LocationProvider
+
+    @Inject
+    lateinit var enrollmentResultDialogProvider: EnrollmentResultDialogProvider
+
+    @Inject
+    lateinit var supportFragmentManager: FragmentManager
+
     @get:Rule
     val composeTestRule = createComposeRule()
 
 
 
     fun setUp() {
+
     }
 
     @Test
