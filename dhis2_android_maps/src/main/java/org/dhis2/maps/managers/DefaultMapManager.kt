@@ -9,6 +9,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.types.PLACES_LAYER_ID
@@ -23,6 +24,8 @@ class DefaultMapManager(
 ) : MapManager(mapView, locationEngine) {
 
     private var featureCollection: FeatureCollection? = null
+    override var numberOfUiIcons = 1
+    override var defaultUiIconRightMargin = 12.dp
 
     companion object {
         const val LAYER_ID = "selected_features_layer"
