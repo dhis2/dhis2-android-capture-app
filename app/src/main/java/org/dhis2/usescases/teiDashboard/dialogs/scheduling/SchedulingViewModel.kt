@@ -267,7 +267,6 @@ class SchedulingViewModel(
 
     fun enterEvent(launchMode: LaunchMode.EnterEvent) {
         viewModelScope.launch {
-            val eventDate = eventDate.value.currentDate ?: return@launch
             val event = withContext(dispatchersProvider.io()) {
                 d2.event(launchMode.eventUid)
             } ?: return@launch
