@@ -32,8 +32,6 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
-import org.dhis2.commons.animations.hide
-import org.dhis2.commons.animations.show
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.DateUtils.OnFromToSelector
 import org.dhis2.commons.date.Period
