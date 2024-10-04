@@ -72,12 +72,16 @@ class ProgramEventDetailModule(
         eventDetailRepository: ProgramEventDetailRepository,
         dispatcher: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
+        pageConfigurator: NavigationPageConfigurator,
+        resourceManager: ResourceManager,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
             MapStyleConfiguration(d2),
             eventDetailRepository,
             dispatcher,
             createEventUseCase,
+            pageConfigurator,
+            resourceManager,
         )
     }
 
