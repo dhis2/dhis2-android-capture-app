@@ -1188,12 +1188,6 @@ class FormView : Fragment() {
         fun eventCompletionResultDialogProvider(eventResultDialogUiProvider: EventCompletionDialogProvider?) =
             apply { this.eventResultDialogUiProvider = eventResultDialogUiProvider }
 
-        /**
-         * Listener for the current activity to know if a activityForResult is called
-         * */
-        fun activityForResultListener(callback: () -> Unit) =
-            apply { this.onActivityForResult = callback }
-
         fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
@@ -1202,13 +1196,7 @@ class FormView : Fragment() {
         fun onDataIntegrityResult(callback: (result: DataIntegrityCheckResult) -> Unit) =
             apply { this.onDataIntegrityCheck = callback }
 
-        fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
-            apply { this.onFieldItemsRendered = callback }
-
         fun setRecords(records: FormRepositoryRecords) = apply { this.records = records }
-
-        fun setActionIconsActivation(activate: Boolean) =
-            apply { this.actionIconsActive = activate }
 
         fun openErrorLocation(openErrorLocation: Boolean) =
             apply { this.openErrorLocation = openErrorLocation }

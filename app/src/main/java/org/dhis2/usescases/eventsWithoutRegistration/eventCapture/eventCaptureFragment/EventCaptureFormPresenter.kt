@@ -44,18 +44,7 @@ class EventCaptureFormPresenter(
     }
 
     fun saveAndExit(eventStatus: EventStatus?) {
-        when (eventStatus) {
-            EventStatus.OVERDUE -> {
-                activityPresenter.attemptSkip()
-            }
-            EventStatus.SKIPPED -> {
-                activityPresenter.attemptReschedule()
-            }
-            else -> {
-                activityPresenter.saveAndExit()
-            }
-        }
-        activityPresenter.saveAndExit()
+        activityPresenter.saveAndExit(eventStatus)
     }
 
     private fun configureNonEditableMessage(eventNonEditableReason: EventNonEditableReason) {

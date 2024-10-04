@@ -35,9 +35,7 @@ class EventCaptureContract {
         fun init()
         fun onBackClick()
 
-        fun saveAndExit()
-        fun attemptSkip()
-        fun attemptReschedule()
+        fun saveAndExit(eventStatus: EventStatus?)
         fun isEnrollmentOpen(): Boolean
         fun completeEvent(addNew: Boolean)
         fun deleteEvent()
