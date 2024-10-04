@@ -30,7 +30,7 @@ fun NoRelationships() {
     Column(
         modifier = Modifier
             .background(Color.White)
-            .padding(start = 42.dp, end = 42.dp, top = 42.dp, bottom = 128.dp),
+            .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

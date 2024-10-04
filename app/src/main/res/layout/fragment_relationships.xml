@@ -12,12 +12,6 @@
         app:clipCorners="@{16}"
         app:fab_extra_bottom_margin="@{16}">
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/noRelationships"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="100dp"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/relationship_recycler"
             android:layout_width="match_parent"

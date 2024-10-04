@@ -141,20 +141,18 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     private fun RelationshipListScreen() {
         val relationships by presenter.relationshipModels.observeAsState()
 
-        AndroidView(factory = { _ ->
-            binding.root
-        }, update = {
-            binding.relationshipRecycler.adapter =
-                RelationshipAdapter(presenter, colorUtils).also {
-                    if (relationships?.isEmpty() == true) {
-                        binding.noRelationships.setContent {
-                            NoRelationships()
-                        }
-                    } else {
+        if (relationships?.isEmpty() == true) {
+            NoRelationships()
+        } else {
+            AndroidView(factory = { _ ->
+                binding.root
+            }, update = {
+                binding.relationshipRecycler.adapter =
+                    RelationshipAdapter(presenter, colorUtils).also {
                         it.submitList(relationships)
                     }
-                }
-        })
+            })
+        }
     }
 
     @Composable
