@@ -19,6 +19,8 @@ class GeocoderSearchImpl(
         visibleRegion: LatLngBounds?,
         onLocationFound: (List<LocationItemModel>) -> Unit,
     ) {
+        val start = System.currentTimeMillis()
+        Timber.tag("LOCATION_SEARCH").d("SEARCH QUERY: $name")
         try {
             val results = geocoderApi.searchFor(
                 name,
@@ -28,8 +30,12 @@ class GeocoderSearchImpl(
                 visibleRegion?.southEast?.longitude,
                 maxResults,
             )
+            Timber.tag("LOCATION_SEARCH").d("SEARCH RESULTS: ${results.size} for query: $name")
+            Timber.tag("LOCATION_SEARCH")
+                .d("SEARCH RESULTS: ${(System.currentTimeMillis() - start) / 1000L}")
             onLocationFound(results)
         } catch (e: Exception) {
+            Timber.tag("LOCATION_SEARCH").d("SEARCH ERROR: ${e.printStackTrace()}")
             Timber.e(e)
             defaultSearchLocationProvider(name, onLocationFound)
         }

@@ -12,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.android.gestures.MoveGestureDetector
@@ -25,14 +28,14 @@ import com.mapbox.mapboxsdk.maps.MapboxMap.OnMoveListener
 import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
-import org.dhis2.maps.geometry.bound.GetBoundingBox
-import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapActivityLocationCallback
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
+import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
+import timber.log.Timber
 
 class MapSelectorActivity :
     AppCompatActivity(),
@@ -99,21 +102,34 @@ class MapSelectorActivity :
 
         setContent {
             Dhis2Theme {
+//                val mapData by mapSelectorViewModel.mapFeatures.collectAsState()
+                val screenState by mapSelectorViewModel.screenState.collectAsState()
+                LaunchedEffect(screenState.mapData) {
+                    mapManager.update(
+                        featureCollection = screenState.mapData.featureCollection,
+                        boundingBox = screenState.mapData.boundingBox,
+                    )
+                    if (screenState.displayPolygonInfo) {
+                        polygonAdapter.updateWithFeatureCollection(screenState.mapData)
+                    }
+                }
+
                 MapSelectorScreen(
                     mapSelectorViewModel = mapSelectorViewModel,
+                    screenState = screenState,
                     mapSelectorScreenActions = MapSelectorScreenActions(
                         onBackClicked = ::finish,
-                        onMapDataUpdated = { featureCollection ->
-                            mapManager.update(
-                                featureCollection = featureCollection,
-                                boundingBox = GetBoundingBox().getEnclosingBoundingBox(
-                                    featureCollection.features()?.getLatLngPointList()
-                                        ?: emptyList(),
-                                ),
-                            )
-                            if (mapSelectorViewModel.shouldDisplayPolygonInfo()) {
-                                polygonAdapter.updateWithFeatureCollection(featureCollection)
-                            }
+                        onMapDataUpdated = { mapData ->
+                            /* mapManager.update(
+                                 featureCollection = featureCollection,
+                                 boundingBox = GetBoundingBox().getEnclosingBoundingBox(
+                                     featureCollection.features()?.getLatLngPointList()
+                                         ?: emptyList(),
+                                 ),
+                             )
+                             if (mapSelectorViewModel.shouldDisplayPolygonInfo()) {
+                                 polygonAdapter.updateWithFeatureCollection(featureCollection)
+                             }*/
                         },
                         onLocationButtonClicked = ::onLocationButtonClicked,
                         loadMap = { loadMap(it, savedInstanceState) },
@@ -139,12 +155,8 @@ class MapSelectorActivity :
             it.onCreate(savedInstanceState)
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
-                onFeatureClicked = { feature ->
-                    mapSelectorViewModel.updateSelectedGeometry(feature)
-                },
-                onPointClicked = { point ->
-                    mapSelectorViewModel.onClickedOnMap(point)
-                },
+                onFeatureClicked = mapSelectorViewModel::onPinClicked,
+                onPointClicked = mapSelectorViewModel::onMapClicked,
             )
 
             mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
@@ -152,6 +164,10 @@ class MapSelectorActivity :
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     with(it.map) {
+                        this?.addOnCameraIdleListener {
+                            Timber.tag("UPDATE_VISIBLE_REGION").d("Camera idle")
+                            updateMapVisibleRegion(this@with)
+                        }
                         this?.addOnMoveListener(object : OnMoveListener {
                             override fun onMoveBegin(detector: MoveGestureDetector) {
                                 // Nothing to do
@@ -162,6 +178,7 @@ class MapSelectorActivity :
                             }
 
                             override fun onMoveEnd(detector: MoveGestureDetector) {
+                                Timber.tag("UPDATE_VISIBLE_REGION").d("Camera moved")
                                 updateMapVisibleRegion(this@with)
                             }
                         })
@@ -175,13 +192,13 @@ class MapSelectorActivity :
                             }
 
                             override fun onScaleEnd(detector: StandardScaleGestureDetector) {
+                                Timber.tag("UPDATE_VISIBLE_REGION").d("Camera scaled")
                                 updateMapVisibleRegion(this@with)
                             }
                         })
                         updateMapVisibleRegion(this)
                     }
 
-                    mapSelectorViewModel.init()
                     if (ActivityCompat.checkSelfPermission(
                             this,
                             permission.ACCESS_FINE_LOCATION,
