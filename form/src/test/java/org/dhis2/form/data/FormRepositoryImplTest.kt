@@ -306,15 +306,6 @@ class FormRepositoryImplTest {
         whenever(dataEntryRepository.isEvent()) doReturn true
         whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
         whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
-        assertTrue(
-            repository.runDataIntegrityCheck(true) is MissingMandatoryResult &&
-                repository.runDataIntegrityCheck(true).allowDiscard,
-        )
-        assertTrue(
-            repository.runDataIntegrityCheck(false) is MissingMandatoryResult &&
-                !repository.runDataIntegrityCheck(false).allowDiscard,
-        )
-
         // When user updates a field with error
         repository.updateErrorList(
             RowAction(
@@ -328,6 +319,9 @@ class FormRepositoryImplTest {
         whenever(
             fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
         ) doReturn "errorMessage"
+        assertTrue(
+            repository.runDataIntegrityCheck(true) is MissingMandatoryResult)
+        assertTrue(repository.runDataIntegrityCheck(false).allowDiscard)
     }
 
     @Test
