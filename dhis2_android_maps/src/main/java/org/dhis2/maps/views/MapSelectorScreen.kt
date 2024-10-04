@@ -26,9 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -41,12 +39,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
+import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
 import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.MapSelectorScreenActions
+import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -60,19 +60,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
-data class MapSelectorScreenActions(
-    val onBackClicked: () -> Unit,
-    val onMapDataUpdated: (FeatureCollection) -> Unit,
-    val onLocationButtonClicked: () -> Unit,
-    val loadMap: (MapView) -> Unit,
-    val onDoneClicked: (result: String?) -> Unit,
-    val configurePolygonInfoRecycler: (RecyclerView) -> Unit,
-)
-
 @Composable
 fun MapSelectorScreen(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     mapSelectorViewModel: MapSelectorViewModel,
+    screenState: MapSelectorScreenState,
     mapSelectorScreenActions: MapSelectorScreenActions,
 ) {
     val useTwoPaneLayout = when (windowSizeClass.windowWidthSizeClass) {
@@ -85,22 +77,14 @@ fun MapSelectorScreen(
     if (useTwoPaneLayout) {
         TwoPaneMapSelector(
             mapSelectorViewModel,
-            mapSelectorScreenActions.onBackClicked,
-            mapSelectorScreenActions.onMapDataUpdated,
-            mapSelectorScreenActions.onLocationButtonClicked,
-            mapSelectorScreenActions.loadMap,
-            mapSelectorScreenActions.onDoneClicked,
-            mapSelectorScreenActions.configurePolygonInfoRecycler,
+            screenState,
+            mapSelectorScreenActions,
         )
     } else {
         SinglePaneMapSelector(
             mapSelectorViewModel,
-            mapSelectorScreenActions.onBackClicked,
-            mapSelectorScreenActions.onMapDataUpdated,
-            mapSelectorScreenActions.onLocationButtonClicked,
-            mapSelectorScreenActions.loadMap,
-            mapSelectorScreenActions.onDoneClicked,
-            mapSelectorScreenActions.configurePolygonInfoRecycler,
+            screenState,
+            mapSelectorScreenActions,
         )
     }
 }
@@ -108,12 +92,8 @@ fun MapSelectorScreen(
 @Composable
 fun SinglePaneMapSelector(
     mapSelectorViewModel: MapSelectorViewModel,
-    onBackClicked: () -> Unit,
-    onMapDataUpdated: (FeatureCollection) -> Unit,
-    onLocationButtonClicked: () -> Unit,
-    loadMap: (MapView) -> Unit,
-    onDoneClicked: (result: String?) -> Unit,
-    configurePolygonInfoRecycler: (RecyclerView) -> Unit,
+    screenState: MapSelectorScreenState,
+    screenActions: MapSelectorScreenActions,
 ) {
     Column(
         Modifier
@@ -121,32 +101,38 @@ fun SinglePaneMapSelector(
             .padding(16.dp),
         verticalArrangement = spacedBy(16.dp),
     ) {
-        SearchBar(mapSelectorViewModel, onBackClicked)
+        SearchBar(screenState.locationItems, mapSelectorViewModel, screenActions.onBackClicked)
 
         Map(
             modifier = Modifier
                 .weight(1f),
             mapSelectorViewModel = mapSelectorViewModel,
-            onMapDataUpdated = onMapDataUpdated,
-            onLocationButtonClicked = onLocationButtonClicked,
-            loadMap = loadMap,
+            searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+            onLocationButtonClicked = screenActions.onLocationButtonClicked,
+            loadMap = screenActions.loadMap,
         )
 
-        LocationInfoContent(mapSelectorViewModel, configurePolygonInfoRecycler)
+        LocationInfoContent(
+            screenState.selectedLocation,
+            screenState.captureMode,
+            screenState.displayPolygonInfo,
+            screenState.accuracyRange,
+            screenActions.configurePolygonInfoRecycler,
+        )
 
-        DoneButton(mapSelectorViewModel, onDoneClicked)
+        DoneButton(
+            mapSelectorViewModel = mapSelectorViewModel,
+            enabled = screenState.doneButtonEnabled,
+            onDoneClicked = screenActions.onDoneClicked,
+        )
     }
 }
 
 @Composable
 private fun TwoPaneMapSelector(
     mapSelectorViewModel: MapSelectorViewModel,
-    onBackClicked: () -> Unit,
-    onMapDataUpdated: (FeatureCollection) -> Unit,
-    onLocationButtonClicked: () -> Unit,
-    loadMap: (MapView) -> Unit,
-    onDoneClicked: (result: String?) -> Unit,
-    configurePolygonInfoRecycler: (RecyclerView) -> Unit,
+    screenState: MapSelectorScreenState,
+    screenActions: MapSelectorScreenActions,
 ) {
     Row(
         modifier = Modifier
@@ -162,11 +148,21 @@ private fun TwoPaneMapSelector(
                 .padding(top = 56.dp),
             verticalArrangement = spacedBy(16.dp),
         ) {
-            SearchBar(mapSelectorViewModel, onBackClicked)
+            SearchBar(screenState.locationItems, mapSelectorViewModel, screenActions.onBackClicked)
 
-            LocationInfoContent(mapSelectorViewModel, configurePolygonInfoRecycler)
+            LocationInfoContent(
+                selectedLocation = screenState.selectedLocation,
+                captureMode = screenState.captureMode,
+                displayPolygonInfo = screenState.displayPolygonInfo,
+                accuracyRange = screenState.accuracyRange,
+                configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
+            )
 
-            DoneButton(mapSelectorViewModel, onDoneClicked)
+            DoneButton(
+                mapSelectorViewModel,
+                enabled = screenState.doneButtonEnabled,
+                onDoneClicked = screenActions.onDoneClicked,
+            )
         }
 
         Column(Modifier.weight(0.7f)) {
@@ -174,18 +170,21 @@ private fun TwoPaneMapSelector(
                 modifier = Modifier
                     .weight(1f),
                 mapSelectorViewModel = mapSelectorViewModel,
-                onMapDataUpdated = onMapDataUpdated,
-                onLocationButtonClicked = onLocationButtonClicked,
-                loadMap = loadMap,
+                searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                onLocationButtonClicked = screenActions.onLocationButtonClicked,
+                loadMap = screenActions.loadMap,
             )
         }
     }
 }
 
 @Composable
-private fun SearchBar(mapSelectorViewModel: MapSelectorViewModel, onBackClicked: () -> Unit) {
-    val locationItems by mapSelectorViewModel.locationItems.collectAsState(emptyList())
-
+private fun SearchBar(
+    locationItems: List<LocationItemModel>,
+    mapSelectorViewModel: MapSelectorViewModel,
+    onBackClicked: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
     LocationBar(
         currentResults = locationItems,
         onBackClicked = onBackClicked,
@@ -193,8 +192,10 @@ private fun SearchBar(mapSelectorViewModel: MapSelectorViewModel, onBackClicked:
         onSearchLocation = mapSelectorViewModel::onSearchLocation,
         onLocationSelected = mapSelectorViewModel::onLocationSelected,
         onModeChanged = {
-            if (it == SearchBarMode.SEARCH) {
-                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.SEARCH)
+            scope.launch {
+                if (it == SearchBarMode.SEARCH) {
+                    mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.SEARCH)
+                }
             }
         },
     )
@@ -202,15 +203,14 @@ private fun SearchBar(mapSelectorViewModel: MapSelectorViewModel, onBackClicked:
 
 @Composable
 private fun LocationInfoContent(
-    mapSelectorViewModel: MapSelectorViewModel,
+    selectedLocation: SelectedLocation,
+    captureMode: MapSelectorViewModel.CaptureMode,
+    displayPolygonInfo: Boolean,
+    accuracyRange: AccuracyRange,
     configurePolygonInfoRecycler: (RecyclerView) -> Unit,
 ) {
-    val selectedLocation by mapSelectorViewModel.selectedLocation.collectAsState()
-
-    val captureMode by mapSelectorViewModel.captureMode.collectAsState()
-
     when {
-        mapSelectorViewModel.shouldDisplayPolygonInfo() -> {
+        displayPolygonInfo -> {
             AndroidView(
                 factory = { context ->
                     RecyclerView(context)
@@ -220,40 +220,35 @@ private fun LocationInfoContent(
         }
 
         captureMode.isNone() && selectedLocation is SelectedLocation.ManualResult -> {
-            with(selectedLocation as SelectedLocation.ManualResult) {
-                LocationItem(
-                    locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = stringResource(R.string.selected_location),
-                        searchedSubtitle = stringResource(
-                            R.string.latitude_longitude,
-                            selectedLocation.latitude.truncate(),
-                            selectedLocation.longitude.truncate(),
-                        ),
-                        searchedLatitude = selectedLocation.latitude,
-                        searchedLongitude = selectedLocation.longitude,
+            LocationItem(
+                locationItemModel = LocationItemModel.SearchResult(
+                    searchedTitle = stringResource(R.string.selected_location),
+                    searchedSubtitle = stringResource(
+                        R.string.latitude_longitude,
+                        selectedLocation.latitude.truncate(),
+                        selectedLocation.longitude.truncate(),
                     ),
-                    icon = {
-                        LocationItemIcon(
-                            icon = Icons.Outlined.Place,
-                            tintedColor = SurfaceColor.Primary,
-                            bgColor = SurfaceColor.PrimaryContainer,
-                        )
-                    },
-                ) { }
-            }
+                    searchedLatitude = selectedLocation.latitude,
+                    searchedLongitude = selectedLocation.longitude,
+                ),
+                icon = {
+                    LocationItemIcon(
+                        icon = Icons.Outlined.Place,
+                        tintedColor = SurfaceColor.Primary,
+                        bgColor = SurfaceColor.PrimaryContainer,
+                    )
+                },
+            ) { }
         }
 
         captureMode.isGps() -> {
-            val accuracy by mapSelectorViewModel.accuracyRange.collectAsState(
-                AccuracyRange.None(),
-            )
             Box(
                 modifier = Modifier
                     .height(64.dp)
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                AccuracyIndicator(accuracyRange = accuracy)
+                AccuracyIndicator(accuracyRange = accuracyRange)
             }
         }
 
@@ -298,7 +293,7 @@ private fun LocationInfoContent(
                 ) {
                 }
             } else if (selectedLocation is SelectedLocation.SearchResult) {
-                with(selectedLocation as SelectedLocation.SearchResult) {
+                with(selectedLocation) {
                     LocationItem(
                         locationItemModel = LocationItemModel.SearchResult(
                             searchedTitle = title
@@ -332,17 +327,11 @@ private fun LocationInfoContent(
 private fun Map(
     modifier: Modifier = Modifier,
     mapSelectorViewModel: MapSelectorViewModel,
-    onMapDataUpdated: (FeatureCollection) -> Unit,
+    searchOnThisAreaVisible: Boolean,
     onLocationButtonClicked: () -> Unit,
     loadMap: (MapView) -> Unit,
 ) {
-    val mapData by mapSelectorViewModel.mapFeatures.collectAsState()
-    val searchOnThisAreaVisible by mapSelectorViewModel.searchOnThisAreaVisible.collectAsState()
-
-    LaunchedEffect(mapData) {
-        onMapDataUpdated(mapData)
-    }
-
+    val scope = rememberCoroutineScope()
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp)),
@@ -365,8 +354,10 @@ private fun Map(
                             )
                         },
                         onClick = {
-                            mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
-                            onLocationButtonClicked()
+                            scope.launch {
+                                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
+                                onLocationButtonClicked()
+                            }
                         },
                     )
                 }
@@ -399,7 +390,7 @@ private fun Map(
                     ),
                 ) {
                     SearchInAreaButton(
-                        onClick = mapSelectorViewModel::performLocationSearch,
+                        onClick = mapSelectorViewModel::onSearchOnAreaClick,
                     )
                 }
             },
@@ -450,9 +441,9 @@ private fun SearchInAreaButton(
 @Composable
 private fun DoneButton(
     mapSelectorViewModel: MapSelectorViewModel,
+    enabled: Boolean,
     onDoneClicked: (result: String?) -> Unit,
 ) {
-    val enabled by mapSelectorViewModel.canSave.collectAsState(false)
     Button(
         enabled = enabled,
         modifier = Modifier.fillMaxWidth(),

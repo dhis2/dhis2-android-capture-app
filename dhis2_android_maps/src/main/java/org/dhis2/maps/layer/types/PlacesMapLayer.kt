@@ -13,6 +13,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.isLine
 import org.dhis2.maps.layer.isPoint
 import org.dhis2.maps.layer.isPolygon
 
@@ -93,11 +94,20 @@ class PlacesMapLayer(
                     PropertyFactory.lineWidth(2f),
                 ).withFilter(isPolygon())
 
+    private val boundingBoxLayer: Layer
+        get() = style.getLayer("BOUNDING_BOX_LAYER_ID")
+            ?: LineLayer("BOUNDING_BOX_LAYER_ID", PLACES_SOURCE_ID)
+                .withProperties(
+                    PropertyFactory.lineColor(Color.RED),
+                    PropertyFactory.lineWidth(4f),
+                ).withFilter(isLine())
+
     init {
         style.addLayer(placesLayer)
         style.addLayerAbove(selectedPlaceLayer, placesLayer.id)
         style.addLayerBelow(polygonBorderLayer, placesLayer.id)
         style.addLayerAbove(polygonLayer, polygonBorderLayer.id)
+        style.addLayerAbove(boundingBoxLayer, placesLayer.id)
     }
 
     override fun showLayer() {
