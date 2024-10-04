@@ -177,7 +177,7 @@ fun ColumnScope.ProvideToolBarIcons(to: String?, hasFacilitySelected: Boolean, h
 fun AnalyticsTopBar(
     title: String,
     themeColor: Color,
-    launchBottomSheet: () -> Unit,
+    backAction: () -> Unit,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
 ) {
@@ -203,7 +203,7 @@ fun AnalyticsTopBar(
         navigationIcon = {
             IconButton(
                 onClick = {
-                    launchBottomSheet.invoke()
+                    backAction.invoke()
                 },
                 icon = {
                     Icon(

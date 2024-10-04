@@ -62,8 +62,7 @@ fun HomeScreen(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
     var selectedIndex by remember { mutableIntStateOf(0) }
-    val analytics by viewModel.analytics.collectAsState()
-
+    val homeScreenState by viewModel.settingsUiState.collectAsState()
     val homeItems = listOf(
         NavigationBarItem(
             id = BottomNavigation.DATA_ENTRY.id,
@@ -106,7 +105,7 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            if (analytics.isNotEmpty()) {
+            if (homeScreenState.hasAnalytics) {
                 NavigationBar(
                     items = homeItems,
                     selectedItemIndex = selectedIndex,
@@ -148,7 +147,7 @@ fun HomeScreen(
                     {
                         AnalyticsScreen(
                             viewModel = viewModel,
-                            manageStockViewModel = manageStockViewModel,
+                            backAction = { manageStockViewModel.onHandleBackNavigation() },
                             themeColor = themeColor,
                             modifier = Modifier.padding(paddingValues),
                             scaffoldState = scaffoldState,

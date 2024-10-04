@@ -18,6 +18,9 @@ data class SettingsUiState(
     val facility: OrganisationUnit? = null,
     val destination: Option? = null,
     val transactionDate: LocalDateTime = LocalDateTime.now(),
+    val hasAnalytics: Boolean = false,
+    val programName: String = "",
+
 ) {
 
     fun hasFacilitySelected() = facility != null

@@ -21,30 +21,28 @@ import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.AnalyticsTopBar
-import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AnalyticsScreen(
-    viewModel: HomeViewModel = viewModel(),
-    manageStockViewModel: ManageStockViewModel = viewModel(),
-    themeColor: Color,
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
+    backAction: () -> Unit,
+    themeColor: Color,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     supportFragmentManager: FragmentManager,
 ) {
     val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     val settingsUiState by viewModel.settingsUiState.collectAsState()
-    val programName by viewModel.programDisplayName.collectAsState()
     BackdropScaffold(
         modifier = modifier,
         appBar = {
             AnalyticsTopBar(
-                title = programName,
+                title = settingsUiState.programName,
                 themeColor = themeColor,
-                launchBottomSheet = {
-                    manageStockViewModel.onHandleBackNavigation()
+                backAction = {
+                    backAction.invoke()
                 },
                 scaffoldState = scaffoldState,
                 syncAction = syncAction,

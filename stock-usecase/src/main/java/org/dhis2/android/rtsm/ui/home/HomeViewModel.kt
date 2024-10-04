@@ -57,12 +57,7 @@ class HomeViewModel @Inject constructor(
     val analytics: StateFlow<List<AnalyticsDhisVisualizationsGroup>>
         get() = _analytics
 
-    private val _programDisplayName =
-        MutableStateFlow<String>("")
-    val programDisplayName: StateFlow<String>
-        get() = _programDisplayName
-
-    var transactionItems by mutableStateOf(mapTransaction())
+    private var transactionItems by mutableStateOf(mapTransaction())
 
     private val _destinations =
         MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
@@ -86,11 +81,16 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val result = charts.getVisualizationGroups(config.program)
             if (result.isNotEmpty()) {
+                _settingsUiSate.update { currentUiState ->
+                    currentUiState.copy(hasAnalytics = result.isNotEmpty())
+                }
                 _analytics.value = result
             }
             val programName = d2.programModule().programs().uid(config.program).blockingGet()?.displayName()
             if (programName != null) {
-                _programDisplayName.value = programName
+                _settingsUiSate.update { currentUiState ->
+                    currentUiState.copy(programName = programName)
+                }
             }
         }
     }
