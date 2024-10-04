@@ -67,12 +67,16 @@ class TrackerRelationshipsRepository(
             .uid(enrollmentUid).blockingGet()?.program()
 
         return flowOf(
+            //Gets all the relationships by the tei uid
             d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().trackedEntityInstance(
                     RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
                         .build(),
                 ).build(),
             ).mapNotNull { relationship ->
+                //maps each relationship to a model
+
+                //Gets the relationship type
                 val relationshipType =
                     d2.relationshipModule().relationshipTypes()
                         .uid(relationship.relationshipType())
@@ -90,6 +94,7 @@ class TrackerRelationshipsRepository(
                 val toDefaultPicRes: Int
                 val canBoOpened: Boolean
 
+                //Here checks if the TEI is the from or to of the relationship
                 when (teiUid) {
                     relationship.from()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                         direction = RelationshipDirection.TO
@@ -97,6 +102,7 @@ class TrackerRelationshipsRepository(
                         fromValues = getTeiAttributesForRelationship(teiUid)
                         fromProfilePic = tei?.profilePicturePath(d2, programUid)
                         fromDefaultPicRes = getTeiDefaultRes(tei)
+                        // If the relationship is to a TEI then the owner is the TEI
                         if (relationship.to()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
                             relationshipOwnerUid =
@@ -110,6 +116,7 @@ class TrackerRelationshipsRepository(
                             canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toTei?.organisationUnit())
                         } else {
+                            // If the relationship is not to a TEI then the owner is the event
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
                                 relationship.to()?.event()?.event()
