@@ -29,8 +29,6 @@ class CompleteEventDialogResourcesProvider(
 
     fun provideWarningInfoCompletedEvent() = resourceManager.getString(R.string.missing_warning_fields_completed_events)
 
-    fun provideNotNow() = R.string.not_now
-
     fun provideCompleteInfo() = resourceManager.getString(R.string.event_can_be_completed)
 
     fun provideOnCompleteErrorInfo() = resourceManager.getString(R.string.event_error_on_complete)

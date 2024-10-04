@@ -32,7 +32,7 @@ class EventCompletionDialogProvider(
         eventMode: EventMode,
         eventState: EventStatus,
         result: DataIntegrityCheckResult,
-    ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
+    ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>> {
         val dialogType = getDialogType(
             errorFields,
             emptyMandatoryFields,
@@ -57,7 +57,7 @@ class EventCompletionDialogProvider(
             iconResource = getIcon(dialogType),
             mainButton = getMainButton(dialogType, eventState),
             secondaryButton = if (canSkipErrorFix || dialogType == DialogType.WARNING) {
-                SecondaryButton(provider.provideNotNow())
+                SecondaryButton(R.string.not_now)
             } else if (result.allowDiscard) {
                 DialogButtonStyle.DiscardButton()
             } else {

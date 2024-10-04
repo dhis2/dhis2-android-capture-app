@@ -4,11 +4,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import org.dhis2.form.R
 import org.dhis2.form.data.EventResultDetails
 import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -33,18 +34,9 @@ class EventCompletionDialogProviderTest {
         EventCompletionDialogProvider(resourceProvider)
 
     @Test
-    fun `Should not configure secondary action for mandatory fields`() {
-        val expectedDialog = BottomSheetDialogUiModel(
-            title = "saved",
-            subtitle = null,
-            message = "missing_mandatory_fields_events",
-            clickableWord = null,
-            iconResource = 0,
-            mainButton = DialogButtonStyle.MainButton(textResource = 0),
-            secondaryButton = null,
-        )
+    fun `Should not allow to save with missing mandatory fields  in completed events`() {
         val mandatoryFields = mapOf("uid" to "uid")
-        val dataCheckResult = MissingMandatoryResult(
+        val completedEventWithMissingMandatoryFields = MissingMandatoryResult(
             mandatoryFields = mandatoryFields,
             errorFields = listOf(),
             warningFields = listOf(),
@@ -53,21 +45,134 @@ class EventCompletionDialogProviderTest {
             allowDiscard = false,
 
             eventResultDetails = EventResultDetails(
-                eventStatus = EventStatus.ACTIVE,
-                eventMode = EventMode.NEW,
+                eventStatus = EventStatus.COMPLETED,
+                eventMode = EventMode.CHECK,
                 validationStrategy = ValidationStrategy.ON_COMPLETE,
             ),
         )
-        val realModel = eventCompletionDialogProvider.invoke(
-            canComplete = dataCheckResult.canComplete,
-            onCompleteMessage = dataCheckResult.onCompleteMessage,
-            errorFields = dataCheckResult.errorFields,
-            emptyMandatoryFields = dataCheckResult.mandatoryFields,
-            warningFields = dataCheckResult.warningFields,
-            eventMode = dataCheckResult.eventResultDetails.eventMode ?: EventMode.NEW,
-            eventState = dataCheckResult.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
-            result = dataCheckResult,
+        val canOnlyReviewModel = eventCompletionDialogProvider.invoke(
+            canComplete = completedEventWithMissingMandatoryFields.canComplete,
+            onCompleteMessage = completedEventWithMissingMandatoryFields.onCompleteMessage,
+            errorFields = completedEventWithMissingMandatoryFields.errorFields,
+            emptyMandatoryFields = completedEventWithMissingMandatoryFields.mandatoryFields,
+            warningFields = completedEventWithMissingMandatoryFields.warningFields,
+            eventMode = completedEventWithMissingMandatoryFields.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = completedEventWithMissingMandatoryFields.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = completedEventWithMissingMandatoryFields,
         )
-        assert(realModel?.first?.mainButton == DialogButtonStyle.MainButton(R.string.review))
+
+        val completedEventWithNoErrors = SuccessfulResult(
+            canComplete = false,
+            onCompleteMessage = null,
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.COMPLETED,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        assertTrue(canOnlyReviewModel.first.mainButton == DialogButtonStyle.MainButton(R.string.review))
+        assertTrue(canOnlyReviewModel.first.secondaryButton == null)
+    }
+
+    @Test
+    fun `Should show complete button if event can be completed`() {
+        val completedEventWithNoErrors = SuccessfulResult(
+            canComplete = true,
+            onCompleteMessage = null,
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        val noErrorsInFormModel = eventCompletionDialogProvider.invoke(
+            canComplete = completedEventWithNoErrors.canComplete,
+            onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            eventMode = completedEventWithNoErrors.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = completedEventWithNoErrors.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = completedEventWithNoErrors,
+        )
+        assertTrue(noErrorsInFormModel.first.mainButton == DialogButtonStyle.CompleteButton)
+    }
+
+    @Test
+    fun `Should follow validation strategy when trying to save the form with errors`() {
+        val completedEventWithNoErrors = SuccessfulResult(
+            canComplete = true,
+            onCompleteMessage = null,
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        val mandatoryFields = mapOf("uid" to "uid")
+        val resultWithErrorsButCanSave = MissingMandatoryResult(
+            mandatoryFields = mandatoryFields,
+            errorFields = listOf(),
+            warningFields = listOf(),
+            canComplete = true,
+            onCompleteMessage = null,
+            allowDiscard = false,
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        val resultWithErrorsButCanNotSave = MissingMandatoryResult(
+            mandatoryFields = mandatoryFields,
+            errorFields = listOf(),
+            warningFields = listOf(),
+            canComplete = true,
+            onCompleteMessage = null,
+            allowDiscard = false,
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_UPDATE_AND_INSERT,
+            ),
+        )
+
+        val noErrorsInFormModel = eventCompletionDialogProvider.invoke(
+            canComplete = completedEventWithNoErrors.canComplete,
+            onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            eventMode = completedEventWithNoErrors.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = completedEventWithNoErrors.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = completedEventWithNoErrors,
+        )
+        assertTrue(noErrorsInFormModel.first.mainButton == DialogButtonStyle.CompleteButton)
+
+        val validationStrategyOnUpdateModel = eventCompletionDialogProvider.invoke(
+            canComplete = resultWithErrorsButCanNotSave.canComplete,
+            onCompleteMessage = resultWithErrorsButCanNotSave.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = mandatoryFields,
+            warningFields = emptyList(),
+            eventMode = resultWithErrorsButCanNotSave.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = resultWithErrorsButCanNotSave.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = resultWithErrorsButCanNotSave,
+        )
+
+        assertTrue(validationStrategyOnUpdateModel.first.mainButton == DialogButtonStyle.MainButton(R.string.review))
+
+        val validationStrategyOnCompleteModel = eventCompletionDialogProvider.invoke(
+            canComplete = resultWithErrorsButCanSave.canComplete,
+            onCompleteMessage = resultWithErrorsButCanSave.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = mandatoryFields,
+            warningFields = emptyList(),
+            eventMode = resultWithErrorsButCanSave.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = resultWithErrorsButCanSave.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = resultWithErrorsButCanSave,
+        )
+        assertTrue(validationStrategyOnCompleteModel.first.mainButton == DialogButtonStyle.MainButton(R.string.review))
+        assertTrue(validationStrategyOnCompleteModel.first.secondaryButton == DialogButtonStyle.SecondaryButton(R.string.not_now))
     }
 }

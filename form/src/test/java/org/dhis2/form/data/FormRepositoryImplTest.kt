@@ -320,7 +320,8 @@ class FormRepositoryImplTest {
             fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
         ) doReturn "errorMessage"
         assertTrue(
-            repository.runDataIntegrityCheck(true) is MissingMandatoryResult)
+            repository.runDataIntegrityCheck(true) is MissingMandatoryResult,
+        )
         assertTrue(repository.runDataIntegrityCheck(false).allowDiscard)
     }
 
