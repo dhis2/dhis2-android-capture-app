@@ -24,8 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationShipItem
 import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.ui.avatar.AvatarProvider
+import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -44,7 +47,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 fun RelationShipsScreen(
     viewModel: RelationShipsViewModel,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
-    onRelationshipClick: (RelationshipViewModel) -> Unit,
+    onRelationshipClick: (RelationShipItem) -> Unit,
 ) {
     val uiState by viewModel.relationshipsUiState.collectAsState()
     Column(
@@ -95,9 +98,9 @@ fun RelationShipTypeSection(
     modifier: Modifier = Modifier,
     title: String,
     description: String?,
-    relationships: List<RelationshipViewModel>,
+    relationships: List<RelationShipItem>,
     onCreateRelationshipClick: () -> Unit,
-    onRelationshipClick: (RelationshipViewModel) -> Unit,
+    onRelationshipClick: (RelationShipItem) -> Unit,
 ) {
     Column {
         Row(
@@ -137,9 +140,14 @@ fun RelationShipTypeSection(
         relationships.forEach { item ->
             ListCard(
                 listCardState = rememberListCardState(
-                    title = ListCardTitleModel(text = item.displayRelationshipName()),
+                    title = ListCardTitleModel(text = item.title),
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                        listOf(),
+                        additionalInfoList = item.attributes.map {
+                            AdditionalInfoItem(
+                                key = it.first,
+                                value = it.second,
+                            )
+                        },
                         syncProgressItem = AdditionalInfoItem(
                             key = "null",
                             value = "null",
@@ -150,7 +158,12 @@ fun RelationShipTypeSection(
                         scrollableContent = false,
                     ),
                 ),
-                onCardClick = { onRelationshipClick(item) }
+                listAvatar = {
+                    AvatarProvider(
+                        avatarProviderConfiguration = item.avatar,
+                    ) { }
+                },
+                onCardClick = { if (item.canOpen) onRelationshipClick(item) }
             )
         }
     }
@@ -166,7 +179,16 @@ fun RelationShipTypeSectionPreview() {
         RelationShipTypeSection(
             title = "Relationship type",
             description = "No data",
-            relationships = listOf(),
+            relationships = listOf(
+                RelationShipItem(
+                    title = "Relationship title",
+                    attributes = emptyList(),
+                    ownerType = RelationshipOwnerType.TEI,
+                    ownerUid = "ownerUid",
+                    avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
+                    canOpen = true,
+                )
+            ),
             onCreateRelationshipClick = {},
             onRelationshipClick = {},
         )
