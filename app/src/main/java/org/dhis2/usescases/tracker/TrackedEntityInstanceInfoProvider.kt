@@ -5,7 +5,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
-import org.dhis2.tracker.GetTeiProfilePicturePathUseCase
+import org.dhis2.tracker.ProfilePictureProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.dhis2.ui.avatar.AvatarProviderConfiguration.Metadata
 import org.dhis2.ui.avatar.AvatarProviderConfiguration.ProfilePic
@@ -24,7 +24,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class TrackedEntityInstanceInfoProvider(
     private val d2: D2,
-    private val getProfilePicturePathUseCase: GetTeiProfilePicturePathUseCase,
+    private val profilePictureProvider: ProfilePictureProvider,
     private val dateLabelProvider: DateLabelProvider,
     private val metadataIconProvider: MetadataIconProvider,
 ) {
@@ -36,7 +36,7 @@ class TrackedEntityInstanceInfoProvider(
     ): AvatarProviderConfiguration {
         val program = programUid?.let { d2.programModule().programs().uid(it).blockingGet() }
         val hasIcon = d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()
-        val profilePath = getProfilePicturePathUseCase(tei, programUid)
+        val profilePath = profilePictureProvider(tei, programUid)
 
         return when {
             profilePath.isNotEmpty() -> {

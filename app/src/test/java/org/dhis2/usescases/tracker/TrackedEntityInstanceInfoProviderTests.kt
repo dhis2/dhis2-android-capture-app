@@ -3,7 +3,7 @@ package org.dhis2.usescases.tracker
 import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.tracker.GetTeiProfilePicturePathUseCase
+import org.dhis2.tracker.ProfilePictureProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.D2
@@ -25,7 +25,7 @@ class TrackedEntityInstanceInfoProviderTests {
     private lateinit var teiInfoProvider: TrackedEntityInstanceInfoProvider
 
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val getProfilePicturePathUseCase: GetTeiProfilePicturePathUseCase = mock()
+    private val profilePictureProvider: ProfilePictureProvider = mock()
     private val dateLabelProvider: DateLabelProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
         on { invoke(any()) } doReturn MetadataIconData.defaultIcon()
@@ -35,7 +35,7 @@ class TrackedEntityInstanceInfoProviderTests {
     fun setup() {
         teiInfoProvider = TrackedEntityInstanceInfoProvider(
             d2,
-            getProfilePicturePathUseCase,
+            profilePictureProvider,
             dateLabelProvider,
             metadataIconProvider,
         )
@@ -50,7 +50,7 @@ class TrackedEntityInstanceInfoProviderTests {
             value = "Value",
         )
 
-        whenever(getProfilePicturePathUseCase.invoke(tei, programUid)) doReturn "/path/to/picture"
+        whenever(profilePictureProvider.invoke(tei, programUid)) doReturn "/path/to/picture"
         whenever(d2.programModule().programs().uid(programUid).blockingGet()) doReturn mockProgram()
         whenever(d2.iconModule().icons().key(any()).blockingExists()) doReturn false
 
@@ -69,7 +69,7 @@ class TrackedEntityInstanceInfoProviderTests {
             value = "Value",
         )
 
-        whenever(getProfilePicturePathUseCase.invoke(tei, programUid)) doReturn ""
+        whenever(profilePictureProvider.invoke(tei, programUid)) doReturn ""
         whenever(d2.programModule().programs().uid(programUid).blockingGet()) doReturn mockProgram()
         whenever(d2.iconModule().icons().key(any()).blockingExists()) doReturn true
         whenever(metadataIconProvider.invoke(any())) doReturn MetadataIconData(
@@ -97,7 +97,7 @@ class TrackedEntityInstanceInfoProviderTests {
             value = "Value",
         )
 
-        whenever(getProfilePicturePathUseCase.invoke(tei, programUid)) doReturn ""
+        whenever(profilePictureProvider.invoke(tei, programUid)) doReturn ""
         whenever(d2.programModule().programs().uid(programUid).blockingGet()) doReturn mockProgram()
         whenever(d2.iconModule().icons().key(any()).blockingExists()) doReturn true
 
@@ -116,7 +116,7 @@ class TrackedEntityInstanceInfoProviderTests {
             value = "First Attribute Value",
         )
 
-        whenever(getProfilePicturePathUseCase.invoke(tei, programUid)) doReturn ""
+        whenever(profilePictureProvider.invoke(tei, programUid)) doReturn ""
         whenever(d2.programModule().programs().uid(programUid).blockingGet()) doReturn mockProgram()
         whenever(d2.iconModule().icons().key(any()).blockingExists()) doReturn false
 
@@ -131,7 +131,7 @@ class TrackedEntityInstanceInfoProviderTests {
         val tei = mockedTrackedEntityInstance()
         val programUid = "programUid"
 
-        whenever(getProfilePicturePathUseCase.invoke(tei, programUid)) doReturn ""
+        whenever(profilePictureProvider.invoke(tei, programUid)) doReturn ""
         whenever(d2.programModule().programs().uid(programUid).blockingGet()) doReturn mockProgram()
         whenever(d2.iconModule().icons().key(any()).blockingExists()) doReturn false
 

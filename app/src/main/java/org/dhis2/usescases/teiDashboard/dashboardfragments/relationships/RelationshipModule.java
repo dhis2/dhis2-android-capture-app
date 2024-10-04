@@ -15,7 +15,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
-import org.dhis2.tracker.GetTeiProfilePicturePathUseCase;
+import org.dhis2.tracker.ProfilePictureProvider;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
@@ -84,7 +84,7 @@ public class RelationshipModule {
             config = new EventRelationshipConfiguration(eventUid);
         }
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, resourceManager);
-        GetTeiProfilePicturePathUseCase teiProfilePicturePathUseCase = new GetTeiProfilePicturePathUseCase(d2);
+        ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new RelationshipRepositoryImpl(
                 d2,
                 config,
@@ -93,7 +93,7 @@ public class RelationshipModule {
                 metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
-                        teiProfilePicturePathUseCase,
+                        profilePictureProvider,
                         dateLabelProvider,
                         metadataIconProvider
                 ),

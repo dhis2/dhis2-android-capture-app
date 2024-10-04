@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
-class GetTeiProfilePicturePathUseCase(
+class ProfilePictureProvider(
     private val d2: D2,
 ) {
     operator fun invoke(
@@ -83,7 +83,7 @@ class GetTeiProfilePicturePathUseCase(
             }
         }
 
-        return path ?: ""
+        return path
     }
 
 }
