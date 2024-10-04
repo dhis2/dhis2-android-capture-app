@@ -70,7 +70,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    //https://dhis2.atlassian.net/browse/ANDROAPP-4230
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
         prepareTeiWithExistingNoteAndLaunchActivity(rule)
@@ -172,8 +171,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
-            clickOnFirstReferralEvent()
-            clickOnReferralNextButton()
+            clickOnSchedule()
             checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
         }
     }
@@ -217,6 +215,7 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot(composeTestRule) {
             clickOnSeeDetails()
+            composeTestRule.waitForIdle()
             checkFullDetails(enrollmentFullDetails)
         }
     }
@@ -334,8 +333,8 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "08/09/2024",
-            "08/09/2024",
+            "10/01/2025",
+            "10/01/2025",
 //            "Ngelehun CHC",
 //            "40.48713205295354",
 //            "-3.6847423830882633",

@@ -286,7 +286,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
-            clickOnTEI("Filona")
+            clickOnTEI("Betty")
         }
     }
 

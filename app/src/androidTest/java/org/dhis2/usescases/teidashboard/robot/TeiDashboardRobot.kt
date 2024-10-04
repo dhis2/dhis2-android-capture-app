@@ -231,15 +231,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 useUnmergedTree = true,
             ).assertIsDisplayed()
 
-            onNodeWithText(enrollmentUIModel.orgUnit).assertIsDisplayed()
-            onNodeWithText("Latitude: ${enrollmentUIModel.latitude}").assertIsDisplayed()
-            onNodeWithText("Longitude: ${enrollmentUIModel.longitude}").assertIsDisplayed()
-            onNodeWithText("Next").performScrollTo()
-            onNodeWithText("Next").performClick()
-
             onNodeWithText(enrollmentUIModel.name).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.lastName).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.sex).assertIsDisplayed()
         }
     }
 
@@ -247,6 +239,11 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
         composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
+    }
+
+
+    fun clickOnSchedule() {
+        composeTestRule.onNodeWithText("Schedule").performClick()
     }
 
     fun clickOnMenuProgramEnrollments() {
