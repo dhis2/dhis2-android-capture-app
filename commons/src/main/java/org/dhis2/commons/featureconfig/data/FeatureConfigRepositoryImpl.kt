@@ -5,6 +5,7 @@ import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.featureconfig.model.FeatureOptions
 import org.dhis2.commons.featureconfig.model.FeatureState
 import org.hisp.dhis.android.core.D2
+import timber.log.Timber
 import javax.inject.Inject
 
 class FeatureConfigRepositoryImpl @Inject constructor(
@@ -41,12 +42,17 @@ class FeatureConfigRepositoryImpl @Inject constructor(
     }
 
     override fun isFeatureEnable(feature: Feature): Boolean {
-        return if (localDataStore.value(feature.name).blockingExists()) {
-            localDataStore.value(feature.name).blockingGet()?.value()?.toBooleanStrictOrNull()
-                ?: false
-        } else {
-            d2.settingModule().generalSetting()
-                .hasExperimentalFeature(feature.name).blockingGet()
+        return try {
+            if (localDataStore.value(feature.name).blockingExists()) {
+                localDataStore.value(feature.name).blockingGet()?.value()?.toBooleanStrictOrNull()
+                    ?: false
+            } else {
+                d2.settingModule().generalSetting()
+                    .hasExperimentalFeature(feature.name).blockingGet()
+            }
+        } catch (e: Exception) {
+            Timber.d(e.message)
+            false
         }
     }
 
