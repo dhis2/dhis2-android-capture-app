@@ -76,17 +76,19 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationshipRepository providesRepository(D2 d2,
-                                              ResourceManager resourceManager,
-                                              TeiAttributesProvider attributesProvider,
-                                              MetadataIconProvider metadataIconProvider) {
+    RelationshipRepository providesRepository(
+            D2 d2,
+            ResourceManager resourceManager,
+            TeiAttributesProvider attributesProvider,
+            MetadataIconProvider metadataIconProvider,
+            DateLabelProvider dateLabelProvider
+    ) {
         RelationshipConfiguration config;
         if (teiUid != null) {
             config = new TrackerRelationshipConfiguration(enrollmentUid, teiUid);
         } else {
             config = new EventRelationshipConfiguration(eventUid);
         }
-        DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, resourceManager);
         ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new RelationshipRepositoryImpl(
                 d2,
@@ -138,9 +140,16 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
-            RelationshipsRepository relationshipsRepository
+            RelationshipsRepository relationshipsRepository,
+            ResourceManager resourceManager,
+            DateLabelProvider dateLabelProvider
     ) {
-        return new GetRelationshipsByType(teiUid, enrollmentUid, relationshipsRepository);
+        return new GetRelationshipsByType(
+                teiUid,
+                enrollmentUid,
+                relationshipsRepository,
+                dateLabelProvider
+        );
     }
 
     @Provides
@@ -167,4 +176,9 @@ public class RelationshipModule {
 
     }
 
+    @Provides
+    @PerFragment
+    DateLabelProvider provideDateLabelProvider(ResourceManager resourceManager) {
+        return new DateLabelProvider(moduleContext, resourceManager);
+    }
 }
