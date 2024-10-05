@@ -484,6 +484,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                         MetadataIconData.Companion.defaultIcon(),
                         true,
                         null,
+                        null,
+                        null,
                         null
                 ));
             }
