@@ -141,6 +141,7 @@ fun RelationShipTypeSection(
             ListCard(
                 listCardState = rememberListCardState(
                     title = ListCardTitleModel(text = item.title),
+                    lastUpdated = item.lastUpdated,
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
                         additionalInfoList = item.attributes.map {
                             AdditionalInfoItem(
@@ -187,6 +188,7 @@ fun RelationShipTypeSectionPreview() {
                     ownerUid = "ownerUid",
                     avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
                     canOpen = true,
+                    lastUpdated = "Yesterday",
                 )
             ),
             onCreateRelationshipClick = {},
