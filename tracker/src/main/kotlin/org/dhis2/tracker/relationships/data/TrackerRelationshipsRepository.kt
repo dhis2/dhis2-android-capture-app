@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
@@ -96,6 +97,8 @@ class TrackerRelationshipsRepository(
                 val canBoOpened: Boolean
                 val toLastUpdated: Date?
                 val fromLastUpdated: Date?
+                val toDescription: String?
+                val fromDescription: String?
 
                 //Here checks if the TEI is the from or to of the relationship
                 when (teiUid) {
@@ -106,6 +109,7 @@ class TrackerRelationshipsRepository(
                         fromProfilePic = tei?.profilePicturePath(d2, programUid)
                         fromDefaultPicRes = getTeiDefaultRes(tei)
                         fromLastUpdated = tei?.lastUpdated()
+                        fromDescription = null
                         // If the relationship is to a TEI then the owner is the TEI
                         if (relationship.to()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
@@ -120,6 +124,7 @@ class TrackerRelationshipsRepository(
                             canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toTei?.organisationUnit())
                             toLastUpdated = toTei?.lastUpdated()
+                            toDescription = null
                         } else {
                             // If the relationship is not to a TEI then the owner is the event
                             relationshipOwnerType = RelationshipOwnerType.EVENT
@@ -134,6 +139,9 @@ class TrackerRelationshipsRepository(
                             canBoOpened = toEvent?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toEvent?.organisationUnit())
                             toLastUpdated = toEvent?.lastUpdated()
+                            toDescription = toEvent?.programStage()?.let { stage ->
+                                getStage(stage)?.displayDescription()
+                            }
                         }
                     }
 
@@ -144,6 +152,7 @@ class TrackerRelationshipsRepository(
                         toProfilePic = tei?.profilePicturePath(d2, programUid)
                         toDefaultPicRes = getTeiDefaultRes(tei)
                         toLastUpdated = tei?.lastUpdated()
+                        toDescription = null
                         if (relationship.from()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
                             relationshipOwnerUid =
@@ -158,6 +167,7 @@ class TrackerRelationshipsRepository(
                             canBoOpened = fromTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(fromTei?.organisationUnit())
                             fromLastUpdated = fromTei?.lastUpdated()
+                            fromDescription = null
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
@@ -171,6 +181,9 @@ class TrackerRelationshipsRepository(
                             canBoOpened = fromEvent?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(fromEvent?.organisationUnit())
                             fromLastUpdated = fromEvent?.lastUpdated()
+                            fromDescription = fromEvent?.programStage()?.let { stage ->
+                                getStage(stage)?.displayDescription()
+                            }
                         }
                     }
 
@@ -196,7 +209,9 @@ class TrackerRelationshipsRepository(
                     getOwnerColor(relationshipOwnerUid, relationshipOwnerType),
                     canBoOpened,
                     toLastUpdated,
-                    fromLastUpdated
+                    fromLastUpdated,
+                    toDescription,
+                    fromDescription,
                 )
             }
         )
@@ -350,5 +365,11 @@ class TrackerRelationshipsRepository(
                 return metadataIconProvider(teType!!.style(), SurfaceColor.Primary)
             }
         }
+    }
+
+    private fun getStage(programStageUid: String): ProgramStage? {
+        return d2.programModule().programStages()
+            .uid(programStageUid)
+            .blockingGet()
     }
 }

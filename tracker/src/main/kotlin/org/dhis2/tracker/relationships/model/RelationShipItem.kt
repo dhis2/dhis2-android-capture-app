@@ -5,6 +5,7 @@ import org.dhis2.ui.avatar.AvatarProviderConfiguration
 
 data class RelationShipItem(
     val title: String,
+    val description: String?,
     val attributes: List<Pair<String, String>>,
     val ownerType: RelationshipOwnerType,
     val ownerUid: String,

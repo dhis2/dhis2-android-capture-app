@@ -22,9 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationShipItem
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.ui.avatar.AvatarProvider
@@ -34,6 +36,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -141,6 +144,7 @@ fun RelationShipTypeSection(
             ListCard(
                 listCardState = rememberListCardState(
                     title = ListCardTitleModel(text = item.title),
+                    description = item.description?.let { ListCardDescriptionModel(text = it) },
                     lastUpdated = item.lastUpdated,
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
                         additionalInfoList = item.attributes.map {
@@ -150,13 +154,13 @@ fun RelationShipTypeSection(
                             )
                         },
                         syncProgressItem = AdditionalInfoItem(
-                            key = "null",
-                            value = "null",
+                            key = stringResource(id = R.string.syncing),
+                            value = "",
                         ),
-                        expandLabelText = "null",
-                        shrinkLabelText = "null",
                         minItemsToShow = 3,
-                        scrollableContent = false,
+                        expandLabelText = stringResource(id = R.string.show_more),
+                        shrinkLabelText = stringResource(id = R.string.show_less),
+                        scrollableContent = true,
                     ),
                 ),
                 listAvatar = {
@@ -183,6 +187,7 @@ fun RelationShipTypeSectionPreview() {
             relationships = listOf(
                 RelationShipItem(
                     title = "Relationship title",
+                    description = null,
                     attributes = emptyList(),
                     ownerType = RelationshipOwnerType.TEI,
                     ownerUid = "ownerUid",
