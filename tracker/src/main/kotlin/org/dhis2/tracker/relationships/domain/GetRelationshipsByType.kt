@@ -2,7 +2,6 @@ package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationShipItem
@@ -34,33 +33,22 @@ class GetRelationshipsByType(
                         relationships = relationships.filter {
                             it.relationshipType.uid() == type.first.uid()
                         }.map {
-                            // here we have RelationshipViewModel and we want to map it to RelationShipItem
-                            val (attributes, profilePath, lastUpdated) = when (it.direction) {
-                                RelationshipDirection.FROM -> Triple(
-                                    it.fromValues,
-                                    it.fromImage,
-                                    it.fromLastUpdated,
-                                )
-
-                                RelationshipDirection.TO -> Triple(
-                                    it.toValues,
-                                    it.toImage,
-                                    it.toLastUpdated,
-                                )
-                            }
+                            // We have RelationshipViewModel and we want to map it to RelationShipItem
 
                             RelationShipItem(
                                 title = it.displayRelationshipName(),
-                                attributes = attributes,
+                                description = it.displayDescription(),
+                                attributes = it.displayAttributes(),
                                 ownerType = it.ownerType,
                                 ownerUid = it.ownerUid,
                                 avatar = AvatarProviderConfiguration.ProfilePic(
-                                    profilePicturePath = profilePath ?: "",
-                                    firstMainValue = attributes.firstOrNull()?.second?.firstOrNull()
+                                    profilePicturePath = it.displayImage().first ?: "",
+                                    firstMainValue = it.displayAttributes()
+                                        .firstOrNull()?.second?.firstOrNull()
                                         ?.toString() ?: "",
                                 ),
                                 canOpen = it.canBeOpened,
-                                lastUpdated = dateLabelProvider.span(lastUpdated),
+                                lastUpdated = dateLabelProvider.span(it.displayLastUpdated()),
                             )
                         },
                         teiTypeUid = teiTypeUid
