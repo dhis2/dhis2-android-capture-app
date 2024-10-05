@@ -4,6 +4,7 @@ import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import java.util.Date
 
 data class RelationshipViewModel(
     val relationship: Relationship,
@@ -21,6 +22,8 @@ data class RelationshipViewModel(
     val toDefaultImageResource: Int,
     val ownerDefaultColorResource: MetadataIconData,
     val canBeOpened: Boolean = true,
+    val toLastUpdated: Date? = null,
+    val fromLastUpdated: Date? = null,
 ) {
     fun displayRelationshipName(): String {
         val values = when (direction) {

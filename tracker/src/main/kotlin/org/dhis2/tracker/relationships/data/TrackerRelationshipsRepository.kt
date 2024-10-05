@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInst
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import java.util.Date
 
 class TrackerRelationshipsRepository(
     private val d2: D2,
@@ -93,6 +94,8 @@ class TrackerRelationshipsRepository(
                 val fromDefaultPicRes: Int
                 val toDefaultPicRes: Int
                 val canBoOpened: Boolean
+                val toLastUpdated: Date?
+                val fromLastUpdated: Date?
 
                 //Here checks if the TEI is the from or to of the relationship
                 when (teiUid) {
@@ -102,6 +105,7 @@ class TrackerRelationshipsRepository(
                         fromValues = getTeiAttributesForRelationship(teiUid)
                         fromProfilePic = tei?.profilePicturePath(d2, programUid)
                         fromDefaultPicRes = getTeiDefaultRes(tei)
+                        fromLastUpdated = tei?.lastUpdated()
                         // If the relationship is to a TEI then the owner is the TEI
                         if (relationship.to()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
@@ -115,6 +119,7 @@ class TrackerRelationshipsRepository(
                             toDefaultPicRes = getTeiDefaultRes(toTei)
                             canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toTei?.organisationUnit())
+                            toLastUpdated = toTei?.lastUpdated()
                         } else {
                             // If the relationship is not to a TEI then the owner is the event
                             relationshipOwnerType = RelationshipOwnerType.EVENT
@@ -128,6 +133,7 @@ class TrackerRelationshipsRepository(
                             toDefaultPicRes = getEventDefaultRes(toEvent)
                             canBoOpened = toEvent?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toEvent?.organisationUnit())
+                            toLastUpdated = toEvent?.lastUpdated()
                         }
                     }
 
@@ -137,6 +143,7 @@ class TrackerRelationshipsRepository(
                         toValues = getTeiAttributesForRelationship(teiUid)
                         toProfilePic = tei?.profilePicturePath(d2, programUid)
                         toDefaultPicRes = getTeiDefaultRes(tei)
+                        toLastUpdated = tei?.lastUpdated()
                         if (relationship.from()?.trackedEntityInstance() != null) {
                             relationshipOwnerType = RelationshipOwnerType.TEI
                             relationshipOwnerUid =
@@ -150,6 +157,7 @@ class TrackerRelationshipsRepository(
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
                             canBoOpened = fromTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(fromTei?.organisationUnit())
+                            fromLastUpdated = fromTei?.lastUpdated()
                         } else {
                             relationshipOwnerType = RelationshipOwnerType.EVENT
                             relationshipOwnerUid =
@@ -162,6 +170,7 @@ class TrackerRelationshipsRepository(
                             fromDefaultPicRes = getEventDefaultRes(fromEvent)
                             canBoOpened = fromEvent?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(fromEvent?.organisationUnit())
+                            fromLastUpdated = fromEvent?.lastUpdated()
                         }
                     }
 
@@ -186,6 +195,8 @@ class TrackerRelationshipsRepository(
                     toDefaultPicRes,
                     getOwnerColor(relationshipOwnerUid, relationshipOwnerType),
                     canBoOpened,
+                    toLastUpdated,
+                    fromLastUpdated
                 )
             }
         )

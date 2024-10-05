@@ -10,4 +10,5 @@ data class RelationShipItem(
     val ownerUid: String,
     val avatar: AvatarProviderConfiguration,
     val canOpen: Boolean,
+    val lastUpdated: String,
 )

@@ -482,7 +482,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
                         MetadataIconData.Companion.defaultIcon(),
-                        true
+                        true,
+                        null,
+                        null
                 ));
             }
         }
