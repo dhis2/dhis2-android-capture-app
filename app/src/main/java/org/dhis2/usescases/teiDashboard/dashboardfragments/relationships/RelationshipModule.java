@@ -143,15 +143,7 @@ public class RelationshipModule {
             RelationshipsRepository relationshipsRepository,
             DateLabelProvider dateLabelProvider
     ) {
-        String uid;
-        if (teiUid != null) {
-            uid = teiUid;
-        } else {
-            uid = eventUid;
-        }
         return new GetRelationshipsByType(
-                uid,
-                enrollmentUid,
                 relationshipsRepository,
                 dateLabelProvider
         );
@@ -170,13 +162,16 @@ public class RelationshipModule {
                     d2,
                     attributesProvider,
                     resourceManager,
-                    metadataIconProvider);
+                    metadataIconProvider,
+                    teiUid,
+                    enrollmentUid);
         } else {
             return new EventRelationshipsRepository(
                     d2,
                     attributesProvider,
                     resourceManager,
-                    metadataIconProvider);
+                    metadataIconProvider,
+                    eventUid);
         }
 
     }

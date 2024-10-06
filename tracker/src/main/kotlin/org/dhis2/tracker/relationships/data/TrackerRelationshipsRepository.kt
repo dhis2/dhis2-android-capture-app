@@ -30,16 +30,18 @@ class TrackerRelationshipsRepository(
     private val teiAttributesProvider: TeiAttributesProvider,
     private val resources: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
+    private val teiUid: String,
+    private val enrollmentUid: String,
 ) : RelationshipsRepository {
-    override fun getRelationshipTypes(uid: String): Flow<List<Pair<RelationshipType, String>>> {
+    override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>> {
         val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(uid)
+            .uid(teiUid)
             .blockingGet()?.trackedEntityType() ?: return flowOf(emptyList())
 
         return flowOf(d2.relationshipModule()
             .relationshipTypes()
             .withConstraints()
-            .byAvailableForTrackedEntityInstance(uid)
+            .byAvailableForTrackedEntityInstance(teiUid)
             .blockingGet().mapNotNull { relationshipType ->
                 val secondaryTeTypeUid = when {
                     relationshipType.fromConstraint()?.trackedEntityType()
@@ -59,10 +61,7 @@ class TrackerRelationshipsRepository(
         )
     }
 
-    override fun getRelationships(
-        teiUid: String,
-        enrollmentUid: String?
-    ): Flow<List<RelationshipViewModel>> {
+    override fun getRelationships(): Flow<List<RelationshipViewModel>> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid).blockingGet()
         val programUid = d2.enrollmentModule().enrollments()
