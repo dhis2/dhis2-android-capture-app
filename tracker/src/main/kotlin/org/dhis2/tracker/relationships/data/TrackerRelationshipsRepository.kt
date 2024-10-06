@@ -61,7 +61,7 @@ class TrackerRelationshipsRepository(
 
     override fun getRelationships(
         teiUid: String,
-        enrollmentUid: String
+        enrollmentUid: String?
     ): Flow<List<RelationshipViewModel>> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid).blockingGet()
