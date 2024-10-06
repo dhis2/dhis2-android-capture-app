@@ -6,5 +6,5 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 
 interface RelationshipsRepository {
     fun getRelationshipTypes(uid: String): Flow<List<Pair<RelationshipType, String>>>
-    fun getRelationships(teiUid: String, enrollmentUid: String): Flow<List<RelationshipViewModel>>
+    fun getRelationships(uid: String, enrollmentUid: String?): Flow<List<RelationshipViewModel>>
 }

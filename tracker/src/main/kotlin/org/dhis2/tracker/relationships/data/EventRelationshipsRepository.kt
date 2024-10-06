@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
@@ -64,7 +65,7 @@ class EventRelationshipsRepository(
 
     override fun getRelationships(
         eventUid: String,
-        enrollmentUid: String
+        enrollmentUid: String?
     ): Flow<List<RelationshipViewModel>> {
         return flowOf(
             d2.relationshipModule().relationships().getByItem(
@@ -94,6 +95,10 @@ class EventRelationshipsRepository(
                     .withTrackedEntityDataValues().uid(eventUid).blockingGet()
                 val tei = d2.trackedEntityModule().trackedEntityInstances()
                     .withTrackedEntityAttributeValues().uid(relationshipOwnerUid).blockingGet()
+
+                val eventDescription = event?.programStage()?.let { stage ->
+                    getStage(stage)?.displayDescription()
+                }
 
                 val (fromGeometry, toGeometry) =
                     if (direction == RelationshipDirection.FROM) {
@@ -154,6 +159,32 @@ class EventRelationshipsRepository(
                             orgUnitInScope(event?.organisationUnit())
                 }
 
+                val (fromLastUpdated, toLastUpdated) =
+                    if (direction == RelationshipDirection.FROM) {
+                        Pair(
+                            tei?.lastUpdated(),
+                            event?.lastUpdated()
+                        )
+                    } else {
+                        Pair(
+                            event?.lastUpdated(),
+                            tei?.lastUpdated()
+                        )
+                    }
+
+                val (fromDescription, toDescription) =
+                    if (direction == RelationshipDirection.FROM) {
+                        Pair(
+                            null,
+                            eventDescription
+                        )
+                    } else {
+                        Pair(
+                            eventDescription,
+                            null
+                        )
+                    }
+
                 RelationshipViewModel(
                     relationship,
                     fromGeometry,
@@ -170,6 +201,10 @@ class EventRelationshipsRepository(
                     toDefaultPic,
                     getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI),
                     canBeOpened,
+                    toLastUpdated,
+                    fromLastUpdated,
+                    toDescription,
+                    fromDescription,
                 )
             }
         )
@@ -323,5 +358,11 @@ class EventRelationshipsRepository(
                 return metadataIconProvider(teType!!.style(), SurfaceColor.Primary)
             }
         }
+    }
+
+    private fun getStage(programStageUid: String): ProgramStage? {
+        return d2.programModule().programStages()
+            .uid(programStageUid)
+            .blockingGet()
     }
 }
