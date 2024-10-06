@@ -12,18 +12,13 @@ import org.dhis2.ui.avatar.AvatarProviderConfiguration
  * This use case fetches all the relationships that the tei has access to grouped by their type.
  */
 class GetRelationshipsByType(
-    private val teiUid: String,
-    private val enrollmentUid: String?,
     private val relationShipRepository: RelationshipsRepository,
     private val dateLabelProvider: DateLabelProvider,
 ) {
     operator fun invoke(): Flow<List<RelationshipSection>> =
-        relationShipRepository.getRelationshipTypes(teiUid)
+        relationShipRepository.getRelationshipTypes()
             .combine(
-                relationShipRepository.getRelationships(
-                    teiUid,
-                    enrollmentUid
-                )
+                relationShipRepository.getRelationships()
             ) { types, relationships ->
                 types.map { type ->
                     val relationshipType = type.first

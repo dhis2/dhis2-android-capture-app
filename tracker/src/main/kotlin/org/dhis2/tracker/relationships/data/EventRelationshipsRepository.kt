@@ -28,9 +28,10 @@ class EventRelationshipsRepository(
     private val teiAttributesProvider: TeiAttributesProvider,
     private val resources: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
+    private val eventUid: String,
 ) : RelationshipsRepository {
-    override fun getRelationshipTypes(uid: String): Flow<List<Pair<RelationshipType, String>>> {
-        val event = d2.eventModule().events().uid(uid).blockingGet()
+    override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>> {
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val programStageUid = event?.programStage() ?: ""
         val programUid = event?.program() ?: ""
         return flowOf(d2.relationshipModule()
@@ -63,10 +64,7 @@ class EventRelationshipsRepository(
         )
     }
 
-    override fun getRelationships(
-        eventUid: String,
-        enrollmentUid: String?
-    ): Flow<List<RelationshipViewModel>> {
+    override fun getRelationships(): Flow<List<RelationshipViewModel>> {
         return flowOf(
             d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().event(
