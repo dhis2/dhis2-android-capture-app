@@ -141,11 +141,16 @@ public class RelationshipModule {
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
             RelationshipsRepository relationshipsRepository,
-            ResourceManager resourceManager,
             DateLabelProvider dateLabelProvider
     ) {
+        String uid;
+        if (teiUid != null) {
+            uid = teiUid;
+        } else {
+            uid = eventUid;
+        }
         return new GetRelationshipsByType(
-                teiUid,
+                uid,
                 enrollmentUid,
                 relationshipsRepository,
                 dateLabelProvider

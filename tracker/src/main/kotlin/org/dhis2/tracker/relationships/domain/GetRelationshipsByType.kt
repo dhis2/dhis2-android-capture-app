@@ -13,7 +13,7 @@ import org.dhis2.ui.avatar.AvatarProviderConfiguration
  */
 class GetRelationshipsByType(
     private val teiUid: String,
-    private val enrollmentUid: String,
+    private val enrollmentUid: String?,
     private val relationShipRepository: RelationshipsRepository,
     private val dateLabelProvider: DateLabelProvider,
 ) {
