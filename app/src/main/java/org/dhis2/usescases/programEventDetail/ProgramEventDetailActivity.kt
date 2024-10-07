@@ -14,8 +14,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -95,7 +95,7 @@ class ProgramEventDetailActivity :
     @Inject
     lateinit var ouRepositoryConfiguration: OURepositoryConfiguration
 
-    private var backDropActive by mutableStateOf(false)
+    private var backDropActive = false
     private var programUid: String = ""
 
     private val programEventsViewModel: ProgramEventDetailViewModel by viewModels {
@@ -143,6 +143,7 @@ class ProgramEventDetailActivity :
         binding.navigationBar.setContent {
             DHIS2Theme {
                 val uiState by programEventsViewModel.navigationBarUIState
+                val isBackdropActive by programEventsViewModel.backdropActive.observeAsState(false)
                 var selectedItemIndex by remember(uiState) {
                     mutableIntStateOf(
                         uiState.items.indexOfFirst {
@@ -183,7 +184,7 @@ class ProgramEventDetailActivity :
                 }
 
                 AnimatedVisibility(
-                    visible = uiState.items.size > 1 && backDropActive.not(),
+                    visible = uiState.items.size > 1 && isBackdropActive.not(),
                     enter = slideInVertically { it },
                     exit = slideOutVertically { it },
                 ) {
