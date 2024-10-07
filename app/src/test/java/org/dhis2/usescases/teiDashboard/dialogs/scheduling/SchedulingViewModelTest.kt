@@ -30,6 +30,7 @@ class SchedulingViewModelTest {
             resourceManager = mock(),
             eventResourcesProvider = mock(),
             periodUtils = mock(),
+            dateUtils = mock(),
             dispatchersProvider = object : DispatcherProvider {
                 override fun io(): CoroutineDispatcher {
                     return testingDispatcher

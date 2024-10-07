@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.event
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -38,6 +39,7 @@ class SchedulingViewModel(
     private val periodUtils: DhisPeriodUtils,
     private val dispatchersProvider: DispatcherProvider,
     private val launchMode: LaunchMode,
+    private val dateUtils: DateUtils,
 ) : ViewModel() {
 
     lateinit var repository: EventDetailsRepository
@@ -265,14 +267,13 @@ class SchedulingViewModel(
 
     fun enterEvent(launchMode: LaunchMode.EnterEvent) {
         viewModelScope.launch {
-            val eventDate = eventDate.value.currentDate ?: return@launch
             val event = withContext(dispatchersProvider.io()) {
                 d2.event(launchMode.eventUid)
             } ?: return@launch
             val programUid = event.program() ?: return@launch
 
             d2.eventModule().events().uid(launchMode.eventUid).run {
-                setEventDate(eventDate)
+                setEventDate(dateUtils.today)
                 setStatus(EventStatus.ACTIVE)
             }
 

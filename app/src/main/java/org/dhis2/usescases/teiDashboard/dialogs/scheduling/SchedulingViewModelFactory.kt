@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -17,6 +18,7 @@ class SchedulingViewModelFactory @AssistedInject constructor(
     private val resourceManager: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val periodUtils: DhisPeriodUtils,
+    private val dateUtils: DateUtils,
     private val dispatcherProvider: DispatcherProvider,
     @Assisted private val launchMode: SchedulingDialog.LaunchMode,
 ) : ViewModelProvider.Factory {
@@ -32,6 +34,7 @@ class SchedulingViewModelFactory @AssistedInject constructor(
             resourceManager = resourceManager,
             eventResourcesProvider = eventResourcesProvider,
             periodUtils = periodUtils,
+            dateUtils = dateUtils,
             dispatchersProvider = dispatcherProvider,
             launchMode = launchMode,
         ) as T
