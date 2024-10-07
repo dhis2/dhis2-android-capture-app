@@ -42,8 +42,6 @@ class TrackedEntityInstanceInfoProvider(
             profilePath.isNotEmpty() -> {
                 ProfilePic(
                     profilePicturePath = profilePath,
-                    firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
-                        ?: "",
                 )
             }
 

@@ -73,7 +73,6 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     RelationshipRepository providesRepository(D2 d2,
-                                              DispatcherProvider dispatcherProvider,
                                               ResourceManager resourceManager,
                                               TeiAttributesProvider attributesProvider,
                                               MetadataIconProvider metadataIconProvider) {
@@ -101,7 +100,8 @@ public class RelationshipModule {
                         d2,
                         resourceManager,
                         dateLabelProvider,
-                        metadataIconProvider
+                        metadataIconProvider,
+                        profilePictureProvider
                 )
         );
     }

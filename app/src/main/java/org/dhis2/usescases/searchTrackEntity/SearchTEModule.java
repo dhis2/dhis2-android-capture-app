@@ -199,7 +199,8 @@ public class SearchTEModule {
                         d2,
                         resourceManager,
                         dateLabelProvider,
-                        metadataIconProvider
+                        metadataIconProvider,
+                        profilePictureProvider
                 )
         );
     }
