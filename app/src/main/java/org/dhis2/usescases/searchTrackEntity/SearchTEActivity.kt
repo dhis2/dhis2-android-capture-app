@@ -82,7 +82,7 @@ import javax.inject.Inject
 class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View {
 
     private lateinit var binding: ActivitySearchBinding
-    private var searchScreenConfigurator: SearchScreenConfigurator? = null
+    private lateinit var searchScreenConfigurator: SearchScreenConfigurator
 
     @Inject
     lateinit var presenter: SearchTEContractsModule.Presenter
@@ -109,12 +109,13 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     lateinit var resourceManager: ResourceManager
 
     private var initialProgram: String? = null
-    private var tEType: String? = null
     private var initialQuery: Map<String, String>? = null
 
     private var fromRelationship = false
     private var fromRelationshipTeiUid: String? = null
     private var fromAnalytics = false
+
+    private lateinit var tEType: String
 
     private val viewModel: SearchTEIViewModel by viewModels<SearchTEIViewModel> { viewModelFactory }
 
@@ -153,17 +154,16 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
-        if (savedInstanceState?.getString(CURRENT_SCREEN) != null) {
-            currentContent = Content.valueOf(
-                savedInstanceState.getString(CURRENT_SCREEN)!!,
-            )
+        val currentScreen = savedInstanceState?.getString(CURRENT_SCREEN).orEmpty()
+        if (currentScreen.isNotBlank()) {
+            currentContent = Content.valueOf(currentScreen)
         }
         initSearchParameters()
 
         searchScreenConfigurator = SearchScreenConfigurator(
             binding,
-        ) { isOpen: Boolean? ->
-            viewModel.setFiltersOpened(isOpen!!)
+        ) { isOpen: Boolean ->
+            viewModel.setFiltersOpened(isOpen)
         }
 
         binding.setPresenter(presenter)
@@ -206,7 +206,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun initializeVariables(savedInstanceState: Bundle?) {
-        tEType = intent.getStringExtra("TRACKED_ENTITY_UID")
+        tEType = intent.getStringExtra("TRACKED_ENTITY_UID").orEmpty()
         initialProgram = intent.getStringExtra("PROGRAM_UID")
         try {
             fromRelationship = intent.getBooleanExtra("FROM_RELATIONSHIP", false)
@@ -219,7 +219,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     private fun inject() {
         searchComponent =
-            (applicationContext as App).userComponent()!!.plus(
+            (applicationContext as App).userComponent()?.plus(
                 SearchTEModule(
                     this,
                     tEType,
@@ -228,7 +228,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                     initialQuery,
                 ),
             )
-        searchComponent!!.inject(this)
+        searchComponent?.inject(this)
     }
 
     override fun onResume() {
@@ -296,7 +296,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable(Constants.QUERY_DATA, viewModel.queryData as Serializable)
-        outState.putString(CURRENT_SCREEN, currentContent!!.name)
+        outState.putString(CURRENT_SCREEN, currentContent?.name)
     }
 
     private fun openSyncDialog() {
@@ -333,11 +333,11 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             binding.searchContainer,
             viewModel,
             initialProgram,
-            tEType!!,
+            tEType,
             resourceManager,
-            { uid: String?, preselectedOrgUnits: List<String?>?, orgUnitScope: OrgUnitSelectorScope?, label: String? ->
+            { uid: String, preselectedOrgUnits: List<String>, orgUnitScope: OrgUnitSelectorScope, label: String ->
                 OUTreeFragment.Builder()
-                    .withPreselectedOrgUnits(preselectedOrgUnits?.filterNotNull().orEmpty())
+                    .withPreselectedOrgUnits(preselectedOrgUnits)
                     .singleSelection()
                     .onSelection { selectedOrgUnits: List<OrganisationUnit> ->
                         var selectedOrgUnit: String? = null
@@ -346,7 +346,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         }
                         viewModel.onParameterIntent(
                             OnSave(
-                                uid!!,
+                                uid,
                                 selectedOrgUnit,
                                 ValueType.ORGANISATION_UNIT,
                                 null,
@@ -354,7 +354,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                             ),
                         )
                     }
-                    .orgUnitScope(orgUnitScope!!)
+                    .orgUnitScope(orgUnitScope)
                     .build()
                     .show(supportFragmentManager, label)
             },
@@ -398,7 +398,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         if (sessionManagerServiceImpl.isUserLoggedIn().not()) return@NavigationBar
 
                         if (viewModel.searchOrFilterIsOpen()) {
-                            searchScreenConfigurator?.closeBackdrop()
+                            searchScreenConfigurator.closeBackdrop()
                         }
 
                         viewModel.onNavigationPageChanged(page)
@@ -465,7 +465,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         if (currentContent != Content.MAP) {
             currentContent = Content.MAP
             supportFragmentManager.beginTransaction().run {
-                replace(R.id.mainComponent, get(fromRelationship, tEType!!))
+                replace(R.id.mainComponent, get(fromRelationship, tEType))
                 commit()
             }
             observeMapLoading()
@@ -502,11 +502,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun observeScreenState() {
-        viewModel.screenState.observe(this) { screenState: SearchTEScreenState? ->
-            searchScreenConfigurator!!.configure(
-                screenState!!,
-            )
-        }
+        viewModel.screenState.observe(this, searchScreenConfigurator::configure)
     }
 
     private fun observeDownload() {
@@ -515,15 +511,15 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 { teiUid: String, programUid: String?, enrollmentUid: String? ->
                     openDashboard(
                         teiUid,
-                        programUid!!,
-                        enrollmentUid!!,
+                        programUid,
+                        enrollmentUid,
                     )
                 },
                 { teiUid: String, enrollmentUid: String? ->
-                    showBreakTheGlass(teiUid, enrollmentUid!!)
+                    showBreakTheGlass(teiUid, enrollmentUid)
                 },
                 {
-                    couldNotDownload(presenter.trackedEntityName.displayName()!!)
+                    couldNotDownload(presenter.trackedEntityName.displayName())
                 },
                 { errorMessage: String? ->
                     displayMessage(errorMessage)
@@ -606,8 +602,8 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         }
 
         binding.programSpinner.overrideHeight(500)
-        binding.programSpinner.doOnItemSelected { selectedIndex: Int? ->
-            viewModel.onProgramSelected(selectedIndex!!, programs) { selectedProgram: String? ->
+        binding.programSpinner.doOnItemSelected { selectedIndex: Int ->
+            viewModel.onProgramSelected(selectedIndex, programs) { selectedProgram: String? ->
                 changeProgram(selectedProgram)
             }
         }
@@ -731,7 +727,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         }
     }
 
-    override fun openDashboard(teiUid: String, programUid: String, enrollmentUid: String) {
+    override fun openDashboard(teiUid: String, programUid: String?, enrollmentUid: String?) {
         searchNavigator.openDashboard(teiUid, programUid, enrollmentUid)
     }
 
@@ -739,11 +735,11 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         viewModel.refreshData()
     }
 
-    override fun couldNotDownload(typeName: String) {
+    override fun couldNotDownload(typeName: String?) {
         displayMessage(getString(R.string.download_tei_error, typeName))
     }
 
-    override fun showBreakTheGlass(teiUid: String, enrollmentUid: String) {
+    override fun showBreakTheGlass(teiUid: String, enrollmentUid: String?) {
         BreakTheGlassBottomDialog()
             .setProgram(presenter.program.uid())
             .setPositiveButton { reason: String? ->
