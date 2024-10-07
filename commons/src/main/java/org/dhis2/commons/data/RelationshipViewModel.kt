@@ -33,8 +33,7 @@ data class RelationshipViewModel(
             RelationshipDirection.TO -> toValues
         }
         return when {
-            values.size > 1 -> "${values[0].second} ${values[1].second}"
-            values.size == 1 -> values[0].second
+            values.isNotEmpty() -> "${values.first().first}: ${values.first().second}"
             else -> "-"
         }
     }
@@ -79,7 +78,7 @@ data class RelationshipViewModel(
         return when (direction) {
             RelationshipDirection.FROM -> fromValues
             RelationshipDirection.TO -> toValues
-        }
+        }.drop(1)
     }
 }
 
