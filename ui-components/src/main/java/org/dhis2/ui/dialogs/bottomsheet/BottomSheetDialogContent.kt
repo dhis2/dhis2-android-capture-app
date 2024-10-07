@@ -22,7 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -141,7 +141,7 @@ fun BottomSheetDialogUi(
             }
         }
         extraContent?.let {
-            Divider()
+            HorizontalDivider()
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,7 +152,7 @@ fun BottomSheetDialogUi(
         }
 
         if (bottomSheetDialogUiModel.hasButtons()) {
-            Divider()
+            HorizontalDivider()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -189,6 +189,8 @@ fun BottomSheetDialogUi(
         }
     }
 }
+const val ERROR_MESSAGE = "Enter text"
+const val DATE_BIRTH = "Date of birth"
 
 private fun provideButtonContent(
     buttonStyle: DialogButtonStyle?,
@@ -232,7 +234,8 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
             tint = Color.Unspecified,
             modifier = Modifier
                 .width(20.dp)
-                .height(20.dp),
+                .height(20.dp)
+                .align(Alignment.CenterVertically),
         )
         Column(Modifier.padding(start = 11.dp)) {
             Text(
@@ -304,14 +307,14 @@ fun DialogPreview3() {
 @Composable
 fun DialogPreview4() {
     val fieldsWithIssues = listOf(
-        FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Age", IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
     )
     BottomSheetDialogUi(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(
