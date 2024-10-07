@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -79,7 +80,7 @@ class TrackerRelationshipsRepository(
 
                 //Gets the relationship type
                 val relationshipType =
-                    d2.relationshipModule().relationshipTypes()
+                    d2.relationshipModule().relationshipTypes().withConstraints()
                         .uid(relationship.relationshipType())
                         .blockingGet() ?: return@mapNotNull null
                 val direction: RelationshipDirection
@@ -104,7 +105,10 @@ class TrackerRelationshipsRepository(
                     relationship.from()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                         direction = RelationshipDirection.TO
                         fromGeometry = tei?.geometry()
-                        fromValues = getTeiAttributesForRelationship(teiUid)
+                        fromValues = getTeiAttributesForRelationship(
+                            teiUid,
+                            relationshipType.fromConstraint()
+                        )
                         fromProfilePic = tei?.profilePicturePath(d2, programUid)
                         fromDefaultPicRes = getTeiDefaultRes(tei)
                         fromLastUpdated = tei?.lastUpdated()
@@ -117,7 +121,10 @@ class TrackerRelationshipsRepository(
                             val toTei = d2.trackedEntityModule().trackedEntityInstances()
                                 .uid(relationshipOwnerUid).blockingGet()
                             toGeometry = toTei?.geometry()
-                            toValues = getTeiAttributesForRelationship(toTei?.uid())
+                            toValues = getTeiAttributesForRelationship(
+                                toTei?.uid(),
+                                relationshipType.toConstraint()
+                            )
                             toProfilePic = toTei?.profilePicturePath(d2, programUid)
                             toDefaultPicRes = getTeiDefaultRes(toTei)
                             canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
@@ -147,7 +154,10 @@ class TrackerRelationshipsRepository(
                     relationship.to()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                         direction = RelationshipDirection.FROM
                         toGeometry = tei?.geometry()
-                        toValues = getTeiAttributesForRelationship(teiUid)
+                        toValues = getTeiAttributesForRelationship(
+                            teiUid,
+                            relationshipType.toConstraint()
+                        )
                         toProfilePic = tei?.profilePicturePath(d2, programUid)
                         toDefaultPicRes = getTeiDefaultRes(tei)
                         toLastUpdated = tei?.lastUpdated()
@@ -160,7 +170,10 @@ class TrackerRelationshipsRepository(
                             val fromTei = d2.trackedEntityModule().trackedEntityInstances()
                                 .uid(relationshipOwnerUid).blockingGet()
                             fromGeometry = fromTei?.geometry()
-                            fromValues = getTeiAttributesForRelationship(fromTei?.uid())
+                            fromValues = getTeiAttributesForRelationship(
+                                fromTei?.uid(),
+                                relationshipType.fromConstraint()
+                            )
                             fromProfilePic = fromTei?.profilePicturePath(d2, programUid)
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
                             canBoOpened = fromTei?.syncState() != State.RELATIONSHIP &&
@@ -216,59 +229,65 @@ class TrackerRelationshipsRepository(
         )
     }
 
-    private fun getTeiAttributesForRelationship(teiUid: String?): List<Pair<String, String>> {
-        val teiTypeUid = d2.trackedEntityModule()
-            .trackedEntityInstances().uid(teiUid).blockingGet()?.trackedEntityType()
+    private fun getTeiAttributesForRelationship(
+        teiUid: String?,
+        relationshipConstraint: RelationshipConstraint?,
+    ): List<Pair<String, String>> {
+        //Get list of ordered attributes
+        val trackedEntityAttributesUids = when {
 
-        val attrValuesFromType = mutableListOf<Pair<String, String>>()
-        teiUid?.let {
-            teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teiTypeUid, it)
-                .mapNotNull { attributeValue ->
-                    val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                        .uid(attributeValue.trackedEntityAttribute()).blockingGet()
-                        ?.displayFormName()
-                    val value = attributeValue.userFriendlyValue(d2)
-                    if (fieldName != null && value != null) {
-                        attrValuesFromType.add(Pair(fieldName, value))
-                    } else {
-                        null
-                    }
-                }
-        }
-
-        val attrValueFromProgramTrackedEntityAttribute = mutableListOf<Pair<String, String>>()
-        val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
-            .uid(teiTypeUid).blockingGet()?.name() ?: ""
-
-        if (attrValuesFromType.isEmpty()) {
-            teiUid?.let {
-                teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teiTypeUid, it)
-                    .mapNotNull { attributeValue ->
-                        val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(attributeValue.trackedEntityAttribute())
-                            .blockingGet()?.displayFormName()
-                        val value = attributeValue.userFriendlyValue(d2)
-                        if (fieldName != null && value != null) {
-                            attrValueFromProgramTrackedEntityAttribute.add(Pair(fieldName, value))
-                        } else {
-                            null
-                        }
-                    }
-            }
-        }
-
-        return when {
-            attrValuesFromType.isNotEmpty() -> {
-                attrValuesFromType
+            //When there are  attributes defined in the constraint
+            !relationshipConstraint?.trackerDataView()?.attributes().isNullOrEmpty() -> {
+                relationshipConstraint?.trackerDataView()?.attributes()
             }
 
-            attrValuesFromType.isEmpty() -> {
-                attrValueFromProgramTrackedEntityAttribute
+            //If there is a program defined in the constraint
+            relationshipConstraint?.program() != null -> {
+                val programUid = relationshipConstraint.program()!!.uid()
+                d2.programModule().programTrackedEntityAttributes()
+                    .byProgram().eq(programUid)
+                    .byDisplayInList().isTrue
+                    .blockingGet().mapNotNull {
+                        it.trackedEntityAttribute()?.uid()
+                    }
+            }
+
+            //If there is no program then we get the trackedEntity type attributes
+            relationshipConstraint?.trackedEntityType()?.uid() != null -> {
+                val teiTypeUid = relationshipConstraint.trackedEntityType()?.uid()
+                d2.trackedEntityModule().trackedEntityTypeAttributes()
+                    .byTrackedEntityTypeUid().eq(teiTypeUid)
+                    .byDisplayInList().isTrue.blockingGet().mapNotNull {
+                        it.trackedEntityAttribute()?.uid()
+                    }
             }
 
             else -> {
-                listOf(Pair("uid", teiTypeName))
+                listOf()
             }
+
+        }
+
+        //Get a list of Pair<DisplayName, value>
+        val attributes = trackedEntityAttributesUids!!.mapNotNull { attributeUid ->
+            val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
+                .uid(attributeUid).blockingGet()
+                ?.displayFormName()
+
+            val value = d2.trackedEntityModule().trackedEntityAttributeValues()
+                .value(attributeUid, teiUid!!).blockingGet()?.userFriendlyValue(d2)
+            if (fieldName != null && value != null) {
+                Pair(fieldName, value)
+            } else {
+                null
+            }
+        }
+
+        return attributes.ifEmpty {
+            val teiTypeUid = relationshipConstraint?.trackedEntityType()?.uid()
+            val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
+                .uid(teiTypeUid).blockingGet()?.name() ?: ""
+            listOf(Pair("uid", teiTypeName))
         }
     }
 
