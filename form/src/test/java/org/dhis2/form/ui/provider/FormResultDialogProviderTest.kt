@@ -15,11 +15,11 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-class EventCompletionDialogProviderTest {
+class FormResultDialogProviderTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private val resourceProvider: CompleteEventDialogResourcesProvider = mock {
+    private val resourceProvider: FormResultDialogResourcesProvider = mock {
         on { provideNotSavedText() } doReturn "not_saved"
         on { provideSavedText() } doReturn "saved"
         on { provideErrorInfo() } doReturn "missing_error_fields_events"
@@ -30,8 +30,8 @@ class EventCompletionDialogProviderTest {
         on { provideOnCompleteErrorInfo() } doReturn "event_error_on_complete"
     }
 
-    private val eventCompletionDialogProvider =
-        EventCompletionDialogProvider(resourceProvider)
+    private val formResultDialogProvider =
+        FormResultDialogProvider(resourceProvider)
 
     @Test
     fun `Should not allow to save with missing mandatory fields  in completed events`() {
@@ -50,7 +50,7 @@ class EventCompletionDialogProviderTest {
                 validationStrategy = ValidationStrategy.ON_COMPLETE,
             ),
         )
-        val canOnlyReviewModel = eventCompletionDialogProvider.invoke(
+        val canOnlyReviewModel = formResultDialogProvider.invoke(
             canComplete = completedEventWithMissingMandatoryFields.canComplete,
             onCompleteMessage = completedEventWithMissingMandatoryFields.onCompleteMessage,
             errorFields = completedEventWithMissingMandatoryFields.errorFields,
@@ -85,7 +85,7 @@ class EventCompletionDialogProviderTest {
                 validationStrategy = ValidationStrategy.ON_COMPLETE,
             ),
         )
-        val noErrorsInFormModel = eventCompletionDialogProvider.invoke(
+        val noErrorsInFormModel = formResultDialogProvider.invoke(
             canComplete = completedEventWithNoErrors.canComplete,
             onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
             errorFields = emptyList(),
@@ -137,7 +137,7 @@ class EventCompletionDialogProviderTest {
             ),
         )
 
-        val noErrorsInFormModel = eventCompletionDialogProvider.invoke(
+        val noErrorsInFormModel = formResultDialogProvider.invoke(
             canComplete = completedEventWithNoErrors.canComplete,
             onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
             errorFields = emptyList(),
@@ -149,7 +149,7 @@ class EventCompletionDialogProviderTest {
         )
         assertTrue(noErrorsInFormModel.first.mainButton == DialogButtonStyle.CompleteButton)
 
-        val validationStrategyOnUpdateModel = eventCompletionDialogProvider.invoke(
+        val validationStrategyOnUpdateModel = formResultDialogProvider.invoke(
             canComplete = resultWithErrorsButCanNotSave.canComplete,
             onCompleteMessage = resultWithErrorsButCanNotSave.onCompleteMessage,
             errorFields = emptyList(),
@@ -162,7 +162,7 @@ class EventCompletionDialogProviderTest {
 
         assertTrue(validationStrategyOnUpdateModel.first.mainButton == DialogButtonStyle.MainButton(R.string.review))
 
-        val validationStrategyOnCompleteModel = eventCompletionDialogProvider.invoke(
+        val validationStrategyOnCompleteModel = formResultDialogProvider.invoke(
             canComplete = resultWithErrorsButCanSave.canComplete,
             onCompleteMessage = resultWithErrorsButCanSave.onCompleteMessage,
             errorFields = emptyList(),

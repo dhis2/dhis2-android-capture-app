@@ -85,6 +85,7 @@ class BottomSheetDialog(
                                 tint = SurfaceColor.Primary,
                             )
                         },
+                        showSectionDivider = content != null,
                         buttonBlock = {
                             ButtonBlock(
                                 primaryButton = {
@@ -107,19 +108,20 @@ class BottomSheetDialog(
                                     }
                                 },
                                 secondaryButton = {
-                                    Button(
-                                        style = ButtonStyle.FILLED,
-                                        text = bottomSheetDialogUiModel.mainButton?.let {
-                                            it.textLabel ?: stringResource(id = it.textResource)
-                                        } ?: "",
-                                        onClick = {
-                                            onMainButtonClicked(this@BottomSheetDialog)
-                                            dismiss()
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .testTag(MAIN_BUTTON_TAG),
-                                    )
+                                    bottomSheetDialogUiModel.mainButton?.let {
+                                        Button(
+                                            style = ButtonStyle.FILLED,
+                                            text =
+                                            it.textLabel ?: stringResource(id = it.textResource),
+                                            onClick = {
+                                                onMainButtonClicked(this@BottomSheetDialog)
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(MAIN_BUTTON_TAG),
+                                        )
+                                    }
                                 },
                             )
                         },
@@ -136,10 +138,6 @@ class BottomSheetDialog(
                             }
                         },
                         contentScrollState = rememberScrollState(),
-                        showSectionDivider = when (bottomSheetDialogUiModel.clickableWord) {
-                            null -> true
-                            else -> false
-                        },
                     )
                 }
             }

@@ -14,7 +14,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.EventCompletionDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.showNonEditableReasonMessage
@@ -27,7 +27,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
     lateinit var presenter: EventCaptureFormPresenter
 
     @Inject
-    lateinit var eventResultDialogUiProvider: EventCompletionDialogProvider
+    lateinit var eventResultDialogUiProvider: FormResultDialogProvider
 
     private lateinit var activity: EventCaptureActivity
 
@@ -38,17 +38,17 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.activity = context as EventCaptureActivity
-        activity.eventCaptureComponent!!.plus(
+        activity.eventCaptureComponent?.plus(
             EventCaptureFormModule(
                 this,
                 arguments?.getString(Constants.EVENT_UID)!!,
             ),
-        ).inject(this)
+        )?.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val eventUid = requireArguments().getString(Constants.EVENT_UID, "")
-        val eventMode = EventMode.valueOf(arguments?.getString(Constants.EVENT_MODE)!!)
+        val eventMode = arguments?.getString(Constants.EVENT_MODE)?.let { EventMode.valueOf(it) }
         val eventStatus = presenter.getEventStatus(eventUid)
         formView = FormView.Builder()
             .locationProvider(locationProvider)
@@ -72,7 +72,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             }
             .eventCompletionResultDialogProvider(eventResultDialogUiProvider = eventResultDialogUiProvider)
             .factory(activity.supportFragmentManager)
-            .setRecords(EventRecords(eventUid, eventMode))
+            .setRecords(EventRecords(eventUid, eventMode ?: EventMode.CHECK))
             .openErrorLocation(requireArguments().getBoolean(OPEN_ERROR_LOCATION, false))
             .build()
         super.onCreate(savedInstanceState)
@@ -168,7 +168,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             val fragment = EventCaptureFormFragment()
             val args = Bundle()
             args.putString(Constants.EVENT_UID, eventUid)
-            args.putBoolean(OPEN_ERROR_LOCATION, openErrorSection!!)
+            openErrorSection?.let { args.putBoolean(OPEN_ERROR_LOCATION, it) }
             args.putString(Constants.EVENT_MODE, eventMode.name)
             fragment.arguments = args
             return fragment

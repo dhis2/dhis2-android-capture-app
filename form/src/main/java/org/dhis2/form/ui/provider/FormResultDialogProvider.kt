@@ -19,8 +19,8 @@ import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 
-class EventCompletionDialogProvider(
-    val provider: CompleteEventDialogResourcesProvider,
+class FormResultDialogProvider(
+    val provider: FormResultDialogResourcesProvider,
 ) {
 
     operator fun invoke(
@@ -29,8 +29,8 @@ class EventCompletionDialogProvider(
         errorFields: List<FieldWithIssue>,
         emptyMandatoryFields: Map<String, String>,
         warningFields: List<FieldWithIssue>,
-        eventMode: EventMode,
-        eventState: EventStatus,
+        eventMode: EventMode?,
+        eventState: EventStatus?,
         result: DataIntegrityCheckResult,
     ): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>> {
         val dialogType = getDialogType(
@@ -49,11 +49,11 @@ class EventCompletionDialogProvider(
             eventMode = eventMode,
             validationStrategy = result.eventResultDetails.validationStrategy,
         )
-        if (eventState == EventStatus.COMPLETED) canSkipErrorFix = false
+        if (eventState == EventStatus.COMPLETED || eventState == null) canSkipErrorFix = false
 
         val model = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
-            message = getSubtitle(dialogType, eventState),
+            message = getSubtitle(dialogType, eventState, result.allowDiscard),
             iconResource = getIcon(dialogType),
             mainButton = getMainButton(dialogType, eventState),
             secondaryButton = if (canSkipErrorFix || dialogType == DialogType.WARNING) {
@@ -125,8 +125,8 @@ class EventCompletionDialogProvider(
         else -> provider.provideSavedText()
     }
 
-    private fun getSubtitle(type: DialogType, eventState: EventStatus) = when (type) {
-        DialogType.ERROR -> provider.provideErrorInfo()
+    private fun getSubtitle(type: DialogType, eventState: EventStatus?, canDiscard: Boolean) = when (type) {
+        DialogType.ERROR -> if (canDiscard) provider.provideErrorWithDiscard() else provider.provideErrorInfo()
         DialogType.MANDATORY -> provider.provideMandatoryInfo()
         DialogType.WARNING -> if (eventState == EventStatus.COMPLETED) provider.provideWarningInfoCompletedEvent() else provider.provideWarningInfo()
         DialogType.SUCCESSFUL -> provider.provideCompleteInfo()
@@ -140,13 +140,13 @@ class EventCompletionDialogProvider(
         DialogType.SUCCESSFUL -> provider.provideSavedIcon()
     }
 
-    private fun getMainButton(type: DialogType, eventState: EventStatus) = when (type) {
+    private fun getMainButton(type: DialogType, eventState: EventStatus?) = when (type) {
         DialogType.ERROR,
         DialogType.MANDATORY,
         DialogType.COMPLETE_ERROR,
         -> MainButton(R.string.review)
 
-        DialogType.WARNING -> if (eventState == EventStatus.COMPLETED) {
+        DialogType.WARNING -> if (eventState == EventStatus.COMPLETED || eventState == null) {
             MainButton(R.string.review)
         } else {
             CompleteButton

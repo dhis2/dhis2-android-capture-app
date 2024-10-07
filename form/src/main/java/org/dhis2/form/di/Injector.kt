@@ -34,7 +34,6 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
-import org.dhis2.form.ui.provider.CompleteEventDialogResourcesProvider
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
@@ -170,9 +169,6 @@ object Injector {
 
     private fun provideEnrollmentFormLabelsProvider(context: Context) =
         EnrollmentFormLabelsProvider(provideResourcesManager(context))
-
-    private fun provideCompleteEventLabelsProvider(resources: ResourceManager) =
-        CompleteEventDialogResourcesProvider(resources)
 
     private fun provideFieldFactory(
         context: Context,

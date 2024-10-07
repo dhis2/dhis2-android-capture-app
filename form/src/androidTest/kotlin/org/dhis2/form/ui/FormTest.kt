@@ -3,20 +3,14 @@ package org.dhis2.form.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.fragment.app.FragmentManager
-import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.FormSection
-import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.form.ui.provider.inputfield.AgeProviderTest.Companion.FIELD_UI_MODEL_UID
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import javax.inject.Inject
+import org.mockito.Mockito.mock
 
 class FormTest {
 
@@ -27,27 +21,12 @@ class FormTest {
     }
 
 
-    @Inject
-    lateinit var locationProvider: LocationProvider
-
-    @Inject
-    lateinit var enrollmentResultDialogProvider: EnrollmentResultDialogProvider
-
-    @Inject
-    lateinit var supportFragmentManager: FragmentManager
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
 
-
-    fun setUp() {
-
-    }
-
     @Test
     fun shouldDisplayEnrollmentFormCorrectly() {
-        setUp()
         val sections = mutableListOf<FormSection>()
         val fields = listOf(FieldUiModelImpl(
             uid = FIELD_UI_MODEL_UID,

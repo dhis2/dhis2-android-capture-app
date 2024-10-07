@@ -3,9 +3,8 @@ package org.dhis2.form.ui.provider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 
-class CompleteEventDialogResourcesProvider(
+class FormResultDialogResourcesProvider(
     private val resourceManager: ResourceManager,
-
 ) {
     fun provideRedAlertIcon() = R.drawable.ic_error_outline
 
@@ -20,6 +19,8 @@ class CompleteEventDialogResourcesProvider(
     fun provideDiscardWarning() = resourceManager.getString(R.string.discard_go_back)
 
     fun provideErrorInfo() = resourceManager.getString(R.string.missing_error_fields_events)
+
+    fun provideErrorWithDiscard() = resourceManager.getString(R.string.field_errors_not_saved_discard)
 
     fun provideMandatoryInfo() = resourceManager.getString(R.string.review_message)
 

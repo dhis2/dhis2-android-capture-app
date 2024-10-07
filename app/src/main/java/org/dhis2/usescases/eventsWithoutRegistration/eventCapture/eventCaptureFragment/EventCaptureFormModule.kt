@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.form.ui.provider.CompleteEventDialogResourcesProvider
-import org.dhis2.form.ui.provider.EventCompletionDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.injection.EventDispatchers
@@ -40,17 +40,17 @@ class EventCaptureFormModule(
     @Provides
     @PerFragment
     fun provideResultDialogProvider(
-        resourceProvider: CompleteEventDialogResourcesProvider,
-    ): EventCompletionDialogProvider {
-        return EventCompletionDialogProvider(resourceProvider)
+        resourceProvider: FormResultDialogResourcesProvider,
+    ): FormResultDialogProvider {
+        return FormResultDialogProvider(resourceProvider)
     }
 
     @Provides
     @PerFragment
     fun provideCompleteEventDialogResourcesProvider(
         resourceManager: ResourceManager,
-    ): CompleteEventDialogResourcesProvider {
-        return CompleteEventDialogResourcesProvider(resourceManager)
+    ): FormResultDialogResourcesProvider {
+        return FormResultDialogResourcesProvider(resourceManager)
     }
 
     @Provides
