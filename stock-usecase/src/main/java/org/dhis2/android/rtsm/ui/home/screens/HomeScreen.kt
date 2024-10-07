@@ -4,14 +4,9 @@ import android.app.Activity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -23,15 +18,11 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanOptions
@@ -44,8 +35,8 @@ import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.buttons.FAButton
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     activity: Activity,
@@ -61,7 +52,6 @@ fun HomeScreen(
 
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
-    var selectedIndex by remember { mutableIntStateOf(0) }
     val homeScreenState by viewModel.settingsUiState.collectAsState()
     val homeItems = listOf(
         NavigationBarItem(
@@ -108,43 +98,22 @@ fun HomeScreen(
             if (homeScreenState.hasAnalytics) {
                 NavigationBar(
                     items = homeItems,
-                    selectedItemIndex = selectedIndex,
+                    selectedItemIndex = homeScreenState.selectedScreen.id,
                 ) { itemId ->
-
-                    selectedIndex = homeItems.indexOfFirst { it.id == itemId }
+                    viewModel.switchScreen(itemId)
                 }
             }
         },
     ) { paddingValues ->
 
         AnimatedContent(
-            selectedIndex,
-            transitionSpec = {
-                slideIn(
-                    animationSpec = spring(3000F),
-                    initialOffset = {
-                        if (selectedIndex == BottomNavigation.ANALYTICS.id) {
-                            IntOffset(300, 0)
-                        } else {
-                            IntOffset(-300, 0)
-                        }
-                    },
-                ) togetherWith slideOut(
-                    animationSpec = spring(3000F),
-                    targetOffset = {
-                        if (selectedIndex == BottomNavigation.ANALYTICS.id) {
-                            IntOffset(-300, 0)
-                        } else {
-                            IntOffset(300, 0)
-                        }
-                    },
-                )
-            },
+            homeScreenState.selectedScreen.id,
             label = "HomeScreenContent",
         ) { targetIndex ->
             when (targetIndex) {
                 BottomNavigation.ANALYTICS.id ->
                     {
+                        DHIS2Theme() {}
                         AnalyticsScreen(
                             viewModel = viewModel,
                             backAction = { manageStockViewModel.onHandleBackNavigation() },

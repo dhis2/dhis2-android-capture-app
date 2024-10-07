@@ -26,6 +26,7 @@ import org.dhis2.android.rtsm.services.MetadataManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
+import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.D2
@@ -292,5 +293,20 @@ class HomeViewModel @Inject constructor(
                 TransactionType.CORRECTION.name,
             ),
         )
+    }
+
+    fun switchScreen(itemId: Int) {
+        when (itemId) {
+            BottomNavigation.DATA_ENTRY.id -> {
+                _settingsUiSate.update { currentUiState ->
+                    currentUiState.copy(selectedScreen = BottomNavigation.DATA_ENTRY)
+                }
+            }
+            BottomNavigation.ANALYTICS.id -> {
+                _settingsUiSate.update { currentUiState ->
+                    currentUiState.copy(selectedScreen = BottomNavigation.ANALYTICS)
+                }
+            }
+        }
     }
 }

@@ -22,6 +22,7 @@ import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.DataElementFactory
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
+import org.dhis2.android.rtsm.data.GroupAnalyticsFactory
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
@@ -34,10 +35,12 @@ import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -47,6 +50,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -76,6 +80,8 @@ class HomeViewModelUnitTest {
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
+
+    private lateinit var analytics: List<AnalyticsDhisVisualizationsGroup>
 
     private val distributionItem = TransactionItem(
         R.drawable.ic_distribution,
@@ -136,7 +142,9 @@ class HomeViewModelUnitTest {
 
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
-
+        analytics = GroupAnalyticsFactory.getListOf(2)
+        `when`(charts.getVisualizationGroups(any()))
+            .thenReturn(analytics)
         val distributionDataSet =
             DataElementFactory.create(appConfig.stockDistribution, DISTRIBUTION_LABEL)
         val correctionDataSet = DataElementFactory.create(appConfig.stockCount, CORRECTION_lABEL)
@@ -164,7 +172,6 @@ class HomeViewModelUnitTest {
 
         `when`(metadataManager.transactionType(appConfig.stockDiscarded))
             .thenReturn(Single.just(discardDataSet))
-
         viewModel = HomeViewModel(
             disposable,
             schedulerProvider,
@@ -197,6 +204,11 @@ class HomeViewModelUnitTest {
         verify(metadataManager).facilities(appConfig.program)
 
         assertEquals(viewModel.facilities.value, OperationState.Success(facilities))
+    }
+
+    @Test
+    fun init_shouldShowAnalyticsIfThereAreVisualizationGroups() {
+        assertTrue(viewModel.settingsUiState.value.hasAnalytics)
     }
 
     @Test

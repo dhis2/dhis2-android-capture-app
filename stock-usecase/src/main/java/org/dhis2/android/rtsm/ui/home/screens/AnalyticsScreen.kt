@@ -53,15 +53,17 @@ fun AnalyticsScreen(
         },
         frontLayerElevation = 0.dp,
         frontLayerContent = {
+            var frameId = 0
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     FrameLayout(context).apply {
                         id = ViewCompat.generateViewId()
+                        frameId = id
                     }
                 },
                 update = {
-                    supportFragmentManager.beginTransaction().add(it.id, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
+                    supportFragmentManager.beginTransaction().add(frameId, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
                         .commit()
                 },
             )

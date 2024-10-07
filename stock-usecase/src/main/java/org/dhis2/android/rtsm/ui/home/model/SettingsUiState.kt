@@ -5,6 +5,7 @@ import org.dhis2.android.rtsm.data.TransactionType.CORRECTION
 import org.dhis2.android.rtsm.data.TransactionType.DISCARD
 import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.UIText
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -20,7 +21,7 @@ data class SettingsUiState(
     val transactionDate: LocalDateTime = LocalDateTime.now(),
     val hasAnalytics: Boolean = false,
     val programName: String = "",
-
+    val selectedScreen: BottomNavigation = BottomNavigation.DATA_ENTRY,
 ) {
 
     fun hasFacilitySelected() = facility != null
