@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
 import org.dhis2.R
-import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.fromCache
@@ -74,7 +73,7 @@ class EventInfoProvider(
                 ?.firstOrNull()
             if (profilePath.isNotEmpty()) {
                 AvatarProviderConfiguration.ProfilePic(
-                    profilePicturePath = tei.profilePicturePath(d2, event.program()),
+                    profilePicturePath = profilePath,
                 )
             } else {
                 AvatarProviderConfiguration.MainValueLabel(
