@@ -9,8 +9,10 @@ import android.os.Looper
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
-import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.LockReset
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -36,7 +38,6 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.AlertBottomDialog.Companion.instance
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
-import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDatasetTableBinding
@@ -45,11 +46,15 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment.Companion.create
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.analytics.SHOW_HELP
+import org.dhis2.utils.customviews.setupDropDownMenu
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.validationrules.ValidationResultViolationsAdapter
 import org.dhis2.utils.validationrules.Violation
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import javax.inject.Inject
 
 class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View {
@@ -110,6 +115,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                     binding.tabLayout.visibility = View.GONE
                     openDetails()
                 }
+
                 R.id.navigation_data_entry -> {
                     binding.syncButton.visibility = View.GONE
                     binding.tabLayout.visibility = View.VISIBLE
@@ -132,6 +138,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
         if (intent.shouldLaunchSyncDialog()) {
             showGranularSync()
         }
+        setupMoreMenu()
     }
 
     private fun openDetails() {
@@ -326,17 +333,21 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                             .translationY(0f)
                             .start()
                     }
+
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         animateArrowUp()
                         binding.saveButton.animate()
                             .translationY(-48.dp.toFloat())
                             .start()
                     }
+
                     BottomSheetBehavior.STATE_DRAGGING,
                     BottomSheetBehavior.STATE_HALF_EXPANDED,
                     BottomSheetBehavior.STATE_HIDDEN,
                     BottomSheetBehavior.STATE_SETTLING,
-                    -> {}
+                    -> {
+                    }
+
                     else -> {}
                 }
             }
@@ -433,24 +444,45 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             .start()
     }
 
-    override fun showMoreOptions(view: View) {
-        AppMenuHelper.Builder()
-            .menu(this, R.menu.dataset_menu)
-            .anchor(view)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                popupMenu.menu.findItem(R.id.reopen).isVisible = presenter.isComplete()
-            }
-            .onMenuItemClicked { itemId: Int ->
-                if (itemId == R.id.showHelp) {
+    private fun setupMoreMenu() {
+        setupDropDownMenu(
+            binding.moreOptions,
+            getMenuItems()
+        ) { itemId ->
+            when (itemId) {
+                DataSetMenuItem.SHOW_HELP -> {
                     analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                     showTutorial(true)
-                } else if (itemId == R.id.reopen) {
-                    showReopenDialog()
                 }
-                true
+
+                DataSetMenuItem.RE_OPEN -> showReopenDialog()
             }
-            .build()
-            .show()
+        }
+    }
+
+    private fun getMenuItems(): List<MenuItemData<DataSetMenuItem>> {
+        return buildList {
+            add(
+                MenuItemData(
+                    id = DataSetMenuItem.SHOW_HELP,
+                    label = getString(R.string.showHelp),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
+                ),
+            )
+            if (presenter.isComplete()) {
+                add(
+                    MenuItemData(
+                        id = DataSetMenuItem.RE_OPEN,
+                        label = getString(R.string.re_open),
+                        leadingElement = MenuLeadingElement.Icon(
+                            icon = Icons.Outlined.LockReset,
+                            defaultTintColor = SurfaceColor.Warning,
+                            selectedTintColor = SurfaceColor.Warning,
+                        ),
+                    ),
+                )
+            }
+        }
     }
 
     private fun showReopenDialog() {
@@ -524,4 +556,9 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             return intent
         }
     }
+}
+
+enum class DataSetMenuItem {
+    SHOW_HELP,
+    RE_OPEN
 }

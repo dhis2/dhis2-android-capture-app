@@ -11,21 +11,14 @@ import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.collectAsState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -82,17 +75,14 @@ import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.customviews.setupDropDownMenu
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import javax.inject.Inject
 
 class TeiDashboardMobileActivity :
@@ -216,7 +206,7 @@ class TeiDashboardMobileActivity :
         observeProgressBar()
         observeDashboardModel()
         showLoadingProgress(false)
-        setupMoreMenu(binding.moreOptions)
+        setupMoreMenu()
     }
 
     private fun observeErrorMessages() {
@@ -797,75 +787,47 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setupMoreMenu(
-        composeView: ComposeView
-    ) {
-        composeView.setContent {
-            var expanded by remember { mutableStateOf(false) }
+    private fun setupMoreMenu() {
+        val menuItems = getEnrollmentMenuList(
+            enrollmentUid = enrollmentUid,
+            resourceManager = resourceManager,
+            presenter = presenter,
+            dashboardViewModel = dashboardViewModel
+        )
 
-            val menuItems = getEnrollmentMenuList(
-                enrollmentUid = enrollmentUid,
-                resourceManager = resourceManager,
-                presenter = presenter,
-                dashboardViewModel = dashboardViewModel
-            )
+        setupDropDownMenu(
+            binding.moreOptions,
+            menuItems
+        ) { itemId ->
+            when (itemId) {
+                EnrollmentMenuItem.SYNC -> openSyncDialog()
+                EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
+                EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
+                EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
+                EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
+                EnrollmentMenuItem.HELP -> {
+                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                    showTutorial(true)
+                }
 
-            Box(
-                modifier = Modifier.padding(
-                    end = Spacing.Spacing16
+                EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
+                EnrollmentMenuItem.SHARE -> startQRActivity()
+                EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                    EnrollmentStatus.ACTIVE,
                 )
-            ) {
-                IconButton(
-                    modifier = Modifier.offset(x = Spacing.Spacing16),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.MoreVert,
-                            tint = SurfaceColor.SurfaceBright,
-                            contentDescription = null,
-                        )
-                    }
-                ) {
-                    expanded = !expanded
+
+                EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                    EnrollmentStatus.CANCELLED,
+                )
+
+                EnrollmentMenuItem.COMPLETE -> {
+                    dashboardViewModel.updateEnrollmentStatus(
+                        EnrollmentStatus.COMPLETED,
+                    )
                 }
 
-                DropDownMenu(
-                    items = menuItems,
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) { itemId ->
-                    expanded = !expanded
-
-                    when (itemId) {
-                        EnrollmentMenuItem.SYNC -> openSyncDialog()
-                        EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
-                        EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
-                        EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
-                        EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
-                        EnrollmentMenuItem.HELP -> {
-                            analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                            showTutorial(true)
-                        }
-
-                        EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
-                        EnrollmentMenuItem.SHARE -> startQRActivity()
-                        EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
-                            EnrollmentStatus.ACTIVE,
-                        )
-
-                        EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
-                            EnrollmentStatus.CANCELLED,
-                        )
-
-                        EnrollmentMenuItem.COMPLETE -> {
-                            dashboardViewModel.updateEnrollmentStatus(
-                                EnrollmentStatus.COMPLETED,
-                            )
-                        }
-
-                        EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
-                        EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
-                    }
-                }
+                EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
+                EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
             }
         }
     }
