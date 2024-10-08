@@ -1,4 +1,4 @@
-package org.dhis2.tracker.relationships.data
+package org.dhis2.usescases.teiDashboard
 
 import io.reactivex.Single
 import org.hisp.dhis.android.core.D2

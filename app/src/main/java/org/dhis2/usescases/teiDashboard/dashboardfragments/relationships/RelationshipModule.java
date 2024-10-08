@@ -17,11 +17,11 @@ import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.tracker.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
-import org.dhis2.tracker.relationships.data.TeiAttributesProvider;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationShipsViewModel;
 import org.dhis2.usescases.events.EventInfoProvider;
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -153,14 +153,12 @@ public class RelationshipModule {
     @PerFragment
     RelationshipsRepository provideRelationshipsRepository(
             D2 d2,
-            TeiAttributesProvider attributesProvider,
             ResourceManager resourceManager,
             MetadataIconProvider metadataIconProvider
     ) {
         if (teiUid != null) {
             return new TrackerRelationshipsRepository(
                     d2,
-                    attributesProvider,
                     resourceManager,
                     metadataIconProvider,
                     teiUid,
@@ -168,7 +166,6 @@ public class RelationshipModule {
         } else {
             return new EventRelationshipsRepository(
                     d2,
-                    attributesProvider,
                     resourceManager,
                     metadataIconProvider,
                     eventUid);

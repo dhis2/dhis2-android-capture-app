@@ -26,7 +26,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class EventRelationshipsRepository(
     private val d2: D2,
-    private val teiAttributesProvider: TeiAttributesProvider,
     private val resources: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
     private val eventUid: String,
@@ -117,7 +116,7 @@ class EventRelationshipsRepository(
                             getTeiAttributesForRelationship(
                                 relationshipOwnerUid,
                                 relationshipType.fromConstraint(),
-                                ),
+                            ),
                             getEventValuesForRelationship(eventUid),
                         )
                     } else {

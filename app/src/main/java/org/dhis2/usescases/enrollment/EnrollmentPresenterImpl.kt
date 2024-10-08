@@ -14,7 +14,7 @@ import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.model.RowAction
 import org.dhis2.tracker.extensions.profilePicturePath
-import org.dhis2.tracker.relationships.data.TeiAttributesProvider
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.DELETE_AND_BACK
 import org.hisp.dhis.android.core.D2

@@ -6,9 +6,9 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.EnrollmentRepository
-import org.dhis2.tracker.relationships.data.TeiAttributesProvider
 import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.CHECK
 import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.NEW
+import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
