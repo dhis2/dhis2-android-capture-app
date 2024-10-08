@@ -7,6 +7,7 @@ import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
@@ -57,29 +58,34 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     RelationshipPresenter providesPresenter(D2 d2,
-                                            RelationshipRepository relationshipRepository,
+                                            RelationshipMapsRepository relationshipMapsRepository,
                                             SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
-                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection) {
-        return new RelationshipPresenter(view,
+                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection,
+                                            RelationshipsRepository relationshipsRepository,
+                                            DispatcherProvider dispatcherProvider
+    ) {
+        return new RelationshipPresenter(
+                view,
                 d2,
-                programUid,
                 teiUid,
                 eventUid,
-                relationshipRepository,
+                relationshipMapsRepository,
                 schedulerProvider,
                 analyticsHelper,
                 new MapRelationshipToRelationshipMapModel(),
                 mapRelationshipsToFeatureCollection,
-                new MapStyleConfiguration(d2));
+                new MapStyleConfiguration(d2),
+                relationshipsRepository,
+                dispatcherProvider
+        );
     }
 
     @Provides
     @PerFragment
-    RelationshipRepository providesRepository(
+    RelationshipMapsRepository providesRepository(
             D2 d2,
             ResourceManager resourceManager,
-            TeiAttributesProvider attributesProvider,
             MetadataIconProvider metadataIconProvider,
             DateLabelProvider dateLabelProvider
     ) {
@@ -90,12 +96,10 @@ public class RelationshipModule {
             config = new EventRelationshipConfiguration(eventUid);
         }
         ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
-        return new RelationshipRepositoryImpl(
+        return new RelationshipMapsRepositoryImpl(
                 d2,
                 config,
                 resourceManager,
-                attributesProvider,
-                metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         profilePictureProvider,
