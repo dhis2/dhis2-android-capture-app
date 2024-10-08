@@ -13,6 +13,10 @@ import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.LockReset
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -46,7 +50,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment.Companion.create
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.setupDropDownMenu
+import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -445,17 +449,22 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
     }
 
     private fun setupMoreMenu() {
-        setupDropDownMenu(
-            binding.moreOptions,
-            getMenuItems()
-        ) { itemId ->
-            when (itemId) {
-                DataSetMenuItem.SHOW_HELP -> {
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                    showTutorial(true)
-                }
+        binding.moreOptions.setContent {
+            var expanded by remember { mutableStateOf(false) }
 
-                DataSetMenuItem.RE_OPEN -> showReopenDialog()
+            MoreIconWithDropDownMenu(
+                getMenuItems(),
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
+                when (itemId) {
+                    DataSetMenuItem.SHOW_HELP -> {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        showTutorial(true)
+                    }
+
+                    DataSetMenuItem.RE_OPEN -> showReopenDialog()
+                }
             }
         }
     }
@@ -560,5 +569,5 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
 
 enum class DataSetMenuItem {
     SHOW_HELP,
-    RE_OPEN
+    RE_OPEN,
 }

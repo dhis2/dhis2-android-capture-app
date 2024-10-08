@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
@@ -63,7 +64,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
-import org.dhis2.usescases.teiDashboard.ui.EnrollmentMenuItem
 import org.dhis2.usescases.teiDashboard.ui.getEnrollmentMenuList
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.HelpManager
@@ -72,8 +72,8 @@ import org.dhis2.utils.analytics.SHARE_TEI
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
+import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.customviews.setupDropDownMenu
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
@@ -794,47 +794,68 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setupMoreMenu() {
-        val menuItems = getEnrollmentMenuList(
-            enrollmentUid = enrollmentUid,
-            resourceManager = resourceManager,
-            presenter = presenter,
-            dashboardViewModel = dashboardViewModel
-        )
+        binding.moreOptions.setContent {
+            val menuItems = getEnrollmentMenuList(
+                enrollmentUid = enrollmentUid,
+                resourceManager = resourceManager,
+                presenter = presenter,
+                dashboardViewModel = dashboardViewModel,
+            )
 
-        setupDropDownMenu(
-            binding.moreOptions,
-            menuItems
-        ) { itemId ->
-            when (itemId) {
-                EnrollmentMenuItem.SYNC -> openSyncDialog()
-                EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
-                EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
-                EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
-                EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
-                EnrollmentMenuItem.HELP -> {
-                    analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                    showTutorial(true)
-                }
+            var expanded by remember { mutableStateOf(false) }
 
-                EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
-                EnrollmentMenuItem.SHARE -> startQRActivity()
-                EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
-                    EnrollmentStatus.ACTIVE,
-                )
+            MoreIconWithDropDownMenu(
+                menuItems,
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
+                when (itemId) {
+                    EnrollmentMenuItem.SYNC -> openSyncDialog()
+                    EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
+                    EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
+                    EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
+                    EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
+                    EnrollmentMenuItem.HELP -> {
+                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        showTutorial(true)
+                    }
 
-                EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
-                    EnrollmentStatus.CANCELLED,
-                )
-
-                EnrollmentMenuItem.COMPLETE -> {
-                    dashboardViewModel.updateEnrollmentStatus(
-                        EnrollmentStatus.COMPLETED,
+                    EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
+                    EnrollmentMenuItem.SHARE -> startQRActivity()
+                    EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                        EnrollmentStatus.ACTIVE,
                     )
-                }
 
-                EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
-                EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                    EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                        EnrollmentStatus.CANCELLED,
+                    )
+
+                    EnrollmentMenuItem.COMPLETE -> {
+                        dashboardViewModel.updateEnrollmentStatus(
+                            EnrollmentStatus.COMPLETED,
+                        )
+                    }
+
+                    EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
+                    EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                }
             }
         }
     }
+}
+
+enum class EnrollmentMenuItem {
+    SYNC,
+    TRANSFER,
+    FOLLOW_UP,
+    GROUP_BY_STAGE,
+    VIEW_TIMELINE,
+    HELP,
+    ENROLLMENTS,
+    SHARE,
+    ACTIVATE,
+    DEACTIVATE,
+    COMPLETE,
+    DELETE,
+    REMOVE,
 }

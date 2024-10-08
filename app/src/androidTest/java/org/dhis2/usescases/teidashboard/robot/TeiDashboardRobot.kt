@@ -205,7 +205,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnShareButton() {
-        onView(withText(R.string.share)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.share)).performClick()
+        }
     }
 
     fun clickOnNextQR() {
@@ -219,7 +221,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnMenuDeleteTEI() {
-        onView(withText(R.string.dashboard_menu_delete_person)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person)).performClick()
+        }
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
@@ -285,10 +289,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuDeleteEnrollment() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val deleteEnrollmentLabel = getString(R.string.dashboard_menu_delete_enrollment_V2)
-            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment, 1)
-            val itemLabel = deleteEnrollmentLabel.format(enrollmentLabel)
-            onView(withText(itemLabel)).perform(click())
+            val deleteEnrollmentLabel = getString(R.string.remove_from)
+            composeTestRule.onNodeWithText(deleteEnrollmentLabel).performClick()
         }
     }
 
