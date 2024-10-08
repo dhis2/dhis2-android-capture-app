@@ -134,11 +134,7 @@ fun ProgramList(
                             onSizeChanged(size)
                         }
                     },
-                    onItemClick = {
-                        if (downLoadState?.running != true) {
-                            onItemClick(it)
-                        }
-                    },
+                    onItemClick = onItemClick,
                     onGranularSyncClick = onGranularSyncClick,
                 )
             }
@@ -420,12 +416,13 @@ fun ProgramItem(
                                 )
                             }
                             addIf(
-                                listOf(
-                                    State.TO_POST,
-                                    State.TO_UPDATE,
-                                    State.ERROR,
-                                    State.WARNING,
-                                ).contains(program.state),
+                                !program.isDownloading() &&
+                                    listOf(
+                                        State.TO_POST,
+                                        State.TO_UPDATE,
+                                        State.ERROR,
+                                        State.WARNING,
+                                    ).contains(program.state),
                                 stateAdditionalInfoItem(program.state),
                             )
                         },
@@ -444,7 +441,11 @@ fun ProgramItem(
                     )
                 },
 
-                onCardClick = { onItemClick(program) },
+                onCardClick = {
+                    if (!program.isDownloading()) {
+                        onItemClick(program)
+                    }
+                },
                 actionButton = {
                     if (!program.isDownloading()) {
                         ProvideSyncButton(state = program.state) {
@@ -474,12 +475,13 @@ fun ProgramItem(
                                 )
                             }
                             addIf(
-                                listOf(
-                                    State.TO_POST,
-                                    State.TO_UPDATE,
-                                    State.ERROR,
-                                    State.WARNING,
-                                ).contains(program.state),
+                                !program.isDownloading() &&
+                                    listOf(
+                                        State.TO_POST,
+                                        State.TO_UPDATE,
+                                        State.ERROR,
+                                        State.WARNING,
+                                    ).contains(program.state),
                                 stateAdditionalInfoItem(program.state),
                             )
                         },
@@ -498,7 +500,11 @@ fun ProgramItem(
                         avatarSize = programLayout.metadataAvatarSize(),
                     )
                 },
-                onCardClick = { onItemClick(program) },
+                onCardClick = {
+                    if (!program.isDownloading()) {
+                        onItemClick(program)
+                    }
+                },
                 actionButton = {
                     if (!program.isDownloading()) {
                         ProvideSyncButton(state = program.state) {

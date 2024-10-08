@@ -286,10 +286,12 @@ class MainActivity :
             presenter.observeDataSync().collect {
                 when (it.running) {
                     true -> {
+                        binding.syncActionButton.visibility = View.GONE
                         setBottomNavigationVisibility(false)
                     }
 
                     false -> {
+                        binding.syncActionButton.visibility = View.VISIBLE
                         setBottomNavigationVisibility(true)
                         presenter.onDataSuccess()
                         if (presenter.hasOneHomeItem()) {
