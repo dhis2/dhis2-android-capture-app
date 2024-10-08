@@ -7,7 +7,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
 import android.view.View
-import android.widget.PopupMenu
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,7 +24,6 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
-import org.dhis2.commons.popupmenu.AppMenuHelper
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -49,11 +50,15 @@ import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.customviews.setupDropDownMenu
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
 import javax.inject.Inject
 
 class EventCaptureActivity :
@@ -107,6 +112,8 @@ class EventCaptureActivity :
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode
         setUpViewPagerAdapter()
         setUpNavigationBar()
+        setupMoreMenu()
+
         setUpEventCaptureFormLandscape(eventUid ?: "")
         if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
             val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
@@ -367,28 +374,42 @@ class EventCaptureActivity :
         binding.programStageName.text = stageName
     }
 
-    override fun showMoreOptions(view: View) {
-        AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                popupMenu.menu.findItem(R.id.menu_delete).isVisible =
-                    presenter.canWrite() && presenter.isEnrollmentOpen()
-                popupMenu.menu.findItem(R.id.menu_share).isVisible = false
-            }
-            .onMenuItemClicked { itemId: Int? ->
-                when (itemId) {
-                    R.id.showHelp -> {
-                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(false)
-                    }
-
-                    R.id.menu_delete -> confirmDeleteEvent()
-                    else -> { // Do nothing
-                    }
+    private fun setupMoreMenu() {
+        setupDropDownMenu(
+            binding.moreOptions,
+            getMenuItems()
+        ) { itemId ->
+            when (itemId) {
+                EventCaptureMenuItem.SHOW_HELP -> {
+                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                    showTutorial(false)
                 }
-                false
+
+                EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
             }
-            .build()
-            .show()
+        }
+    }
+
+    private fun getMenuItems(): List<MenuItemData<EventCaptureMenuItem>> {
+        return buildList {
+            add(
+                MenuItemData(
+                    id = EventCaptureMenuItem.SHOW_HELP,
+                    label = getString(R.string.showHelp),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
+                )
+            )
+            if (presenter.canWrite() && presenter.isEnrollmentOpen()) {
+                add(
+                    MenuItemData(
+                        id = EventCaptureMenuItem.DELETE,
+                        label = getString(R.string.delete),
+                        style = MenuItemStyle.ALERT,
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
+                    )
+                )
+            }
+        }
     }
 
     override fun showTutorial(shaked: Boolean) {
@@ -562,4 +583,9 @@ class EventCaptureActivity :
             }
         }
     }
+}
+
+enum class EventCaptureMenuItem {
+    SHOW_HELP,
+    DELETE,
 }
