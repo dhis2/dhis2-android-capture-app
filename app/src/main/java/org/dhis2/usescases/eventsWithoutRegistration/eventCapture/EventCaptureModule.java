@@ -47,15 +47,19 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    SchedulerProvider schedulerProvider,
-                                                    PreferenceProvider preferences) {
+    EventCaptureContract.Presenter providePresenter(
+            @NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
+            SchedulerProvider schedulerProvider,
+            PreferenceProvider preferences,
+            NavigationPageConfigurator pageConfigurator
+    ) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
                 eventCaptureRepository,
                 schedulerProvider,
-                preferences);
+                preferences,
+                pageConfigurator);
     }
 
     @Provides

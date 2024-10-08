@@ -14,6 +14,7 @@ import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
@@ -25,6 +26,7 @@ class EventCapturePresenterImpl(
     private val eventCaptureRepository: EventCaptureRepository,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
+    private val pageConfigurator: NavigationPageConfigurator,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
