@@ -28,7 +28,6 @@ import java.util.Date
 
 class TrackerRelationshipsRepository(
     private val d2: D2,
-    private val teiAttributesProvider: TeiAttributesProvider,
     private val resources: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
     private val teiUid: String,

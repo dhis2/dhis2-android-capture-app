@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard
 
-import org.dhis2.tracker.relationships.data.TeiAttributesProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
