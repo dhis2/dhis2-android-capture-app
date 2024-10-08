@@ -183,8 +183,8 @@ class SearchTEIViewModel(
             selectedItem = enrollmentItems.firstOrNull()?.id,
         )
 
-        if (_navigationBarUIState.value.selectedItem != null) {
-            onNavigationPageChanged(navigationBarUIState.value.items.first().id)
+        if (enrollmentItems.isNotEmpty()) {
+            onNavigationPageChanged(enrollmentItems.first().id)
         }
     }
 
