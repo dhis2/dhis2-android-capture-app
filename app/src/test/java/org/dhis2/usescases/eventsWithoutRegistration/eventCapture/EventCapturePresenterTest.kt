@@ -9,6 +9,7 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -38,6 +39,7 @@ class EventCapturePresenterTest {
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog = mock()
+    private val pageConfigurator: NavigationPageConfigurator = mock()
 
     @Before
     fun setUp() {
@@ -48,6 +50,7 @@ class EventCapturePresenterTest {
             schedulers,
             preferences,
             configureEventCompletionDialog,
+            pageConfigurator,
         )
     }
 

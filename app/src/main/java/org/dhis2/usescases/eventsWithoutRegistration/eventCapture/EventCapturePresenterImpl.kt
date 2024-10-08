@@ -18,6 +18,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleto
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
@@ -31,6 +32,7 @@ class EventCapturePresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog,
+    private val pageConfigurator: NavigationPageConfigurator,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()

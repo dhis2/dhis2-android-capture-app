@@ -49,17 +49,22 @@ public class EventCaptureModule {
 
     @Provides
     @PerActivity
-    EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    SchedulerProvider schedulerProvider,
-                                                    PreferenceProvider preferences,
-                                                    ConfigureEventCompletionDialog configureEventCompletionDialog) {
+    EventCaptureContract.Presenter providePresenter(
+            @NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
+            SchedulerProvider schedulerProvider,
+            PreferenceProvider preferences,
+            ConfigureEventCompletionDialog configureEventCompletionDialog,
+            NavigationPageConfigurator pageConfigurator
+    ) {
         return new EventCapturePresenterImpl(
                 view,
                 eventUid,
                 eventCaptureRepository,
                 schedulerProvider,
                 preferences,
-                configureEventCompletionDialog);
+                configureEventCompletionDialog,
+                pageConfigurator
+        );
     }
 
     @Provides

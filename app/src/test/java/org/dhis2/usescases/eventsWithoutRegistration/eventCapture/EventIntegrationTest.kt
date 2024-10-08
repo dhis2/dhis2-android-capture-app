@@ -22,6 +22,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFr
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider
 import org.dhis2.utils.customviews.FormBottomDialog
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
@@ -58,6 +59,7 @@ class EventIntegrationTest {
         on { provideCompleteInfo() } doReturn "event_can_be_completed"
         on { provideOnCompleteErrorInfo() } doReturn "event_error_on_complete"
     }
+    private val pageConfigurator: NavigationPageConfigurator = mock()
 
     private val configurationEventCompletionDialog =
         ConfigureEventCompletionDialog(resourceProvider)
@@ -69,6 +71,7 @@ class EventIntegrationTest {
         schedulerProvider = schedulers,
         preferences = preferences,
         configureEventCompletionDialog = configurationEventCompletionDialog,
+        pageConfigurator = pageConfigurator,
     )
 
     private val eventCaptureFormPresenter = EventCaptureFormPresenter(
