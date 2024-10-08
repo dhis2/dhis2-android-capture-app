@@ -18,6 +18,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
+import org.dhis2.usescases.teiDashboard.EnrollmentMenuItem
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
@@ -26,36 +27,19 @@ import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
-enum class EnrollmentMenuItem {
-    SYNC,
-    TRANSFER,
-    FOLLOW_UP,
-    GROUP_BY_STAGE,
-    VIEW_TIMELINE,
-    HELP,
-    ENROLLMENTS,
-    SHARE,
-    ACTIVATE,
-    DEACTIVATE,
-    COMPLETE,
-    DELETE,
-    REMOVE,
-}
-
 fun getEnrollmentMenuList(
     enrollmentUid: String?,
     resourceManager: ResourceManager,
     presenter: TeiDashboardContracts.Presenter,
     dashboardViewModel: DashboardViewModel,
 ): List<MenuItemData<EnrollmentMenuItem>> {
-
     return if (enrollmentUid == null) {
         buildList {
             addAll(
                 listOf(
                     getSyncMenuItem(resourceManager),
-                    getMoreEnrollmentsMenuItem(resourceManager)
-                )
+                    getMoreEnrollmentsMenuItem(resourceManager),
+                ),
             )
             getDeleteTEIMenuItem(presenter, resourceManager)?.let { add(it) }
         }
@@ -68,7 +52,7 @@ fun getEnrollmentMenuList(
                         id = EnrollmentMenuItem.TRANSFER,
                         label = resourceManager.getString(R.string.transfer),
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.MoveDown),
-                    )
+                    ),
                 )
             }
 
@@ -78,7 +62,7 @@ fun getEnrollmentMenuList(
                         id = EnrollmentMenuItem.FOLLOW_UP,
                         label = resourceManager.getString(R.string.mark_follow_up),
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Flag),
-                    )
+                    ),
                 )
             }
             if (dashboardViewModel.groupByStage.value != false) {
@@ -113,7 +97,7 @@ fun getEnrollmentMenuList(
                         showDivider = true,
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
                     ),
-                )
+                ),
             )
 
             val status = presenter.getEnrollmentStatus(enrollmentUid)
@@ -162,7 +146,6 @@ fun getEnrollmentMenuList(
             }
 
             if (presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)) {
-
                 val dashboardModel = dashboardViewModel.dashboardModel.value
                 val programmeName = if (dashboardModel is DashboardEnrollmentModel) {
                     dashboardModel.currentProgram().displayName()
@@ -176,7 +159,7 @@ fun getEnrollmentMenuList(
                         supportingText = programmeName,
                         style = MenuItemStyle.ALERT,
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteOutline),
-                    )
+                    ),
                 )
             }
 
@@ -186,7 +169,7 @@ fun getEnrollmentMenuList(
 }
 
 fun getSyncMenuItem(
-    resourceManager: ResourceManager
+    resourceManager: ResourceManager,
 ): MenuItemData<EnrollmentMenuItem> {
     return MenuItemData(
         id = EnrollmentMenuItem.SYNC,
@@ -196,7 +179,7 @@ fun getSyncMenuItem(
 }
 
 fun getMoreEnrollmentsMenuItem(
-    resourceManager: ResourceManager
+    resourceManager: ResourceManager,
 ): MenuItemData<EnrollmentMenuItem> {
     return MenuItemData(
         id = EnrollmentMenuItem.ENROLLMENTS,
@@ -207,7 +190,7 @@ fun getMoreEnrollmentsMenuItem(
 
 fun getDeleteTEIMenuItem(
     presenter: TeiDashboardContracts.Presenter,
-    resourceManager: ResourceManager
+    resourceManager: ResourceManager,
 ): MenuItemData<EnrollmentMenuItem>? {
     return if (presenter.checkIfTEICanBeDeleted()) {
         MenuItemData(

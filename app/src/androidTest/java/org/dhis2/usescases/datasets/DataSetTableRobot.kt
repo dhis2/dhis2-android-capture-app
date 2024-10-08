@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
@@ -13,6 +14,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -51,7 +53,9 @@ class DataSetTableRobot(
     }
 
     fun clickOnMenuReOpen() {
-        onView(withText(R.string.re_open)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.re_open)).performClick()
+        }
     }
 
     fun typeOnCell(tableId: String, rowIndex: Int, columnIndex: Int) {

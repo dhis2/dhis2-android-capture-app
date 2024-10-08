@@ -51,7 +51,7 @@ class EventTest : BaseTest() {
             clickOnEventGroupByStageUsingDate(tbVisitDate)
         }
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnDelete()
             clickOnDeleteDialog()
@@ -69,7 +69,7 @@ class EventTest : BaseTest() {
 
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             checkEventDataEntryIsOpened(completion, email, composeTestRule)
         }
     }
@@ -80,7 +80,7 @@ class EventTest : BaseTest() {
 
         prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnShare()
             clickOnAllQR(qrList)
@@ -123,7 +123,7 @@ class EventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             clickNextButton()
         }
         eventRobot(composeTestRule) {
