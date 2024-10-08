@@ -51,7 +51,9 @@ public class EventCaptureModule {
             @NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
             SchedulerProvider schedulerProvider,
             PreferenceProvider preferences,
-            NavigationPageConfigurator pageConfigurator
+            NavigationPageConfigurator pageConfigurator,
+            NavigationPageConfigurator pageConfigurator,
+            ResourceManager resourceManager
     ) {
         return new EventCapturePresenterImpl(
                 view,
@@ -59,7 +61,8 @@ public class EventCaptureModule {
                 eventCaptureRepository,
                 schedulerProvider,
                 preferences,
-                pageConfigurator);
+                pageConfigurator,
+                resourceManager);
     }
 
     @Provides

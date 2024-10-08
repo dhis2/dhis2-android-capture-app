@@ -9,6 +9,7 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
@@ -27,6 +28,7 @@ class EventCapturePresenterImpl(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val pageConfigurator: NavigationPageConfigurator,
+    private val resourceManager: ResourceManager,
 ) : ViewModel(), EventCaptureContract.Presenter {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
