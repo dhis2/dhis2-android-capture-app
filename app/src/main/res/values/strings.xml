@@ -743,9 +743,9 @@
     <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="section_charts">Charts</string>
-    <string name="navigation_list_view">List view</string>
+    <string name="navigation_list_view">List</string>
     <string name="navigation_table_view">Table view</string>
-    <string name="navigation_map_view">Map view</string>
+    <string name="navigation_map_view">Map</string>
     <string name="navigation_analytics">Analytics</string>
     <string name="navigation_tasks">Tasks</string>
     <string name="navigation_programs">Programs</string>
