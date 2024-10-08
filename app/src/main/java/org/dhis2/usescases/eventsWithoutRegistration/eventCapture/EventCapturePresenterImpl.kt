@@ -1,23 +1,40 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.automirrored.outlined.StickyNote2
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Hub
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Hub
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
+import org.dhis2.ui.icons.DHIS2Icons
+import org.dhis2.ui.icons.DataEntryFilled
+import org.dhis2.ui.icons.DataEntryOutline
+import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCaptureInitialInfo
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.Unit
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import timber.log.Timber
 import java.util.Date
 
@@ -36,6 +53,12 @@ class EventCapturePresenterImpl(
     private val notesCounterProcessor: PublishProcessor<Unit> = PublishProcessor.create()
 
     val actions = MutableLiveData<EventCaptureAction>()
+
+    private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
+
+    override fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>> {
+        return _navigationBarUIState
+    }
 
     override fun observeActions(): LiveData<EventCaptureAction> = actions
 
@@ -73,6 +96,104 @@ class EventCapturePresenterImpl(
             ),
         )
         checkExpiration()
+
+        viewModelScope.launch {
+            loadBottomBarItems()
+        }
+    }
+
+    private fun loadBottomBarItems() {
+        val navItems = mutableListOf<NavigationBarItem<NavigationPage>>()
+
+        if (pageConfigurator.displayDataEntry()) {
+            navItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.DATA_ENTRY,
+                    icon = DHIS2Icons.DataEntryOutline,
+                    selectedIcon = DHIS2Icons.DataEntryFilled,
+                    label = resourceManager.getString(R.string.navigation_form),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayAnalytics()) {
+            navItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.ANALYTICS,
+                    icon = Icons.Outlined.BarChart,
+                    selectedIcon = Icons.Filled.BarChart,
+                    label = resourceManager.getString(R.string.navigation_charts),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayRelationships()) {
+            navItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.RELATIONSHIPS,
+                    icon = Icons.Outlined.Hub,
+                    selectedIcon = Icons.Filled.Hub,
+                    label = resourceManager.getString(R.string.navigation_relations),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayNotes()) {
+            navItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.NOTES,
+                    icon = Icons.AutoMirrored.Outlined.StickyNote2,
+                    selectedIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                    label = resourceManager.getString(R.string.navigation_notes),
+                ),
+            )
+        }
+
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(
+            items = navItems.takeIf { it.size > 1 }.orEmpty(),
+        )
+    }
+
+    override fun onNavigationPageChanged(page: NavigationPage) {
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = page)
+    }
+
+    override fun onSetNavigationPage(index: Int) {
+        val navigationPageAtIndex = _navigationBarUIState
+            .value
+            .items
+            .getOrNull(index)
+            ?.id
+
+        if (navigationPageAtIndex != null) {
+            onNavigationPageChanged(navigationPageAtIndex)
+        }
+    }
+
+    override fun isDataEntrySelected(): Boolean {
+        return _navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
+    }
+
+    override fun updateNotesBadge(numberOfNotes: Int) {
+        val navigationBarUIState = _navigationBarUIState.value
+        val indexOfNotesNavigationItem = navigationBarUIState
+            .items
+            .indexOfFirst { it.id == NavigationPage.NOTES }
+
+        val notesNavigationItem = navigationBarUIState
+            .items
+            .getOrNull(indexOfNotesNavigationItem)
+
+        if (notesNavigationItem != null) {
+            val updatedList = navigationBarUIState.items.toMutableList()
+            updatedList[indexOfNotesNavigationItem] = notesNavigationItem.copy(
+                showBadge = numberOfNotes > 0,
+            )
+
+            _navigationBarUIState.value = _navigationBarUIState.value.copy(
+                items = updatedList,
+            )
+        }
     }
 
     private fun checkExpiration() {
@@ -252,6 +373,7 @@ class EventCapturePresenterImpl(
     override fun getEnrollmentUid(): String? {
         return eventCaptureRepository.getEnrollmentUid()
     }
+
     override fun getTeiUid(): String? {
         return eventCaptureRepository.getTeiUid()
     }
