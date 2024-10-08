@@ -129,9 +129,9 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (context as SearchTEActivity).searchComponent.plus(
+        (context as SearchTEActivity).searchComponent?.plus(
             SearchTEListModule(),
-        ).inject(this)
+        )?.inject(this)
     }
 
     @ExperimentalAnimationApi
