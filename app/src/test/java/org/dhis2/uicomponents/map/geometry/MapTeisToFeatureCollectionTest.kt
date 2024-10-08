@@ -182,7 +182,6 @@ class MapTeisToFeatureCollectionTest {
                 uid = TEI_UID,
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     TEI_UID_IMAGE,
-                    "",
                 ),
                 title = "",
                 description = null,
@@ -230,7 +229,6 @@ class MapTeisToFeatureCollectionTest {
                 uid = TEI_UID,
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     TEI_UID_IMAGE,
-                    "",
                 ),
                 title = "",
                 description = null,
@@ -253,7 +251,6 @@ class MapTeisToFeatureCollectionTest {
                 uid = TEI_UID,
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     TEI_UID_IMAGE,
-                    "",
                 ),
                 title = "",
                 description = null,
@@ -284,7 +281,6 @@ class MapTeisToFeatureCollectionTest {
                 uid = TEI_UID,
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     TEI_UID_IMAGE,
-                    "",
                 ),
                 title = "",
                 description = null,
@@ -310,7 +306,6 @@ class MapTeisToFeatureCollectionTest {
                 uid = TEI_UID + "_2",
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     TEI_UID_IMAGE + "_2",
-                    "",
                 ),
                 title = "",
                 description = null,
