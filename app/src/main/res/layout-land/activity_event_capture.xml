@@ -37,15 +37,14 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
-                <ImageView
-                    android:id="@+id/moreOptions"
-                    style="@style/ActionIcon"
-                    android:onClick="showMoreOptions"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_more"
-                    tools:ignore="ContentDescription" />
+                <androidx.compose.ui.platform.ComposeView
+                  android:id="@+id/moreOptions"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintTop_toTopOf="parent"
+                  />
 
                 <org.dhis2.utils.customviews.CircularCompletionView
                     android:id="@+id/completion"
@@ -96,7 +95,6 @@
                 <ImageView
                     android:id="@+id/syncButton"
                     style="@style/ActionIcon"
-                    android:onClick="showMoreOptions"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/completion"
