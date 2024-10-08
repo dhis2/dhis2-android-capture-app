@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
@@ -40,6 +41,7 @@ class EventCapturePresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val configureEventCompletionDialog: ConfigureEventCompletionDialog = mock()
     private val pageConfigurator: NavigationPageConfigurator = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -51,6 +53,7 @@ class EventCapturePresenterTest {
             preferences,
             configureEventCompletionDialog,
             pageConfigurator,
+            resourceManager,
         )
     }
 

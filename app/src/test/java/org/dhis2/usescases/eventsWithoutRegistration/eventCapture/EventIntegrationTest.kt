@@ -72,6 +72,7 @@ class EventIntegrationTest {
         preferences = preferences,
         configureEventCompletionDialog = configurationEventCompletionDialog,
         pageConfigurator = pageConfigurator,
+        resourceManager = resourceManager,
     )
 
     private val eventCaptureFormPresenter = EventCaptureFormPresenter(

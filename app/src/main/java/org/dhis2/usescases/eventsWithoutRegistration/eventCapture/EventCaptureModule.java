@@ -54,7 +54,8 @@ public class EventCaptureModule {
             SchedulerProvider schedulerProvider,
             PreferenceProvider preferences,
             ConfigureEventCompletionDialog configureEventCompletionDialog,
-            NavigationPageConfigurator pageConfigurator
+            NavigationPageConfigurator pageConfigurator,
+            ResourceManager resourceManager
     ) {
         return new EventCapturePresenterImpl(
                 view,
@@ -63,7 +64,8 @@ public class EventCaptureModule {
                 schedulerProvider,
                 preferences,
                 configureEventCompletionDialog,
-                pageConfigurator
+                pageConfigurator,
+                resourceManager
         );
     }
 
