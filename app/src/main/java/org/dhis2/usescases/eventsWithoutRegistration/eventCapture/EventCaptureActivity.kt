@@ -10,7 +10,7 @@ import android.view.View
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.DeleteForever
-import android.widget.PopupMenu
+import androidx.compose.runtime.setValue
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.mutableStateOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -61,8 +62,8 @@ import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
+import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.customviews.setupDropDownMenu
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -412,17 +413,22 @@ class EventCaptureActivity :
     }
 
     private fun setupMoreMenu() {
-        setupDropDownMenu(
-            binding.moreOptions,
-            getMenuItems()
-        ) { itemId ->
-            when (itemId) {
-                EventCaptureMenuItem.SHOW_HELP -> {
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                    showTutorial(false)
-                }
+        binding.moreOptions.setContent {
+            var expanded by remember { mutableStateOf(false) }
 
-                EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
+            MoreIconWithDropDownMenu(
+                getMenuItems(),
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
+                when (itemId) {
+                    EventCaptureMenuItem.SHOW_HELP -> {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        showTutorial(false)
+                    }
+
+                    EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
+                }
             }
         }
     }
@@ -434,7 +440,7 @@ class EventCaptureActivity :
                     id = EventCaptureMenuItem.SHOW_HELP,
                     label = getString(R.string.showHelp),
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
-                )
+                ),
             )
             if (presenter.canWrite() && presenter.isEnrollmentOpen()) {
                 add(
@@ -443,7 +449,7 @@ class EventCaptureActivity :
                         label = getString(R.string.delete),
                         style = MenuItemStyle.ALERT,
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
-                    )
+                    ),
                 )
             }
         }

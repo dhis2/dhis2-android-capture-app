@@ -10,6 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.databinding.DataBindingUtil
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
@@ -38,7 +42,7 @@ import org.dhis2.utils.analytics.CREATE_EVENT
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.setupDropDownMenu
+import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -316,18 +320,23 @@ class EventInitialActivity :
     }
 
     private fun setupMoreMenu() {
-        setupDropDownMenu(
-            binding.moreOptions,
-            getMenuItems()
-        ) { itemId ->
-            when (itemId) {
-                EventInitialMenuItem.SHOW_HELP -> {
-                    analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                    setTutorial()
-                }
+        binding.moreOptions.setContent {
+            var expanded by remember { mutableStateOf(false) }
 
-                EventInitialMenuItem.SHARE -> presenter.onShareClick()
-                EventInitialMenuItem.DELETE -> confirmDeleteEvent()
+            MoreIconWithDropDownMenu(
+                getMenuItems(),
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
+                when (itemId) {
+                    EventInitialMenuItem.SHOW_HELP -> {
+                        analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        setTutorial()
+                    }
+
+                    EventInitialMenuItem.SHARE -> presenter.onShareClick()
+                    EventInitialMenuItem.DELETE -> confirmDeleteEvent()
+                }
             }
         }
     }
@@ -359,7 +368,7 @@ class EventInitialActivity :
                         label = getString(R.string.delete),
                         style = MenuItemStyle.ALERT,
                         leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
-                    )
+                    ),
                 )
             }
         }
