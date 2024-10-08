@@ -387,7 +387,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 }
 
                 AnimatedVisibility(
-                    visible = viewModel.searchOrFilterIsOpen().not(),
+                    visible = viewModel.searchOrFilterIsOpen().not() && uiState.items.isNotEmpty(),
                 ) {
                     NavigationBar(
                         modifier = Modifier.fillMaxWidth(),

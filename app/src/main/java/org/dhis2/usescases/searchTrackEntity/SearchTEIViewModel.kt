@@ -179,7 +179,7 @@ class SearchTEIViewModel(
         }
 
         _navigationBarUIState.value = _navigationBarUIState.value.copy(
-            items = enrollmentItems,
+            items = enrollmentItems.takeIf { it.size > 1 }.orEmpty(),
             selectedItem = enrollmentItems.firstOrNull()?.id,
         )
 
