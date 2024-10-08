@@ -153,7 +153,9 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkShareDataDialogIsDisplayed() {
-        onView(withId(android.R.id.content)).check(matches(isDisplayed()))
+        val title = InstrumentationRegistry.getInstrumentation()
+            .targetContext.getString(R.string.improve_app_msg_title)
+        composeTestRule.onNodeWithText(title)
     }
 
     fun clickOnPrivacyPolicy() {
