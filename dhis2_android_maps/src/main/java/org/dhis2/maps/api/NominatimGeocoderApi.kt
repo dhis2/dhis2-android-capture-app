@@ -1,12 +1,12 @@
 package org.dhis2.maps.api
 
-import io.ktor.http.headers
 import kotlinx.coroutines.delay
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.maps.model.NominatimLocation
 import org.hisp.dhis.android.BuildConfig
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.api.RequestBuilder
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import timber.log.Timber
 import java.util.Locale
@@ -122,17 +122,15 @@ class NominatimGeocoderApi(
         }
     }
 
-    private fun customHeaders() {
-        headers {
-            append(
-                HEADER_REFERER,
-                "${BuildConfig.LIBRARY_PACKAGE_NAME}_${BuildConfig.VERSION_NAME}",
-            )
-            append(
-                HEADER_LANGUAGE,
-                localeSelector.getUserLanguage() ?: Locale.getDefault().language,
-            )
-        }
+    private fun RequestBuilder.customHeaders() {
+        header(
+            HEADER_REFERER,
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}_${BuildConfig.VERSION_NAME}",
+        )
+        header(
+            HEADER_LANGUAGE,
+            localeSelector.getUserLanguage() ?: Locale.getDefault().language,
+        )
     }
 
     private fun List<NominatimLocation>.mapNominatimLocationsToLocationItems() =

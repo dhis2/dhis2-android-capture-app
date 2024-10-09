@@ -12,19 +12,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mapbox.android.gestures.MoveGestureDetector
-import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
-import com.mapbox.mapboxsdk.location.engine.MapboxFusedLocationEngineImpl
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.MapboxMap.OnMoveListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
@@ -33,9 +37,10 @@ import org.dhis2.maps.location.MapActivityLocationCallback
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
+import org.dhis2.maps.utils.GeometryCoordinate
+import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
-import timber.log.Timber
 
 class MapSelectorActivity :
     AppCompatActivity(),
@@ -93,8 +98,6 @@ class MapSelectorActivity :
         onRemovePolygonPoint = { index, _ -> mapSelectorViewModel.removePointFromPolygon(index) },
     )
 
-    private lateinit var mapboxLocationProvider: MapboxFusedLocationEngineImpl
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -102,46 +105,58 @@ class MapSelectorActivity :
 
         setContent {
             Dhis2Theme {
-//                val mapData by mapSelectorViewModel.mapFeatures.collectAsState()
                 val screenState by mapSelectorViewModel.screenState.collectAsState()
-                LaunchedEffect(screenState.mapData) {
-                    mapManager.update(
-                        featureCollection = screenState.mapData.featureCollection,
-                        boundingBox = screenState.mapData.boundingBox,
-                    )
-                    if (screenState.displayPolygonInfo) {
-                        polygonAdapter.updateWithFeatureCollection(screenState.mapData)
-                    }
+
+                ObserveAsEvents(mapSelectorViewModel.geometryCoordinateResultChannel) { geometryCoordinates ->
+                    geometryCoordinates?.let(::finishResult)
                 }
 
                 MapSelectorScreen(
-                    mapSelectorViewModel = mapSelectorViewModel,
                     screenState = screenState,
                     mapSelectorScreenActions = MapSelectorScreenActions(
                         onBackClicked = ::finish,
-                        onMapDataUpdated = { mapData ->
-                            /* mapManager.update(
-                                 featureCollection = featureCollection,
-                                 boundingBox = GetBoundingBox().getEnclosingBoundingBox(
-                                     featureCollection.features()?.getLatLngPointList()
-                                         ?: emptyList(),
-                                 ),
-                             )
-                             if (mapSelectorViewModel.shouldDisplayPolygonInfo()) {
-                                 polygonAdapter.updateWithFeatureCollection(featureCollection)
-                             }*/
-                        },
-                        onLocationButtonClicked = ::onLocationButtonClicked,
                         loadMap = { loadMap(it, savedInstanceState) },
-                        onDoneClicked = { result ->
-                            result?.let(::finishResult)
-                        },
                         configurePolygonInfoRecycler = {
                             it.adapter = polygonAdapter
                             it.layoutManager = GridLayoutManager(this, 2)
                         },
+                        onClearLocation = mapSelectorViewModel::onClearSearchClicked,
+                        onSearchLocation = mapSelectorViewModel::onSearchLocation,
+                        onLocationSelected = mapSelectorViewModel::onLocationSelected,
+                        onSearchCaptureMode = mapSelectorViewModel::initSearchMode,
+                        onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
+                        onMyLocationButtonClick = {
+                            mapSelectorViewModel::onMyLocationButtonClick
+                            onLocationButtonClicked()
+                        },
+                        onDoneButtonClick = mapSelectorViewModel::onDoneClick,
                     ),
                 )
+
+                LaunchedEffect(screenState.mapData) {
+                    this.launch {
+                        delay(500)
+                        mapManager.update(
+                            featureCollection = screenState.mapData.featureCollection,
+                            boundingBox = screenState.mapData.boundingBox,
+                        )
+                        if (screenState.displayPolygonInfo) {
+                            polygonAdapter.updateWithFeatureCollection(screenState.mapData)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+        val lifecycleOwner = LocalLifecycleOwner.current
+        LaunchedEffect(flow, lifecycleOwner.lifecycle) {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                withContext(Dispatchers.Main.immediate) {
+                    flow.collect(onEvent)
+                }
             }
         }
     }
@@ -159,46 +174,10 @@ class MapSelectorActivity :
                 onPointClicked = mapSelectorViewModel::onMapClicked,
             )
 
-            mapboxLocationProvider = MapboxFusedLocationEngineImpl(this)
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
-                    with(it.map) {
-                        this?.addOnCameraIdleListener {
-                            Timber.tag("UPDATE_VISIBLE_REGION").d("Camera idle")
-                            updateMapVisibleRegion(this@with)
-                        }
-                        this?.addOnMoveListener(object : OnMoveListener {
-                            override fun onMoveBegin(detector: MoveGestureDetector) {
-                                // Nothing to do
-                            }
-
-                            override fun onMove(detector: MoveGestureDetector) {
-                                // Nothing to do yet
-                            }
-
-                            override fun onMoveEnd(detector: MoveGestureDetector) {
-                                Timber.tag("UPDATE_VISIBLE_REGION").d("Camera moved")
-                                updateMapVisibleRegion(this@with)
-                            }
-                        })
-                        this?.addOnScaleListener(object : MapboxMap.OnScaleListener {
-                            override fun onScaleBegin(detector: StandardScaleGestureDetector) {
-                                // Nothing to do
-                            }
-
-                            override fun onScale(detector: StandardScaleGestureDetector) {
-                                // Nothing to do
-                            }
-
-                            override fun onScaleEnd(detector: StandardScaleGestureDetector) {
-                                Timber.tag("UPDATE_VISIBLE_REGION").d("Camera scaled")
-                                updateMapVisibleRegion(this@with)
-                            }
-                        })
-                        updateMapVisibleRegion(this)
-                    }
-
+                    it.map?.addMoveListeners(mapSelectorViewModel::updateCurrentVisibleRegion)
                     if (ActivityCompat.checkSelfPermission(
                             this,
                             permission.ACCESS_FINE_LOCATION,
@@ -218,11 +197,6 @@ class MapSelectorActivity :
                 },
             )
         }
-    }
-
-    private fun updateMapVisibleRegion(mapboxMap: MapboxMap?) {
-        val mapBounds = mapboxMap?.projection?.visibleRegion?.latLngBounds
-        mapSelectorViewModel.updateCurrentVisibleRegion(mapBounds)
     }
 
     private fun onLocationButtonClicked() {
@@ -258,10 +232,11 @@ class MapSelectorActivity :
         super.onDestroy()
         LocationEngineDefault.getDefaultLocationEngine(this)
             .removeLocationUpdates(locationCallback)
-        mapboxLocationProvider.removeLocationUpdates(locationListener)
+//        mapboxLocationProvider.removeLocationUpdates(locationListener)
+        locationProvider.stopLocationUpdates()
     }
 
-    private fun finishResult(value: String) {
+    private fun finishResult(value: GeometryCoordinate) {
         val intent = Intent()
         intent.putExtra(FIELD_UID, fieldUid)
         intent.putExtra(DATA_EXTRA, value)

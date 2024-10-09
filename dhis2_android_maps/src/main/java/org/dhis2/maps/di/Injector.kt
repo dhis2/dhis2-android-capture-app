@@ -23,25 +23,27 @@ object Injector {
         initialCoordinates: String?,
     ) = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            val dispatcherProvider = object : DispatcherProvider {
+                override fun io() = Dispatchers.IO
+
+                override fun computation() = Dispatchers.Unconfined
+
+                override fun ui() = Dispatchers.Main
+            }
             return MapSelectorViewModel(
                 featureType = locationType,
                 initialCoordinates = initialCoordinates,
                 mapStyleConfig = MapStyleConfiguration(D2Manager.getD2()),
                 geocoder = GeocoderSearchImpl(
-                    Geocoder(context),
-                    NominatimGeocoderApi(
+                    geocoder = Geocoder(context),
+                    geocoderApi = NominatimGeocoderApi(
                         D2Manager.getD2(),
                         LocaleSelector(context, D2Manager.getD2()),
                     ),
+                    dispatcherProvider = dispatcherProvider,
                 ),
                 searchLocationManager = SearchLocationManager(D2Manager.getD2()),
-                dispatchers = object : DispatcherProvider {
-                    override fun io() = Dispatchers.IO
-
-                    override fun computation() = Dispatchers.Unconfined
-
-                    override fun ui() = Dispatchers.Main
-                },
+                dispatchers = dispatcherProvider,
             ) as T
         }
     }

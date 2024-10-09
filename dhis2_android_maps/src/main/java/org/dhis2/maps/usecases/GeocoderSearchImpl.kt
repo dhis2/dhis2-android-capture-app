@@ -4,25 +4,27 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import timber.log.Timber
+import kotlin.coroutines.resume
 
 class GeocoderSearchImpl(
     private val geocoder: Geocoder,
     private val geocoderApi: GeocoderApi,
     private val maxResults: Int = 10,
+    private val dispatcherProvider: DispatcherProvider,
 ) : GeocoderSearch {
 
     override suspend fun getLocationFromName(
         name: String,
         visibleRegion: LatLngBounds?,
-        onLocationFound: (List<LocationItemModel>) -> Unit,
-    ) {
-        val start = System.currentTimeMillis()
-        Timber.tag("LOCATION_SEARCH").d("SEARCH QUERY: $name")
-        try {
-            val results = geocoderApi.searchFor(
+    ): List<LocationItemModel> {
+        return try {
+            geocoderApi.searchFor(
                 name,
                 visibleRegion?.northWest?.latitude,
                 visibleRegion?.northWest?.longitude,
@@ -30,14 +32,9 @@ class GeocoderSearchImpl(
                 visibleRegion?.southEast?.longitude,
                 maxResults,
             )
-            Timber.tag("LOCATION_SEARCH").d("SEARCH RESULTS: ${results.size} for query: $name")
-            Timber.tag("LOCATION_SEARCH")
-                .d("SEARCH RESULTS: ${(System.currentTimeMillis() - start) / 1000L}")
-            onLocationFound(results)
         } catch (e: Exception) {
-            Timber.tag("LOCATION_SEARCH").d("SEARCH ERROR: ${e.printStackTrace()}")
             Timber.e(e)
-            defaultSearchLocationProvider(name, onLocationFound)
+            defaultSearchLocationProvider(name)
         }
     }
 
@@ -49,21 +46,20 @@ class GeocoderSearchImpl(
     }
 
     @Suppress("DEPRECATION")
-    private fun defaultSearchLocationProvider(
-        name: String,
-        onLocationFound: (List<LocationItemModel>) -> Unit,
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocationName(name, maxResults) { addresses ->
-                onLocationFound(
-                    addresses.mapToLocationItems(),
-                )
+    private suspend fun defaultSearchLocationProvider(name: String): List<LocationItemModel> {
+        return withContext(dispatcherProvider.io()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                suspendCancellableCoroutine { continuation ->
+                    geocoder.getFromLocationName(name, maxResults) { addresses ->
+                        continuation.resume(addresses.mapToLocationItems())
+                    }
+                    continuation.invokeOnCancellation {
+                        // Optionally cancel Geocoder operation here, if possible
+                    }
+                }
+            } else {
+                geocoder.getFromLocationName(name, maxResults)?.mapToLocationItems() ?: emptyList()
             }
-        } else {
-            val results = geocoder.getFromLocationName(name, maxResults) ?: emptyList()
-            onLocationFound(
-                results.mapToLocationItems(),
-            )
         }
     }
 

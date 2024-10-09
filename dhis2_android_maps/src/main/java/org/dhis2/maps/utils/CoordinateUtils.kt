@@ -1,11 +1,15 @@
 package org.dhis2.maps.utils
 
+import com.google.gson.Gson
 import com.mapbox.geojson.Geometry
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
+import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.extensions.toLatLng
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
+
+typealias GeometryCoordinate = String
 
 object CoordinateUtils {
     fun geometryFromStringCoordinates(featureType: FeatureType, coordinates: String?): Geometry? {
@@ -20,6 +24,27 @@ object CoordinateUtils {
                 else ->
                     null
             }
+        }
+    }
+
+    fun geometryCoordinates(geometry: Geometry?): GeometryCoordinate? {
+        return when (geometry) {
+            is Point -> {
+                Gson().toJson(
+                    geometry.coordinates().map { coordinate -> coordinate.truncate() },
+                )
+            }
+
+            is Polygon -> {
+                val value = geometry.coordinates().map { polygon ->
+                    polygon.map { point ->
+                        point.coordinates().map { coordinate -> coordinate.truncate() }
+                    }
+                }
+                Gson().toJson(value)
+            }
+
+            else -> null
         }
     }
 

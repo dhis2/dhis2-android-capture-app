@@ -2,36 +2,36 @@ package org.dhis2.maps.views
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.model.toAccuracyRance
 import org.dhis2.maps.usecases.GeocoderSearch
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.usecases.SearchLocationManager
 import org.dhis2.maps.utils.CoordinateUtils
+import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.GetMapData
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
-import com.mapbox.geojson.Geometry as MapGeometry
 
 class MapSelectorViewModel(
     val featureType: FeatureType,
@@ -55,19 +55,30 @@ class MapSelectorViewModel(
         fun isSearch() = this == SEARCH
     }
 
-    private val initialSelectedLocation: SelectedLocation
+    private val initialGeometry =
+        CoordinateUtils.geometryFromStringCoordinates(featureType, initialCoordinates)
+    private var initialSelectedLocation = if (initialGeometry is Point) {
+        SelectedLocation.ManualResult(
+            selectedLatitude = initialGeometry.latitude(),
+            selectedLongitude = initialGeometry.longitude(),
+        )
+    } else {
+        SelectedLocation.None()
+    }
 
-    private var _currentFeature: Feature? = null
+    private var _currentFeature: Feature? = initialGeometry?.let { Feature.fromGeometry(it) }
     private var _currentVisibleRegion: LatLngBounds? = null
     private var searchRegion: LatLngBounds? = null
-
     private val _searchLocationQuery = MutableStateFlow("")
+
+    private val _geometryCoordinateResultChannel = Channel<GeometryCoordinate?>()
+    val geometryCoordinateResultChannel = _geometryCoordinateResultChannel.receiveAsFlow()
 
     private val _screenState = MutableStateFlow(
         MapSelectorScreenState(
-            mapData = GetMapData(null, emptyList(), CaptureMode.NONE),
+            mapData = GetMapData(_currentFeature, emptyList(), CaptureMode.NONE),
             locationItems = emptyList(),
-            selectedLocation = SelectedLocation.None(),
+            selectedLocation = initialSelectedLocation,
             captureMode = if (initialCoordinates == null) CaptureMode.GPS else CaptureMode.NONE,
             accuracyRange = AccuracyRange.None(),
             searchOnAreaVisible = false,
@@ -75,80 +86,43 @@ class MapSelectorViewModel(
         ),
     )
 
-    val screenState = _screenState
-        .onStart {
-            initState()
-        }
-        .debounce(500)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            MapSelectorScreenState(
-                mapData = GetMapData(null, emptyList(), CaptureMode.NONE),
-                locationItems = emptyList(),
-                selectedLocation = SelectedLocation.None(),
-                captureMode = if (initialCoordinates == null) CaptureMode.GPS else CaptureMode.NONE,
-                accuracyRange = AccuracyRange.None(),
-                searchOnAreaVisible = false,
-                displayPolygonInfo = featureType == FeatureType.POLYGON,
-            ),
-        )
+    val screenState = _screenState.asStateFlow()
 
     init {
-        val initialGeometry =
-            CoordinateUtils.geometryFromStringCoordinates(featureType, initialCoordinates)
-        initialGeometry?.let {
-            viewModelScope.launch(dispatchers.io()) {
-                updateCurrentGeometry(it)
-            }
-        }
-        initialSelectedLocation = if (initialGeometry is Point) {
-            SelectedLocation.ManualResult(
-                initialGeometry.latitude(),
-                initialGeometry.longitude(),
-            )
-        } else {
-            SelectedLocation.None()
-        }
-
         registerSearchListener()
-    }
-
-    private fun initState() {
-        viewModelScope.launch(dispatchers.io()) {
-            _screenState.value = _screenState.value.copy(selectedLocation = initialSelectedLocation)
-        }
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
     }
 
-    private suspend fun updateCurrentGeometry(geometry: MapGeometry) =
-        withContext(dispatchers.io()) {
-            updateMapData(feature = Feature.fromGeometry(geometry))
-        }
-
-    private suspend fun updateMapData(
-        feature: Feature? = null,
+    private fun updateScreenState(
+        mapData: MapData = _screenState.value.mapData,
         locationItems: List<LocationItemModel> = _screenState.value.locationItems,
+        selectedLocation: SelectedLocation = _screenState.value.selectedLocation,
         captureMode: CaptureMode = _screenState.value.captureMode,
-    ) = withContext(dispatchers.io()) {
-        _currentFeature = feature
-        _screenState.value = _screenState.value.copy(
-            mapData = GetMapData(feature, locationItems, captureMode),
-            locationItems = locationItems,
-            captureMode = captureMode,
-        )
+        accuracyRange: AccuracyRange = _screenState.value.accuracyRange,
+        searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
+        displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
+    ) {
+        _screenState.update {
+            it.copy(
+                mapData = mapData,
+                locationItems = locationItems,
+                selectedLocation = selectedLocation,
+                captureMode = captureMode,
+                accuracyRange = accuracyRange,
+                searchOnAreaVisible = searchOnAreaVisible,
+                displayPolygonInfo = displayPolygonInfo,
+            )
+        }
     }
 
-    private suspend fun updateSelectedGeometry(
-        point: SelectedLocation,
-    ) = withContext(dispatchers.io()) {
+    private fun updateSelectedGeometry(point: SelectedLocation) =
         if (point !is SelectedLocation.None) {
             val newPoint = Point.fromLngLat(point.longitude, point.latitude)
             when (featureType) {
-                FeatureType.POINT -> updateCurrentGeometry(newPoint)
+                FeatureType.POINT -> Feature.fromGeometry(newPoint)
 
                 FeatureType.POLYGON -> {
                     val coordinates =
@@ -158,63 +132,43 @@ class MapSelectorViewModel(
                                 newList.add(newPoint)
                                 newList
                             } ?: listOf(listOf(newPoint))
-                    updateCurrentGeometry(
+                    Feature.fromGeometry(
                         Polygon.fromLngLats(coordinates),
                     )
                 }
 
                 else -> {
-                    // no-op
+                    null
                 }
             }
         } else {
-            updateMapData()
+            null
         }
-        updateSelectedLocation(point)
-    }
 
-    private fun updateSelectedLocation(selectedLocation: SelectedLocation) {
-        _screenState.value = _screenState.value.copy(selectedLocation = selectedLocation)
-    }
-
-    private fun onNewLocationAccuracy(accuracy: Float) {
-        _screenState.value = _screenState.value.copy(accuracyRange = accuracy.toAccuracyRance())
-    }
-
-    fun onSaveCurrentGeometry(onValueReady: (String?) -> Unit) {
-        viewModelScope.launch(dispatchers.io()) {
-            val result = async {
-                when (val geometry = _currentFeature?.geometry()) {
-                    is Point -> {
-                        Gson().toJson(
-                            geometry.coordinates().map { coordinate -> coordinate.truncate() },
-                        )
-                    }
-
-                    is Polygon -> {
-                        val value = geometry.coordinates().map { polygon ->
-                            polygon.map { point ->
-                                point.coordinates().map { coordinate -> coordinate.truncate() }
-                            }
-                        }
-                        Gson().toJson(value)
-                    }
-
-                    else -> null
-                }
-            }
-            onValueReady(result.await())
-        }
+    private suspend fun onSaveCurrentGeometry() {
+        val coordinates = CoordinateUtils.geometryCoordinates(_currentFeature?.geometry())
+        _geometryCoordinateResultChannel.send(coordinates)
     }
 
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
             if (gpsResult.accuracy < _screenState.value.accuracyRange.value.toFloat()) {
-                onNewLocationAccuracy(gpsResult.accuracy)
-            }
-            when {
-                featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
-                    updateSelectedGeometry(gpsResult)
+                val mapData = when {
+                    featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
+                        GetMapData(
+                            currentFeature = updateSelectedGeometry(gpsResult),
+                            locationItems = _screenState.value.locationItems,
+                            captureMode = _screenState.value.captureMode,
+                        )
+
+                    else -> _screenState.value.mapData
+                }
+
+                updateScreenState(
+                    mapData = mapData,
+                    selectedLocation = gpsResult,
+                    accuracyRange = gpsResult.accuracy.toAccuracyRance(),
+                )
             }
         }
     }
@@ -222,14 +176,20 @@ class MapSelectorViewModel(
     fun addPointToPolygon(polygonPoint: List<Double>) {
         if (featureType == FeatureType.POLYGON) {
             viewModelScope.launch(dispatchers.io()) {
-                _currentFeature?.let { feature ->
+                val newGeometry = _currentFeature?.let { feature ->
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
                         .add(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))
-                    updateCurrentGeometry(geometry)
-                } ?: updateCurrentGeometry(
-                    Polygon.fromLngLats(
-                        listOf(listOf(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))),
+                    geometry
+                } ?: Polygon.fromLngLats(
+                    listOf(listOf(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))),
+                )
+                _currentFeature = Feature.fromGeometry(newGeometry)
+                updateScreenState(
+                    mapData = GetMapData(
+                        _currentFeature,
+                        _screenState.value.locationItems,
+                        _screenState.value.captureMode,
                     ),
                 )
             }
@@ -239,57 +199,61 @@ class MapSelectorViewModel(
     fun removePointFromPolygon(index: Int) {
         if (featureType == FeatureType.POLYGON) {
             viewModelScope.launch(dispatchers.io()) {
-                _currentFeature?.let { feature ->
+                val newGeometry = _currentFeature?.let { feature ->
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
                         .removeAt(index)
-                    updateCurrentGeometry(geometry)
+                    geometry
                 }
+                _currentFeature = Feature.fromGeometry(newGeometry)
+                updateScreenState(
+                    mapData = GetMapData(
+                        _currentFeature,
+                        _screenState.value.locationItems,
+                        _screenState.value.captureMode,
+                    ),
+                )
             }
         }
     }
 
     private fun registerSearchListener() {
-        viewModelScope.launch(dispatchers.io()) {
-            _searchLocationQuery.debounce(1000)
-                .collectLatest(::performLocationSearch)
-        }
+        _searchLocationQuery
+            .debounce(1000)
+            .onEach { query -> performLocationSearch(query) }
+            .launchIn(viewModelScope)
     }
 
     fun onSearchOnAreaClick() {
         viewModelScope.launch(dispatchers.io()) {
-            setCaptureMode(CaptureMode.SEARCH)
+            initSearchMode()
             performLocationSearch()
         }
     }
 
-    private suspend fun performLocationSearch(query: String = _searchLocationQuery.value) =
-        withContext(dispatchers.io()) {
-            if (_screenState.value.captureMode.isSearch()) {
-                searchRegion = _currentVisibleRegion
-                val filteredPreviousLocation =
-                    searchLocationManager.getAvailableLocations(query)
-                geocoder.getLocationFromName(query, searchRegion) { searchItems ->
-                    onSearchResults(filteredPreviousLocation + searchItems)
-                }
-                updateSearchOnThisAreaVisible(false)
-            }
+    private suspend fun performLocationSearch(
+        query: String = _searchLocationQuery.value,
+        regionToSearch: LatLngBounds? = _currentVisibleRegion,
+    ) {
+        if (_screenState.value.captureMode.isSearch()) {
+            val filteredPreviousLocation =
+                searchLocationManager.getAvailableLocations(query)
+            val searchItems = geocoder.getLocationFromName(query, regionToSearch)
+            val (selectedLocation, currentFeature) = onClearSelectedLocation()
+            _currentFeature = currentFeature
+            val locationItems = searchItems + filteredPreviousLocation
+            searchRegion = regionToSearch
+            updateScreenState(
+                mapData = GetMapData(
+                    currentFeature = _currentFeature,
+                    locationItems = locationItems,
+                    captureMode = _screenState.value.captureMode,
+                ),
+                locationItems = locationItems,
+                selectedLocation = selectedLocation,
+                searchOnAreaVisible = false,
+            )
         }
-
-    private fun onSearchResults(locationItemModels: List<LocationItemModel>) {
-        viewModelScope.launch(dispatchers.io()) {
-            onClearSelectedLocation()
-            updateLocationItems(locationItemModels)
-        }
-    }
-
-    private suspend fun updateLocationItems(
-        locationItems: List<LocationItemModel>,
-    ) = withContext(dispatchers.io()) {
-        if (locationItems.isNotEmpty() && _currentFeature != null) {
-            onClearSelectedLocation()
-        }
-        updateMapData(locationItems = locationItems)
     }
 
     fun onSearchLocation(searchQuery: String) {
@@ -298,76 +262,124 @@ class MapSelectorViewModel(
 
     fun onLocationSelected(selectedLocation: LocationItemModel) {
         viewModelScope.launch(dispatchers.io()) {
-            updateSelectedGeometry(
-                SelectedLocation.SearchResult(
-                    title = selectedLocation.title,
-                    address = selectedLocation.subtitle,
-                    resultLatitude = selectedLocation.latitude,
-                    resultLongitude = selectedLocation.longitude,
-                ),
+            val location = SelectedLocation.SearchResult(
+                title = selectedLocation.title,
+                address = selectedLocation.subtitle,
+                resultLatitude = selectedLocation.latitude,
+                resultLongitude = selectedLocation.longitude,
             )
-            searchLocationManager.storeLocation(selectedLocation)
+
+            _currentFeature = updateSelectedGeometry(location)
+
+            async {
+                updateScreenState(
+                    mapData = GetMapData(
+                        _currentFeature,
+                        _screenState.value.locationItems,
+                        _screenState.value.captureMode,
+                    ),
+                    selectedLocation = location,
+                )
+            }.await()
+
+            async {
+                searchLocationManager.storeLocation(selectedLocation)
+            }.await()
         }
     }
 
     fun onClearSearchClicked() {
         viewModelScope.launch(dispatchers.io()) {
-            setCaptureMode(CaptureMode.NONE)
-            onClearSelectedLocation()
+            val (selectedLocation, currentFeature) = onClearSelectedLocation()
+            _currentFeature = currentFeature
+
+            updateScreenState(
+                captureMode = CaptureMode.NONE,
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    CaptureMode.NONE,
+                ),
+                selectedLocation = selectedLocation,
+            )
+
             onSearchLocation("")
         }
     }
 
     fun onPinClicked(feature: Feature) {
         viewModelScope.launch(dispatchers.io()) {
-            updateSelectedGeometry(
-                SelectedLocation.SearchResult(
-                    title = feature.getStringProperty("title"),
-                    address = feature.getStringProperty("subtitle"),
-                    resultLatitude = feature.getPointLatLng().latitude,
-                    resultLongitude = feature.getPointLatLng().longitude,
+            val selectedLocation = SelectedLocation.SearchResult(
+                title = feature.getStringProperty("title"),
+                address = feature.getStringProperty("subtitle"),
+                resultLatitude = feature.getPointLatLng().latitude,
+                resultLongitude = feature.getPointLatLng().longitude,
+            )
+            _currentFeature = feature
+            updateScreenState(
+                mapData = GetMapData(
+                    feature,
+                    _screenState.value.locationItems,
+                    _screenState.value.captureMode,
                 ),
+                selectedLocation = selectedLocation,
             )
         }
     }
 
     fun onMapClicked(point: LatLng) {
         viewModelScope.launch(dispatchers.io()) {
-            setCaptureMode(CaptureMode.MANUAL)
-            updateSelectedGeometry(
-                SelectedLocation.ManualResult(point.latitude, point.longitude),
+            val selectedLocation = SelectedLocation.ManualResult(point.latitude, point.longitude)
+            _currentFeature = updateSelectedGeometry(selectedLocation)
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    _screenState.value.captureMode,
+                ),
+                captureMode = CaptureMode.MANUAL,
+                selectedLocation = selectedLocation,
             )
         }
     }
 
-    private suspend fun onClearSelectedLocation() {
-        updateSelectedGeometry(
-            if (initialCoordinates != null) {
-                initialSelectedLocation
-            } else {
-                SelectedLocation.None()
-            },
-        )
-    }
-
-    suspend fun setCaptureMode(selectedMode: CaptureMode) = withContext(dispatchers.io()) {
-        val locationItems =
-            if (selectedMode.isSearch() && _screenState.value.locationItems.isEmpty()) {
-                searchLocationManager.getAvailableLocations()
-            } else {
-                emptyList()
-            }
-        updateMapData(captureMode = selectedMode, locationItems = locationItems)
+    private fun onClearSelectedLocation(): Pair<SelectedLocation, Feature?> {
+        val selectedLocation = if (initialCoordinates != null) {
+            initialSelectedLocation
+        } else {
+            SelectedLocation.None()
+        }
+        val feature = updateSelectedGeometry(selectedLocation)
+        return Pair(selectedLocation, feature)
     }
 
     fun updateCurrentVisibleRegion(mapBounds: LatLngBounds?) {
         _currentVisibleRegion = mapBounds
-        updateSearchOnThisAreaVisible()
+        updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank())
     }
 
-    private fun updateSearchOnThisAreaVisible(
-        canSearch: Boolean = _searchLocationQuery.value.isNotBlank(),
-    ) {
-        _screenState.value = _screenState.value.copy(searchOnAreaVisible = canSearch)
+    fun initSearchMode() {
+        viewModelScope.launch(dispatchers.io()) {
+            val locationItems = _screenState.value.locationItems.ifEmpty {
+                searchLocationManager.getAvailableLocations()
+            }
+
+            updateScreenState(
+                captureMode = CaptureMode.SEARCH,
+                locationItems = locationItems,
+            )
+        }
+    }
+
+    fun onMyLocationButtonClick() {
+        viewModelScope.launch(dispatchers.io()) {
+            updateScreenState(captureMode = CaptureMode.GPS)
+        }
+    }
+
+    fun onDoneClick() {
+        viewModelScope.launch(dispatchers.io()) {
+            onSaveCurrentGeometry()
+        }
     }
 }

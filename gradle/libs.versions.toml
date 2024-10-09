@@ -47,7 +47,7 @@ autovalueparcel = "0.2.7"
 mapboxmarkerview = "0.3.0"
 mapboxannotation = "0.8.0"
 matomo = "4.1.2"
-sentry = "6.18.1"
+sentry = "7.14.0"
 timber = "5.0.1"
 flipper = "0.161.0"
 flippernoop = "0.161.0"
@@ -179,6 +179,7 @@ analytics-rxlint = { group = "nl.littlerobots.rxlint", name = "rxlint", version.
 analytics-customactivityoncrash = { group = "cat.ereza", name = "customactivityoncrash", version.ref = "crashactivity" }
 analytics-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 analytics-sentry = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
+analytics-sentry-compose = {group="io.sentry", name="sentry-compose-android", version.ref = "sentry"}
 security-rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "root" }
 security-openId = { group = "net.openid", name = "appauth", version.ref = "openid" }
 security-conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
