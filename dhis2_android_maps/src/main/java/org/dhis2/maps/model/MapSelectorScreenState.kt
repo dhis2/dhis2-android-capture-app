@@ -9,6 +9,7 @@ data class MapSelectorScreenState(
     val locationItems: List<LocationItemModel>,
     val selectedLocation: SelectedLocation,
     val captureMode: MapSelectorViewModel.CaptureMode,
+    val canCaptureManually: Boolean,
     val accuracyRange: AccuracyRange,
     val searchOnAreaVisible: Boolean,
     val displayPolygonInfo: Boolean,

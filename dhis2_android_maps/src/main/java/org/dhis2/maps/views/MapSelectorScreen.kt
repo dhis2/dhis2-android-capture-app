@@ -27,8 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,6 +119,9 @@ fun SinglePaneMapSelector(
         Map(
             modifier = Modifier
                 .weight(1f),
+            captureMode = screenState.captureMode,
+            selectedLocation = screenState.selectedLocation,
+            canCaptureManually = screenState.canCaptureManually,
             searchOnThisAreaVisible = screenState.searchOnAreaVisible,
             loadMap = screenActions.loadMap,
             onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
@@ -188,6 +189,9 @@ private fun TwoPaneMapSelector(
             Map(
                 modifier = Modifier
                     .weight(1f),
+                captureMode = screenState.captureMode,
+                selectedLocation = screenState.selectedLocation,
+                canCaptureManually = screenState.canCaptureManually,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
@@ -239,7 +243,7 @@ private fun LocationInfoContent(
             )
         }
 
-        captureMode.isNone() && selectedLocation is SelectedLocation.ManualResult -> {
+        captureMode.isSearch() && selectedLocation is SelectedLocation.ManualResult -> {
             LocationItem(
                 locationItemModel = LocationItemModel.SearchResult(
                     searchedTitle = stringResource(R.string.selected_location),
@@ -294,7 +298,7 @@ private fun LocationInfoContent(
             }
         }
 
-        captureMode.isManual() && selectedLocation is SelectedLocation.ManualResult -> {
+        selectedLocation is SelectedLocation.ManualResult -> {
             LocationItem(
                 locationItemModel = LocationItemModel.SearchResult(
                     searchedTitle = stringResource(R.string.selected_location),
@@ -368,6 +372,9 @@ private fun LocationInfoContent(
 @Composable
 private fun Map(
     modifier: Modifier = Modifier,
+    captureMode: MapSelectorViewModel.CaptureMode,
+    selectedLocation: SelectedLocation,
+    canCaptureManually: Boolean,
     searchOnThisAreaVisible: Boolean,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
@@ -385,8 +392,23 @@ private fun Map(
                     horizontalArrangement = spacedBy(8.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-                    if (mapSelectorViewModel.canCaptureManually()) {
-                        SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
+                    AnimatedVisibility(
+                        modifier = Modifier.weight(1f),
+                        visible = canCaptureManually,
+                        enter = scaleIn(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessMediumLow,
+                            ),
+                        ),
+                        exit = scaleOut(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessMediumLow,
+                            ),
+                        ),
+                    ) {
+                        SwipeToChangeLocationInfo(modifier = Modifier.fillMaxWidth())
                     }
 
                     IconButton(
@@ -435,7 +457,10 @@ private fun Map(
             },
         )
 
-        DraggableSelectedIcon(mapSelectorViewModel)
+        DraggableSelectedIcon(
+            captureMode = captureMode,
+            selectedLocation = selectedLocation,
+        )
     }
 }
 
@@ -495,11 +520,11 @@ private fun DoneButton(
 
 @Composable
 private fun DraggableSelectedIcon(
-    mapSelectorViewModel: MapSelectorViewModel,
+    captureMode: MapSelectorViewModel.CaptureMode,
+    selectedLocation: SelectedLocation,
 ) {
     val density = LocalDensity.current
-    val captureMode by mapSelectorViewModel.captureMode.collectAsState()
-    val selectedLocation by mapSelectorViewModel.selectedLocation.collectAsState()
+
     val visible by remember {
         derivedStateOf {
             selectedLocation !is SelectedLocation.None

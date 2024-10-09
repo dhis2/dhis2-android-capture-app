@@ -24,7 +24,7 @@ object GetMapData {
         searchRegion: LatLngBounds? = null,
     ): MapData {
         val selectedFeatures = buildList {
-            currentFeature?.withPlacesProperties(true)?.let {
+            currentFeature?.let {
                 add(it)
             }
         }

@@ -393,34 +393,41 @@ class MapSelectorViewModelTest {
 
     @Test
     fun shouldUpdateGeometryWhenMapMoves() = runTest {
-        with(mapSelectorViewModel) {
-            selectedLocation.test {
-                awaitItem()
-                onMove(LatLng(4.98075, 110.63242))
-                assertTrue(captureMode.value.isSwipe())
-                assertTrue(mapFeatures.value.features()?.isEmpty() == true)
-                val selectedLocation = awaitItem()
-                assertTrue(selectedLocation is SelectedLocation.ManualResult)
-                assertTrue(selectedLocation.latitude == 4.98075 && selectedLocation.longitude == 110.63242)
-            }
-        }
+        mapSelectorViewModel.screenState.initTest(
+            given = {
+            },
+            `when` = {
+                mapSelectorViewModel.onMove(LatLng(4.98075, 110.63242))
+                1
+            },
+            then = { screenState ->
+                assertTrue(screenState.captureMode.isSwipe())
+                assertTrue(screenState.selectedLocation is SelectedLocation.ManualResult)
+                assertTrue(screenState.selectedLocation.latitude == 4.98075 && screenState.selectedLocation.longitude == 110.63242)
+            },
+        )
     }
 
     @Test
     fun shouldSwitchCaptureModeToManual() = runTest {
-        with(mapSelectorViewModel) {
-            onMove(LatLng(4.98075, 110.63242))
-            assertTrue(captureMode.value.isSwipe())
-            onMoveEnd()
-            assertTrue(captureMode.value.isManual())
-        }
-    }
-
-    @Test
-    fun shouldAllowCapturingManually() = runTest {
-        with(mapSelectorViewModel) {
-            assertTrue(canCaptureManually())
-        }
+        mapSelectorViewModel.screenState.initTest(
+            given = {
+                mapSelectorViewModel.onMove(LatLng(4.98075, 110.63242))
+                awaitItem()
+            },
+            `when` = {
+                mapSelectorViewModel.updateCurrentVisibleRegion(LatLngBounds.world())
+                1
+            },
+            then = { screenState ->
+                assertTrue(screenState.captureMode.isManual())
+                assertTrue(screenState.selectedLocation is SelectedLocation.ManualResult)
+                assertTrue(
+                    screenState.selectedLocation.latitude == LatLngBounds.world().center.latitude &&
+                        screenState.selectedLocation.longitude == LatLngBounds.world().center.longitude,
+                )
+            },
+        )
     }
 
     private val mockedLocationItemSearchResults = listOf(
