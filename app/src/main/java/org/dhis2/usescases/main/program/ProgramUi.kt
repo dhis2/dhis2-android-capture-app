@@ -111,7 +111,10 @@ fun ProgramList(
                 HasPrograms = programs?.isNotEmpty() ?: false
             },
     ) {
-        DownloadMessage(downLoadState)
+        DownloadMessage(
+            downLoadState = downLoadState,
+            isDownloading = programs?.any { it.isDownloading()} ?: false
+        )
 
         programs?.let {
             if (programs.isEmpty()) {
@@ -153,11 +156,9 @@ private fun getProgramLayout(programs: List<ProgramUiModel>) = when {
 }
 
 @Composable
-private fun DownloadMessage(downLoadState: SyncStatusData?) {
+private fun DownloadMessage(downLoadState: SyncStatusData?, isDownloading: Boolean) {
     val visibility = when {
-        downLoadState?.running == false ->
-            timeVisibility()
-
+        downLoadState?.running == false -> timeVisibility(isDownloading)
         else -> downLoadState?.canDisplayMessage() == true
     }
 
@@ -303,8 +304,8 @@ fun DownloadErrorIcon() {
 }
 
 @Composable
-fun timeVisibility(hideAfterMillis: Long = 3000): Boolean {
-    var visible by remember { mutableStateOf(true) }
+fun timeVisibility(initialVisibility: Boolean, hideAfterMillis: Long = 3000): Boolean {
+    var visible by remember { mutableStateOf(initialVisibility) }
     DisposableEffect(Unit) {
         val handler = Handler(Looper.getMainLooper())
         val runnable = {
