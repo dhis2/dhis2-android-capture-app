@@ -345,13 +345,6 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
                             .start()
                     }
 
-                    BottomSheetBehavior.STATE_DRAGGING,
-                    BottomSheetBehavior.STATE_HALF_EXPANDED,
-                    BottomSheetBehavior.STATE_HIDDEN,
-                    BottomSheetBehavior.STATE_SETTLING,
-                    -> {
-                    }
-
                     else -> {}
                 }
             }
