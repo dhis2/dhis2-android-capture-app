@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
 import org.dhis2.R
-import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.fromCache
@@ -19,6 +18,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.maps.model.RelatedInfo
+import org.dhis2.tracker.ProfilePictureProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -40,6 +40,7 @@ class EventInfoProvider(
     private val resourceManager: ResourceManager,
     private val dateLabelProvider: DateLabelProvider,
     private val metadataIconProvider: MetadataIconProvider,
+    private val profilePictureProvider: ProfilePictureProvider,
 ) {
     private val cachedPrograms = mutableMapOf<String, Program>()
     private val cachedDisplayOrgUnit = mutableMapOf<String, Boolean>()
@@ -64,16 +65,22 @@ class EventInfoProvider(
         val tei = enrollment?.trackedEntityInstance()?.let { d2.tei(it) }
 
         return if (tei != null && !useMetadataIcon) {
+            val profilePath = profilePictureProvider(tei, event.program())
             val firstAttributeValue = d2.trackedEntityModule().trackedEntitySearch()
                 .uid(tei.uid())
                 .blockingGet()
                 ?.attributeValues
                 ?.firstOrNull()
-            AvatarProviderConfiguration.ProfilePic(
-                profilePicturePath = tei.profilePicturePath(d2, event.program()),
-                firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
-                    ?: "",
-            )
+            if (profilePath.isNotEmpty()) {
+                AvatarProviderConfiguration.ProfilePic(
+                    profilePicturePath = profilePath,
+                )
+            } else {
+                AvatarProviderConfiguration.MainValueLabel(
+                    firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
+                        ?: "",
+                )
+            }
         } else {
             AvatarProviderConfiguration.Metadata(
                 metadataIconData = metadataIconProvider(

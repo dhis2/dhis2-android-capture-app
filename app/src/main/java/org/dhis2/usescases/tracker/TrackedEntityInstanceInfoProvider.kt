@@ -1,15 +1,18 @@
 package org.dhis2.usescases.tracker
 
-import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.date.DateLabelProvider
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
+import org.dhis2.tracker.ProfilePictureProvider
+import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.ui.avatar.AvatarProviderConfiguration.Metadata
 import org.dhis2.ui.avatar.AvatarProviderConfiguration.ProfilePic
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.relationship.Relationship
@@ -21,20 +24,43 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class TrackedEntityInstanceInfoProvider(
     private val d2: D2,
-    private val resourceManager: ResourceManager,
+    private val profilePictureProvider: ProfilePictureProvider,
     private val dateLabelProvider: DateLabelProvider,
+    private val metadataIconProvider: MetadataIconProvider,
 ) {
-    private val cachedPrograms = mutableMapOf<String, Program>()
 
     fun getAvatar(
         tei: TrackedEntityInstance,
         programUid: String?,
         firstAttributeValue: AdditionalInfoItem?,
-    ) = ProfilePic(
-        profilePicturePath = tei.profilePicturePath(d2, programUid),
-        firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
-            ?: "",
-    )
+    ): AvatarProviderConfiguration {
+        val program = programUid?.let { d2.programModule().programs().uid(it).blockingGet() }
+        val hasIcon = d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()
+        val profilePath = profilePictureProvider(tei, programUid)
+
+        return when {
+            profilePath.isNotEmpty() -> {
+                ProfilePic(
+                    profilePicturePath = profilePath,
+                )
+            }
+
+            hasIcon && profilePath.isEmpty() -> {
+                Metadata(
+                    metadataIconData = metadataIconProvider.invoke(
+                        program?.style() ?: ObjectStyle.builder().build(),
+                    ),
+                )
+            }
+
+            else -> {
+                AvatarProviderConfiguration.MainValueLabel(
+                    firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
+                        ?: "",
+                )
+            }
+        }
+    }
 
     fun getTeiTitle(
         header: String?,

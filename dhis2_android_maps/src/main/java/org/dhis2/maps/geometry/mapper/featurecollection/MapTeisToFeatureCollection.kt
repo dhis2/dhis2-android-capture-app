@@ -100,7 +100,11 @@ class MapTeisToFeatureCollection(
 
         mapPolygonPointToFeature.map(geometry)?.apply {
             addStringProperty(TEI_UID, mapItemModel.uid)
-            addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
+            if (mapItemModel.isProfilePictureAvailable()) {
+                addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
+            } else if (mapItemModel.isCustomIcon()) {
+                addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
+            }
         }?.also { featureMap[TEI]?.add(it) }
     }
 
