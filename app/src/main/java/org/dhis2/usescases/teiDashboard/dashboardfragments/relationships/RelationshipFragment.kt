@@ -126,10 +126,12 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     LaunchedEffect(key1 = showMap) {
                         presenter.takeIf { showMap == true }?.fetchMapData()
                     }
+
+                    val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
                         else -> RelationShipsScreen(
-                            viewModel = relationShipsViewModel,
+                            uiState = uiState,
                             onCreateRelationshipClick = {
                                 goToRelationShip(
                                     relationshipTypeModel = it.relationshipType,
