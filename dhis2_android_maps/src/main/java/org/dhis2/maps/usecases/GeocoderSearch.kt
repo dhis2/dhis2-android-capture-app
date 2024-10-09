@@ -7,8 +7,7 @@ interface GeocoderSearch {
     suspend fun getLocationFromName(
         name: String,
         visibleRegion: LatLngBounds?,
-        onLocationFound: (List<LocationItemModel>) -> Unit,
-    )
+    ): List<LocationItemModel>
 
     suspend fun getLocationFromLatLng(
         latitude: Double,

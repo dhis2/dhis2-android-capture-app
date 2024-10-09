@@ -122,6 +122,7 @@ dependencies {
     api(libs.test.espresso.idlingresource)
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
+    api(libs.analytics.sentry.compose)
     implementation(libs.github.treeView)
     api(libs.dhis2.mobile.designsystem) {
         isChanging = true
