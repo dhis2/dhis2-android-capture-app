@@ -57,6 +57,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -125,6 +126,7 @@ fun SinglePaneMapSelector(
             searchOnThisAreaVisible = screenState.searchOnAreaVisible,
             captureMode = screenState.captureMode,
             selectedLocation = screenState.selectedLocation,
+            locationState = screenState.locationState,
             loadMap = screenActions.loadMap,
             onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
             onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -197,6 +199,7 @@ private fun TwoPaneMapSelector(
                 captureMode = screenState.captureMode,
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                locationState = screenState.locationState,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -379,13 +382,11 @@ private fun Map(
     captureMode: MapSelectorViewModel.CaptureMode,
     selectedLocation: SelectedLocation,
     searchOnThisAreaVisible: Boolean,
+    locationState: LocationState,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val locationState by mapSelectorViewModel.locationState.collectAsState()
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp)),
@@ -402,12 +403,7 @@ private fun Map(
 
                     LocationIcon(
                         locationState = locationState,
-                        onLocationButtonClicked = {
-                            scope.launch {
-                                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
-                                onLocationButtonClicked()
-                            }
-                        },
+                        onLocationButtonClicked = onMyLocationButtonClicked,
                     )
                 }
             },

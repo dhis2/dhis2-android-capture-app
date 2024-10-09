@@ -28,11 +28,12 @@ object Injector {
                 initialCoordinates = initialCoordinates,
                 mapStyleConfig = MapStyleConfiguration(D2Manager.getD2()),
                 geocoder = GeocoderSearchImpl(
-                    Geocoder(context),
-                    NominatimGeocoderApi(
+                    geocoder = Geocoder(context),
+                    geocoderApi = NominatimGeocoderApi(
                         D2Manager.getD2(),
                         LocaleSelector(context, D2Manager.getD2()),
                     ),
+                    dispatcherProvider = provideDispatcher(),
                 ),
                 searchLocationManager = SearchLocationManager(D2Manager.getD2()),
                 dispatchers = provideDispatcher(),

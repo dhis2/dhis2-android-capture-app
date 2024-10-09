@@ -8,13 +8,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -192,7 +190,7 @@ class MapSelectorActivity :
                     }
                     lifecycleScope.launch {
                         mapManager.locationState.collect { locationState ->
-                            mapSelectorViewModel.locationState.emit(locationState)
+                            mapSelectorViewModel.updateLocationState(locationState)
                         }
                     }
                 },
