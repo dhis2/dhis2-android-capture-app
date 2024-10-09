@@ -72,7 +72,7 @@ import org.dhis2.utils.analytics.SHARE_TEI
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
-import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -204,7 +204,7 @@ class TeiDashboardMobileActivity :
         observeProgressBar()
         observeDashboardModel()
         showLoadingProgress(false)
-        setupMoreMenu()
+        setupMoreOptionsMenu()
     }
 
     private fun observeErrorMessages() {
@@ -793,7 +793,7 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setupMoreMenu() {
+    private fun setupMoreOptionsMenu() {
         binding.moreOptions.setContent {
             val menuItems = getEnrollmentMenuList(
                 enrollmentUid = enrollmentUid,
@@ -804,7 +804,7 @@ class TeiDashboardMobileActivity :
 
             var expanded by remember { mutableStateOf(false) }
 
-            MoreIconWithDropDownMenu(
+            MoreOptionsWithDropDownMenuButton(
                 menuItems,
                 expanded,
                 onMenuToggle = { expanded = it },

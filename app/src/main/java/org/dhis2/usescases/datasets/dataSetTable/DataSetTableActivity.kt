@@ -50,7 +50,7 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment.Companion.create
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -142,7 +142,7 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
         if (intent.shouldLaunchSyncDialog()) {
             showGranularSync()
         }
-        setupMoreMenu()
+        setupMoreOptionsMenu()
     }
 
     private fun openDetails() {
@@ -448,11 +448,11 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             .start()
     }
 
-    private fun setupMoreMenu() {
+    private fun setupMoreOptionsMenu() {
         binding.moreOptions.setContent {
             var expanded by remember { mutableStateOf(false) }
 
-            MoreIconWithDropDownMenu(
+            MoreOptionsWithDropDownMenuButton(
                 getMenuItems(),
                 expanded,
                 onMenuToggle = { expanded = it },
