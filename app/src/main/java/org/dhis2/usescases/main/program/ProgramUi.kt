@@ -113,7 +113,7 @@ fun ProgramList(
     ) {
         DownloadMessage(
             downLoadState = downLoadState,
-            isDownloading = programs?.any { it.isDownloading()} ?: false
+            isDownloading = programs?.any { it.isDownloading() } ?: false,
         )
 
         programs?.let {
