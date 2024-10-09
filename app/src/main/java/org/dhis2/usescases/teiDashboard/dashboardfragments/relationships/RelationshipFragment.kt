@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -123,10 +124,12 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     LaunchedEffect(key1 = showMap) {
                         presenter.takeIf { showMap == true }?.fetchMapData()
                     }
+
+                    val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
                         else -> RelationShipsScreen(
-                            viewModel = relationShipsViewModel,
+                            uiState = uiState,
                             onCreateRelationshipClick = {
                                 goToRelationShip(
                                     relationshipTypeModel = it.relationshipType,
