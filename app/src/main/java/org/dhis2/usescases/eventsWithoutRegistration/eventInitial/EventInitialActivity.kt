@@ -42,7 +42,7 @@ import org.dhis2.utils.analytics.CREATE_EVENT
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
@@ -129,7 +129,7 @@ class EventInitialActivity :
         binding.setPresenter(presenter)
 
         initProgressBar()
-        setupMoreMenu()
+        setupMoreOptionsMenu()
 
         val bundle = Bundle()
         bundle.putString(Constants.EVENT_UID, eventUid)
@@ -319,11 +319,11 @@ class EventInitialActivity :
         }, 500)
     }
 
-    private fun setupMoreMenu() {
+    private fun setupMoreOptionsMenu() {
         binding.moreOptions.setContent {
             var expanded by remember { mutableStateOf(false) }
 
-            MoreIconWithDropDownMenu(
+            MoreOptionsWithDropDownMenuButton(
                 getMenuItems(),
                 expanded,
                 onMenuToggle = { expanded = it },
