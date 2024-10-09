@@ -455,6 +455,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 replace(R.id.mainComponent, get(fromRelationship))
                 commit()
             }
+            hideToolbarProgressBar()
         }
         viewModel.refreshData.observe(this) {
             binding.root.closeKeyboard()
@@ -484,6 +485,13 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 )
                 commit()
             }
+            hideToolbarProgressBar()
+        }
+    }
+
+    private fun hideToolbarProgressBar() {
+        if (binding.toolbarProgress.isShown) {
+            binding.toolbarProgress.hide()
         }
     }
 
