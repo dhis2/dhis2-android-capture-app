@@ -268,15 +268,13 @@ class FormRepositoryImpl(
     private fun getMissingMandatoryResult(eventStatus: EventStatus?, itemsWithErrors: List<FieldWithIssue>, itemsWithWarning: List<FieldWithIssue>, validationStrategy: ValidationStrategy?, backPressed: Boolean): DataIntegrityCheckResult {
         return when (eventStatus) {
             EventStatus.ACTIVE -> {
-                val allowDiscard = backPressed || validationStrategy == ValidationStrategy.ON_COMPLETE
-
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
                     errorFields = itemsWithErrors,
                     warningFields = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard,
+                    allowDiscard = backPressed,
                     eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
 
                 )

@@ -56,10 +56,10 @@ class FormResultDialogProvider(
             message = getSubtitle(dialogType, eventState, result.allowDiscard),
             iconResource = getIcon(dialogType),
             mainButton = getMainButton(dialogType, eventState),
-            secondaryButton = if (canSkipErrorFix || dialogType == DialogType.WARNING) {
-                SecondaryButton(R.string.not_now)
-            } else if (result.allowDiscard) {
+            secondaryButton = if (result.allowDiscard) {
                 DialogButtonStyle.DiscardButton()
+            } else if (canSkipErrorFix || dialogType == DialogType.WARNING) {
+                SecondaryButton(R.string.not_now)
             } else {
                 null
             },

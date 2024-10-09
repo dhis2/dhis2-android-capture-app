@@ -22,6 +22,7 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
@@ -443,6 +444,20 @@ class FormView : Fragment() {
         ).show()
     }
 
+    @Composable
+    private fun DialogContent(fieldsWithIssues: List<FieldWithIssue>, bottomSheetDialog: BottomSheetDialog): Unit? {
+        return if (fieldsWithIssues.isEmpty()) {
+            null
+        } else {
+            fieldsWithIssues.takeIf { it.isNotEmpty() }?.let {
+                ErrorFieldList(
+                    fieldsWithIssues = fieldsWithIssues,
+                    onItemClick = { bottomSheetDialog.dismiss() },
+                )
+            }
+        }
+    }
+
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
         formResultDialogUiProvider?.let {
             val modelAndFieldsWithIssuesList = getDialogModelBasedOnResult(result)
@@ -454,6 +469,7 @@ class FormView : Fragment() {
                         onFinishDataEntry?.invoke()
                     } else {
                         dialogModel?.let { model ->
+
                             BottomSheetDialog(
                                 bottomSheetDialogUiModel = model,
                                 onSecondaryButtonClicked = {
@@ -462,18 +478,8 @@ class FormView : Fragment() {
                                 onMainButtonClicked = { bottomSheetDialog ->
                                     manageMainButtonAction(fieldsWithIssues.isNotEmpty(), result.eventResultDetails.eventStatus == EventStatus.COMPLETED, bottomSheetDialog)
                                 },
-                                content = if (fieldsWithIssues.isEmpty()) {
-                                    null
-                                } else {
-                                    { bottomSheetDialog ->
-                                        fieldsWithIssues.takeIf { it.isNotEmpty() }?.let {
-                                            ErrorFieldList(
-                                                fieldsWithIssues = fieldsWithIssues,
-                                                onItemClick = { bottomSheetDialog.dismiss() },
-                                            )
-                                        }
-                                    }
-                                },
+                                showDivider = fieldsWithIssues.isNotEmpty(),
+                                content = { bottomSheetDialog -> DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog) },
                             ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
                         }
                     }
@@ -481,6 +487,9 @@ class FormView : Fragment() {
                 else -> {
                     onFinishDataEntry?.invoke()
                 }
+            }
+            if (result.eventResultDetails.eventStatus == null && result is NotSavedResult) {
+                onFinishDataEntry?.invoke()
             }
         }
     }

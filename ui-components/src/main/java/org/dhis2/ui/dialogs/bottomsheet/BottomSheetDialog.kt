@@ -45,6 +45,7 @@ class BottomSheetDialog(
     var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
+    val showDivider: Boolean = false,
     val content: @Composable
     ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
@@ -85,7 +86,7 @@ class BottomSheetDialog(
                                 tint = SurfaceColor.Primary,
                             )
                         },
-                        showSectionDivider = content != null,
+                        showSectionDivider = showDivider,
                         buttonBlock = {
                             ButtonBlock(
                                 primaryButton = {
