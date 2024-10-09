@@ -92,6 +92,7 @@ import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -469,14 +470,13 @@ class FormView : Fragment() {
                         onFinishDataEntry?.invoke()
                     } else {
                         dialogModel?.let { model ->
-
                             BottomSheetDialog(
                                 bottomSheetDialogUiModel = model,
                                 onSecondaryButtonClicked = {
                                     manageSecondaryButtonAction(result.allowDiscard)
                                 },
                                 onMainButtonClicked = { bottomSheetDialog ->
-                                    manageMainButtonAction(fieldsWithIssues.isNotEmpty(), result.eventResultDetails.eventStatus == EventStatus.COMPLETED, bottomSheetDialog)
+                                    manageMainButtonAction((fieldsWithIssues), result.eventResultDetails.eventStatus == EventStatus.COMPLETED, bottomSheetDialog)
                                 },
                                 showDivider = fieldsWithIssues.isNotEmpty(),
                                 content = { bottomSheetDialog -> DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog) },
@@ -494,8 +494,9 @@ class FormView : Fragment() {
         }
     }
 
-    private fun manageMainButtonAction(fieldsWithErrors: Boolean, isEventCompleted: Boolean, bottomSheetDialog: BottomSheetDialog) {
-        if (fieldsWithErrors) {
+    private fun manageMainButtonAction(fieldsWithIssues: List<FieldWithIssue>, isEventCompleted: Boolean, bottomSheetDialog: BottomSheetDialog) {
+        val errorsInField = fieldsWithIssues.isNotEmpty() && fieldsWithIssues.any { it.issueType == IssueType.ERROR }
+        if (errorsInField) {
             bottomSheetDialog.dismiss()
         } else if (isEventCompleted) {
             onFinishDataEntry?.invoke()
