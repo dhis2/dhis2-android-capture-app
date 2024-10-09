@@ -232,7 +232,6 @@ class MapSelectorActivity :
         super.onDestroy()
         LocationEngineDefault.getDefaultLocationEngine(this)
             .removeLocationUpdates(locationCallback)
-//        mapboxLocationProvider.removeLocationUpdates(locationListener)
         locationProvider.stopLocationUpdates()
     }
 

@@ -226,7 +226,7 @@ private fun LocationInfoContent(
             )
         }
 
-        captureMode.isNone() && selectedLocation is SelectedLocation.ManualResult -> {
+        (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
             LocationItem(
                 locationItemModel = LocationItemModel.SearchResult(
                     searchedTitle = stringResource(R.string.selected_location),
@@ -257,28 +257,6 @@ private fun LocationInfoContent(
             ) {
                 AccuracyIndicator(accuracyRange = accuracyRange)
             }
-        }
-
-        captureMode.isManual() && selectedLocation is SelectedLocation.ManualResult -> {
-            LocationItem(
-                locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = stringResource(R.string.selected_location),
-                    searchedSubtitle = stringResource(
-                        R.string.latitude_longitude,
-                        selectedLocation.latitude.truncate(),
-                        selectedLocation.longitude.truncate(),
-                    ),
-                    searchedLatitude = selectedLocation.latitude,
-                    searchedLongitude = selectedLocation.longitude,
-                ),
-                icon = {
-                    LocationItemIcon(
-                        icon = Icons.Outlined.Place,
-                        tintedColor = SurfaceColor.Primary,
-                        bgColor = SurfaceColor.PrimaryContainer,
-                    )
-                },
-            ) { }
         }
 
         captureMode.isSearch() -> {
