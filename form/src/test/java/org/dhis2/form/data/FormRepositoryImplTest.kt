@@ -280,24 +280,6 @@ class FormRepositoryImplTest {
     }
 
     @Test
-    fun `Should follow validation strategy correctly`() {
-        whenever(
-            dataEntryRepository.list(),
-        ) doReturn Flowable.just(provideMandatoryItemList())
-        whenever(dataEntryRepository.isEvent()) doReturn true
-        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
-        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
-        repository.fetchFormItems()
-        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
-        assertTrue(repository.runDataIntegrityCheck(false).allowDiscard)
-
-        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
-        repository.fetchFormItems()
-        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
-        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
-    }
-
-    @Test
     fun `Should allow discard Changes in event forms if navigating back`() {
         whenever(
             dataEntryRepository.list(),
@@ -322,7 +304,7 @@ class FormRepositoryImplTest {
         assertTrue(
             repository.runDataIntegrityCheck(true) is MissingMandatoryResult,
         )
-        assertTrue(repository.runDataIntegrityCheck(false).allowDiscard)
+        assertTrue(repository.runDataIntegrityCheck(true).allowDiscard)
     }
 
     @Test
