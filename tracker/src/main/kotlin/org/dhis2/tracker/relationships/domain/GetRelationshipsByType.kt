@@ -38,9 +38,7 @@ class GetRelationshipsByType(
                                 ownerUid = it.ownerUid,
                                 avatar = AvatarProviderConfiguration.ProfilePic(
                                     profilePicturePath = it.displayImage().first ?: "",
-                                    firstMainValue = it.displayAttributes()
-                                        .firstOrNull()?.second?.firstOrNull()
-                                        ?.toString() ?: "",
+                                    firstMainValue = it.firstMainValue(),
                                 ),
                                 canOpen = it.canBeOpened,
                                 lastUpdated = dateLabelProvider.span(it.displayLastUpdated()),
