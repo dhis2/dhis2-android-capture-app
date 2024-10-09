@@ -15,7 +15,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
-fun <T> MoreIconWithDropDownMenu(
+fun <T> MoreOptionsWithDropDownMenuButton(
     dropDownMenuItems: List<MenuItemData<T>>,
     expanded: Boolean,
     onMenuToggle: (Boolean) -> Unit,
