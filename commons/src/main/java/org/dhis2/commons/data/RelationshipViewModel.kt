@@ -80,6 +80,15 @@ data class RelationshipViewModel(
             RelationshipDirection.TO -> toValues
         }.drop(1)
     }
+
+    fun firstMainValue(): String {
+        val values = when (direction) {
+            RelationshipDirection.FROM -> fromValues
+            RelationshipDirection.TO -> toValues
+        }
+        return values.first().second.firstOrNull()
+            ?.toString() ?: ""
+    }
 }
 
 enum class RelationshipDirection {
