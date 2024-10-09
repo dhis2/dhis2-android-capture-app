@@ -16,8 +16,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +29,7 @@ import org.dhis2.tracker.relationships.model.RelationShipItem
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -43,24 +42,24 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun RelationShipsScreen(
-    viewModel: RelationShipsViewModel,
+    uiState: RelationshipsListUiState<List<RelationshipSection>>,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
     onRelationshipClick: (RelationShipItem) -> Unit,
 ) {
-    val uiState by viewModel.relationshipsUiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 8.dp),
+            .background(color = Color.White, shape = Shape.LargeTop)
+            .padding(horizontal = Spacing.Spacing8),
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
-        when (val currentState = uiState) {
+        when (uiState) {
             is RelationshipsListUiState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -77,7 +76,7 @@ fun RelationShipsScreen(
 
             is RelationshipsListUiState.Success -> {
                 LazyColumn {
-                    items(currentState.data) { item ->
+                    items(uiState.data) { item ->
                         RelationShipTypeSection(
                             title = item.relationshipType.displayName() ?: "",
                             description = if (item.relationships.isEmpty()) "No data" else null,
@@ -105,18 +104,24 @@ fun RelationShipTypeSection(
     onCreateRelationshipClick: () -> Unit,
     onRelationshipClick: (RelationShipItem) -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(16.dp),
+        verticalArrangement = spacedBy(4.dp),
+    ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(horizontal = 16.dp),
+                .wrapContentHeight(),
             horizontalArrangement = spacedBy(16.dp),
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically),
             ) {
                 Title(text = title)
 
@@ -160,7 +165,7 @@ fun RelationShipTypeSection(
                         minItemsToShow = 3,
                         expandLabelText = stringResource(id = R.string.show_more),
                         shrinkLabelText = stringResource(id = R.string.show_less),
-                        scrollableContent = true,
+                        scrollableContent = false,
                     ),
                 ),
                 listAvatar = {
@@ -176,30 +181,65 @@ fun RelationShipTypeSection(
 
 @Preview
 @Composable
-fun RelationShipTypeSectionPreview() {
-    Box(
-        modifier = Modifier
-            .background(Color.White)
-    ) {
-        RelationShipTypeSection(
-            title = "Relationship type",
-            description = "No data",
-            relationships = listOf(
-                RelationShipItem(
-                    title = "Relationship title",
-                    description = null,
-                    attributes = emptyList(),
-                    ownerType = RelationshipOwnerType.TEI,
-                    ownerUid = "ownerUid",
-                    avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
-                    canOpen = true,
-                    lastUpdated = "Yesterday",
-                )
+fun RelationShipScreenPreview() {
+    val mockUiState = RelationshipsListUiState.Success(
+        data = listOf(
+            RelationshipSection(
+                relationshipType = RelationshipType.builder()
+                    .uid("")
+                    .displayName("Relationship type")
+                    .build(),
+                relationships = listOf(
+                    RelationShipItem(
+                        title = "First name: Peter",
+                        description = null,
+                        attributes = listOf(
+                            Pair("Last name", "Parker"),
+                            Pair("Age", "25"),
+                            Pair("Gender", "Male"),
+                            Pair("Height", "1.75"),
+                        ),
+                        ownerType = RelationshipOwnerType.TEI,
+                        ownerUid = "ownerUid",
+                        avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
+                        canOpen = true,
+                        lastUpdated = "Yesterday",
+                    ),
+                    RelationShipItem(
+                        title = "First name: Mario",
+                        description = null,
+                        attributes = listOf(
+                            Pair("Last name", "Bros"),
+                            Pair("Age", "25"),
+                            Pair("Gender", "Male"),
+                            Pair("Height", "1.75"),
+                        ),
+                        ownerType = RelationshipOwnerType.TEI,
+                        ownerUid = "ownerUid",
+                        avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
+                        canOpen = true,
+                        lastUpdated = "Yesterday",
+                    )
+                ),
+                teiTypeUid = "teiTypeUid",
             ),
-            onCreateRelationshipClick = {},
-            onRelationshipClick = {},
+            RelationshipSection(
+                relationshipType = RelationshipType.builder()
+                    .uid("")
+                    .displayName("Empty relation ship")
+                    .build(),
+                relationships = emptyList(),
+                teiTypeUid = "teiTypeUid",
+
+                )
         )
-    }
+    )
+
+    RelationShipsScreen(
+        uiState = mockUiState,
+        onCreateRelationshipClick = {},
+        onRelationshipClick = {}
+    )
 }
 
 const val TEST_ADD_RELATIONSHIP_BUTTON = "TEST_ADD_RELATIONSHIP_BUTTON"
