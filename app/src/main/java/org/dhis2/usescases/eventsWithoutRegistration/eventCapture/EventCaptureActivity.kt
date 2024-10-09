@@ -61,8 +61,8 @@ import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
-import org.dhis2.utils.customviews.MoreIconWithDropDownMenu
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
@@ -127,7 +127,7 @@ class EventCaptureActivity :
         eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode
         setUpViewPagerAdapter()
         setUpNavigationBar()
-        setupMoreMenu()
+        setupMoreOptionsMenu()
 
         setUpEventCaptureFormLandscape(eventUid ?: "")
         if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
@@ -412,11 +412,11 @@ class EventCaptureActivity :
         binding.programStageName.text = stageName
     }
 
-    private fun setupMoreMenu() {
+    private fun setupMoreOptionsMenu() {
         binding.moreOptions.setContent {
             var expanded by remember { mutableStateOf(false) }
 
-            MoreIconWithDropDownMenu(
+            MoreOptionsWithDropDownMenuButton(
                 getMenuItems(),
                 expanded,
                 onMenuToggle = { expanded = it },
