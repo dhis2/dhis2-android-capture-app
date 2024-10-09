@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -42,6 +41,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -107,6 +107,7 @@ fun SinglePaneMapSelector(
             modifier = Modifier
                 .weight(1f),
             searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+            locationState = screenState.locationState,
             loadMap = screenActions.loadMap,
             onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
             onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -174,6 +175,7 @@ private fun TwoPaneMapSelector(
                 modifier = Modifier
                     .weight(1f),
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                locationState = screenState.locationState,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -332,13 +334,11 @@ private fun LocationInfoContent(
 private fun Map(
     modifier: Modifier = Modifier,
     searchOnThisAreaVisible: Boolean,
+    locationState: LocationState,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val locationState by mapSelectorViewModel.locationState.collectAsState()
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp)),
@@ -354,12 +354,7 @@ private fun Map(
 
                     LocationIcon(
                         locationState = locationState,
-                        onLocationButtonClicked = {
-                            scope.launch {
-                                mapSelectorViewModel.setCaptureMode(MapSelectorViewModel.CaptureMode.GPS)
-                                onLocationButtonClicked()
-                            }
-                        },
+                        onLocationButtonClicked = onMyLocationButtonClicked,
                     )
                 }
             },
