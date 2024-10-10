@@ -14,4 +14,6 @@ data class MapSelectorScreenState(
     val displayPolygonInfo: Boolean,
 ) {
     val doneButtonEnabled = selectedLocation !is SelectedLocation.None
+    fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&
+        newAccuracy < accuracyRange.value.toFloat()
 }
