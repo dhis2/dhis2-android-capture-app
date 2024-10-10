@@ -26,7 +26,7 @@ abstract class RelationshipsRepository(
     private val resources: ResourceManager,
     protected val metadataIconProvider: MetadataIconProvider,
 ) {
-    abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>>
+    abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipViewModel>>
     abstract fun getProgramStyle(): ObjectStyle?
 
