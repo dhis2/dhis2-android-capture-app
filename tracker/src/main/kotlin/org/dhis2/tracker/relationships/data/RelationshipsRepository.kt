@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
+import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import java.util.Date
 
 abstract class RelationshipsRepository(
     private val d2: D2,
@@ -45,6 +47,7 @@ abstract class RelationshipsRepository(
     protected fun getTeiAttributesForRelationship(
         teiUid: String?,
         relationshipConstraint: RelationshipConstraint?,
+        relationshipCreationDate: Date?,
     ): List<Pair<String, String>> {
         //Get list of ordered attributes
         val trackedEntityAttributesUids = when {
@@ -100,7 +103,7 @@ abstract class RelationshipsRepository(
             val teiTypeUid = relationshipConstraint?.trackedEntityType()?.uid()
             val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiTypeUid).blockingGet()?.name() ?: ""
-            listOf(Pair("uid", teiTypeName))
+            listOf(Pair(teiTypeName, relationshipCreationDate?.toUi() ?: ""))
         }
     }
 

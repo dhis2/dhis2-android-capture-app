@@ -108,6 +108,7 @@ class EventRelationshipsRepository(
                             getTeiAttributesForRelationship(
                                 relationshipOwnerUid,
                                 relationshipType.fromConstraint(),
+                                relationship.created(),
                             ),
                             getEventValuesForRelationship(eventUid),
                         )
@@ -117,6 +118,7 @@ class EventRelationshipsRepository(
                             getTeiAttributesForRelationship(
                                 relationshipOwnerUid,
                                 relationshipType.toConstraint(),
+                                relationship.created(),
                             ),
                         )
                     }
