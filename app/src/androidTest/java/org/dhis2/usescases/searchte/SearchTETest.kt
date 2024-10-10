@@ -256,7 +256,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
-    @Ignore("Flaky test")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6541")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
