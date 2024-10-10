@@ -10,8 +10,14 @@ import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
+import org.hisp.dhis.android.core.enrollment.EnrollmentModule
+import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.program.ProgramModule
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy
@@ -29,14 +35,34 @@ class SchedulingViewModelTest {
     private val enrollment = Enrollment.builder().uid("enrollment-uid").build()
     private val programStage = ProgramStage.builder().uid("program-stage").build()
 
+    private val enrollmentObjectRepository: EnrollmentObjectRepository = mock {
+        on { blockingGet() } doReturn enrollment
+    }
+    private val enrollmentCollectionRepository: EnrollmentCollectionRepository = mock {
+        on { uid("enrollment-uid") } doReturn enrollmentObjectRepository
+    }
+    private val enrollmentModule: EnrollmentModule = mock {
+        on { enrollments() } doReturn enrollmentCollectionRepository
+    }
+
+    private val readOnlyOneObjectRepositoryFinalImpl: ReadOnlyOneObjectRepositoryFinalImpl<ProgramStage> = mock {
+        on { blockingGet() } doReturn programStage
+    }
+    private val programStageCollectionRepository: ProgramStageCollectionRepository = mock {
+        on { uid("program-stage") } doReturn readOnlyOneObjectRepositoryFinalImpl
+    }
+    private val programModule: ProgramModule = mock {
+        on { programStages() } doReturn programStageCollectionRepository
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         schedulingViewModel = SchedulingViewModel(
             d2 = mock {
-                on { enrollment("enrollment-uid") } doReturn enrollment
-                on { programStage("program-stage") } doReturn programStage
+                on { enrollmentModule() } doReturn enrollmentModule
+                on { programModule() } doReturn programModule
             },
             resourceManager = mock(),
             eventResourcesProvider = mock(),
