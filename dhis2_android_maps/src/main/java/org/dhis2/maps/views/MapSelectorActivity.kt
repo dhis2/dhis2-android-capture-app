@@ -124,6 +124,11 @@ class MapSelectorActivity :
                         onSearchLocation = mapSelectorViewModel::onSearchLocation,
                         onLocationSelected = mapSelectorViewModel::onLocationSelected,
                         onSearchCaptureMode = mapSelectorViewModel::initSearchMode,
+                        onButtonMode = {
+                            if (::mapManager.isInitialized) {
+                                mapManager.updateCameraPosition()
+                            }
+                        },
                         onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
                         onMyLocationButtonClick = {
                             mapSelectorViewModel::onMyLocationButtonClick
