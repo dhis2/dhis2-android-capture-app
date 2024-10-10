@@ -81,6 +81,7 @@ fun RelationShipsScreen(
                             title = item.relationshipType.displayName() ?: "",
                             description = if (item.relationships.isEmpty()) "No data" else null,
                             relationships = item.relationships,
+                            canAddRelationship = item.canAddRelationship(),
                             onCreateRelationshipClick = {
                                 onCreateRelationshipClick(item)
                             },
@@ -101,6 +102,7 @@ fun RelationShipTypeSection(
     title: String,
     description: String?,
     relationships: List<RelationShipItem>,
+    canAddRelationship: Boolean,
     onCreateRelationshipClick: () -> Unit,
     onRelationshipClick: (RelationShipItem) -> Unit,
 ) {
@@ -132,18 +134,20 @@ fun RelationShipTypeSection(
                     )
                 }
             }
-            IconButton(
-                modifier = Modifier.testTag(TEST_ADD_RELATIONSHIP_BUTTON),
-                style = IconButtonStyle.FILLED,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "New event",
-                        tint = MaterialTheme.colors.onPrimary,
-                    )
-                },
-                onClick = onCreateRelationshipClick,
-            )
+            if(canAddRelationship) {
+                IconButton(
+                    modifier = Modifier.testTag(TEST_ADD_RELATIONSHIP_BUTTON),
+                    style = IconButtonStyle.FILLED,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = "New event",
+                            tint = MaterialTheme.colors.onPrimary,
+                        )
+                    },
+                    onClick = onCreateRelationshipClick,
+                )
+            }
         }
         relationships.forEach { item ->
             ListCard(
@@ -225,7 +229,7 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     )
                 ),
-                teiTypeUid = "teiTypeUid",
+                teiTypeUid = null,
             ),
             RelationshipSection(
                 relationshipType = RelationshipType.builder()
@@ -234,7 +238,6 @@ fun RelationShipScreenPreview() {
                     .build(),
                 relationships = emptyList(),
                 teiTypeUid = "teiTypeUid",
-
                 )
         )
     )

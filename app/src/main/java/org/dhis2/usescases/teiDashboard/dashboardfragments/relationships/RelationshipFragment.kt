@@ -133,10 +133,12 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         else -> RelationShipsScreen(
                             uiState = uiState,
                             onCreateRelationshipClick = {
-                                goToRelationShip(
-                                    relationshipTypeModel = it.relationshipType,
-                                    teiTypeUid = it.teiTypeUid,
-                                )
+                                it.teiTypeUid?.let { teiTypeUid ->
+                                    goToRelationShip(
+                                        relationshipTypeModel = it.relationshipType,
+                                        teiTypeUid = teiTypeUid,
+                                    )
+                                }
                             },
                             onRelationshipClick = {
                                 presenter.onRelationshipClicked(
