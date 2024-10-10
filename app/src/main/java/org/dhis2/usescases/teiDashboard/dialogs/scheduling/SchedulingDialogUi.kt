@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.EventBusy
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -49,15 +49,15 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun SchedulingDialogUi(
-    programStages: List<ProgramStage>,
     viewModel: SchedulingViewModel,
-    orgUnitUid: String?,
     launchMode: LaunchMode,
     onDismiss: () -> Unit,
 ) {
     val date by viewModel.eventDate.collectAsState()
     val catCombo by viewModel.eventCatCombo.collectAsState()
+    val programStages by viewModel.programStages.collectAsState()
     val selectedProgramStage by viewModel.programStage.collectAsState()
+    val enrollment by viewModel.enrollment.collectAsState()
 
     val yesNoOptions = InputYesNoFieldValues.entries.map {
         RadioButtonData(
@@ -116,7 +116,7 @@ fun SchedulingDialogUi(
                         selectedProgramStage = selectedProgramStage,
                         date = date,
                         catCombo = catCombo,
-                        orgUnitUid = orgUnitUid,
+                        orgUnitUid = enrollment?.organisationUnit(),
                         launchMode = launchMode,
                     )
                 }
