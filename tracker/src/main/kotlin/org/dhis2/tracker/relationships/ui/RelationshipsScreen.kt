@@ -201,7 +201,9 @@ fun RelationShipScreenPreview() {
                         ),
                         ownerType = RelationshipOwnerType.TEI,
                         ownerUid = "ownerUid",
-                        avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
+                        avatar =  AvatarProviderConfiguration.MainValueLabel(
+                            firstMainValue = "P",
+                        ),
                         canOpen = true,
                         lastUpdated = "Yesterday",
                     ),
@@ -216,7 +218,9 @@ fun RelationShipScreenPreview() {
                         ),
                         ownerType = RelationshipOwnerType.TEI,
                         ownerUid = "ownerUid",
-                        avatar = AvatarProviderConfiguration.ProfilePic("", "P"),
+                        avatar = AvatarProviderConfiguration.MainValueLabel(
+                            firstMainValue = "M",
+                        ),
                         canOpen = true,
                         lastUpdated = "Yesterday",
                     )

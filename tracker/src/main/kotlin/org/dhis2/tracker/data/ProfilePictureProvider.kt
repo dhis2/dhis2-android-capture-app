@@ -1,4 +1,4 @@
-package org.dhis2.tracker
+package org.dhis2.tracker.data
 
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

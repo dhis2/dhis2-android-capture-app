@@ -7,8 +7,9 @@ import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.tracker.extensions.profilePicturePath
+import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
@@ -19,7 +20,8 @@ class EventRelationshipsRepository(
     resources: ResourceManager,
     metadataIconProvider: MetadataIconProvider,
     private val eventUid: String,
-) : RelationshipsRepository(d2, resources, metadataIconProvider) {
+    private val profilePictureProvider: ProfilePictureProvider,
+    ) : RelationshipsRepository(d2, resources, metadataIconProvider) {
     override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val programStageUid = event?.programStage() ?: ""
@@ -122,13 +124,13 @@ class EventRelationshipsRepository(
                 val (fromProfilePic, toProfilePic) =
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
-                            tei?.profilePicturePath(d2, null),
+                            tei?.let{ profilePictureProvider(it, null) },
                             null,
                         )
                     } else {
                         Pair(
                             null,
-                            tei?.profilePicturePath(d2, null),
+                            tei?.let{ profilePictureProvider(it, null) },
                         )
                     }
 
@@ -202,5 +204,16 @@ class EventRelationshipsRepository(
                 )
             }
         )
+    }
+
+    override fun getProgramStyle(): ObjectStyle? {
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val program = d2.programModule().programs().uid(event?.program()).blockingGet()
+
+        return if (d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()) {
+            program?.style() ?: ObjectStyle.builder().build()
+        } else {
+            null
+        }
     }
 }

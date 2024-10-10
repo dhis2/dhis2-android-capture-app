@@ -7,9 +7,10 @@ import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.tracker.extensions.profilePicturePath
+import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
@@ -22,6 +23,7 @@ class TrackerRelationshipsRepository(
     metadataIconProvider: MetadataIconProvider,
     private val teiUid: String,
     private val enrollmentUid: String,
+    private val profilePictureProvider: ProfilePictureProvider,
 ) : RelationshipsRepository(d2, resources, metadataIconProvider) {
     override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>> {
         val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
@@ -98,7 +100,7 @@ class TrackerRelationshipsRepository(
                             teiUid,
                             relationshipType.fromConstraint()
                         )
-                        fromProfilePic = tei?.profilePicturePath(d2, programUid)
+                        fromProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                         fromDefaultPicRes = getTeiDefaultRes(tei)
                         fromLastUpdated = tei?.lastUpdated()
                         fromDescription = null
@@ -114,7 +116,7 @@ class TrackerRelationshipsRepository(
                                 toTei?.uid(),
                                 relationshipType.toConstraint()
                             )
-                            toProfilePic = toTei?.profilePicturePath(d2, programUid)
+                            toProfilePic = toTei?.let { profilePictureProvider(it, programUid) }
                             toDefaultPicRes = getTeiDefaultRes(toTei)
                             canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(toTei?.organisationUnit())
@@ -147,7 +149,7 @@ class TrackerRelationshipsRepository(
                             teiUid,
                             relationshipType.toConstraint()
                         )
-                        toProfilePic = tei?.profilePicturePath(d2, programUid)
+                        toProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                         toDefaultPicRes = getTeiDefaultRes(tei)
                         toLastUpdated = tei?.lastUpdated()
                         toDescription = null
@@ -163,7 +165,7 @@ class TrackerRelationshipsRepository(
                                 fromTei?.uid(),
                                 relationshipType.fromConstraint()
                             )
-                            fromProfilePic = fromTei?.profilePicturePath(d2, programUid)
+                            fromProfilePic = fromTei?.let { profilePictureProvider(it, programUid) }
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
                             canBoOpened = fromTei?.syncState() != State.RELATIONSHIP &&
                                     orgUnitInScope(fromTei?.organisationUnit())
@@ -216,5 +218,16 @@ class TrackerRelationshipsRepository(
                 )
             }
         )
+    }
+
+    override fun getProgramStyle(): ObjectStyle? {
+        val programUid = d2.enrollmentModule().enrollments()
+            .uid(enrollmentUid).blockingGet()?.program()
+        val program = d2.programModule().programs().uid(programUid).blockingGet()
+        return if (d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()) {
+            program?.style() ?: ObjectStyle.builder().build()
+        } else {
+            null
+        }
     }
 }

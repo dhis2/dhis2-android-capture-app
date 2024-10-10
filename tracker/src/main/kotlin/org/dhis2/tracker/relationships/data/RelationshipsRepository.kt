@@ -9,6 +9,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -21,10 +22,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
-    private val metadataIconProvider: MetadataIconProvider,
+    protected val metadataIconProvider: MetadataIconProvider,
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>>
     abstract fun getRelationships(): Flow<List<RelationshipViewModel>>
+    abstract fun getProgramStyle(): ObjectStyle?
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
