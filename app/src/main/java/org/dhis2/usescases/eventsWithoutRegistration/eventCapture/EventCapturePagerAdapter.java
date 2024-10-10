@@ -17,6 +17,7 @@ import org.dhis2.usescases.notes.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment;
+import org.dhis2.utils.customviews.navigationbar.NavigationPage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -83,6 +84,25 @@ public class EventCapturePagerAdapter extends FragmentStateAdapter {
             case R.id.navigation_analytics -> EventPageType.ANALYTICS;
             case R.id.navigation_relationships -> EventPageType.RELATIONSHIPS;
             case R.id.navigation_notes -> EventPageType.NOTES;
+            default -> null;
+        };
+
+        if (pageType != null) {
+            if (isPortrait()) {
+                return portraitPages.indexOf(pageType);
+            } else {
+                return landscapePages.indexOf(pageType);
+            }
+        } else {
+            return NO_POSITION;
+        }
+    }
+
+    public int getDynamicTabIndex(NavigationPage navigationPage) {
+        EventPageType pageType = switch (navigationPage) {
+            case ANALYTICS -> EventPageType.ANALYTICS;
+            case RELATIONSHIPS -> EventPageType.RELATIONSHIPS;
+            case NOTES -> EventPageType.NOTES;
             default -> null;
         };
 
