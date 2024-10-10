@@ -15,7 +15,12 @@ import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
-import org.dhis2.tracker.ProfilePictureProvider;
+import org.dhis2.tracker.data.ProfilePictureProvider;
+import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
+import org.dhis2.tracker.relationships.data.RelationshipsRepository;
+import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
+import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
+import org.dhis2.tracker.relationships.ui.RelationShipsViewModel;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
@@ -53,43 +58,48 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     RelationshipPresenter providesPresenter(D2 d2,
-                                            RelationshipRepository relationshipRepository,
+                                            RelationshipMapsRepository relationshipMapsRepository,
                                             SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
-                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection) {
-        return new RelationshipPresenter(view,
+                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection,
+                                            RelationshipsRepository relationshipsRepository,
+                                            DispatcherProvider dispatcherProvider
+    ) {
+        return new RelationshipPresenter(
+                view,
                 d2,
-                programUid,
                 teiUid,
                 eventUid,
-                relationshipRepository,
+                relationshipMapsRepository,
                 schedulerProvider,
                 analyticsHelper,
                 new MapRelationshipToRelationshipMapModel(),
                 mapRelationshipsToFeatureCollection,
-                new MapStyleConfiguration(d2));
+                new MapStyleConfiguration(d2),
+                relationshipsRepository,
+                dispatcherProvider
+        );
     }
 
     @Provides
     @PerFragment
-    RelationshipRepository providesRepository(D2 d2,
-                                              ResourceManager resourceManager,
-                                              TeiAttributesProvider attributesProvider,
-                                              MetadataIconProvider metadataIconProvider) {
+    RelationshipMapsRepository providesRepository(
+            D2 d2,
+            ResourceManager resourceManager,
+            MetadataIconProvider metadataIconProvider,
+            DateLabelProvider dateLabelProvider
+    ) {
         RelationshipConfiguration config;
         if (teiUid != null) {
             config = new TrackerRelationshipConfiguration(enrollmentUid, teiUid);
         } else {
             config = new EventRelationshipConfiguration(eventUid);
         }
-        DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, resourceManager);
         ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
-        return new RelationshipRepositoryImpl(
+        return new RelationshipMapsRepositoryImpl(
                 d2,
                 config,
                 resourceManager,
-                attributesProvider,
-                metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         profilePictureProvider,
@@ -121,5 +131,68 @@ public class RelationshipModule {
     @PerFragment
     TeiAttributesProvider teiAttributesProvider(D2 d2) {
         return new TeiAttributesProvider(d2);
+    }
+
+    @Provides
+    @PerFragment
+    RelationShipsViewModel provideRelationshipsViewModel(
+            GetRelationshipsByType getRelationshipsByType
+    ) {
+        return new RelationShipsViewModel(getRelationshipsByType);
+    }
+
+    @Provides
+    @PerFragment
+    GetRelationshipsByType provideGetRelationshipsByType(
+            RelationshipsRepository relationshipsRepository,
+            DateLabelProvider dateLabelProvider,
+            MetadataIconProvider metadataIconProvider
+    ) {
+        return new GetRelationshipsByType(
+                relationshipsRepository,
+                dateLabelProvider,
+                metadataIconProvider
+        );
+    }
+
+    @Provides
+    @PerFragment
+    RelationshipsRepository provideRelationshipsRepository(
+            D2 d2,
+            ResourceManager resourceManager,
+            MetadataIconProvider metadataIconProvider,
+            ProfilePictureProvider profilePictureProvider
+    ) {
+        if (teiUid != null) {
+            return new TrackerRelationshipsRepository(
+                    d2,
+                    resourceManager,
+                    metadataIconProvider,
+                    teiUid,
+                    enrollmentUid,
+                    profilePictureProvider
+            );
+        } else {
+            return new EventRelationshipsRepository(
+                    d2,
+                    resourceManager,
+                    metadataIconProvider,
+                    eventUid,
+                    profilePictureProvider
+            );
+        }
+
+    }
+
+    @Provides
+    @PerFragment
+    DateLabelProvider provideDateLabelProvider(ResourceManager resourceManager) {
+        return new DateLabelProvider(moduleContext, resourceManager);
+    }
+
+    @Provides
+    @PerFragment
+    ProfilePictureProvider provideProfilePictureProvider(D2 d2){
+        return new ProfilePictureProvider(d2);
     }
 }

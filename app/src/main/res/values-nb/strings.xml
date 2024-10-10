@@ -398,7 +398,6 @@
     <string name="tuto_main_10">Logg ut for å endre bruker på server. Du vil kunne logge inn igjen selv om det ikke er noen internettilkobling.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relasjoner</string>
-    <string name="empty_relationships">Det er ingen relasjoner, klikk \"+\" for å legge til en ny.</string>
     <string name="empty_tei_add">Det er ingen hendelser registrert, klikk \"+\" for å legge til en ny.</string>
     <string name="empty_tei_no_add">Det er ingen hendelser registrert.</string>
     <string name="qr_data_values">Dataverdier</string>

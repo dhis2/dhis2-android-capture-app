@@ -402,7 +402,6 @@
     <string name="tuto_main_10">退出以便改变用户或服务器，你将可以再次登录即使没有互联网。</string>
     <string name="text_plus_colon">%s：</string>
     <string name="relationships">关系</string>
-    <string name="empty_relationships">还没有现存的关系。点击“+”添加一个新的</string>
     <string name="empty_tei_add">没有注册事件，单击“ +”添加一个新事件。</string>
     <string name="empty_tei_no_add">没有注册事件。</string>
     <string name="qr_data_values">数据值</string>

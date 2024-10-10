@@ -426,7 +426,6 @@
     <string name="tuto_main_10">Cierre sesión para cambiar de usuario o de servidor. Podrá volver a entrar con el mismo usuario si no hay internet.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relaciones</string>
-    <string name="empty_relationships">No hay relaciones, haga click en \"+\" para crear una nueva.</string>
     <string name="empty_tei_add">No hay eventos registrados, haga click en \"+\" para añadir uno.</string>
     <string name="empty_tei_no_add">No hay eventos registrados.</string>
     <string name="qr_data_values">Valores de datos</string>

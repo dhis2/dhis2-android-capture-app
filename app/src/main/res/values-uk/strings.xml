@@ -420,7 +420,6 @@
     <string name="tuto_main_10">Вийдіть, щоб змінити користувача або адресу серверу. Ви зможете увійти знову, навіть якщо немає підключення до Інтернету.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">зв\'язки</string>
-    <string name="empty_relationships">Немає зв’язків, натисніть «+», щоб додати новий.</string>
     <string name="empty_tei_add">Немає зареєстрованих випадків, натисніть «+», щоб додати новий.</string>
     <string name="empty_tei_no_add">Немає зареєстрованих випадків.</string>
     <string name="qr_data_values">Значення даних</string>

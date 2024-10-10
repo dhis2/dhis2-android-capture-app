@@ -4,6 +4,7 @@ import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import java.util.Date
 
 data class RelationshipViewModel(
     val relationship: Relationship,
@@ -21,6 +22,10 @@ data class RelationshipViewModel(
     val toDefaultImageResource: Int,
     val ownerDefaultColorResource: MetadataIconData,
     val canBeOpened: Boolean = true,
+    val toLastUpdated: Date? = null,
+    val fromLastUpdated: Date? = null,
+    val toDescription: String? = null,
+    val fromDescription: String? = null,
 ) {
     fun displayRelationshipName(): String {
         val values = when (direction) {
@@ -28,8 +33,7 @@ data class RelationshipViewModel(
             RelationshipDirection.TO -> toValues
         }
         return when {
-            values.size > 1 -> "${values[0].second} ${values[1].second}"
-            values.size == 1 -> values[0].second
+            values.isNotEmpty() -> "${values.first().first}: ${values.first().second}"
             else -> "-"
         }
     }
@@ -54,6 +58,43 @@ data class RelationshipViewModel(
 
     fun isFrom(): Boolean {
         return direction == RelationshipDirection.FROM
+    }
+
+    fun displayDescription(): String? {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromDescription
+            RelationshipDirection.TO -> toDescription
+        }
+    }
+
+    fun displayLastUpdated(): Date? {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromLastUpdated
+            RelationshipDirection.TO -> toLastUpdated
+        }
+    }
+
+    fun displayAttributes(): List<Pair<String, String>> {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromValues
+            RelationshipDirection.TO -> toValues
+        }.drop(1)
+    }
+
+    fun firstMainValue(): String {
+        val values = when (direction) {
+            RelationshipDirection.FROM -> fromValues
+            RelationshipDirection.TO -> toValues
+        }
+        return values.first().second.firstOrNull()
+            ?.toString() ?: ""
+    }
+
+    fun getPicturePath(): String {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromImage ?: ""
+            RelationshipDirection.TO -> toImage ?: ""
+        }
     }
 }
 

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Il n\'y a pas de relations, cliquez \"+\" pour en ajouter une nouvelle.</string>
+</resources>

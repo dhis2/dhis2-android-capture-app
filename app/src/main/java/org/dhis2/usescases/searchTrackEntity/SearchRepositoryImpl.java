@@ -368,7 +368,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         String value = attribute.getValue();
         String transformedValue;
         if (value != null) {
-            transformedValue =  ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
+            transformedValue = ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
         } else {
             transformedValue = sortingValueSetter.getUnknownLabel();
         }
@@ -410,7 +410,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (count > 0) {
             tei.setHasOverdue(true);
             Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = !overdueList.isEmpty()  ? overdueList.get(0).dueDate() : null;
+            Date overdueDate = !overdueList.isEmpty() ? overdueList.get(0).dueDate() : null;
             Date dateToShow = null;
             if (scheduleDate != null && overdueDate != null) {
                 if (scheduleDate.before(overdueDate)) {
@@ -482,7 +482,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
                         MetadataIconData.Companion.defaultIcon(),
-                        true
+                        true,
+                        null,
+                        null,
+                        null,
+                        null
                 ));
             }
         }
