@@ -230,7 +230,7 @@ class SearchTETest : BaseTest() {
             checkCountAtFilter(eventStatusFilter, totalCount)
         }
         searchTeiRobot(composeTestRule) {
-            checkListOfSearchTEIWithAdditionalInfo("First name: ADRIANNA", "1 day overdue")
+            checkListOfSearchTEIWithAdditionalInfo("First name: Claire", "8 months overdue")
         }
     }
 
@@ -462,16 +462,16 @@ class SearchTETest : BaseTest() {
     )
 
     private fun createRegisterTEI() = RegisterTEIUIModel(
-        "ADRIANNA",
-        "ROBERTS",
+        "Claire",
+        "Jones",
         dateRegistration,
         dateEnrollment,
     )
 
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
-        2000,
-        6,
-        30,
+        2016,
+        1,
+        9,
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
