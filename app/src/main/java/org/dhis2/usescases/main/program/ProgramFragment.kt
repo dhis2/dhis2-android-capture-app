@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
@@ -71,13 +72,13 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
             )
             setContent {
                 val items by programViewModel.programs.observeAsState()
-                val state by programViewModel.downloadState().observeAsState()
-                val downloadState by programViewModel.downloadState().observeAsState()
+                val downloadState by programViewModel.downloadState().collectAsState()
+
                 LaunchedEffect(downloadState) {
                     programViewModel.setIsDownloading()
                 }
                 ProgramList(
-                    downLoadState = state,
+                    downLoadState = downloadState,
                     programs = items,
                     onItemClick = {
                         programViewModel.onItemClick(it)
