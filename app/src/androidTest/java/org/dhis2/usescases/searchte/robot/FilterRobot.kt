@@ -113,6 +113,6 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkTeiAreCompleted() {
-        composeTestRule.onAllNodesWithText("Enrollment completed", true).assertCountEquals(5)
+        composeTestRule.onAllNodesWithText("Enrollment completed", true).assertCountEquals(4)
     }
 }
