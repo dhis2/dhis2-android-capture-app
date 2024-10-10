@@ -21,7 +21,7 @@ class EventRelationshipsRepository(
     metadataIconProvider: MetadataIconProvider,
     private val eventUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
-    ) : RelationshipsRepository(d2, resources, metadataIconProvider) {
+) : RelationshipsRepository(d2, resources, metadataIconProvider) {
 
     override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
@@ -111,11 +111,19 @@ class EventRelationshipsRepository(
                                 relationshipType.fromConstraint(),
                                 relationship.created(),
                             ),
-                            getEventValuesForRelationship(eventUid),
+                            getEventValuesForRelationship(
+                                eventUid,
+                                relationshipType.toConstraint(),
+                                relationship.created(),
+                            ),
                         )
                     } else {
                         Pair(
-                            getEventValuesForRelationship(eventUid),
+                            getEventValuesForRelationship(
+                                eventUid,
+                                relationshipType.fromConstraint(),
+                                relationship.created(),
+                            ),
                             getTeiAttributesForRelationship(
                                 relationshipOwnerUid,
                                 relationshipType.toConstraint(),
@@ -127,13 +135,13 @@ class EventRelationshipsRepository(
                 val (fromProfilePic, toProfilePic) =
                     if (direction == RelationshipDirection.FROM) {
                         Pair(
-                            tei?.let{ profilePictureProvider(it, null) },
+                            tei?.let { profilePictureProvider(it, null) },
                             null,
                         )
                     } else {
                         Pair(
                             null,
-                            tei?.let{ profilePictureProvider(it, null) },
+                            tei?.let { profilePictureProvider(it, null) },
                         )
                     }
 

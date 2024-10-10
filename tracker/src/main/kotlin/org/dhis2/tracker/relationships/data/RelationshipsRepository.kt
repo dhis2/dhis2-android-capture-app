@@ -107,31 +107,52 @@ abstract class RelationshipsRepository(
         }
     }
 
-    //TODO Review
-    protected fun getEventValuesForRelationship(eventUid: String?): List<Pair<String, String>> {
+    protected fun getEventValuesForRelationship(
+        eventUid: String?,
+        relationshipConstraint: RelationshipConstraint?,
+        relationshipCreationDate: Date?,
+    ): List<Pair<String, String>> {
+
+        //Get list of ordered attributes
+        val dataElementUids = when {
+
+            //When there are  attributes defined in the constraint
+            !relationshipConstraint?.trackerDataView()?.dataElements().isNullOrEmpty() -> {
+                relationshipConstraint?.trackerDataView()?.dataElements()
+            }
+
+            //If there is a program stage defined in the constraint
+            relationshipConstraint?.programStage() != null -> {
+                val programStageUid = relationshipConstraint.programStage()?.uid()
+                d2.programModule().programStageDataElements()
+                    .byProgramStage().eq(programStageUid)
+                    .byDisplayInReports().isTrue.blockingGetUids()
+            }
+
+            else -> {
+                listOf()
+            }
+
+        }
+
         val event =
             d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet()
-        val deFromEvent = d2.programModule().programStageDataElements()
-            .byProgramStage().eq(event?.programStage())
-            .byDisplayInReports().isTrue.blockingGetUids()
 
-        val valuesFromEvent = event?.trackedEntityDataValues()?.mapNotNull {
-            if (!deFromEvent.contains(it.dataElement())) return@mapNotNull null
-            val formName = d2.dataElementModule().dataElements().uid(it.dataElement()).blockingGet()
+        val dataElements = dataElementUids!!.mapNotNull { dataElementUid ->
+            val formName = d2.dataElementModule().dataElements()
+                .uid(dataElementUid).blockingGet()
                 ?.displayName()
-            val value = it.userFriendlyValue(d2)
+            val value = event?.trackedEntityDataValues()?.find { it.dataElement() == dataElementUid }.userFriendlyValue(d2)
             if (formName != null && value != null) {
                 Pair(formName, value)
             } else {
                 null
             }
-        } ?: emptyList()
+        }
 
-        return if (valuesFromEvent.isNotEmpty()) {
-            valuesFromEvent
-        } else {
+        return dataElements.ifEmpty {
             val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-            listOf(Pair("displayName", stage?.displayName() ?: event?.uid() ?: ""))
+            listOf(Pair(stage?.displayName() ?: event?.uid() ?: "", relationshipCreationDate?.toUi() ?: ""))
         }
     }
 
