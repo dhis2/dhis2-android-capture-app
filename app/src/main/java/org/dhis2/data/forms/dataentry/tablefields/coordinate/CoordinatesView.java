@@ -394,7 +394,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
     public void onMapPositionClick() {
         subscribe();
         ((FragmentActivity) getContext()).startActivityForResult(MapSelectorActivity.Companion.create(
-                        (FragmentActivity) getContext(),
+                        getContext(),
+                        null,
                         getFeatureType(),
                         currentCoordinates()),
                 RQ_MAP_LOCATION_VIEW);
