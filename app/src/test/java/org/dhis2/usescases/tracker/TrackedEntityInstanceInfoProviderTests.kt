@@ -3,7 +3,7 @@ package org.dhis2.usescases.tracker
 import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.tracker.ProfilePictureProvider
+import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.D2

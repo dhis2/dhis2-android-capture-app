@@ -89,6 +89,13 @@ data class RelationshipViewModel(
         return values.first().second.firstOrNull()
             ?.toString() ?: ""
     }
+
+    fun getPicturePath(): String {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromImage ?: ""
+            RelationshipDirection.TO -> toImage ?: ""
+        }
+    }
 }
 
 enum class RelationshipDirection {
