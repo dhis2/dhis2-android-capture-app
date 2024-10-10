@@ -22,7 +22,8 @@ class EventRelationshipsRepository(
     private val eventUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
     ) : RelationshipsRepository(d2, resources, metadataIconProvider) {
-    override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String>>> {
+
+    override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val programStageUid = event?.programStage() ?: ""
         val programUid = event?.program() ?: ""

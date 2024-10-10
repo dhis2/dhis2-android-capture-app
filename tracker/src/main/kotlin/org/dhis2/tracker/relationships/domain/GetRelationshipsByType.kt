@@ -2,6 +2,7 @@ package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
@@ -25,31 +26,23 @@ class GetRelationshipsByType(
             .combine(
                 relationshipsRepository.getRelationships()
             ) { types, relationships ->
-                types.map { type ->
+                types.mapNotNull { type ->
                     val relationshipType = type.first
                     val teiTypeUid = type.second
+
+                    // Filter relationships once based on relationshipType
+                    val filteredRelationships = relationships.filter {
+                        it.relationshipType.uid() == relationshipType.uid()
+                    }
+
+                    // Return null if no matching relationships
+                    if (filteredRelationships.isEmpty() && teiTypeUid == null) {
+                        return@mapNotNull null
+                    }
+
                     RelationshipSection(
                         relationshipType = relationshipType,
-                        relationships = relationships.filter {
-                            it.relationshipType.uid() == type.first.uid()
-                        }.map {
-                            // We have RelationshipViewModel and we want to map it to RelationShipItem
-
-                            RelationShipItem(
-                                title = it.displayRelationshipName(),
-                                description = it.displayDescription(),
-                                attributes = it.displayAttributes(),
-                                ownerType = it.ownerType,
-                                ownerUid = it.ownerUid,
-                                avatar = getAvatar(
-                                    style = relationshipsRepository.getProgramStyle(),
-                                    profilePath = it.getPicturePath(),
-                                    firstAttributeValue = it.firstMainValue(),
-                                ),
-                                canOpen = it.canBeOpened,
-                                lastUpdated = dateLabelProvider.span(it.displayLastUpdated()),
-                            )
-                        },
+                        relationships = filteredRelationships.map { mapToRelationshipItem(it) },
                         teiTypeUid = teiTypeUid
                     )
                 }
@@ -82,5 +75,22 @@ class GetRelationshipsByType(
                 )
             }
         }
+    }
+
+    private fun mapToRelationshipItem(relationship: RelationshipViewModel): RelationShipItem {
+        return RelationShipItem(
+            title = relationship.displayRelationshipName(),
+            description = relationship.displayDescription(),
+            attributes = relationship.displayAttributes(),
+            ownerType = relationship.ownerType,
+            ownerUid = relationship.ownerUid,
+            avatar = getAvatar(
+                style = relationshipsRepository.getProgramStyle(),
+                profilePath = relationship.getPicturePath(),
+                firstAttributeValue = relationship.firstMainValue(),
+            ),
+            canOpen = relationship.canBeOpened,
+            lastUpdated = dateLabelProvider.span(relationship.displayLastUpdated())
+        )
     }
 }
