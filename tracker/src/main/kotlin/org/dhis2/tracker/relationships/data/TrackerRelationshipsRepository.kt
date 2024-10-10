@@ -131,7 +131,11 @@ class TrackerRelationshipsRepository(
                             val toEvent = d2.eventModule().events()
                                 .uid(relationshipOwnerUid).blockingGet()
                             toGeometry = toEvent?.geometry()
-                            toValues = getEventValuesForRelationship(toEvent?.uid())
+                            toValues = getEventValuesForRelationship(
+                                toEvent?.uid(),
+                                relationshipType.toConstraint(),
+                                relationship.created(),
+                            )
                             toProfilePic = ""
                             toDefaultPicRes = getEventDefaultRes(toEvent)
                             canBoOpened = toEvent?.syncState() != State.RELATIONSHIP &&
@@ -181,7 +185,11 @@ class TrackerRelationshipsRepository(
                             val fromEvent = d2.eventModule().events()
                                 .uid(relationshipOwnerUid).blockingGet()
                             fromGeometry = fromEvent?.geometry()
-                            fromValues = getEventValuesForRelationship(fromEvent?.uid())
+                            fromValues = getEventValuesForRelationship(
+                                fromEvent?.uid(),
+                                relationshipType.fromConstraint(),
+                                relationship.created(),
+                            )
                             fromProfilePic = ""
                             fromDefaultPicRes = getEventDefaultRes(fromEvent)
                             canBoOpened = fromEvent?.syncState() != State.RELATIONSHIP &&
