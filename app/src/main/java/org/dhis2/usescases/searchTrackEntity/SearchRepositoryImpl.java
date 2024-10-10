@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.R;
+import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
@@ -36,7 +37,6 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
-import org.dhis2.tracker.extensions.TrackedEntityExtensionsKt;
 import org.dhis2.ui.MetadataIconData;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
@@ -496,7 +496,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private String profilePicturePath(TrackedEntityInstance tei, String programUid) {
         if (!profilePictureCache.containsKey(tei.uid())) {
-            profilePictureCache.put(tei.uid(), TrackedEntityExtensionsKt.profilePicturePath(tei, d2, programUid));
+            profilePictureCache.put(tei.uid(), ExtensionsKt.profilePicturePath(tei, d2, programUid));
         }
         return profilePictureCache.get(tei.uid());
     }
@@ -814,7 +814,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private String profilePicturePath(TrackedEntityInstance tei, @Nullable Program selectedProgram) {
-        return TrackedEntityExtensionsKt.profilePicturePath(tei, d2, selectedProgram != null ? selectedProgram.uid() : null);
+        return ExtensionsKt.profilePicturePath(tei, d2, selectedProgram != null ? selectedProgram.uid() : null);
     }
 
     @Override

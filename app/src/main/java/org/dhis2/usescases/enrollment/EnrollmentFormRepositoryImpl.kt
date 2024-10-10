@@ -1,8 +1,8 @@
 package org.dhis2.usescases.enrollment
 
 import io.reactivex.Single
+import org.dhis2.bindings.profilePicturePath
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
-import org.dhis2.tracker.extensions.profilePicturePath
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
