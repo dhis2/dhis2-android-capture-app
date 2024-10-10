@@ -2,12 +2,13 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -15,6 +16,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.parcelize.Parcelize
 import org.dhis2.bindings.app
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.PeriodDialog
@@ -36,18 +38,24 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         const val PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID"
         const val EVENT_LABEL = "EVENT_LABEL"
 
+        private const val TAG_LAUNCH_MODE = "LAUNCH_MODE"
+
         fun newSchedule(
             enrollmentUid: String,
             programStagesUids: List<String>,
             showYesNoOptions: Boolean,
             eventCreationType: EventCreationType,
         ): SchedulingDialog {
+            val launchMode = LaunchMode.NewSchedule(
+                enrollmentUid = enrollmentUid,
+                programStagesUids = programStagesUids,
+                showYesNoOptions = showYesNoOptions,
+                eventCreationType = eventCreationType,
+            )
+
             return SchedulingDialog().apply {
-                this.launchMode = LaunchMode.NewSchedule(
-                    enrollmentUid = enrollmentUid,
-                    programStagesUids = programStagesUids,
-                    showYesNoOptions = showYesNoOptions,
-                    eventCreationType = eventCreationType,
+                arguments = bundleOf(
+                    TAG_LAUNCH_MODE to launchMode,
                 )
             }
         }
@@ -56,16 +64,22 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             eventUid: String,
             showYesNoOptions: Boolean,
             eventCreationType: EventCreationType,
-        ) = SchedulingDialog().apply {
-            this.launchMode = LaunchMode.EnterEvent(
+        ): SchedulingDialog {
+            val launchMode = LaunchMode.EnterEvent(
                 eventUid = eventUid,
                 showYesNoOptions = showYesNoOptions,
                 eventCreationType = eventCreationType,
             )
+
+            return SchedulingDialog().apply {
+                arguments = bundleOf(
+                    TAG_LAUNCH_MODE to launchMode,
+                )
+            }
         }
     }
 
-    lateinit var launchMode: LaunchMode
+    private lateinit var launchMode: LaunchMode
 
     @Inject
     lateinit var factory: SchedulingViewModelFactory.Factory
@@ -77,6 +91,10 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+        val arguments = arguments
+        if (arguments != null) {
+            launchMode = LaunchMode.fromBundle(arguments)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -174,11 +192,24 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
     }
 
-    sealed interface LaunchMode {
+    sealed interface LaunchMode : Parcelable {
+
+        companion object {
+
+            fun fromBundle(args: Bundle): LaunchMode {
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    args.getParcelable(TAG_LAUNCH_MODE, LaunchMode::class.java)!!
+                } else {
+                    @Suppress("DEPRECATION")
+                    args.getParcelable(TAG_LAUNCH_MODE)!!
+                }
+            }
+        }
 
         val showYesNoOptions: Boolean
         val eventCreationType: EventCreationType
 
+        @Parcelize
         data class NewSchedule(
             val enrollmentUid: String,
             val programStagesUids: List<String>,
@@ -186,6 +217,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             override val eventCreationType: EventCreationType,
         ) : LaunchMode
 
+        @Parcelize
         data class EnterEvent(
             val eventUid: String,
             override val showYesNoOptions: Boolean,
