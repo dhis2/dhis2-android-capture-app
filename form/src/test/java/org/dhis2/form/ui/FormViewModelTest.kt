@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.form.data.EventResultDetails
 import org.dhis2.form.data.FieldsWithErrorResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
@@ -89,6 +90,7 @@ class FormViewModelTest {
             false,
             null,
             false,
+            eventResultDetails = EventResultDetails(null, null, null),
         )
 
         viewModel.runDataIntegrityCheck()
@@ -108,6 +110,8 @@ class FormViewModelTest {
             false,
             null,
             false,
+            eventResultDetails = EventResultDetails(null, null, null),
+
         )
 
         viewModel.runDataIntegrityCheck()
@@ -124,6 +128,8 @@ class FormViewModelTest {
             null,
             true,
             null,
+            eventResultDetails = EventResultDetails(null, null, null),
+
         )
 
         viewModel.runDataIntegrityCheck()

@@ -48,7 +48,7 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
@@ -278,8 +278,8 @@ class TeiDashboardMobileActivity :
                 .onFinishDataEntry {
                     dashboardViewModel.updateDashboard()
                 }
-                .resultDialogUiProvider(
-                    EnrollmentResultDialogUiProvider(
+                .enrollmentResultDialogUiProvider(
+                    EnrollmentResultDialogProvider(
                         ResourceManager(
                             this.context,
                             ColorUtils(),

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,16 +33,19 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Border
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-    var onMainButtonClicked: () -> Unit = {},
+    var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
+    val showDivider: Boolean = false,
     val content: @Composable
     ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
@@ -49,6 +53,13 @@ class BottomSheetDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+    }
+
+    private fun getSecondaryButtonColor(buttonStyle: DialogButtonStyle): ColorStyle {
+        return when (buttonStyle) {
+            is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+            else -> ColorStyle.DEFAULT
+        }
     }
 
     override fun onCreateView(
@@ -59,69 +70,77 @@ class BottomSheetDialog(
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                BottomSheetShell(
-                    title = bottomSheetDialogUiModel.title,
-                    description = when (bottomSheetDialogUiModel.clickableWord) {
-                        null -> bottomSheetDialogUiModel.message
-                        else -> null
-                    },
-                    headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
-                    icon = {
-                        Icon(
-                            modifier = Modifier.size(Spacing24),
-                            painter = painterResource(bottomSheetDialogUiModel.iconResource),
-                            contentDescription = "Icon",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    buttonBlock = {
-                        ButtonBlock(
-                            primaryButton = {
-                                Button(
-                                    style = ButtonStyle.OUTLINED,
-                                    text = bottomSheetDialogUiModel.secondaryButton?.let {
-                                        it.textLabel ?: stringResource(id = it.textResource)
-                                    } ?: "",
-                                    onClick = {
-                                        onSecondaryButtonClicked()
-                                        dismiss()
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .testTag(SECONDARY_BUTTON_TAG),
-                                )
-                            },
-                            secondaryButton = {
-                                Button(
-                                    style = ButtonStyle.FILLED,
-                                    text = bottomSheetDialogUiModel.mainButton?.let {
-                                        it.textLabel ?: stringResource(id = it.textResource)
-                                    } ?: "",
-                                    onClick = {
-                                        onMainButtonClicked()
-                                        dismiss()
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .testTag(MAIN_BUTTON_TAG),
-                                )
-                            },
-                        )
-                    },
-                    onDismiss = {
-                        onSecondaryButtonClicked()
-                        dismiss()
-                    },
-                    content = bottomSheetDialogUiModel.clickableWord?.let {
-                        {
-                            ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
-                        }
-                    },
-                    showSectionDivider = when (bottomSheetDialogUiModel.clickableWord) {
-                        null -> true
-                        else -> false
-                    },
-                )
+                DHIS2Theme {
+                    BottomSheetShell(
+                        title = bottomSheetDialogUiModel.title,
+                        description = when (bottomSheetDialogUiModel.clickableWord) {
+                            null -> bottomSheetDialogUiModel.message
+                            else -> null
+                        },
+                        headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(Spacing24),
+                                painter = painterResource(bottomSheetDialogUiModel.iconResource),
+                                contentDescription = "Icon",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        showSectionDivider = showDivider,
+                        buttonBlock = {
+                            ButtonBlock(
+                                primaryButton = {
+                                    bottomSheetDialogUiModel.secondaryButton?.let { style ->
+
+                                        Button(
+                                            style = ButtonStyle.TEXT,
+                                            text = bottomSheetDialogUiModel.secondaryButton?.let {
+                                                it.textLabel ?: stringResource(id = it.textResource)
+                                            } ?: "",
+                                            colorStyle = getSecondaryButtonColor(style),
+                                            onClick = {
+                                                onSecondaryButtonClicked()
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(SECONDARY_BUTTON_TAG),
+                                        )
+                                    }
+                                },
+                                secondaryButton = {
+                                    bottomSheetDialogUiModel.mainButton?.let {
+                                        Button(
+                                            style = ButtonStyle.FILLED,
+                                            text =
+                                            it.textLabel ?: stringResource(id = it.textResource),
+                                            onClick = {
+                                                onMainButtonClicked(this@BottomSheetDialog)
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(MAIN_BUTTON_TAG),
+                                        )
+                                    }
+                                },
+                            )
+                        },
+                        onDismiss = {
+                            dismiss()
+                        },
+                        content = {
+                            if (content != null) {
+                                content.invoke(this@BottomSheetDialog)
+                            } else {
+                                bottomSheetDialogUiModel.clickableWord?.let {
+                                    ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
+                                }
+                            }
+                        },
+                        contentScrollState = rememberScrollState(),
+                    )
+                }
             }
         }
     }

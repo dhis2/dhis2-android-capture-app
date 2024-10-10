@@ -1,11 +1,10 @@
-package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider
+package org.dhis2.form.ui.provider
 
-import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 
-class EventCaptureResourcesProvider(
+class FormResultDialogResourcesProvider(
     private val resourceManager: ResourceManager,
-
 ) {
     fun provideRedAlertIcon() = R.drawable.ic_error_outline
 
@@ -17,21 +16,19 @@ class EventCaptureResourcesProvider(
 
     fun provideSavedText() = resourceManager.getString(R.string.saved)
 
+    fun provideDiscardWarning() = resourceManager.getString(R.string.discard_go_back)
+
     fun provideErrorInfo() = resourceManager.getString(R.string.missing_error_fields_events)
 
-    fun provideMandatoryInfo() = resourceManager.getString(R.string.missing_mandatory_fields_events)
+    fun provideErrorWithDiscard() = resourceManager.getString(R.string.field_errors_not_saved_discard)
+
+    fun provideMandatoryInfo() = resourceManager.getString(R.string.review_message)
 
     fun provideMandatoryField() = resourceManager.getString(R.string.field_is_mandatory)
 
     fun provideWarningInfo() = resourceManager.getString(R.string.missing_warning_fields_events)
 
     fun provideWarningInfoCompletedEvent() = resourceManager.getString(R.string.missing_warning_fields_completed_events)
-
-    fun provideReview() = R.string.review
-
-    fun provideNotNow() = R.string.not_now
-
-    fun provideSaveAnyway() = R.string.save_anyway
 
     fun provideCompleteInfo() = resourceManager.getString(R.string.event_can_be_completed)
 

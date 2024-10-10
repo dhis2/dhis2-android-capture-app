@@ -28,14 +28,12 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
@@ -77,7 +75,7 @@ class EventCaptureActivity :
     @Inject
     var themeManager: ThemeManager? = null
     private var isEventCompleted = false
-    private var eventMode: EventMode? = null
+    private lateinit var eventMode: EventMode
 
     @Inject
     lateinit var eventResourcesProvider: EventResourcesProvider
@@ -106,7 +104,7 @@ class EventCaptureActivity :
             this.isLandscape() -> binding.eventViewLandPager
             else -> binding.eventViewPager
         }
-        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
+        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode
         setUpViewPagerAdapter()
         setUpNavigationBar()
         setUpEventCaptureFormLandscape(eventUid ?: "")
@@ -134,8 +132,8 @@ class EventCaptureActivity :
         eventViewPager?.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
-            intent.getStringExtra(Constants.PROGRAM_UID),
-            intent.getStringExtra(Constants.EVENT_UID),
+            intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
+            intent.getStringExtra(Constants.EVENT_UID) ?: "",
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
@@ -288,33 +286,6 @@ class EventCaptureActivity :
         binding.completion.setCompletionPercentage(primaryValue)
         if (!presenter.getCompletionPercentageVisibility()) {
             binding.completion.visibility = View.GONE
-        }
-    }
-
-    override fun showCompleteActions(eventCompletionDialog: EventCompletionDialog) {
-        val dialog = BottomSheetDialog(
-            bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-            onMainButtonClicked = {
-                setAction(eventCompletionDialog.mainButtonAction)
-            },
-            onSecondaryButtonClicked = {
-                eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-            },
-            content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                { bottomSheetDialog ->
-                    ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                        bottomSheetDialog.dismiss()
-                    }
-                }
-            } else {
-                null
-            },
-        )
-        if (binding.navigationBar.selectedItemId == R.id.navigation_data_entry) {
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
-        }
-        if (this.isLandscape()) {
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
         }
     }
 

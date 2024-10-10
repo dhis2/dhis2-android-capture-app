@@ -735,7 +735,7 @@ class FormViewModel(
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
-                repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
+                repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
             }
             try {
                 _dataIntegrityResult.postValue(result.await())
@@ -755,6 +755,18 @@ class FormViewModel(
             }
             try {
                 _completionPercentage.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    fun completeEvent() {
+        viewModelScope.launch {
+            try {
+                async(dispatcher.io()) {
+                    repository.completeEvent()
+                }.await()
             } catch (e: Exception) {
                 Timber.e(e)
             }
