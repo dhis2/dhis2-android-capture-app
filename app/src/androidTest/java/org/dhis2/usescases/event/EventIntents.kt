@@ -30,7 +30,7 @@ fun prepareEventDetailsIntentAndLaunchActivity(rule: LazyActivityScenarioRule<Ev
         ApplicationProvider.getApplicationContext(),
         EventCaptureActivity::class.java,
     ).apply {
-        putExtra(PROGRAM_UID, PROGRAM_XX_TRACKER_UID)
+        putExtra(PROGRAM_UID, PROGRAM_TB_UID)
         putExtra(EVENT_UID, EVENT_DETAILS_UID)
         putExtra(Constants.EVENT_MODE, EventMode.CHECK)
 

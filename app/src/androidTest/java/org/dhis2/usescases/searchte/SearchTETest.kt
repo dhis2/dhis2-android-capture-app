@@ -168,7 +168,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
+    fun ºshouldSuccessfullyFilterByEnrollmentStatusCompleted() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
             .format(
                 context.resources.getQuantityString(R.plurals.enrollment, 1)
@@ -280,13 +280,14 @@ class SearchTETest : BaseTest() {
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
+            composeTestRule.waitForIdle()
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
             clickOnFilter()
             composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
-            clickOnTEI("Betty")
+            clickOnTEI("John")
         }
     }
 
@@ -437,15 +438,15 @@ class SearchTETest : BaseTest() {
     )
 
     private fun createFromEnrollmentDate() = DateRegistrationUIModel(
-        2024,
+        2014,
         9,
-        5,
+        20,
     )
 
     private fun createToEnrollmentDate() = DateRegistrationUIModel(
-        2024,
+        2014,
         9,
-        10,
+        25,
     )
 
     private fun createFromEventDate() = DateRegistrationUIModel(
