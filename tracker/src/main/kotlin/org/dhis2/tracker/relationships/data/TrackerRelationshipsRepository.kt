@@ -98,7 +98,8 @@ class TrackerRelationshipsRepository(
                         fromGeometry = tei?.geometry()
                         fromValues = getTeiAttributesForRelationship(
                             teiUid,
-                            relationshipType.fromConstraint()
+                            relationshipType.fromConstraint(),
+                            relationship.created()
                         )
                         fromProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                         fromDefaultPicRes = getTeiDefaultRes(tei)
@@ -114,7 +115,8 @@ class TrackerRelationshipsRepository(
                             toGeometry = toTei?.geometry()
                             toValues = getTeiAttributesForRelationship(
                                 toTei?.uid(),
-                                relationshipType.toConstraint()
+                                relationshipType.toConstraint(),
+                                relationship.created()
                             )
                             toProfilePic = toTei?.let { profilePictureProvider(it, programUid) }
                             toDefaultPicRes = getTeiDefaultRes(toTei)
@@ -147,7 +149,8 @@ class TrackerRelationshipsRepository(
                         toGeometry = tei?.geometry()
                         toValues = getTeiAttributesForRelationship(
                             teiUid,
-                            relationshipType.toConstraint()
+                            relationshipType.toConstraint(),
+                            relationship.created(),
                         )
                         toProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                         toDefaultPicRes = getTeiDefaultRes(tei)
@@ -163,7 +166,8 @@ class TrackerRelationshipsRepository(
                             fromGeometry = fromTei?.geometry()
                             fromValues = getTeiAttributesForRelationship(
                                 fromTei?.uid(),
-                                relationshipType.fromConstraint()
+                                relationshipType.fromConstraint(),
+                                relationship.created(),
                             )
                             fromProfilePic = fromTei?.let { profilePictureProvider(it, programUid) }
                             fromDefaultPicRes = getTeiDefaultRes(fromTei)
