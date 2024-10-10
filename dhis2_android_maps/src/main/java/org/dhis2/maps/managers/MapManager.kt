@@ -320,7 +320,9 @@ abstract class MapManager(
             Lifecycle.Event.ON_DESTROY -> {
                 markerViewManager?.onDestroy()
                 symbolManager?.onDestroy()
-                map?.locationComponent?.isLocationComponentEnabled = false
+                if (map?.locationComponent?.isLocationComponentActivated == true) {
+                    map?.locationComponent?.isLocationComponentEnabled = false
+                }
                 if (!mapView.isDestroyed) {
                     mapView.onDestroy()
                 }
