@@ -24,6 +24,7 @@ class DefaultMapManager(
 ) : MapManager(mapView, locationEngine) {
 
     private var featureCollection: FeatureCollection? = null
+    private var boundingBox: BoundingBox? = null
     override var numberOfUiIcons = 1
     override var defaultUiIconRightMargin = 12.dp
 
@@ -40,12 +41,17 @@ class DefaultMapManager(
         boundingBox: BoundingBox,
     ) {
         this.featureCollection = featureCollection
+        this.boundingBox = boundingBox
         if (featureCollection.features()?.isNotEmpty() == true) {
             initCameraPosition(boundingBox)
         }
         setSource()
         setIcons()
         setLayer()
+    }
+
+    fun updateCameraPosition() {
+        boundingBox?.let { initCameraPosition(it) }
     }
 
     override fun loadDataForStyle() {

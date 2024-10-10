@@ -26,6 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -39,6 +45,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.mapbox.mapboxsdk.maps.MapView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
@@ -103,6 +111,7 @@ fun SinglePaneMapSelector(
             onSearchLocation = screenActions.onSearchLocation,
             onLocationSelected = screenActions.onLocationSelected,
             onSearchCaptureMode = screenActions.onSearchCaptureMode,
+            onButtonMode = screenActions.onButtonMode,
         )
 
         Map(
@@ -155,6 +164,9 @@ private fun TwoPaneMapSelector(
                 onSearchLocation = screenActions.onSearchLocation,
                 onLocationSelected = screenActions.onLocationSelected,
                 onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                onButtonMode = {
+                    // no-op
+                },
             )
 
             LocationInfoContent(
@@ -192,17 +204,39 @@ private fun SearchBar(
     onSearchLocation: (String) -> Unit,
     onLocationSelected: (LocationItemModel) -> Unit,
     onSearchCaptureMode: () -> Unit,
+    onButtonMode: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
+    var timeLeft by remember(locationItems) { mutableIntStateOf(1000) }
+    LaunchedEffect(timeLeft) {
+        while (timeLeft > 0) {
+            delay(100)
+            timeLeft -= 100
+        }
+    }
+
     LocationBar(
         currentResults = locationItems,
         searchAction = OnSearchAction.OnOneItemSelect,
         onBackClicked = onBackClicked,
         onClearLocation = onClearLocation,
-        onSearchLocation = onSearchLocation,
-        onLocationSelected = onLocationSelected,
+        onSearchLocation = {
+            timeLeft = 1000
+            onSearchLocation(it)
+        },
+        onLocationSelected = {
+            scope.launch {
+                delay(1000)
+                if (timeLeft == 0) {
+                    onLocationSelected(it)
+                }
+            }
+        },
         onModeChanged = {
-            if (it == SearchBarMode.SEARCH) {
-                onSearchCaptureMode()
+            when (it) {
+                SearchBarMode.BUTTON -> onButtonMode()
+                SearchBarMode.SEARCH -> onSearchCaptureMode()
             }
         },
     )

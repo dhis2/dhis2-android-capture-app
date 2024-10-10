@@ -14,6 +14,7 @@ data class MapSelectorScreenActions(
     val onSearchLocation: (String) -> Unit,
     val onLocationSelected: (LocationItemModel) -> Unit,
     val onSearchCaptureMode: () -> Unit,
+    val onButtonMode: () -> Unit,
     val onSearchOnAreaClick: () -> Unit,
     val onMyLocationButtonClick: () -> Unit,
     val onDoneButtonClick: () -> Unit,

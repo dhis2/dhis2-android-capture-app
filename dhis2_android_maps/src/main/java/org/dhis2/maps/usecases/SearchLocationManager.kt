@@ -37,7 +37,7 @@ class SearchLocationManager(
     private fun List<LocationItemModel.StoredResult>.flexibleFilter(
         query: String?,
     ): List<LocationItemModel.StoredResult> = filter { item ->
-        query?.let {
+        query?.takeIf { it.isNotEmpty() }?.let {
             (jaroWinklerDistance.apply(item.title, query) >= jaroWinklerThreshold) or
                 (jaroWinklerDistance.apply(item.subtitle, query) >= jaroWinklerThreshold)
         } ?: true
