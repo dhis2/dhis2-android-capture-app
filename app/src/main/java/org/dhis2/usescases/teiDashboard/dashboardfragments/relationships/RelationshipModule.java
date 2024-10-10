@@ -15,7 +15,7 @@ import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
-import org.dhis2.tracker.ProfilePictureProvider;
+import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
@@ -145,11 +145,13 @@ public class RelationshipModule {
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
             RelationshipsRepository relationshipsRepository,
-            DateLabelProvider dateLabelProvider
+            DateLabelProvider dateLabelProvider,
+            MetadataIconProvider metadataIconProvider
     ) {
         return new GetRelationshipsByType(
                 relationshipsRepository,
-                dateLabelProvider
+                dateLabelProvider,
+                metadataIconProvider
         );
     }
 
@@ -158,7 +160,8 @@ public class RelationshipModule {
     RelationshipsRepository provideRelationshipsRepository(
             D2 d2,
             ResourceManager resourceManager,
-            MetadataIconProvider metadataIconProvider
+            MetadataIconProvider metadataIconProvider,
+            ProfilePictureProvider profilePictureProvider
     ) {
         if (teiUid != null) {
             return new TrackerRelationshipsRepository(
@@ -166,13 +169,17 @@ public class RelationshipModule {
                     resourceManager,
                     metadataIconProvider,
                     teiUid,
-                    enrollmentUid);
+                    enrollmentUid,
+                    profilePictureProvider
+            );
         } else {
             return new EventRelationshipsRepository(
                     d2,
                     resourceManager,
                     metadataIconProvider,
-                    eventUid);
+                    eventUid,
+                    profilePictureProvider
+            );
         }
 
     }
@@ -181,5 +188,11 @@ public class RelationshipModule {
     @PerFragment
     DateLabelProvider provideDateLabelProvider(ResourceManager resourceManager) {
         return new DateLabelProvider(moduleContext, resourceManager);
+    }
+
+    @Provides
+    @PerFragment
+    ProfilePictureProvider provideProfilePictureProvider(D2 d2){
+        return new ProfilePictureProvider(d2);
     }
 }
