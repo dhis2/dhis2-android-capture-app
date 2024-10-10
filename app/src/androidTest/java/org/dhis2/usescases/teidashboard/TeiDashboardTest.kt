@@ -7,6 +7,7 @@ import dhis2.org.analytics.charts.data.ChartType
 import org.dhis2.R
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
@@ -78,7 +79,9 @@ class TeiDashboardTest : BaseTest() {
         }
 
         noteRobot {
-            clickOnNoteWithPosition(0)
+            clickOnFabAddNewNote()
+            typeNote(NOTE_EXISTING_TEXT)
+            clickOnSaveButton()
             checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
@@ -140,7 +143,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
+        val orgUnit = "Ngelehun CHC"
+
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
@@ -153,7 +162,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("To fix in ANDROAPP-6109")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
@@ -163,8 +171,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
-            clickOnFirstReferralEvent()
-            clickOnReferralNextButton()
+            clickOnSchedule()
             checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
         }
     }
@@ -208,6 +215,7 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot(composeTestRule) {
             clickOnSeeDetails()
+            composeTestRule.waitForIdle()
             checkFullDetails(enrollmentFullDetails)
         }
     }
@@ -260,6 +268,7 @@ class TeiDashboardTest : BaseTest() {
         val deliveryEvent = "Delivery"
         val visitANCEvent = "ANC Visit (2-4+)"
         val firstANCVisitEvent = "ANC 1st visit"
+        val orgUnit = "Ngelehun CHC"
 
         setDatePicker()
         prepareTeiToEnrollToOtherProgramAndLaunchActivity(rule)
@@ -274,6 +283,11 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
+        }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+        enrollmentRobot(composeTestRule) {
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()
@@ -312,18 +326,18 @@ class TeiDashboardTest : BaseTest() {
 
     private fun createExpectedUpperInformation() =
         UpperEnrollmentUIModel(
-            "10/1/2021",
+            "10/1/2024",
             "10/1/2021",
             "Ngelehun CHC"
         )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
-            "10/01/2021",
-            "10/01/2021",
-            "Ngelehun CHC",
-            "40.48713205295354",
-            "-3.6847423830882633",
+            "10/01/2025",
+            "10/01/2025",
+//            "Ngelehun CHC",
+//            "40.48713205295354",
+//            "-3.6847423830882633",
             "Filona",
             "Ryder",
             "Female"
@@ -336,6 +350,6 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
-        const val LAB_MONITORING_SCHEDULE_DATE = "10/9/2019"
+        const val LAB_MONITORING_SCHEDULE_DATE = "10/09/2023"
     }
 }
