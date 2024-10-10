@@ -438,12 +438,8 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         val model = dashboardViewModel.dashboardModel.value
         if (model is DashboardEnrollmentModel) {
             SchedulingDialog.newSchedule(
-                enrollment = model.currentEnrollment,
-                programStages = if (programStage != null) {
-                    listOf(programStage)
-                } else {
-                    presenter.filterAvailableStages(model.programStages)
-                },
+                enrollmentUid = model.currentEnrollment.uid(),
+                programStagesUids = presenter.filterAvailableStages(model.programStages).map { it.uid() },
                 showYesNoOptions = showYesNoOptions,
                 eventCreationType = eventCreationType,
             ).show(parentFragmentManager, SCHEDULING_DIALOG)

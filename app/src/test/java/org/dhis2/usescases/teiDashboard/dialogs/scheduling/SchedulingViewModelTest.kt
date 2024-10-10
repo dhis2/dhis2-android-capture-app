@@ -3,30 +3,41 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SchedulingViewModelTest {
 
     private lateinit var schedulingViewModel: SchedulingViewModel
 
-    private val testingDispatcher = StandardTestDispatcher()
+    private val testingDispatcher = UnconfinedTestDispatcher()
+
+    private val enrollment = Enrollment.builder().uid("enrollment-uid").build()
+    private val programStage = ProgramStage.builder().uid("program-stage").build()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         schedulingViewModel = SchedulingViewModel(
-            d2 = mock(),
+            d2 = mock {
+                on { enrollment("enrollment-uid") } doReturn enrollment
+                on { programStage("program-stage") } doReturn programStage
+            },
             resourceManager = mock(),
             eventResourcesProvider = mock(),
             periodUtils = mock(),
@@ -45,8 +56,8 @@ class SchedulingViewModelTest {
                 }
             },
             launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                enrollment = Enrollment.builder().uid("enrollment").build(),
-                programStages = emptyList(),
+                enrollmentUid = "enrollment-uid",
+                programStagesUids = listOf("program-stage"),
                 showYesNoOptions = false,
                 eventCreationType = EventCreationType.SCHEDULE,
             ),

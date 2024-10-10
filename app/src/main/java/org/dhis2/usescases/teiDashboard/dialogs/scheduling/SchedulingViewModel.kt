@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
+import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.DhisPeriodUtils
@@ -46,9 +48,6 @@ class SchedulingViewModel(
     lateinit var configureEventReportDate: ConfigureEventReportDate
     lateinit var configureEventCatCombo: ConfigureEventCatCombo
 
-    private val _programStage: MutableStateFlow<ProgramStage?> = MutableStateFlow(null)
-    val programStage: StateFlow<ProgramStage?> get() = _programStage
-
     var showCalendar: (() -> Unit)? = null
     var showPeriods: (() -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
@@ -57,22 +56,19 @@ class SchedulingViewModel(
     var onEnterEvent: ((String, String) -> Unit)? = null
 
     private val _eventDate: MutableStateFlow<EventDate> = MutableStateFlow(EventDate())
-    val eventDate: StateFlow<EventDate> get() = _eventDate
+    val eventDate: StateFlow<EventDate> = _eventDate
 
     private val _eventCatCombo: MutableStateFlow<EventCatCombo> = MutableStateFlow(EventCatCombo())
-    val eventCatCombo: StateFlow<EventCatCombo> get() = _eventCatCombo
+    val eventCatCombo: StateFlow<EventCatCombo> = _eventCatCombo
 
-    val programStages: List<ProgramStage>
-        get() = when (launchMode) {
-            is LaunchMode.NewSchedule -> launchMode.programStages
-            is LaunchMode.EnterEvent -> listOfNotNull(programStage.value)
-        }
+    private val _programStage: MutableStateFlow<ProgramStage?> = MutableStateFlow(null)
+    val programStage: StateFlow<ProgramStage?> = _programStage
 
-    val enrollment: Enrollment?
-        get() = when (launchMode) {
-            is LaunchMode.NewSchedule -> launchMode.enrollment
-            is LaunchMode.EnterEvent -> null
-        }
+    private val _programStages: MutableStateFlow<List<ProgramStage>> = MutableStateFlow(emptyList())
+    val programStages: StateFlow<List<ProgramStage>> = _programStages
+
+    private val _enrollment: MutableStateFlow<Enrollment?> = MutableStateFlow(null)
+    val enrollment: StateFlow<Enrollment?> = _enrollment
 
     val overdueSubtitle: String?
         get() {
@@ -89,30 +85,51 @@ class SchedulingViewModel(
 
     init {
         viewModelScope.launch {
-            val programStage = when (launchMode) {
-                is LaunchMode.NewSchedule -> launchMode.programStages.first()
-                is LaunchMode.EnterEvent -> {
-                    val eventProgramStageId = d2.event(launchMode.eventUid)?.programStage()
-                    d2.programModule().programStages().uid(eventProgramStageId).blockingGet()
+            val enrollment = withContext(dispatchersProvider.io()) {
+                when (launchMode) {
+                    is LaunchMode.NewSchedule -> d2.enrollment(launchMode.enrollmentUid)
+                    is LaunchMode.EnterEvent -> null
                 }
             }
+            _enrollment.value = enrollment
 
+            val programStages = withContext(dispatchersProvider.io()) {
+                when (launchMode) {
+                    is LaunchMode.NewSchedule -> {
+                        launchMode.programStagesUids.mapNotNull(d2::programStage)
+                    }
+                    is LaunchMode.EnterEvent -> emptyList()
+                }
+            }
+            _programStages.value = programStages
+
+            val programStage = withContext(dispatchersProvider.io()) {
+                when (launchMode) {
+                    is LaunchMode.NewSchedule -> programStages.first()
+                    is LaunchMode.EnterEvent -> {
+                        val eventProgramStageId = d2.event(launchMode.eventUid)?.programStage()
+                        d2.programModule().programStages().uid(eventProgramStageId).blockingGet()
+                    }
+                }
+            }
             _programStage.value = programStage
+
             loadScheduleConfiguration(launchMode)
         }
     }
 
     private fun loadScheduleConfiguration(launchMode: LaunchMode) {
+        val enrollment = enrollment.value
         val event = when (launchMode) {
             is LaunchMode.EnterEvent -> d2.event(launchMode.eventUid)
             is LaunchMode.NewSchedule -> null
         }
         val programId = when (launchMode) {
-            is LaunchMode.NewSchedule -> launchMode.enrollment.program()
+            is LaunchMode.NewSchedule -> enrollment?.program()
             is LaunchMode.EnterEvent -> event?.program()
         }.orEmpty()
         val enrollmentId = when (launchMode) {
-            is LaunchMode.NewSchedule -> launchMode.enrollment.uid()
+            is LaunchMode.NewSchedule -> enrollment?.uid()
             is LaunchMode.EnterEvent -> event?.enrollment().orEmpty()
         }
 
@@ -243,18 +260,18 @@ class SchedulingViewModel(
 
     fun updateStage(stage: ProgramStage) {
         _programStage.value = stage
-
         loadScheduleConfiguration(launchMode = launchMode)
     }
 
     fun scheduleEvent(launchMode: LaunchMode.NewSchedule) {
         viewModelScope.launch {
             val eventDate = eventDate.value.currentDate ?: return@launch
+            val enrollment = enrollment.value ?: return@launch
 
             repository.scheduleEvent(
-                enrollmentUid = launchMode.enrollment.uid(),
+                enrollmentUid = enrollment.uid(),
                 dueDate = eventDate,
-                orgUnitUid = launchMode.enrollment.organisationUnit(),
+                orgUnitUid = enrollment.organisationUnit(),
                 categoryOptionComboUid = eventCatCombo.value.uid,
             ).flowOn(dispatchersProvider.io())
                 .collect {
