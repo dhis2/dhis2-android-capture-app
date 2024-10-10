@@ -17,8 +17,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,7 +27,6 @@ import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
-import org.dhis2.maps.location.MapActivityLocationCallback
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
@@ -38,21 +35,9 @@ import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
 
-class MapSelectorActivity :
-    AppCompatActivity(),
-    MapActivityLocationCallback.OnLocationChanged {
+class MapSelectorActivity : AppCompatActivity() {
 
     private val locationProvider = LocationProviderImpl(this)
-
-    override fun onLocationChanged(latLng: LatLng, accuracy: Float) {
-        mapSelectorViewModel.onNewLocation(
-            SelectedLocation.GPSResult(
-                latLng.latitude,
-                latLng.longitude,
-                accuracy,
-            ),
-        )
-    }
 
     private val locationListener = LocationListener { location ->
         mapSelectorViewModel.onNewLocation(
@@ -63,8 +48,6 @@ class MapSelectorActivity :
             ),
         )
     }
-
-    private val locationCallback = MapActivityLocationCallback(this)
 
     private var fieldUid: String? = null
 
@@ -237,8 +220,6 @@ class MapSelectorActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        LocationEngineDefault.getDefaultLocationEngine(this)
-            .removeLocationUpdates(locationCallback)
         locationProvider.stopLocationUpdates()
     }
 
