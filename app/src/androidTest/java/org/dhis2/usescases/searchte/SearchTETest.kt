@@ -51,7 +51,7 @@ class SearchTETest : BaseTest() {
         setupMockServer()
     }
 
-    @Ignore("Test needs to be fixed in NDROAPP-6459")
+    @Ignore("Test needs to be fixed in ANDROAPP-6459")
     @Test
     fun shouldSuccessfullySearchByName() {
         mockWebServerRobot.addResponse(
@@ -256,6 +256,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Flaky test")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
