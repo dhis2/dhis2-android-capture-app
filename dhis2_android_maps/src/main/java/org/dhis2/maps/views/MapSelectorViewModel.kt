@@ -152,7 +152,7 @@ class MapSelectorViewModel(
 
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
-            if (gpsResult.accuracy < _screenState.value.accuracyRange.value.toFloat()) {
+            if (_screenState.value.canCaptureGps(gpsResult.accuracy)) {
                 val mapData = when {
                     featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
                         GetMapData(
@@ -220,7 +220,7 @@ class MapSelectorViewModel(
     private fun registerSearchListener() {
         _searchLocationQuery
             .debounce(1000)
-            .onEach { query -> performLocationSearch(query) }
+            .onEach(::performLocationSearch)
             .launchIn(viewModelScope)
     }
 
@@ -239,8 +239,7 @@ class MapSelectorViewModel(
             val filteredPreviousLocation =
                 searchLocationManager.getAvailableLocations(query)
             val searchItems = geocoder.getLocationFromName(query, regionToSearch)
-            val (selectedLocation, currentFeature) = onClearSelectedLocation()
-            _currentFeature = currentFeature
+            _currentFeature = null
             val locationItems = searchItems + filteredPreviousLocation
             searchRegion = regionToSearch
             updateScreenState(
@@ -250,7 +249,7 @@ class MapSelectorViewModel(
                     captureMode = _screenState.value.captureMode,
                 ),
                 locationItems = locationItems,
-                selectedLocation = selectedLocation,
+                selectedLocation = SelectedLocation.None(),
                 searchOnAreaVisible = false,
             )
         }
