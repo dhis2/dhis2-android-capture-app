@@ -69,7 +69,7 @@ class SchedulingDialogUiTest {
                 orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollment = enrollment,
-                    programStages = programStages,
+                    programStagesUids = programStages,
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -100,7 +100,7 @@ class SchedulingDialogUiTest {
                 orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollment = enrollment,
-                    programStages = programStages,
+                    programStagesUids = programStages,
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -125,7 +125,7 @@ class SchedulingDialogUiTest {
                 orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollment = enrollment,
-                    programStages = programStages,
+                    programStagesUids = programStages,
                     showYesNoOptions = true,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -155,7 +155,7 @@ class SchedulingDialogUiTest {
                 orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollment = enrollment,
-                    programStages = programStages,
+                    programStagesUids = programStages,
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -189,7 +189,7 @@ class SchedulingDialogUiTest {
                 orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollment = enrollment,
-                    programStages = programStages,
+                    programStagesUids = programStages,
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )

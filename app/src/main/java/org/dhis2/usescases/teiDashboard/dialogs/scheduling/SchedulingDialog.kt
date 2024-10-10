@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -21,8 +23,6 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.form.R
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 import javax.inject.Inject
 
@@ -37,15 +37,15 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         const val EVENT_LABEL = "EVENT_LABEL"
 
         fun newSchedule(
-            enrollment: Enrollment,
-            programStages: List<ProgramStage>,
+            enrollmentUid: String,
+            programStagesUids: List<String>,
             showYesNoOptions: Boolean,
             eventCreationType: EventCreationType,
         ): SchedulingDialog {
             return SchedulingDialog().apply {
                 this.launchMode = LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStages = programStages,
+                    enrollmentUid = enrollmentUid,
+                    programStagesUids = programStagesUids,
                     showYesNoOptions = showYesNoOptions,
                     eventCreationType = eventCreationType,
                 )
@@ -133,8 +133,6 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             setContent {
                 SchedulingDialogUi(
                     viewModel = viewModel,
-                    programStages = viewModel.programStages,
-                    orgUnitUid = viewModel.enrollment?.organisationUnit(),
                     launchMode = launchMode,
                     onDismiss = { dismiss() },
                 )
@@ -182,8 +180,8 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         val eventCreationType: EventCreationType
 
         data class NewSchedule(
-            val enrollment: Enrollment,
-            val programStages: List<ProgramStage>,
+            val enrollmentUid: String,
+            val programStagesUids: List<String>,
             override val showYesNoOptions: Boolean,
             override val eventCreationType: EventCreationType,
         ) : LaunchMode
