@@ -108,7 +108,7 @@ class EventCaptureActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
-        setUpEventCaptureComponent(eventUid)
+        setUpEventCaptureComponent(eventUid!!)
         teiUid = presenter.getTeiUid()
         enrollmentUid = presenter.getEnrollmentUid()
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
@@ -216,7 +216,7 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpEventCaptureComponent(eventUid: String?) {
+    private fun setUpEventCaptureComponent(eventUid: String) {
         eventCaptureComponent = app().userComponent()!!.plus(
             EventCaptureModule(
                 this,
