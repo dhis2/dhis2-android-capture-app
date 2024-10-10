@@ -62,14 +62,15 @@ class SchedulingDialogUiTest {
         val programStages =
             listOf(ProgramStage.builder().uid("stageUid").displayName("PS A").build())
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
+        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+
         composeTestRule.setContent {
             SchedulingDialogUi(
-                programStages = programStages,
                 viewModel = viewModel,
-                orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStagesUids = programStages,
+                    enrollmentUid = enrollment.uid(),
+                    programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -93,14 +94,15 @@ class SchedulingDialogUiTest {
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
+        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+
         composeTestRule.setContent {
             SchedulingDialogUi(
-                programStages = programStages,
                 viewModel = viewModel,
-                orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStagesUids = programStages,
+                    enrollmentUid = enrollment.uid(),
+                    programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -118,14 +120,15 @@ class SchedulingDialogUiTest {
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
+        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+
         composeTestRule.setContent {
             SchedulingDialogUi(
-                programStages = programStages,
                 viewModel = viewModel,
-                orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStagesUids = programStages,
+                    enrollmentUid = enrollment.uid(),
+                    programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = true,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -148,14 +151,15 @@ class SchedulingDialogUiTest {
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
+        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
+
         composeTestRule.setContent {
             SchedulingDialogUi(
-                programStages = programStages,
                 viewModel = viewModel,
-                orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStagesUids = programStages,
+                    enrollmentUid = enrollment.uid(),
+                    programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -181,15 +185,15 @@ class SchedulingDialogUiTest {
             ProgramStage.builder().uid("stageUidB").displayName("PS B").build(),
         )
         whenever(viewModel.programStage).thenReturn(MutableStateFlow(programStages.first()))
+        whenever(viewModel.programStages).thenReturn(MutableStateFlow(programStages))
+        whenever(viewModel.enrollment).thenReturn(MutableStateFlow(enrollment))
 
         composeTestRule.setContent {
             SchedulingDialogUi(
-                programStages = programStages,
                 viewModel = viewModel,
-                orgUnitUid = "orgUnitUid",
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                    enrollment = enrollment,
-                    programStagesUids = programStages,
+                    enrollmentUid = enrollment.uid(),
+                    programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
