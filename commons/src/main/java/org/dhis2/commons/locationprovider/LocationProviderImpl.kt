@@ -27,6 +27,8 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
 
     private var locationListener: LocationListener? = null
 
+    private var updatesEnabled: Boolean = false
+
     @SuppressLint("MissingPermission")
     override fun getLastKnownLocation(
         onNewLocation: (Location) -> Unit,
@@ -37,19 +39,22 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
             onPermissionNeeded()
         } else if (!hasLocationEnabled()) {
             onLocationDisabled()
-            requestLocationUpdates(onNewLocation)
+            requestLocationUpdates(onNewLocation, onLocationDisabled)
         } else {
             locationManager.getLastKnownLocation(locationProvider).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
                 }
-                requestLocationUpdates(onNewLocation)
+                requestLocationUpdates(onNewLocation, onLocationDisabled)
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun requestLocationUpdates(onNewLocation: (Location) -> Unit) {
+    private fun requestLocationUpdates(
+        onNewLocation: (Location) -> Unit,
+        onLocationProviderChanged: () -> Unit,
+    ) {
         if (hasPermission()) {
             locationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
@@ -57,11 +62,11 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                 }
 
                 override fun onProviderEnabled(provider: String) {
-                    // Need implementation for compatibility
+                    onLocationProviderChanged()
                 }
 
                 override fun onProviderDisabled(provider: String) {
-                    // Need implementation for compatibility
+                    onLocationProviderChanged()
                 }
 
                 @Deprecated("Deprecated in Java")
@@ -76,6 +81,7 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                 1f,
                 requireNotNull(locationListener),
             )
+            updatesEnabled = true
         }
     }
 
@@ -94,6 +100,9 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
     override fun stopLocationUpdates() {
         locationListener?.let {
             locationManager.removeUpdates(it)
+            updatesEnabled = false
         }
     }
+
+    override fun hasUpdatesEnabled() = updatesEnabled
 }

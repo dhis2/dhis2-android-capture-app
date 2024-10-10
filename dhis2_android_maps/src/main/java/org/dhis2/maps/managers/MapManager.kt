@@ -2,6 +2,7 @@ package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.location.LocationListener
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -22,18 +23,25 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.dhis2.commons.bindings.dp
+import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
 import org.dhis2.maps.camera.initCameraToViewAllElements
 import org.dhis2.maps.camera.moveCameraToDevicePosition
+import org.dhis2.maps.di.Injector
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.basemaps.BaseMapManager
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 
 abstract class MapManager(
@@ -51,6 +59,8 @@ abstract class MapManager(
     private var mapStyles: List<BaseMapStyle> = emptyList()
 
     private val colorUtils: ColorUtils = ColorUtils()
+    private val dispatcherProvider = Injector.provideDispatcher()
+    private val locationProvider = LocationProviderImpl(mapView.context)
 
     open var numberOfUiIcons: Int = 2
     open var defaultUiIconLeftMargin = 8.dp
@@ -59,8 +69,17 @@ abstract class MapManager(
     open var defaultUiIconBottomMargin = 0.dp
     open var defaultUiIconSize = 40.dp
 
+    private val _locationState = MutableStateFlow(
+        when (locationProvider.hasLocationEnabled()) {
+            true -> LocationState.NOT_FIXED
+            false -> LocationState.OFF
+        },
+    )
+    val locationState = _locationState.asStateFlow()
+
     fun init(
         mapStyles: List<BaseMapStyle>,
+        locationListener: LocationListener? = null,
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
@@ -91,8 +110,12 @@ abstract class MapManager(
                     onMapClickListener?.let { mapClickListener ->
                         map?.addOnMapClickListener(mapClickListener)
                     }
+                    map?.addOnCameraMoveListener {
+                        updateLocationState()
+                    }
+
                     markerViewManager = MarkerViewManager(mapView, map)
-                    enableLocationComponent(styleLoaded, onMissingPermission)
+                    enableLocationComponent(styleLoaded, onMissingPermission, locationListener)
                     loadDataForStyle()
                     onInitializationFinished()
                 }
@@ -214,6 +237,7 @@ abstract class MapManager(
     private fun enableLocationComponent(
         style: Style,
         onMissingPermission: (PermissionsManager?) -> Unit,
+        locationListener: LocationListener?,
     ) {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
@@ -235,13 +259,18 @@ abstract class MapManager(
                         .build(),
                 )
                 isLocationComponentEnabled = true
+                locationProvider.getLastKnownLocation(
+                    { location -> locationListener?.onLocationChanged(location) },
+                    { onMissingPermission(permissionsManager) },
+                    { updateLocationState() },
+                )
             } else {
                 permissionsManager = PermissionsManager(object : PermissionsListener {
                     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
 
                     override fun onPermissionResult(granted: Boolean) {
                         if (granted) {
-                            enableLocationComponent(style, onMissingPermission)
+                            enableLocationComponent(style, onMissingPermission, locationListener)
                         }
                     }
                 })
@@ -275,6 +304,28 @@ abstract class MapManager(
                     }
                 })
                 onMissingPermission(permissionsManager)
+            }
+        }
+    }
+
+    private fun updateLocationState() {
+        map?.apply {
+            val currentLocation = locationComponent.lastKnownLocation?.let { LatLng(it) }
+            val mapCenter = cameraPosition.target
+            val locationState = when {
+                !locationProvider.hasLocationEnabled() ||
+                    mapCenter == null || currentLocation == null ->
+                    LocationState.OFF
+
+                locationProvider.hasUpdatesEnabled() &&
+                    mapCenter.distanceTo(currentLocation) < (1f) ->
+                    LocationState.FIXED
+
+                else ->
+                    LocationState.NOT_FIXED
+            }
+            CoroutineScope(dispatcherProvider.io()).launch {
+                _locationState.emit(locationState)
             }
         }
     }

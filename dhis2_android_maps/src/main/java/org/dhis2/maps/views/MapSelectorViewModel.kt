@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -83,6 +84,7 @@ class MapSelectorViewModel(
             accuracyRange = AccuracyRange.None(),
             searchOnAreaVisible = false,
             displayPolygonInfo = featureType == FeatureType.POLYGON,
+            locationState = LocationState.NOT_FIXED,
         ),
     )
 
@@ -104,6 +106,7 @@ class MapSelectorViewModel(
         accuracyRange: AccuracyRange = _screenState.value.accuracyRange,
         searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
+        locationState: LocationState = _screenState.value.locationState,
     ) {
         _screenState.update {
             it.copy(
@@ -114,6 +117,7 @@ class MapSelectorViewModel(
                 accuracyRange = accuracyRange,
                 searchOnAreaVisible = searchOnAreaVisible,
                 displayPolygonInfo = displayPolygonInfo,
+                locationState = locationState,
             )
         }
     }
@@ -381,5 +385,9 @@ class MapSelectorViewModel(
         viewModelScope.launch(dispatchers.io()) {
             onSaveCurrentGeometry()
         }
+    }
+
+    fun updateLocationState(locationState: LocationState) {
+        updateScreenState(locationState = locationState)
     }
 }
