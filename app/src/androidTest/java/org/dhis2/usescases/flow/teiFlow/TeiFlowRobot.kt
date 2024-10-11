@@ -38,13 +38,9 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(registrationModel.lastName)
             openNextSearchParameter("Date of birth")
-            typeOnDateParameter("${registrationDate.day}0${registrationDate.month}${registrationDate.year}")
+            typeOnDateParameter("0${registrationDate.day}0${registrationDate.month}${registrationDate.year}")
             clickOnSearch()
             clickOnEnroll()
-        }
-
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
         }
 
         enrollmentRobot(composeTestRule) {
@@ -71,9 +67,6 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             selectDate(year.toInt(), month.toInt(), day.toInt())
         }
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(enrollmentDetails.orgUnit)
-        }
         enrollmentRobot(composeTestRule){
             clickOnSaveEnrollment()
         }
@@ -117,9 +110,6 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun changeDueDate(
         cardTitle: String,
     ) {
-        teiDashboardRobot(composeTestRule) {
-            clickOnEventGroupByStageUsingDate(cardTitle)
-        }
 
         eventRobot(composeTestRule) {
             clickOnEventDueDate()
