@@ -58,8 +58,8 @@ class FeatureConfigRepositoryImpl @Inject constructor(
 
     private fun featureOptions(feature: Feature): FeatureOptions? {
         return when (feature) {
-            Feature.AUTO_LOGOUT -> null
             Feature.RESPONSIVE_HOME -> FeatureOptions.ResponsiveHome(totalItems = getResponsiveHomeTotalItems())
+            else -> null
         }
     }
 

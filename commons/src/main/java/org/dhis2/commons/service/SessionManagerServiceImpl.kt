@@ -3,8 +3,6 @@ package org.dhis2.commons.service
 import androidx.lifecycle.LifecycleCoroutineScope
 import io.reactivex.Completable
 import kotlinx.coroutines.launch
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
@@ -17,7 +15,6 @@ class SessionManagerServiceImpl(
     private val d2: D2,
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
-    private val featureConfig: FeatureConfigRepository,
 ) : SessionManagerService {
 
     override fun onUserInteraction() {
@@ -28,8 +25,6 @@ class SessionManagerServiceImpl(
         val currentTime = System.currentTimeMillis()
         return if (currentTime - preferences.getLong(Preference.LAST_USER_INTERACTION.toString(), 0L)!! > SESSION_TIMEOUT_DURATION && !preferences.getBoolean(
                 Preference.PIN_ENABLED, false,
-            ) && featureConfig.isFeatureEnable(
-                Feature.AUTO_LOGOUT,
             )
         ) {
             logoutUser(navigateAction, scope)

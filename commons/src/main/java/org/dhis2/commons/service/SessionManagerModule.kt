@@ -2,7 +2,6 @@ package org.dhis2.commons.service
 
 import dagger.Module
 import dagger.Provides
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.D2
@@ -17,9 +16,8 @@ open class SessionManagerModule() {
     fun providesSessionManagerService(
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
-        featureConfigRepository: FeatureConfigRepository,
     ): SessionManagerService {
-        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfigRepository)
+        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences)
     }
 
     @Provides
@@ -27,9 +25,8 @@ open class SessionManagerModule() {
     fun providesSessionManagerServiceImpl(
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
-        featureConfigRepository: FeatureConfigRepository,
     ): SessionManagerServiceImpl {
-        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfig = featureConfigRepository)
+        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences)
     }
 
     private fun provideSdk(): D2 {
