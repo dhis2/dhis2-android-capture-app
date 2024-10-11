@@ -21,8 +21,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
@@ -41,7 +39,7 @@ import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
-import org.dhis2.tracker.relationships.ui.RelationShipsViewModel
+import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
@@ -75,11 +73,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     lateinit var colorUtils: ColorUtils
 
     @Inject
-    lateinit var relationShipsViewModel: RelationShipsViewModel
+    lateinit var relationShipsViewModel: RelationshipsViewModel
 
     private var relationshipType: RelationshipType? = null
     private var relationshipMapManager: RelationshipMapManager? = null
-    private var sources: Set<String>? = null
     private lateinit var mapButtonObservable: MapButtonObservable
 
     private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
@@ -105,7 +102,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             RelationshipModule(
                 requireContext(),
                 this,
-                programUid(),
                 requireArguments().getString("ARG_TEI_UID"),
                 requireArguments().getString("ARG_ENROLLMENT_UID"),
                 requireArguments().getString("ARG_EVENT_UID"),
@@ -123,9 +119,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             setContent {
                 Dhis2Theme {
                     val showMap by mapButtonObservable.relationshipMap().observeAsState()
-                    LaunchedEffect(key1 = showMap) {
-                        presenter.takeIf { showMap == true }?.fetchMapData()
-                    }
 
                     val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
                     when (showMap) {
@@ -253,7 +246,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         ),
                     ),
                     onCardClick = {
-                        openDashboardFor(item.uid)
+                        presenter.onMapRelationshipClicked(item.uid)
                     },
                     listAvatar = {
                         AvatarProvider(
@@ -413,15 +406,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 }
             },
         )
-    }
-
-    override fun setFeatureCollection(
-        currentTei: String?,
-        relationshipsMapModels: List<RelationshipUiComponentModel>,
-        map: Pair<Map<String, FeatureCollection>, BoundingBox>,
-    ) {
-        relationshipMapManager?.update(map.first, map.second)
-        sources = map.first.keys
     }
 
     companion object {

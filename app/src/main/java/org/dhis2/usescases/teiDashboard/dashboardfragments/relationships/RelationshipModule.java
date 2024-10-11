@@ -6,21 +6,20 @@ import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
 import org.dhis2.maps.geometry.point.MapPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
-import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
-import org.dhis2.tracker.relationships.ui.RelationShipsViewModel;
+import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
+import org.dhis2.tracker.ui.AvatarProvider;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
@@ -33,7 +32,6 @@ import dagger.Provides;
 @Module
 public class RelationshipModule {
 
-    private final String programUid;
     private final String teiUid;
     private final String enrollmentUid;
     private final String eventUid;
@@ -43,12 +41,11 @@ public class RelationshipModule {
     public RelationshipModule(
             Context moduleContext,
             RelationshipView view,
-            String programUid,
             String teiUid,
             String enrollmentUid,
             String eventUid) {
         this.moduleContext = moduleContext;
-        this.programUid = programUid;
+
         this.teiUid = teiUid;
         this.enrollmentUid = enrollmentUid;
         this.eventUid = eventUid;
@@ -59,10 +56,11 @@ public class RelationshipModule {
     @PerFragment
     RelationshipPresenter providesPresenter(D2 d2,
                                             RelationshipMapsRepository relationshipMapsRepository,
-                                            SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
                                             MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection,
                                             RelationshipsRepository relationshipsRepository,
+                                            AvatarProvider avatarProvider,
+                                            DateLabelProvider dateLabelProvider,
                                             DispatcherProvider dispatcherProvider
     ) {
         return new RelationshipPresenter(
@@ -71,12 +69,12 @@ public class RelationshipModule {
                 teiUid,
                 eventUid,
                 relationshipMapsRepository,
-                schedulerProvider,
                 analyticsHelper,
-                new MapRelationshipToRelationshipMapModel(),
                 mapRelationshipsToFeatureCollection,
                 new MapStyleConfiguration(d2),
                 relationshipsRepository,
+                avatarProvider,
+                dateLabelProvider,
                 dispatcherProvider
         );
     }
@@ -99,7 +97,6 @@ public class RelationshipModule {
         return new RelationshipMapsRepositoryImpl(
                 d2,
                 config,
-                resourceManager,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         profilePictureProvider,
@@ -135,10 +132,10 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    RelationShipsViewModel provideRelationshipsViewModel(
+    RelationshipsViewModel provideRelationshipsViewModel(
             GetRelationshipsByType getRelationshipsByType
     ) {
-        return new RelationShipsViewModel(getRelationshipsByType);
+        return new RelationshipsViewModel(getRelationshipsByType);
     }
 
     @Provides
@@ -146,12 +143,12 @@ public class RelationshipModule {
     GetRelationshipsByType provideGetRelationshipsByType(
             RelationshipsRepository relationshipsRepository,
             DateLabelProvider dateLabelProvider,
-            MetadataIconProvider metadataIconProvider
+            AvatarProvider avatarProvider
     ) {
         return new GetRelationshipsByType(
                 relationshipsRepository,
                 dateLabelProvider,
-                metadataIconProvider
+                avatarProvider
         );
     }
 
@@ -160,14 +157,12 @@ public class RelationshipModule {
     RelationshipsRepository provideRelationshipsRepository(
             D2 d2,
             ResourceManager resourceManager,
-            MetadataIconProvider metadataIconProvider,
             ProfilePictureProvider profilePictureProvider
     ) {
         if (teiUid != null) {
             return new TrackerRelationshipsRepository(
                     d2,
                     resourceManager,
-                    metadataIconProvider,
                     teiUid,
                     enrollmentUid,
                     profilePictureProvider
@@ -176,7 +171,6 @@ public class RelationshipModule {
             return new EventRelationshipsRepository(
                     d2,
                     resourceManager,
-                    metadataIconProvider,
                     eventUid,
                     profilePictureProvider
             );
@@ -192,7 +186,15 @@ public class RelationshipModule {
 
     @Provides
     @PerFragment
-    ProfilePictureProvider provideProfilePictureProvider(D2 d2){
+    ProfilePictureProvider provideProfilePictureProvider(D2 d2) {
         return new ProfilePictureProvider(d2);
+    }
+
+    @Provides
+    @PerFragment
+    AvatarProvider provideAvatarProvider(
+            MetadataIconProvider metadataIconProvider
+    ) {
+        return new AvatarProvider(metadataIconProvider);
     }
 }

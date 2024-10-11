@@ -40,16 +40,16 @@ class RelationshipViewHolder(
                     relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
                 }
             }
-            relationshipTypeName.text = relationships.displayRelationshipTypeName()
+//            relationshipTypeName.text = relationships.displayRelationshipTypeName()
             toRelationshipName.text = relationships.displayRelationshipName()
-            relationships.displayImage().let { (imagePath, defaultRes) ->
+           /* relationships.displayImage().let { (imagePath, defaultRes) ->
                 if (relationships.isEvent()) {
-                    /*binding.composeToImage.setUpMetadataIcon(
+                    binding.composeToImage.setUpMetadataIcon(
                         relationships.ownerStyle,
                         false,
-                    )*/
+                    )
                 } else {
-                    /*toTeiImage.setItemPic(
+                    toTeiImage.setItemPic(
                         imagePath,
                         defaultRes,
                         relationships.ownerStyle.color.toArgb(),
@@ -57,9 +57,9 @@ class RelationshipViewHolder(
                         relationships.isEvent(),
                         binding.imageText,
                         colorUtils,
-                    )*/
+                    )
                 }
-            }
+            }*/
         }
     }
 }
