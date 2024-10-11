@@ -85,7 +85,7 @@ class GetRelationshipsByType(
             ownerType = relationship.ownerType,
             ownerUid = relationship.ownerUid,
             avatar = getAvatar(
-                style = relationshipsRepository.getProgramStyle(),
+                style = relationship.ownerStyle,
                 profilePath = relationship.getPicturePath(),
                 firstAttributeValue = relationship.firstMainValue(),
             ),

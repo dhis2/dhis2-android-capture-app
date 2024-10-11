@@ -10,7 +10,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
@@ -220,7 +219,7 @@ class TrackerRelationshipsRepository(
                     toProfilePic,
                     fromDefaultPicRes,
                     toDefaultPicRes,
-                    getOwnerColor(relationshipOwnerUid, relationshipOwnerType),
+                    getOwnerStyle(relationshipOwnerUid, relationshipOwnerType),
                     canBoOpened,
                     toLastUpdated,
                     fromLastUpdated,
@@ -229,16 +228,5 @@ class TrackerRelationshipsRepository(
                 )
             }
         )
-    }
-
-    override fun getProgramStyle(): ObjectStyle? {
-        val programUid = d2.enrollmentModule().enrollments()
-            .uid(enrollmentUid).blockingGet()?.program()
-        val program = d2.programModule().programs().uid(programUid).blockingGet()
-        return if (d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()) {
-            program?.style() ?: ObjectStyle.builder().build()
-        } else {
-            null
-        }
     }
 }
