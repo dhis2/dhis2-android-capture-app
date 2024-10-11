@@ -14,6 +14,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VISUALIZAT
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment.Companion.withArguments
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 
 class EventCapturePagerAdapter(
     private val fragmentActivity: FragmentActivity,
@@ -110,6 +111,25 @@ class EventCapturePagerAdapter(
                     eventMode,
                 )
             }
+        }
+    }
+
+    fun getDynamicTabIndex(navigationPage: NavigationPage?): Int {
+        val pageType = when (navigationPage) {
+            NavigationPage.ANALYTICS -> EventPageType.ANALYTICS
+            NavigationPage.RELATIONSHIPS -> EventPageType.RELATIONSHIPS
+            NavigationPage.NOTES -> EventPageType.NOTES
+            else -> null
+        }
+
+        return if (pageType != null) {
+            if (isPortrait) {
+                portraitPages.indexOf(pageType)
+            } else {
+                landscapePages.indexOf(pageType)
+            }
+        } else {
+            NO_POSITION
         }
     }
 

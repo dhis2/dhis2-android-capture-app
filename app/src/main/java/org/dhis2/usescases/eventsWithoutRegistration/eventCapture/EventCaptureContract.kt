@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.usescases.general.AbstractActivityContracts
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.usescases.general.AbstractActivityContracts
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus

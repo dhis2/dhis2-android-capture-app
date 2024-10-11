@@ -26,8 +26,6 @@ import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCaptureRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.provider.EventCaptureResourcesProvider
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -43,7 +41,6 @@ class EventCaptureModule(
         eventCaptureRepository: EventCaptureRepository,
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
-        configureEventCompletionDialog: ConfigureEventCompletionDialog,
         pageConfigurator: NavigationPageConfigurator,
         resourceManager: ResourceManager,
     ): EventCaptureContract.Presenter {
@@ -53,7 +50,6 @@ class EventCaptureModule(
             eventCaptureRepository,
             schedulerProvider,
             preferences,
-            configureEventCompletionDialog,
             pageConfigurator,
             resourceManager,
         )
@@ -124,21 +120,5 @@ class EventCaptureModule(
         repository: EventCaptureRepository,
     ): NavigationPageConfigurator {
         return EventPageConfigurator(repository, isPortrait)
-    }
-
-    @Provides
-    @PerActivity
-    fun provideConfigureEventCompletionDialog(
-        eventCaptureResourcesProvider: EventCaptureResourcesProvider,
-    ): ConfigureEventCompletionDialog {
-        return ConfigureEventCompletionDialog(eventCaptureResourcesProvider)
-    }
-
-    @Provides
-    @PerActivity
-    fun provideEventCaptureResourcesProvider(
-        resourceManager: ResourceManager,
-    ): EventCaptureResourcesProvider {
-        return EventCaptureResourcesProvider(resourceManager)
     }
 }
