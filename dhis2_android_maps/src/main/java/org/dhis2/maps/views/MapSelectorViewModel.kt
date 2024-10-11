@@ -156,7 +156,7 @@ class MapSelectorViewModel(
 
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
-            if (_screenState.value.canCaptureGps(gpsResult.accuracy)) {
+            if (_screenState.value.canCaptureGps()) {
                 val mapData = when {
                     featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
                         GetMapData(
@@ -165,14 +165,15 @@ class MapSelectorViewModel(
                             captureMode = _screenState.value.captureMode,
                         )
 
-                else -> _screenState.value.mapData
-            }
+                    else -> _screenState.value.mapData
+                }
 
-            updateScreenState(
-                mapData = mapData,
-                selectedLocation = gpsResult,
-                accuracyRange = gpsResult.accuracy.toAccuracyRance(),
-            )
+                updateScreenState(
+                    mapData = mapData,
+                    selectedLocation = gpsResult,
+                    accuracyRange = gpsResult.accuracy.toAccuracyRance(),
+                )
+            }
         }
     }
 
