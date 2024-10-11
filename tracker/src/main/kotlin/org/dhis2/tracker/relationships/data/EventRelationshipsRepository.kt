@@ -9,7 +9,6 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
@@ -206,7 +205,7 @@ class EventRelationshipsRepository(
                     toProfilePic,
                     fromDefaultPic,
                     toDefaultPic,
-                    getOwnerColor(relationshipOwnerUid, RelationshipOwnerType.TEI),
+                    getOwnerStyle(relationshipOwnerUid, RelationshipOwnerType.TEI),
                     canBeOpened,
                     toLastUpdated,
                     fromLastUpdated,
@@ -215,16 +214,5 @@ class EventRelationshipsRepository(
                 )
             }
         )
-    }
-
-    override fun getProgramStyle(): ObjectStyle? {
-        val event = d2.eventModule().events().uid(eventUid).blockingGet()
-        val program = d2.programModule().programs().uid(event?.program()).blockingGet()
-
-        return if (d2.iconModule().icons().key(program?.style()?.icon() ?: "").blockingExists()) {
-            program?.style() ?: ObjectStyle.builder().build()
-        } else {
-            null
-        }
     }
 }

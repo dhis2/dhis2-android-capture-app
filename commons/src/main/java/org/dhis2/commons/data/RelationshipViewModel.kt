@@ -1,7 +1,7 @@
 package org.dhis2.commons.data
 
-import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import java.util.Date
@@ -20,7 +20,7 @@ data class RelationshipViewModel(
     val toImage: String?,
     val fromDefaultImageResource: Int,
     val toDefaultImageResource: Int,
-    val ownerDefaultColorResource: MetadataIconData,
+    val ownerStyle: ObjectStyle?,
     val canBeOpened: Boolean = true,
     val toLastUpdated: Date? = null,
     val fromLastUpdated: Date? = null,

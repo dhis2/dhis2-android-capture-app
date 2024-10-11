@@ -8,7 +8,6 @@ import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
-import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
@@ -18,7 +17,6 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.util.Date
 
 abstract class RelationshipsRepository(
@@ -28,7 +26,6 @@ abstract class RelationshipsRepository(
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipViewModel>>
-    abstract fun getProgramStyle(): ObjectStyle?
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
@@ -142,7 +139,9 @@ abstract class RelationshipsRepository(
             val formName = d2.dataElementModule().dataElements()
                 .uid(dataElementUid).blockingGet()
                 ?.displayName()
-            val value = event?.trackedEntityDataValues()?.find { it.dataElement() == dataElementUid }.userFriendlyValue(d2)
+            val value =
+                event?.trackedEntityDataValues()?.find { it.dataElement() == dataElementUid }
+                    .userFriendlyValue(d2)
             if (formName != null && value != null) {
                 Pair(formName, value)
             } else {
@@ -152,7 +151,12 @@ abstract class RelationshipsRepository(
 
         return dataElements.ifEmpty {
             val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-            listOf(Pair(stage?.displayName() ?: event?.uid() ?: "", relationshipCreationDate?.toUi() ?: ""))
+            listOf(
+                Pair(
+                    stage?.displayName() ?: event?.uid() ?: "",
+                    relationshipCreationDate?.toUi() ?: ""
+                )
+            )
         }
     }
 
@@ -182,20 +186,20 @@ abstract class RelationshipsRepository(
         )
     }
 
-    protected fun getOwnerColor(
+    protected fun getOwnerStyle(
         uid: String,
         relationshipOwnerType: RelationshipOwnerType,
-    ): MetadataIconData {
+    ): ObjectStyle? {
         return when (relationshipOwnerType) {
             RelationshipOwnerType.EVENT -> {
                 val event = d2.eventModule().events().uid(uid).blockingGet()
                 val program = d2.programModule().programs().uid(event?.program()).blockingGet()
                 if (program?.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                    metadataIconProvider.invoke(program.style(), SurfaceColor.Primary)
+                    program.style()
                 } else {
                     val programStage =
                         d2.programModule().programStages().uid(event?.programStage()).blockingGet()
-                    metadataIconProvider(programStage!!.style(), SurfaceColor.Primary)
+                    programStage?.style()
                 }
             }
 
@@ -204,7 +208,7 @@ abstract class RelationshipsRepository(
                     .uid(uid).blockingGet()
                 val teType = d2.trackedEntityModule().trackedEntityTypes()
                     .uid(tei?.trackedEntityType()).blockingGet()
-                return metadataIconProvider(teType!!.style(), SurfaceColor.Primary)
+                teType?.style()
             }
         }
     }
