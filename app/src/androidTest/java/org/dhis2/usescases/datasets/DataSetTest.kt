@@ -48,18 +48,14 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Oct 2023"
+        val period = "Jul 2025"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
+        startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
 
         dataSetDetailRobot {
             clickOnAddDataSet()
         }
         dataSetInitialRobot {
-            clickOnInputOrgUnit()
-            orgUnitSelectorRobot(composeTestRule) {
-                selectTreeOrgUnit(orgUnit)
-            }
             clickOnInputPeriod()
             selectPeriod(period)
             clickOnActionButton()
@@ -68,13 +64,9 @@ class DataSetTest : BaseTest() {
             typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("1")
-            composeTestRule.waitForIdle()
             pressBack()
-            composeTestRule.waitForIdle()
             pressBack()
-            composeTestRule.waitForIdle()
             clickOnSaveButton()
-            waitToDebounce(500)
             clickOnNegativeButton()
         }
 
@@ -86,20 +78,17 @@ class DataSetTest : BaseTest() {
             typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("5")
-            composeTestRule.waitForIdle()
             pressBack()
-            composeTestRule.waitForIdle()
             pressBack()
-            composeTestRule.waitForIdle()
             clickOnSaveButton()
-            waitToDebounce(500)
+            clickOnPositiveButton()
             clickOnNegativeButton()
         }
     }
 
     @Test
     fun shouldSelectNewCellIfCurrentHasNoErrorAndBlockSelectingNewCellIfCurrentHasError() {
-        startDataSetDetailActivity("BfMAe6Itzgt", "AUTOMATIC TESTING - Child Health", ruleDataSetDetail)
+        startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
 
         dataSetRobot {
             clickOnDataSetAtPosition(0)

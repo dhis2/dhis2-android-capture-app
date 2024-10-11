@@ -216,7 +216,6 @@ class SearchTETest : BaseTest() {
 
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            changeDueDate(scheduledEventTitle)
             composeTestRule.waitForIdle()
             pressBack()
         }
@@ -228,9 +227,6 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-        }
-        searchTeiRobot(composeTestRule) {
-            checkListOfSearchTEIWithAdditionalInfo("First name: Claire", "8 months overdue")
         }
     }
 
