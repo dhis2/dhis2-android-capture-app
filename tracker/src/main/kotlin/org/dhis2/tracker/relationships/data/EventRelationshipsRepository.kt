@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
@@ -17,10 +16,9 @@ import org.hisp.dhis.android.core.relationship.RelationshipType
 class EventRelationshipsRepository(
     private val d2: D2,
     resources: ResourceManager,
-    metadataIconProvider: MetadataIconProvider,
     private val eventUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
-) : RelationshipsRepository(d2, resources, metadataIconProvider) {
+) : RelationshipsRepository(d2, resources) {
 
     override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()

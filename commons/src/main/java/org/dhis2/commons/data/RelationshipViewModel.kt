@@ -38,28 +38,6 @@ data class RelationshipViewModel(
         }
     }
 
-    fun displayRelationshipTypeName(): String {
-        return when (direction) {
-            RelationshipDirection.FROM -> relationshipType.toFromName()
-            RelationshipDirection.TO -> relationshipType.fromToName()
-        } ?: relationshipType.displayName() ?: "-"
-    }
-
-    fun displayImage(): Pair<String?, Int> {
-        return when (direction) {
-            RelationshipDirection.FROM -> Pair(fromImage, fromDefaultImageResource)
-            RelationshipDirection.TO -> Pair(toImage, toDefaultImageResource)
-        }
-    }
-
-    fun isEvent(): Boolean {
-        return ownerType == RelationshipOwnerType.EVENT
-    }
-
-    fun isFrom(): Boolean {
-        return direction == RelationshipDirection.FROM
-    }
-
     fun displayDescription(): String? {
         return when (direction) {
             RelationshipDirection.FROM -> fromDescription
@@ -94,6 +72,13 @@ data class RelationshipViewModel(
         return when (direction) {
             RelationshipDirection.FROM -> fromImage ?: ""
             RelationshipDirection.TO -> toImage ?: ""
+        }
+    }
+
+    fun displayGeometry(): Geometry? {
+        return when (direction) {
+            RelationshipDirection.FROM -> fromGeometry
+            RelationshipDirection.TO -> toGeometry
         }
     }
 }

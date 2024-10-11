@@ -5,7 +5,6 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.date.toUi
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
 import org.hisp.dhis.android.core.D2
@@ -22,7 +21,6 @@ import java.util.Date
 abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
-    protected val metadataIconProvider: MetadataIconProvider,
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipViewModel>>

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.data.RelationshipDirection
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.commons.data.RelationshipViewModel
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
@@ -19,11 +18,10 @@ import java.util.Date
 class TrackerRelationshipsRepository(
     private val d2: D2,
     resources: ResourceManager,
-    metadataIconProvider: MetadataIconProvider,
     private val teiUid: String,
     private val enrollmentUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
-) : RelationshipsRepository(d2, resources, metadataIconProvider) {
+) : RelationshipsRepository(d2, resources) {
 
     override fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>> {
         val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()

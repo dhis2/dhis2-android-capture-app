@@ -12,7 +12,7 @@ import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
 import org.dhis2.tracker.relationships.model.RelationshipSection
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RelationShipsViewModel(
+class RelationshipsViewModel(
     getRelationshipsByType: GetRelationshipsByType
 ) : ViewModel() {
 

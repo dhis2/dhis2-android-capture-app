@@ -1,10 +1,12 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
-import io.reactivex.Single
-import org.dhis2.maps.model.MapItemModel
+import org.dhis2.commons.data.RelationshipOwnerType
+import org.dhis2.maps.model.RelatedInfo
 
 interface RelationshipMapsRepository {
-    fun mapRelationships(): Single<List<MapItemModel>>
-    fun getTeiTypeDefaultRes(teiTypeUid: String?): Int
     fun getEventProgram(eventUid: String?): String
+    fun getRelatedInfo(
+        ownerType: RelationshipOwnerType,
+        ownerUid: String,
+    ): RelatedInfo?
 }
