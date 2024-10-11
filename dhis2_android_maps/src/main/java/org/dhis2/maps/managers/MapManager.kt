@@ -53,11 +53,11 @@ abstract class MapManager(
     private val colorUtils: ColorUtils = ColorUtils()
 
     open var numberOfUiIcons: Int = 2
-    private val defaultUiIconLeftMargin = 8.dp
-    private val defaultUiIconTopMargin = 9.dp
-    private val defaultUiIconRightMargin = 9.dp
-    private val defaultUiIconBottomMargin = 0.dp
-    private val defaultUiIconSize = 40.dp
+    open var defaultUiIconLeftMargin = 8.dp
+    open var defaultUiIconTopMargin = 9.dp
+    open var defaultUiIconRightMargin = 9.dp
+    open var defaultUiIconBottomMargin = 0.dp
+    open var defaultUiIconSize = 40.dp
 
     fun init(
         mapStyles: List<BaseMapStyle>,
@@ -92,8 +92,8 @@ abstract class MapManager(
                         map?.addOnMapClickListener(mapClickListener)
                     }
                     markerViewManager = MarkerViewManager(mapView, map)
-                    loadDataForStyle()
                     enableLocationComponent(styleLoaded, onMissingPermission)
+                    loadDataForStyle()
                     onInitializationFinished()
                 }
             }

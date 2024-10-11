@@ -6,11 +6,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Polygon
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemPolygonFullBinding
+import org.dhis2.maps.model.MapData
 
 class PolygonAdapter(
     private val onAddPolygonPoint: (List<Double>) -> Unit,
@@ -47,9 +47,9 @@ class PolygonAdapter(
         holder.bind(getItem(position), position == itemCount - 1, position)
     }
 
-    fun updateWithFeatureCollection(featureCollection: FeatureCollection?) {
+    fun updateWithFeatureCollection(mapData: MapData) {
         val data = mutableListOf<List<Double>>()
-        featureCollection?.features()?.filter { it.geometry() is Polygon }?.forEach { feature ->
+        mapData.featureCollection.features()?.filter { it.geometry() is Polygon }?.forEach { feature ->
             (feature.geometry() as Polygon).coordinates().forEach { points ->
                 points.forEach {
                     data.add(it.coordinates())
