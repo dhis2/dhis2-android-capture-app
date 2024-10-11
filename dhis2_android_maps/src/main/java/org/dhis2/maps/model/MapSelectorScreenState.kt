@@ -35,5 +35,5 @@ data class MapSelectorScreenState(
 
     val doneButtonEnabled = getDoneButtonEnabledState()
     fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&
-        newAccuracy < accuracyRange.value.toFloat()
+            newAccuracy < accuracyRange.value.toFloat()
 }
