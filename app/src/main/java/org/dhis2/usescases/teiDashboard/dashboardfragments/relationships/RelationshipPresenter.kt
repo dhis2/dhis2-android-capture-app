@@ -9,8 +9,6 @@ import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
@@ -21,6 +19,8 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK

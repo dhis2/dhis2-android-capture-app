@@ -2,11 +2,11 @@ package org.dhis2.tracker.relationships.data
 
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.bindings.userFriendlyValue
-import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event

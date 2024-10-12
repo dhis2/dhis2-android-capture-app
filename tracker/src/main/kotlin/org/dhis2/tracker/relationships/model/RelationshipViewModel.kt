@@ -1,4 +1,4 @@
-package org.dhis2.commons.data
+package org.dhis2.tracker.relationships.model
 
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
