@@ -3,9 +3,9 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemRelationshipBinding
+import org.dhis2.tracker.relationships.model.RelationshipViewModel
 
 // TODO not remove unitl delete relationship in https://dhis2.atlassian.net/browse/ANDROAPP-6364 is implemented
 class RelationshipViewHolder(

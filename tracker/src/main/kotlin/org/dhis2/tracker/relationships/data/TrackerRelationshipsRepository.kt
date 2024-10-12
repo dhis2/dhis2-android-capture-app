@@ -2,11 +2,11 @@ package org.dhis2.tracker.relationships.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import org.dhis2.commons.data.RelationshipDirection
-import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
+import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
