@@ -16,18 +16,18 @@ class RelationshipsViewModel(
     getRelationshipsByType: GetRelationshipsByType
 ) : ViewModel() {
 
-    val relationshipsUiState: StateFlow<RelationshipsListUiState<List<RelationshipSection>>> =
+    val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> =
         getRelationshipsByType()
             .flatMapLatest {
                 if (it.isEmpty()) {
-                    flowOf(RelationshipsListUiState.Empty)
+                    flowOf(RelationshipsUiState.Empty)
                 } else {
-                    flowOf(RelationshipsListUiState.Success(it))
+                    flowOf(RelationshipsUiState.Success(it))
                 }
             }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = RelationshipsListUiState.Loading
+                initialValue = RelationshipsUiState.Loading
             )
 }

@@ -1,18 +1,24 @@
 package org.dhis2.tracker.relationships.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.Composable
@@ -20,12 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.tracker.R
-import org.dhis2.tracker.relationships.model.RelationShipItem
+import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
@@ -48,9 +60,9 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun RelationShipsScreen(
-    uiState: RelationshipsListUiState<List<RelationshipSection>>,
+    uiState: RelationshipsUiState<List<RelationshipSection>>,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
-    onRelationshipClick: (RelationShipItem) -> Unit,
+    onRelationshipClick: (RelationshipItem) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -60,7 +72,7 @@ fun RelationShipsScreen(
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         when (uiState) {
-            is RelationshipsListUiState.Loading -> {
+            is RelationshipsUiState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -71,10 +83,10 @@ fun RelationShipsScreen(
                 }
             }
 
-            is RelationshipsListUiState.Empty,
-            is RelationshipsListUiState.Error -> NoRelationships()
+            is RelationshipsUiState.Empty,
+            is RelationshipsUiState.Error -> NoRelationships()
 
-            is RelationshipsListUiState.Success -> {
+            is RelationshipsUiState.Success -> {
                 LazyColumn {
                     items(uiState.data) { item ->
                         RelationShipTypeSection(
@@ -97,14 +109,14 @@ fun RelationShipsScreen(
 }
 
 @Composable
-fun RelationShipTypeSection(
+private fun RelationShipTypeSection(
     modifier: Modifier = Modifier,
     title: String,
     description: String?,
-    relationships: List<RelationShipItem>,
+    relationships: List<RelationshipItem>,
     canAddRelationship: Boolean,
     onCreateRelationshipClick: () -> Unit,
-    onRelationshipClick: (RelationShipItem) -> Unit,
+    onRelationshipClick: (RelationshipItem) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -183,10 +195,52 @@ fun RelationShipTypeSection(
     }
 }
 
+@Composable
+private fun NoRelationships() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(42.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(1.dp)
+                .width(139.dp)
+                .height(125.dp),
+            painter = painterResource(id = R.drawable.no_relationships),
+            contentDescription = stringResource(id = R.string.empty_relationships),
+        )
+        Spacer(
+            modifier = Modifier
+                .height(17.dp)
+                .fillMaxWidth(),
+        )
+        Text(
+            text = stringResource(id = R.string.empty_relationships),
+            style = TextStyle(
+                fontSize = 17.sp,
+                lineHeight = 24.sp,
+                fontWeight = FontWeight.Normal,
+                color = colorResource(id = R.color.gray_990),
+                textAlign = TextAlign.Center,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun NoRelationshipsPreview() {
+    NoRelationships()
+}
+
 @Preview
 @Composable
 fun RelationShipScreenPreview() {
-    val mockUiState = RelationshipsListUiState.Success(
+    val mockUiState = RelationshipsUiState.Success(
         data = listOf(
             RelationshipSection(
                 relationshipType = RelationshipType.builder()
@@ -194,7 +248,7 @@ fun RelationShipScreenPreview() {
                     .displayName("Relationship type")
                     .build(),
                 relationships = listOf(
-                    RelationShipItem(
+                    RelationshipItem(
                         title = "First name: Peter",
                         description = null,
                         attributes = listOf(
@@ -211,7 +265,7 @@ fun RelationShipScreenPreview() {
                         canOpen = true,
                         lastUpdated = "Yesterday",
                     ),
-                    RelationShipItem(
+                    RelationshipItem(
                         title = "First name: Mario",
                         description = null,
                         attributes = listOf(
