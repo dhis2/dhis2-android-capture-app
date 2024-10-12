@@ -18,7 +18,6 @@ import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.dhis2.uicomponents.map.mocks.RelationshipViewModelDummy
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -73,7 +72,7 @@ class MapTeisToFeatureCollectionTest {
 
         val result = mapTeisToFeatureCollection.map(teiList, true, mapRelationships)
         val featureCollectionResults =
-            result.first[RelationshipViewModelDummy.DISPLAY_NAME]
+            result.first[DISPLAY_NAME]
 
         val relationshipFeatureCollection =
             featureCollectionResults?.features()?.get(0)?.geometry() as LineString
@@ -293,10 +292,10 @@ class MapTeisToFeatureCollectionTest {
                     .build(),
                 relatedInfo = RelatedInfo(
                     relationship = RelatedInfo.Relationship(
-                        uid = RelationshipViewModelDummy.UID,
-                        displayName = RelationshipViewModelDummy.DISPLAY_NAME,
-                        relationshipTypeUid = RelationshipViewModelDummy.RELATIONSHIP_TYPE,
-                        relatedUid = RelationshipViewModelDummy.UID,
+                        uid = UID,
+                        displayName = DISPLAY_NAME,
+                        relationshipTypeUid = RELATIONSHIP_TYPE,
+                        relatedUid = UID,
                         relationshipDirection = RelationshipDirection.FROM,
                     ),
                 ),
@@ -318,10 +317,10 @@ class MapTeisToFeatureCollectionTest {
                     .build(),
                 relatedInfo = RelatedInfo(
                     relationship = RelatedInfo.Relationship(
-                        uid = RelationshipViewModelDummy.UID,
-                        displayName = RelationshipViewModelDummy.DISPLAY_NAME,
-                        relationshipTypeUid = RelationshipViewModelDummy.RELATIONSHIP_TYPE,
-                        relatedUid = RelationshipViewModelDummy.UID,
+                        uid = UID,
+                        displayName = DISPLAY_NAME,
+                        relationshipTypeUid = RELATIONSHIP_TYPE,
+                        relatedUid = UID,
                         relationshipDirection = RelationshipDirection.TO,
                     ),
                 ),
@@ -338,5 +337,9 @@ class MapTeisToFeatureCollectionTest {
         const val TEI_UID = "123"
         const val TEI_UID_IMAGE = "/random/path"
         const val ENROLLMENT_UID = "enrollment_uid"
+        const val UID = "test_uid"
+        const val RELATIONSHIP_TYPE = "relationship_type"
+        const val NAME = "test_name"
+        const val DISPLAY_NAME = "Test-to-test"
     }
 }
