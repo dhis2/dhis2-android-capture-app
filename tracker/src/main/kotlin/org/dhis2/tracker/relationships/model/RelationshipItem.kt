@@ -3,7 +3,7 @@ package org.dhis2.tracker.relationships.model
 import org.dhis2.commons.data.RelationshipOwnerType
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 
-data class RelationShipItem(
+data class RelationshipItem(
     val title: String,
     val description: String?,
     val attributes: List<Pair<String, String>>,

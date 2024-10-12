@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.combine
 import org.dhis2.commons.data.RelationshipViewModel
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
-import org.dhis2.tracker.relationships.model.RelationShipItem
+import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.ui.AvatarProvider
 
@@ -44,8 +44,8 @@ class GetRelationshipsByType(
                 }
             }
 
-    private fun mapToRelationshipItem(relationship: RelationshipViewModel): RelationShipItem {
-        return RelationShipItem(
+    private fun mapToRelationshipItem(relationship: RelationshipViewModel): RelationshipItem {
+        return RelationshipItem(
             title = relationship.displayRelationshipName(),
             description = relationship.displayDescription(),
             attributes = relationship.displayAttributes(),
