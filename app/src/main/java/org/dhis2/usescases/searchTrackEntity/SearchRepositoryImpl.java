@@ -15,7 +15,6 @@ import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.data.RelationshipDirection;
 import org.dhis2.commons.data.RelationshipOwnerType;
 import org.dhis2.commons.data.RelationshipViewModel;
-import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.date.DateUtils;

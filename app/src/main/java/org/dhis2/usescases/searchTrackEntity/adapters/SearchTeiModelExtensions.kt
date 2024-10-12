@@ -11,10 +11,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import org.dhis2.commons.R
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import java.io.File
 
 fun SearchTeiModel.setTeiImage(
