@@ -43,6 +43,10 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             clickOnEnroll()
         }
 
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
         enrollmentRobot(composeTestRule) {
             typeOnDateParameterWithLabel("LMP Date *", incidentDate)
             clickOnSaveEnrollment()
@@ -50,6 +54,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun enrollToProgram(program: String, enrollmentDetails: EnrollmentListUIModel) {
+        val orgUnit = "Ngelehun CHC"
 
         teiDashboardRobot(composeTestRule) {
             clickOnMenuMoreOptions()
@@ -65,6 +70,10 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             val month = enrollmentDetails.currentEnrollmentDate.substring(3, 5)
             val year = enrollmentDetails.currentEnrollmentDate.substring(6)
             selectDate(year.toInt(), month.toInt(), day.toInt())
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
         }
 
         enrollmentRobot(composeTestRule){
