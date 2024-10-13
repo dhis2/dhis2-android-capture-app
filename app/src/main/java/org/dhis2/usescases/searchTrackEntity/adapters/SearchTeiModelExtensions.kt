@@ -40,81 +40,89 @@ fun SearchTeiModel.setTeiImage(
     val placeHolderId = ResourceManager(context, colorUtils)
         .getObjectStyleDrawableResource(defaultTypeIcon, -1)
     teiImageView.setOnClickListener(null)
-    if (file.exists()) {
-        teiTextImageView.visibility = View.GONE
-        Glide.with(context)
-            .load(file)
-            .error(placeHolderId)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .transform(CircleCrop())
-            .into(teiImageView)
-        teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
-    } else if (textAttributeValues != null &&
-        textAttributeValues.values.isNotEmpty() &&
-        ArrayList(textAttributeValues.values)[0].value() != "-"
-    ) {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(textAttributeValues.values)
-        if (valueToShow[0]?.value()?.isEmpty() != false) {
-            teiTextImageView.text = "?"
-        } else {
-            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
+    when {
+        file.exists() -> {
+            teiTextImageView.visibility = View.GONE
+            Glide.with(context)
+                .load(file)
+                .error(placeHolderId)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CircleCrop())
+                .into(teiImageView)
+            teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
         }
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
+
+        textAttributeValues != null &&
+            textAttributeValues.values.isNotEmpty() &&
+            ArrayList(textAttributeValues.values)[0].value() != "-" -> {
+            teiImageView.setImageDrawable(null)
+            teiTextImageView.visibility = View.VISIBLE
+            val valueToShow = ArrayList(textAttributeValues.values)
+            if (valueToShow[0]?.value()?.isEmpty() != false) {
+                teiTextImageView.text = "?"
+            } else {
+                teiTextImageView.text = valueToShow[0].value()?.first().toString().uppercase()
+            }
+            teiTextImageView.setTextColor(
+                colorUtils.getContrastColor(
+                    colorUtils.getPrimaryColor(
+                        context,
+                        ColorType.PRIMARY,
+                    ),
                 ),
-            ),
-        )
-    } else if (isOnline && attributeValues.isNotEmpty() &&
-        !ArrayList(attributeValues.values).first().value().isNullOrEmpty()
-    ) {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(attributeValues.values)
-        if (valueToShow[0] == null) {
-            teiTextImageView.text = "?"
-        } else {
-            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
+            )
         }
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
+
+        isOnline && attributeValues.isNotEmpty() &&
+            !ArrayList(attributeValues.values).first().value().isNullOrEmpty() -> {
+            teiImageView.setImageDrawable(null)
+            teiTextImageView.visibility = View.VISIBLE
+            val valueToShow = ArrayList(attributeValues.values)
+            if (valueToShow[0] == null) {
+                teiTextImageView.text = "?"
+            } else {
+                teiTextImageView.text = valueToShow[0].value()?.first().toString().uppercase()
+            }
+            teiTextImageView.setTextColor(
+                colorUtils.getContrastColor(
+                    colorUtils.getPrimaryColor(
+                        context,
+                        ColorType.PRIMARY,
+                    ),
                 ),
-            ),
-        )
-    } else if (placeHolderId != -1) {
-        teiTextImageView.visibility = View.GONE
-        val icon = AppCompatResources.getDrawable(
-            context,
-            placeHolderId,
-        )
-        icon!!.colorFilter = PorterDuffColorFilter(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
+            )
+        }
+
+        placeHolderId != -1 -> {
+            teiTextImageView.visibility = View.GONE
+            val icon = AppCompatResources.getDrawable(
+                context,
+                placeHolderId,
+            )
+            icon!!.colorFilter = PorterDuffColorFilter(
+                colorUtils.getContrastColor(
+                    colorUtils.getPrimaryColor(
+                        context,
+                        ColorType.PRIMARY,
+                    ),
                 ),
-            ),
-            PorterDuff.Mode.SRC_IN,
-        )
-        teiImageView.setImageDrawable(icon)
-    } else {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        teiTextImageView.text = "?"
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
+                PorterDuff.Mode.SRC_IN,
+            )
+            teiImageView.setImageDrawable(icon)
+        }
+
+        else -> {
+            teiImageView.setImageDrawable(null)
+            teiTextImageView.visibility = View.VISIBLE
+            teiTextImageView.text = "?"
+            teiTextImageView.setTextColor(
+                colorUtils.getContrastColor(
+                    colorUtils.getPrimaryColor(
+                        context,
+                        ColorType.PRIMARY,
+                    ),
                 ),
-            ),
-        )
+            )
+        }
     }
 }
