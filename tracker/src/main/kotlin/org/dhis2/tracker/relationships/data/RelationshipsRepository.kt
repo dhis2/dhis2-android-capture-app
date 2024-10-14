@@ -5,8 +5,8 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
@@ -23,7 +23,7 @@ abstract class RelationshipsRepository(
     private val resources: ResourceManager,
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
-    abstract fun getRelationships(): Flow<List<RelationshipViewModel>>
+    abstract fun getRelationships(): Flow<List<RelationshipModel>>
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
@@ -112,8 +112,8 @@ abstract class RelationshipsRepository(
         val dataElementUids = when {
 
             //When there are  attributes defined in the constraint
-            !relationshipConstraint?.trackerDataView()?.dataElements().isNullOrEmpty() -> {
-                relationshipConstraint?.trackerDataView()?.dataElements()
+            relationshipConstraint?.trackerDataView()?.dataElements()?.isNotEmpty() == true -> {
+                relationshipConstraint.trackerDataView()?.dataElements()
             }
 
             //If there is a program stage defined in the constraint

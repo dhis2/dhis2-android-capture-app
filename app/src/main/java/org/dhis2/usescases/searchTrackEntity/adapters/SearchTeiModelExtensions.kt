@@ -74,7 +74,7 @@ fun SearchTeiModel.setTeiImage(
         }
 
         isOnline && attributeValues.isNotEmpty() &&
-            !ArrayList(attributeValues.values).first().value().isNullOrEmpty() -> {
+            ArrayList(attributeValues.values).firstOrNull()?.value()?.isNotEmpty() == true -> {
             teiImageView.setImageDrawable(null)
             teiTextImageView.visibility = View.VISIBLE
             val valueToShow = ArrayList(attributeValues.values)
@@ -99,7 +99,7 @@ fun SearchTeiModel.setTeiImage(
                 context,
                 placeHolderId,
             )
-            icon!!.colorFilter = PorterDuffColorFilter(
+            icon?.colorFilter = PorterDuffColorFilter(
                 colorUtils.getContrastColor(
                     colorUtils.getPrimaryColor(
                         context,

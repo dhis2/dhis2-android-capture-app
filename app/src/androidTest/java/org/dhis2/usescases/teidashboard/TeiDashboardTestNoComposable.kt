@@ -56,10 +56,6 @@ class TeiDashboardTestNoComposable : BaseTest() {
             clickOnSearch()
             clickOnTEI(relationshipName)
         }
-
-        relationshipRobot {
-//            checkRelationshipWasCreated(0, completeName)
-        }
     }
 
     @Test

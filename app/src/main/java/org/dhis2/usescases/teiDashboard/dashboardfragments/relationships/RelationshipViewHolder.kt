@@ -5,9 +5,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemRelationshipBinding
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
+import org.dhis2.tracker.relationships.model.RelationshipModel
 
-// TODO not remove unitl delete relationship in https://dhis2.atlassian.net/browse/ANDROAPP-6364 is implemented
+// TODO not remove until delete relationship in https://dhis2.atlassian.net/browse/ANDROAPP-6364 is implemented
 class RelationshipViewHolder(
     private val binding: ItemRelationshipBinding,
     private val colorUtils: ColorUtils,
@@ -20,7 +20,7 @@ class RelationshipViewHolder(
         )
     }
 
-    fun bind(presenter: RelationshipPresenter, relationships: RelationshipViewModel) {
+    fun bind(presenter: RelationshipPresenter, relationships: RelationshipModel) {
         binding.apply {
             relationshipCard.setOnClickListener {
                 if (relationships.canBeOpened) {
@@ -40,26 +40,7 @@ class RelationshipViewHolder(
                     relationships.relationship.uid()?.let { presenter.deleteRelationship(it) }
                 }
             }
-//            relationshipTypeName.text = relationships.displayRelationshipTypeName()
             toRelationshipName.text = relationships.displayRelationshipName()
-           /* relationships.displayImage().let { (imagePath, defaultRes) ->
-                if (relationships.isEvent()) {
-                    binding.composeToImage.setUpMetadataIcon(
-                        relationships.ownerStyle,
-                        false,
-                    )
-                } else {
-                    toTeiImage.setItemPic(
-                        imagePath,
-                        defaultRes,
-                        relationships.ownerStyle.color.toArgb(),
-                        relationships.displayRelationshipName(),
-                        relationships.isEvent(),
-                        binding.imageText,
-                        colorUtils,
-                    )
-                }
-            }*/
         }
     }
 }

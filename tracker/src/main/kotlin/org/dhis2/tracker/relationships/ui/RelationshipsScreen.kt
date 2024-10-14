@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,15 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
@@ -54,9 +48,11 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun RelationShipsScreen(
@@ -91,7 +87,11 @@ fun RelationShipsScreen(
                     items(uiState.data) { item ->
                         RelationShipTypeSection(
                             title = item.relationshipType.displayName() ?: "",
-                            description = if (item.relationships.isEmpty()) "No data" else null,
+                            description = if (item.relationships.isEmpty()) {
+                                stringResource(id = R.string.no_data)
+                            } else {
+                                null
+                            },
                             relationships = item.relationships,
                             canAddRelationship = item.canAddRelationship(),
                             onCreateRelationshipClick = {
@@ -122,8 +122,8 @@ private fun RelationShipTypeSection(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(16.dp),
-        verticalArrangement = spacedBy(4.dp),
+            .padding(Spacing.Spacing16),
+        verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         Row(
             modifier = modifier
@@ -146,7 +146,7 @@ private fun RelationShipTypeSection(
                     )
                 }
             }
-            if(canAddRelationship) {
+            if (canAddRelationship) {
                 IconButton(
                     modifier = Modifier.testTag(TEST_ADD_RELATIONSHIP_BUTTON),
                     style = IconButtonStyle.FILLED,
@@ -208,8 +208,7 @@ private fun NoRelationships() {
         Image(
             modifier = Modifier
                 .padding(1.dp)
-                .width(139.dp)
-                .height(125.dp),
+                .fillMaxWidth(),
             painter = painterResource(id = R.drawable.no_relationships),
             contentDescription = stringResource(id = R.string.empty_relationships),
         )
@@ -220,13 +219,7 @@ private fun NoRelationships() {
         )
         Text(
             text = stringResource(id = R.string.empty_relationships),
-            style = TextStyle(
-                fontSize = 17.sp,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight.Normal,
-                color = colorResource(id = R.color.gray_990),
-                textAlign = TextAlign.Center,
-            ),
+            style = getTextStyle(style = DHIS2TextStyle.BODY_MEDIUM),
         )
     }
 }
@@ -259,7 +252,7 @@ fun RelationShipScreenPreview() {
                         ),
                         ownerType = RelationshipOwnerType.TEI,
                         ownerUid = "ownerUid",
-                        avatar =  AvatarProviderConfiguration.MainValueLabel(
+                        avatar = AvatarProviderConfiguration.MainValueLabel(
                             firstMainValue = "P",
                         ),
                         canOpen = true,
@@ -292,7 +285,7 @@ fun RelationShipScreenPreview() {
                     .build(),
                 relationships = emptyList(),
                 teiTypeUid = "teiTypeUid",
-                )
+            )
         )
     )
 

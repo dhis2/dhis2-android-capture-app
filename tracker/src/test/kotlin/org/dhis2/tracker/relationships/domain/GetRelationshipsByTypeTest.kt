@@ -8,9 +8,9 @@ import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipItem
+import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -83,8 +83,8 @@ class GetRelationshipsByTypeTest {
         )
     }
 
-    private fun getRelationshipsMock(): Flow<List<RelationshipViewModel>> {
-        val relationshipViewModel1 = RelationshipViewModel(
+    private fun getRelationshipsMock(): Flow<List<RelationshipModel>> {
+        val relationshipModel1 = RelationshipModel(
             relationshipType = relationshipType1,
             ownerType = RelationshipOwnerType.TEI,
             ownerUid = "OwnerUid1",
@@ -109,7 +109,7 @@ class GetRelationshipsByTypeTest {
             relationship = mock()
         )
 
-        val relationshipViewModel2 = RelationshipViewModel(
+        val relationshipModel2 = RelationshipModel(
             relationshipType = relationshipType2,
             ownerType = RelationshipOwnerType.TEI,
             ownerUid = "OwnerUid2",
@@ -136,7 +136,7 @@ class GetRelationshipsByTypeTest {
 
 
         return flowOf(
-            listOf(relationshipViewModel1, relationshipViewModel2)
+            listOf(relationshipModel1, relationshipModel2)
         )
     }
 
