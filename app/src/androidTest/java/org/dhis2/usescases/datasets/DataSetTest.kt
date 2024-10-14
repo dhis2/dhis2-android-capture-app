@@ -56,6 +56,14 @@ class DataSetTest : BaseTest() {
             clickOnAddDataSet()
         }
         dataSetInitialRobot {
+            clickOnInputOrgUnit()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
+        dataSetInitialRobot {
             clickOnInputPeriod()
             selectPeriod(period)
             clickOnActionButton()
@@ -82,7 +90,7 @@ class DataSetTest : BaseTest() {
             pressBack()
             clickOnSaveButton()
             clickOnPositiveButton()
-            clickOnNegativeButton()
+            clickOnPositiveButton()
         }
     }
 
