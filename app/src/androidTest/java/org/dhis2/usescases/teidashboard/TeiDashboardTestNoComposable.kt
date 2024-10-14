@@ -102,6 +102,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
+            composeTestRule.waitForIdle()
             clickOnTEI(teiName)
         }
 
