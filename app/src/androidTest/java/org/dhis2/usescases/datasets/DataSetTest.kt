@@ -76,6 +76,7 @@ class DataSetTest : BaseTest() {
             pressBack()
             clickOnSaveButton()
             clickOnNegativeButton()
+            clickOnNegativeButton()
         }
 
         dataSetRobot {
@@ -83,13 +84,13 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("dzjKKQq0cSO", 0, 0)
+            typeOnCell("dzjKKQq0cSO", 0, 1)
             clickOnEditValue()
             typeInput("5")
             pressBack()
             pressBack()
             clickOnSaveButton()
-            clickOnPositiveButton()
+            clickOnNegativeButton()
             clickOnPositiveButton()
         }
     }
