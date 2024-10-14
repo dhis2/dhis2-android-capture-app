@@ -283,7 +283,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
-            clickOnTEI("John")
+            clickOnTEI("Betty")
         }
     }
 
@@ -434,15 +434,15 @@ class SearchTETest : BaseTest() {
     )
 
     private fun createFromEnrollmentDate() = DateRegistrationUIModel(
-        2014,
+        2024,
         9,
-        20,
+        6,
     )
 
     private fun createToEnrollmentDate() = DateRegistrationUIModel(
-        2014,
+        2024,
         9,
-        25,
+        9,
     )
 
     private fun createFromEventDate() = DateRegistrationUIModel(
