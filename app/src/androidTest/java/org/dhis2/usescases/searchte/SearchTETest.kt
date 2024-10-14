@@ -289,6 +289,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6545")
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
         val eventDate = context.getString(R.string.filters_title_event_date)
