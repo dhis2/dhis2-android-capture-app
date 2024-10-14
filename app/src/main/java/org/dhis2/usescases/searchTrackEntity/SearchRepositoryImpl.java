@@ -34,8 +34,8 @@ import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
 import org.dhis2.tracker.relationships.model.RelationshipDirection;
+import org.dhis2.tracker.relationships.model.RelationshipModel;
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType;
-import org.dhis2.tracker.relationships.model.RelationshipViewModel;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.ValueUtils;
@@ -426,7 +426,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private void setRelationshipsInfo(@NonNull SearchTeiModel searchTeiModel, Program selectedProgram) {
-        List<RelationshipViewModel> relationshipViewModels = new ArrayList<>();
+        List<RelationshipModel> relationshipModels = new ArrayList<>();
         List<Relationship> relationships = d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().trackedEntityInstance(
                         RelationshipItemTrackedEntityInstance.builder()
@@ -465,7 +465,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 for (TrackedEntityAttributeValue attributeValue : toAttr) {
                     toValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(), attributeValue.value()));
                 }
-                relationshipViewModels.add(new RelationshipViewModel(
+                relationshipModels.add(new RelationshipModel(
                         relationship,
                         fromTei.geometry(),
                         toTei.geometry(),
@@ -489,7 +489,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
         }
 
-        searchTeiModel.setRelationships(relationshipViewModels);
+        searchTeiModel.setRelationships(relationshipModels);
     }
 
     private String profilePicturePath(TrackedEntityInstance tei, String programUid) {

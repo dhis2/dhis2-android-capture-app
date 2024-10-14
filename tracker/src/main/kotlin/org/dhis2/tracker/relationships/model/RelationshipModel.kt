@@ -6,7 +6,7 @@ import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import java.util.Date
 
-data class RelationshipViewModel(
+data class RelationshipModel(
     val relationship: Relationship,
     val fromGeometry: Geometry?,
     val toGeometry: Geometry?,

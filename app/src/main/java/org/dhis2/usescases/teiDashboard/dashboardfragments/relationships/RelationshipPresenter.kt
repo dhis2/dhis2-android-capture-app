@@ -19,8 +19,8 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -59,7 +59,7 @@ class RelationshipPresenter internal constructor(
             .blockingGet()?.trackedEntityType()
     private var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
-    private val _relationshipsModels = MutableLiveData<List<RelationshipViewModel>>()
+    private val _relationshipsModels = MutableLiveData<List<RelationshipModel>>()
     private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
     val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
     private val _mapItemClicked = MutableLiveData<String>()

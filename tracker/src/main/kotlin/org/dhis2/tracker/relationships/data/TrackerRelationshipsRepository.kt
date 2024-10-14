@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -49,7 +49,7 @@ class TrackerRelationshipsRepository(
         )
     }
 
-    override fun getRelationships(): Flow<List<RelationshipViewModel>> {
+    override fun getRelationships(): Flow<List<RelationshipModel>> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid).blockingGet()
         val programUid = d2.enrollmentModule().enrollments()
@@ -66,10 +66,9 @@ class TrackerRelationshipsRepository(
                 //maps each relationship to a model
 
                 //Gets the relationship type
-                val relationshipType =
-                    d2.relationshipModule().relationshipTypes().withConstraints()
-                        .uid(relationship.relationshipType())
-                        .blockingGet() ?: return@mapNotNull null
+                val relationshipType = getRelationshipTypeByUid(
+                    relationship.relationshipType()
+                ) ?: return@mapNotNull null
                 val direction: RelationshipDirection
                 val relationshipOwnerUid: String?
                 val relationshipOwnerType: RelationshipOwnerType?
@@ -203,7 +202,7 @@ class TrackerRelationshipsRepository(
 
                 if (relationshipOwnerUid == null) return@mapNotNull null
 
-                RelationshipViewModel(
+                RelationshipModel(
                     relationship,
                     fromGeometry,
                     toGeometry,
@@ -227,4 +226,9 @@ class TrackerRelationshipsRepository(
             }
         )
     }
+
+    private fun getRelationshipTypeByUid(relationshipTypeUid: String?) =
+        d2.relationshipModule().relationshipTypes().withConstraints()
+            .uid(relationshipTypeUid)
+            .blockingGet()
 }

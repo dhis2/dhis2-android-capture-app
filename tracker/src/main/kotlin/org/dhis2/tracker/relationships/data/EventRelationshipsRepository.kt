@@ -5,13 +5,16 @@ import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipViewModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 class EventRelationshipsRepository(
     private val d2: D2,
@@ -54,7 +57,7 @@ class EventRelationshipsRepository(
         )
     }
 
-    override fun getRelationships(): Flow<List<RelationshipViewModel>> {
+    override fun getRelationships(): Flow<List<RelationshipModel>> {
         return flowOf(
             d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().event(
@@ -88,108 +91,45 @@ class EventRelationshipsRepository(
                     getStage(stage)?.displayDescription()
                 }
 
-                val (fromGeometry, toGeometry) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            tei?.geometry(),
-                            event?.geometry(),
-                        )
-                    } else {
-                        Pair(
-                            event?.geometry(),
-                            tei?.geometry(),
-                        )
-                    }
-                val (fromValues, toValues) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            getTeiAttributesForRelationship(
-                                relationshipOwnerUid,
-                                relationshipType.fromConstraint(),
-                                relationship.created(),
-                            ),
-                            getEventValuesForRelationship(
-                                eventUid,
-                                relationshipType.toConstraint(),
-                                relationship.created(),
-                            ),
-                        )
-                    } else {
-                        Pair(
-                            getEventValuesForRelationship(
-                                eventUid,
-                                relationshipType.fromConstraint(),
-                                relationship.created(),
-                            ),
-                            getTeiAttributesForRelationship(
-                                relationshipOwnerUid,
-                                relationshipType.toConstraint(),
-                                relationship.created(),
-                            ),
-                        )
-                    }
+                val (fromGeometry, toGeometry) = getGeometries(
+                    direction = direction,
+                    tei = tei,
+                    event = event,
+                )
+                val (fromValues, toValues) = getValues(
+                    direction = direction,
+                    relationshipOwnerUid = relationshipOwnerUid,
+                    relationshipType = relationshipType,
+                    relationship = relationship,
+                )
+                val (fromProfilePic, toProfilePic) = getProfilePics(
+                    direction = direction,
+                    tei = tei,
+                )
+                val (fromDefaultPic, toDefaultPic) = getDefaultPics(
+                    direction = direction,
+                    tei = tei,
+                    event = event,
+                )
 
-                val (fromProfilePic, toProfilePic) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            tei?.let { profilePictureProvider(it, null) },
-                            null,
-                        )
-                    } else {
-                        Pair(
-                            null,
-                            tei?.let { profilePictureProvider(it, null) },
-                        )
-                    }
+                val canBeOpened = canBeOpened(
+                    direction = direction,
+                    tei = tei,
+                    event = event,
+                )
 
-                val (fromDefaultPic, toDefaultPic) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            getTeiDefaultRes(tei),
-                            getEventDefaultRes(event),
-                        )
-                    } else {
-                        Pair(
-                            getEventDefaultRes(event),
-                            getTeiDefaultRes(tei),
-                        )
-                    }
+                val (fromLastUpdated, toLastUpdated) = getLastUpdatedInfo(
+                    direction = direction,
+                    tei = tei,
+                    event = event,
+                )
 
-                val canBeOpened = if (direction == RelationshipDirection.FROM) {
-                    tei?.syncState() != State.RELATIONSHIP &&
-                            orgUnitInScope(tei?.organisationUnit())
-                } else {
-                    event?.syncState() != State.RELATIONSHIP &&
-                            orgUnitInScope(event?.organisationUnit())
-                }
+                val (fromDescription, toDescription) = getDescriptions(
+                    direction = direction,
+                    eventDescription = eventDescription,
+                )
 
-                val (fromLastUpdated, toLastUpdated) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            tei?.lastUpdated(),
-                            event?.lastUpdated()
-                        )
-                    } else {
-                        Pair(
-                            event?.lastUpdated(),
-                            tei?.lastUpdated()
-                        )
-                    }
-
-                val (fromDescription, toDescription) =
-                    if (direction == RelationshipDirection.FROM) {
-                        Pair(
-                            null,
-                            eventDescription
-                        )
-                    } else {
-                        Pair(
-                            eventDescription,
-                            null
-                        )
-                    }
-
-                RelationshipViewModel(
+                RelationshipModel(
                     relationship,
                     fromGeometry,
                     toGeometry,
@@ -211,6 +151,129 @@ class EventRelationshipsRepository(
                     fromDescription,
                 )
             }
+        )
+    }
+
+    private fun canBeOpened(
+        direction: RelationshipDirection,
+        tei: TrackedEntityInstance?,
+        event: Event?
+    ) = if (direction == RelationshipDirection.FROM) {
+        tei?.syncState() != State.RELATIONSHIP &&
+                orgUnitInScope(tei?.organisationUnit())
+    } else {
+        event?.syncState() != State.RELATIONSHIP &&
+                orgUnitInScope(event?.organisationUnit())
+    }
+
+    private fun getDescriptions(
+        direction: RelationshipDirection,
+        eventDescription: String?
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            null,
+            eventDescription
+        )
+    } else {
+        Pair(
+            eventDescription,
+            null
+        )
+    }
+
+    private fun getLastUpdatedInfo(
+        direction: RelationshipDirection,
+        tei: TrackedEntityInstance?,
+        event: Event?
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            tei?.lastUpdated(),
+            event?.lastUpdated()
+        )
+    } else {
+        Pair(
+            event?.lastUpdated(),
+            tei?.lastUpdated()
+        )
+    }
+
+    private fun getDefaultPics(
+        direction: RelationshipDirection,
+        tei: TrackedEntityInstance?,
+        event: Event?
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            getTeiDefaultRes(tei),
+            getEventDefaultRes(event),
+        )
+    } else {
+        Pair(
+            getEventDefaultRes(event),
+            getTeiDefaultRes(tei),
+        )
+    }
+
+    private fun getGeometries(
+        direction: RelationshipDirection,
+        tei: TrackedEntityInstance?,
+        event: Event?
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            tei?.geometry(),
+            event?.geometry(),
+        )
+    } else {
+        Pair(
+            event?.geometry(),
+            tei?.geometry(),
+        )
+    }
+
+    private fun getProfilePics(
+        direction: RelationshipDirection,
+        tei: TrackedEntityInstance?
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            tei?.let { profilePictureProvider(it, null) },
+            null,
+        )
+    } else {
+        Pair(
+            null,
+            tei?.let { profilePictureProvider(it, null) },
+        )
+    }
+
+    private fun getValues(
+        direction: RelationshipDirection,
+        relationshipOwnerUid: String?,
+        relationshipType: RelationshipType,
+        relationship: Relationship
+    ) = if (direction == RelationshipDirection.FROM) {
+        Pair(
+            getTeiAttributesForRelationship(
+                relationshipOwnerUid,
+                relationshipType.fromConstraint(),
+                relationship.created(),
+            ),
+            getEventValuesForRelationship(
+                eventUid,
+                relationshipType.toConstraint(),
+                relationship.created(),
+            ),
+        )
+    } else {
+        Pair(
+            getEventValuesForRelationship(
+                eventUid,
+                relationshipType.fromConstraint(),
+                relationship.created(),
+            ),
+            getTeiAttributesForRelationship(
+                relationshipOwnerUid,
+                relationshipType.toConstraint(),
+                relationship.created(),
+            ),
         )
     }
 }
