@@ -46,8 +46,8 @@ class SessionManagerServiceImpl(
     }
 
     companion object {
-        // todo request configured session time out duration when ready for production
-        private const val SESSION_TIMEOUT_DURATION = 10 * 1000 // 10 seconds
+        // todo update to have a configurable session timeout with the ASWA
+        private const val SESSION_TIMEOUT_DURATION = 60 * 1000 * 15 // 15 minutes
     }
 
     private fun logoutUser(navigateAction: (Int) -> Unit, scope: LifecycleCoroutineScope) {

@@ -123,7 +123,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     }
 
     override fun onUserInteraction() {
-        if (::sessionManagerServiceImpl.isInitialized && this !is SplashActivity) sessionManagerServiceImpl.onUserInteraction()
+        checkSessionTimeout()
     }
 
     private var comesFromImageSource: Boolean = false
@@ -135,7 +135,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         grantResults: IntArray,
     ) {
         if (activityResultObserver != null) {
-            activityResultObserver!!.onRequestPermissionsResult(
+            activityResultObserver?.onRequestPermissionsResult(
                 requestCode,
                 permissions,
                 grantResults,
@@ -155,14 +155,12 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
             (this is LoginActivity),
             {
                 startActivity(MainActivity::class.java, null, true, true, null)
-                null
             },
             {
                 analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
                 if (this !is LoginActivity) {
                     startActivity(LoginActivity::class.java, null, true, true, null)
                 }
-                null
             },
         )
     }
@@ -198,14 +196,14 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     }
 
     private fun showPinDialog() {
-        pinDialog!!.show(supportFragmentManager, PIN_DIALOG_TAG)
+        pinDialog?.show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (activityResultObserver != null && sessionManagerServiceImpl.isUserLoggedIn()) {
             comesFromImageSource = true
-            activityResultObserver!!.onActivityResult(requestCode, resultCode, data)
+            activityResultObserver?.onActivityResult(requestCode, resultCode, data)
             activityResultObserver = null
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -215,6 +213,8 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         if (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.checkSessionTimeout({ accountsCount -> sessionAction(accountsCount) }, lifecycleScope) && this !is LoginActivity) {
             workManagerController.cancelAllWork()
             syncStatusController.restore()
+        } else {
+            if (::sessionManagerServiceImpl.isInitialized && this !is SplashActivity) sessionManagerServiceImpl.onUserInteraction()
         }
     }
 
@@ -222,10 +222,6 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         super.onStop()
         val dialog = pinDialog
         dialog?.dismissAllowingStateLoss()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onResume() {
