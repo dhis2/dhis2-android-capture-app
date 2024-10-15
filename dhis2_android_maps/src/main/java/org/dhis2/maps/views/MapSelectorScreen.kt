@@ -512,11 +512,6 @@ private fun DraggableSelectedIcon(
     selectedLocation: SelectedLocation,
 ) {
     val density = LocalDensity.current
-    /*val visible by remember(selectedLocation) {
-        derivedStateOf {
-            selectedLocation !is SelectedLocation.None
-        }
-    }*/
 
     if (selectedLocation !is SelectedLocation.None) {
         var heightOffset by remember {
