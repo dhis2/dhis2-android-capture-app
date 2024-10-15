@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,7 +29,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
@@ -128,8 +128,9 @@ private fun RelationShipTypeSection(
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .defaultMinSize(minHeight = Spacing.Spacing48)
                 .wrapContentHeight(),
-            horizontalArrangement = spacedBy(16.dp),
+            horizontalArrangement = spacedBy(Spacing.Spacing16),
         ) {
             Column(
                 modifier = Modifier
@@ -201,20 +202,20 @@ private fun NoRelationships() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(42.dp),
+            .padding(Spacing.Spacing48),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
             modifier = Modifier
-                .padding(1.dp)
+                .padding(Spacing.Spacing1)
                 .fillMaxWidth(),
             painter = painterResource(id = R.drawable.no_relationships),
             contentDescription = stringResource(id = R.string.empty_relationships),
         )
         Spacer(
             modifier = Modifier
-                .height(17.dp)
+                .height(Spacing.Spacing16)
                 .fillMaxWidth(),
         )
         Text(
