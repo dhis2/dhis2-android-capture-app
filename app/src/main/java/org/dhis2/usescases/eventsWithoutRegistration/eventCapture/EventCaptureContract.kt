@@ -1,10 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -52,6 +55,11 @@ class EventCaptureContract {
         fun programStage(): String
         fun getTeiUid(): String?
         fun getEnrollmentUid(): String?
+        fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>>
+        fun onNavigationPageChanged(page: NavigationPage)
+        fun onSetNavigationPage(index: Int)
+        fun isDataEntrySelected(): Boolean
+        fun updateNotesBadge(numberOfNotes: Int)
     }
 
     interface EventCaptureRepository {

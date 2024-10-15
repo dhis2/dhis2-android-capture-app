@@ -1,13 +1,21 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +27,8 @@ import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
+import org.dhis2.commons.animations.hide
+import org.dhis2.commons.animations.show
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
@@ -48,12 +58,15 @@ import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.customviews.FormBottomDialog
 import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
 
 class EventCaptureActivity :
@@ -93,7 +106,7 @@ class EventCaptureActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
         programUid = intent.getStringExtra(Constants.PROGRAM_UID)
-        setUpEventCaptureComponent(eventUid)
+        setUpEventCaptureComponent(eventUid!!)
         teiUid = presenter.getTeiUid()
         enrollmentUid = presenter.getEnrollmentUid()
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
@@ -156,18 +169,40 @@ class EventCaptureActivity :
     }
 
     private fun setUpNavigationBar() {
-        binding.navigationBar.pageConfiguration(pageConfigurator!!)
         eventViewPager?.registerOnPageChangeCallback(
             object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    binding.navigationBar.selectItemAt(position)
+                    presenter.onSetNavigationPage(position)
                 }
             },
         )
-        binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-            eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
-            true
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by presenter.observeNavigationBarUIState()
+                val selectedItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.items.isNotEmpty(),
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it },
+                ) {
+                    NavigationBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.items,
+                        selectedItemIndex = selectedItemIndex,
+                    ) { page ->
+                        presenter.onNavigationPageChanged(page)
+                        eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(page)
+                    }
+                }
+            }
         }
     }
 
@@ -179,7 +214,7 @@ class EventCaptureActivity :
         }
     }
 
-    private fun setUpEventCaptureComponent(eventUid: String?) {
+    private fun setUpEventCaptureComponent(eventUid: String) {
         eventCaptureComponent = app().userComponent()!!.plus(
             EventCaptureModule(
                 this,
@@ -208,7 +243,7 @@ class EventCaptureActivity :
     }
 
     fun openDetails() {
-        binding.navigationBar.selectItemAt(0)
+        presenter.onNavigationPageChanged(NavigationPage.DETAILS)
     }
 
     fun openForm() {
@@ -217,7 +252,7 @@ class EventCaptureActivity :
                 it.dismiss()
             }
         }
-        binding.navigationBar.selectItemAt(1)
+        presenter.onNavigationPageChanged(NavigationPage.DATA_ENTRY)
     }
 
     override fun onResume() {
@@ -237,13 +272,14 @@ class EventCaptureActivity :
         onBackPressed()
     }
 
+    @SuppressLint("MissingSuperCall")
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         finishEditMode()
     }
 
     private fun finishEditMode() {
-        if (binding.navigationBar.isHidden()) {
+        if (binding.navigationBar.visibility == View.GONE) {
             showNavigationBar()
         } else {
             attemptFinish()
@@ -438,14 +474,16 @@ class EventCaptureActivity :
             )
             .setPositiveButton(
                 R.string.change_event_date,
-            ) { _, _ -> binding.navigationBar.selectItemAt(0) }
+            ) { _, _ ->
+                presenter.onSetNavigationPage(0)
+            }
             .setNegativeButton(R.string.go_back) { _, _ -> back() }
             .setCancelable(false)
             .show()
     }
 
     override fun updateNoteBadge(numberOfNotes: Int) {
-        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
+        presenter.updateNotesBadge(numberOfNotes)
     }
 
     override fun showProgress() {

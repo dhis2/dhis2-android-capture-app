@@ -5,7 +5,9 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -34,6 +36,8 @@ class EventCapturePresenterTest {
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
+    private val pageConfigurator: NavigationPageConfigurator = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -43,6 +47,8 @@ class EventCapturePresenterTest {
             eventRepository,
             schedulers,
             preferences,
+            pageConfigurator,
+            resourceManager,
         )
     }
 
