@@ -65,4 +65,6 @@
     <string name="error_database">Không thể truy cập cơ sở dữ liệu. Xin vui lòng liên hệ quản lý của bạn. </string>
     <string name="error_invalid_program">Bạn không có quyền truy cập đến chương trình %s</string>
     <string name="error_invalid_attribute">Bạn không có quyền truy cập đến thuộc tính %s</string>
+    <string name="error_unsupported_aggregation_type">Kiểu tổng hợp chưa được hỗ trợ%s</string>
+    <string name="line_listing_max_results">Bảng báo cáo chỉ giới hạn đến %1$smục. Hãy lọc để tinh chỉnh kết quả</string>
 </resources>
