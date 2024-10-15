@@ -74,7 +74,7 @@ abstract class RelationshipsRepository(
             }
 
             else -> {
-                listOf()
+                emptyList()
             }
 
         }
@@ -133,7 +133,7 @@ abstract class RelationshipsRepository(
         val event =
             d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).blockingGet()
 
-        val dataElements = dataElementUids!!.mapNotNull { dataElementUid ->
+        val dataElements = dataElementUids?.mapNotNull { dataElementUid ->
             val formName = d2.dataElementModule().dataElements()
                 .uid(dataElementUid).blockingGet()
                 ?.displayName()
@@ -145,7 +145,7 @@ abstract class RelationshipsRepository(
             } else {
                 null
             }
-        }
+        } ?: emptyList()
 
         return dataElements.ifEmpty {
             val stage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
