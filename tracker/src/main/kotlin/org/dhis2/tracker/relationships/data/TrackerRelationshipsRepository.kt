@@ -227,6 +227,25 @@ class TrackerRelationshipsRepository(
         )
     }
 
+    override fun getRelationshipTitle(relationshipType: RelationshipType): String {
+        val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(teiUid)
+            .blockingGet()?.trackedEntityType()
+        return when (teTypeUid) {
+            relationshipType.fromConstraint()?.trackedEntityType()?.uid() -> {
+                relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
+            }
+
+            relationshipType.toConstraint()?.trackedEntityType()?.uid() -> {
+                relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
+            }
+
+            else -> {
+                relationshipType.displayName() ?: ""
+            }
+        }
+    }
+
     private fun getRelationshipTypeByUid(relationshipTypeUid: String?) =
         d2.relationshipModule().relationshipTypes().withConstraints()
             .uid(relationshipTypeUid)

@@ -33,7 +33,13 @@ data class RelationshipModel(
             RelationshipDirection.TO -> toValues
         }
         return when {
-            values.isNotEmpty() -> "${values.first().first}: ${values.first().second}"
+            values.isNotEmpty() -> {
+                val firstPair = values.first()
+                val label = firstPair.first
+                val value = firstPair.second
+                if (value.isNotEmpty()) "$label: $value" else label
+            }
+
             else -> "-"
         }
     }

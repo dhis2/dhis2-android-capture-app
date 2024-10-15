@@ -37,6 +37,7 @@ class GetRelationshipsByType(
                     }
 
                     RelationshipSection(
+                        title = relationshipsRepository.getRelationshipTitle(relationshipType),
                         relationshipType = relationshipType,
                         relationships = filteredRelationships.map { mapToRelationshipItem(it) },
                         teiTypeUid = teiTypeUid

@@ -37,14 +37,18 @@ class RelationshipMapsRepositoryImpl(
                     .blockingGet()
 
                 searchItem?.let {
-                    val programUid = d2.enrollmentModule().enrollments()
-                        .uid((config as TrackerRelationshipConfiguration).enrollmentUid)
-                        .blockingGet()
-                        ?.program()
-                    trackedEntityInfoProvider.getRelatedInfo(
-                        searchItem = searchItem,
-                        selectedProgram = programUid?.let { d2.program(programUid) },
-                    )
+                    if (config is TrackerRelationshipConfiguration) {
+                        val programUid = d2.enrollmentModule().enrollments()
+                            .uid(config.enrollmentUid)
+                            .blockingGet()
+                            ?.program()
+                        trackedEntityInfoProvider.getRelatedInfo(
+                            searchItem = searchItem,
+                            selectedProgram = programUid?.let { d2.program(programUid) },
+                        )
+                    } else {
+                        null
+                    }
                 }
             }
         }
