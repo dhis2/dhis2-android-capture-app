@@ -9,6 +9,7 @@ import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
@@ -147,11 +148,9 @@ class TeiDashboardTest : BaseTest() {
 
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
-
         teiDashboardRobot(composeTestRule) {
+            clickOnMenuMoreOptions()
+            clickOnReopen()
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnFab()
@@ -283,6 +282,10 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
         }
 
         enrollmentRobot(composeTestRule) {
