@@ -60,6 +60,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonPointToFeature;
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.tracker.ProfilePictureProvider;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
@@ -180,6 +181,7 @@ public class SearchTEModule {
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
+        ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
 
         return new SearchRepositoryImplKt(
                 searchRepository,
@@ -189,14 +191,16 @@ public class SearchTEModule {
                 metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
-                        resourceManager,
-                        dateLabelProvider
+                        profilePictureProvider,
+                        dateLabelProvider,
+                        metadataIconProvider
                 ),
                 new EventInfoProvider(
                         d2,
                         resourceManager,
                         dateLabelProvider,
-                        metadataIconProvider
+                        metadataIconProvider,
+                        profilePictureProvider
                 )
         );
     }

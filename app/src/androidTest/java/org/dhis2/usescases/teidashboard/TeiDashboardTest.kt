@@ -148,7 +148,6 @@ class TeiDashboardTest : BaseTest() {
             clickOnFab()
             clickOnReferral()
             clickOnFirstReferralEvent()
-            clickOnReferralOption(context.getString(R.string.one_time))
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
         }

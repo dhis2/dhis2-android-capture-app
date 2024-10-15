@@ -54,7 +54,6 @@ class MapTeiEventsToFeatureCollectionTest {
                 uid = EVENTUID,
                 avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
                     "image",
-                    "",
                 ),
                 title = "",
                 description = null,

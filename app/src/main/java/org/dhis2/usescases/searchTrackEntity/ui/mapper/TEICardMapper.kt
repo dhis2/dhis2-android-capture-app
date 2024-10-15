@@ -30,9 +30,10 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.io.File
@@ -63,20 +64,32 @@ class TEICardMapper(
 
     @Composable
     private fun ProvideAvatar(item: SearchTeiModel, onImageClick: ((String) -> Unit)) {
+        val programUid: String? = if (item.selectedEnrollment != null) {
+            item.selectedEnrollment.program().toString()
+        } else {
+            null
+        }
+
         if (item.profilePicturePath.isNotEmpty()) {
             val file = File(item.profilePicturePath)
             val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
             val painter = BitmapPainter(bitmap)
 
             Avatar(
-                imagePainter = painter,
-                style = AvatarStyle.IMAGE,
+                style = AvatarStyleData.Image(painter),
                 onImageClick = { onImageClick(item.profilePicturePath) },
+            )
+        } else if (item.isMetadataIconDataAvailable(programUid)) {
+            Avatar(
+                style = AvatarStyleData.Metadata(
+                    imageCardData = item.getMetadataIconData(programUid).imageCardData,
+                    avatarSize = MetadataAvatarSize.S(),
+                    tintColor = item.getMetadataIconData(programUid).color,
+                ),
             )
         } else {
             Avatar(
-                textAvatar = getTitleFirstLetter(item),
-                style = AvatarStyle.TEXT,
+                style = AvatarStyleData.Text(getTitleFirstLetter(item)),
             )
         }
     }

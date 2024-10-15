@@ -63,6 +63,9 @@ class DashboardViewModel(
     private var _state = MutableStateFlow<State?>(null)
     val state = _state.asStateFlow()
 
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val _dashboardModel = MutableLiveData<DashboardModel?>()
     var dashboardModel: LiveData<DashboardModel?> = _dashboardModel
 
@@ -276,5 +279,31 @@ class DashboardViewModel(
 
     fun onNavigationItemSelected(itemId: TEIDashboardItems) {
         _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = itemId)
+    }
+
+    fun checkIfTeiCanBeTransferred(): Boolean {
+        return repository.teiCanBeTransferred()
+    }
+
+    fun transferTei(
+        newOrgUnitId: String,
+        onCompletion: () -> Unit,
+    ) {
+        _isLoading.value = true
+        viewModelScope.launch(dispatcher.io()) {
+            try {
+                repository.transferTei(newOrgUnitId)
+                withContext(dispatcher.ui()) {
+                    updateDashboard()
+                    onCompletion()
+                }
+            } catch (ex: Exception) {
+                Timber.e(ex)
+            } finally {
+                withContext(dispatcher.ui()) {
+                    _isLoading.value = false
+                }
+            }
+        }
     }
 }

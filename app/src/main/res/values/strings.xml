@@ -147,6 +147,7 @@
     <string name="there_is_no_available_period">There is no available periods to select.</string>
     <!--Event Detail-->
     <string name="due_date">Due date</string>
+    <string name="next_event">Next %1$s</string>
     <string name="cat_combo">Cat combo</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Cancel</string>
@@ -480,7 +481,8 @@
     <string name="biometrics_dialog_title">Empty Credentials</string>
     <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
     <string name="biometrics_security_title">Biometric Security</string>
-    <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
+    <string name="biometrics_login_title">Quick login</string>
+    <string name="biometrics_login_text">Would you like to use your fingerprint or another biometric method to log in?</string>
     <string name="tab_tables">Tables</string>
     <string name="table">Table</string>
     <string name="login_https">https://</string>
@@ -492,7 +494,7 @@
     <string name="send_user_name_title">Send data</string>
     <string name="send_user_name_mesage">Help DHIS2 improve this app by sharing error logs associated to your user id.</string>
     <string name="improve_app_msg_title">Do you want to help us improve this app?</string>
-    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.  For further details, please refer to our privacy policy.</string>
+    <string name="improve_app_msg_text">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.\n\nFor further details, please refer to our privacy policy.</string>
     <string name="improve_app_msg_clickable_word">privacy policy</string>
     <string name="check_mandatory_field">Check fields</string>
     <string name="error_no_network_during_sync">You lost your internet connection while performing your configuration sync. Please try again later</string>
@@ -741,9 +743,9 @@
     <string name="error_init_session">We could not init the session with your user</string>
     <string name="enrollment_date_edition_warning">There are planned events that won\'t be re-scheduled</string>
     <string name="section_charts">Charts</string>
-    <string name="navigation_list_view">List view</string>
+    <string name="navigation_list_view">List</string>
     <string name="navigation_table_view">Table view</string>
-    <string name="navigation_map_view">Map view</string>
+    <string name="navigation_map_view">Map</string>
     <string name="navigation_analytics">Analytics</string>
     <string name="navigation_tasks">Tasks</string>
     <string name="navigation_programs">Programs</string>
@@ -751,6 +753,7 @@
     <string name="navigation_relationships">Relations</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
+    <string name="navigation_form">Form</string>
     <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">View as Line</string>
@@ -958,6 +961,9 @@
     <string name="remove_enrollment_dialog_message">Data from %s will de deleted. This action cannot be undone.</string>
     <string name="schedule_next">Schedule next</string>
     <string name="schedule">Schedule</string>
+    <string name="scheduled_enter_event">Scheduled</string>
+    <string name="enter_event">Enter %1$s</string>
+    <string name="cancel_event">Cancel %1$s</string>
     <string name="program_stage">Program stage</string>
     <string name="event">event</string>
     <string name="timeline">Timeline</string>
@@ -979,4 +985,12 @@
     <string name="file_resources">file resources</string>
     <string name="show_description">Show description</string>
     <string name="hide_description">Hide description</string>
+    <string name="biometric_title">Verify It\'s You</string>
+    <string name="use_password">Use Password</string>
+    <string name="transfer">Transfer</string>
+    <string name="transfer_tei_org_sheet_title">Transfer %s</string>
+    <string name="transfer_tei_org_sheet_description">From %s to…</string>
+    <string name="successfully_transferred">Successfully transferred</string>
+    <string name="event_cancelled">%1$s cancelled</string>
+    <string name="due_date_updated">Due date updated</string>
 </resources>

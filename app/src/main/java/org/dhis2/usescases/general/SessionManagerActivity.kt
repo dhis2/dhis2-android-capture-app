@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -19,6 +20,7 @@ import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.service.SessionManagerServiceImpl
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.OpenIdSession.LogOutReason
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
@@ -58,7 +60,13 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     private var lifeCycleObservable: BehaviorSubject<Status> =
         BehaviorSubject.create()
 
-    var syncStatusController: SyncStatusController = SyncStatusController()
+    var syncStatusController: SyncStatusController = SyncStatusController(
+        object : DispatcherProvider {
+            override fun io() = Dispatchers.IO
+            override fun computation() = Dispatchers.Default
+            override fun ui() = Dispatchers.Main
+        },
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val serverComponent = (applicationContext as App).serverComponent

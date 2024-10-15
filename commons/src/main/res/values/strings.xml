@@ -221,6 +221,7 @@
     <string name="msg_network_connection_maps">An internet connection is required in order to use maps.</string>
 
     <string name="overdue_today">Today</string>
+    <string name="overdue_due_today">Due today</string>
     <plurals name="overdue_days">
         <item quantity="one">%d day overdue</item>
         <item quantity="other">%d days overdue</item>

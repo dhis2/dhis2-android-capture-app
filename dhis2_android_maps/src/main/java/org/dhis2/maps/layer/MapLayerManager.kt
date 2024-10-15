@@ -61,6 +61,8 @@ class MapLayerManager(
         const val TEI_ICON_ID = "TEI_ICON_ID"
         const val ENROLLMENT_ICON_ID = "ENROLLMENT_ICON_ID"
         const val STAGE_ICON_ID = "STAGE_ICON_ID"
+        const val PLACE_ICON_ID = "PLACE_ICON_ID"
+        const val SELECTED_PLACE_ICON_ID = "SELECTED_PLACE_ICON_ID"
     }
 
     fun withMapStyle(mapStyle: MapStyle?) = apply {

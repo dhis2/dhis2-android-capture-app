@@ -114,8 +114,7 @@ fun MapItemHorizontalListPreview() {
         items.add(
             MapItemModel(
                 uid = UUID.randomUUID().toString(),
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    "",
+                avatarProviderConfiguration = AvatarProviderConfiguration.MainValueLabel(
                     "Tem",
                 ),
                 title = "Title",

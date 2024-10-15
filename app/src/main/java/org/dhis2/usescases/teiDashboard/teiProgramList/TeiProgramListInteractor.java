@@ -9,7 +9,6 @@ import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.data.service.SyncStatusController;
-import org.dhis2.data.service.SyncStatusData;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramUiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -43,7 +42,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     private Date selectedEnrollmentDate;
     private PublishProcessor<Unit> refreshData = PublishProcessor.create();
     private SyncStatusController syncStatusController;
-    private SyncStatusData lastSyncData = null;
 
     TeiProgramListInteractor(
             TeiProgramListRepository teiProgramListRepository,
@@ -227,10 +225,9 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 programUiModel.getUid()
         )) {
             programDownloadState = ProgramDownloadState.DOWNLOADING;
-        } else if (syncStatusController.observeDownloadProcess().getValue().wasProgramDownloading(
-                lastSyncData,
-                programUiModel.getUid())
-        ) {
+        } else if (syncStatusController.observeDownloadProcess().getValue().isProgramDownloaded(
+                programUiModel.getUid()
+        )) {
             programDownloadState = ProgramDownloadState.DOWNLOADED;
         } else if (programUiModel.getDownloadState() == ProgramDownloadState.ERROR) {
             programDownloadState = ProgramDownloadState.ERROR;

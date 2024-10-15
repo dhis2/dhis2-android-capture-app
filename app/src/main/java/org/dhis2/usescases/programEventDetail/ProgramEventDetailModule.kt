@@ -24,6 +24,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.tracker.ProfilePictureProvider
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
@@ -72,12 +73,16 @@ class ProgramEventDetailModule(
         eventDetailRepository: ProgramEventDetailRepository,
         dispatcher: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
+        pageConfigurator: NavigationPageConfigurator,
+        resourceManager: ResourceManager,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
             MapStyleConfiguration(d2),
             eventDetailRepository,
             dispatcher,
             createEventUseCase,
+            pageConfigurator,
+            resourceManager,
         )
     }
 
@@ -120,11 +125,13 @@ class ProgramEventDetailModule(
         d2: D2,
         resourceManager: ResourceManager,
         metadataIconProvider: MetadataIconProvider,
+        profilePictureProvider: ProfilePictureProvider,
     ) = EventInfoProvider(
         d2,
         resourceManager,
         DateLabelProvider(context, resourceManager),
         metadataIconProvider,
+        profilePictureProvider,
     )
 
     @Provides
@@ -178,4 +185,8 @@ class ProgramEventDetailModule(
     @PerActivity
     fun provideOURepositoryConfiguration(d2: D2) =
         OURepositoryConfiguration(d2, orgUnitSelectorScope)
+
+    @Provides
+    @PerActivity
+    fun provideProfilePictureProvider(d2: D2) = ProfilePictureProvider(d2)
 }

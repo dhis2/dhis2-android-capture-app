@@ -16,7 +16,9 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
@@ -258,6 +260,104 @@ class FormRepositoryImplTest {
         ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
         repository.fetchFormItems()
         assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+    }
+
+    @Test
+    fun `Should allow to complete only uncompleted events`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertTrue(repository.runDataIntegrityCheck(false).canComplete)
+        whenever(formValueStore.eventState()) doReturn EventStatus.COMPLETED
+        repository.fetchFormItems()
+
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertFalse(repository.runDataIntegrityCheck(false).canComplete)
+    }
+
+    @Test
+    fun `Should allow discard Changes in event forms if navigating back`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1"))
+        repository.fetchFormItems()
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        // When user updates a field with error
+        repository.updateErrorList(
+            RowAction(
+                id = "uid001",
+                value = "testValue",
+                type = ActionType.ON_SAVE,
+                error = Throwable(),
+            ),
+        )
+
+        whenever(
+            fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
+        ) doReturn "errorMessage"
+        assertTrue(
+            repository.runDataIntegrityCheck(true) is MissingMandatoryResult,
+        )
+        assertTrue(repository.runDataIntegrityCheck(true).allowDiscard)
+    }
+
+    @Test
+    fun `Events should follow validation strategy when form has errors`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideItemList())
+        repository.fetchFormItems()
+
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        // When user updates a field with error
+        repository.updateErrorList(
+            RowAction(
+                id = "uid001",
+                value = "testValue",
+                type = ActionType.ON_SAVE,
+                error = Throwable(),
+            ),
+        )
+
+        whenever(
+            fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
+        ) doReturn "errorMessage"
+
+        assertTrue(
+            repository.runDataIntegrityCheck(true) is FieldsWithErrorResult &&
+                repository.runDataIntegrityCheck(true).allowDiscard,
+        )
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        repository.fetchFormItems()
+
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+    }
+
+    @Test
+    fun `Should not allow to exit form with errors if event is completed`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryItemList())
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.COMPLETED
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+        assertTrue(repository.runDataIntegrityCheck(true).allowDiscard)
     }
 
     @Test

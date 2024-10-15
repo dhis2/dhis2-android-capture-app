@@ -464,6 +464,9 @@
     <string name="org_unit_selection_warning">Debe seleccionar al menos una unidad organizativa.</string>
     <string name="send_user_name_title">Enviar datos</string>
     <string name="send_user_name_mesage">Ayude a DHIS2 a mejorar esta app compartiendo errores asociados a su usuario.</string>
+    <string name="improve_app_msg_title">Quiere ayudarnos a mejorar esta app?</string>
+    <string name="improve_app_msg_text">"Si dice que sí la app mandará estadísticas anónimas y registro de errores que ayudaran a mejorar la experiencia y el rendimiento.\n\nPara más detalles, consulte nuestra política de privacidad. "</string>
+    <string name="improve_app_msg_clickable_word">política de privacidad</string>
     <string name="check_mandatory_field">Comprobar campos</string>
     <string name="error_no_network_during_sync">Se perdió la conexión a internet durante la sincronización. Inténtelo mas tarde.</string>
     <string name="action_agree">Confirmar</string>

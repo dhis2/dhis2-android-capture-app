@@ -2,6 +2,7 @@ package org.dhis2.maps.geometry
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 fun Feature?.getPointLatLng(): LatLng {
@@ -13,3 +14,13 @@ fun List<Feature?>.getLatLngPointList() =
     this.filter { it?.geometry() is Point }.map { it.getPointLatLng() }
 
 fun Feature?.isPoint() = this?.geometry() is Point
+
+fun Feature?.isPolygon() = this?.geometry() is Polygon
+
+fun Feature?.getPolygonPoints(): List<Feature> = if (this?.geometry() is Polygon) {
+    (this.geometry() as Polygon).coordinates().map { points ->
+        points.map { point -> Feature.fromGeometry(point) }
+    }.flatten()
+} else {
+    emptyList()
+}

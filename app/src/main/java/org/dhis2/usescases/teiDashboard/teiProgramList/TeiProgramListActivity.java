@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -31,8 +30,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     TeiProgramListAdapter adapter;
     @Inject
     ThemeManager themeManager;
-    @Inject
-    SyncStatusController syncStatusController;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,8 +38,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-
-        syncStatusController.observeDownloadProcess().observe(this, syncStatusData -> presenter.refreshData());
     }
 
     @Override

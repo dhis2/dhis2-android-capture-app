@@ -10,6 +10,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Even
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -23,6 +24,7 @@ class ConfigureEventReportDateTest {
     private val resourcesProvider: EventDetailResourcesProvider = mock {
         on { provideDueDate() } doReturn DUE_DATE
         on { provideEventDate() } doReturn EVENT_DATE
+        on { provideNextEventDate(label = null) } doReturn NEXT_EVENT
     }
 
     private val programStage: ProgramStage = mock()
@@ -66,6 +68,9 @@ class ConfigureEventReportDateTest {
     @Test
     fun `Should return current day when new event`() = runBlocking {
         // Given the creation of new event
+        whenever(repository.getEvent()) doReturn null
+        whenever(programStage.displayEventLabel()) doReturn null
+
         configureEventReportDate = ConfigureEventReportDate(
             resourceProvider = resourcesProvider,
             repository = repository,
@@ -81,8 +86,7 @@ class ConfigureEventReportDateTest {
         assert(eventDate.active)
         // Then reportDate should be the current day
         assert(eventDate.dateValue == currentDay)
-        // Then default label should be displayed
-        assert(eventDate.label == EVENT_DATE)
+        assert(eventDate.label == NEXT_EVENT)
     }
 
     @Test
@@ -215,17 +219,18 @@ class ConfigureEventReportDateTest {
 
         // And with hidden due date
         whenever(programStage.hideDueDate()) doReturn true
-        whenever(programStage.dueDateLabel()) doReturn DUE_DATE
         whenever(repository.getStageLastDate(ENROLLMENT_ID)) doReturn DateUtils.getInstance().today
         whenever(repository.getMinDaysFromStartByProgramStage()) doReturn 6
         whenever(repository.getProgramStage()) doReturn programStage
+        whenever(repository.getEvent()) doReturn null
+        whenever(programStage.displayEventLabel()) doReturn null
 
         // When report date is invoked
         val eventDate = configureEventReportDate.invoke().first()
 
         // Then report date should be hidden
         assertFalse(eventDate.active)
-        assert(eventDate.label == DUE_DATE)
+        assertEquals(eventDate.label, NEXT_EVENT)
     }
 
     @Test
@@ -254,5 +259,6 @@ class ConfigureEventReportDateTest {
         const val EVENT_ID = "eventId"
         const val DUE_DATE = "Due date"
         const val EVENT_DATE = "Event date"
+        const val NEXT_EVENT = "Next event"
     }
 }

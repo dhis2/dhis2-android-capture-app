@@ -1,5 +1,13 @@
 package org.dhis2.usescases.searchTrackEntity
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,13 +46,16 @@ import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import timber.log.Timber
 
 const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
@@ -67,7 +78,12 @@ class SearchTEIViewModel(
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
 
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
-    val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
+
+    private val _navigationBarUIState = mutableStateOf(
+        NavigationBarUIState<NavigationPage>(),
+    )
+    val navigationBarUIState: MutableState<NavigationBarUIState<NavigationPage>> =
+        _navigationBarUIState
 
     val queryData = mutableMapOf<String, String>().apply {
         initialQuery?.let { putAll(it) }
@@ -115,12 +131,65 @@ class SearchTEIViewModel(
             createButtonScrollVisibility.postValue(
                 searchRepository.canCreateInProgramWithoutSearch(),
             )
-            _pageConfiguration.postValue(searchNavPageConfigurator.initVariables())
+            loadNavigationBarItems()
 
             _teTypeName.postValue(
                 searchRepository.trackedEntityType.displayName(),
             )
         }
+    }
+
+    private fun loadNavigationBarItems() {
+        val pageConfigurator = searchNavPageConfigurator.initVariables()
+        _pageConfiguration.postValue(pageConfigurator)
+
+        val enrollmentItems = mutableListOf<NavigationBarItem<NavigationPage>>()
+
+        if (pageConfigurator.displayListView()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.LIST_VIEW,
+                    icon = Icons.AutoMirrored.Outlined.List,
+                    selectedIcon = Icons.AutoMirrored.Filled.List,
+                    label = resourceManager.getString(R.string.navigation_list_view),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayMapView()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.MAP_VIEW,
+                    icon = Icons.Outlined.Map,
+                    selectedIcon = Icons.Filled.Map,
+                    label = resourceManager.getString(R.string.navigation_map_view),
+                ),
+            )
+        }
+
+        if (pageConfigurator.displayAnalytics()) {
+            enrollmentItems.add(
+                NavigationBarItem(
+                    id = NavigationPage.ANALYTICS,
+                    icon = Icons.Outlined.BarChart,
+                    selectedIcon = Icons.Filled.BarChart,
+                    label = resourceManager.getString(R.string.navigation_charts),
+                ),
+            )
+        }
+
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(
+            items = enrollmentItems.takeIf { it.size > 1 }.orEmpty(),
+            selectedItem = enrollmentItems.firstOrNull()?.id,
+        )
+
+        if (enrollmentItems.isNotEmpty()) {
+            onNavigationPageChanged(enrollmentItems.first().id)
+        }
+    }
+
+    fun onNavigationPageChanged(page: NavigationPage) {
+        _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = page)
     }
 
     fun setListScreen() {

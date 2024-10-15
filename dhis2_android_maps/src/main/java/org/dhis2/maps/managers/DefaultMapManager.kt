@@ -1,18 +1,20 @@
 package org.dhis2.maps.managers
 
+import android.graphics.RectF
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import com.mapbox.geojson.BoundingBox
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
+import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.types.PLACES_LAYER_ID
+import org.dhis2.maps.layer.types.PLACES_SOURCE_ID
+import org.dhis2.maps.layer.types.PlacesMapLayer
 import org.hisp.dhis.android.core.common.FeatureType
 
 class DefaultMapManager(
@@ -22,6 +24,9 @@ class DefaultMapManager(
 ) : MapManager(mapView, locationEngine) {
 
     private var featureCollection: FeatureCollection? = null
+    private var boundingBox: BoundingBox? = null
+    override var numberOfUiIcons = 1
+    override var defaultUiIconRightMargin = 12.dp
 
     companion object {
         const val LAYER_ID = "selected_features_layer"
@@ -36,9 +41,17 @@ class DefaultMapManager(
         boundingBox: BoundingBox,
     ) {
         this.featureCollection = featureCollection
-        initCameraPosition(boundingBox)
+        this.boundingBox = boundingBox
+        if (featureCollection.features()?.isNotEmpty() == true) {
+            initCameraPosition(boundingBox)
+        }
         setSource()
+        setIcons()
         setLayer()
+    }
+
+    fun updateCameraPosition() {
+        boundingBox?.let { initCameraPosition(it) }
     }
 
     override fun loadDataForStyle() {
@@ -66,41 +79,61 @@ class DefaultMapManager(
     }
 
     override fun setSource() {
-        (style?.getSource(SOURCE_ID) as GeoJsonSource?)?.setGeoJson(featureCollection)
-            ?: style?.addSource(GeoJsonSource(SOURCE_ID, featureCollection))
+        (style?.getSource(PLACES_SOURCE_ID) as GeoJsonSource?)?.setGeoJson(featureCollection)
+            ?: style?.addSource(GeoJsonSource(PLACES_SOURCE_ID, featureCollection))
+    }
+
+    private fun setIcons() {
+        AppCompatResources.getDrawable(
+            mapView.context,
+            R.drawable.ic_map_pin,
+        )?.let { placeIconDrawable ->
+            style?.addImage(
+                MapLayerManager.PLACE_ICON_ID,
+                placeIconDrawable,
+            )
+        }
+        AppCompatResources.getDrawable(
+            mapView.context,
+            R.drawable.ic_map_pin_selected,
+        )?.let { placeIconDrawable ->
+            style?.addImage(
+                MapLayerManager.SELECTED_PLACE_ICON_ID,
+                placeIconDrawable,
+            )
+        }
     }
 
     override fun setLayer() {
-        if (featureType == FeatureType.POINT && style?.getLayer(LAYER_ID) == null) {
-            style?.addLayer(
-                SymbolLayer(LAYER_ID, SOURCE_ID)
-                    .withProperties(
-                        PropertyFactory.iconImage(POINT_ICON_ID),
-                    ),
-            )
+        if (style?.getLayer(PLACES_LAYER_ID) == null) {
+            style?.let {
+                mapLayerManager.mapLayers[PLACES_SOURCE_ID] = PlacesMapLayer(it)
+            }
+        }
+    }
+
+    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+        val rectF = map?.projection?.toScreenLocation(point)?.let { pointf ->
+            RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+        } ?: RectF()
+        var selectedFeature: Feature? = null
+        val features = map?.queryRenderedFeatures(rectF, PLACES_LAYER_ID) ?: emptyList()
+        if (features.isNotEmpty()) {
+            mapLayerManager.selectFeature(null)
+            selectedFeature = features.first()
         }
 
-        if (featureType == FeatureType.POLYGON && style?.getLayer(LAYER_ID) == null) {
-            style?.addLayer(
-                SymbolLayer(LAYER_ID, SOURCE_ID)
-                    .withProperties(
-                        PropertyFactory.iconImage(POLYGON_ICON_ID),
-                    ),
-            )
-
-            style?.addLayerBelow(
-                FillLayer(FILL_LAYER_ID, SOURCE_ID)
-                    .withProperties(
-                        fillColor(
-                            ContextCompat.getColor(
-                                mapView.context,
-                                R.color.green_7ed,
-                            ),
-                        ),
-                    ),
-                "settlement-label",
-            )
+        featureCollection?.features()?.forEach {
+            if (it.getStringProperty("id") == selectedFeature?.getStringProperty("id")) {
+                it.addBooleanProperty("selected", true)
+            } else {
+                it.addBooleanProperty("selected", false)
+            }
         }
+
+        setSource()
+
+        return selectedFeature
     }
 
     override fun findFeature(

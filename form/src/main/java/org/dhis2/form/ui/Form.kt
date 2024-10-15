@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -68,6 +69,7 @@ fun Form(
     }
     LazyColumn(
         modifier = Modifier
+            .testTag("FORM_VIEW")
             .fillMaxSize()
             .background(
                 Color.White,

@@ -9,8 +9,9 @@ interface FormRepository {
 
     fun fetchFormItems(shouldOpenErrorLocation: Boolean = false): List<FieldUiModel>
     fun composeList(skipProgramRules: Boolean = false): List<FieldUiModel>
+    fun completeEvent()
     fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>?
-    fun runDataIntegrityCheck(allowDiscard: Boolean): DataIntegrityCheckResult
+    fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult
     fun completedFieldsPercentage(value: List<FieldUiModel>): Float
     fun calculationLoopOverLimit(): Boolean
     fun backupOfChangedItems(): List<FieldUiModel>

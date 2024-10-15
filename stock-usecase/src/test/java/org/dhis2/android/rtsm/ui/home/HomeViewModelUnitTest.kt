@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import dhis2.org.analytics.charts.Charts
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.disposables.CompositeDisposable
@@ -21,6 +22,7 @@ import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.DataElementFactory
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
+import org.dhis2.android.rtsm.data.GroupAnalyticsFactory
 import org.dhis2.android.rtsm.data.OperationState
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
@@ -30,20 +32,27 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.services.scheduler.TrampolineSchedulerProvider
 import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.android.rtsm.utils.humanReadableDate
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
@@ -56,6 +65,10 @@ class HomeViewModelUnitTest {
     @get:Rule
     val countingTaskExecutorRule = CountingTaskExecutorRule()
 
+    private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
+
+    private val charts: Charts = mock()
+
     @Mock
     private lateinit var metadataManager: MetadataManager
 
@@ -67,6 +80,8 @@ class HomeViewModelUnitTest {
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
     private lateinit var appConfig: AppConfig
+
+    private lateinit var analytics: List<AnalyticsDhisVisualizationsGroup>
 
     private val distributionItem = TransactionItem(
         R.drawable.ic_distribution,
@@ -114,7 +129,6 @@ class HomeViewModelUnitTest {
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
-
         appConfig = AppConfig(
             "F5ijs28K4s8",
             "wBr4wccNBj1",
@@ -128,7 +142,9 @@ class HomeViewModelUnitTest {
 
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
-
+        analytics = GroupAnalyticsFactory.getListOf(2)
+        `when`(charts.getVisualizationGroups(any()))
+            .thenReturn(analytics)
         val distributionDataSet =
             DataElementFactory.create(appConfig.stockDistribution, DISTRIBUTION_LABEL)
         val correctionDataSet = DataElementFactory.create(appConfig.stockCount, CORRECTION_lABEL)
@@ -156,11 +172,12 @@ class HomeViewModelUnitTest {
 
         `when`(metadataManager.transactionType(appConfig.stockDiscarded))
             .thenReturn(Single.just(discardDataSet))
-
         viewModel = HomeViewModel(
             disposable,
             schedulerProvider,
             metadataManager,
+            charts,
+            d2,
             getStateHandle(),
         )
 
@@ -187,6 +204,11 @@ class HomeViewModelUnitTest {
         verify(metadataManager).facilities(appConfig.program)
 
         assertEquals(viewModel.facilities.value, OperationState.Success(facilities))
+    }
+
+    @Test
+    fun init_shouldShowAnalyticsIfThereAreVisualizationGroups() {
+        assertTrue(viewModel.settingsUiState.value.hasAnalytics)
     }
 
     @Test

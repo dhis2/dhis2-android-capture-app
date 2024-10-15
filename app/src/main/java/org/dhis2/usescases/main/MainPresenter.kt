@@ -3,7 +3,6 @@ package org.dhis2.usescases.main
 import android.content.Context
 import android.net.Uri
 import android.view.Gravity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
@@ -11,6 +10,7 @@ import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
@@ -237,7 +237,7 @@ class MainPresenter(
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
     }
 
-    fun observeDataSync(): LiveData<SyncStatusData> {
+    fun observeDataSync(): StateFlow<SyncStatusData> {
         return syncStatusController.observeDownloadProcess()
     }
 

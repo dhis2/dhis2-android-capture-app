@@ -39,10 +39,8 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun clickOnMap() {
-        onView(withId(R.id.navigation_map_view)).perform(click())
+        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
-
-
 
     @OptIn(ExperimentalTestApi::class)
     fun checkEventWasCreatedAndClosed() {

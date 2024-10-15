@@ -167,18 +167,7 @@ class EventInitialActivity :
         if (eventUid == null) { // This is a new Event
             presenter.onEventCreated()
             analyticsHelper().setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
-            if (eventCreationType == EventCreationType.REFERAL && eventDetails.temCreate != null && eventDetails.temCreate == Constants.PERMANENT) {
-                presenter.scheduleEventPermanent(
-                    enrollmentUid,
-                    getTrackedEntityInstance,
-                    programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
-                    geometry,
-                )
-            } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
+            if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                 presenter.scheduleEvent(
                     enrollmentUid,
                     programStageModelUid,

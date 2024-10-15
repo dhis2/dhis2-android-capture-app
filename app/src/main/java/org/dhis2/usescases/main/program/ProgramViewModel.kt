@@ -41,7 +41,7 @@ class ProgramViewModel internal constructor(
         viewModelScope.launch {
             val result = async(dispatchers.io()) {
                 val programs = programRepository.homeItems(
-                    syncStatusController.observeDownloadProcess().value!!,
+                    syncStatusController.observeDownloadProcess().value,
                 ).blockingLast()
                 if (featureConfigRepository.isFeatureEnable(Feature.RESPONSIVE_HOME)) {
                     val feature = featureConfigRepository.featuresList.find { it.feature == Feature.RESPONSIVE_HOME }

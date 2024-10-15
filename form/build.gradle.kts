@@ -70,7 +70,9 @@ dependencies {
     implementation(project(":dhis2-mobile-program-rules"))
     testImplementation(libs.bundles.form.test)
     androidTestImplementation(libs.test.compose.ui.test)
-
+    androidTestApi(libs.test.mockitoCore)
+    androidTestApi(libs.test.mockitoKotlin)
+    androidTestApi(libs.test.dexmaker.mockitoInline)
     debugImplementation(libs.androidx.compose.uitooling)
     debugImplementation(libs.test.ui.test.manifest)
 

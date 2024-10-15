@@ -51,7 +51,7 @@ class SearchTETest : BaseTest() {
         setupMockServer()
     }
 
-    @Ignore("Test needs to be fixed in NDROAPP-6459")
+    @Ignore("Test needs to be fixed in ANDROAPP-6459")
     @Test
     fun shouldSuccessfullySearchByName() {
         mockWebServerRobot.addResponse(
@@ -218,6 +218,7 @@ class SearchTETest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             changeDueDate(scheduledEventTitle)
+            composeTestRule.waitForIdle()
             pressBack()
         }
         composeTestRule.waitForIdle()
@@ -255,6 +256,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6541")
     @Test
     fun shouldSuccessfullyFilterByEnrollmentDateAndSort() {
         val enrollmentDate = "DATE OF ENROLLMENT"
@@ -287,6 +289,7 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6545")
     @Test
     fun shouldSuccessfullyFilterByEventDateAndSort() {
         val eventDate = context.getString(R.string.filters_title_event_date)

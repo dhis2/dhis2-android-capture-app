@@ -16,6 +16,12 @@ data class MetadataIconData(
         }
     }
 
+    fun getIconRes() = if (imageCardData is ImageCardData.IconCardData) {
+        imageCardData.iconRes
+    } else {
+        ""
+    }
+
     companion object {
         fun defaultIcon() = MetadataIconData(
             imageCardData = ImageCardData.IconCardData(
