@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Sự Kiện</string>
     <string name="no_data">Không có dữ liệu</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
-    <string name="change_calendar_view">Thay đổi xem lịch</string>
+    <string name="change_calendar_view">Thay đổi lịch</string>
     <string name="clear">xóa</string>
     <string name="action_accept">Chấp nhận</string>
     <string name="next">Tiếp tục</string>
@@ -16,6 +17,7 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
+    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
@@ -23,6 +25,8 @@
     <string name="event_overview">Chi tiết</string>
     <string name="select_option">Chọn</string>
     <string name="search">Tìm kiếm</string>
+    <string name="jira_issue_sent">Vấn đề đã được gửi</string>
+    <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="events">sự kiện</string>
     <string name="data_sets">Biểu nhập</string>
     <string name="tei">Đối Tượng Theo Dõi</string>
@@ -70,6 +74,8 @@
     <string name="enrollment_status_completed">Hoàn tất</string>
     <string name="enrollment_status_cancelled">Đã hủy</string>
     <string name="record_marked_for_deletion">Dữ liệu này được chọn để xóa. Bạn không thể truy cập nó. </string>
+
+    <string name="enrollment_org_unit">Đơn vị đăng ký</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Hôm nay</string>
@@ -200,8 +206,12 @@
     <string name="error_min_attributes">Không có đủ yếu tố để thực hiện tìm kiếm. Vui lòng kiểm tra với nhiều yếu tố hơn.</string>
     <string name="error_org_unit_scope">Tìm kiếm trực tuyến chỉ hiển thị trong các đơn vị mà tài khoảng của bạn được cấp.</string>
     <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
+    <string name="error_server_unavailable">Không thể truy cập máy chủ. Xin vui lòng thử lại sau.</string>
+    <string name="error_no_internet_connection">Bạn đang ngoại tuyến. Vui lòng kết nối mạng và thử lại</string>
     <string name="unsupported_field_description">Trường này không hiển thị để nhập dữ liệu bằng điện thoại</string>
     <string name="add_image">Thêm hình ảnh</string>
+    <string name="add_signature">Thêm chữ ký</string>
+    <string name="add_file">Thêm tập tin</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Tính năng chia sẻ vị trí thiết bị của bạn bị tắt. Vui lòng mở nó để thu thập tọa độ.</string>
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
@@ -210,4 +220,18 @@
     <string name="complete">Hoàn tất</string>
     <string name="default_table_header_label">Giá trị</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
-    </resources>
+    <string name="default_empty_dataset_section_label">Dữ liệu</string>
+    <string name="title_network_connection_unavailable">Không có kết nối mạng</string>
+    <string name="msg_network_connection_maps">Cần có kết nối mạng để sử dụng bản đồ</string>
+
+    <string name="overdue_today">Hôm nay</string>
+    <plurals name="overdue_days">
+        <item quantity="other">Trễ hẹn %dngày</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="other">Trễ hẹn %d tháng</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="other">Trễ hẹn %d năm</item>
+    </plurals>
+</resources>

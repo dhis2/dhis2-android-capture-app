@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -443,7 +443,6 @@
     <string name="biometrics_dialog_title">Credenciais Vazias</string>
     <string name="biometrics_first_use_text">Para poder fazer login usando o scanner de impressão digital você precisa primeiro usar a maneira padrão</string>
     <string name="biometrics_security_title">Segurança biométrica</string>
-    <string name="biometrics_security_text">Use sua impressão digital para fazer login com este usuário?</string>
     <string name="tab_tables">Tabelas</string>
     <string name="table">Tabela</string>
     <string name="login_https">https:// </string>
@@ -689,6 +688,13 @@
     <string name="error_init_session">Não foi possível fazer login com seu nome de usuário</string>
     <string name="enrollment_date_edition_warning">Existem eventos planejados que não serão reprogramados</string>
     <string name="section_charts">Gráficos</string>
+    <string name="navigation_table_view">Vista de tabela</string>
+    <string name="navigation_analytics">Google Analytics</string>
+    <string name="navigation_tasks">Tarefas</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Entrada de dados</string>
+    <string name="navigation_tei_data">Detalhes</string>
     <string name="show_bar_graph">Ver como barra</string>
     <string name="show_line_graph">Ver como linha</string>
     <string name="show_table_graph">Ver como tabela</string>
