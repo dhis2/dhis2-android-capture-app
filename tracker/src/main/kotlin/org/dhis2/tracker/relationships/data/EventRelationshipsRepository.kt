@@ -154,6 +154,24 @@ class EventRelationshipsRepository(
         )
     }
 
+    override fun getRelationshipTitle(relationshipType: RelationshipType): String {
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val programStageUid = event?.programStage() ?: ""
+        return when (programStageUid) {
+            relationshipType.fromConstraint()?.programStage()?.uid() -> {
+                relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
+            }
+
+            relationshipType.toConstraint()?.program()?.uid() -> {
+                relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
+            }
+
+            else -> {
+                relationshipType.displayName() ?: ""
+            }
+        }
+    }
+
     private fun canBeOpened(
         direction: RelationshipDirection,
         tei: TrackedEntityInstance?,

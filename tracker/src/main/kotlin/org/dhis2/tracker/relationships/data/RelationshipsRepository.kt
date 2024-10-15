@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import java.util.Date
 
@@ -24,6 +25,7 @@ abstract class RelationshipsRepository(
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipModel>>
+    abstract fun getRelationshipTitle(relationshipType: RelationshipType): String
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
@@ -53,7 +55,7 @@ abstract class RelationshipsRepository(
             }
 
             //If there is a program defined in the constraint
-            relationshipConstraint?.program() != null -> {
+            relationshipConstraint?.program() != null && isServerVersionLessThan38() -> {
                 val programUid = relationshipConstraint.program()?.uid()
                 d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(programUid)
@@ -64,7 +66,8 @@ abstract class RelationshipsRepository(
             }
 
             //If there is no program then we get the trackedEntity type attributes
-            relationshipConstraint?.trackedEntityType()?.uid() != null -> {
+            relationshipConstraint?.trackedEntityType()?.uid() != null &&
+                    isServerVersionLessThan38() -> {
                 val teiTypeUid = relationshipConstraint.trackedEntityType()?.uid()
                 d2.trackedEntityModule().trackedEntityTypeAttributes()
                     .byTrackedEntityTypeUid().eq(teiTypeUid)
@@ -98,7 +101,13 @@ abstract class RelationshipsRepository(
             val teiTypeUid = relationshipConstraint?.trackedEntityType()?.uid()
             val teiTypeName = d2.trackedEntityModule().trackedEntityTypes()
                 .uid(teiTypeUid).blockingGet()?.name() ?: ""
-            listOf(Pair(teiTypeName, relationshipCreationDate?.toUi() ?: ""))
+            listOf(
+                Pair(teiTypeName, ""),
+                Pair(
+                    resources.getString(R.string.relation_creation_date),
+                    relationshipCreationDate?.toUi() ?: ""
+                )
+            )
         }
     }
 
@@ -117,7 +126,7 @@ abstract class RelationshipsRepository(
             }
 
             //If there is a program stage defined in the constraint
-            relationshipConstraint?.programStage() != null -> {
+            relationshipConstraint?.programStage() != null && isServerVersionLessThan38() -> {
                 val programStageUid = relationshipConstraint.programStage()?.uid()
                 d2.programModule().programStageDataElements()
                     .byProgramStage().eq(programStageUid)
@@ -152,6 +161,10 @@ abstract class RelationshipsRepository(
             listOf(
                 Pair(
                     stage?.displayName() ?: event?.uid() ?: "",
+                    ""
+                ),
+                Pair(
+                    resources.getString(R.string.relation_creation_date),
                     relationshipCreationDate?.toUi() ?: ""
                 )
             )
@@ -215,5 +228,9 @@ abstract class RelationshipsRepository(
         return d2.programModule().programStages()
             .uid(programStageUid)
             .blockingGet()
+    }
+
+    private fun isServerVersionLessThan38(): Boolean {
+        return !d2.systemInfoModule().versionManager().isGreaterOrEqualThan(DHISVersion.V2_38)
     }
 }

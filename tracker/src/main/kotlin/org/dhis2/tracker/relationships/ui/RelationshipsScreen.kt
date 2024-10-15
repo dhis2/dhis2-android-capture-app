@@ -86,7 +86,7 @@ fun RelationShipsScreen(
                 LazyColumn {
                     items(uiState.data) { item ->
                         RelationShipTypeSection(
-                            title = item.relationshipType.displayName() ?: "",
+                            title = item.title,
                             description = if (item.relationships.isEmpty()) {
                                 stringResource(id = R.string.no_data)
                             } else {
@@ -236,6 +236,7 @@ fun RelationShipScreenPreview() {
     val mockUiState = RelationshipsUiState.Success(
         data = listOf(
             RelationshipSection(
+                title = "Relationship type",
                 relationshipType = RelationshipType.builder()
                     .uid("")
                     .displayName("Relationship type")
@@ -279,6 +280,7 @@ fun RelationShipScreenPreview() {
                 teiTypeUid = null,
             ),
             RelationshipSection(
+                title = "Empty relation ship",
                 relationshipType = RelationshipType.builder()
                     .uid("")
                     .displayName("Empty relation ship")
