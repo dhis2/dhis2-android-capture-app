@@ -278,6 +278,19 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    fun clickOnReopen() {
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            val timelineLabel = getString(R.string.enrollment_reopen)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
+            val itemLabel = timelineLabel.format(eventLabel)
+            try {
+                onView(withText(itemLabel)).perform(click())
+            } catch (e: NoMatchingViewException) {
+                checkIfGroupedEventsIsVisible()
+            }
+        }
+    }
+
     private fun checkIfGroupedEventsIsVisible() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val groupLabel = getString(R.string.group_by_stage)
