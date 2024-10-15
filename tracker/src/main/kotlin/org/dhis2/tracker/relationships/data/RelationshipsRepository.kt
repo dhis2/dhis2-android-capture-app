@@ -48,13 +48,13 @@ abstract class RelationshipsRepository(
         val trackedEntityAttributesUids = when {
 
             //When there are  attributes defined in the constraint
-            !relationshipConstraint?.trackerDataView()?.attributes().isNullOrEmpty() -> {
-                relationshipConstraint?.trackerDataView()?.attributes()
+            relationshipConstraint?.trackerDataView()?.attributes()?.isNotEmpty() == true -> {
+                relationshipConstraint.trackerDataView()?.attributes()
             }
 
             //If there is a program defined in the constraint
             relationshipConstraint?.program() != null -> {
-                val programUid = relationshipConstraint.program()!!.uid()
+                val programUid = relationshipConstraint.program()?.uid()
                 d2.programModule().programTrackedEntityAttributes()
                     .byProgram().eq(programUid)
                     .byDisplayInList().isTrue
@@ -80,7 +80,7 @@ abstract class RelationshipsRepository(
         }
 
         //Get a list of Pair<DisplayName, value>
-        val attributes = trackedEntityAttributesUids!!.mapNotNull { attributeUid ->
+        val attributes = trackedEntityAttributesUids?.mapNotNull { attributeUid ->
             val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(attributeUid).blockingGet()
                 ?.displayFormName()
@@ -92,7 +92,7 @@ abstract class RelationshipsRepository(
             } else {
                 null
             }
-        }
+        } ?: emptyList()
 
         return attributes.ifEmpty {
             val teiTypeUid = relationshipConstraint?.trackedEntityType()?.uid()
@@ -125,7 +125,7 @@ abstract class RelationshipsRepository(
             }
 
             else -> {
-                listOf()
+                emptyList()
             }
 
         }
