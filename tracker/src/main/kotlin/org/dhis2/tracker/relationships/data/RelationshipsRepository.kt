@@ -19,6 +19,9 @@ import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import java.util.Date
 
+typealias value = String
+typealias label = String
+
 abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
@@ -45,7 +48,7 @@ abstract class RelationshipsRepository(
         teiUid: String?,
         relationshipConstraint: RelationshipConstraint?,
         relationshipCreationDate: Date?,
-    ): List<Pair<String, String>> {
+    ): List<Pair<label, value>> {
         //Get list of ordered attributes
         val trackedEntityAttributesUids = when {
 
@@ -115,7 +118,7 @@ abstract class RelationshipsRepository(
         eventUid: String?,
         relationshipConstraint: RelationshipConstraint?,
         relationshipCreationDate: Date?,
-    ): List<Pair<String, String>> {
+    ): List<Pair<label, value>> {
 
         //Get list of ordered attributes
         val dataElementUids = when {
