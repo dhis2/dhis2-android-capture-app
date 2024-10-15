@@ -22,18 +22,13 @@ class GetRelationshipsByType(
             .combine(
                 relationshipsRepository.getRelationships()
             ) { types, relationships ->
-                types.mapNotNull { type ->
+                types.map { type ->
                     val relationshipType = type.first
                     val teiTypeUid = type.second
 
                     // Filter relationships once based on relationshipType
                     val filteredRelationships = relationships.filter {
                         it.relationshipType.uid() == relationshipType.uid()
-                    }
-
-                    // Return null if no matching relationships
-                    if (filteredRelationships.isEmpty() && teiTypeUid == null) {
-                        return@mapNotNull null
                     }
 
                     RelationshipSection(
