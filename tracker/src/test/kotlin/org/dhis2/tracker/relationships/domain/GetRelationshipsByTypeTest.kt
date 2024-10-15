@@ -59,6 +59,8 @@ class GetRelationshipsByTypeTest {
         //Given a list of relationship types and relationships
         whenever(relationshipsRepository.getRelationshipTypes()) doReturn getRelationshipTypesMock()
         whenever(relationshipsRepository.getRelationships()) doReturn getRelationshipsMock()
+        whenever(relationshipsRepository.getRelationshipTitle(relationshipType1)) doReturn "Relationship 1"
+        whenever(relationshipsRepository.getRelationshipTitle(relationshipType2)) doReturn "Relationship 2"
         whenever(dateLabelProvider.span(any())) doReturn "5 days ago"
 
         // When calling the use case to get the relationships grouped by type
@@ -142,6 +144,7 @@ class GetRelationshipsByTypeTest {
 
     private val relationshipSections = listOf(
         RelationshipSection(
+            title = "Relationship 1",
             relationshipType = relationshipType1,
             relationships = listOf(
                 RelationshipItem(
@@ -162,6 +165,7 @@ class GetRelationshipsByTypeTest {
             teiTypeUid = "teiType1"
         ),
         RelationshipSection(
+            title = "Relationship 2",
             relationshipType = relationshipType2,
             relationships = listOf(
                 RelationshipItem(
