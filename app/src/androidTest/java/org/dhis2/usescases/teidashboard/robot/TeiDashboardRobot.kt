@@ -110,8 +110,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnReferral() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val referalTag = targetContext.resources.getString(R.string.referral)
-        composeTestRule.onNodeWithTag(referalTag).performClick()
+        val referalTag = targetContext.resources.getString(R.string.refer)
+        composeTestRule.onNodeWithText(referalTag, true).performClick()
     }
 
     fun clickOnFirstReferralEvent() {
