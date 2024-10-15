@@ -24,9 +24,10 @@ object GetMapData {
         searchRegion: LatLngBounds? = null,
     ): MapData {
         val selectedFeatures = buildList {
-            currentFeature?.withPlacesProperties(true)?.let {
-                add(it)
-            }
+            currentFeature?.takeIf { !captureMode.isSwipe() }
+                ?.let {
+                    add(it)
+                }
         }
 
         val polygonPointFeatures = currentFeature?.getPolygonPoints() ?: emptyList()

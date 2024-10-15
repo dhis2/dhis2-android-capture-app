@@ -2,6 +2,7 @@ package org.dhis2.maps.utils
 
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
@@ -17,11 +18,14 @@ abstract class OnScaleListener : MapboxMap.OnScaleListener {
 
 fun MapboxMap.addMoveListeners(
     onIdle: (LatLngBounds) -> Unit,
+    onMove: (LatLng) -> Unit,
 ) {
-    this.addOnCameraIdleListener {
-        onIdle(this.latLngBounds())
-    }
     this.addOnMoveListener(object : OnMoveListener() {
+        override fun onMove(detector: MoveGestureDetector) {
+            if (detector.currentEvent.pointerCount == 1) {
+                onMove(this@addMoveListeners.latLngBounds().center)
+            }
+        }
         override fun onMoveEnd(detector: MoveGestureDetector) {
             onIdle(this@addMoveListeners.latLngBounds())
         }
