@@ -28,7 +28,7 @@ fun SearchTeiModel.setTeiImage(
         context,
         R.drawable.photo_temp_gray,
     )
-    imageBg!!.colorFilter = PorterDuffColorFilter(
+    imageBg?.colorFilter = PorterDuffColorFilter(
         colorUtils.getPrimaryColor(
             context,
             ColorType.PRIMARY,
