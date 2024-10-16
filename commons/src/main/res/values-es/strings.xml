@@ -205,6 +205,7 @@
     <string name="error_sms_not_supported">SMS no está soportado.</string>
     <string name="error_min_attributes">No hay suficientes atributos para realizar la búsqueda. Por favor redefina la búsqueda añadiendo más atributos.</string>
     <string name="error_org_unit_scope">La búsqueda online solo está disponible para las unidades organizativas de búsqueda.</string>
+    <string name="error_invalid_characters">La consulta contiene caracteres inválidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">El servidor no está disponible actualmente. Vuelve a intentarlo más tarde.</string>
     <string name="error_no_internet_connection">Estas desconectado. Conéctese a Internet e inténtelo nuevamente.</string>
     <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
