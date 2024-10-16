@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -162,7 +162,7 @@ private fun RelationShipTypeSection(
                         Icon(
                             imageVector = Icons.Outlined.Add,
                             contentDescription = "New event",
-                            tint = MaterialTheme.colors.onPrimary,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                         )
                     },
                     onClick = onCreateRelationshipClick,
@@ -176,7 +176,7 @@ private fun RelationShipTypeSection(
                     description = item.description?.let { ListCardDescriptionModel(text = it) },
                     lastUpdated = item.lastUpdated,
                     selectionState = relationshipSelectionState.isSelected(
-                        item.ownerUid,
+                        item.uid,
                         item.canOpen
                     ),
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
@@ -204,7 +204,7 @@ private fun RelationShipTypeSection(
                 onCardClick = { if (item.canOpen) onRelationshipClick(item) },
                 onCardSelected = {
                     if (item.canOpen) {
-                        onRelationshipSelected(item.ownerUid)
+                        onRelationshipSelected(item.uid)
                     }
                 }
             )
@@ -260,6 +260,7 @@ fun RelationShipScreenPreview() {
                     .build(),
                 relationships = listOf(
                     RelationshipItem(
+                        uid = "uidA",
                         title = "First name: Peter",
                         description = null,
                         attributes = listOf(
@@ -277,6 +278,7 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     ),
                     RelationshipItem(
+                        uid = "uidB",
                         title = "First name: Mario",
                         description = null,
                         attributes = listOf(

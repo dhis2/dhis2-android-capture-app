@@ -42,6 +42,7 @@ class GetRelationshipsByType(
 
     private fun mapToRelationshipItem(relationship: RelationshipModel): RelationshipItem {
         return RelationshipItem(
+            uid = relationship.relationship.uid() ?: "",
             title = relationship.displayRelationshipName(),
             description = relationship.displayDescription(),
             attributes = relationship.displayAttributes(),

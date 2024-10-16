@@ -148,6 +148,7 @@ class GetRelationshipsByTypeTest {
             relationshipType = relationshipType1,
             relationships = listOf(
                 RelationshipItem(
+                    uid = "uid1",
                     title = "MainValue1: Value1",
                     description = "Description 1",
                     attributes = listOf(
@@ -169,6 +170,7 @@ class GetRelationshipsByTypeTest {
             relationshipType = relationshipType2,
             relationships = listOf(
                 RelationshipItem(
+                    uid = "uid2",
                     title = "MainValue2: Value2",
                     description = "Description 2",
                     attributes = listOf(

@@ -226,4 +226,12 @@ abstract class RelationshipsRepository(
     private fun isServerVersionLessThan38(): Boolean {
         return !d2.systemInfoModule().versionManager().isGreaterOrEqualThan(DHISVersion.V2_38)
     }
+
+    fun deleteRelationship(relationshipUid: String) {
+        d2.relationshipModule()
+            .relationships()
+            .withItems()
+            .uid(relationshipUid)
+            .blockingDelete()
+    }
 }

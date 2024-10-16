@@ -17,6 +17,7 @@ import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
+import org.dhis2.tracker.relationships.domain.DeleteRelationships;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
 import org.dhis2.tracker.ui.AvatarProvider;
@@ -133,9 +134,15 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     RelationshipsViewModel provideRelationshipsViewModel(
-            GetRelationshipsByType getRelationshipsByType
+            GetRelationshipsByType getRelationshipsByType,
+            DeleteRelationships deleteRelationships,
+            DispatcherProvider dispatcherProvider
     ) {
-        return new RelationshipsViewModel(getRelationshipsByType);
+        return new RelationshipsViewModel(
+                getRelationshipsByType,
+                deleteRelationships,
+                dispatcherProvider
+        );
     }
 
     @Provides
@@ -150,6 +157,14 @@ public class RelationshipModule {
                 dateLabelProvider,
                 avatarProvider
         );
+    }
+
+    @Provides
+    @PerFragment
+    DeleteRelationships provideDeleteRelationships(
+            RelationshipsRepository relationshipsRepository
+    ) {
+        return new DeleteRelationships(relationshipsRepository);
     }
 
     @Provides

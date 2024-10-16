@@ -10,14 +10,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
 import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipSection
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RelationshipsViewModel(
-    getRelationshipsByType: GetRelationshipsByType
+    getRelationshipsByType: GetRelationshipsByType,
+    val deleteRelationships: DeleteRelationships,
+    val dispatcher: DispatcherProvider,
 ) : ViewModel() {
 
     val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> =
@@ -40,29 +45,28 @@ class RelationshipsViewModel(
 
 
     fun updateSelectedList(relationshipUid: String) {
-        viewModelScope.launch {
-            val updatedState = relationshipSelectionState.value.let {
-                it.copy(
-                    selectingMode = true,
-                    selectedItems = it.selectedItems.toMutableList().apply {
-                        if (contains(relationshipUid)) {
-                            remove(relationshipUid)
-                        } else {
-                            add(relationshipUid)
-                        }
+        viewModelScope.launch(dispatcher.io()) {
+            _relationshipSelectionState.update {
+                val updatedList = it.selectedItems.toMutableList().apply {
+                    if (contains(relationshipUid)) {
+                        remove(relationshipUid)
+                    } else {
+                        add(relationshipUid)
                     }
+                }
+                it.copy(
+                    selectingMode = updatedList.isNotEmpty(),
+                    selectedItems = updatedList
                 )
             }
-            _relationshipSelectionState.emit(updatedState)
         }
     }
 
     fun deselectAll() {
-        viewModelScope.launch {
-            val updatedState = relationshipSelectionState.value.copy(
-                selectedItems = emptyList()
-            )
-            _relationshipSelectionState.emit(updatedState)
+        viewModelScope.launch(dispatcher.io()) {
+            _relationshipSelectionState.update {
+                it.copy(selectedItems = emptyList())
+            }
         }
     }
 
@@ -70,30 +74,33 @@ class RelationshipsViewModel(
         val allRelationshipsUid = (relationshipsUiState.value as? RelationshipsUiState.Success)
             ?.data?.flatMap { it.relationships.map { it.ownerUid } } ?: listOf()
 
-        viewModelScope.launch {
-            val updatedState = relationshipSelectionState.value.copy(
-                selectedItems = allRelationshipsUid
-            )
-            _relationshipSelectionState.emit(updatedState)
+        viewModelScope.launch(dispatcher.io()) {
+            _relationshipSelectionState.update {
+                it.copy(selectedItems = allRelationshipsUid)
+            }
         }
     }
 
     fun startSelectingMode() {
-        viewModelScope.launch {
-            val updatedState = relationshipSelectionState.value.copy(
-                selectingMode = true,
-            )
-            _relationshipSelectionState.emit(updatedState)
+        viewModelScope.launch(dispatcher.io()) {
+            _relationshipSelectionState.update {
+                it.copy(selectingMode = true)
+            }
         }
     }
 
     fun stopSelectingMode() {
-        viewModelScope.launch {
-            val updatedState = relationshipSelectionState.value.copy(
-                selectingMode = false,
-                selectedItems = emptyList()
-            )
-            _relationshipSelectionState.emit(updatedState)
+        viewModelScope.launch(dispatcher.io()) {
+            _relationshipSelectionState.update {
+               it.copy(
+                    selectingMode = false,
+                    selectedItems = emptyList()
+               )
+            }
         }
+    }
+
+    fun deleteSelectedRelationships() {
+        deleteRelationships(relationshipSelectionState.value.selectedItems)
     }
 }
