@@ -49,26 +49,16 @@ abstract class RelationshipsRepository(
         relationshipConstraint: RelationshipConstraint?,
         relationshipCreationDate: Date?,
     ): List<Pair<label, value>> {
-        //Get list of ordered attributes
+
+        //Get list of ordered attributes uids
         val trackedEntityAttributesUids = when {
 
-            //When there are  attributes defined in the constraint
+            //When there are  attributes defined in the relationship constraint
             relationshipConstraint?.trackerDataView()?.attributes()?.isNotEmpty() == true -> {
                 relationshipConstraint.trackerDataView()?.attributes()
             }
 
-            //If there is a program defined in the constraint
-            relationshipConstraint?.program() != null && isServerVersionLessThan38() -> {
-                val programUid = relationshipConstraint.program()?.uid()
-                d2.programModule().programTrackedEntityAttributes()
-                    .byProgram().eq(programUid)
-                    .byDisplayInList().isTrue
-                    .blockingGet().mapNotNull {
-                        it.trackedEntityAttribute()?.uid()
-                    }
-            }
-
-            //If there is no program then we get the trackedEntity type attributes
+            //If not and server version is less than 38, we check the trackedEntity type attributes
             relationshipConstraint?.trackedEntityType()?.uid() != null &&
                     isServerVersionLessThan38() -> {
                 val teiTypeUid = relationshipConstraint.trackedEntityType()?.uid()
@@ -85,7 +75,7 @@ abstract class RelationshipsRepository(
 
         }
 
-        //Get a list of Pair<DisplayName, value>
+        //Get a list of Pair<label, value>
         val attributes = trackedEntityAttributesUids?.mapNotNull { attributeUid ->
             val fieldName = d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(attributeUid).blockingGet()
@@ -120,15 +110,15 @@ abstract class RelationshipsRepository(
         relationshipCreationDate: Date?,
     ): List<Pair<label, value>> {
 
-        //Get list of ordered attributes
+        //Get list of ordered data elements uids
         val dataElementUids = when {
 
-            //When there are  attributes defined in the constraint
+            //When there are  data elements defined in the relationship constraint
             relationshipConstraint?.trackerDataView()?.dataElements()?.isNotEmpty() == true -> {
                 relationshipConstraint.trackerDataView()?.dataElements()
             }
 
-            //If there is a program stage defined in the constraint
+            //If not and server version is less than 38, we check the program stage data elements
             relationshipConstraint?.programStage() != null && isServerVersionLessThan38() -> {
                 val programStageUid = relationshipConstraint.programStage()?.uid()
                 d2.programModule().programStageDataElements()
