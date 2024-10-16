@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
@@ -57,8 +58,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 @Composable
 fun RelationShipsScreen(
     uiState: RelationshipsUiState<List<RelationshipSection>>,
+    relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationShipSelected: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -94,12 +97,14 @@ fun RelationShipsScreen(
                             },
                             relationships = item.relationships,
                             canAddRelationship = item.canAddRelationship(),
+                            relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
                                 onCreateRelationshipClick(item)
                             },
                             onRelationshipClick = {
                                 onRelationshipClick(it)
-                            }
+                            },
+                            onRelationshipSelected = onRelationShipSelected
                         )
                     }
                 }
@@ -115,8 +120,10 @@ private fun RelationShipTypeSection(
     description: String?,
     relationships: List<RelationshipItem>,
     canAddRelationship: Boolean,
+    relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: () -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationshipSelected: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -168,6 +175,10 @@ private fun RelationShipTypeSection(
                     title = ListCardTitleModel(text = item.title),
                     description = item.description?.let { ListCardDescriptionModel(text = it) },
                     lastUpdated = item.lastUpdated,
+                    selectionState = relationshipSelectionState.isSelected(
+                        item.ownerUid,
+                        item.canOpen
+                    ),
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
                         additionalInfoList = item.attributes.map {
                             AdditionalInfoItem(
@@ -190,7 +201,12 @@ private fun RelationShipTypeSection(
                         avatarProviderConfiguration = item.avatar,
                     ) { }
                 },
-                onCardClick = { if (item.canOpen) onRelationshipClick(item) }
+                onCardClick = { if (item.canOpen) onRelationshipClick(item) },
+                onCardSelected = {
+                    if (item.canOpen) {
+                        onRelationshipSelected(item.ownerUid)
+                    }
+                }
             )
         }
     }
@@ -294,8 +310,10 @@ fun RelationShipScreenPreview() {
 
     RelationShipsScreen(
         uiState = mockUiState,
+        relationshipSelectionState = ListSelectionState(),
         onCreateRelationshipClick = {},
-        onRelationshipClick = {}
+        onRelationshipClick = {},
+        onRelationShipSelected = {},
     )
 }
 

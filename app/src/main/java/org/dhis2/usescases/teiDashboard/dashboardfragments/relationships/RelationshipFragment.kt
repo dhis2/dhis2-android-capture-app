@@ -118,10 +118,13 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     val showMap by mapButtonObservable.relationshipMap().observeAsState()
 
                     val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
+                    val relationshipSelectionState by relationShipsViewModel.relationshipSelectionState.collectAsState()
+
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
                         else -> RelationShipsScreen(
                             uiState = uiState,
+                            relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
                                 it.teiTypeUid?.let { teiTypeUid ->
                                     goToRelationShip(
@@ -136,6 +139,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                     ownerUid = it.ownerUid,
                                 )
                             },
+                            onRelationShipSelected = relationShipsViewModel::updateSelectedList,
                         )
                     }
                 }
