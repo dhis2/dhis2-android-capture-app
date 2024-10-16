@@ -6,7 +6,6 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +29,7 @@ import org.dhis2.maps.model.toAccuracyRance
 import org.dhis2.maps.usecases.GeocoderSearch
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.usecases.SearchLocationManager
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.dhis2.maps.utils.CoordinateUtils
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.GetMapData
@@ -73,8 +73,8 @@ class MapSelectorViewModel(
 
     private var _lastGPSLocation: SelectedLocation? = null
     private var _currentFeature: Feature? = initialGeometry?.let { Feature.fromGeometry(it) }
-    private var _currentVisibleRegion: LatLngBounds? = null
-    private var searchRegion: LatLngBounds? = null
+    private var _currentVisibleRegion: AvailableLatLngBounds? = null
+    private var searchRegion: AvailableLatLngBounds? = null
     private val _searchLocationQuery = MutableStateFlow("")
 
     private val _geometryCoordinateResultChannel = Channel<GeometryCoordinate?>()
@@ -92,6 +92,7 @@ class MapSelectorViewModel(
             locationState = NOT_FIXED,
             isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
             forcedLocationAccuracy = mapStyleConfig.getForcedLocationAccuracy(),
+            zoomLevel = 0f,
         ),
     )
 
@@ -114,6 +115,7 @@ class MapSelectorViewModel(
         searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
         locationState: LocationState = _screenState.value.locationState,
+        zoomLevel: Float = _screenState.value.zoomLevel,
     ) {
         _screenState.update {
             it.copy(
@@ -125,6 +127,7 @@ class MapSelectorViewModel(
                 searchOnAreaVisible = searchOnAreaVisible,
                 displayPolygonInfo = displayPolygonInfo,
                 locationState = locationState,
+                zoomLevel = zoomLevel,
             )
         }
     }
@@ -246,14 +249,14 @@ class MapSelectorViewModel(
 
     private suspend fun performLocationSearch(
         query: String = _searchLocationQuery.value,
-        regionToSearch: LatLngBounds? = _currentVisibleRegion,
+        regionToSearch: AvailableLatLngBounds? = _currentVisibleRegion,
     ) {
         if (_screenState.value.captureMode.isSearch()) {
             val filteredPreviousLocation =
                 searchLocationManager.getAvailableLocations(query)
             val searchItems = geocoder.getLocationFromName(query, regionToSearch)
             _currentFeature = null
-            val locationItems = searchItems + filteredPreviousLocation
+            val locationItems = searchItems /*+ filteredPreviousLocation*/
             searchRegion = regionToSearch
             updateScreenState(
                 mapData = GetMapData(
@@ -349,9 +352,9 @@ class MapSelectorViewModel(
         return Pair(selectedLocation, feature)
     }
 
-    fun updateCurrentVisibleRegion(mapBounds: LatLngBounds?) {
+    fun updateCurrentVisibleRegion(mapBounds: AvailableLatLngBounds?, zoomLevel: Float) {
         _currentVisibleRegion = mapBounds
-        updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank())
+        updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank(), zoomLevel = zoomLevel)
     }
 
     fun initSearchMode() {

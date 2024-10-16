@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.maps.model.NominatimLocation
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.android.BuildConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.api.RequestBuilder
@@ -28,6 +29,46 @@ class NominatimGeocoderApi(
     private val d2: D2,
     private val localeSelector: LocaleSelector,
 ) : GeocoderApi {
+
+    override suspend fun searchFor(
+        query: String,
+        visibleRegion: AvailableLatLngBounds?,
+        maxResults: Int,
+    ): List<LocationItemModel> {
+        if (query.isEmpty()) return emptyList()
+
+        val startTime = System.currentTimeMillis()
+
+        val searchResult: MutableList<NominatimLocation> = mutableListOf()
+        run loop@{
+            visibleRegion?.list?.forEachIndexed { index, region ->
+                Timber.tag("Nominatim").d("Init search $index for $query")
+                searchResult.addAll(
+                    search(
+                        query = query,
+                        topCornerLongitude = region.northWest.longitude,
+                        bottomCornerLongitude = region.southEast.longitude,
+                        topCornerLatitude = region.northWest.latitude,
+                        bottomCornerLatitude = region.southEast.latitude,
+                        maxResults = maxResults - searchResult.size,
+                    ),
+                )
+                Timber.tag("Nominatim").d("End search $index: ${searchResult.size} results")
+
+                if (searchResult.isNotEmpty()) {
+                    return@loop
+                }
+                while (System.currentTimeMillis() - startTime < 1000) {
+                    delay(100)
+                }
+            }
+        }
+
+        Timber.tag("Nominatim").d("End search: ${searchResult.size} results")
+
+        return searchResult.mapNominatimLocationsToLocationItems()
+    }
+
     override suspend fun searchFor(
         query: String,
         topCornerLatitude: Double?,

@@ -8,6 +8,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import timber.log.Timber
 import kotlin.coroutines.resume
@@ -25,15 +26,28 @@ class GeocoderSearchImpl(
     ): List<LocationItemModel> {
         return try {
             geocoderApi.searchFor(
-                name,
-                visibleRegion?.northWest?.latitude,
-                visibleRegion?.northWest?.longitude,
-                visibleRegion?.southEast?.latitude,
-                visibleRegion?.southEast?.longitude,
-                maxResults,
+                query = name,
+                topCornerLatitude = visibleRegion?.northWest?.latitude,
+                topCornerLongitude = visibleRegion?.northWest?.longitude,
+                bottomCornerLatitude = visibleRegion?.southEast?.latitude,
+                bottomCornerLongitude = visibleRegion?.southEast?.longitude,
+                maxResults = maxResults,
             )
         } catch (e: Exception) {
             Timber.e(e)
+            defaultSearchLocationProvider(name)
+        }
+    }
+
+    override suspend fun getLocationFromName(
+        name: String,
+        visibleRegion: AvailableLatLngBounds?,
+    ): List<LocationItemModel> {
+        return try {
+            geocoderApi.searchFor(name, visibleRegion, maxResults)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Timber.tag("NOMINATIM").d("Geocoder error: $e")
             defaultSearchLocationProvider(name)
         }
     }

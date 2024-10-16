@@ -15,6 +15,7 @@ data class MapSelectorScreenState(
     val searchOnAreaVisible: Boolean,
     val displayPolygonInfo: Boolean,
     val locationState: LocationState,
+    val zoomLevel: Float,
     val isManualCaptureEnabled: Boolean,
     val forcedLocationAccuracy: Int,
 ) {
