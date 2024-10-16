@@ -19,11 +19,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
@@ -37,7 +35,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 
 class MapSelectorActivity : AppCompatActivity() {
 
-    private val locationProvider = LocationProviderImpl(this)
+    private val locationProvider = MapLocationEngine(this)
 
     private val locationListener = LocationListener { location ->
         mapSelectorViewModel.onNewLocation(
@@ -103,7 +101,7 @@ class MapSelectorActivity : AppCompatActivity() {
                         },
                         onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
                         onMyLocationButtonClick = {
-                            mapSelectorViewModel::onMyLocationButtonClick
+                            mapSelectorViewModel.onMyLocationButtonClick()
                             onLocationButtonClicked()
                         },
                         onDoneButtonClick = mapSelectorViewModel::onDoneClick,
@@ -112,7 +110,6 @@ class MapSelectorActivity : AppCompatActivity() {
 
                 LaunchedEffect(screenState.mapData) {
                     this.launch {
-                        delay(500)
                         mapManager.update(
                             featureCollection = screenState.mapData.featureCollection,
                             boundingBox = screenState.mapData.boundingBox,
@@ -141,7 +138,7 @@ class MapSelectorActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
         mapManager =
-            DefaultMapManager(mapView, MapLocationEngine(this), mapSelectorViewModel.featureType)
+            DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
         mapManager.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
