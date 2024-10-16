@@ -21,8 +21,8 @@ import org.dhis2.tracker.relationships.model.RelationshipSection
 @OptIn(ExperimentalCoroutinesApi::class)
 class RelationshipsViewModel(
     getRelationshipsByType: GetRelationshipsByType,
-    val deleteRelationships: DeleteRelationships,
-    val dispatcher: DispatcherProvider,
+    private val deleteRelationships: DeleteRelationships,
+    private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
 
     val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> =

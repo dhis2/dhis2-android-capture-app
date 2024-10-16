@@ -45,14 +45,14 @@
                     style="@style/ActionIcon"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/relationshipMapIcon"
+                    app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_sync"
                     app:tint="?colorOnPrimary"
                     tools:ignore="ContentDescription" />
 
-                <ImageView
-                    android:id="@+id/relationshipMapIcon"
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/relationshipIcon"
                     style="@style/ActionIcon"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"

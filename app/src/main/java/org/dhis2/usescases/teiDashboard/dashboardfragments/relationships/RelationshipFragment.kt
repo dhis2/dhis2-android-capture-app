@@ -21,8 +21,13 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.bindings.launchImageDetail
@@ -36,6 +41,7 @@ import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
 import org.dhis2.ui.ThemeManager
@@ -43,6 +49,7 @@ import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
+import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.OnDialogClickListener
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -75,6 +82,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     private var relationshipType: RelationshipType? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private lateinit var mapButtonObservable: MapButtonObservable
+    private val dashboardViewModel: DashboardViewModel by activityViewModels()
 
     private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
         themeManager.setProgramTheme(programUid()!!)
@@ -142,6 +150,28 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             onRelationShipSelected = relationShipsViewModel::updateSelectedList,
                         )
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeRelationshipTopBarIcon()
+    }
+
+    private fun observeRelationshipTopBarIcon() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                relationShipsViewModel.relationshipSelectionState.collect { selectionState ->
+                    val topBarIconState = if (selectionState.selectingMode) {
+                        RelationshipTopBarIconState.Selecting {
+                            relationShipsViewModel.deleteSelectedRelationships()
+                        }
+                    } else {
+                        RelationshipTopBarIconState.Map()
+                    }
+                    dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
                 }
             }
         }

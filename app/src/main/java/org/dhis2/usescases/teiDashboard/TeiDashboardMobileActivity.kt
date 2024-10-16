@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.collectAsState
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -51,6 +53,7 @@ import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.tracker.TEIDashboardItems
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -79,6 +82,7 @@ import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
@@ -239,25 +243,51 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setRelationshipMapIconListener() {
-        binding.relationshipMapIcon.setOnClickListener {
-            networkUtils.performIfOnline(
-                this,
-                {
-                    if (java.lang.Boolean.FALSE == relationshipMap.value) {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list)
-                    } else {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
-                    }
-                    val showMap = !relationshipMap.value!!
-                    if (showMap) {
-                        binding.toolbarProgress.visibility = View.VISIBLE
-                        binding.toolbarProgress.hide()
-                    }
-                    relationshipMap.value = showMap
-                },
-                {},
-                getString(R.string.msg_network_connection_maps),
-            )
+        binding.relationshipIcon.setContent {
+            DHIS2Theme {
+                val uiState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
+                IconButton(
+                    onClick = {
+                        when (uiState) {
+                            is RelationshipTopBarIconState.Selecting -> {
+                                (uiState as RelationshipTopBarIconState.Selecting).onClickListener.invoke()
+                            }
+
+                            else -> {
+                                networkUtils.performIfOnline(
+                                    this,
+                                    {
+                                        if (java.lang.Boolean.FALSE == relationshipMap.value) {
+                                            dashboardViewModel.updateRelationshipsTopBarIconState(
+                                                RelationshipTopBarIconState.List(),
+                                            )
+                                        } else {
+                                            dashboardViewModel.updateRelationshipsTopBarIconState(
+                                                RelationshipTopBarIconState.Map(),
+                                            )
+                                        }
+                                        val showMap = !relationshipMap.value!!
+                                        if (showMap) {
+                                            binding.toolbarProgress.visibility = View.VISIBLE
+                                            binding.toolbarProgress.hide()
+                                        }
+                                        relationshipMap.value = showMap
+                                    },
+                                    {},
+                                    getString(R.string.msg_network_connection_maps),
+                                )
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = uiState.icon,
+                            contentDescription = "Relationships",
+                            tint = Color.White,
+                        )
+                    },
+                )
+            }
         }
     }
 
@@ -388,9 +418,9 @@ class TeiDashboardMobileActivity :
 
     private fun updateTopBar(item: TEIDashboardItems) {
         if (item === TEIDashboardItems.RELATIONSHIPS) {
-            binding.relationshipMapIcon.visibility = View.VISIBLE
+            binding.relationshipIcon.visibility = View.VISIBLE
         } else {
-            binding.relationshipMapIcon.visibility = View.GONE
+            binding.relationshipIcon.visibility = View.GONE
         }
 
         if (this.isPortrait()) {
@@ -762,7 +792,10 @@ class TeiDashboardMobileActivity :
             .singleSelection()
             .withModel(
                 OUTreeModel(
-                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType.lowercase()),
+                    title = getString(
+                        R.string.transfer_tei_org_sheet_title,
+                        presenter.teType.lowercase(),
+                    ),
                     subtitle = getString(
                         R.string.transfer_tei_org_sheet_description,
                         ownerOrgUnit?.displayName(),

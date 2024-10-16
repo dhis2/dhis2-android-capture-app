@@ -18,11 +18,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.commons.R
+import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.TEIDashboardItems
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.utils.AuthorityException
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -76,6 +77,10 @@ class DashboardViewModel(
     private val _navigationBarUIState =
         MutableStateFlow<NavigationBarUIState<TEIDashboardItems>>(NavigationBarUIState())
     val navigationBarUIState = _navigationBarUIState.asStateFlow()
+
+    private val _relationshipTopBarIconState =
+        MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.Map())
+    val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
 
     init {
         fetchDashboardModel()
@@ -301,5 +306,9 @@ class DashboardViewModel(
                 }
             }
         }
+    }
+
+    fun updateRelationshipsTopBarIconState(state: RelationshipTopBarIconState) {
+        _relationshipTopBarIconState.value = state
     }
 }
