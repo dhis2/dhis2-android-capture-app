@@ -182,7 +182,14 @@ class MapSelectorActivity :
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
-                    it.map?.addMoveListeners(mapSelectorViewModel::updateCurrentVisibleRegion)
+                    it.map?.addMoveListeners(
+                        onIdle = {
+                            mapSelectorViewModel.updateCurrentVisibleRegion(it)
+                            mapSelectorViewModel.onMoveEnd()
+                        },
+                        onMove = mapSelectorViewModel::onMove,
+                    )
+
                     if (ActivityCompat.checkSelfPermission(
                             this,
                             permission.ACCESS_FINE_LOCATION,

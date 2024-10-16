@@ -2,6 +2,7 @@ package org.dhis2.maps.views
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -37,8 +39,13 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
@@ -118,6 +125,8 @@ fun SinglePaneMapSelector(
             modifier = Modifier
                 .weight(1f),
             searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+            captureMode = screenState.captureMode,
+            selectedLocation = screenState.selectedLocation,
             loadMap = screenActions.loadMap,
             onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
             onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -187,6 +196,8 @@ private fun TwoPaneMapSelector(
             Map(
                 modifier = Modifier
                     .weight(1f),
+                captureMode = screenState.captureMode,
+                selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
@@ -282,6 +293,28 @@ private fun LocationInfoContent(
             ) { }
         }
 
+        captureMode.isSwipe() -> {
+            LocationItem(
+                locationItemModel = LocationItemModel.SearchResult(
+                    searchedTitle = stringResource(R.string.drop_to_select),
+                    searchedSubtitle = stringResource(
+                        R.string.latitude_longitude,
+                        selectedLocation.latitude.truncate(),
+                        selectedLocation.longitude.truncate(),
+                    ),
+                    searchedLatitude = selectedLocation.latitude,
+                    searchedLongitude = selectedLocation.longitude,
+                ),
+                icon = {
+                    LocationItemIcon(
+                        icon = Icons.Outlined.TouchApp,
+                        tintedColor = TextColor.OnWarningContainer,
+                        bgColor = SurfaceColor.WarningContainer,
+                    )
+                },
+            ) { }
+        }
+
         captureMode.isGps() -> {
             Box(
                 modifier = Modifier
@@ -345,6 +378,8 @@ private fun LocationInfoContent(
 @Composable
 private fun Map(
     modifier: Modifier = Modifier,
+    captureMode: MapSelectorViewModel.CaptureMode,
+    selectedLocation: SelectedLocation,
     searchOnThisAreaVisible: Boolean,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
@@ -353,6 +388,7 @@ private fun Map(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center,
     ) {
         MapScreen(
             actionButtons = {
@@ -407,6 +443,11 @@ private fun Map(
                     )
                 }
             },
+        )
+
+        DraggableSelectedIcon(
+            captureMode = captureMode,
+            selectedLocation = selectedLocation,
         )
     }
 }
@@ -463,4 +504,50 @@ private fun DoneButton(
         text = stringResource(R.string.done),
         onClick = onDoneButtonClicked,
     )
+}
+
+@Composable
+private fun DraggableSelectedIcon(
+    captureMode: MapSelectorViewModel.CaptureMode,
+    selectedLocation: SelectedLocation,
+) {
+    val density = LocalDensity.current
+
+    if (selectedLocation !is SelectedLocation.None) {
+        var heightOffset by remember {
+            mutableStateOf(0.dp)
+        }
+        val iconOffset by animateDpAsState(
+            if (captureMode.isSwipe()) {
+                (-15).dp
+            } else {
+                0.dp
+            },
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow,
+            ),
+            label = "offset",
+        )
+        Box(
+            modifier = Modifier
+                .offset(y = heightOffset)
+                .onGloballyPositioned {
+                    heightOffset = -with(density) { it.size.height.toDp() } / 2
+                }
+                .graphicsLayer { clip = false },
+        ) {
+            Icon(
+                modifier = Modifier.offset(y = iconOffset),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_map_pin_selected_no_shadow),
+                contentDescription = "",
+                tint = Color.Unspecified,
+            )
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_map_pin_shadow),
+                contentDescription = "",
+                tint = Color.Unspecified,
+            )
+        }
+    }
 }

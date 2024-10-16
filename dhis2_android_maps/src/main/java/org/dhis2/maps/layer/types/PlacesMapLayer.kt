@@ -8,6 +8,7 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
@@ -42,7 +43,7 @@ class PlacesMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.PLACE_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconOffset(arrayOf(0f, -14.5f)),
+                    PropertyFactory.iconAnchor(ICON_ANCHOR_BOTTOM),
                 )
                 .withFilter(
                     Expression.all(
@@ -64,7 +65,7 @@ class PlacesMapLayer(
                 .withProperties(
                     PropertyFactory.iconImage(MapLayerManager.SELECTED_PLACE_ICON_ID),
                     PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconOffset(arrayOf(0f, -14.5f)),
+                    PropertyFactory.iconAnchor(ICON_ANCHOR_BOTTOM),
                 ).withFilter(
                     Expression.all(
                         Expression.eq(

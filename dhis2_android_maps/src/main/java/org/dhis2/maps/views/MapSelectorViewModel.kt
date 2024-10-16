@@ -46,12 +46,14 @@ class MapSelectorViewModel(
         NONE,
         GPS,
         MANUAL,
+        MANUAL_SWIPE,
         SEARCH,
         ;
 
         fun isNone() = this == NONE
         fun isGps() = this == GPS
         fun isManual() = this == MANUAL
+        fun isSwipe() = this == MANUAL_SWIPE
         fun isSearch() = this == SEARCH
     }
 
@@ -328,17 +330,20 @@ class MapSelectorViewModel(
 
     fun onMapClicked(point: LatLng) {
         viewModelScope.launch(dispatchers.io()) {
-            val selectedLocation = SelectedLocation.ManualResult(point.latitude, point.longitude)
-            _currentFeature = updateSelectedGeometry(selectedLocation)
-            updateScreenState(
-                mapData = GetMapData(
-                    _currentFeature,
-                    _screenState.value.locationItems,
-                    _screenState.value.captureMode,
-                ),
-                captureMode = CaptureMode.MANUAL,
-                selectedLocation = selectedLocation,
-            )
+            if (mapStyleConfig.isManualCaptureEnabled()) {
+                val selectedLocation =
+                    SelectedLocation.ManualResult(point.latitude, point.longitude)
+                _currentFeature = updateSelectedGeometry(selectedLocation)
+                updateScreenState(
+                    mapData = GetMapData(
+                        _currentFeature,
+                        _screenState.value.locationItems,
+                        _screenState.value.captureMode,
+                    ),
+                    captureMode = CaptureMode.MANUAL,
+                    selectedLocation = selectedLocation,
+                )
+            }
         }
     }
 
@@ -380,5 +385,52 @@ class MapSelectorViewModel(
         viewModelScope.launch(dispatchers.io()) {
             onSaveCurrentGeometry()
         }
+    }
+
+    fun onMove(point: LatLng) {
+        if (canCaptureWithSwipe()) {
+            val captureMode = if (!_screenState.value.captureMode.isSwipe()) {
+                CaptureMode.MANUAL_SWIPE
+            } else {
+                _screenState.value.captureMode
+            }
+
+            val selectedLocation = SelectedLocation.ManualResult(
+                selectedLatitude = point.latitude,
+                selectedLongitude = point.longitude,
+            )
+
+            _currentFeature = updateSelectedGeometry(selectedLocation)
+
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    captureMode,
+                ),
+                selectedLocation = selectedLocation,
+                captureMode = captureMode,
+            )
+        }
+    }
+
+    fun onMoveEnd() {
+        if (_screenState.value.captureMode.isSwipe()) {
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    screenState.value.locationItems,
+                    CaptureMode.MANUAL,
+                ),
+                captureMode = CaptureMode.MANUAL,
+            )
+        }
+    }
+
+    private fun canCaptureWithSwipe() = mapStyleConfig.isManualCaptureEnabled() &&
+        _screenState.value.selectedLocation !is SelectedLocation.None
+
+    fun canCaptureManually(): Boolean {
+        return mapStyleConfig.isManualCaptureEnabled()
     }
 }
