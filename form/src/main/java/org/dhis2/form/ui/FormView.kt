@@ -200,8 +200,10 @@ class FormView : Fragment() {
             if (success) {
                 val imageFile = File(
                     FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                    TEMP_FILE,
-                ).rotateImage(requireContext())
+                    TEMP_FILE_IMAGE,
+                )// Eyeseetea customization - Avoid resize the image to take photo
+                //.rotateImage(requireContext())
+
                 onSavePicture?.invoke(imageFile.path)
 
                 viewModel.getFocusedItemUid()?.let {
@@ -940,7 +942,7 @@ class FormView : Fragment() {
                                     FileResourceDirectoryHelper.getFileResourceDirectory(
                                         requireContext(),
                                     ),
-                                    TEMP_FILE,
+                                    TEMP_FILE_IMAGE,
                                 ),
                             )
                             takePicture.launch(photoUri)
@@ -1077,7 +1079,7 @@ class FormView : Fragment() {
         SignatureDialog(uiEvent.label) {
             val file = File(
                 FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                TEMP_FILE,
+                TEMP_FILE_SIGNATURE,
             )
             file.outputStream().use { out ->
                 it.compress(Bitmap.CompressFormat.PNG, 85, out)
@@ -1282,6 +1284,7 @@ class FormView : Fragment() {
 
     companion object {
         const val RECORDS = "RECORDS"
-        const val TEMP_FILE = "tempFile.png"
+        const val TEMP_FILE_SIGNATURE = "tempFile.png"
+        const val TEMP_FILE_IMAGE = "tempFile.jpg"
     }
 }
