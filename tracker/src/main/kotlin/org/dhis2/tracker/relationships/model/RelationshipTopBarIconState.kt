@@ -10,11 +10,11 @@ sealed class RelationshipTopBarIconState(
     val icon: ImageVector,
 ) {
     class List : RelationshipTopBarIconState(
-        icon = Icons.AutoMirrored.Outlined.List,
+        icon = Icons.Outlined.Map,
     )
 
     class Map : RelationshipTopBarIconState(
-        icon = Icons.Outlined.Map,
+        icon = Icons.AutoMirrored.Outlined.List,
     )
 
     data class Selecting(val onClickListener: () -> Unit) : RelationshipTopBarIconState(

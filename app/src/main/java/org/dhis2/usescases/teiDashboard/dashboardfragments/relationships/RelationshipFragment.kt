@@ -169,7 +169,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             relationShipsViewModel.deleteSelectedRelationships()
                         }
                     } else {
-                        RelationshipTopBarIconState.Map()
+                        RelationshipTopBarIconState.List()
                     }
                     dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
                 }

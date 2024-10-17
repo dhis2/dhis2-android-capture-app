@@ -12,7 +12,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.collectAsState
@@ -20,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -69,6 +67,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.CLICK
@@ -82,7 +81,6 @@ import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
@@ -200,7 +198,7 @@ class TeiDashboardMobileActivity :
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
 
-        setRelationshipMapIconListener()
+        setRelationshipMapIcon()
         setSyncButtonListener()
         setFormViewForLandScape()
         setEditButton()
@@ -242,51 +240,48 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setRelationshipMapIconListener() {
+    private fun setRelationshipMapIcon() {
         binding.relationshipIcon.setContent {
             DHIS2Theme {
-                val uiState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
-                IconButton(
-                    onClick = {
-                        when (uiState) {
-                            is RelationshipTopBarIconState.Selecting -> {
-                                (uiState as RelationshipTopBarIconState.Selecting).onClickListener.invoke()
-                            }
-
-                            else -> {
-                                networkUtils.performIfOnline(
-                                    this,
-                                    {
-                                        if (java.lang.Boolean.FALSE == relationshipMap.value) {
-                                            dashboardViewModel.updateRelationshipsTopBarIconState(
-                                                RelationshipTopBarIconState.List(),
-                                            )
-                                        } else {
-                                            dashboardViewModel.updateRelationshipsTopBarIconState(
-                                                RelationshipTopBarIconState.Map(),
-                                            )
-                                        }
-                                        val showMap = !relationshipMap.value!!
-                                        if (showMap) {
-                                            binding.toolbarProgress.visibility = View.VISIBLE
-                                            binding.toolbarProgress.hide()
-                                        }
-                                        relationshipMap.value = showMap
-                                    },
-                                    {},
-                                    getString(R.string.msg_network_connection_maps),
-                                )
-                            }
+                val relationshipTopBarIconState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
+                RelationshipTopBarIcon(
+                    relationshipTopBarIconState = relationshipTopBarIconState,
+                ) {
+                    when (val uiState = relationshipTopBarIconState) {
+                        is RelationshipTopBarIconState.Selecting -> {
+                            uiState.onClickListener()
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = uiState.icon,
-                            contentDescription = "Relationships",
-                            tint = Color.White,
-                        )
-                    },
-                )
+
+                        is RelationshipTopBarIconState.List -> {
+                            networkUtils.performIfOnline(
+                                context = this,
+                                action = {
+                                    dashboardViewModel.updateRelationshipsTopBarIconState(
+                                        RelationshipTopBarIconState.Map(),
+                                    )
+                                },
+                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                            )
+
+                            binding.toolbarProgress.visibility = View.VISIBLE
+                            binding.toolbarProgress.hide()
+                            relationshipMap.value = true
+                        }
+
+                        is RelationshipTopBarIconState.Map -> {
+                            networkUtils.performIfOnline(
+                                context = this,
+                                action = {
+                                    dashboardViewModel.updateRelationshipsTopBarIconState(
+                                        RelationshipTopBarIconState.List(),
+                                    )
+                                },
+                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                            )
+                            relationshipMap.value = false
+                        }
+                    }
+                }
             }
         }
     }

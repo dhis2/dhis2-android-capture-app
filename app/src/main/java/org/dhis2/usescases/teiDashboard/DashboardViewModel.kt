@@ -79,7 +79,7 @@ class DashboardViewModel(
     val navigationBarUIState = _navigationBarUIState.asStateFlow()
 
     private val _relationshipTopBarIconState =
-        MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.Map())
+        MutableStateFlow<RelationshipTopBarIconState>(RelationshipTopBarIconState.List())
     val relationshipTopBarIconState = _relationshipTopBarIconState.asStateFlow()
 
     init {
