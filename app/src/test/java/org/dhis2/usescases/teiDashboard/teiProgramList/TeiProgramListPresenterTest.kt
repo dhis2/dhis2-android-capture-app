@@ -9,7 +9,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentService
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito

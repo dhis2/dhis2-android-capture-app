@@ -1,7 +1,7 @@
 package org.dhis2.ui
 
 import androidx.compose.ui.graphics.Color
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 
 const val FILE_NOT_LOADED = "FILE_NOT_LOADED"
 
