@@ -17,6 +17,11 @@ class MapStyleConfiguration(
             programConfiguration.disableManualLocation() != true
         } ?: true
 
+    private val forcedLocationPrecision = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
+        ?.let { programConfiguration ->
+            programConfiguration.minimumLocationAccuracy() ?: -1
+        } ?: -1
+
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()
         return d2.mapsModule().mapLayers().withImageryProviders().blockingGet()
@@ -33,6 +38,8 @@ class MapStyleConfiguration(
     }
 
     fun isManualCaptureEnabled(): Boolean = canCaptureManually
+
+    fun getForcedLocationAccuracy(): Int = forcedLocationPrecision
 }
 
 fun String.mapTileUrls(subdomainPlaceholder: String?, subdomains: List<String>?): List<String> {
