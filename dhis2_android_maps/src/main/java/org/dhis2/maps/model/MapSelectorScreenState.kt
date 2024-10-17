@@ -15,8 +15,23 @@ data class MapSelectorScreenState(
     val displayPolygonInfo: Boolean,
     val locationState: LocationState,
     val isManualCaptureEnabled: Boolean,
+    val forcedLocationAccuracy: Int,
 ) {
-    val doneButtonEnabled = selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
+    private fun getDoneButtonEnabledState(): Boolean {
+        return when {
+            (forcedLocationAccuracy == -1) -> {
+                selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
+            }
+            (captureMode.isGps()) -> {
+                accuracyRange.value.toFloat() <= forcedLocationAccuracy
+            }
+            else -> {
+                selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
+            }
+        }
+    }
+
+    val doneButtonEnabled = getDoneButtonEnabledState()
     fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&
         newAccuracy < accuracyRange.value.toFloat()
 }
