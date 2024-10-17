@@ -8,7 +8,7 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.rules.models.Rule
 import java.util.Locale
 
