@@ -66,6 +66,7 @@ import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
