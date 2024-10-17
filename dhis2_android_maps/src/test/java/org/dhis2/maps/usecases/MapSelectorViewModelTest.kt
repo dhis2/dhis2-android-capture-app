@@ -263,17 +263,6 @@ class MapSelectorViewModelTest {
     }
 
     @Test
-    fun shouldSetValueFromMapClick() = runTest {
-        mapSelectorViewModel.screenState.test() {
-            awaitItem()
-            mapSelectorViewModel.onMapClicked(mockedGpsResult.asLatLng())
-            val item = awaitItem()
-            assertTrue(item.captureMode == MapSelectorViewModel.CaptureMode.MANUAL)
-            assertTrue(item.selectedLocation is SelectedLocation.ManualResult)
-        }
-    }
-
-    @Test
     fun shouldNotDisplayPolygonInfo() {
         assertTrue(!mapSelectorViewModel.screenState.value.displayPolygonInfo)
     }

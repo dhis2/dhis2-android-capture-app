@@ -17,5 +17,5 @@ data class MapSelectorScreenState(
 ) {
     val doneButtonEnabled = selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
     fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&
-            newAccuracy < accuracyRange.value.toFloat()
+        newAccuracy < accuracyRange.value.toFloat()
 }

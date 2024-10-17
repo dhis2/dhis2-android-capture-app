@@ -46,7 +46,7 @@ import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 
 abstract class MapManager(
     val mapView: MapView,
-    val locationEngine: LocationEngine?,
+    private val locationEngine: LocationEngine?,
 ) : LifecycleEventObserver {
 
     var map: MapboxMap? = null
@@ -242,21 +242,7 @@ abstract class MapManager(
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
                 activateLocationComponent(
-                    LocationComponentActivationOptions
-                        .builder(mapView.context, style)
-                        .locationComponentOptions(
-                            LocationComponentOptions.builder(mapView.context)
-                                .accuracyAnimationEnabled(true)
-                                .build(),
-                        ).apply {
-                            if (this@MapManager.locationEngine != null) {
-                                useDefaultLocationEngine(false)
-                                locationEngine(this@MapManager.locationEngine)
-                            } else {
-                                useDefaultLocationEngine(true)
-                            }
-                        }
-                        .build(),
+                    getLocationComponentActivationOptions(style),
                 )
                 isLocationComponentEnabled = true
                 locationProvider.getLastKnownLocation(
@@ -277,6 +263,28 @@ abstract class MapManager(
                 onMissingPermission(permissionsManager)
             }
         }
+    }
+
+    private fun getLocationComponentActivationOptions(style: Style) = if (locationEngine != null) {
+        LocationComponentActivationOptions
+            .builder(mapView.context, style)
+            .locationComponentOptions(
+                LocationComponentOptions.builder(mapView.context)
+                    .accuracyAnimationEnabled(true)
+                    .build(),
+            ).useDefaultLocationEngine(false)
+            .locationEngine(locationEngine)
+            .build()
+    } else {
+        LocationComponentActivationOptions
+            .builder(mapView.context, style)
+            .locationComponentOptions(
+                LocationComponentOptions.builder(mapView.context)
+                    .accuracyAnimationEnabled(true)
+                    .build(),
+            )
+            .useDefaultLocationEngine(true)
+            .build()
     }
 
     @SuppressLint("MissingPermission")

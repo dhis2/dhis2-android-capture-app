@@ -39,14 +39,13 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
             onPermissionNeeded()
         } else if (!hasLocationEnabled()) {
             onLocationDisabled()
-            requestLocationUpdates(onNewLocation, onLocationDisabled)
         } else {
             locationManager.getLastKnownLocation(locationProvider).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
                 }
-                requestLocationUpdates(onNewLocation, onLocationDisabled)
             }
+            requestLocationUpdates(onNewLocation, onLocationDisabled)
         }
     }
 
@@ -77,8 +76,8 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
 
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                1000,
-                1f,
+                500,
+                0f,
                 requireNotNull(locationListener),
             )
             updatesEnabled = true

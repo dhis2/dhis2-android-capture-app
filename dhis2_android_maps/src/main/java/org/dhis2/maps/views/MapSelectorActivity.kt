@@ -145,29 +145,18 @@ class MapSelectorActivity : AppCompatActivity() {
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
                 onFeatureClicked = mapSelectorViewModel::onPinClicked,
-                onPointClicked = mapSelectorViewModel::onMapClicked,
             )
 
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     it.map?.addMoveListeners(
-                        onIdle = {
-                            mapSelectorViewModel.updateCurrentVisibleRegion(it)
+                        onIdle = { bounds ->
+                            mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
                             mapSelectorViewModel.onMoveEnd()
                         },
                         onMove = mapSelectorViewModel::onMove,
                     )
-
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            permission.ACCESS_FINE_LOCATION,
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        initLocationUpdates()
-                    } else {
-                        requestLocationPermission.launch(permission.ACCESS_FINE_LOCATION)
-                    }
                     lifecycleScope.launch {
                         mapManager.locationState.collect { locationState ->
                             mapSelectorViewModel.updateLocationState(locationState)
@@ -203,15 +192,6 @@ class MapSelectorActivity : AppCompatActivity() {
             requestCode,
             permissions,
             grantResults,
-        )
-    }
-
-    @RequiresPermission(permission.ACCESS_FINE_LOCATION)
-    private fun initLocationUpdates() {
-        locationProvider.getLastKnownLocation(
-            { location -> locationListener.onLocationChanged(location) },
-            {},
-            {},
         )
     }
 

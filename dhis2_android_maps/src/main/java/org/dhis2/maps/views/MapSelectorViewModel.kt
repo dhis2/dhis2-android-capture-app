@@ -162,7 +162,7 @@ class MapSelectorViewModel(
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
             _lastGPSLocation = gpsResult
-            if (_screenState.value.canCaptureGps()) {
+            if (_screenState.value.canCaptureGps(gpsResult.accuracy)) {
                 _currentFeature = updateSelectedGeometry(gpsResult)
                 val mapData = when {
                     featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
@@ -334,25 +334,6 @@ class MapSelectorViewModel(
                 ),
                 selectedLocation = selectedLocation,
             )
-        }
-    }
-
-    fun onMapClicked(point: LatLng) {
-        viewModelScope.launch(dispatchers.io()) {
-            if (mapStyleConfig.isManualCaptureEnabled()) {
-                val selectedLocation =
-                    SelectedLocation.ManualResult(point.latitude, point.longitude)
-                _currentFeature = updateSelectedGeometry(selectedLocation)
-                updateScreenState(
-                    mapData = GetMapData(
-                        _currentFeature,
-                        _screenState.value.locationItems,
-                        _screenState.value.captureMode,
-                    ),
-                    captureMode = CaptureMode.MANUAL,
-                    selectedLocation = selectedLocation,
-                )
-            }
         }
     }
 
