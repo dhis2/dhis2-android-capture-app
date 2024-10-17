@@ -17,7 +17,7 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
