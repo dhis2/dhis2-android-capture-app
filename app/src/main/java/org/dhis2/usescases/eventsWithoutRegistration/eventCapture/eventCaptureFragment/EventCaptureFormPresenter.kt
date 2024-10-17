@@ -87,7 +87,7 @@ class EventCaptureFormPresenter(
         it.status() == EventStatus.COMPLETED && hasReopenAuthority()
     } ?: false
 
-    private fun getEvent(): Event? {
+    fun getEvent(): Event? {
         return d2.eventModule().events().uid(eventUid).blockingGet()
     }
 

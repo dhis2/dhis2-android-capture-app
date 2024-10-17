@@ -121,6 +121,7 @@ class FormView : Fragment() {
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
+    private var programUid: String? = null
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -845,7 +846,8 @@ class FormView : Fragment() {
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
         onActivityForResult?.invoke()
         mapContent.launch(
-            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
+            MapSelectorActivity
+                .create(requireContext(), event.uid, event.featureType, event.value, programUid),
         )
     }
 
@@ -1091,12 +1093,14 @@ class FormView : Fragment() {
         eventResultDialogUiProvider: FormResultDialogProvider?,
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
+        programUid: String?,
     ) {
         this.locationProvider = locationProvider
         this.completionListener = completionListener
         this.formResultDialogUiProvider = eventResultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
+        this.programUid = programUid
     }
 
     internal fun setCallbackConfiguration(
@@ -1133,6 +1137,7 @@ class FormView : Fragment() {
         private var eventResultDialogUiProvider: FormResultDialogProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
+        private var programUid: String? = null
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -1188,6 +1193,8 @@ class FormView : Fragment() {
         fun openErrorLocation(openErrorLocation: Boolean) =
             apply { this.openErrorLocation = openErrorLocation }
 
+        fun setProgramUid(programUid: String?) = apply { this.programUid = programUid }
+
         fun build(): FormView {
             if (fragmentManager == null) {
                 throw Exception("You need to call factory method and pass a FragmentManager")
@@ -1210,6 +1217,7 @@ class FormView : Fragment() {
                     eventResultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,
+                    programUid,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(

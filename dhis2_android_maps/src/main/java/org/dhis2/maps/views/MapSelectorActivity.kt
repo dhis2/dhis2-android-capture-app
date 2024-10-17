@@ -60,6 +60,7 @@ class MapSelectorActivity : AppCompatActivity() {
                 FeatureType.valueOf(featureName)
             } ?: FeatureType.POINT,
             initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES),
+            programUid = intent.getStringExtra(PROGRAM_UID),
         )
     }
 
@@ -214,17 +215,20 @@ class MapSelectorActivity : AppCompatActivity() {
         const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
         const val FIELD_UID = "FIELD_UID_EXTRA"
+        const val PROGRAM_UID = "PROGRAM_UID_EXTRA"
 
         fun create(
             activity: Context,
             fieldUid: String?,
             locationType: FeatureType,
             initialData: String?,
+            programUid: String?,
         ): Intent {
             val intent = Intent(activity, MapSelectorActivity::class.java)
             fieldUid.let { intent.putExtra(FIELD_UID, fieldUid) }
             intent.putExtra(LOCATION_TYPE_EXTRA, locationType.toString())
             initialData.let { intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData) }
+            initialData.let { intent.putExtra(PROGRAM_UID, programUid) }
 
             return intent
         }

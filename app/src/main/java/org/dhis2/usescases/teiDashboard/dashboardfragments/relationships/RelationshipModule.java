@@ -2,6 +2,8 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 
+import org.dhis2.commons.data.ProgramConfigurationRepository;
+import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
@@ -32,6 +34,7 @@ import dagger.Provides;
 @Module
 public class RelationshipModule {
 
+    private final String programUid;
     private final String teiUid;
     private final String enrollmentUid;
     private final String eventUid;
@@ -41,11 +44,12 @@ public class RelationshipModule {
     public RelationshipModule(
             Context moduleContext,
             RelationshipView view,
+            String programUid,
             String teiUid,
             String enrollmentUid,
             String eventUid) {
         this.moduleContext = moduleContext;
-
+        this.programUid = programUid;
         this.teiUid = teiUid;
         this.enrollmentUid = enrollmentUid;
         this.eventUid = eventUid;
@@ -61,7 +65,8 @@ public class RelationshipModule {
                                             RelationshipsRepository relationshipsRepository,
                                             AvatarProvider avatarProvider,
                                             DateLabelProvider dateLabelProvider,
-                                            DispatcherProvider dispatcherProvider
+                                            DispatcherProvider dispatcherProvider,
+                                            ProgramConfigurationRepository programConfigurationRepository
     ) {
         return new RelationshipPresenter(
                 view,
@@ -71,12 +76,18 @@ public class RelationshipModule {
                 relationshipMapsRepository,
                 analyticsHelper,
                 mapRelationshipsToFeatureCollection,
-                new MapStyleConfiguration(d2),
+                new MapStyleConfiguration(d2, programUid, programConfigurationRepository),
                 relationshipsRepository,
                 avatarProvider,
                 dateLabelProvider,
                 dispatcherProvider
         );
+    }
+
+    @Provides
+    @PerFragment
+    ProgramConfigurationRepository providesProgramConfigurationRepository(D2 d2) {
+        return new ProgramConfigurationRepository(d2);
     }
 
     @Provides
