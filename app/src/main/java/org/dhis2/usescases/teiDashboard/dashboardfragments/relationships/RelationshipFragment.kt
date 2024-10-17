@@ -34,7 +34,6 @@ import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.RelationshipMapManager
-import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
