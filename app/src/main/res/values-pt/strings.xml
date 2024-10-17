@@ -400,7 +400,6 @@
     <string name="tuto_main_10">Faça logout para alterar usuário ou servidor. Você poderá fazer login novamente, mesmo se não houver conexão com a Internet.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">Relacionamentos</string>
-    <string name="empty_relationships">Não há relacionamentos, clique em \"+\" para adicionar um novo.</string>
     <string name="empty_tei_add">Não há eventos registrados, clique em \"+\" para adicionar um novo.</string>
     <string name="empty_tei_no_add">Não há eventos registrados.</string>
     <string name="qr_data_values">Valor de Dados</string>

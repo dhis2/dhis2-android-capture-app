@@ -382,7 +382,6 @@
     <string name="tuto_main_9">4 xonali kod bilan sessiyani bloklash. Kodingizni unutmang!</string>
     <string name="tuto_main_10">Foydalanuvchini yoki serverni oʼzgartirish uchun tizimdan chiqing. Internetda ulanish boʼlmasa ham, siz yana tizimga kirishingiz mumkin.</string>
     <string name="text_plus_colon">%s:</string>
-    <string name="empty_relationships">Oʼzaro aloqalar mavjud emas, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
     <string name="empty_tei_add">Hech qanday hodisa/tadbir roʼyxatdan oʼtkazilmagan, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
     <string name="empty_tei_no_add">Hech qanday hodisa/tadbir roʼyxatdan oʼtkazilmagan.</string>
     <string name="qr_data_values">Maʼlumotlarning qiymatlari</string>

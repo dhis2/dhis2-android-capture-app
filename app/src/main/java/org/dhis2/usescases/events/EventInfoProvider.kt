@@ -18,7 +18,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.maps.model.RelatedInfo
-import org.dhis2.tracker.ProfilePictureProvider
+import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle

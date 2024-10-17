@@ -15,6 +15,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.maps.R
+import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
@@ -31,8 +32,8 @@ class RelationshipMapManager(
         const val RELATIONSHIP_ARROW_BIDIRECTIONAL = "RELATIONSHIP_ARROW_BIDIRECTIONAL"
     }
 
-    private lateinit var boundingBox: BoundingBox
-    private lateinit var featureCollections: Map<String, FeatureCollection>
+    private var boundingBox: BoundingBox = GetBoundingBox().getEnclosingBoundingBox(emptyList())
+    private var featureCollections: Map<String, FeatureCollection> = emptyMap()
 
     fun update(featureCollections: Map<String, FeatureCollection>, boundingBox: BoundingBox) {
         this.featureCollections = featureCollections

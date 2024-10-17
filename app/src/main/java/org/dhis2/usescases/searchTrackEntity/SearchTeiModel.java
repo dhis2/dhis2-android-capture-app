@@ -1,6 +1,8 @@
-package org.dhis2.commons.data;
+package org.dhis2.usescases.searchTrackEntity;
 
+import org.dhis2.commons.data.CarouselItemModel;
 import org.dhis2.commons.data.tuples.Trio;
+import org.dhis2.tracker.relationships.model.RelationshipModel;
 import org.dhis2.ui.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
@@ -37,7 +39,7 @@ public class SearchTeiModel implements CarouselItemModel {
     private Enrollment selectedEnrollment;
     private List<Enrollment> enrollments;
     private Date overdueDate;
-    private List<RelationshipViewModel> relationships;
+    private List<RelationshipModel> relationships;
     private boolean openedAttributeList = false;
     private String sortingKey;
     private String sortingValue;
@@ -214,11 +216,11 @@ public class SearchTeiModel implements CarouselItemModel {
         return overdueDate;
     }
 
-    public List<RelationshipViewModel> getRelationships() {
+    public List<RelationshipModel> getRelationships() {
         return relationships;
     }
 
-    public void setRelationships(List<RelationshipViewModel> relationships) {
+    public void setRelationships(List<RelationshipModel> relationships) {
         this.relationships = relationships;
     }
 

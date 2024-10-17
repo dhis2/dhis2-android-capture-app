@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.extensions.toFriendlyDate
 import org.dhis2.commons.extensions.toFriendlyDateTime
 import org.dhis2.commons.extensions.toPercentage
