@@ -14,6 +14,7 @@ data class MapSelectorScreenState(
     val searchOnAreaVisible: Boolean,
     val displayPolygonInfo: Boolean,
     val locationState: LocationState,
+    val isManualCaptureEnabled: Boolean,
 ) {
     val doneButtonEnabled = selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
     fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&

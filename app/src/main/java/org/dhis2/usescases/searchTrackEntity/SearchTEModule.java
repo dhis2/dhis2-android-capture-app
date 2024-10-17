@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.di.dagger.PerActivity;
@@ -303,7 +304,8 @@ public class SearchTEModule {
             D2 d2,
             ResourceManager resourceManager,
             DisplayNameProvider displayNameProvider,
-            FilterManager filterManager
+            FilterManager filterManager,
+            ProgramConfigurationRepository programConfigurationRepository
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -314,11 +316,19 @@ public class SearchTEModule {
                 mapDataRepository,
                 networkUtils,
                 new SearchDispatchers(),
-                new MapStyleConfiguration(d2),
+                new MapStyleConfiguration(d2, initialProgram, programConfigurationRepository),
                 resourceManager,
                 displayNameProvider,
                 filterManager
         );
+    }
+
+    @Provides
+    @PerActivity
+    ProgramConfigurationRepository provideProgramConfigurationRepository(
+            D2 d2
+    ) {
+        return new ProgramConfigurationRepository(d2);
     }
 
     @Provides

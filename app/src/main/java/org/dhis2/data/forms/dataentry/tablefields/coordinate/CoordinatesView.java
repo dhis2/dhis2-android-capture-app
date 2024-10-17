@@ -397,7 +397,8 @@ public class CoordinatesView extends FieldLayout implements View.OnClickListener
                         getContext(),
                         null,
                         getFeatureType(),
-                        currentCoordinates()),
+                        currentCoordinates(),
+                        null),
                 RQ_MAP_LOCATION_VIEW);
     }
 

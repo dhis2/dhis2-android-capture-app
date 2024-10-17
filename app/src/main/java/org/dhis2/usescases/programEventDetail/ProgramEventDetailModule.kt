@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
@@ -75,9 +76,14 @@ class ProgramEventDetailModule(
         createEventUseCase: CreateEventUseCase,
         pageConfigurator: NavigationPageConfigurator,
         resourceManager: ResourceManager,
+        programConfigurationRepository: ProgramConfigurationRepository,
     ): ProgramEventDetailViewModelFactory {
         return ProgramEventDetailViewModelFactory(
-            MapStyleConfiguration(d2),
+            MapStyleConfiguration(
+                d2,
+                programUid,
+                programConfigurationRepository,
+            ),
             eventDetailRepository,
             dispatcher,
             createEventUseCase,
@@ -85,6 +91,12 @@ class ProgramEventDetailModule(
             resourceManager,
         )
     }
+
+    @Provides
+    @PerActivity
+    fun provideProgramConfigurationRepository(
+        d2: D2,
+    ) = ProgramConfigurationRepository(d2)
 
     @Provides
     @PerActivity

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.teiDashboard.data
+package org.dhis2.commons.data
 
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting

@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.domain
 
 import org.dhis2.commons.data.EventCreationType.REFERAL
 import org.dhis2.commons.data.EventCreationType.SCHEDULE
-import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
 import org.junit.Assert.assertNotNull

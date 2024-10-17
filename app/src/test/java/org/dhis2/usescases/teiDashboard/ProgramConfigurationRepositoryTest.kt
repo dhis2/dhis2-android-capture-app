@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard
 
-import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
 import org.junit.Assert.assertEquals

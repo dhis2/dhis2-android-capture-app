@@ -74,6 +74,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             .factory(activity.supportFragmentManager)
             .setRecords(EventRecords(eventUid, eventMode ?: EventMode.CHECK))
             .openErrorLocation(requireArguments().getBoolean(OPEN_ERROR_LOCATION, false))
+            .setProgramUid(presenter.getEvent()?.program())
             .build()
         super.onCreate(savedInstanceState)
     }

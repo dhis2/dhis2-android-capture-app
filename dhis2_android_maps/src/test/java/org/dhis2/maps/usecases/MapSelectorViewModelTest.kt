@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
 import org.dhis2.maps.model.AccuracyRange
@@ -51,7 +52,10 @@ class MapSelectorViewModelTest {
     private val androidGeocoder: Geocoder = mock()
     private val geocoderApi: GeocoderApi = mock()
 
-    private val mapStyleConfiguration = MapStyleConfiguration(d2)
+    private val programUid = null
+    private val programConfigurationRepository: ProgramConfigurationRepository = mock()
+
+    private val mapStyleConfiguration = MapStyleConfiguration(d2, programUid, programConfigurationRepository)
 
     private val dispatcherProvider = object : DispatcherProvider {
         override fun io() = testingDispatcher

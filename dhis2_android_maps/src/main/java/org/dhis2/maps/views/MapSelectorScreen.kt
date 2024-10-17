@@ -7,6 +7,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +20,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,11 +66,13 @@ import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.OnSearchAction
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBarMode
+import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -85,7 +91,7 @@ fun MapSelectorScreen(
         else -> false
     }
 
-    if (useTwoPaneLayout) {
+    if (useTwoPaneLayout && screenState.isManualCaptureEnabled) {
         TwoPaneMapSelector(
             screenState,
             mapSelectorScreenActions,
@@ -104,45 +110,55 @@ fun SinglePaneMapSelector(
     screenActions: MapSelectorScreenActions,
 ) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = spacedBy(16.dp),
+        Modifier.fillMaxSize(),
     ) {
-        SearchBar(
-            locationItems = screenState.locationItems,
-            onBackClicked = screenActions.onBackClicked,
-            onClearLocation = screenActions.onClearLocation,
-            onSearchLocation = screenActions.onSearchLocation,
-            onLocationSelected = screenActions.onLocationSelected,
-            onSearchCaptureMode = screenActions.onSearchCaptureMode,
-            onButtonMode = screenActions.onButtonMode,
-        )
+        if (!screenState.isManualCaptureEnabled) {
+            MapTopBar(screenActions.onBackClicked)
+        }
 
-        Map(
-            modifier = Modifier
-                .weight(1f),
-            searchOnThisAreaVisible = screenState.searchOnAreaVisible,
-            captureMode = screenState.captureMode,
-            selectedLocation = screenState.selectedLocation,
-            locationState = screenState.locationState,
-            loadMap = screenActions.loadMap,
-            onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
-            onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
-        )
+        Column(
+            Modifier
+                .padding(16.dp),
+            verticalArrangement = spacedBy(16.dp),
+        ) {
+            if (screenState.isManualCaptureEnabled) {
+                SearchBar(
+                    locationItems = screenState.locationItems,
+                    onBackClicked = screenActions.onBackClicked,
+                    onClearLocation = screenActions.onClearLocation,
+                    onSearchLocation = screenActions.onSearchLocation,
+                    onLocationSelected = screenActions.onLocationSelected,
+                    onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                    onButtonMode = screenActions.onButtonMode,
+                )
+            }
 
-        LocationInfoContent(
-            screenState.selectedLocation,
-            screenState.captureMode,
-            screenState.displayPolygonInfo,
-            screenState.accuracyRange,
-            screenActions.configurePolygonInfoRecycler,
-        )
+            Map(
+                modifier = Modifier
+                    .weight(1f),
+                captureMode = screenState.captureMode,
+                selectedLocation = screenState.selectedLocation,
+                searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                locationState = screenState.locationState,
+                isManualCaptureEnabled = screenState.isManualCaptureEnabled,
+                loadMap = screenActions.loadMap,
+                onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
+                onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
+            )
 
-        DoneButton(
-            enabled = screenState.doneButtonEnabled,
-            onDoneButtonClicked = screenActions.onDoneButtonClick,
-        )
+            LocationInfoContent(
+                screenState.selectedLocation,
+                screenState.captureMode,
+                screenState.displayPolygonInfo,
+                screenState.accuracyRange,
+                screenActions.configurePolygonInfoRecycler,
+            )
+
+            DoneButton(
+                enabled = screenState.doneButtonEnabled,
+                onDoneButtonClicked = screenActions.onDoneButtonClick,
+            )
+        }
     }
 }
 
@@ -199,6 +215,7 @@ private fun TwoPaneMapSelector(
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
                 locationState = screenState.locationState,
+                isManualCaptureEnabled = screenState.isManualCaptureEnabled,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -382,6 +399,7 @@ private fun Map(
     selectedLocation: SelectedLocation,
     searchOnThisAreaVisible: Boolean,
     locationState: LocationState,
+    isManualCaptureEnabled: Boolean,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
@@ -395,10 +413,12 @@ private fun Map(
             actionButtons = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = spacedBy(8.dp),
+                    horizontalArrangement = if (isManualCaptureEnabled) spacedBy(8.dp) else Arrangement.End,
                     verticalAlignment = CenterVertically,
                 ) {
-                    SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
+                    if (isManualCaptureEnabled) {
+                        SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
+                    }
 
                     LocationIcon(
                         locationState = locationState,
@@ -545,4 +565,29 @@ private fun DraggableSelectedIcon(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MapTopBar(onBackClicked: () -> Unit) {
+    TopBar(
+        navigationIcon = {
+            IconButton(
+                onClick = onBackClicked,
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = null,
+                    )
+                },
+            )
+        },
+        title = {
+            Text(text = stringResource(R.string.select_location_title))
+        },
+        actions = {},
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = SurfaceColor.ContainerLow,
+        ),
+    )
 }
