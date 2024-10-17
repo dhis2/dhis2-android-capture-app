@@ -20,6 +20,9 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.location.LocationState
+import org.dhis2.maps.location.LocationState.FIXED
+import org.dhis2.maps.location.LocationState.NOT_FIXED
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -68,6 +71,7 @@ class MapSelectorViewModel(
         SelectedLocation.None()
     }
 
+    private var _lastGPSLocation: SelectedLocation? = null
     private var _currentFeature: Feature? = initialGeometry?.let { Feature.fromGeometry(it) }
     private var _currentVisibleRegion: LatLngBounds? = null
     private var searchRegion: LatLngBounds? = null
@@ -85,6 +89,7 @@ class MapSelectorViewModel(
             accuracyRange = AccuracyRange.None(),
             searchOnAreaVisible = false,
             displayPolygonInfo = featureType == FeatureType.POLYGON,
+            locationState = NOT_FIXED,
         ),
     )
 
@@ -106,6 +111,7 @@ class MapSelectorViewModel(
         accuracyRange: AccuracyRange = _screenState.value.accuracyRange,
         searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
+        locationState: LocationState = _screenState.value.locationState,
     ) {
         _screenState.update {
             it.copy(
@@ -116,6 +122,7 @@ class MapSelectorViewModel(
                 accuracyRange = accuracyRange,
                 searchOnAreaVisible = searchOnAreaVisible,
                 displayPolygonInfo = displayPolygonInfo,
+                locationState = locationState,
             )
         }
     }
@@ -154,11 +161,13 @@ class MapSelectorViewModel(
 
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
+            _lastGPSLocation = gpsResult
             if (_screenState.value.canCaptureGps(gpsResult.accuracy)) {
+                _currentFeature = updateSelectedGeometry(gpsResult)
                 val mapData = when {
                     featureType == FeatureType.POINT && _screenState.value.captureMode.isGps() ->
                         GetMapData(
-                            currentFeature = updateSelectedGeometry(gpsResult),
+                            currentFeature = _currentFeature,
                             locationItems = _screenState.value.locationItems,
                             captureMode = _screenState.value.captureMode,
                         )
@@ -328,25 +337,6 @@ class MapSelectorViewModel(
         }
     }
 
-    fun onMapClicked(point: LatLng) {
-        viewModelScope.launch(dispatchers.io()) {
-            if (mapStyleConfig.isManualCaptureEnabled()) {
-                val selectedLocation =
-                    SelectedLocation.ManualResult(point.latitude, point.longitude)
-                _currentFeature = updateSelectedGeometry(selectedLocation)
-                updateScreenState(
-                    mapData = GetMapData(
-                        _currentFeature,
-                        _screenState.value.locationItems,
-                        _screenState.value.captureMode,
-                    ),
-                    captureMode = CaptureMode.MANUAL,
-                    selectedLocation = selectedLocation,
-                )
-            }
-        }
-    }
-
     private fun onClearSelectedLocation(): Pair<SelectedLocation, Feature?> {
         val selectedLocation = if (initialCoordinates != null) {
             initialSelectedLocation
@@ -377,7 +367,17 @@ class MapSelectorViewModel(
 
     fun onMyLocationButtonClick() {
         viewModelScope.launch(dispatchers.io()) {
-            updateScreenState(captureMode = CaptureMode.GPS)
+            _currentFeature = _lastGPSLocation?.let { updateSelectedGeometry(it) }
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    CaptureMode.GPS,
+                ),
+                selectedLocation = _lastGPSLocation ?: SelectedLocation.None(),
+                captureMode = CaptureMode.GPS,
+                locationState = FIXED,
+            )
         }
     }
 
@@ -432,5 +432,26 @@ class MapSelectorViewModel(
 
     fun canCaptureManually(): Boolean {
         return mapStyleConfig.isManualCaptureEnabled()
+    }
+
+    fun updateLocationState(locationState: LocationState) {
+        if (locationState == FIXED && _lastGPSLocation != null) {
+            _currentFeature = updateSelectedGeometry(_lastGPSLocation!!)
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    CaptureMode.GPS,
+                ),
+                selectedLocation = _lastGPSLocation ?: _screenState.value.selectedLocation,
+                captureMode = CaptureMode.GPS,
+                locationState = locationState,
+            )
+        } else {
+            updateScreenState(
+                captureMode = if (locationState == FIXED) CaptureMode.GPS else _screenState.value.captureMode,
+                locationState = locationState,
+            )
+        }
     }
 }

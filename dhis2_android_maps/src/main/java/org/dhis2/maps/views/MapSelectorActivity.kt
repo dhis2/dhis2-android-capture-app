@@ -1,39 +1,30 @@
 package org.dhis2.maps.views
 
-import android.Manifest.permission
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationListener
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.engine.LocationEngineDefault
 import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
-import org.dhis2.maps.location.MapActivityLocationCallback
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
@@ -42,28 +33,9 @@ import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
 
-class MapSelectorActivity :
-    AppCompatActivity(),
-    MapActivityLocationCallback.OnLocationChanged {
+class MapSelectorActivity : AppCompatActivity() {
 
-    private val requestLocationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                initLocationUpdates()
-            }
-        }
-
-    private val locationProvider = LocationProviderImpl(this)
-
-    override fun onLocationChanged(latLng: LatLng, accuracy: Float) {
-        mapSelectorViewModel.onNewLocation(
-            SelectedLocation.GPSResult(
-                latLng.latitude,
-                latLng.longitude,
-                accuracy,
-            ),
-        )
-    }
+    private val locationProvider = MapLocationEngine(this)
 
     private val locationListener = LocationListener { location ->
         mapSelectorViewModel.onNewLocation(
@@ -74,8 +46,6 @@ class MapSelectorActivity :
             ),
         )
     }
-
-    private val locationCallback = MapActivityLocationCallback(this)
 
     private var fieldUid: String? = null
 
@@ -131,7 +101,7 @@ class MapSelectorActivity :
                         },
                         onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
                         onMyLocationButtonClick = {
-                            mapSelectorViewModel::onMyLocationButtonClick
+                            mapSelectorViewModel.onMyLocationButtonClick()
                             onLocationButtonClicked()
                         },
                         onDoneButtonClick = mapSelectorViewModel::onDoneClick,
@@ -140,7 +110,6 @@ class MapSelectorActivity :
 
                 LaunchedEffect(screenState.mapData) {
                     this.launch {
-                        delay(500)
                         mapManager.update(
                             featureCollection = screenState.mapData.featureCollection,
                             boundingBox = screenState.mapData.boundingBox,
@@ -169,35 +138,29 @@ class MapSelectorActivity :
     @SuppressLint("MissingPermission")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
         mapManager =
-            DefaultMapManager(mapView, MapLocationEngine(this), mapSelectorViewModel.featureType)
+            DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
         mapManager.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
                 onFeatureClicked = mapSelectorViewModel::onPinClicked,
-                onPointClicked = mapSelectorViewModel::onMapClicked,
             )
 
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     it.map?.addMoveListeners(
-                        onIdle = {
-                            mapSelectorViewModel.updateCurrentVisibleRegion(it)
+                        onIdle = { bounds ->
+                            mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
                             mapSelectorViewModel.onMoveEnd()
                         },
                         onMove = mapSelectorViewModel::onMove,
                     )
-
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            permission.ACCESS_FINE_LOCATION,
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        initLocationUpdates()
-                    } else {
-                        requestLocationPermission.launch(permission.ACCESS_FINE_LOCATION)
+                    lifecycleScope.launch {
+                        mapManager.locationState.collect { locationState ->
+                            mapSelectorViewModel.updateLocationState(locationState)
+                        }
                     }
                 },
                 onMissingPermission = { permissionsManager ->
@@ -207,6 +170,7 @@ class MapSelectorActivity :
                         LocationSettingLauncher.requestEnableLocationSetting(this)
                     }
                 },
+                locationListener = locationListener,
             )
         }
     }
@@ -231,19 +195,8 @@ class MapSelectorActivity :
         )
     }
 
-    @RequiresPermission(permission.ACCESS_FINE_LOCATION)
-    private fun initLocationUpdates() {
-        locationProvider.getLastKnownLocation(
-            { location -> locationListener.onLocationChanged(location) },
-            {},
-            {},
-        )
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        LocationEngineDefault.getDefaultLocationEngine(this)
-            .removeLocationUpdates(locationCallback)
         locationProvider.stopLocationUpdates()
     }
 

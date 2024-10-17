@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -57,13 +56,12 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
+import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
@@ -127,6 +125,7 @@ fun SinglePaneMapSelector(
             searchOnThisAreaVisible = screenState.searchOnAreaVisible,
             captureMode = screenState.captureMode,
             selectedLocation = screenState.selectedLocation,
+            locationState = screenState.locationState,
             loadMap = screenActions.loadMap,
             onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
             onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -199,6 +198,7 @@ private fun TwoPaneMapSelector(
                 captureMode = screenState.captureMode,
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                locationState = screenState.locationState,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -381,6 +381,7 @@ private fun Map(
     captureMode: MapSelectorViewModel.CaptureMode,
     selectedLocation: SelectedLocation,
     searchOnThisAreaVisible: Boolean,
+    locationState: LocationState,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
@@ -399,15 +400,9 @@ private fun Map(
                 ) {
                     SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
 
-                    IconButton(
-                        style = IconButtonStyle.TONAL,
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_my_location),
-                                contentDescription = "",
-                            )
-                        },
-                        onClick = onMyLocationButtonClicked,
+                    LocationIcon(
+                        locationState = locationState,
+                        onLocationButtonClicked = onMyLocationButtonClicked,
                     )
                 }
             },
