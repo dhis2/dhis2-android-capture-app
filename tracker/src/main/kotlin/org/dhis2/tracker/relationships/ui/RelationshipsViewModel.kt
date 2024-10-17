@@ -36,6 +36,8 @@ class RelationshipsViewModel(
     private val _relationshipSelectionState = MutableStateFlow(ListSelectionState())
     val relationshipSelectionState = _relationshipSelectionState.asStateFlow()
 
+    var showDeleteConfirmation = MutableStateFlow(false)
+
     init {
         refreshRelationships()
     }

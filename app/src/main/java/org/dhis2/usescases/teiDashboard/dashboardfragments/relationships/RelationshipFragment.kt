@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -41,7 +42,9 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
+import org.dhis2.tracker.relationships.ui.DeleteRelationshipsConfirmation
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
+import org.dhis2.tracker.relationships.ui.RelationshipsUiState
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
@@ -128,6 +131,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
                     val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
                     val relationshipSelectionState by relationShipsViewModel.relationshipSelectionState.collectAsState()
+                    val showDeleteConfirmation by relationShipsViewModel.showDeleteConfirmation.collectAsState()
 
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
@@ -151,6 +155,25 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             onRelationShipSelected = relationShipsViewModel::updateSelectedList,
                         )
                     }
+
+                    if (showDeleteConfirmation) {
+                        (uiState as? RelationshipsUiState.Success)?.let { state ->
+                            DeleteRelationshipsConfirmation(
+                                relationships =
+                                relationshipSelectionState.selectedItems.map { selectedUid ->
+                                    state.data.first {
+                                        it.relationships.any { it.uid == selectedUid }
+                                    }.title
+                                },
+                                onDelete = {
+                                    relationShipsViewModel.deleteSelectedRelationships()
+                                },
+                                onDismiss = {
+                                    relationShipsViewModel.showDeleteConfirmation.value = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -167,7 +190,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 relationShipsViewModel.relationshipSelectionState.collect { selectionState ->
                     val topBarIconState = if (selectionState.selectingMode) {
                         RelationshipTopBarIconState.Selecting {
-                            relationShipsViewModel.deleteSelectedRelationships()
+                            relationShipsViewModel.showDeleteConfirmation.value = true
                         }
                     } else {
                         RelationshipTopBarIconState.List()

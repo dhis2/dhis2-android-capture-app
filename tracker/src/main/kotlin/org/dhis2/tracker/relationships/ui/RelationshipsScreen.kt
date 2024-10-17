@@ -17,7 +17,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +42,11 @@ import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
@@ -316,6 +325,58 @@ fun RelationShipScreenPreview() {
         onCreateRelationshipClick = {},
         onRelationshipClick = {},
         onRelationShipSelected = {},
+    )
+}
+
+@Composable
+fun DeleteRelationshipsConfirmation(
+    relationships: List<String>,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BottomSheetShell(
+        title = when (relationships.size) {
+            1 -> stringResource(R.string.remove_relationship_title, relationships[0])
+            else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
+        },
+        description = when (relationships.size) {
+            1 -> stringResource(R.string.remove_relationship_desc, relationships[0])
+            else -> stringResource(R.string.remove_some_relationships_desc, relationships.size)
+        },
+        icon = {
+            Icon(
+                Icons.Outlined.ErrorOutline,
+                tint = TextColor.OnErrorContainer,
+                contentDescription = "error",
+            )
+        },
+        buttonBlock = {
+            ButtonBlock(
+                primaryButton = {
+                    Button(
+                        style = ButtonStyle.OUTLINED,
+                        text = stringResource(R.string.cancel),
+                        onClick = onDismiss,
+                    )
+                },
+                secondaryButton = {
+                    Button(
+                        style = ButtonStyle.FILLED,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = "Delete",
+                            )
+                        },
+                        text = stringResource(R.string.remove),
+                        colorStyle = ColorStyle.ERROR,
+                        onClick = onDelete,
+                    )
+                },
+            )
+        },
+        onDismiss = onDismiss,
+        content = null
     )
 }
 
