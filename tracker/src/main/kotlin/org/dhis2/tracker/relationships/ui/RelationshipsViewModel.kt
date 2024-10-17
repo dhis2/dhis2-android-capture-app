@@ -3,12 +3,16 @@ package org.dhis2.tracker.relationships.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,29 +24,37 @@ import org.dhis2.tracker.relationships.model.RelationshipSection
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RelationshipsViewModel(
-    getRelationshipsByType: GetRelationshipsByType,
+    private val getRelationshipsByType: GetRelationshipsByType,
     private val deleteRelationships: DeleteRelationships,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
 
-    val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> =
-        getRelationshipsByType()
-            .flatMapLatest {
-                if (it.isEmpty()) {
-                    flowOf(RelationshipsUiState.Empty)
-                } else {
-                    flowOf(RelationshipsUiState.Success(it))
-                }
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = RelationshipsUiState.Loading
-            )
+
+    private val _relationshipsUiState = MutableStateFlow<RelationshipsUiState<List<RelationshipSection>>>(RelationshipsUiState.Loading)
+    val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> = _relationshipsUiState.asStateFlow()
 
     private val _relationshipSelectionState = MutableStateFlow(ListSelectionState())
     val relationshipSelectionState = _relationshipSelectionState.asStateFlow()
 
+    init {
+        refreshRelationships()
+    }
+
+    private fun refreshRelationships() {
+        viewModelScope.launch(dispatcher.io()) {
+            getRelationshipsByType()
+                .flatMapLatest {
+                    if (it.isEmpty()) {
+                        flowOf(RelationshipsUiState.Empty)
+                    } else {
+                        flowOf(RelationshipsUiState.Success(it))
+                    }
+                }
+                .collect {
+                    _relationshipsUiState.value = it
+                }
+        }
+    }
 
     fun updateSelectedList(relationshipUid: String) {
         viewModelScope.launch(dispatcher.io()) {
@@ -101,6 +113,15 @@ class RelationshipsViewModel(
     }
 
     fun deleteSelectedRelationships() {
-        deleteRelationships(relationshipSelectionState.value.selectedItems)
+        viewModelScope.launch(dispatcher.io()) {
+            deleteRelationships(
+                relationshipSelectionState.value.selectedItems
+            ).collect { result ->
+                if (result.isSuccess) {
+                    stopSelectingMode()
+                    refreshRelationships()
+                }
+            }
+        }
     }
 }
