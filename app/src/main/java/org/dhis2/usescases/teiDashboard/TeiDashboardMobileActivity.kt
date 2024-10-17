@@ -879,6 +879,10 @@ class TeiDashboardMobileActivity :
         startActivity(intent)
     }
 
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
+    }
+
     override fun finishActivity() {
         finish()
     }

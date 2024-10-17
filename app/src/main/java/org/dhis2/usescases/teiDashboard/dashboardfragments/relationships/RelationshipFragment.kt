@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -49,7 +48,6 @@ import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.OnDialogClickListener
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -82,7 +80,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     private var relationshipType: RelationshipType? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private lateinit var mapButtonObservable: MapButtonObservable
-    private val dashboardViewModel: DashboardViewModel by activityViewModels()
 
     private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
         themeManager.setProgramTheme(programUid()!!)
@@ -102,16 +99,20 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mapButtonObservable = context as MapButtonObservable
-        app().userComponent()?.plus(
-            RelationshipModule(
-                requireContext(),
-                this,
-                requireArguments().getString("ARG_TEI_UID"),
-                requireArguments().getString("ARG_ENROLLMENT_UID"),
-                requireArguments().getString("ARG_EVENT_UID"),
-            ),
-        )?.inject(this)
+        if (context is MapButtonObservable) {
+            mapButtonObservable = context
+            app().userComponent()?.plus(
+                RelationshipModule(
+                    requireContext(),
+                    this,
+                    requireArguments().getString("ARG_TEI_UID"),
+                    requireArguments().getString("ARG_ENROLLMENT_UID"),
+                    requireArguments().getString("ARG_EVENT_UID"),
+                ),
+            )?.inject(this)
+        } else {
+            throw ClassCastException("$context must implement MapButtonObservable")
+        }
     }
 
     override fun onCreateView(
@@ -171,7 +172,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     } else {
                         RelationshipTopBarIconState.List()
                     }
-                    dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
+                    mapButtonObservable.updateRelationshipsTopBarIconState(topBarIconState)
                 }
             }
         }
