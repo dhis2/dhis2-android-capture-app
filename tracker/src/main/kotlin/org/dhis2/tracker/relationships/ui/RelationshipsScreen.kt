@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -32,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.ListSelectionState
@@ -335,6 +334,7 @@ fun DeleteRelationshipsConfirmation(
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
+        headerTextAlignment = TextAlign.Start,
         title = when (relationships.size) {
             1 -> stringResource(R.string.remove_relationship_title, relationships[0])
             else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
@@ -357,6 +357,7 @@ fun DeleteRelationshipsConfirmation(
                         style = ButtonStyle.OUTLINED,
                         text = stringResource(R.string.cancel),
                         onClick = onDismiss,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 },
                 secondaryButton = {
@@ -370,7 +371,11 @@ fun DeleteRelationshipsConfirmation(
                         },
                         text = stringResource(R.string.remove),
                         colorStyle = ColorStyle.ERROR,
-                        onClick = onDelete,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onDelete()
+                            onDismiss()
+                        }
                     )
                 },
             )
