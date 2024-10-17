@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 
+import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
@@ -56,7 +57,8 @@ public class RelationshipModule {
                                             RelationshipRepository relationshipRepository,
                                             SchedulerProvider schedulerProvider,
                                             AnalyticsHelper analyticsHelper,
-                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection) {
+                                            MapRelationshipsToFeatureCollection mapRelationshipsToFeatureCollection,
+                                            ProgramConfigurationRepository programConfigurationRepository) {
         return new RelationshipPresenter(view,
                 d2,
                 programUid,
@@ -67,7 +69,13 @@ public class RelationshipModule {
                 analyticsHelper,
                 new MapRelationshipToRelationshipMapModel(),
                 mapRelationshipsToFeatureCollection,
-                new MapStyleConfiguration(d2));
+                new MapStyleConfiguration(d2, programUid, programConfigurationRepository));
+    }
+
+    @Provides
+    @PerFragment
+    ProgramConfigurationRepository providesProgramConfigurationRepository(D2 d2) {
+        return new ProgramConfigurationRepository(d2);
     }
 
     @Provides

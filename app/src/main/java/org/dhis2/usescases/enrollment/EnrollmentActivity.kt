@@ -129,6 +129,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             .openErrorLocation(openErrorLocation)
+            .setProgramUid(programUid)
             .build()
 
         super.onCreate(savedInstanceState)

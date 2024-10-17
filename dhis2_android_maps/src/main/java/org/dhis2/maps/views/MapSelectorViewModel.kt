@@ -90,6 +90,7 @@ class MapSelectorViewModel(
             searchOnAreaVisible = false,
             displayPolygonInfo = featureType == FeatureType.POLYGON,
             locationState = NOT_FIXED,
+            isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
         ),
     )
 
@@ -427,11 +428,11 @@ class MapSelectorViewModel(
         }
     }
 
-    private fun canCaptureWithSwipe() = mapStyleConfig.isManualCaptureEnabled() &&
+    private fun canCaptureWithSwipe() = _screenState.value.isManualCaptureEnabled &&
         _screenState.value.selectedLocation !is SelectedLocation.None
 
     fun canCaptureManually(): Boolean {
-        return mapStyleConfig.isManualCaptureEnabled()
+        return _screenState.value.isManualCaptureEnabled
     }
 
     fun updateLocationState(locationState: LocationState) {

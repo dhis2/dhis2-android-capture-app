@@ -288,6 +288,7 @@ class TeiDashboardMobileActivity :
                 )
                 .factory(supportFragmentManager)
                 .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.CHECK))
+                .setProgramUid(programUid)
                 .build()
 
             supportFragmentManager.beginTransaction()
