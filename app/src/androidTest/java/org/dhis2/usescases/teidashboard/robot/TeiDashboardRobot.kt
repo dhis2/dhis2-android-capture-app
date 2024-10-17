@@ -85,7 +85,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnMenuReOpen() {
-        onView(withText(R.string.re_open)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.re_open)).performClick()
+        }
     }
 
     fun checkCancelledStateInfoBarIsDisplay() {
@@ -108,8 +110,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnReferral() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val referalTag = targetContext.resources.getString(R.string.referral)
-        composeTestRule.onNodeWithTag(referalTag).performClick()
+        val referalTag = targetContext.resources.getString(R.string.refer)
+        composeTestRule.onNodeWithText(referalTag, true).performClick()
     }
 
     fun clickOnFirstReferralEvent() {
@@ -181,11 +183,15 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnMenuDeactivate() {
-        onView(withText(R.string.deactivate)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.deactivate)).performClick()
+        }
     }
 
     fun clickOnMenuComplete() {
-        onView(withText(R.string.complete)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.complete)).performClick()
+        }
     }
 
     fun checkCompleteStateInfoBarIsDisplay() {
@@ -199,7 +205,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnShareButton() {
-        onView(withText(R.string.share)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.share)).performClick()
+        }
     }
 
     fun clickOnNextQR() {
@@ -213,7 +221,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnMenuDeleteTEI() {
-        onView(withText(R.string.dashboard_menu_delete_person)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person)).performClick()
+        }
     }
 
     fun checkUpperInfo(upperInformation: UpperEnrollmentUIModel) {
@@ -265,10 +275,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuProgramEnrollments() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val programSelectorLabel = getString(R.string.program_selector_V2)
-            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment, 2)
-            val itemLabel = programSelectorLabel.format(enrollmentLabel)
-            onView(withText(itemLabel)).perform(click())
+            val programSelectorLabel = getString(R.string.more_enrollments)
+            composeTestRule.onNodeWithText(programSelectorLabel).performClick()
         }
     }
 
@@ -281,20 +289,16 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuDeleteEnrollment() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val deleteEnrollmentLabel = getString(R.string.dashboard_menu_delete_enrollment_V2)
-            val enrollmentLabel = resources.getQuantityString(R.plurals.enrollment, 1)
-            val itemLabel = deleteEnrollmentLabel.format(enrollmentLabel)
-            onView(withText(itemLabel)).perform(click())
+            val deleteEnrollmentLabel = getString(R.string.remove_from)
+            composeTestRule.onNodeWithText(deleteEnrollmentLabel).performClick()
         }
     }
 
     fun clickOnTimelineEvents() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val timelineLabel = getString(R.string.show_event_label_timeline)
-            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
-            val itemLabel = timelineLabel.format(eventLabel)
+            val timelineLabel = getString(R.string.view_timeline)
             try {
-                onView(withText(itemLabel)).perform(click())
+                composeTestRule.onNodeWithText(timelineLabel).performClick()
             } catch (e: NoMatchingViewException) {
                 checkIfGroupedEventsIsVisible()
             }
@@ -303,10 +307,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     private fun checkIfGroupedEventsIsVisible() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            val timelineLabel = getString(R.string.group_event_label_by_stage)
-            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
-            val itemLabel = timelineLabel.format(eventLabel)
-            onView(withText(itemLabel)).check(matches(isDisplayed()))
+            val groupLabel = getString(R.string.group_by_stage)
+            composeTestRule.onNodeWithText(groupLabel).assertIsDisplayed()
         }
     }
 
