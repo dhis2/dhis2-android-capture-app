@@ -46,7 +46,10 @@ fun NewEventOptions(
             items = options,
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            onItemClick = { onOptionSelected.invoke(it) },
+            onItemClick = {
+                onOptionSelected.invoke(it)
+                expanded = false
+            },
         )
     }
 }
