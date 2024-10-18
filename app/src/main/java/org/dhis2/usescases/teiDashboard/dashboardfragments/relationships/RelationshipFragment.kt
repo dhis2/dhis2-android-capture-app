@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -172,7 +171,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                 },
                                 onDismiss = {
                                     relationShipsViewModel.showDeleteConfirmation.value = false
-                                }
+                                },
                             )
                         }
                     }
