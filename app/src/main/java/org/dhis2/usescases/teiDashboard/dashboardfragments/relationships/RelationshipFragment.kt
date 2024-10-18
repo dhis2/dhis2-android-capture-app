@@ -101,6 +101,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             RelationshipModule(
                 requireContext(),
                 this,
+                programUid(),
                 requireArguments().getString("ARG_TEI_UID"),
                 requireArguments().getString("ARG_ENROLLMENT_UID"),
                 requireArguments().getString("ARG_EVENT_UID"),
