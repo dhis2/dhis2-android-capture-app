@@ -39,6 +39,7 @@ import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.RelationshipMapManager
+import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
@@ -62,6 +63,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import javax.inject.Inject
 
 class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
@@ -211,6 +213,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         }
 
         val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
+        val locationState = relationshipMapManager?.locationState?.collectAsState()
 
         LaunchedEffect(key1 = items) {
             mapData?.let { data ->
@@ -257,6 +260,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_layers),
                             contentDescription = "",
+                            tint = TextColor.OnPrimaryContainer,
                         )
                     },
                 ) {
@@ -269,16 +273,12 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         )
                     }
                 }
-                IconButton(
-                    style = IconButtonStyle.TONAL,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_my_location),
-                            contentDescription = "",
-                        )
-                    },
-                    onClick = ::onLocationButtonClicked,
-                )
+                locationState?.let {
+                    LocationIcon(
+                        locationState = it.value,
+                        onLocationButtonClicked = ::onLocationButtonClicked,
+                    )
+                }
             },
             onItem = { item ->
                 ListCard(

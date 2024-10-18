@@ -6,6 +6,7 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -262,17 +263,6 @@ class MapSelectorViewModelTest {
     }
 
     @Test
-    fun shouldSetValueFromMapClick() = runTest {
-        mapSelectorViewModel.screenState.test() {
-            awaitItem()
-            mapSelectorViewModel.onMapClicked(mockedGpsResult.asLatLng())
-            val item = awaitItem()
-            assertTrue(item.captureMode == MapSelectorViewModel.CaptureMode.MANUAL)
-            assertTrue(item.selectedLocation is SelectedLocation.ManualResult)
-        }
-    }
-
-    @Test
     fun shouldNotDisplayPolygonInfo() {
         assertTrue(!mapSelectorViewModel.screenState.value.displayPolygonInfo)
     }
@@ -387,6 +377,38 @@ class MapSelectorViewModelTest {
             }
         } else if (initialItem != null) {
             then(initialItem)
+        }
+    }
+
+    @Test
+    fun shouldUpdateGeometryWhenMapMoves() = runTest {
+        with(mapSelectorViewModel) {
+            screenState.test {
+                awaitItem()
+                onMove(LatLng(4.98075, 110.63242))
+                val item = awaitItem()
+                assertTrue(item.captureMode.isSwipe())
+                assertTrue(item.mapData.featureCollection.features()?.isEmpty() == true)
+                assertTrue(item.selectedLocation is SelectedLocation.ManualResult)
+                assertTrue(item.selectedLocation.latitude == 4.98075 && item.selectedLocation.longitude == 110.63242)
+            }
+        }
+    }
+
+    @Test
+    fun shouldSwitchCaptureModeToManual() = runTest {
+        with(mapSelectorViewModel) {
+            onMove(LatLng(4.98075, 110.63242))
+            assertTrue(screenState.value.captureMode.isSwipe())
+            onMoveEnd()
+            assertTrue(screenState.value.captureMode.isManual())
+        }
+    }
+
+    @Test
+    fun shouldAllowCapturingManually() = runTest {
+        with(mapSelectorViewModel) {
+            assertTrue(canCaptureManually())
         }
     }
 

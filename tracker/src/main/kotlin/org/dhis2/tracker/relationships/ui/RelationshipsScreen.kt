@@ -23,7 +23,12 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipItem
@@ -60,6 +66,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardStat
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
@@ -71,7 +78,7 @@ fun RelationShipsScreen(
     onRelationshipClick: (RelationshipItem) -> Unit,
     onRelationShipSelected: (String) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White, shape = Shape.LargeTop)
@@ -80,41 +87,43 @@ fun RelationShipsScreen(
     ) {
         when (uiState) {
             is RelationshipsUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                    }
                 }
             }
 
             is RelationshipsUiState.Empty,
-            is RelationshipsUiState.Error -> NoRelationships()
+            is RelationshipsUiState.Error -> {
+                item { NoRelationships() }
+            }
 
             is RelationshipsUiState.Success -> {
-                LazyColumn {
-                    items(uiState.data) { item ->
-                        RelationShipTypeSection(
-                            title = item.title,
-                            description = if (item.relationships.isEmpty()) {
-                                stringResource(id = R.string.no_data)
-                            } else {
-                                null
-                            },
-                            relationships = item.relationships,
-                            canAddRelationship = item.canAddRelationship(),
-                            relationshipSelectionState = relationshipSelectionState,
-                            onCreateRelationshipClick = {
-                                onCreateRelationshipClick(item)
-                            },
-                            onRelationshipClick = {
-                                onRelationshipClick(it)
-                            },
-                            onRelationshipSelected = onRelationShipSelected
-                        )
-                    }
+                items(uiState.data) { item ->
+                    RelationShipTypeSection(
+                        title = item.title,
+                        description = if (item.relationships.isEmpty()) {
+                            stringResource(id = R.string.no_data)
+                        } else {
+                            null
+                        },
+                        relationships = item.relationships,
+                        canAddRelationship = item.canAddRelationship(),
+                        relationshipSelectionState = relationshipSelectionState,
+                        onCreateRelationshipClick = {
+                            onCreateRelationshipClick(item)
+                        },
+                        onRelationshipClick = {
+                            onRelationshipClick(it)
+                        },
+                        onRelationshipSelected = onRelationShipSelected,
+                    )
                 }
             }
         }
@@ -133,6 +142,9 @@ private fun RelationShipTypeSection(
     onRelationshipClick: (RelationshipItem) -> Unit,
     onRelationshipSelected: (String) -> Unit,
 ) {
+    var expanded by remember { mutableStateOf(false) }
+    val displayedItems = if (expanded) relationships else relationships.take(3)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -170,14 +182,15 @@ private fun RelationShipTypeSection(
                         Icon(
                             imageVector = Icons.Outlined.Add,
                             contentDescription = "New event",
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = Color.White,
                         )
                     },
                     onClick = onCreateRelationshipClick,
                 )
             }
         }
-        relationships.forEach { item ->
+
+        displayedItems.forEach { item ->
             ListCard(
                 listCardState = rememberListCardState(
                     title = ListCardTitleModel(text = item.title),
@@ -216,6 +229,22 @@ private fun RelationShipTypeSection(
                     }
                 }
             )
+        }
+
+        if (relationships.size > 3) {
+            TextButton(
+                modifier = Modifier,
+                onClick = { expanded = !expanded }
+            ) {
+                Text(
+                    text = if (expanded) {
+                        stringResource(R.string.show_less) + "..."
+                    } else {
+                        stringResource(R.string.show_more) + "..."
+                    },
+                    color = SurfaceColor.Primary,
+                )
+            }
         }
     }
 }

@@ -30,4 +30,5 @@
     <string name="selet_location_subtitle">by clicking on it</string>
     <string name="selected_location">Selected location</string>
     <string name="latitude_longitude">Lat: %1$s, Lon: %2$s</string>
+    <string name="drop_to_select">Drop to select location</string>
 </resources>
