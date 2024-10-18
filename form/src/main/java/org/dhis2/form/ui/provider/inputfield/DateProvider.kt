@@ -21,9 +21,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeTransformation
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.TimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

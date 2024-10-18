@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.option.Option
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 
 @Composable
 fun rememberInputCardList(

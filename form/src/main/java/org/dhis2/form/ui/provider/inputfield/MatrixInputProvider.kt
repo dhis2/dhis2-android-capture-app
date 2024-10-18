@@ -11,9 +11,9 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputMatrix
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 
 @Composable
 internal fun ProvideMatrixInput(

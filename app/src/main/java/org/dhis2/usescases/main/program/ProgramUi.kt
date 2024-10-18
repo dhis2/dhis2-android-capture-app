@@ -69,6 +69,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ExpandableItemColumn
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -78,7 +79,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.VerticalInfoListCard
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
