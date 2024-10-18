@@ -205,6 +205,7 @@ class TeiDashboardMobileActivity :
         observeErrorMessages()
         observeProgressBar()
         observeDashboardModel()
+        setUpNavigationBar()
         showLoadingProgress(false)
     }
 
@@ -513,7 +514,6 @@ class TeiDashboardMobileActivity :
         binding.title = title
         binding.executePendingBindings()
         enrollmentUid = dashboardModel.currentEnrollment.uid()
-        setUpNavigationBar()
         if (this.isLandscape()) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
