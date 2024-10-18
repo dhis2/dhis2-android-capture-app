@@ -6,6 +6,8 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 
+const val DEFAULT_FORCED_LOCATION_ACCURACY = -1
+
 class MapStyleConfiguration(
     private val d2: D2,
     val programUid: String? = null,
@@ -19,8 +21,8 @@ class MapStyleConfiguration(
 
     private val forcedLocationPrecision = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
         ?.let { programConfiguration ->
-            programConfiguration.minimumLocationAccuracy() ?: -1
-        } ?: -1
+            programConfiguration.minimumLocationAccuracy() ?: DEFAULT_FORCED_LOCATION_ACCURACY
+        } ?: DEFAULT_FORCED_LOCATION_ACCURACY
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()

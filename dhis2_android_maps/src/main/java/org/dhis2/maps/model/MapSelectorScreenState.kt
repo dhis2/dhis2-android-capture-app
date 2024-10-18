@@ -1,6 +1,7 @@
 package org.dhis2.maps.model
 
 import org.dhis2.maps.location.LocationState
+import org.dhis2.maps.usecases.DEFAULT_FORCED_LOCATION_ACCURACY
 import org.dhis2.maps.views.MapSelectorViewModel
 import org.dhis2.maps.views.SelectedLocation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
@@ -17,9 +18,10 @@ data class MapSelectorScreenState(
     val isManualCaptureEnabled: Boolean,
     val forcedLocationAccuracy: Int,
 ) {
+
     private fun getDoneButtonEnabledState(): Boolean {
         return when {
-            (forcedLocationAccuracy == -1) -> {
+            (forcedLocationAccuracy == DEFAULT_FORCED_LOCATION_ACCURACY) -> {
                 selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
             }
             (captureMode.isGps()) -> {
