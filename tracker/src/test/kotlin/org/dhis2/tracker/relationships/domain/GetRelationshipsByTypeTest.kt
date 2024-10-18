@@ -13,6 +13,7 @@ import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -43,6 +44,13 @@ class GetRelationshipsByTypeTest {
     private val relationshipType2: RelationshipType = mock {
         on { uid() } doReturn "type2"
         on { displayName() } doReturn "Relationship 2"
+    }
+
+    private val relationship1: Relationship = mock {
+        on { uid() } doReturn "uid1"
+    }
+    private val relationship2: Relationship = mock {
+        on { uid() } doReturn "uid2"
     }
 
     @Before
@@ -108,7 +116,7 @@ class GetRelationshipsByTypeTest {
             fromGeometry = null,
             toGeometry = null,
             direction = RelationshipDirection.FROM,
-            relationship = mock()
+            relationship = relationship1
         )
 
         val relationshipModel2 = RelationshipModel(
@@ -133,7 +141,7 @@ class GetRelationshipsByTypeTest {
             fromGeometry = null,
             toGeometry = null,
             direction = RelationshipDirection.FROM,
-            relationship = mock()
+            relationship = relationship2
         )
 
 
@@ -148,6 +156,7 @@ class GetRelationshipsByTypeTest {
             relationshipType = relationshipType1,
             relationships = listOf(
                 RelationshipItem(
+                    uid = "uid1",
                     title = "MainValue1: Value1",
                     description = "Description 1",
                     attributes = listOf(
@@ -169,6 +178,7 @@ class GetRelationshipsByTypeTest {
             relationshipType = relationshipType2,
             relationships = listOf(
                 RelationshipItem(
+                    uid = "uid2",
                     title = "MainValue2: Value2",
                     description = "Description 2",
                     attributes = listOf(

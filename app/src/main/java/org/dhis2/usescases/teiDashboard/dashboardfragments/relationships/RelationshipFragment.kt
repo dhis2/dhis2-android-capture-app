@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,8 +21,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.maps.MapView
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.bindings.launchImageDetail
@@ -37,7 +41,10 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
+import org.dhis2.tracker.relationships.ui.DeleteRelationshipsConfirmation
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
+import org.dhis2.tracker.relationships.ui.RelationshipsUiState
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
@@ -96,17 +103,21 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mapButtonObservable = context as MapButtonObservable
-        app().userComponent()?.plus(
-            RelationshipModule(
-                requireContext(),
-                this,
-                programUid(),
-                requireArguments().getString("ARG_TEI_UID"),
-                requireArguments().getString("ARG_ENROLLMENT_UID"),
-                requireArguments().getString("ARG_EVENT_UID"),
-            ),
-        )?.inject(this)
+        if (context is MapButtonObservable) {
+            mapButtonObservable = context
+            app().userComponent()?.plus(
+                RelationshipModule(
+                    requireContext(),
+                    this,
+                    programUid(),
+                    requireArguments().getString("ARG_TEI_UID"),
+                    requireArguments().getString("ARG_ENROLLMENT_UID"),
+                    requireArguments().getString("ARG_EVENT_UID"),
+                ),
+            )?.inject(this)
+        } else {
+            throw ClassCastException("$context must implement MapButtonObservable")
+        }
     }
 
     override fun onCreateView(
@@ -121,10 +132,14 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     val showMap by mapButtonObservable.relationshipMap().observeAsState()
 
                     val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
+                    val relationshipSelectionState by relationShipsViewModel.relationshipSelectionState.collectAsState()
+                    val showDeleteConfirmation by relationShipsViewModel.showDeleteConfirmation.collectAsState()
+
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
                         else -> RelationShipsScreen(
                             uiState = uiState,
+                            relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
                                 it.teiTypeUid?.let { teiTypeUid ->
                                     goToRelationShip(
@@ -139,8 +154,50 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                     ownerUid = it.ownerUid,
                                 )
                             },
+                            onRelationShipSelected = relationShipsViewModel::updateSelectedList,
                         )
                     }
+
+                    if (showDeleteConfirmation) {
+                        (uiState as? RelationshipsUiState.Success)?.let { state ->
+                            DeleteRelationshipsConfirmation(
+                                relationships =
+                                relationshipSelectionState.selectedItems.map { selectedUid ->
+                                    state.data.first {
+                                        it.relationships.any { it.uid == selectedUid }
+                                    }.title
+                                },
+                                onDelete = {
+                                    relationShipsViewModel.deleteSelectedRelationships()
+                                },
+                                onDismiss = {
+                                    relationShipsViewModel.onDismissDelete()
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeRelationshipTopBarIcon()
+    }
+
+    private fun observeRelationshipTopBarIcon() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                relationShipsViewModel.relationshipSelectionState.collect { selectionState ->
+                    val topBarIconState = if (selectionState.selectingMode) {
+                        RelationshipTopBarIconState.Selecting {
+                            relationShipsViewModel.onDeleteClick()
+                        }
+                    } else {
+                        RelationshipTopBarIconState.List()
+                    }
+                    mapButtonObservable.updateRelationshipsTopBarIconState(topBarIconState)
                 }
             }
         }
@@ -318,6 +375,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        relationShipsViewModel.refreshRelationships()
     }
 
     override fun onPause() {

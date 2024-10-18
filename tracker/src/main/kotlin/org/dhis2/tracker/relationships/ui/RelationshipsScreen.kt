@@ -18,9 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +33,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
@@ -42,6 +45,11 @@ import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
@@ -56,21 +64,23 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardStat
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun RelationShipsScreen(
     uiState: RelationshipsUiState<List<RelationshipSection>>,
+    relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationShipSelected: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White, shape = Shape.LargeTop)
             .padding(horizontal = Spacing.Spacing8),
+        verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         when (uiState) {
             is RelationshipsUiState.Loading -> {
@@ -102,12 +112,14 @@ fun RelationShipsScreen(
                         },
                         relationships = item.relationships,
                         canAddRelationship = item.canAddRelationship(),
+                        relationshipSelectionState = relationshipSelectionState,
                         onCreateRelationshipClick = {
                             onCreateRelationshipClick(item)
                         },
                         onRelationshipClick = {
                             onRelationshipClick(it)
-                        }
+                        },
+                        onRelationshipSelected = onRelationShipSelected,
                     )
                 }
             }
@@ -122,8 +134,10 @@ private fun RelationShipTypeSection(
     description: String?,
     relationships: List<RelationshipItem>,
     canAddRelationship: Boolean,
+    relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: () -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationshipSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val displayedItems = if (expanded) relationships else relationships.take(3)
@@ -179,6 +193,10 @@ private fun RelationShipTypeSection(
                     title = ListCardTitleModel(text = item.title),
                     description = item.description?.let { ListCardDescriptionModel(text = it) },
                     lastUpdated = item.lastUpdated,
+                    selectionState = relationshipSelectionState.isSelected(
+                        item.uid,
+                        item.canOpen
+                    ),
                     additionalInfoColumnState = rememberAdditionalInfoColumnState(
                         additionalInfoList = item.attributes.map {
                             AdditionalInfoItem(
@@ -201,23 +219,28 @@ private fun RelationShipTypeSection(
                         avatarProviderConfiguration = item.avatar,
                     ) { }
                 },
-                onCardClick = { if (item.canOpen) onRelationshipClick(item) }
+                onCardClick = { if (item.canOpen) onRelationshipClick(item) },
+                onCardSelected = {
+                    if (item.canOpen) {
+                        onRelationshipSelected(item.uid)
+                    }
+                }
             )
         }
 
         if (relationships.size > 3) {
-            TextButton(
-                modifier = Modifier,
-                onClick = { expanded = !expanded }
+            val showMoreText =
+                stringResource(id = R.string.show_number_more, relationships.size - 3)
+            val showLessText = stringResource(id = R.string.show_less) + "..."
+            Button(
+                style = ButtonStyle.TEXT,
+                text = if (expanded) {
+                    showLessText
+                } else {
+                    showMoreText
+                },
             ) {
-                Text(
-                    text = if (expanded) {
-                        stringResource(R.string.show_less) + "..."
-                    } else {
-                        stringResource(R.string.show_more) + "..."
-                    },
-                    color = SurfaceColor.Primary,
-                )
+                expanded = !expanded
             }
         }
     }
@@ -271,6 +294,7 @@ fun RelationShipScreenPreview() {
                     .build(),
                 relationships = listOf(
                     RelationshipItem(
+                        uid = "uidA",
                         title = "First name: Peter",
                         description = null,
                         attributes = listOf(
@@ -288,6 +312,7 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     ),
                     RelationshipItem(
+                        uid = "uidB",
                         title = "First name: Mario",
                         description = null,
                         attributes = listOf(
@@ -321,8 +346,68 @@ fun RelationShipScreenPreview() {
 
     RelationShipsScreen(
         uiState = mockUiState,
+        relationshipSelectionState = ListSelectionState(),
         onCreateRelationshipClick = {},
-        onRelationshipClick = {}
+        onRelationshipClick = {},
+        onRelationShipSelected = {},
+    )
+}
+
+@Composable
+fun DeleteRelationshipsConfirmation(
+    relationships: List<String>,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BottomSheetShell(
+        headerTextAlignment = TextAlign.Start,
+        title = when (relationships.size) {
+            1 -> stringResource(R.string.remove_relationship_title, relationships[0])
+            else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
+        },
+        description = when (relationships.size) {
+            1 -> stringResource(R.string.remove_relationship_desc, relationships[0])
+            else -> stringResource(R.string.remove_some_relationships_desc, relationships.size)
+        },
+        icon = {
+            Icon(
+                Icons.Outlined.ErrorOutline,
+                tint = TextColor.OnErrorContainer,
+                contentDescription = "error",
+            )
+        },
+        buttonBlock = {
+            ButtonBlock(
+                primaryButton = {
+                    Button(
+                        style = ButtonStyle.OUTLINED,
+                        text = stringResource(R.string.cancel),
+                        onClick = onDismiss,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                secondaryButton = {
+                    Button(
+                        style = ButtonStyle.FILLED,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = "Delete",
+                            )
+                        },
+                        text = stringResource(R.string.remove),
+                        colorStyle = ColorStyle.ERROR,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onDelete()
+                            onDismiss()
+                        }
+                    )
+                },
+            )
+        },
+        onDismiss = onDismiss,
+        content = null
     )
 }
 

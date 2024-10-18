@@ -55,7 +55,7 @@
                     app:circleColor="@color/circleColor"
                     app:completionColor="@color/completionColor"
                     app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
-                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
                     app:layout_constraintTop_toTopOf="@+id/moreOptions"
                     app:percentageColor="@color/percentageColor"
                     app:percentageSize="13sp"
@@ -63,6 +63,16 @@
                     app:strokeSize="3dp"
                     tools:initialPercentage="0.1"
                     tools:initialSecondaryPercentage="0.2" />
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/relationshipIcon"
+                    style="@style/ActionIcon"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/moreOptions"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintTop_toTopOf="@+id/moreOptions"
+                    tools:ignore="ContentDescription"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/programStageName"

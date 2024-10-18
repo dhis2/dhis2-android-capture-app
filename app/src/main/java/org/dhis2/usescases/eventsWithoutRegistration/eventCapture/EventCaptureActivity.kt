@@ -38,11 +38,13 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
+import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -53,6 +55,7 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
@@ -511,6 +514,26 @@ class EventCaptureActivity :
 
     override fun onRelationshipMapLoaded() {
         // there are no relationships on events
+    }
+
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        when (topBarIconState) {
+            is RelationshipTopBarIconState.Selecting -> {
+                binding.relationshipIcon.visibility = View.VISIBLE
+                binding.relationshipIcon.setContent {
+                    Dhis2Theme {
+                        RelationshipTopBarIcon(
+                            relationshipTopBarIconState = topBarIconState,
+                        ) {
+                            topBarIconState.onClickListener()
+                        }
+                    }
+                }
+            }
+            else -> {
+                binding.relationshipIcon.visibility = View.GONE
+            }
+        }
     }
 
     override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {

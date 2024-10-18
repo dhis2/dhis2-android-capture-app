@@ -1,6 +1,7 @@
 package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
@@ -42,6 +43,7 @@ class GetRelationshipsByType(
 
     private fun mapToRelationshipItem(relationship: RelationshipModel): RelationshipItem {
         return RelationshipItem(
+            uid = relationship.relationship.uid() ?: "",
             title = relationship.displayRelationshipName(),
             description = relationship.displayDescription(),
             attributes = relationship.displayAttributes(),
