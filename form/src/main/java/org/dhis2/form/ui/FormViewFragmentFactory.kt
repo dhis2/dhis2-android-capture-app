@@ -22,6 +22,7 @@ class FormViewFragmentFactory(
     private val formResultDialogProvider: FormResultDialogProvider?,
     private val actionIconsActivate: Boolean = true,
     private val openErrorLocation: Boolean = false,
+    private val programUid: String? = null,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -41,7 +42,7 @@ class FormViewFragmentFactory(
                     actionIconsActivate = actionIconsActivate,
                     openErrorLocation = openErrorLocation,
                     eventResultDialogUiProvider = formResultDialogProvider,
-
+                    programUid = programUid,
                 )
             }
 

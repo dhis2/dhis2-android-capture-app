@@ -1,13 +1,21 @@
 package org.dhis2.maps.usecases
 
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 
-class MapStyleConfiguration(private val d2: D2) {
+class MapStyleConfiguration(
+    private val d2: D2,
+    val programUid: String? = null,
+    programConfigurationRepository: ProgramConfigurationRepository,
+) {
 
-    private val canCaptureManually by lazy { true }
+    private val canCaptureManually = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
+        ?.let { programConfiguration ->
+            programConfiguration.disableManualLocation() != true
+        } ?: true
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()

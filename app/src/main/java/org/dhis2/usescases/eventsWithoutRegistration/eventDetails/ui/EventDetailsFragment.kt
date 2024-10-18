@@ -185,6 +185,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     fieldUid = null,
                     locationType = FeatureType.valueOfFeatureType(featureType),
                     initialData = initCoordinate,
+                    programUid = requireArguments().getString(PROGRAM_UID),
                 ),
             )
         }
