@@ -496,7 +496,7 @@ class FormView : Fragment() {
     }
 
     private fun manageMainButtonAction(fieldsWithIssues: List<FieldWithIssue>, isEventCompleted: Boolean, bottomSheetDialog: BottomSheetDialog) {
-        val errorsInField = fieldsWithIssues.isNotEmpty() && fieldsWithIssues.any { it.issueType == IssueType.ERROR }
+        val errorsInField = fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
         if (errorsInField) {
             bottomSheetDialog.dismiss()
         } else if (isEventCompleted) {
