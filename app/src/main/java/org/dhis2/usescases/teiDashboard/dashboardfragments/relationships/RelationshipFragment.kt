@@ -170,7 +170,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                     relationShipsViewModel.deleteSelectedRelationships()
                                 },
                                 onDismiss = {
-                                    relationShipsViewModel.showDeleteConfirmation.value = false
+                                    relationShipsViewModel.onDismissDelete()
                                 },
                             )
                         }
@@ -191,7 +191,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 relationShipsViewModel.relationshipSelectionState.collect { selectionState ->
                     val topBarIconState = if (selectionState.selectingMode) {
                         RelationshipTopBarIconState.Selecting {
-                            relationShipsViewModel.showDeleteConfirmation.value = true
+                            relationShipsViewModel.onDeleteClick()
                         }
                     } else {
                         RelationshipTopBarIconState.List()

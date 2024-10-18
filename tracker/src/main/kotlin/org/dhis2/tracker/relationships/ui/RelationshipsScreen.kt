@@ -21,9 +21,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +64,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardStat
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
@@ -232,18 +229,18 @@ private fun RelationShipTypeSection(
         }
 
         if (relationships.size > 3) {
-            TextButton(
-                modifier = Modifier,
-                onClick = { expanded = !expanded }
+            val showMoreText =
+                stringResource(id = R.string.show_number_more, relationships.size - 3)
+            val showLessText = stringResource(id = R.string.show_less) + "..."
+            Button(
+                style = ButtonStyle.TEXT,
+                text = if (expanded) {
+                    showLessText
+                } else {
+                    showMoreText
+                },
             ) {
-                Text(
-                    text = if (expanded) {
-                        stringResource(R.string.show_less) + "..."
-                    } else {
-                        stringResource(R.string.show_more) + "..."
-                    },
-                    color = SurfaceColor.Primary,
-                )
+                expanded = !expanded
             }
         }
     }

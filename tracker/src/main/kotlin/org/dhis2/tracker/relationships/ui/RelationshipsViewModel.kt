@@ -3,17 +3,11 @@ package org.dhis2.tracker.relationships.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -36,7 +30,8 @@ class RelationshipsViewModel(
     private val _relationshipSelectionState = MutableStateFlow(ListSelectionState())
     val relationshipSelectionState = _relationshipSelectionState.asStateFlow()
 
-    var showDeleteConfirmation = MutableStateFlow(false)
+    private val _showDeleteConfirmation = MutableStateFlow(false)
+    var showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
 
     init {
         refreshRelationships()
@@ -125,5 +120,13 @@ class RelationshipsViewModel(
                 }
             }
         }
+    }
+
+    fun onDeleteClick() {
+        _showDeleteConfirmation.value = true
+    }
+
+    fun onDismissDelete() {
+        _showDeleteConfirmation.value = false
     }
 }
