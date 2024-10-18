@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 import android.content.Context;
 
 import org.dhis2.commons.data.ProgramConfigurationRepository;
-import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
