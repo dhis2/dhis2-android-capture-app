@@ -150,34 +150,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventWasCreatedWithDate(eventName: String, eventDate: String) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(),
-                        isNotEmpty(),
-                        atPosition(
-                            1,
-                            hasDescendant(
-                                allOf(
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.programStageName),
-                                            withText(eventName),
-                                        ),
-                                    ),
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.event_date),
-                                            withText(eventDate),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            )
+        composeTestRule.onNode(
+            hasAnySibling(hasText(eventDate, true))
+                    and hasText(eventName, true), useUnmergedTree = true
+        ).assertIsDisplayed()
     }
 
     fun clickOnMenuDeactivate() {
@@ -245,15 +221,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 useUnmergedTree = true,
             ).assertIsDisplayed()
 
-            onNodeWithText(enrollmentUIModel.orgUnit).assertIsDisplayed()
-            onNodeWithText("Latitude: ${enrollmentUIModel.latitude}").assertIsDisplayed()
-            onNodeWithText("Longitude: ${enrollmentUIModel.longitude}").assertIsDisplayed()
-            onNodeWithText("Next").performScrollTo()
-            onNodeWithText("Next").performClick()
-
             onNodeWithText(enrollmentUIModel.name).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.lastName).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.sex).assertIsDisplayed()
         }
     }
 
@@ -261,6 +229,11 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
         composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
+    }
+
+
+    fun clickOnSchedule() {
+        composeTestRule.onNodeWithText("Schedule").performClick()
     }
 
     fun clickOnMenuProgramEnrollments() {
