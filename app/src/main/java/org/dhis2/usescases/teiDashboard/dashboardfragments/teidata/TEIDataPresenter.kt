@@ -40,7 +40,6 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
-import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
@@ -51,6 +50,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -396,9 +396,9 @@ class TEIDataPresenter(
         }
     }
 
-    fun getNewEventOptionsByStages(stage: ProgramStage?): List<EventCreationOptions> {
+    fun getNewEventOptionsByStages(stage: ProgramStage?): List<MenuItemData<EventCreationType>> {
         val options = programUid?.let { getNewEventCreationTypeOptions(stage, it) }
-        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
+        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it, stage?.displayEventLabel()) } ?: emptyList()
     }
 
     fun fetchEvents() {

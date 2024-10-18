@@ -16,13 +16,10 @@ class GetNewEventCreationTypeOptions(
         programUid: String,
     ): List<EventCreationType> {
         val options: MutableList<EventCreationType> = mutableListOf()
-
+        options.add(ADDNEW)
         if (programStage == null || shouldShowScheduleEvents(programStage)) {
             options.add(SCHEDULE)
         }
-
-        options.add(ADDNEW)
-
         if (shouldShowReferralEvents(programUid)) {
             options.add(REFERAL)
         }
