@@ -53,8 +53,7 @@ fun File.rotateImage(context: Context): File {
     return File(
         FileResourceDirectoryHelper.getFileResourceDirectory(context),
         "tempFile.jpg",
-    )//   // EyeSeeTea - Avoid resize
-    // .apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
+    ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
 }
 
 private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
