@@ -33,11 +33,7 @@ class RelationshipsViewModel(
     private val _showDeleteConfirmation = MutableStateFlow(false)
     var showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
 
-    init {
-        refreshRelationships()
-    }
-
-    private fun refreshRelationships() {
+    fun refreshRelationships() {
         viewModelScope.launch(dispatcher.io()) {
             getRelationshipsByType()
                 .flatMapLatest {

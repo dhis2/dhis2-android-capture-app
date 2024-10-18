@@ -374,6 +374,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     override fun onResume() {
         super.onResume()
         presenter.init()
+        relationShipsViewModel.refreshRelationships()
     }
 
     override fun onPause() {
