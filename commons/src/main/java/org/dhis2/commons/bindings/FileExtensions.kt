@@ -39,7 +39,8 @@ fun File.rotateImage(context: Context): File {
         ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     var bitmap = BitmapFactory.decodeFile(
         this.path,
-        BitmapFactory.Options().apply { inSampleSize = 4 },
+        // EyeSeeTea - Avoid resize
+        //BitmapFactory.Options().apply { inSampleSize = 4 },
     )
 
     bitmap = when (orientation) {
@@ -51,8 +52,9 @@ fun File.rotateImage(context: Context): File {
 
     return File(
         FileResourceDirectoryHelper.getFileResourceDirectory(context),
-        "tempFile.png",
-    ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
+        "tempFile.jpg",
+    )//   // EyeSeeTea - Avoid resize
+    // .apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
 }
 
 private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {

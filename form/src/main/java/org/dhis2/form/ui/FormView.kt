@@ -201,8 +201,7 @@ class FormView : Fragment() {
                 val imageFile = File(
                     FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
                     TEMP_FILE_IMAGE,
-                )// Eyeseetea customization - Avoid resize the image to take photo
-                //.rotateImage(requireContext())
+                ).rotateImage(requireContext())
 
                 onSavePicture?.invoke(imageFile.path)
 
