@@ -1,3 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="empty_relationships">Không có mối quan hệ, bấm vào \"+\" để thêm một mối quan hệ.</string>
+    <string name="relation_creation_date">Mối quan hệ đã được tạo trên</string>
+</resources>
