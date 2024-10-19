@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Hoàn tất</string>
+    <string name="discard_changes">Hủy bỏ các thay đổi</string>
+    <string name="not_now">Không phải bây giờ</string>
+    <string name="keep_editing">Tiếp tục chỉnh sửa</string>
+    <string name="review">Xem lại</string>
+    <string name="cancel">Hủy</string>
+    <string name="save">Lưu</string>
+    <string name="clear">Xóa</string>
+    <string name="draw_here">Vẽ ở đây</string>
+    <string name="action_done">Hoàn thành</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_close">Đóng</string>
+    <string name="hint_search">Tìm kiếm</string>
+    <string name="action_clear_all">Xóa tất cả</string>
+    <plurals name="error_count">
+        <item quantity="other">Các lỗi %s</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="other">Các cảnh báo %s</item>
+    </plurals>
+</resources>
