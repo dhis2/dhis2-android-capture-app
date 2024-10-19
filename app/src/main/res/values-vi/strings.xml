@@ -142,6 +142,7 @@
     <string name="there_is_no_available_period">Không có thời điểm để chọn.</string>
     <!--Event Detail-->
     <string name="due_date">Ngày đến hạn</string>
+    <string name="next_event">%1$skế tiếp</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">Hủy</string>
@@ -161,6 +162,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Xem Chi Tiết</string>
     <string name="view_more">XEM THÊM</string>
+    <string name="edit">Chỉnh sửa</string>
     <string name="follow_up">Theo dõi</string>
     <string name="follow_up_enabled">Đã bật theo dõi</string>
     <string name="follow_up_disabled">Đã tắt theo dõi</string>
@@ -727,7 +729,9 @@
     <string name="error_init_session">Chúng ta không thể khởi đầu phiên đăng nhập bằng tên đăng nhập của bạn</string>
     <string name="enrollment_date_edition_warning">Có các sự kiện đã lên kế hoạch mà sẽ không chỉnh sửa lịch hẹn.</string>
     <string name="section_charts">Biểu đồ</string>
+    <string name="navigation_list_view">Danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>
+    <string name="navigation_map_view">Bản Đồ</string>
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Các nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
@@ -735,6 +739,7 @@
     <string name="navigation_relationships">Các mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
+    <string name="navigation_form">Biểu nhập</string>
     <string name="navigation_tei_data">Chi tiết</string>
     <string name="show_bar_graph">Xem Cột</string>
     <string name="show_line_graph">Xe Đường</string>
@@ -838,6 +843,7 @@
     <string name="action_ok">Ok</string>
     <string name="init_search">Mở trang tìm kiếm để tìm bất cứ %snào</string>
     <string name="search_or_create">Bạn có thể tìm kiếm hoặc tạo một %smới</string>
+    <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
     <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
@@ -936,6 +942,9 @@
     <string name="remove_enrollment_dialog_message">Dữ liệu từ %ssẽ bj xóa. Hành động này không thể hồi phục.</string>
     <string name="schedule_next">Lịch hẹn kế tiếp</string>
     <string name="schedule">Lịch trình</string>
+    <string name="scheduled_enter_event">Đã xếp lịch</string>
+    <string name="enter_event">Nhập %1$s</string>
+    <string name="cancel_event">Hủy %1$s</string>
     <string name="program_stage">Giai Đoạn Chương Trình</string>
     <string name="event">sự kiện</string>
     <string name="timeline">Dòng thời gian</string>
@@ -963,4 +972,6 @@
     <string name="transfer_tei_org_sheet_title">Chuyển %s</string>
     <string name="transfer_tei_org_sheet_description">Từ %s đến ...</string>
     <string name="successfully_transferred">Đã chuyển thành công</string>
-    </resources>
+    <string name="event_cancelled">%1$s đã hủy</string>
+    <string name="due_date_updated">Ngày đến hạn đã được cập nhật</string>
+</resources>

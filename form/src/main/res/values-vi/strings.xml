@@ -22,6 +22,8 @@
     <string name="conf_error_value_to_assign_option_set">Luật Chương Trình %s đang cố gắng gán giá trị %s mà không thuộc Bộ Tùy Chọn %s</string>
     <string name="conf_error_value_option_set">Giá trị của trường %s không thuộc Bộ Tùy Chọn trong %s</string>
     <string name="field_is_mandatory">Trường bắt buộc</string>
+    <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo. \n Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="required">Bắt buộc</string>
     <string name="date">Ngày</string>
     <string name="hint_year">Năm</string>
@@ -55,10 +57,13 @@
     <string name="complete">Hoàn tất</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
     <string name="saved">Đã lưu!</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\n Bạn có muốn xem không?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \n Bạn có muốn xem lại biểu nhập không?</string>
     <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\n Bạn có muốn xem xét biểu nhập không?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="save_anyway">Tiếp tục Lưu</string>
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
+    <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
     <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.\n Nếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
