@@ -91,6 +91,7 @@ class MapSelectorViewModel(
             displayPolygonInfo = featureType == FeatureType.POLYGON,
             locationState = NOT_FIXED,
             isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
+            forcedLocationAccuracy = mapStyleConfig.getForcedLocationAccuracy(),
         ),
     )
 
