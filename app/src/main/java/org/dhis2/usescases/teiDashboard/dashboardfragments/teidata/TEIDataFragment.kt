@@ -165,9 +165,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
             }
 
-            presenter.events.observe(viewLifecycleOwner) {
-                setEvents(it)
-                showLoadingProgress(false)
+            if (::presenter.isInitialized) {
+                presenter.events.observe(viewLifecycleOwner) {
+                    setEvents(it)
+                    showLoadingProgress(false)
+                }
             }
 
             setFragmentResultListener(SCHEDULING_DIALOG_RESULT) { _, bundle ->
