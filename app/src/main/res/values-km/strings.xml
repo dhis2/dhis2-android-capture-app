@@ -71,7 +71,6 @@
     <string name="read_only">បានត្រឹមតែអាន</string>
     <string name="completed">បានបញ្ចប់</string>
     <string name="cancelled">បានលុបចោល</string>
-    <string name="re_open">បើកឡើងវិញ</string>
     <!-- State -->
     <string name="state_synced">បញ្ចូន</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>

@@ -101,7 +101,6 @@
     <string name="finish_and_complete">完成</string>
     <string name="completed">已完成</string>
     <string name="cancelled">已取消</string>
-    <string name="re_open">重新打开</string>
     <string name="re_open_form">重新打开表单</string>
     <string name="activate">激活</string>
     <string name="active">活跃的</string>
@@ -928,7 +927,6 @@
     <string name="sync_warning">同步警告</string>
     <string name="sync_error">同步错误</string>
     <string name="mark_follow_up">后续标记</string>
-    <string name="remove">移除</string>
     <string name="coordinates">坐标</string>
     <string name="no_data_access">您无权访问数据。\n请与您的管理员联系。</string>
     <string name="sync_offline_check_connection">您似乎已离线。请检查您的连接</string>

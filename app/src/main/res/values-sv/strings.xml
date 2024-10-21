@@ -69,7 +69,6 @@
     <string name="read_only">read only</string>
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
-    <string name="re_open">Öppna igen</string>
     <!-- State -->
     <string name="state_synced">Synkronisera</string>
     <string name="state_to_update">Att uppdatera</string>

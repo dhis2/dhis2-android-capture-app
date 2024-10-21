@@ -103,7 +103,6 @@
     <string name="finish_and_complete">Acabar y completar</string>
     <string name="completed">Completado</string>
     <string name="cancelled">Cancelar</string>
-    <string name="re_open">Reabrir</string>
     <string name="re_open_form">Reabrir formulario</string>
     <string name="activate">Activar</string>
     <string name="active">Activo</string>
@@ -940,7 +939,6 @@
     <string name="sync_warning">Advertencia de sincronización</string>
     <string name="sync_error">Error en la sincronización</string>
     <string name="mark_follow_up">Marcar para hacer seguimiento</string>
-    <string name="remove">Eliminar</string>
     <string name="coordinates">Coordenadas</string>
     <string name="no_data_access">No tiene acceso a los datos.\nContacte a su administrador</string>
     <string name="sync_offline_check_connection">Parece que está desconectado. Por favor, revise su conexión a Internet</string>
