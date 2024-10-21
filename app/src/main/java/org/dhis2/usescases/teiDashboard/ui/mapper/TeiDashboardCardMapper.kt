@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import java.io.File
 import java.util.Date
@@ -68,9 +68,10 @@ class TeiDashboardCardMapper(
         val painter = BitmapPainter(bitmap)
 
         Avatar(
-            imagePainter = painter,
+            style = AvatarStyleData.Image(
+                imagePainter = painter,
+            ),
             onImageClick = { onImageClick.invoke(file) },
-            style = AvatarStyle.IMAGE,
         )
     }
 
