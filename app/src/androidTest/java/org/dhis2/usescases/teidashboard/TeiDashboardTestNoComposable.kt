@@ -6,6 +6,7 @@ import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchte.robot.searchTeiRobot
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.relationshipRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Rule
@@ -33,6 +34,12 @@ class TeiDashboardTestNoComposable : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(ruleSearch)
 
         searchTeiRobot(composeTestRule) {
+            clickOnOpenSearch()
+            openNextSearchParameter("First name")
+            typeOnNextSearchTextParameter(teiName)
+            openNextSearchParameter("Last name")
+            typeOnNextSearchTextParameter(teiLastName)
+            clickOnSearch()
             clickOnTEI(teiName)
         }
 
@@ -102,6 +109,7 @@ class TeiDashboardTestNoComposable : BaseTest() {
             openNextSearchParameter("Last name")
             typeOnNextSearchTextParameter(teiLastName)
             clickOnSearch()
+            composeTestRule.waitForIdle()
             clickOnTEI(teiName)
         }
 
