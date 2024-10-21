@@ -1,11 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
 import android.os.Bundle
-import androidx.annotation.IntegerRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import org.dhis2.R
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.notes.NotesFragment.Companion.newEventInstance
@@ -52,25 +50,6 @@ class EventCapturePagerAdapter(
         }
         portraitPages.add(EventPageType.NOTES)
         landscapePages.add(EventPageType.NOTES)
-    }
-
-    fun getDynamicTabIndex(@IntegerRes tabClicked: Int): Int {
-        val pageType = when (tabClicked) {
-            R.id.navigation_analytics -> EventPageType.ANALYTICS
-            R.id.navigation_relationships -> EventPageType.RELATIONSHIPS
-            R.id.navigation_notes -> EventPageType.NOTES
-            else -> null
-        }
-
-        return if (pageType != null) {
-            if (isPortrait) {
-                portraitPages.indexOf(pageType)
-            } else {
-                landscapePages.indexOf(pageType)
-            }
-        } else {
-            NO_POSITION
-        }
     }
 
     override fun createFragment(position: Int): Fragment {

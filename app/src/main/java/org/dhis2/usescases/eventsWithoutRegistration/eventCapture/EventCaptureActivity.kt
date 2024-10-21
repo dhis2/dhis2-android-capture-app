@@ -41,6 +41,7 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -56,6 +57,7 @@ import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
@@ -136,7 +138,9 @@ class EventCaptureActivity :
             viewModelFactory?.let {
                 dashboardViewModel =
                     ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
-                supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid))
+                    .commit()
                 dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
         }
@@ -218,7 +222,10 @@ class EventCaptureActivity :
     private fun setUpEventCaptureFormLandscape(eventUid: String) {
         if (this.isLandscape()) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false, eventMode))
+                .replace(
+                    R.id.event_form,
+                    EventCaptureFormFragment.newInstance(eventUid, false, eventMode),
+                )
                 .commit()
         }
     }
@@ -268,7 +275,8 @@ class EventCaptureActivity :
         super.onResume()
         presenter.refreshTabCounters()
         with(dashboardViewModel) {
-            this?.selectedEventUid()?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
+            this?.selectedEventUid()
+                ?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
         }
     }
 
@@ -539,6 +547,25 @@ class EventCaptureActivity :
 
     override fun onRelationshipMapLoaded() {
         // there are no relationships on events
+    }
+
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        when (topBarIconState) {
+            is RelationshipTopBarIconState.Selecting -> {
+                binding.relationshipIcon.visibility = View.VISIBLE
+                binding.relationshipIcon.setContent {
+                    RelationshipTopBarIcon(
+                        relationshipTopBarIconState = topBarIconState,
+                    ) {
+                        topBarIconState.onClickListener()
+                    }
+                }
+            }
+
+            else -> {
+                binding.relationshipIcon.visibility = View.GONE
+            }
+        }
     }
 
     override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {

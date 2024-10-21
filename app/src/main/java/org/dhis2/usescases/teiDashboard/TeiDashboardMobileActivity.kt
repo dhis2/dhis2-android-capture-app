@@ -50,6 +50,7 @@ import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.tracker.TEIDashboardItems
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.EnrollmentActivity
@@ -65,6 +66,7 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.Relatio
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.usescases.teiDashboard.ui.getEnrollmentMenuList
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.HelpManager
@@ -197,13 +199,14 @@ class TeiDashboardMobileActivity :
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
 
-        setRelationshipMapIconListener()
+        setRelationshipMapIcon()
         setSyncButtonListener()
         setFormViewForLandScape()
         setEditButton()
         observeErrorMessages()
         observeProgressBar()
         observeDashboardModel()
+        setUpNavigationBar()
         showLoadingProgress(false)
         setupMoreOptionsMenu()
     }
@@ -221,6 +224,7 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setSyncButtonListener() {
+        binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
@@ -239,26 +243,47 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setRelationshipMapIconListener() {
-        binding.relationshipMapIcon.setOnClickListener {
-            networkUtils.performIfOnline(
-                this,
-                {
-                    if (java.lang.Boolean.FALSE == relationshipMap.value) {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list)
-                    } else {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
+    private fun setRelationshipMapIcon() {
+        binding.relationshipIcon.setContent {
+            val relationshipTopBarIconState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
+            RelationshipTopBarIcon(
+                relationshipTopBarIconState = relationshipTopBarIconState,
+            ) {
+                when (val uiState = relationshipTopBarIconState) {
+                    is RelationshipTopBarIconState.Selecting -> {
+                        uiState.onClickListener()
                     }
-                    val showMap = !relationshipMap.value!!
-                    if (showMap) {
+
+                    is RelationshipTopBarIconState.List -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.Map(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
+
                         binding.toolbarProgress.visibility = View.VISIBLE
                         binding.toolbarProgress.hide()
+                        relationshipMap.value = true
                     }
-                    relationshipMap.value = showMap
-                },
-                {},
-                getString(R.string.msg_network_connection_maps),
-            )
+
+                    is RelationshipTopBarIconState.Map -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.List(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
+                        relationshipMap.value = false
+                    }
+                }
+            }
         }
     }
 
@@ -390,18 +415,20 @@ class TeiDashboardMobileActivity :
 
     private fun updateTopBar(item: TEIDashboardItems) {
         if (item === TEIDashboardItems.RELATIONSHIPS) {
-            binding.relationshipMapIcon.visibility = View.VISIBLE
+            binding.relationshipIcon.visibility = View.VISIBLE
         } else {
-            binding.relationshipMapIcon.visibility = View.GONE
+            binding.relationshipIcon.visibility = View.GONE
         }
 
         if (this.isPortrait()) {
             if (item == TEIDashboardItems.DETAILS && programUid != null) {
                 binding.toolbarTitle?.visibility = View.GONE
                 binding.editButton?.visibility = View.VISIBLE
+                binding.syncButton.visibility = View.GONE
             } else {
                 binding.toolbarTitle?.visibility = View.VISIBLE
                 binding.editButton?.visibility = View.GONE
+                binding.syncButton.visibility = View.VISIBLE
             }
         }
     }
@@ -487,7 +514,6 @@ class TeiDashboardMobileActivity :
         binding.title = title
         binding.executePendingBindings()
         enrollmentUid = dashboardModel.currentEnrollment.uid()
-        setUpNavigationBar()
         if (this.isLandscape()) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
@@ -650,7 +676,10 @@ class TeiDashboardMobileActivity :
             .singleSelection()
             .withModel(
                 OUTreeModel(
-                    title = getString(R.string.transfer_tei_org_sheet_title, presenter.teType.lowercase()),
+                    title = getString(
+                        R.string.transfer_tei_org_sheet_title,
+                        presenter.teType.lowercase(),
+                    ),
                     subtitle = getString(
                         R.string.transfer_tei_org_sheet_description,
                         ownerOrgUnit?.displayName(),
@@ -737,6 +766,10 @@ class TeiDashboardMobileActivity :
         val intent = Intent(context, QrActivity::class.java)
         intent.putExtra(TEI_UID, teiUid)
         startActivity(intent)
+    }
+
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
     }
 
     override fun finishActivity() {

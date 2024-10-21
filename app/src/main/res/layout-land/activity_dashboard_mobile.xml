@@ -41,8 +41,20 @@
                     tools:ignore="ContentDescription" />
 
                 <ImageView
-                    android:id="@+id/relationshipMapIcon"
+                    android:id="@+id/syncButton"
                     style="@style/ActionIcon"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_sync"
+                    app:tint="?colorOnPrimary"
+                    tools:ignore="ContentDescription" />
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/relationshipIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/moreOptions"
