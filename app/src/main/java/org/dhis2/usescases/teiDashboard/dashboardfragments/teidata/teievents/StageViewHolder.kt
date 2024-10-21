@@ -106,7 +106,7 @@ internal class StageViewHolder(
         Avatar(
             style = AvatarStyleData.Metadata(
                 imageCardData = metadataIconData.imageCardData,
-                avatarSize = MetadataAvatarSize.L(),
+                avatarSize = MetadataAvatarSize.M(),
                 tintColor = metadataIconData.color,
             ),
         )
