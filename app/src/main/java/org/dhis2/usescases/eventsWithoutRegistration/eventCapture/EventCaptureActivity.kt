@@ -47,7 +47,6 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
-import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -139,7 +138,9 @@ class EventCaptureActivity :
             viewModelFactory?.let {
                 dashboardViewModel =
                     ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
-                supportFragmentManager.beginTransaction().replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid)).commit()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid))
+                    .commit()
                 dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
         }
@@ -221,7 +222,10 @@ class EventCaptureActivity :
     private fun setUpEventCaptureFormLandscape(eventUid: String) {
         if (this.isLandscape()) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.event_form, EventCaptureFormFragment.newInstance(eventUid, false, eventMode))
+                .replace(
+                    R.id.event_form,
+                    EventCaptureFormFragment.newInstance(eventUid, false, eventMode),
+                )
                 .commit()
         }
     }
@@ -271,7 +275,8 @@ class EventCaptureActivity :
         super.onResume()
         presenter.refreshTabCounters()
         with(dashboardViewModel) {
-            this?.selectedEventUid()?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
+            this?.selectedEventUid()
+                ?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
         }
     }
 
@@ -549,15 +554,14 @@ class EventCaptureActivity :
             is RelationshipTopBarIconState.Selecting -> {
                 binding.relationshipIcon.visibility = View.VISIBLE
                 binding.relationshipIcon.setContent {
-                    Dhis2Theme {
-                        RelationshipTopBarIcon(
-                            relationshipTopBarIconState = topBarIconState,
-                        ) {
-                            topBarIconState.onClickListener()
-                        }
+                    RelationshipTopBarIcon(
+                        relationshipTopBarIconState = topBarIconState,
+                    ) {
+                        topBarIconState.onClickListener()
                     }
                 }
             }
+
             else -> {
                 binding.relationshipIcon.visibility = View.GONE
             }

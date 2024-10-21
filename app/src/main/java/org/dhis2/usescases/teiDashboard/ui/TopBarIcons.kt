@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
@@ -13,6 +12,7 @@ import org.dhis2.R
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 fun ComposeView?.setButtonContent(trackedEntityName: String, onButtonClicked: () -> Unit) {
     this?.setContent {
@@ -36,12 +36,16 @@ fun RelationshipTopBarIcon(
     relationshipTopBarIconState: RelationshipTopBarIconState,
     onButtonClicked: () -> Unit,
 ) {
-    Icon(
-        modifier = Modifier.clickable {
-            onButtonClicked()
+    IconButton(
+        modifier = Modifier,
+        icon = {
+            Icon(
+                imageVector = relationshipTopBarIconState.icon,
+                contentDescription = stringResource(R.string.relationships),
+                tint = Color.White,
+            )
         },
-        imageVector = relationshipTopBarIconState.icon,
-        contentDescription = stringResource(R.string.relationships),
-        tint = Color.White,
-    )
+    ) {
+        onButtonClicked()
+    }
 }

@@ -245,44 +245,42 @@ class TeiDashboardMobileActivity :
 
     private fun setRelationshipMapIcon() {
         binding.relationshipIcon.setContent {
-            DHIS2Theme {
-                val relationshipTopBarIconState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
-                RelationshipTopBarIcon(
-                    relationshipTopBarIconState = relationshipTopBarIconState,
-                ) {
-                    when (val uiState = relationshipTopBarIconState) {
-                        is RelationshipTopBarIconState.Selecting -> {
-                            uiState.onClickListener()
-                        }
+            val relationshipTopBarIconState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
+            RelationshipTopBarIcon(
+                relationshipTopBarIconState = relationshipTopBarIconState,
+            ) {
+                when (val uiState = relationshipTopBarIconState) {
+                    is RelationshipTopBarIconState.Selecting -> {
+                        uiState.onClickListener()
+                    }
 
-                        is RelationshipTopBarIconState.List -> {
-                            networkUtils.performIfOnline(
-                                context = this,
-                                action = {
-                                    dashboardViewModel.updateRelationshipsTopBarIconState(
-                                        RelationshipTopBarIconState.Map(),
-                                    )
-                                },
-                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
-                            )
+                    is RelationshipTopBarIconState.List -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.Map(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
 
-                            binding.toolbarProgress.visibility = View.VISIBLE
-                            binding.toolbarProgress.hide()
-                            relationshipMap.value = true
-                        }
+                        binding.toolbarProgress.visibility = View.VISIBLE
+                        binding.toolbarProgress.hide()
+                        relationshipMap.value = true
+                    }
 
-                        is RelationshipTopBarIconState.Map -> {
-                            networkUtils.performIfOnline(
-                                context = this,
-                                action = {
-                                    dashboardViewModel.updateRelationshipsTopBarIconState(
-                                        RelationshipTopBarIconState.List(),
-                                    )
-                                },
-                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
-                            )
-                            relationshipMap.value = false
-                        }
+                    is RelationshipTopBarIconState.Map -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.List(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
+                        relationshipMap.value = false
                     }
                 }
             }
