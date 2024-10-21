@@ -101,7 +101,6 @@
     <string name="finish_and_complete">Lưu và Hoàn Tất</string>
     <string name="completed">Hoàn tất</string>
     <string name="cancelled">Đã hủy</string>
-    <string name="re_open">mở lại</string>
     <string name="re_open_form">Mở lại biểu nhập</string>
     <string name="activate">Kích hoạt</string>
     <string name="active">Hoạt động</string>
@@ -932,7 +931,6 @@
     <string name="sync_warning">Cảnh báo đồng bộ</string>
     <string name="sync_error">Lỗi đồng bộ</string>
     <string name="mark_follow_up">Đánh dấu để theo-dõi</string>
-    <string name="remove">Loại bỏ</string>
     <string name="coordinates">Toạ độ</string>
     <string name="no_data_access">Bạn không có quyền truy cập dữ liệu.\n Liên lạc quản trị của bạn.</string>
     <string name="sync_offline_check_connection">Dường như bạn đang ngoại tuyến. Xin vui lòng kiểm tra kết nối mạng</string>

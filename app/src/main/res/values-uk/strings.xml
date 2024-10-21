@@ -99,7 +99,6 @@
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
     <string name="cancelled">Скасовано</string>
-    <string name="re_open">повторно відкрити</string>
     <string name="activate">Активувати</string>
     <string name="active">Активно</string>
 
@@ -862,7 +861,6 @@
     <string name="programs">Програми</string>
     <string name="sync_error">Помилка синхронізації</string>
     <string name="mark_follow_up">Позначити для подальших дій</string>
-    <string name="remove">Видалити</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
     <string name="program_stage">Етап програми</string>
