@@ -76,17 +76,15 @@ class NominatimGeocoderApi(
         absoluteUrl(SEARCH_API)
         customHeaders()
         parameters {
-            attribute(Pair(PARAM_FORMAT, PARAM_FORMAT_JSON))
-            attribute(Pair(PARAM_QUERY, query))
-            attribute(Pair(PARAM_LIMIT, maxResults))
+            attribute(PARAM_FORMAT, PARAM_FORMAT_JSON)
+            attribute(PARAM_QUERY, query)
+            attribute(PARAM_LIMIT, maxResults)
             topCornerLatitude?.let {
                 attribute(
-                    Pair(
-                        PARAM_VIEWBOX,
-                        "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude",
-                    ),
+                    PARAM_VIEWBOX,
+                    "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude",
                 )
-                attribute(Pair(PARAM_BOUNDED, bounded))
+                attribute(PARAM_BOUNDED, bounded)
             }
         }
     }
@@ -101,14 +99,9 @@ class NominatimGeocoderApi(
                     url(REVERSE_API)
                     customHeaders()
                     parameters {
-                        attribute(
-                            Pair(
-                                PARAM_FORMAT,
-                                PARAM_FORMAT_JSON,
-                            ),
-                        )
-                        attribute(Pair(PARAM_LATITUDE, latitude.toString()))
-                        attribute(Pair(PARAM_LONGITUDE, longitude.toString()))
+                        attribute(PARAM_FORMAT, PARAM_FORMAT_JSON)
+                        attribute(PARAM_LATITUDE, latitude.toString())
+                        attribute(PARAM_LONGITUDE, longitude.toString())
                     }
                 }.toLocationItem()
         } catch (e: Exception) {
