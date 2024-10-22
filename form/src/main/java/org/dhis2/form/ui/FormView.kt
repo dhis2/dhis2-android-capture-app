@@ -463,31 +463,44 @@ class FormView : Fragment() {
     private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
         formResultDialogUiProvider?.let {
             val modelAndFieldsWithIssuesList = getDialogModelBasedOnResult(result)
-            val dialogModel = modelAndFieldsWithIssuesList?.first
             val fieldsWithIssues = modelAndFieldsWithIssuesList?.second ?: emptyList()
+
+            val showBottomSheetDialog = {
+                modelAndFieldsWithIssuesList?.first?.let { model ->
+                    BottomSheetDialog(
+                        bottomSheetDialogUiModel = model,
+                        onSecondaryButtonClicked = {
+                            manageSecondaryButtonAction(result.allowDiscard)
+                        },
+                        onMainButtonClicked = { bottomSheetDialog ->
+                            manageMainButtonAction(
+                                fieldsWithIssues,
+                                result.eventResultDetails.eventStatus == EventStatus.COMPLETED,
+                                bottomSheetDialog,
+                            )
+                        },
+                        showDivider = fieldsWithIssues.isNotEmpty(),
+                        content = { bottomSheetDialog ->
+                            DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                        },
+                    ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+                }
+            }
+
             when (result.eventResultDetails.eventStatus) {
-                EventStatus.ACTIVE, EventStatus.COMPLETED, null -> {
-                    if (result.eventResultDetails.eventStatus == EventStatus.COMPLETED && fieldsWithIssues.isEmpty()) {
-                        onFinishDataEntry?.invoke()
-                    } else {
-                        dialogModel?.let { model ->
-                            BottomSheetDialog(
-                                bottomSheetDialogUiModel = model,
-                                onSecondaryButtonClicked = {
-                                    manageSecondaryButtonAction(result.allowDiscard)
-                                },
-                                onMainButtonClicked = { bottomSheetDialog ->
-                                    manageMainButtonAction((fieldsWithIssues), result.eventResultDetails.eventStatus == EventStatus.COMPLETED, bottomSheetDialog)
-                                },
-                                showDivider = fieldsWithIssues.isNotEmpty(),
-                                content = { bottomSheetDialog -> DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog) },
-                            ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
-                        }
-                    }
-                }
-                else -> {
+                EventStatus.ACTIVE, null -> showBottomSheetDialog()
+                EventStatus.COMPLETED -> if (fieldsWithIssues.isEmpty()) {
                     onFinishDataEntry?.invoke()
+                } else {
+                    showBottomSheetDialog()
                 }
+                EventStatus.SKIPPED -> {
+                    if (fieldsWithIssues.isEmpty()) {
+                        viewModel.activateEvent()
+                    }
+                    showBottomSheetDialog()
+                }
+                else -> onFinishDataEntry?.invoke()
             }
             if (result.eventResultDetails.eventStatus == null && result is NotSavedResult) {
                 onFinishDataEntry?.invoke()
@@ -495,7 +508,11 @@ class FormView : Fragment() {
         }
     }
 
-    private fun manageMainButtonAction(fieldsWithIssues: List<FieldWithIssue>, isEventCompleted: Boolean, bottomSheetDialog: BottomSheetDialog) {
+    private fun manageMainButtonAction(
+        fieldsWithIssues: List<FieldWithIssue>,
+        isEventCompleted: Boolean,
+        bottomSheetDialog: BottomSheetDialog,
+    ) {
         val errorsInField = fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
         if (errorsInField) {
             bottomSheetDialog.dismiss()

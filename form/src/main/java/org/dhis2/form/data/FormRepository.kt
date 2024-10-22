@@ -31,4 +31,5 @@ interface FormRepository {
     fun hasLegendSet(dataElementUid: String): Boolean
     fun getListFromPreferences(uid: String): MutableList<String>
     fun saveListToPreferences(uid: String, list: List<String>)
+    fun activateEvent()
 }
