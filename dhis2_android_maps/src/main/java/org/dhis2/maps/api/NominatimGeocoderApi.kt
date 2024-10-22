@@ -80,7 +80,10 @@ class NominatimGeocoderApi(
             attribute(PARAM_QUERY, query)
             attribute(PARAM_LIMIT, maxResults)
             topCornerLatitude?.let {
-                attribute(PARAM_VIEWBOX, "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude")
+                attribute(
+                    PARAM_VIEWBOX,
+                    "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude"
+                )
                 attribute(PARAM_BOUNDED, bounded)
             }
         }
