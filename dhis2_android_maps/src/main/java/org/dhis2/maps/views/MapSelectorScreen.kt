@@ -144,7 +144,6 @@ fun SinglePaneMapSelector(
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
-                zoomLevel = screenState.zoomLevel,
             )
 
             LocationInfoContent(
@@ -220,7 +219,6 @@ private fun TwoPaneMapSelector(
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
-                zoomLevel = screenState.zoomLevel,
             )
         }
     }
@@ -399,7 +397,6 @@ private fun Map(
     modifier: Modifier = Modifier,
     captureMode: MapSelectorViewModel.CaptureMode,
     selectedLocation: SelectedLocation,
-    zoomLevel: Float,
     searchOnThisAreaVisible: Boolean,
     locationState: LocationState,
     isManualCaptureEnabled: Boolean,
@@ -428,7 +425,6 @@ private fun Map(
                         onLocationButtonClicked = onMyLocationButtonClicked,
                     )
                 }
-                Text("Zoom level: $zoomLevel")
             },
             map = {
                 AndroidView(factory = { context ->
@@ -464,10 +460,12 @@ private fun Map(
             },
         )
 
-        DraggableSelectedIcon(
-            captureMode = captureMode,
-            selectedLocation = selectedLocation,
-        )
+        if (captureMode.isSwipe()) {
+            DraggableSelectedIcon(
+                captureMode = captureMode,
+                selectedLocation = selectedLocation,
+            )
+        }
     }
 }
 

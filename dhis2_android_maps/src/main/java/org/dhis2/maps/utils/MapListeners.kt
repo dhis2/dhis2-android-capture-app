@@ -19,22 +19,20 @@ abstract class OnScaleListener : MapboxMap.OnScaleListener {
 }
 
 fun MapboxMap.addMoveListeners(
-    onIdle: (AvailableLatLngBounds, zoomLevel: Float) -> Unit,
+    onIdle: (AvailableLatLngBounds) -> Unit,
     onMove: (LatLng) -> Unit,
 ) {
     this.addOnCameraIdleListener {
-        onIdle(this.latLngBounds(), this.cameraPosition.zoom.toFloat())
+        onIdle(this.latLngBounds())
     }
+
     this.addOnMoveListener(object : OnMoveListener() {
         override fun onMove(detector: MoveGestureDetector) {
-            if (detector.currentEvent.pointerCount == 1) {
-                onMove(this@addMoveListeners.latLngBounds().center)
-            }
+            onMove(projection.visibleRegion.latLngBounds.center)
         }
         override fun onMoveEnd(detector: MoveGestureDetector) {
             onIdle(
                 this@addMoveListeners.latLngBounds(),
-                this@addMoveListeners.cameraPosition.zoom.toFloat(),
             )
         }
     })
@@ -42,11 +40,10 @@ fun MapboxMap.addMoveListeners(
         override fun onScaleEnd(detector: StandardScaleGestureDetector) {
             onIdle(
                 this@addMoveListeners.latLngBounds(),
-                this@addMoveListeners.cameraPosition.zoom.toFloat(),
             )
         }
     })
-    onIdle(this.latLngBounds(), this.cameraPosition.zoom.toFloat())
+    onIdle(this.latLngBounds())
 }
 
 fun MapboxMap.latLngBounds() = AvailableLatLngBounds(

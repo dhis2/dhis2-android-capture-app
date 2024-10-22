@@ -42,7 +42,6 @@ class NominatimGeocoderApi(
         val searchResult: MutableList<NominatimLocation> = mutableListOf()
         run loop@{
             visibleRegion?.list?.forEachIndexed { index, region ->
-                Timber.tag("Nominatim").d("Init search $index for $query")
                 searchResult.addAll(
                     search(
                         query = query,
@@ -53,9 +52,8 @@ class NominatimGeocoderApi(
                         maxResults = maxResults - searchResult.size,
                     ),
                 )
-                Timber.tag("Nominatim").d("End search $index: ${searchResult.size} results")
 
-                if (searchResult.isNotEmpty()) {
+                if (searchResult.size == maxResults) {
                     return@loop
                 }
                 while (System.currentTimeMillis() - startTime < 1000) {
@@ -63,8 +61,6 @@ class NominatimGeocoderApi(
                 }
             }
         }
-
-        Timber.tag("Nominatim").d("End search: ${searchResult.size} results")
 
         return searchResult.mapNominatimLocationsToLocationItems()
     }

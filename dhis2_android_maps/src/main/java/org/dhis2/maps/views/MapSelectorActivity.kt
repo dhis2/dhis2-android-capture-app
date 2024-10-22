@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationListener
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.maps.camera.MapSelectorZoomHandler
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapLocationEngine
@@ -32,6 +34,7 @@ import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
+import timber.log.Timber
 
 class MapSelectorActivity : AppCompatActivity() {
 
@@ -110,14 +113,24 @@ class MapSelectorActivity : AppCompatActivity() {
                 )
 
                 LaunchedEffect(screenState.mapData) {
-                    this.launch {
-                        mapManager.update(
-                            featureCollection = screenState.mapData.featureCollection,
-                            boundingBox = screenState.mapData.boundingBox,
-                        )
-                        if (screenState.displayPolygonInfo) {
-                            polygonAdapter.updateWithFeatureCollection(screenState.mapData)
-                        }
+                    mapManager.update(
+                        featureCollection = screenState.mapData.featureCollection,
+                        boundingBox = screenState.mapData.boundingBox,
+                    )
+                    MapSelectorZoomHandler(
+                        mapManager.map,
+                        screenState.captureMode,
+                        screenState.mapData.featureCollection,
+                    )
+
+                    Timber.tag("MAP").d(
+                        "Capture mode: ${screenState.captureMode.name}, feature selected: ${
+                            screenState.mapData.featureCollection.features()
+                                ?.any { it.getBooleanProperty("selected") }
+                        }",
+                    )
+                    if (screenState.displayPolygonInfo) {
+                        polygonAdapter.updateWithFeatureCollection(screenState.mapData)
                     }
                 }
             }
@@ -136,7 +149,7 @@ class MapSelectorActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "ClickableViewAccessibility")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
         mapManager =
             DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
@@ -151,6 +164,15 @@ class MapSelectorActivity : AppCompatActivity() {
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    it.mapView.setOnTouchListener { v, event ->
+                        if (event.action == MotionEvent.ACTION_DOWN) {
+                            Timber.tag("MAP").d("Touched")
+                            mapSelectorViewModel.onMapTouched()
+                        } else if (event.action == MotionEvent.ACTION_UP) {
+                            mapSelectorViewModel.onMapTouched(false)
+                        }
+                        super.onTouchEvent(event)
+                    }
                     it.map?.addMoveListeners(
                         onIdle = { bounds ->
                             mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
