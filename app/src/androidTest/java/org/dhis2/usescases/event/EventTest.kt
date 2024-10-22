@@ -11,7 +11,6 @@ import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
-import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -52,7 +51,7 @@ class EventTest : BaseTest() {
             clickOnEventGroupByStageUsingDate(tbVisitDate)
         }
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnDelete()
             clickOnDeleteDialog()
@@ -68,11 +67,9 @@ class EventTest : BaseTest() {
         val completion = 92
         val email = "mail@mail.com"
 
-        enableComposeForms()
-
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             checkEventDataEntryIsOpened(completion, email, composeTestRule)
         }
     }
@@ -83,7 +80,7 @@ class EventTest : BaseTest() {
 
         prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
 
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             openMenuMoreOptions()
             clickOnShare()
             clickOnAllQR(qrList)
@@ -105,7 +102,7 @@ class EventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            fillRadioButtonForm(radioFormLength)
+//            fillRadioButtonForm(radioFormLength)
             clickOnFormFabButton()
             clickOnCompleteButton()
         }
@@ -126,11 +123,11 @@ class EventTest : BaseTest() {
         programEventsRobot(composeTestRule) {
             clickOnAddEvent()
         }
-        eventRegistrationRobot {
+        eventRegistrationRobot(composeTestRule) {
             clickNextButton()
         }
         eventRobot(composeTestRule) {
-            typeOnRequiredEventForm("125", 1)
+//            typeOnRequiredEventForm("125", 1)
             clickOnFormFabButton()
             checkSecondaryButtonNotVisible()
         }

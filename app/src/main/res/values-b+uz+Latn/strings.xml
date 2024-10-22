@@ -129,8 +129,6 @@
     <string name="delete">Oʼchirib tashlash</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Qayd jurnali</string>
     <string name="active_programs">Faol dasturlar</string>
     <string name="to_enroll_programs">Roʼyxatga olish dasturlari</string>
     <string name="enroll">Roʼyxatga kiritish</string>
@@ -280,7 +278,6 @@
     <string name="qr_error_attr">Ushbu atributlarrni qoʼshib boʼlmadi</string>
     <string name="qr_error_enrollment">Ushbu qaydlarni qoʼshib boʼlmadi</string>
 
-    <string name="jira_report">Jira nashri uchun xabar berish</string>
     <string name="about">Ҳақида</string>
     <string name="programs_to_enroll">Roʼyxatga olish dasturlari</string>
     <string name="select_all">hammasini belgilash</string>
@@ -344,10 +341,6 @@
     <string name="date_dialog_tigle">Filtrlash uchun sanalarni tanlang</string>
     <string name="select_option">Variant tanlang</string>
     <string name="issue_reported">Muammo haqida xabar berildi</string>
-    <string name="jira_credential_error">Jira foydalanuvchingiz va parolingiz toʼgʼriligini tekshiring</string>
-    <string name="jira_issue_error">Muammo haqida xabar berishda xatolik yuz berdi</string>
-    <string name="jira_fields_error">Barcha maydonlar majburiy</string>
-    <string name="dialog_generate_new_event">Yangi hodisa/tadbir yaratish</string>
     <string name="message_generate_new_event">Haqiqatdan ham boshqa hodisa/tadbir yaratmoqchimisiz?</string>
     <string name="event_completed_title">Hodisa/Tadbir Tugallandi</string>
     <string name="event_completed_message">Ushbu dasturdagi barcha hodisa/tadbirlar yakunlandi. Haqiqatdan ham ushbu dasturni yopishni xoxlaysizmi?</string>
@@ -389,7 +382,6 @@
     <string name="tuto_main_9">4 xonali kod bilan sessiyani bloklash. Kodingizni unutmang!</string>
     <string name="tuto_main_10">Foydalanuvchini yoki serverni oʼzgartirish uchun tizimdan chiqing. Internetda ulanish boʼlmasa ham, siz yana tizimga kirishingiz mumkin.</string>
     <string name="text_plus_colon">%s:</string>
-    <string name="empty_relationships">Oʼzaro aloqalar mavjud emas, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
     <string name="empty_tei_add">Hech qanday hodisa/tadbir roʼyxatdan oʼtkazilmagan, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
     <string name="empty_tei_no_add">Hech qanday hodisa/tadbir roʼyxatdan oʼtkazilmagan.</string>
     <string name="qr_data_values">Maʼlumotlarning qiymatlari</string>
@@ -649,7 +641,6 @@
     <string name="download_tei_error">Tanlangan %s  yuklanmadi.</string>
     <string name="completed_by">%s tomonidan bajarilgan: %s</string>
     <string name="updated_time">Yangilangan: %s</string>
-    <string name="action_done">Bajarildi!</string>
     <string name="validation_internal_error_datasets">Maʼlumotlar sifatini tekshirib boʼlmadi. Аdministratoringizga murojaat qiling</string>
     <string name="are_you_sure">Ishonchinigiz komilmi?</string>
     <string name="reopen_question">Maʼlumotlar toʼplamini qayta ochib koʼrmoqchimisiz?</string>
@@ -672,19 +663,7 @@
     <string name="customactivityoncrash_error_activity_error_details_copied">Buferga nusxa olindi</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Xatto haqida maʼlumot</string>
     <string name="enrollment_date_edition_warning">Rejalashtirila olinmaydigan hodisa/tadbir rejalari mavjud</string>
-    <string name="jira_issue_sent">Muammo yuborildi</string>
-    <string name="jira_issue_sent_error">Muammoni yuborishda xxatolik yuz berdi</string>
     <string name="section_charts">Diagrammalar</string>
-    <string name="navigation_list_view">Roʼyxat koʼrinishi</string>
-    <string name="navigation_table_view">Jadval koʼrinishi</string>
-    <string name="navigation_map_view">Xarita koʼrinishi</string>
-    <string name="navigation_analytics">Аnalitika</string>
-    <string name="navigation_tasks">Vazifalar</string>
-    <string name="navigation_programs">Dasturlar</string>
-    <string name="navigation_relationships">Oʼzaro aloqalar</string>
-    <string name="navigation_notes">Izohlar</string>
-    <string name="navigation_data_entry">Maʼlumot kiritish</string>
-    <string name="navigation_tei_data">Тафсилотлари</string>
     <string name="show_table_graph">Jadval sifatida koʼrish</string>
     <string name="filter_period_this_year">Ушбу йил</string>
     <string name="filter_period_this_bimonth">Ushbu juft oylik</string>

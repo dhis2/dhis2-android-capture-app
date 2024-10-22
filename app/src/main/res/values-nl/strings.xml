@@ -141,8 +141,6 @@
     <string name="delete">Verwijder</string>
     <string name="total">Totaal</string>
     <string name="most_recent_event_date">Datum meest recente evenement</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Inschrijvingslijst</string>
     <string name="active_programs">Actieve programma\'s</string>
     <string name="to_enroll_programs">Programma\'s om in te schrijven</string>
     <string name="enroll">Inschrijven</string>
@@ -304,7 +302,6 @@
     <string name="qr_error_attr">Dit kenmerk kan niet worden toegevoegd</string>
     <string name="qr_error_enrollment">Deze inschrijving kan niet worden toegevoegd</string>
 
-    <string name="jira_report">Rapporteer Jira-probleem</string>
     <string name="about">Over</string>
     <string name="programs_to_enroll">Programma\'s om in te schrijven</string>
     <string name="select_all">selecteer alles</string>
@@ -368,10 +365,6 @@
     <string name="date_dialog_tigle">Selecteer datums om te filteren</string>
     <string name="select_option">Selecteer optie</string>
     <string name="issue_reported">Probleem gemeld</string>
-    <string name="jira_credential_error">Controleer of uw jira-gebruiker en -wachtwoord correct zijn</string>
-    <string name="jira_issue_error">Foutmelding van het probleem</string>
-    <string name="jira_fields_error">Alle velden zijn verplicht</string>
-    <string name="dialog_generate_new_event">Nieuwe gebeurtenis genereren</string>
     <string name="message_generate_new_event">Wil je nog een evenement aanmaken?</string>
     <string name="event_completed_title">Evenementen voltooid</string>
     <string name="event_completed_message">Alle evenementen in dit programma zijn voltooid. Wilt u het programma ook afsluiten?</string>
@@ -414,7 +407,6 @@
     <string name="tuto_main_10">Log uit om gebruiker of server te wijzigen. U kunt opnieuw inloggen, ook als er geen internetverbinding is.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relaties</string>
-    <string name="empty_relationships">Er zijn geen relaties, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="empty_tei_add">Er zijn geen evenementen geregistreerd, klik op \"+\" om een nieuwe toe te voegen.</string>
     <string name="empty_tei_no_add">Er zijn geen evenementen geregistreerd.</string>
     <string name="qr_data_values">Gegevens waarden</string>
@@ -686,12 +678,9 @@
     <string name="download_tei_error">De geselecteerde %s kon niet worden gedownload.</string>
     <string name="completed_by">Aangevuld door %s: %s</string>
     <string name="updated_time">Bijgewerkt: %s</string>
-    <string name="action_done">Klaar!</string>
     <string name="validation_internal_error_datasets">We konden de gegevenskwaliteit niet controleren. Neem contact op met uw beheerder</string>
     <string name="are_you_sure">Weet je het zeker?</string>
     <string name="reopen_question">Wilt u de dataset opnieuw openen?</string>
-    <string name="group_events_by_stage">Groepsevenementen per podium</string>
-    <string name="show_events_timeline">Tijdlijn van gebeurtenissen weergeven</string>
     <string name="filters_title_date">Datum</string>
     <string name="filters_title_event_date">Evenement datum</string>
     <string name="tei_type_has_no_attributes">%s heeft geen openbare attributen. Selecteer een programma</string>
@@ -715,19 +704,7 @@
     <string name="metada_first_sync_error">We hebben een fout gevonden bij het synchroniseren met uw server. Deel de fout indien mogelijk met uw systeembeheerder.</string>
     <string name="error_init_session">We kunnen de sessie met uw gebruiker niet starten</string>
     <string name="enrollment_date_edition_warning">Er zijn geplande evenementen die niet opnieuw worden gepland</string>
-    <string name="jira_issue_sent">Probleem verzonden</string>
-    <string name="jira_issue_sent_error">Fout bij verzenden</string>
     <string name="section_charts">Grafieken</string>
-    <string name="navigation_list_view">Lijstweergave</string>
-    <string name="navigation_table_view">Tabel weergave</string>
-    <string name="navigation_map_view">Kaartweergave</string>
-    <string name="navigation_analytics">Analyse</string>
-    <string name="navigation_tasks">Taken</string>
-    <string name="navigation_programs">Programma\'s</string>
-    <string name="navigation_relationships">Relaties</string>
-    <string name="navigation_notes">Notities</string>
-    <string name="navigation_data_entry">Gegevensinvoer</string>
-    <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Bekijk als balk</string>
     <string name="show_line_graph">Bekijk als lijn</string>
     <string name="show_table_graph">Bekijk als tabel</string>
@@ -864,7 +841,6 @@
     <string name="downloading_image_resources">Afbeeldingen downloaden...</string>
     <string name="program_description">Programma beschrijving</string>
     <string name="wrong_pin">Verkeerde speld</string>
-    <string name="enrolledIn">Ingeschreven in:</string>
     <string name="sync_dialog_title_not_synced">Synchronisatie nodig</string>
     <string name="sync_dialog_title_error">Synchronisatiefout</string>
     <string name="sync_dialog_title_synced">Gesynchroniseerd</string>

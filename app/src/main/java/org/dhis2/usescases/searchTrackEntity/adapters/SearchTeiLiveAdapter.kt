@@ -13,10 +13,10 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import org.dhis2.R
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
+import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
@@ -128,12 +128,6 @@ class SearchTeiLiveAdapter(
                                 onCardClick = card.onCardCLick,
                             )
                         }
-                    }
-                    holder.bind(it, {
-                        getItem(holder.absoluteAdapterPosition)?.toggleAttributeList()
-                        notifyItemChanged(holder.absoluteAdapterPosition)
-                    }) { path: String? ->
-                        path?.let { onImageClick(path) }
                     }
                 }
             }

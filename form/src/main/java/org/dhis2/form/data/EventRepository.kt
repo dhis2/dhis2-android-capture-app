@@ -10,6 +10,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -29,6 +30,7 @@ import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -48,6 +50,7 @@ class EventRepository(
     private val d2: D2,
     private val metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
+    private val eventResourcesProvider: EventResourcesProvider,
     private val dateUtils: DateUtils,
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
@@ -162,9 +165,10 @@ class EventRepository(
         return mutableListOf(
             fieldFactory.createSection(
                 sectionUid = EVENT_DATA_SECTION_UID,
-                sectionName = resources.formatWithEventLabel(
+                sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                     stringResource = R.string.event_data_section_title,
                     programStageUid = programStage?.uid(),
+                    programUid = programUid,
                 ),
                 description = null,
                 isOpen = true,
@@ -177,6 +181,14 @@ class EventRepository(
 
     override fun isEvent(): Boolean {
         return true
+    }
+
+    override fun eventMode(): EventMode? {
+        return eventMode
+    }
+
+    override fun validationStrategy(): ValidationStrategy? {
+        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()?.validationStrategy()
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {
@@ -390,10 +402,12 @@ class EventRepository(
 
         return fieldFactory.create(
             id = EVENT_REPORT_DATE_UID,
-            label = programStage?.displayExecutionDateLabel() ?: resources.formatWithEventLabel(
-                R.string.event_label_date,
-                programStage?.uid(),
-            ),
+            label = programStage?.displayExecutionDateLabel()
+                ?: eventResourcesProvider.formatWithProgramStageEventLabel(
+                    R.string.event_label_date,
+                    programStage?.uid(),
+                    programUid,
+                ),
             valueType = ValueType.DATE,
             mandatory = true,
             optionSet = null,
@@ -455,9 +469,10 @@ class EventRepository(
     private fun createEventDetailsSection(): FieldUiModel {
         return fieldFactory.createSection(
             sectionUid = EVENT_DETAILS_SECTION_UID,
-            sectionName = resources.formatWithEventLabel(
+            sectionName = eventResourcesProvider.formatWithProgramStageEventLabel(
                 stringResource = R.string.event_details_section_title,
                 programStageUid = programStage?.uid(),
+                programUid = programUid,
             ),
             description = programStage?.description(),
             isOpen = false,

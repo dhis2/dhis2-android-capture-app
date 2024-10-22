@@ -2,6 +2,7 @@ package org.dhis2.usescases.teidashboard.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -16,19 +17,14 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
-import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.common.viewactions.scrollToBottomRecyclerView
-import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.form.ui.FormViewHolder
 import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
-import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 
 fun eventRobot(
     composeTestRule: ComposeTestRule,
@@ -40,10 +36,6 @@ fun eventRobot(
 }
 
 class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
-
-    fun scrollToBottomForm() {
-        onView(withId(R.id.recyclerView)).perform(scrollToBottomRecyclerView())
-    }
 
     fun clickOnFormFabButton() {
         waitForView(withId(R.id.actionButton)).perform(click())
@@ -65,32 +57,8 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag("REOPEN_BUTTON").performClick()
     }
 
-    fun fillRadioButtonForm(numberFields: Int) {
-        var formLength = 0
-
-        while (formLength < numberFields) {
-            onView(withId(R.id.recyclerView))
-                .perform(
-                    actionOnItemAtPosition<DashboardProgramViewHolder>(
-                        formLength,
-                        clickChildViewWithId(R.id.yes)
-                    )
-                )
-            formLength++
-        }
-    }
-
     fun acceptUpdateEventDate() {
         composeTestRule.onNodeWithText("OK", true).performClick()
-    }
-
-    fun typeOnRequiredEventForm(text: String, position: Int) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItemAtPosition<FormViewHolder>( //EditTextCustomHolder
-                    position, typeChildViewWithId(text, R.id.input_editText)
-                )
-            )
     }
 
     fun openMenuMoreOptions() {
@@ -98,7 +66,10 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnDelete() {
-        onView(withText(R.string.delete)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            val deleteLabel = getString(R.string.delete)
+            composeTestRule.onNodeWithText(deleteLabel).performClick()
+        }
     }
 
     fun clickOnDeleteDialog() {
@@ -147,7 +118,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventIsOpen() {
-        composeTestRule.onNodeWithTag("REOPEN_BUTTON").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON").assertIsNotDisplayed()
     }
 
     private fun formatStoredDateToUI(dateValue: String): String {

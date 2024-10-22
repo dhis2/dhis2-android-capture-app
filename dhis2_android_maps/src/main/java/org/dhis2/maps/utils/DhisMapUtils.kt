@@ -1,5 +1,6 @@
 package org.dhis2.maps.utils
 
+import org.dhis2.maps.geometry.mapper.featurecollection.FeatureCollectionMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -15,6 +16,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import javax.inject.Inject
 
 class DhisMapUtils @Inject constructor(val d2: D2) {
+
+    private val featureCollectionMapper = FeatureCollectionMapper()
 
     fun getCoordinateDataElementInfo(eventUidList: List<String>): List<CoordinateDataElementInfo> {
         return d2.trackedEntityModule().trackedEntityDataValues()
@@ -94,6 +97,12 @@ class DhisMapUtils @Inject constructor(val d2: D2) {
         val hasValue = trackedEntityAttributeValue.value() != null
         return isCoordinateValueType && hasValue
     }
+
+    fun eventsToFeatureCollection(events: List<Event>) =
+        featureCollectionMapper.eventToFeatureCollection.map(events)
+
+    fun coordinateFieldsToFeatureCollection(fields: List<CoordinateFieldInfo>) =
+        featureCollectionMapper.coordinateFieldToFeatureCollection.map(fields)
 }
 
 sealed class CoordinateFieldInfo

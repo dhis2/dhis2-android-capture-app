@@ -27,11 +27,15 @@ class FormSectionMapper {
                                 null -> SectionState.FIXED
                             },
                             fields = fields,
-                            warningMessage = if (fields.isEmpty()) {
+                            warningMessage = if (item.totalFields == 0) {
                                 R.string.form_without_fields
                             } else {
                                 null
                             },
+                            completeFields = item.completedFields,
+                            totalFields = item.totalFields,
+                            warnings = item.warnings,
+                            errors = item.errors,
                         ),
                     )
                 }

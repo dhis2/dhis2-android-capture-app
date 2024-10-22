@@ -1,5 +1,6 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -8,8 +9,10 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("kotlin-parcelize")
     id("kotlinx-serialization")
     id("dagger.hilt.android.plugin")
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
@@ -64,8 +67,6 @@ android {
         }
     }
 
-    ndkVersion = libs.versions.ndk.get()
-    compileSdk = libs.versions.sdk.get().toInt()
     namespace = "org.dhis2"
     testNamespace = "org.dhis2.test"
 
@@ -75,8 +76,9 @@ android {
 
     defaultConfig {
         applicationId = "com.dhis2"
-        minSdk = libs.versions.minSdk.get().toInt()
+        compileSdk = libs.versions.sdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
         versionName = libs.versions.vName.get()
         testInstrumentationRunner = "org.dhis2.Dhis2Runner"
@@ -127,12 +129,6 @@ android {
                     "META-INF/gradle/incremental.annotation.processors"
                 )
             )
-        }
-    }
-
-    testOptions {
-        unitTests {
-            isReturnDefaultValues = true
         }
     }
 
@@ -218,13 +214,6 @@ android {
         }
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
     lint {
         abortOnError = false
         checkReleaseBuilds = false
@@ -250,6 +239,12 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":viewpagerdotsindicator"))
@@ -260,6 +255,7 @@ dependencies {
     implementation(project(":compose-table"))
     implementation(project(":stock-usecase"))
     implementation(project(":dhis2-mobile-program-rules"))
+    implementation(project(":tracker"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
@@ -274,14 +270,13 @@ dependencies {
     implementation(libs.androidx.work)
     implementation(libs.androidx.workrx)
     implementation(libs.androidx.exifinterface)
-    implementation(libs.google.flexbox)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.material3)
     implementation(libs.google.guava)
     implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.dagger.hilt.android)
-    implementation(libs.rx.kotlin)
-    implementation(libs.network.gsonconverter)
     implementation(libs.network.okhttp)
     implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
@@ -297,7 +292,6 @@ dependencies {
     debugImplementation(libs.analytics.flipper.network)
     debugImplementation(libs.analytics.flipper.leak)
     debugImplementation(libs.analytics.leakcanary)
-    debugImplementation(libs.test.ui.test.manifest)
 
     releaseImplementation(libs.analytics.leakcanary.noop)
     releaseImplementation(libs.analytics.flipper.noop)
@@ -307,7 +301,6 @@ dependencies {
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)
-    kapt(libs.dagger.hilt.compiler)
     kapt(libs.deprecated.autoValueParcel)
 
     testImplementation(libs.test.archCoreTesting)
@@ -324,12 +317,9 @@ dependencies {
     androidTestImplementation(libs.test.testRunner)
     androidTestImplementation(libs.test.espresso.intents)
     androidTestImplementation(libs.test.espresso.contrib)
-    androidTestImplementation(libs.test.espresso.accessibility)
-    androidTestImplementation(libs.test.espresso.web)
     androidTestImplementation(libs.test.uiautomator)
     androidTestImplementation(libs.test.testCore)
     androidTestImplementation(libs.test.rules)
-    androidTestImplementation(libs.test.coreKtx)
     androidTestImplementation(libs.test.junitKtx)
     androidTestImplementation(libs.test.mockitoCore)
     androidTestImplementation(libs.test.dexmaker.mockitoInline)

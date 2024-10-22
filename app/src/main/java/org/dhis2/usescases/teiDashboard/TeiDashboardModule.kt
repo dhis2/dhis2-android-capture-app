@@ -7,11 +7,9 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.forms.EnrollmentFormRepository
-import org.dhis2.data.forms.FormRepository
-import org.dhis2.form.data.RulesRepository
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -75,26 +73,6 @@ class TeiDashboardModule(
 
     @Provides
     @PerActivity
-    fun rulesRepository(d2: D2): RulesRepository {
-        return RulesRepository(d2)
-    }
-
-    @Provides
-    @PerActivity
-    fun formRepository(
-        rulesRepository: RulesRepository,
-        d2: D2,
-    ): FormRepository {
-        val enrollmentUidToUse = enrollmentUid ?: ""
-        return EnrollmentFormRepository(
-            rulesRepository,
-            enrollmentUidToUse,
-            d2,
-        )
-    }
-
-    @Provides
-    @PerActivity
     fun ruleEngineRepository(
         d2: D2,
     ): RuleEngineHelper? {
@@ -125,7 +103,15 @@ class TeiDashboardModule(
         repository: DashboardRepository,
         analyticsHelper: AnalyticsHelper,
         dispatcher: DispatcherProvider,
+        pageConfigurator: NavigationPageConfigurator,
+        resourcesManager: ResourceManager,
     ): DashboardViewModelFactory {
-        return DashboardViewModelFactory(repository, analyticsHelper, dispatcher)
+        return DashboardViewModelFactory(
+            repository,
+            analyticsHelper,
+            dispatcher,
+            pageConfigurator,
+            resourcesManager,
+        )
     }
 }

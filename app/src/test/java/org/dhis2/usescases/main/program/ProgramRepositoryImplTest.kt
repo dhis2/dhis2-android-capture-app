@@ -10,7 +10,6 @@ import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -47,7 +46,6 @@ class ProgramRepositoryImplTest {
     private val filterPresenter: FilterPresenter =
         Mockito.mock(FilterPresenter::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisProgramUtils: DhisProgramUtils = mock()
-    private val dhisTeiUtils: DhisTrackedEntityInstanceUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
@@ -62,7 +60,6 @@ class ProgramRepositoryImplTest {
             d2,
             filterPresenter,
             dhisProgramUtils,
-            dhisTeiUtils,
             resourceManager,
             metadataIconProvider,
             scheduler,
@@ -129,41 +126,9 @@ class ProgramRepositoryImplTest {
     }
 
     @Test
-    fun `Should set data set count to 0 if assign to me is active`() {
-        val syncStatusData = SyncStatusData(true)
-        whenever(
-            filterPresenter.filteredDataSetInstances(),
-        ) doReturn mock()
-        whenever(
-            filterPresenter.filteredDataSetInstances().get(),
-        ) doReturn Single.just(mockedDataSetInstanceSummaries())
-        whenever(
-            filterPresenter.isAssignedToMeApplied(),
-        ) doReturn true
-        whenever(
-            filterPresenter.areFiltersActive(),
-        ) doReturn true
-
-        val testObserver = programRepository.aggregatesModels(syncStatusData).test()
-
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.size == 2 &&
-                    it[0].count == 0 &&
-                    it[0].translucent() &&
-                    it[1].count == 0 &&
-                    it[1].translucent()
-            }
-    }
-
-    @Test
     fun `Should return list of program ProgramViewModels`() {
         val syncStatusData = SyncStatusData(true)
         initWheneverForPrograms()
-        whenever(
-            filterPresenter.areFiltersActive(),
-        ) doReturn false
         val testOvserver = programRepository.programModels(syncStatusData).test()
 
         testOvserver
@@ -173,7 +138,6 @@ class ProgramRepositoryImplTest {
                     it[0].count == 10 &&
                     it[0].typeName == "event" &&
                     it[1].count == 2 &&
-                    it[1].hasOverdueEvent &&
                     it[1].typeName == "tei"
             }
     }
@@ -218,12 +182,8 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredTrackerProgram(any()).offlineFirst(),
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGetUids(),
-        ) doReturn arrayListOf("teiUid1", "teiUid2")
-
-        whenever(
-            dhisTeiUtils.hasOverdueInProgram(any(), any()),
-        ) doReturn true
+            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingCount(),
+        ) doReturn 2
     }
 
     private fun mockedDataSetInstanceSummaries(): List<DataSetInstanceSummary> {

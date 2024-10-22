@@ -18,14 +18,13 @@
     <string name="navigation_tasks">Tasks</string>
     <string name="navigation_programs">Programs</string>
     <string name="navigation_relationships">Relationships</string>
+    <string name="navigation_relations">Relations</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Data entry</string>
     <string name="navigation_tei_data">Details</string>
     <string name="event_overview">Details</string>
     <string name="select_option">Select option</string>
     <string name="search">Search</string>
-    <string name="jira_issue_sent">Issue Sent</string>
-    <string name="jira_issue_sent_error">Error sending issue</string>
     <string name="events">events</string>
     <string name="data_sets">Data sets</string>
     <string name="tei">TEI</string>
@@ -42,8 +41,8 @@
     <string name="filters_title_state">Sync</string>
     <string name="filters_title_assigned">Assigned to me</string>
     <string name="filters_title_date">Date</string>
-    <string name="filters_title_event_date">Event date</string>
-    <string name="filters_title_event_status">Event status</string>
+    <string name="filters_title_event_label_date">%s date</string>
+    <string name="filters_title_event_label_status">%s status</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
 
@@ -222,6 +221,7 @@
     <string name="msg_network_connection_maps">An internet connection is required in order to use maps.</string>
 
     <string name="overdue_today">Today</string>
+    <string name="overdue_due_today">Due today</string>
     <plurals name="overdue_days">
         <item quantity="one">%d day overdue</item>
         <item quantity="other">%d days overdue</item>
@@ -272,6 +272,11 @@
     <string name="enrolling_ou">Enrolled in:</string> <!--TODO: Remove this once ANDROAPP-5901 has been merged. Also remove unused TEI card xmls-->
     <string name="dashboard_menu_delete_enrollment_V2">Delete %s only</string>
     <string name="program_selector_V2">Program %s</string>
+    <string name="more_enrollments">More enrollments</string>
+    <string name="remove_from">Remove from</string>
+    <string name="refresh_this_record">Refresh this record</string>
+    <string name="view_timeline">View timeline</string>
+    <string name="group_by_stage">Group by stage</string>
 
 
     <!-- Event -->
@@ -294,5 +299,13 @@
     <string name="period_span_default_label" translatable="false">%s - %s</string>
     <string name="week_period_span_default_label">Week %d %s to %s</string>
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
+    <string name="group_event_label_by_stage">Group %s by stage</string>
+    <string name="show_event_label_timeline">Show %s timeline</string>
+    <string name="empty_tei_event_label_add">There are no %s registered, click "+" to add a new one.</string>
+    <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
+    <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
 
+    <string name="sync_retry">Retry sync</string>
+    <string name="syncing">Synchronizing...</string>
+    <string name="remove">Remove</string>
 </resources>

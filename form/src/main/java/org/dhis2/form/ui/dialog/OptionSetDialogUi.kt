@@ -21,11 +21,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.form.R
 import org.dhis2.form.model.OptionSetDialogViewModel
 import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
 fun OptionSetDialogScreen(
@@ -156,13 +156,16 @@ private fun SearchBar(
                     innerTextField()
                 }
                 if (searchValue.isNotEmpty()) {
-                    IconButton(onClick = onClearSearchClick) {
-                        Icon(
-                            imageVector = Icons.Filled.Clear,
-                            contentDescription = "",
-                            tint = MaterialTheme.colors.primary,
-                        )
-                    }
+                    IconButton(
+                        onClick = onClearSearchClick,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.primary,
+                            )
+                        },
+                    )
                 }
             }
         },
@@ -204,12 +207,14 @@ private fun DialogButtonActions(onClearClick: () -> Unit, onCancelClick: () -> U
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
     ) {
-        TextButton(onClick = onClearClick) {
-            Text(text = stringResource(id = R.string.clear).uppercase())
-        }
+        Button(
+            text = stringResource(id = R.string.clear).uppercase(),
+            onClick = onClearClick,
+        )
         Spacer(modifier = Modifier.size(8.dp))
-        TextButton(onClick = onCancelClick) {
-            Text(text = stringResource(id = R.string.cancel).uppercase())
-        }
+        Button(
+            text = stringResource(id = R.string.cancel).uppercase(),
+            onClick = onCancelClick,
+        )
     }
 }

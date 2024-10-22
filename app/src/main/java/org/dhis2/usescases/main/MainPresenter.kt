@@ -3,22 +3,20 @@ package org.dhis2.usescases.main
 import android.content.Context
 import android.net.Uri
 import android.view.Gravity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
-import org.dhis2.commons.matomo.Actions.Companion.JIRA_REPORT
 import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.commons.matomo.Actions.Companion.QR_SCANNER
 import org.dhis2.commons.matomo.Actions.Companion.SETTINGS
@@ -59,7 +57,6 @@ class MainPresenter(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val filterManager: FilterManager,
     private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
@@ -68,6 +65,7 @@ class MainPresenter(
     private val syncStatusController: SyncStatusController,
     private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
+    private val forceToNotSynced: Boolean,
 ) : CoroutineScope {
 
     private var job = Job()
@@ -119,44 +117,6 @@ class MainPresenter(
         trackDhis2Server()
     }
 
-    fun initFilters() {
-        disposable.add(
-            Flowable.just(filterRepository.homeFilters())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filters ->
-                        if (filters.isEmpty()) {
-                            view.hideFilters()
-                        } else {
-                            view.setFilters(filters)
-                        }
-                    },
-                    { Timber.e(it) },
-                ),
-        )
-
-        disposable.add(
-            filterManager.asFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filterManager -> view.updateFilters(filterManager.totalFilters) },
-                    { Timber.e(it) },
-                ),
-        )
-
-        disposable.add(
-            filterManager.periodRequest
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { periodRequest -> view.showPeriodRequest(periodRequest.first) },
-                    { Timber.e(it) },
-                ),
-        )
-    }
-
     fun trackDhis2Server() {
         disposable.add(
             repository.getServerVersion()
@@ -200,6 +160,7 @@ class MainPresenter(
                 syncStatusController.restore()
                 FilterManager.getInstance().clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
+                preferences.setValue(Preference.PIN_ENABLED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
             }.andThen(
                 repository.logOut(),
@@ -240,10 +201,6 @@ class MainPresenter(
         view.back()
     }
 
-    fun showFilter() {
-        view.showHideFilter()
-    }
-
     fun onDetach() {
         disposable.clear()
     }
@@ -262,7 +219,6 @@ class MainPresenter(
 
     fun onNavigateBackToHome() {
         view.goToHome()
-        initFilters()
     }
 
     fun onClickSyncManager() {
@@ -281,12 +237,12 @@ class MainPresenter(
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
     }
 
-    fun observeDataSync(): LiveData<SyncStatusData> {
+    fun observeDataSync(): StateFlow<SyncStatusData> {
         return syncStatusController.observeDownloadProcess()
     }
 
     fun wasSyncAlreadyDone(): Boolean {
-        if (view.hasToNotSync()) {
+        if (forceToNotSynced) {
             return true
         }
         return syncIsPerformedInteractor.execute()
@@ -309,10 +265,6 @@ class MainPresenter(
 
     fun trackQRScanner() {
         matomoAnalyticsController.trackEvent(HOME, QR_SCANNER, CLICK)
-    }
-
-    fun trackJiraReport() {
-        matomoAnalyticsController.trackEvent(HOME, JIRA_REPORT, CLICK)
     }
 
     fun checkVersionUpdate() {

@@ -8,12 +8,11 @@ import org.dhis2.bindings.hasFollowUp
 import org.dhis2.bindings.paintAllEnrollmentIcons
 import org.dhis2.bindings.setAttributeList
 import org.dhis2.bindings.setStatusText
-import org.dhis2.bindings.setTeiImage
 import org.dhis2.commons.data.EnrollmentIconData
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
+import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 
 abstract class BaseTeiViewHolder(
     private val binding: ItemSearchTrackedEntityBinding,

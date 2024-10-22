@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
@@ -32,7 +31,6 @@ import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.usescases.events.ScheduledEventActivity.Companion.getIntent
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity.Companion.getActivityBundle
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
@@ -42,7 +40,6 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
-import org.dhis2.usescases.teiDashboard.ui.EventCreationOptions
 import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
@@ -53,6 +50,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
@@ -207,7 +205,11 @@ class TEIDataPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe({ programStage ->
                     if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
-                        view.displayScheduleEvent()
+                        view.displayScheduleEvent(
+                            programStage = programStage,
+                            showYesNoOptions = true,
+                            eventCreationType = EventCreationType.SCHEDULE,
+                        )
                     } else if (programStage.remindCompleted() == true) {
                         view.showDialogCloseProgram()
                     }
@@ -268,47 +270,46 @@ class TEIDataPresenter(
 
     fun onScheduleSelected(uid: String?, sharedView: View?) {
         uid?.let {
-            val intent = getIntent(view.context, uid)
-            val options = sharedView?.let { it1 ->
-                ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    view.abstractActivity,
-                    it1,
-                    "shared_view",
-                )
-            } ?: ActivityOptionsCompat.makeBasic()
-            view.openEventDetails(intent, options)
+            view.displayEnterEvent(
+                eventUid = it,
+                showYesNoOptions = false,
+                eventCreationType = EventCreationType.SCHEDULE,
+            )
         }
     }
 
     fun onEventSelected(uid: String, eventStatus: EventStatus) {
-        if (eventStatus == EventStatus.ACTIVE || eventStatus == EventStatus.COMPLETED) {
-            val intent = Intent(view.context, EventCaptureActivity::class.java)
-            intent.putExtras(
-                getActivityBundle(
-                    eventUid = uid,
-                    programUid = programUid ?: throw IllegalStateException(),
-                    eventMode = EventMode.CHECK,
-                ),
-            )
-            view.openEventCapture(intent)
-        } else {
-            val event = d2.event(uid)
-            val intent = Intent(view.context, EventInitialActivity::class.java)
-            intent.putExtras(
-                EventInitialActivity.getBundle(
-                    programUid,
-                    uid,
-                    EventCreationType.DEFAULT.name,
-                    teiUid,
-                    null,
-                    event?.organisationUnit(),
-                    event?.programStage(),
-                    enrollmentUid,
-                    0,
-                    teiDataRepository.getEnrollment().blockingGet()?.status(),
-                ),
-            )
-            view.openEventInitial(intent)
+        when (eventStatus) {
+            EventStatus.ACTIVE, EventStatus.COMPLETED, EventStatus.SKIPPED -> {
+                val intent = Intent(view.context, EventCaptureActivity::class.java)
+                intent.putExtras(
+                    getActivityBundle(
+                        eventUid = uid,
+                        programUid = programUid ?: throw IllegalStateException(),
+                        eventMode = EventMode.CHECK,
+                    ),
+                )
+                view.openEventCapture(intent)
+            }
+            else -> {
+                val event = d2.event(uid)
+                val intent = Intent(view.context, EventInitialActivity::class.java)
+                intent.putExtras(
+                    EventInitialActivity.getBundle(
+                        programUid,
+                        uid,
+                        EventCreationType.DEFAULT.name,
+                        teiUid,
+                        null,
+                        event?.organisationUnit(),
+                        event?.programStage(),
+                        enrollmentUid,
+                        0,
+                        teiDataRepository.getEnrollment().blockingGet()?.status(),
+                    ),
+                )
+                view.openEventInitial(intent)
+            }
         }
     }
 
@@ -359,23 +360,45 @@ class TEIDataPresenter(
         }
     }
 
-    private fun manageAddNewEventOptionSelected(eventCreationType: EventCreationType, stage: ProgramStage?) {
+    private fun manageAddNewEventOptionSelected(
+        eventCreationType: EventCreationType,
+        stage: ProgramStage?,
+    ) {
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
                     checkOrgUnitCount(program, stage.uid())
                 }
 
+                EventCreationType.SCHEDULE -> {
+                    view.displayScheduleEvent(
+                        programStage = stage,
+                        showYesNoOptions = false,
+                        eventCreationType = eventCreationType,
+                    )
+                }
+
                 else -> view.goToEventInitial(eventCreationType, stage)
             }
         } else {
-            createEventInEnrollment(eventCreationType)
+            when (eventCreationType) {
+                EventCreationType.REFERAL -> {
+                    createEventInEnrollment(eventCreationType)
+                }
+                else -> {
+                    view.displayScheduleEvent(
+                        programStage = null,
+                        showYesNoOptions = false,
+                        eventCreationType = eventCreationType,
+                    )
+                }
+            }
         }
     }
 
-    fun getNewEventOptionsByStages(stage: ProgramStage?): List<EventCreationOptions> {
+    fun getNewEventOptionsByStages(stage: ProgramStage?): List<MenuItemData<EventCreationType>> {
         val options = programUid?.let { getNewEventCreationTypeOptions(stage, it) }
-        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it) } ?: emptyList()
+        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it, stage?.displayEventLabel()) } ?: emptyList()
     }
 
     fun fetchEvents() {

@@ -169,12 +169,6 @@
     <string name="customactivityoncrash_error_activity_restart_app">Вернуться</string>
     <string name="customactivityoncrash_error_activity_error_details_close">Закрыть</string>
     <string name="section_charts">Диаграммы</string>
-    <string name="navigation_analytics">Аналитика</string>
-    <string name="navigation_programs">Программы</string>
-    <string name="navigation_relationships">Зависимости</string>
-    <string name="navigation_notes">Заметки</string>
-    <string name="navigation_data_entry">Ввод данных</string>
-    <string name="navigation_tei_data">Детали</string>
     <string name="filter_period_this_year">Этот год</string>
     <string name="filter_period_this_bimonth">Этот бимесяц</string>
     <string name="filter_period_last_bimonth">Прошлый бимесяц</string>

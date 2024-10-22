@@ -14,10 +14,8 @@ import org.dhis2.form.ui.provider.AutoCompleteProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
-import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.provider.UiStyleProvider
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -26,8 +24,6 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 class FieldViewModelFactoryImpl(
-    private val uiStyleProvider: UiStyleProvider,
-    private val layoutProvider: LayoutProvider,
     private val hintProvider: HintProvider,
     private val displayNameProvider: DisplayNameProvider,
     private val uiEventTypesProvider: UiEventTypesProvider,
@@ -63,12 +59,6 @@ class FieldViewModelFactoryImpl(
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
             uid = id,
-            layoutId = layoutProvider.getLayoutByType(
-                valueType,
-                fieldRendering?.type(),
-                optionSet,
-                renderingType,
-            ),
             value = value,
             focused = false,
             error = null,
@@ -77,7 +67,6 @@ class FieldViewModelFactoryImpl(
             mandatory = mandatory,
             label = label,
             programStageSection = programStageSection,
-            style = uiStyleProvider.provideStyle(valueType),
             hint = hintProvider.provideDateHint(valueType),
             description = description,
             valueType = if (optionSet != null && valueType == ValueType.TEXT) ValueType.MULTI_TEXT else valueType,
@@ -117,7 +106,6 @@ class FieldViewModelFactoryImpl(
     override fun createSingleSection(singleSectionName: String): FieldUiModel {
         return SectionUiModelImpl(
             SectionUiModelImpl.SINGLE_SECTION_UID,
-            layoutProvider.getLayoutForSection(),
             null,
             false,
             null,
@@ -125,7 +113,6 @@ class FieldViewModelFactoryImpl(
             null,
             false,
             singleSectionName,
-            null,
             null,
             null,
             null,
@@ -159,7 +146,6 @@ class FieldViewModelFactoryImpl(
     ): FieldUiModel {
         return SectionUiModelImpl(
             sectionUid,
-            layoutProvider.getLayoutForSection(),
             null,
             false,
             null,
@@ -168,7 +154,6 @@ class FieldViewModelFactoryImpl(
             false,
             sectionName ?: "",
             sectionUid,
-            null,
             null,
             description,
             null,
@@ -193,7 +178,6 @@ class FieldViewModelFactoryImpl(
     override fun createClosingSection(): FieldUiModel {
         return SectionUiModelImpl(
             SectionUiModelImpl.CLOSING_SECTION_UID,
-            layoutProvider.getLayoutForSection(),
             null,
             false,
             null,
@@ -201,7 +185,6 @@ class FieldViewModelFactoryImpl(
             null,
             false,
             SectionUiModelImpl.CLOSING_SECTION_UID,
-            null,
             null,
             null,
             null,

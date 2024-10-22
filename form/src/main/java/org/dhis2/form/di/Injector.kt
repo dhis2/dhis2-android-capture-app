@@ -9,6 +9,7 @@ import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -32,7 +33,6 @@ import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
-import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
@@ -40,10 +40,6 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.provider.UiStyleProvider
-import org.dhis2.form.ui.provider.UiStyleProviderImpl
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -142,7 +138,11 @@ object Injector {
     ): DataEntryRepository {
         return EnrollmentRepository(
             fieldFactory = provideFieldFactory(context),
-            conf = EnrollmentConfiguration(provideD2(), enrollmentRecords.enrollmentUid, metadataIconProvider),
+            conf = EnrollmentConfiguration(
+                provideD2(),
+                enrollmentRecords.enrollmentUid,
+                metadataIconProvider,
+            ),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
         )
@@ -158,6 +158,10 @@ object Injector {
             d2 = provideD2(),
             metadataIconProvider = provideMetadataIconProvider(),
             resources = provideResourcesManager(context),
+            eventResourcesProvider = EventResourcesProvider(
+                provideD2(),
+                provideResourcesManager(context),
+            ),
             dateUtils = DateUtils.getInstance(),
             eventMode = eventRecords.eventMode,
         )
@@ -169,8 +173,6 @@ object Injector {
     private fun provideFieldFactory(
         context: Context,
     ): FieldViewModelFactory = FieldViewModelFactoryImpl(
-        uiStyleProvider = provideUiStyleProvider(context),
-        layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
         displayNameProvider = provideDisplayNameProvider(context),
         uiEventTypesProvider = provideUiEventTypesProvider(),
@@ -184,22 +186,6 @@ object Injector {
     private fun provideUiEventTypesProvider() = UiEventTypesProviderImpl()
 
     private fun provideHintProvider(context: Context) = HintProviderImpl(context)
-
-    private fun provideLayoutProvider() = LayoutProviderImpl()
-
-    private fun provideUiStyleProvider(
-        context: Context,
-    ): UiStyleProvider = UiStyleProviderImpl(
-        colorFactory = FormUiModelColorFactoryImpl(
-            context,
-            provideColorUtils(),
-        ),
-        longTextColorFactory = LongTextUiColorFactoryImpl(
-            context,
-            provideColorUtils(),
-        ),
-        actionIconClickable = true,
-    )
 
     private fun provideFormValueStore(
         context: Context,

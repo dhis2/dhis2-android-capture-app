@@ -16,7 +16,7 @@ import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -24,7 +24,7 @@ import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -49,10 +49,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var resourceManager: ResourceManager
 
     @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
+
+    @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
     @Inject
-    lateinit var enrollmentResultDialogUiProvider: EnrollmentResultDialogUiProvider
+    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
 
     @Inject
     lateinit var featureConfig: FeatureConfigRepository
@@ -93,7 +96,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
             ?: EnrollmentMode.NEW
         val openErrorLocation = intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
-        (applicationContext as App).userComponent()!!.plus(
+        (applicationContext as App).userComponent()?.plus(
             EnrollmentModule(
                 this,
                 enrollmentUid,
@@ -101,7 +104,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 enrollmentMode,
                 context,
             ),
-        ).inject(this)
+        )?.inject(this)
 
         formView = FormView.Builder()
             .locationProvider(locationProvider)
@@ -115,7 +118,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 }
             }
             .onFinishDataEntry { presenter.finish(mode) }
-            .resultDialogUiProvider(enrollmentResultDialogUiProvider)
+            .eventCompletionResultDialogProvider(enrollmentResultDialogProvider)
             .factory(supportFragmentManager)
             .setRecords(
                 EnrollmentRecords(
@@ -126,9 +129,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             .openErrorLocation(openErrorLocation)
-            .useComposeForm(
-                featureConfig.isFeatureEnable(Feature.COMPOSE_FORMS),
-            )
+            .setProgramUid(programUid)
             .build()
 
         super.onCreate(savedInstanceState)
@@ -172,17 +173,19 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
                     if (data?.hasExtra(MapSelectorActivity.DATA_EXTRA) == true) {
-                        handleGeometry(
-                            FeatureType.valueOfFeatureType(
-                                data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
-                            ),
-                            data.getStringExtra(MapSelectorActivity.DATA_EXTRA)!!,
-                            requestCode,
-                        )
+                        data.getStringExtra(MapSelectorActivity.DATA_EXTRA)?.let {
+                            handleGeometry(
+                                FeatureType.valueOfFeatureType(
+                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
+                                ),
+                                it,
+                                requestCode,
+                            )
+                        }
                     }
                 }
 
-                RQ_EVENT -> openDashboard(presenter.getEnrollment()!!.uid()!!)
+                RQ_EVENT -> presenter.getEnrollment()?.uid()?.let { openDashboard(it) }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -208,19 +211,19 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     private val openEventForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) {
-        openDashboard(presenter.getEnrollment()!!.uid()!!)
+        presenter.getEnrollment()?.uid()?.let { it1 -> openDashboard(it1) }
     }
 
     override fun openDashboard(enrollmentUid: String) {
         if (forRelationship) {
             val intent = Intent()
-            intent.putExtra("TEI_A_UID", presenter.getEnrollment()!!.trackedEntityInstance())
+            intent.putExtra("TEI_A_UID", presenter.getEnrollment()?.trackedEntityInstance())
             setResult(Activity.RESULT_OK, intent)
             finish()
         } else {
             val bundle = Bundle()
             bundle.putString(PROGRAM_UID, presenter.getProgram()?.uid())
-            bundle.putString(TEI_UID, presenter.getEnrollment()!!.trackedEntityInstance())
+            bundle.putString(TEI_UID, presenter.getEnrollment()?.trackedEntityInstance())
             bundle.putString(ENROLLMENT_UID, enrollmentUid)
             startActivity(TeiDashboardMobileActivity::class.java, bundle, true, false, null)
         }
@@ -232,7 +235,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        formView.onEditionFinish()
         attemptFinish()
     }
 
@@ -291,7 +293,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         if (mode != EnrollmentMode.NEW) {
             binding.title.text =
                 resourceManager.defaultEnrollmentLabel(
-                    programUid = presenter.getProgram()?.uid()!!,
+                    programUid = presenter.getProgram()?.uid(),
                     true,
                     1,
                 )
@@ -360,9 +362,15 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    override fun showDateEditionWarning() {
+    override fun showDateEditionWarning(programUid: String?) {
         val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(R.string.enrollment_date_edition_warning)
+            .setMessage(
+                eventResourcesProvider.formatWithProgramEventLabel(
+                    R.string.enrollment_date_edition_warning_event_label,
+                    programUid,
+                    2,
+                ),
+            )
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
     }

@@ -2,6 +2,7 @@ package org.dhis2.form.data
 
 import io.reactivex.Single
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.EventMode
@@ -37,6 +38,7 @@ class EventRepositoryTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val fieldViewModelFactory: FieldViewModelFactory = mock()
     private val resources: ResourceManager = mock()
+    private val eventResourcesProvider: EventResourcesProvider = mock()
     private val dateUtil: DateUtils = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
 
@@ -143,6 +145,7 @@ class EventRepositoryTest {
         d2 = d2,
         metadataIconProvider = metadataIconProvider,
         resources = resources,
+        eventResourcesProvider = eventResourcesProvider,
         dateUtils = dateUtil,
         eventMode = eventMode,
     )

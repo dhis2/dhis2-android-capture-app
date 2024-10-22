@@ -22,8 +22,6 @@
     <string name="event_overview">Rincian</string>
     <string name="select_option">Pilih opsi</string>
     <string name="search">Pencarian</string>
-    <string name="jira_issue_sent">Masalah Terkirim</string>
-    <string name="jira_issue_sent_error">Terjadi kesalahan saat melaporkan masalah</string>
     <string name="events">Even</string>
     <string name="data_sets">Data set</string>
     <string name="tei">TEI</string>

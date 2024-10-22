@@ -8,7 +8,7 @@ import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.geometry.mapper.addTeiEventInfo
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
-import org.dhis2.maps.model.EventUiComponentModel
+import org.dhis2.maps.model.MapItemModel
 import org.hisp.dhis.android.core.common.FeatureType
 
 class MapTeiEventsToFeatureCollection(
@@ -17,16 +17,17 @@ class MapTeiEventsToFeatureCollection(
     private val bounds: GetBoundingBox,
 ) {
 
-    fun map(events: List<EventUiComponentModel>): Pair<EventsByProgramStage, BoundingBox> {
+    fun map(events: List<MapItemModel>): Pair<EventsByProgramStage, BoundingBox> {
         val eventsByProgramStage = events
-            .groupBy { it.programStage?.displayName()!! }
+            .filter { it.relatedInfo?.event?.stageDisplayName != null }
+            .groupBy { it.relatedInfo?.event?.stageDisplayName!! }
             .mapValues { eventModel ->
                 eventModel.value.mapNotNull {
-                    val feature = it.event.geometry()?.let { event ->
-                        if (event.type() == FeatureType.POINT) {
-                            mapPointToFeature.map(event)
+                    val feature = it.geometry?.let { eventGeometry ->
+                        if (eventGeometry.type() == FeatureType.POINT) {
+                            mapPointToFeature.map(eventGeometry)
                         } else {
-                            mapPolygonToFeature.map(event)
+                            mapPolygonToFeature.map(eventGeometry)
                         }
                     }
                     feature?.addTeiEventInfo(it)

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -7,10 +9,10 @@ apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 android {
     namespace = "org.dhis2.dhis2_mobile_program_rules"
-    compileSdk = 34
+    compileSdk = libs.versions.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -27,15 +29,21 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
 dependencies {
     implementation(project(":commons"))
+    testImplementation(libs.test.mockitoCore)
+    testImplementation(libs.test.mockitoInline)
+    testImplementation(libs.test.mockitoKotlin)
     coreLibraryDesugaring(libs.desugar)
 }

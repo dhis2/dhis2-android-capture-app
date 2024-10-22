@@ -15,8 +15,14 @@ import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
@@ -33,14 +39,13 @@ import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.fingerprint.FingerPrintResult
-import org.dhis2.data.fingerprint.Type
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
@@ -73,6 +78,7 @@ const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
 const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
 const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
+const val FROM_SPLASH = "FROM_SPLASH"
 const val RESULT_ACCOUNT_SERVER = "RESULT_ACCOUNT_SERVER"
 const val RESULT_ACCOUNT_USERNAME = "RESULT_ACCOUNT_USERNAME"
 const val RESULT_ACCOUNT_CLICKED = "RESULT_ACCOUNT_CLICKED"
@@ -135,11 +141,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             accountsCount: Int = -1,
             isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null,
+            fromSplash: Boolean = false,
         ): Bundle {
             return Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
                 putBoolean(IS_DELETION, isDeletion)
                 putInt(ACCOUNTS_COUNT, accountsCount)
+                putBoolean(FROM_SPLASH, fromSplash)
                 when (logOutReason) {
                     OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
                     OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
@@ -161,6 +169,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         ): Intent = Intent().apply {
             serverUrl?.let { putExtra(RESULT_ACCOUNT_SERVER, serverUrl) }
             userName?.let { putExtra(RESULT_ACCOUNT_USERNAME, userName) }
+            putExtra(FROM_SPLASH, false)
             putExtra(RESULT_ACCOUNT_CLICKED, wasAccountClicked)
         }
     }
@@ -181,6 +190,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
         val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
+        val fromSplash = intent.getBooleanExtra(FROM_SPLASH, false)
 
         if ((isDeletion && accountsCount >= 1)) {
             openAccountsActivity()
@@ -206,6 +216,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 )
             }
         }
+
+        provideBiometricButton()
 
         binding.presenter = presenter
         setLoginVisibility(false)
@@ -260,10 +272,36 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         checkMessage()
         presenter.apply {
             checkServerInfoAndShowBiometricButton()
+            canLoginWithBiometrics.observe(this@LoginActivity) {
+                if (it && fromSplash) {
+                    presenter.authenticateWithBiometric()
+                }
+            }
         }
 
         if (!isDeletion && accountsCount == 1) {
             blockLoginInfo()
+        }
+    }
+
+    private fun provideBiometricButton() {
+        binding.biometricButton.setContent {
+            val displayBiometric by presenter.canLoginWithBiometrics.observeAsState(false)
+            if (displayBiometric) {
+                Dhis2Theme {
+                    IconButton(
+                        onClick = {
+                            presenter.authenticateWithBiometric()
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_fingerprint),
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = stringResource(id = R.string.fingerprint_title),
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -321,11 +359,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         return NetworkUtils.isOnline(this)
     }
 
-    override fun setUrl(url: String) {
+    override fun setUrl(url: String?) {
         binding.serverUrlEdit.setText(if (!isEmpty(qrUrl)) qrUrl else url)
     }
 
-    override fun setUser(user: String) {
+    override fun setUser(user: String?) {
         binding.userNameEdit.setText(user)
         binding.userNameEdit.setSelectAllOnFocus(true)
     }
@@ -378,8 +416,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 message = getString(R.string.improve_app_msg_text),
                 clickableWord = getString(R.string.improve_app_msg_clickable_word),
                 iconResource = R.drawable.ic_line_chart,
+                headerTextAlignment = TextAlign.Start,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.no),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
@@ -442,45 +481,32 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private fun onLoginDataUpdated(displayTrackingMessage: Boolean) {
         when {
             displayTrackingMessage -> showCrashlyticsDialog()
-            !presenter.areSameCredentials() -> {
-                handleFingerPrint()
+            presenter.shouldAskForBiometrics() -> showBiometricDialog()
+            else -> {
+                presenter.saveUserCredentials()
                 goToNextScreen()
             }
-
-            else -> goToNextScreen()
         }
     }
 
-    private fun handleFingerPrint() {
-        // This is commented until fingerprint login for multiuser is supported
-        /* if (presenter.canHandleBiometrics() == true) {
-            showInfoDialog(
-                getString(R.string.biometrics_security_title),
-                getString(R.string.biometrics_security_text),
-                object : OnDialogClickListener {
-                    override fun onPositiveClick() {
-                        presenter.saveUserCredentials(
-                            binding.serverUrlEdit.text.toString(),
-                            binding.userNameEdit.text.toString(),
-                            binding.userPassEdit.text.toString()
-                        )
-                        goToNextScreen()
-                    }
-
-                    override fun onNegativeClick() {
-                        goToNextScreen()
-                    }
-                }
-            )
-           goToNextScreen()
-        } else {
-            presenter.saveUserCredentials(
-                binding.serverUrlEdit.text.toString(),
-                binding.userNameEdit.text.toString(),
-                ""
-            )
-            goToNextScreen()
-        } */
+    private fun showBiometricDialog() {
+        BottomSheetDialog(
+            BottomSheetDialogUiModel(
+                title = getString(R.string.biometrics_login_title),
+                message = getString(R.string.biometrics_login_text),
+                iconResource = R.drawable.ic_fingerprint,
+                mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
+            ),
+            onMainButtonClicked = {
+                presenter.saveUserCredentials(binding.userPassEdit.text.toString())
+                onLoginDataUpdated(false)
+            },
+            onSecondaryButtonClicked = {
+                presenter.saveUserCredentials()
+                onLoginDataUpdated(false)
+            },
+        ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
     @Deprecated("Deprecated in Java")
@@ -509,8 +535,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showBiometricButton() {
-        // This is commented until fingerprint login for multiuser is supported
-        // binding.biometricButton.visibility = View.VISIBLE
+        binding.biometricButton.visibility = View.VISIBLE
     }
 
     private val requestQRScanner = registerForActivityResult(
@@ -578,14 +603,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun showCredentialsData(result: FingerPrintResult, vararg args: String) {
-        if (result.type == Type.SUCCESS) {
-            binding.serverUrlEdit.setText(args[0])
-            binding.userNameEdit.setText(args[1])
-            binding.userPassEdit.setText(args[2])
-        } else if (result.type == Type.ERROR && args[0] != getString(R.string.cancel)) {
-            showInfoDialog(getString(R.string.biometrics_dialog_title), args[0])
-        }
+    override fun showCredentialsData(vararg args: String) {
+        binding.serverUrlEdit.setText(args[0])
+        binding.userNameEdit.setText(args[1])
+        binding.userPassEdit.setText(args[2])
     }
 
     override fun showEmptyCredentialsMessage() {

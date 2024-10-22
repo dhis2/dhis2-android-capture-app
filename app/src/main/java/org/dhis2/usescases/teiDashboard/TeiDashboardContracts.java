@@ -25,6 +25,8 @@ public class TeiDashboardContracts {
         void showTabsAndEnableSwipe();
 
         void displayStatusError(StatusChangeResultCode statusCode);
+
+        void showOrgUnitSelector(String programUid);
     }
 
     public interface Presenter {
@@ -66,5 +68,7 @@ public class TeiDashboardContracts {
         Boolean checkIfTEICanBeDeleted();
 
         Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid);
+
+        void onTransferClick();
     }
 }

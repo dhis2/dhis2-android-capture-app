@@ -320,7 +320,6 @@
     <string name="qr_error_attr">Este atributo no puede ser añadido</string>
     <string name="qr_error_enrollment">Esta admisión no puede ser añadida</string>
 
-    <string name="jira_report">Reportar problema en Jira</string>
     <string name="about">Acerca de</string>
     <string name="programs_to_enroll">Programas disponibles para admisión</string>
     <string name="select_all">Selecionar todo</string>
@@ -384,10 +383,6 @@
     <string name="date_dialog_tigle">Selecciona las fechas para filtrar</string>
     <string name="select_option">Seleccionar opción</string>
     <string name="issue_reported">Incidencia reportada</string>
-    <string name="jira_credential_error">Compruebe que sus credenciales de jira son correctas</string>
-    <string name="jira_issue_error">Error al reportar la incidencia</string>
-    <string name="jira_fields_error">Todos los campos son obligatorios</string>
-    <string name="dialog_generate_new_event">Generar nuevo evento</string>
     <string name="message_generate_new_event">¿Quiere crear un nuevo evento?</string>
     <string name="event_completed_title">Eventos Completados</string>
     <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quiere completar el programa también?</string>
@@ -431,7 +426,6 @@
     <string name="tuto_main_10">Cierre sesión para cambiar de usuario o de servidor. Podrá volver a entrar con el mismo usuario si no hay internet.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relaciones</string>
-    <string name="empty_relationships">No hay relaciones, haga click en \"+\" para crear una nueva.</string>
     <string name="empty_tei_add">No hay eventos registrados, haga click en \"+\" para añadir uno.</string>
     <string name="empty_tei_no_add">No hay eventos registrados.</string>
     <string name="qr_data_values">Valores de datos</string>
@@ -490,7 +484,7 @@
     <string name="send_user_name_title">Enviar datos</string>
     <string name="send_user_name_mesage">Ayude a DHIS2 a mejorar esta app compartiendo errores asociados a su usuario.</string>
     <string name="improve_app_msg_title">Quiere ayudarnos a mejorar esta app?</string>
-    <string name="improve_app_msg_text">"Si dice que sí la app mandará estadísticas anónimas y registro de errores que ayudaran a mejorar la experiencia y el rendimiento. Para más detalles, consulte nuestra política de privacidad. "</string>
+    <string name="improve_app_msg_text">"Si dice que sí la app mandará estadísticas anónimas y registro de errores que ayudaran a mejorar la experiencia y el rendimiento.\n\nPara más detalles, consulte nuestra política de privacidad. "</string>
     <string name="improve_app_msg_clickable_word">política de privacidad</string>
     <string name="check_mandatory_field">Comprobar campos</string>
     <string name="error_no_network_during_sync">Se perdió la conexión a internet durante la sincronización. Inténtelo mas tarde.</string>
@@ -704,12 +698,9 @@
     <string name="download_tei_error">El %s seleccionado no puede ser descargado.</string>
     <string name="completed_by">Completado por %s: %s</string>
     <string name="updated_time">Actualizado: %s</string>
-    <string name="action_done">¡Listo!</string>
     <string name="validation_internal_error_datasets">No hemos podido verificar la calidad de los datos. Contacte con su administrador</string>
     <string name="are_you_sure">¿Está seguro?</string>
     <string name="reopen_question">¿Quiere reabrir este set de datos?</string>
-    <string name="group_events_by_stage">Agrupar eventos por etapa</string>
-    <string name="show_events_timeline">Mostrar eventos por fecha</string>
     <string name="filters_title_date">Fecha</string>
     <string name="filters_title_event_date">Fecha de evento</string>
     <string name="tei_type_has_no_attributes">%s no tiene atributos públicos. Por favor seleccione un programa</string>
@@ -733,19 +724,7 @@
     <string name="metada_first_sync_error">Encontramos un error al sincronizar con su servidor. Comparta el error con el administrador del sistema si es posible.</string>
     <string name="error_init_session">No pudimos iniciar la sesión con su usuario</string>
     <string name="enrollment_date_edition_warning">Hay eventos planificados que no serán reprogramados</string>
-    <string name="jira_issue_sent">Incidencia reportada</string>
-    <string name="jira_issue_sent_error">Error al enviar la incidencia</string>
     <string name="section_charts">Gráficas</string>
-    <string name="navigation_list_view">Vista de lista</string>
-    <string name="navigation_table_view">Vista de tabla</string>
-    <string name="navigation_map_view">Vista del mapa</string>
-    <string name="navigation_analytics">Analíticas</string>
-    <string name="navigation_tasks">Tareas</string>
-    <string name="navigation_programs">Programas</string>
-    <string name="navigation_relationships">Relaciones</string>
-    <string name="navigation_notes">Notas</string>
-    <string name="navigation_data_entry">Introducción de datos</string>
-    <string name="navigation_tei_data">Detalles</string>
     <string name="show_bar_graph">Ver como barras</string>
     <string name="show_line_graph">Ver como líneas</string>
     <string name="show_table_graph">Ver como tabla</string>

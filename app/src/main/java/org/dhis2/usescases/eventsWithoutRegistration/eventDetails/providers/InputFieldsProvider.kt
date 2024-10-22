@@ -23,8 +23,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCa
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
@@ -41,12 +39,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
-import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
-import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -143,6 +138,7 @@ fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String)
         }
     }
 }
+
 private fun isValid(valueString: String) = valueString.length == 8
 
 private fun formatStoredDateToUI(dateValue: String): String? {
@@ -386,56 +382,6 @@ fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
         Coordinates(
             latitude = GeometryHelper.getPoint(geometry)[1],
             longitude = GeometryHelper.getPoint(geometry)[0],
-        )
-    }
-}
-
-@Composable
-fun ProvideRadioButtons(
-    eventTemp: EventTemp,
-    detailsEnabled: Boolean,
-    resources: ResourceManager,
-    onEventTempSelected: (status: EventTempStatus?) -> Unit,
-    showField: Boolean = true,
-) {
-    if (showField) {
-        Spacer(modifier = Modifier.height(16.dp))
-        val radioButtonData = listOf(
-            RadioButtonData(
-                uid = EventTempStatus.ONE_TIME.name,
-                selected = eventTemp.status == EventTempStatus.ONE_TIME,
-                enabled = true,
-                textInput = resources.getString(R.string.one_time),
-            ),
-            RadioButtonData(
-                uid = EventTempStatus.PERMANENT.name,
-                selected = eventTemp.status == EventTempStatus.PERMANENT,
-                enabled = true,
-                textInput = resources.getString(R.string.permanent),
-            ),
-        )
-
-        InputRadioButton(
-            title = resources.getString(R.string.referral),
-            radioButtonData = radioButtonData,
-            orientation = Orientation.HORIZONTAL,
-            state = getInputState(detailsEnabled),
-            itemSelected = radioButtonData.find { it.selected },
-            onItemChange = { data ->
-                when (data?.uid) {
-                    EventTempStatus.ONE_TIME.name -> {
-                        onEventTempSelected(EventTempStatus.ONE_TIME)
-                    }
-
-                    EventTempStatus.PERMANENT.name -> {
-                        onEventTempSelected(EventTempStatus.PERMANENT)
-                    }
-
-                    else -> {
-                        onEventTempSelected(null)
-                    }
-                }
-            },
         )
     }
 }

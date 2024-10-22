@@ -147,8 +147,6 @@
     <string name="most_recent_event_date">Дата останнього випадку</string>
     <string name="no_options">Немає доступних опцій</string>
 
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Список реєстрацій</string>
     <string name="active_programs">Активні програми</string>
     <string name="to_enroll_programs">Програми для реєстрації</string>
     <string name="enroll">Зареєструвати</string>
@@ -316,7 +314,6 @@
     <string name="qr_error_attr">Цей атрибут не можна додати</string>
     <string name="qr_error_enrollment">Цю реєстрацію не можна додати</string>
 
-    <string name="jira_report">Повідомити про проблему Jira</string>
     <string name="about">Про</string>
     <string name="programs_to_enroll">Програми для реєстрації</string>
     <string name="select_all">обрати усі</string>
@@ -380,9 +377,6 @@
     <string name="date_dialog_tigle">Обрати дати для фільтрування</string>
     <string name="select_option">Обрати опцію</string>
     <string name="issue_reported">Про проблему повідомлено</string>
-    <string name="jira_credential_error">Переконайтеся, що Ваші логін та пароль jira правильні</string>
-    <string name="jira_issue_error">Помилка при повідомленні про проблему</string>
-    <string name="jira_fields_error">Усі поля обов\'язкові для заповнення</string>
     <string name="dialog_generate_new_event">Створити новий випадок</string>
     <string name="message_generate_new_event">Ви хочете створити інший випадок?</string>
     <string name="event_completed_title">Завершені випадки</string>
@@ -426,7 +420,6 @@
     <string name="tuto_main_10">Вийдіть, щоб змінити користувача або адресу серверу. Ви зможете увійти знову, навіть якщо немає підключення до Інтернету.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">зв\'язки</string>
-    <string name="empty_relationships">Немає зв’язків, натисніть «+», щоб додати новий.</string>
     <string name="empty_tei_add">Немає зареєстрованих випадків, натисніть «+», щоб додати новий.</string>
     <string name="empty_tei_no_add">Немає зареєстрованих випадків.</string>
     <string name="qr_data_values">Значення даних</string>
@@ -723,19 +716,7 @@
     <string name="metada_first_sync_error">Ми знайшли помилку під час синхронізації з Вашим сервером. Якщо можливо, повідомте про помилку системному адміністратору.</string>
     <string name="error_init_session">Нам не вдалося почати сесію із Вашим користувачем</string>
     <string name="enrollment_date_edition_warning">Є заплановані випадки, які не будуть перенесені</string>
-    <string name="jira_issue_sent">Надіслано сповіщення про проблему</string>
-    <string name="jira_issue_sent_error">Помилка при надсиланні сповіщення про проблему</string>
     <string name="section_charts">Діаграми</string>
-    <string name="navigation_list_view">У вигляді списку</string>
-    <string name="navigation_table_view">У вигляді таблиці</string>
-    <string name="navigation_map_view">У вигляді карти</string>
-    <string name="navigation_analytics">Аналітика</string>
-    <string name="navigation_tasks">Завдання</string>
-    <string name="navigation_programs">Програми</string>
-    <string name="navigation_relationships">Зв\'язки</string>
-    <string name="navigation_notes">Примітки</string>
-    <string name="navigation_data_entry">Введення даних</string>
-    <string name="navigation_tei_data">Деталі</string>
     <string name="show_bar_graph">Переглянути як стовпчикову діаграму</string>
     <string name="show_line_graph">Переглянути як лінійний графік</string>
     <string name="show_table_graph">Переглянути як таблицю</string>

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,11 +26,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +43,9 @@ import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -197,6 +198,7 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = spacedBy(8.dp),
 
     ) {
         Column(
@@ -214,14 +216,10 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
                 color = Color.DarkGray,
             )
         }
-        TextButton(onClick = { onCopy(stackTrace) }) {
-            Text(
-                text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_error_details_copy,
-                ).uppercase(),
-                color = colorResource(id = R.color.colorPrimary),
-            )
-        }
+        Button(
+            text = stringResource(id = R.string.customactivityoncrash_error_activity_error_details_copy),
+            onClick = { onCopy(stackTrace) },
+        )
     }
 }
 
@@ -233,18 +231,13 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
         horizontalArrangement = Arrangement.Center,
     ) {
         Button(
-            onClick = { onGoBack() },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.colorPrimary),
+            text = stringResource(
+                id = R.string.customactivityoncrash_error_activity_restart_app,
             ),
-        ) {
-            Text(
-                text = stringResource(
-                    id = R.string.customactivityoncrash_error_activity_restart_app,
-                ).uppercase(),
-                color = colorResource(id = R.color.primaryBgTextColor),
-            )
-        }
+            onClick = { onGoBack() },
+            colorStyle = ColorStyle.DEFAULT,
+            style = ButtonStyle.FILLED,
+        )
     }
 }
 

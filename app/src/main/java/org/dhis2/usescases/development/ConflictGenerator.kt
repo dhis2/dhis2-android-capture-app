@@ -305,7 +305,7 @@ class ConflictGenerator(private val d2: D2) {
         return event.uid()
     }
 
-    private fun generateConflictInEvent(eventUid: String, importStatus: ImportStatus) {
+    fun generateConflictInEvent(eventUid: String, importStatus: ImportStatus) {
         val build = TrackerImportConflict.builder().conflict("Generated error conflict in event")
             .event(eventUid).displayDescription("Generated error description in event")
             .status(importStatus).build()
@@ -313,6 +313,33 @@ class ConflictGenerator(private val d2: D2) {
         try {
             d2.databaseAdapter().insert("TrackerImportConflict", null, cv)
             d2.databaseAdapter().execSQL(updateEvent(eventUid, importStatus.toSyncState().name))
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    fun generateStatusConflictInDataSet(importStatus: ImportStatus) {
+        val attributeValue = d2.dataValueModule().dataValues()
+            .bySyncState().eq(State.TO_UPDATE)
+            .blockingGet().first()
+        val build = DataValueConflict.builder().conflict("Generated error conflict in data value")
+            .value(attributeValue.value()).dataElement(attributeValue.dataElement())
+            .period(attributeValue.period()).orgUnit(attributeValue.organisationUnit())
+            .attributeOptionCombo(attributeValue.attributeOptionCombo())
+            .categoryOptionCombo(attributeValue.categoryOptionCombo())
+            .displayDescription("Generated error description in data value")
+            .status(importStatus).build()
+        val cv = build.toContentValues()
+        val updatedDataValueCV =
+            attributeValue.toBuilder().syncState(importStatus.toSyncState()).build().toContentValues()
+        try {
+            d2.databaseAdapter().insert("DataValueConflict", null, cv)
+            d2.databaseAdapter().update(
+                DataValueTableInfo.TABLE_INFO.name(),
+                updatedDataValueCV,
+                "_id = ${attributeValue.id()}",
+                emptyArray(),
+            )
         } catch (e: Exception) {
             Timber.e(e)
         }

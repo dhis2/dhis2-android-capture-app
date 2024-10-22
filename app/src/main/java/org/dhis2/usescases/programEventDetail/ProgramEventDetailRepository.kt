@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
+import org.dhis2.maps.layer.MapLayer
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.event.Event
@@ -14,7 +15,7 @@ import org.hisp.dhis.android.core.program.ProgramStage
 
 interface ProgramEventDetailRepository {
     fun filteredProgramEvents(): Flow<PagingData<Event>>
-    fun filteredEventsForMap(): Flowable<ProgramEventMapData>
+    fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData>
     fun program(): Single<Program?>
     fun getAccessDataWrite(): Boolean
     fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel>

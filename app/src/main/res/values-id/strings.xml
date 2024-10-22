@@ -137,8 +137,6 @@
     <string name="delete">hapus</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">hal yang paling terbaru</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Data pendaftaran</string>
     <string name="active_programs">Aktifkan program</string>
     <string name="to_enroll_programs">Program untuk didaftarkan</string>
     <string name="enroll">Daftar</string>
@@ -295,7 +293,6 @@
     <string name="qr_error_attr">Atribut ini tidak dapat ditambahkan</string>
     <string name="qr_error_enrollment">Pendaftaran ini tidak dapat ditambahkan</string>
 
-    <string name="jira_report">Laporkan Masalah Jira</string>
     <string name="about">Tentang</string>
     <string name="programs_to_enroll">Program untuk didaftarkan</string>
     <string name="select_all">Pilih Semua</string>
@@ -359,10 +356,6 @@
     <string name="date_dialog_tigle">Pilih tanggal untuk difilter</string>
     <string name="select_option">Pilih opsi</string>
     <string name="issue_reported">Masalah dilaporkan</string>
-    <string name="jira_credential_error">Periksa apakah pengguna dan kata sandi jira Anda benar</string>
-    <string name="jira_issue_error">Terjadi kesalahan saat melaporkan masalah</string>
-    <string name="jira_fields_error">Semua bidang wajib</string>
-    <string name="dialog_generate_new_event">Buat even baru</string>
     <string name="message_generate_new_event">Apakah Anda ingin membuat even lain?</string>
     <string name="event_completed_title">Even Selesai</string>
     <string name="event_completed_message">Semua even dalam program ini selesai. Apakah Anda ingin menutup program?</string>
@@ -405,7 +398,6 @@
     <string name="tuto_main_10">Logout untuk mengubah pengguna atau server. Anda akan dapat masuk kembali meskipun tidak ada koneksi internet.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">hubungan</string>
-    <string name="empty_relationships">Tidak ada hubungan, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="empty_tei_add">Tidak ada acara yang terdaftar, klik \"+\" untuk menambahkan yang baru.</string>
     <string name="empty_tei_no_add">Tidak ada even yang terdaftar.</string>
     <string name="qr_data_values">Nilai data</string>
@@ -780,12 +772,9 @@
     <string name="download_tei_error">%s yang dipilih tidak dapat diunduh.</string>
     <string name="completed_by">Diselesaikan oleh %s: %s</string>
     <string name="updated_time">Diperbarui: %s</string>
-    <string name="action_done">Selesai!</string>
     <string name="validation_internal_error_datasets">Kami tidak dapat memeriksa kualitas data. Hubungi administrator Anda</string>
     <string name="are_you_sure">Anda yakin?</string>
     <string name="reopen_question">Apakah Anda ingin membuka kembali data set?</string>
-    <string name="group_events_by_stage">Grup even berdasarkan tahap</string>
-    <string name="show_events_timeline">Tampilkan timeline even</string>
     <string name="filters_title_date">Tanggal</string>
     <string name="filters_title_event_date">Tanggal even</string>
     <string name="tei_type_has_no_attributes">%s tidak memiliki atribut publik. Silakan pilih program</string>
@@ -808,19 +797,7 @@
     <string name="metada_first_sync_error">Kami menemukan kesalahan saat menyinkronkan dengan server Anda. Bagikan kesalahan dengan administrator sistem Anda jika memungkinkan.</string>
     <string name="error_init_session">Kami tidak dapat memulai sesi dengan pengguna Anda</string>
     <string name="enrollment_date_edition_warning">Ada even yang direncanakan yang tidak akan dijadwalkan ulang</string>
-    <string name="jira_issue_sent">Masalah Terkirim</string>
-    <string name="jira_issue_sent_error">Terjadi kesalahan saat melaporkan masalah</string>
     <string name="section_charts">Grafik</string>
-    <string name="navigation_list_view">Tampilan daftar</string>
-    <string name="navigation_table_view">Tampilan tabel</string>
-    <string name="navigation_map_view">Tampilan peta</string>
-    <string name="navigation_analytics">Analitik</string>
-    <string name="navigation_tasks">Tugas</string>
-    <string name="navigation_programs">Program-program</string>
-    <string name="navigation_relationships">Hubungan</string>
-    <string name="navigation_notes">Catatan</string>
-    <string name="navigation_data_entry">Data entri</string>
-    <string name="navigation_tei_data">Rincian</string>
     <string name="show_bar_graph">Lihat sebagai Bar</string>
     <string name="show_line_graph">Lihat sebagai Garis</string>
     <string name="show_table_graph">Lihat sebagai Tabel</string>

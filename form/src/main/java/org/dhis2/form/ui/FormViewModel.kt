@@ -1,5 +1,7 @@
 package org.dhis2.form.ui
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -35,7 +37,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
@@ -93,6 +94,8 @@ class FormViewModel(
         capacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+
+    private val handler = Handler(Looper.getMainLooper())
 
     init {
         viewModelScope.launch {
@@ -162,6 +165,12 @@ class FormViewModel(
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
                         _queryData.value = it
+                    }
+                    if (repository.hasLegendSet(result.first.id)) {
+                        handler.removeCallbacksAndMessages(null)
+                        handler.postDelayed({
+                            processCalculatedItems(skipProgramRules = true)
+                        }, 500L)
                     }
                 }
 
@@ -339,7 +348,7 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = getSaveIntent(it)
+                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
                 val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
@@ -359,7 +368,9 @@ class FormViewModel(
 
     private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) =
         getLastFocusedTextItem()?.let {
-            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
+            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE &&
+                !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0
+            ) {
                 val autoCompleteValues =
                     getListFromPreference(fieldUidModel.uid)
                 if (!autoCompleteValues.contains(fieldUidModel.value)) {
@@ -391,16 +402,6 @@ class FormViewModel(
                 it.valueType == ValueType.DATE ||
                 it.valueType == ValueType.TIME
             )
-    }
-
-    private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
-        ValueType.COORDINATE -> FormIntent.SaveCurrentLocation(
-            field.uid,
-            field.value,
-            getFeatureType(field.renderingType).name,
-        )
-
-        else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
     }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
@@ -734,7 +735,7 @@ class FormViewModel(
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
-                repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
+                repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
             }
             try {
                 _dataIntegrityResult.postValue(result.await())
@@ -754,6 +755,18 @@ class FormViewModel(
             }
             try {
                 _completionPercentage.postValue(result.await())
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    fun completeEvent() {
+        viewModelScope.launch {
+            try {
+                async(dispatcher.io()) {
+                    repository.completeEvent()
+                }.await()
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -781,7 +794,7 @@ class FormViewModel(
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(getSaveIntent(it))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
         }
         submitIntent(FormIntent.OnFinish())
     }

@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.enrollment.EnrollmentService;
 
@@ -44,7 +44,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
-    public void onEnrollClick(ProgramViewModel program) {
+    public void onEnrollClick(ProgramUiModel program) {
         switch (enrollmentService.blockingGetEnrollmentAccess(teiUid, program.getUid())) {
             case WRITE_ACCESS:
             default:
