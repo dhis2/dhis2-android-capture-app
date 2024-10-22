@@ -10,7 +10,6 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
@@ -36,6 +35,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
+import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON_IN_TIMELINE
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.CoreMatchers.allOf
@@ -105,7 +105,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFab() {
-        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON_IN_TIMELINE, useUnmergedTree = true).performClick()
     }
 
     fun clickOnReferral() {
