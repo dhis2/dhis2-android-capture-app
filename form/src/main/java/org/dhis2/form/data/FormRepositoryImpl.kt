@@ -690,6 +690,10 @@ class FormRepositoryImpl(
     override fun hasLegendSet(dataElementUid: String): Boolean =
         legendValueProvider.hasLegendSet(dataElementUid)
 
+    override fun getRecordUid(): String {
+        return formValueStore.recordUid()
+    }
+
     override fun setFocusedItem(action: RowAction) {
         focusedItemId = when (action.type) {
             ActionType.ON_NEXT -> getNextItem(action.id)

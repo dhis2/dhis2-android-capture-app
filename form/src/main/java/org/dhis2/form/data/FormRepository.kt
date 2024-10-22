@@ -29,4 +29,5 @@ interface FormRepository {
     fun storeFile(id: String, filePath: String?): StoreResult?
     fun areSectionCollapsable(): Boolean
     fun hasLegendSet(dataElementUid: String): Boolean
+    fun getRecordUid(): String
 }

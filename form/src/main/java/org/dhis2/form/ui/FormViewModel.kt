@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
@@ -766,6 +767,7 @@ class FormViewModel(
             try {
                 async(dispatcher.io()) {
                     repository.completeEvent()
+                    preferenceProvider.setValue(Preference.PREF_COMPLETED_EVENT, repository.getRecordUid())
                 }.await()
             } catch (e: Exception) {
                 Timber.e(e)
