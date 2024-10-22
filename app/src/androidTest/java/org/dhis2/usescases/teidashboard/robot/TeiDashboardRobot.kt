@@ -10,10 +10,12 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
@@ -105,7 +107,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFab() {
-        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON_IN_TIMELINE, useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON_IN_TIMELINE, useUnmergedTree = true)
+            .performClick()
     }
 
     fun clickOnReferral() {
@@ -152,6 +155,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventWasCreatedWithDate(eventName: String, eventDate: String) {
+        onView(withId(R.id.tei_recycler))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
+
         composeTestRule.onNode(
             hasAnySibling(hasText(eventDate, true))
                     and hasText(eventName, true), useUnmergedTree = true
@@ -198,7 +204,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuDeleteTEI() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person)).performClick()
+            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person))
+                .performClick()
         }
     }
 
@@ -237,8 +244,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnScheduleNew() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
-        composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
+        val scheduleTag = targetContext.resources.getString(R.string.schedule) + " event"
+        composeTestRule.onNodeWithText(scheduleTag, useUnmergedTree = true).performClick()
     }
 
 
