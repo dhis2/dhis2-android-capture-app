@@ -2,7 +2,7 @@
 sdk = "34"
 minSdk = "21"
 vCode = "136"
-vName = "3.1.0"
+vName = "3.1.0-RC"
 gradle = "8.6.1"
 kotlin = '2.0.20'
 hilt = '2.47'
@@ -220,7 +220,6 @@ dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "disp
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" }
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window","androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material-themeadapter", "google-material3-themeadapter"]
