@@ -82,7 +82,7 @@ class NominatimGeocoderApi(
             topCornerLatitude?.let {
                 attribute(
                     PARAM_VIEWBOX,
-                    "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude"
+                    "$topCornerLongitude,$topCornerLatitude,$bottomCornerLongitude,$bottomCornerLatitude",
                 )
                 attribute(PARAM_BOUNDED, bounded)
             }
