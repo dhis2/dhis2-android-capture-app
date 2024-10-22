@@ -50,7 +50,11 @@ class DataSetTest : BaseTest() {
     fun shouldCreateNewDataSet() {
         val period = "Jul 2025"
         val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
+        startDataSetDetailActivity(
+            "BfMAe6Itzgt",
+            "Child Health",
+            ruleDataSetDetail
+        )
 
         dataSetDetailRobot {
             clickOnAddDataSet()
