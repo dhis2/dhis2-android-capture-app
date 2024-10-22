@@ -92,7 +92,6 @@ class MapSelectorViewModel(
             locationState = NOT_FIXED,
             isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
             forcedLocationAccuracy = mapStyleConfig.getForcedLocationAccuracy(),
-            zoomLevel = 0f,
         ),
     )
 
@@ -115,7 +114,6 @@ class MapSelectorViewModel(
         searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
         locationState: LocationState = _screenState.value.locationState,
-        zoomLevel: Float = _screenState.value.zoomLevel,
     ) {
         _screenState.update {
             it.copy(
@@ -127,7 +125,6 @@ class MapSelectorViewModel(
                 searchOnAreaVisible = searchOnAreaVisible,
                 displayPolygonInfo = displayPolygonInfo,
                 locationState = locationState,
-                zoomLevel = zoomLevel,
             )
         }
     }
@@ -256,7 +253,7 @@ class MapSelectorViewModel(
                 searchLocationManager.getAvailableLocations(query)
             val searchItems = geocoder.getLocationFromName(query, regionToSearch)
             _currentFeature = null
-            val locationItems = searchItems /*+ filteredPreviousLocation*/
+            val locationItems = searchItems + filteredPreviousLocation
             searchRegion = regionToSearch
             updateScreenState(
                 mapData = GetMapData(
@@ -352,9 +349,9 @@ class MapSelectorViewModel(
         return Pair(selectedLocation, feature)
     }
 
-    fun updateCurrentVisibleRegion(mapBounds: AvailableLatLngBounds?, zoomLevel: Float) {
+    fun updateCurrentVisibleRegion(mapBounds: AvailableLatLngBounds?) {
         _currentVisibleRegion = mapBounds
-        updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank(), zoomLevel = zoomLevel)
+        updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank())
     }
 
     fun initSearchMode() {
@@ -458,5 +455,17 @@ class MapSelectorViewModel(
                 locationState = locationState,
             )
         }
+    }
+
+    fun onMapTouched(actionDown: Boolean = true) {
+        val captureMode = if (actionDown) CaptureMode.MANUAL_SWIPE else CaptureMode.MANUAL
+        updateScreenState(
+            mapData = GetMapData(
+                _currentFeature,
+                _screenState.value.locationItems,
+                captureMode,
+            ),
+            captureMode = captureMode,
+        )
     }
 }
