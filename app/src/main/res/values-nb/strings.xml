@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -90,7 +90,6 @@
     <string name="finish_and_complete">Gjør ferdig og fullfør</string>
     <string name="completed">Fullført</string>
     <string name="cancelled">Kansellert</string>
-    <string name="re_open">Åpne igjen</string>
     <string name="activate">Aktiver</string>
     <string name="active">Aktiv</string>
 
@@ -441,7 +440,6 @@
     <string name="biometrics_dialog_title">Tomme opplysninger</string>
     <string name="biometrics_first_use_text">For å kunne logge inn ved bruk av fingerskanner må du først logge inn på standard måte</string>
     <string name="biometrics_security_title">Biometrisk sikkerhet</string>
-    <string name="biometrics_security_text">Vil du bruke fingerskanner for å logge inn med denne brukeren?</string>
     <string name="tab_tables">Tabeller</string>
     <string name="table">Tabell</string>
     <string name="login_https">https://</string>
@@ -685,6 +683,13 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasjon om feil</string>
     <string name="enrollment_date_edition_warning">Det er planlagte arrangementer som ikke vil bli planlagt på nytt</string>
     <string name="section_charts">Diagrammer</string>
+    <string name="navigation_table_view">Tabellvisning</string>
+    <string name="navigation_analytics">Analyser</string>
+    <string name="navigation_tasks">Oppgaver</string>
+    <string name="navigation_programs">Programmer</string>
+    <string name="navigation_notes">Notater</string>
+    <string name="navigation_data_entry">Dataregistrering</string>
+    <string name="navigation_tei_data">Detaljer</string>
     <string name="show_table_graph">Vis som tabell</string>
     <string name="filter_period_this_year">Dette året</string>
     <string name="filter_period_this_bimonth">Denne tomåned</string>

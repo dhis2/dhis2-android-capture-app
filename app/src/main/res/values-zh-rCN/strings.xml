@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
     <string name="logo_text">区域健康信息系统</string>
@@ -89,7 +89,6 @@
     <string name="finish_and_complete">完成</string>
     <string name="completed">已完成</string>
     <string name="cancelled">已取消</string>
-    <string name="re_open">重新打开</string>
     <string name="activate">激活</string>
     <string name="active">活跃的</string>
 
@@ -440,7 +439,6 @@
     <string name="biometrics_dialog_title">空证书</string>
     <string name="biometrics_first_use_text">为了能够使用指纹扫描器，你需要先使用缺省的方法</string>
     <string name="biometrics_security_title">生物特征安全</string>
-    <string name="biometrics_security_text">使用你的指纹登录该用户？</string>
     <string name="tab_tables">表</string>
     <string name="table">表</string>
     <string name="login_https">https://</string>
@@ -686,6 +684,13 @@
     <string name="error_init_session">我们无法与您的用户发起会话</string>
     <string name="enrollment_date_edition_warning">已经计划的事件不会重新安排</string>
     <string name="section_charts">图表</string>
+    <string name="navigation_table_view">表格检视</string>
+    <string name="navigation_analytics">分析</string>
+    <string name="navigation_tasks">任务</string>
+    <string name="navigation_programs">项目</string>
+    <string name="navigation_notes">笔记</string>
+    <string name="navigation_data_entry">数据输入</string>
+    <string name="navigation_tei_data">详情</string>
     <string name="show_bar_graph">查看柱状图</string>
     <string name="show_line_graph">查看折线图</string>
     <string name="show_table_graph">查看表格</string>

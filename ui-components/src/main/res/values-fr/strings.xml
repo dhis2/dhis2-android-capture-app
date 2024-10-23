@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="not_now">Pas maintenant</string>
+    <string name="cancel">Annuler</string>
+    <string name="clear">Effacer</string>
+    <string name="action_close">Fermer</string>
+    <string name="hint_search">Rechercher</string>
+    <plurals name="error_count">
+        <item quantity="one">%s erreur</item>
+        <item quantity="many">%s erreurs</item>
+        <item quantity="other">%s erreurs</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s avertissement</item>
+        <item quantity="many">%s avertissements</item>
+        <item quantity="other">%s avertissements</item>
+    </plurals>
+</resources>

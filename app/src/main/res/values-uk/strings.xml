@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -99,7 +99,6 @@
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
     <string name="cancelled">Скасовано</string>
-    <string name="re_open">повторно відкрити</string>
     <string name="activate">Активувати</string>
     <string name="active">Активно</string>
 
@@ -466,7 +465,6 @@
     <string name="biometrics_dialog_title">Порожні облікові дані</string>
     <string name="biometrics_first_use_text">Щоб мати можливість увійти за допомогою сканера відбитків пальців, спочатку потрібно використовувати спосіб за замовчуванням</string>
     <string name="biometrics_security_title">Біометрична безпека</string>
-    <string name="biometrics_security_text">Використовувати відбиток пальця, щоб увійти під цим користувачем?</string>
     <string name="tab_tables">Таблиці</string>
     <string name="table">Таблиця</string>
     <string name="login_https">https://</string>
@@ -717,6 +715,13 @@
     <string name="error_init_session">Нам не вдалося почати сесію із Вашим користувачем</string>
     <string name="enrollment_date_edition_warning">Є заплановані випадки, які не будуть перенесені</string>
     <string name="section_charts">Діаграми</string>
+    <string name="navigation_table_view">У вигляді таблиці</string>
+    <string name="navigation_analytics">Аналітика</string>
+    <string name="navigation_tasks">Завдання</string>
+    <string name="navigation_programs">Програми</string>
+    <string name="navigation_notes">Примітки</string>
+    <string name="navigation_data_entry">Введення даних</string>
+    <string name="navigation_tei_data">Деталі</string>
     <string name="show_bar_graph">Переглянути як стовпчикову діаграму</string>
     <string name="show_line_graph">Переглянути як лінійний графік</string>
     <string name="show_table_graph">Переглянути як таблицю</string>
@@ -856,7 +861,6 @@
     <string name="programs">Програми</string>
     <string name="sync_error">Помилка синхронізації</string>
     <string name="mark_follow_up">Позначити для подальших дій</string>
-    <string name="remove">Видалити</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
     <string name="program_stage">Етап програми</string>

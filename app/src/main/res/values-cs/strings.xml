@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -97,7 +97,6 @@
     <string name="finish_and_complete">Hotovo a dokončit</string>
     <string name="completed">Dokončeno</string>
     <string name="cancelled">Zrušeno</string>
-    <string name="re_open">znovu otevřít</string>
     <string name="activate">Aktivovat</string>
     <string name="active">Aktivní</string>
 
@@ -454,7 +453,6 @@
     <string name="biometrics_dialog_title">Prázdné pověření</string>
     <string name="biometrics_first_use_text">Abyste se mohli přihlásit pomocí snímače otisků prstů, musíte nejprve použít výchozí způsob</string>
     <string name="biometrics_security_title">Biometrické zabezpečení</string>
-    <string name="biometrics_security_text">Chcete se tímto uživatelem přihlásit pomocí otisku prstu?</string>
     <string name="tab_tables">Tabulky</string>
     <string name="table">Tabulka</string>
     <string name="login_https">https://</string>
@@ -704,6 +702,13 @@
     <string name="error_init_session">Nemohli jsme zahájit relaci s vaším uživatelem</string>
     <string name="enrollment_date_edition_warning">Jsou plánované události, které nebudou znovu naplánovány</string>
     <string name="section_charts">Grafy</string>
+    <string name="navigation_table_view">Zobrazení tabulky</string>
+    <string name="navigation_analytics">Analýza</string>
+    <string name="navigation_tasks">Úkoly</string>
+    <string name="navigation_programs">Programy</string>
+    <string name="navigation_notes">Poznámky</string>
+    <string name="navigation_data_entry">Vstup dat</string>
+    <string name="navigation_tei_data">Detaily</string>
     <string name="show_bar_graph">Zobrazit jako lištu</string>
     <string name="show_line_graph">Zobrazit jako čáru</string>
     <string name="show_table_graph">Zobrazit jako tabulku</string>

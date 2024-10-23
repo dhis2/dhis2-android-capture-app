@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">ລະບົບ DHIS2</string>
     <string name="logo_text">ລະບົບຂໍ້ມູນຂ່າວສານດ້ານສຸຂະພາບຂັ້ນເມືອງ</string>
@@ -89,7 +89,6 @@
     <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
-    <string name="re_open">ເປີດຄືນໃໝ່</string>
     <string name="activate">ເປິດໃຊ້ງານ</string>
     <string name="active">ທີ່ຍັງນໍາໃຊ້ຢູ່</string>
 
@@ -435,7 +434,6 @@
     <string name="empty_description">ບໍ່ມີຂໍ້ມູນສຳລັບຫ້ອງຂໍ້ມູນນີ້</string>
     <string name="biometrics_dialog_title">ຂໍ້ມູນປະຈຳຕົວຫວ່າງເປົ່າ</string>
     <string name="biometrics_first_use_text">ເພື່ອໃຫ້ສາມາດເຂົ້າສູ່ລະບົບໂດຍໃຊ້ເຄື່ອງສະແກນລາຍນິ້ວມື້ ທ່ານຕ້ອງໃຊ້ວິທີເລີ່ມຕົ້ນກ່ອນ</string>
-    <string name="biometrics_security_text">ໃຊ້ລາຍນິ້ວມືຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບກັບຜູ້ໃຊ້ນີ້ບໍ?</string>
     <string name="tab_tables">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="table">ຕາຕະລາງຂໍ້ມູນ</string>
     <string name="delete_local_data_message">ຂໍ້ມູນທີ່ບໍ່ໄດ້ຮັບການຊິ້ງຈະສູນເສຍໄປ. ທ່ານຕ້ອງການສືບຕໍ່ຫຼືບໍ?</string>
@@ -646,6 +644,12 @@
     <string name="customactivityoncrash_error_activity_error_details_title">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
+    <string name="navigation_analytics">ການວິເຄາະ</string>
+    <string name="navigation_programs">ສາຍງານ</string>
+    <string name="navigation_notes">ຂໍ້ຄວາມ</string>
+    <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
+    <string name="navigation_tei_data">ລາຍລະອຽດ</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">ເບິ່ງເປັນແຖວ</string>
     <string name="show_table_graph">ເບິ່ງເປັນຕາຕະລາງ</string>
