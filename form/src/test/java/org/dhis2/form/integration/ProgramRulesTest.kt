@@ -58,6 +58,7 @@ class ProgramRulesTest {
     private val d2: D2 = mock()
     private val optionRepository: OptionsRepository = mock()
     private val formValueStore: FormValueStore = mock()
+
     private val ruleEngineHelper: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider = RulesUtilsProviderImpl(d2, optionRepository)
     private val dataEntryRepository: DataEntryRepository = mock()
@@ -69,7 +70,6 @@ class ProgramRulesTest {
 
     private lateinit var formViewModel: FormViewModel
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val testingDispatcher = StandardTestDispatcher()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -114,6 +114,7 @@ class ProgramRulesTest {
             rulesUtilsProvider = rulesUtilsProvider,
             legendValueProvider = mock(),
             useCompose = true,
+            preferenceProvider = preferenceProvider,
         )
 
         whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
@@ -134,7 +135,6 @@ class ProgramRulesTest {
                 }
             },
             geometryController,
-            preferenceProvider = preferenceProvider,
         )
 
         testingDispatcher.scheduler.advanceUntilIdle()

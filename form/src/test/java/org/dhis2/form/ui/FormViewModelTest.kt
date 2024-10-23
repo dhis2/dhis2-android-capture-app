@@ -55,7 +55,6 @@ class FormViewModelTest {
             repository,
             dispatcher,
             geometryController,
-            preferenceProvider = preferenceProvider,
         )
     }
 
