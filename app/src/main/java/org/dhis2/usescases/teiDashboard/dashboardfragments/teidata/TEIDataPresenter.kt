@@ -206,7 +206,7 @@ class TEIDataPresenter(
                 .subscribe({ programStage ->
                     if (programStage.displayGenerateEventBox() == true || programStage.allowGenerateNextVisit() == true) {
                         view.displayScheduleEvent(
-                            programStage = programStage,
+                            programStage = null,
                             showYesNoOptions = true,
                             eventCreationType = EventCreationType.SCHEDULE,
                         )
