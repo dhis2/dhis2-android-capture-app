@@ -1,5 +1,9 @@
 package org.dhis2.form.data
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.dhis2.commons.prefs.Preference
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
@@ -29,6 +33,7 @@ class FormRepositoryImpl(
     private val rulesUtilsProvider: RulesUtilsProvider,
     private val legendValueProvider: LegendValueProvider,
     private val useCompose: Boolean,
+    private val preferenceProvider: PreferenceProvider,
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -80,6 +85,7 @@ class FormRepositoryImpl(
 
     override fun completeEvent() {
         formValueStore.completeEvent()
+        preferenceProvider.setValue(Preference.PREF_COMPLETED_EVENT, formValueStore.recordUid())
     }
 
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
@@ -690,10 +696,6 @@ class FormRepositoryImpl(
     override fun hasLegendSet(dataElementUid: String): Boolean =
         legendValueProvider.hasLegendSet(dataElementUid)
 
-    override fun getRecordUid(): String {
-        return formValueStore.recordUid()
-    }
-
     override fun setFocusedItem(action: RowAction) {
         focusedItemId = when (action.type) {
             ActionType.ON_NEXT -> getNextItem(action.id)
@@ -722,4 +724,17 @@ class FormRepositoryImpl(
 
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }
+
+    override fun getListFromPreferences(uid: String): MutableList<String> {
+        val gson = Gson()
+        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    override fun saveListToPreferences(uid: String, list: List<String>) {
+        val gson = Gson()
+        val json = gson.toJson(list)
+        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
+    }
 }
