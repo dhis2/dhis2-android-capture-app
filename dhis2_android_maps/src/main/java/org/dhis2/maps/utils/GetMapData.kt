@@ -48,14 +48,13 @@ object GetMapData {
         val features = selectedFeatures + polygonPointFeatures + locationFeatures
         return MapData(
             featureCollection = FeatureCollection.fromFeatures(features),
-            boundingBox = boundingBox(captureMode, selectedFeatures, polygonPointFeatures, locationFeatures),
+            boundingBox = boundingBox(captureMode, selectedFeatures, locationFeatures),
         )
     }
 
     private fun boundingBox(
         captureMode: MapSelectorViewModel.CaptureMode,
         selectedFeatures: List<Feature>,
-        polygonPointFeatures: List<Feature>,
         locationFeatures: List<Feature>,
     ) = when (captureMode) {
         MapSelectorViewModel.CaptureMode.NONE -> null
