@@ -41,7 +41,7 @@ class NominatimGeocoderApi(
 
         val searchResult: MutableList<NominatimLocation> = mutableListOf()
         run loop@{
-            visibleRegion?.list?.forEachIndexed { index, region ->
+            visibleRegion?.list?.forEach { region ->
                 searchResult.addAll(
                     search(
                         query = query,

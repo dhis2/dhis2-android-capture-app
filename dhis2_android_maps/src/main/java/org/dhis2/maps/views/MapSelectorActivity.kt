@@ -165,7 +165,7 @@ class MapSelectorActivity : AppCompatActivity() {
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
-                    it.mapView.setOnTouchListener { v, event ->
+                    it.mapView.setOnTouchListener { _, event ->
                         if (event.action == MotionEvent.ACTION_DOWN) {
                             Timber.tag("MAP").d("Touched")
                             mapSelectorViewModel.onMapTouched()

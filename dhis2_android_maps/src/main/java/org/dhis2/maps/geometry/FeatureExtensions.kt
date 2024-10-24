@@ -23,18 +23,18 @@ fun Feature.getLatLng(): LatLng {
 }
 
 fun Feature.getCameraUpdate(): CameraUpdateData? {
-    if (this.geometry() is Point) {
+    return if (this.geometry() is Point) {
         val point = this.geometry() as Point
-        return CameraUpdateData.Point(point.toLatLn())
+        CameraUpdateData.Point(point.toLatLn())
     } else if (this.geometry() is Polygon) {
         val polygonPoints = this.getPolygonPoints().map {
             it.getPointLatLng()
         }
-        return CameraUpdateData.Polygon(
+        CameraUpdateData.Polygon(
             GetBoundingBox().getEnclosingBoundingBox(polygonPoints).toLatLngBounds(),
         )
     } else {
-        return null
+        null
     }
 }
 
