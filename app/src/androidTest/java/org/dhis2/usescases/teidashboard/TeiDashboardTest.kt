@@ -183,6 +183,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnScheduleNew()
             typeOnInputDateField(formattedCurrentDate, "Next event")
             clickOnSchedule()
+            waitToDebounce(1000)
             checkEventWasScheduled(LAB_MONITORING, 0)
         }
     }
