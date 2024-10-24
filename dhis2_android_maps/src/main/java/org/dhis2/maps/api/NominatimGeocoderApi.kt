@@ -65,42 +65,6 @@ class NominatimGeocoderApi(
         return searchResult.mapNominatimLocationsToLocationItems()
     }
 
-    override suspend fun searchFor(
-        query: String,
-        topCornerLatitude: Double?,
-        topCornerLongitude: Double?,
-        bottomCornerLatitude: Double?,
-        bottomCornerLongitude: Double?,
-        maxResults: Int,
-    ): List<LocationItemModel> {
-        if (query.isEmpty()) return emptyList()
-
-        val startTime = System.currentTimeMillis()
-        var searchResult = search(
-            query = query,
-            topCornerLongitude = topCornerLongitude,
-            bottomCornerLongitude = bottomCornerLongitude,
-            topCornerLatitude = topCornerLatitude,
-            bottomCornerLatitude = bottomCornerLatitude,
-            maxResults = maxResults,
-        )
-        if (searchResult.isEmpty()) {
-            while (System.currentTimeMillis() - startTime < 1000) {
-                delay(100)
-            }
-            searchResult = search(
-                query = query,
-                topCornerLongitude = topCornerLongitude,
-                bottomCornerLongitude = bottomCornerLongitude,
-                topCornerLatitude = topCornerLatitude,
-                bottomCornerLatitude = bottomCornerLatitude,
-                maxResults = maxResults,
-                bounded = 0,
-            )
-        }
-        return searchResult.mapNominatimLocationsToLocationItems()
-    }
-
     private suspend fun search(
         query: String,
         topCornerLongitude: Double?,

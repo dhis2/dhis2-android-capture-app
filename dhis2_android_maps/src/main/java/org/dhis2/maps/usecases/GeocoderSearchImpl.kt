@@ -3,7 +3,6 @@ package org.dhis2.maps.usecases
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -22,32 +21,12 @@ class GeocoderSearchImpl(
 
     override suspend fun getLocationFromName(
         name: String,
-        visibleRegion: LatLngBounds?,
-    ): List<LocationItemModel> {
-        return try {
-            geocoderApi.searchFor(
-                query = name,
-                topCornerLatitude = visibleRegion?.northWest?.latitude,
-                topCornerLongitude = visibleRegion?.northWest?.longitude,
-                bottomCornerLatitude = visibleRegion?.southEast?.latitude,
-                bottomCornerLongitude = visibleRegion?.southEast?.longitude,
-                maxResults = maxResults,
-            )
-        } catch (e: Exception) {
-            Timber.e(e)
-            defaultSearchLocationProvider(name)
-        }
-    }
-
-    override suspend fun getLocationFromName(
-        name: String,
         visibleRegion: AvailableLatLngBounds?,
     ): List<LocationItemModel> {
         return try {
             geocoderApi.searchFor(name, visibleRegion, maxResults)
         } catch (e: Exception) {
             Timber.e(e)
-            Timber.tag("NOMINATIM").d("Geocoder error: $e")
             defaultSearchLocationProvider(name)
         }
     }
