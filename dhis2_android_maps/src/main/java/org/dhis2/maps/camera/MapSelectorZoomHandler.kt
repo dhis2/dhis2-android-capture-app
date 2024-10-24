@@ -2,11 +2,14 @@ package org.dhis2.maps.camera
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.camera.CameraUpdate
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.maps.extensions.toLatLngBounds
-import org.dhis2.maps.geometry.getPointLatLng
+import org.dhis2.maps.geometry.getCameraUpdate
+import org.dhis2.maps.geometry.getLatLng
+import org.dhis2.maps.model.CameraUpdateData
 import org.dhis2.maps.views.MapSelectorViewModel
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.GPS
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL
@@ -48,26 +51,44 @@ object MapSelectorZoomHandler {
                     update,
                     CalculateCameraAnimationDuration(
                         mapboxMap.cameraPosition.target ?: LatLng(),
-                        selectedFeature?.getPointLatLng() ?: LatLng(),
+                        selectedFeature?.getLatLng() ?: LatLng(),
                     ),
                 )
             }
         }
     }
 
+    private fun buildCameraUpdate(
+        feature: Feature,
+        zoomLevel: Double = INITIAL_ZOOM_LEVEL,
+        padding: Int = PADDING,
+    ): CameraUpdate? {
+        return when (val data = feature.getCameraUpdate()) {
+            is CameraUpdateData.Point -> {
+                CameraUpdateFactory.newLatLngZoom(data.latLng, zoomLevel)
+            }
+
+            is CameraUpdateData.Polygon -> {
+                CameraUpdateFactory.newLatLngBounds(data.latLngBounds, padding)
+            }
+
+            null -> null
+        }
+    }
+
     private fun initialZoomWithSelectedFeature(selectedFeature: Feature) =
-        CameraUpdateFactory.newLatLngZoom(selectedFeature.getPointLatLng(), INITIAL_ZOOM_LEVEL)
+        buildCameraUpdate(selectedFeature)
 
     private fun initialZoomWithNoSelection() = null
 
     private fun gpsZoom(selectedFeature: Feature) =
-        CameraUpdateFactory.newLatLngZoom(selectedFeature.getPointLatLng(), GPS_ZOOM_LEVEL)
+        buildCameraUpdate(selectedFeature, GPS_ZOOM_LEVEL)
 
     private fun manualZoom(selectedFeature: Feature) =
-        CameraUpdateFactory.newLatLngZoom(selectedFeature.getPointLatLng(), MANUAL_ZOOM_LEVEL)
+        buildCameraUpdate(selectedFeature, MANUAL_ZOOM_LEVEL)
 
     private fun searchZoomWithSelectedFeature(selectedFeature: Feature) =
-        CameraUpdateFactory.newLatLngZoom(selectedFeature.getPointLatLng(), SEARCH_ZOOM_LEVEL)
+        buildCameraUpdate(selectedFeature, SEARCH_ZOOM_LEVEL)
 
     private fun searchZoomWithNoSelection(featureCollection: FeatureCollection) =
         featureCollection.bbox()?.toLatLngBounds()?.let { bounds ->

@@ -159,6 +159,7 @@ class MapSelectorActivity : AppCompatActivity() {
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
                 onFeatureClicked = mapSelectorViewModel::onPinClicked,
+                onPointClicked = mapSelectorViewModel::onPointClicked,
             )
 
             mapManager.init(
