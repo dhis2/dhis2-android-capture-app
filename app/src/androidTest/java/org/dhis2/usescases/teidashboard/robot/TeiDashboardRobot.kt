@@ -3,6 +3,7 @@ package org.dhis2.usescases.teidashboard.robot
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -10,12 +11,11 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.recyclerview.widget.RecyclerView
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
@@ -152,16 +152,6 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                     ),
                 ),
             )
-    }
-
-    fun checkEventWasCreatedWithDate(eventName: String, eventDate: String) {
-        onView(withId(R.id.tei_recycler))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
-
-        composeTestRule.onNode(
-            hasAnySibling(hasText(eventDate, true))
-                    and hasText(eventName, true), useUnmergedTree = true
-        ).assertIsDisplayed()
     }
 
     fun clickOnMenuDeactivate() {
@@ -463,5 +453,18 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             ),
             useUnmergedTree = true
         ).assertIsDisplayed()
+    }
+
+    fun typeOnInputDateField(dateValue: String, title: String) {
+        composeTestRule.apply {
+            onNode(
+                hasTestTag(
+                    "INPUT_DATE_TIME_TEXT_FIELD"
+                ) and hasAnySibling(
+                    hasText(title)
+                ),
+                useUnmergedTree = true,
+            ).performTextReplacement(dateValue)
+        }
     }
 }
