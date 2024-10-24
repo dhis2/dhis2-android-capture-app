@@ -439,12 +439,18 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
     override fun displayScheduleEvent(programStage: ProgramStage?, showYesNoOptions: Boolean, eventCreationType: EventCreationType) {
         val model = dashboardViewModel.dashboardModel.value
         if (model is DashboardEnrollmentModel) {
-            SchedulingDialog.newSchedule(
-                enrollmentUid = model.currentEnrollment.uid(),
-                programStagesUids = presenter.filterAvailableStages(model.programStages).map { it.uid() },
-                showYesNoOptions = showYesNoOptions,
-                eventCreationType = eventCreationType,
-            ).show(parentFragmentManager, SCHEDULING_DIALOG)
+            val programStages = programStage?.let { listOf(it.uid()) }
+                ?: presenter.filterAvailableStages(model.programStages)
+                    .map { it.uid() }
+
+            if (programStages.isNotEmpty()) {
+                SchedulingDialog.newSchedule(
+                    enrollmentUid = model.currentEnrollment.uid(),
+                    programStagesUids = programStages,
+                    showYesNoOptions = showYesNoOptions,
+                    eventCreationType = eventCreationType,
+                ).show(parentFragmentManager, SCHEDULING_DIALOG)
+            }
         }
     }
 
