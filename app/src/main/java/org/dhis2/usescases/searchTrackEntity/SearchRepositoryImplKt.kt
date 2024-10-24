@@ -82,7 +82,7 @@ class SearchRepositoryImplKt(
                 trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
         }
 
-        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isNotEmpty()) {
+        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
         } else {
             trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
