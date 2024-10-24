@@ -88,6 +88,10 @@ class FormRepositoryImpl(
         preferenceProvider.setValue(Preference.PREF_COMPLETED_EVENT, formValueStore.recordUid())
     }
 
+    override fun activateEvent() {
+        formValueStore.activateEvent()
+    }
+
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
         if (isEmpty()) {
             return this
