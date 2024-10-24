@@ -64,15 +64,13 @@ class EventTest : BaseTest() {
 
     @Test
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
-        val completion = 92
-        val email = "mail@mail.com"
-
-//TODO: eventCaptureRepositoryimpl getCurrentEvent blockingGet seems to be the problem
+        val completion = 100
+        val orgUnit = "Ngelehun CHC"
 
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot(composeTestRule) {
-            checkEventDataEntryIsOpened(completion, email, composeTestRule)
+            checkEventDataEntryIsOpened(completion, orgUnit)
         }
     }
 
