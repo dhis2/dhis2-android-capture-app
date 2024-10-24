@@ -11,14 +11,6 @@ interface GeocoderApi {
         maxResults: Int,
     ): List<LocationItemModel>
 
-    suspend fun searchFor(
-        query: String,
-        topCornerLatitude: Double? = null,
-        topCornerLongitude: Double? = null,
-        bottomCornerLatitude: Double? = null,
-        bottomCornerLongitude: Double? = null,
-        maxResults: Int,
-    ): List<LocationItemModel>
     suspend fun getLocationFromLatLng(
         latitude: Double,
         longitude: Double,
