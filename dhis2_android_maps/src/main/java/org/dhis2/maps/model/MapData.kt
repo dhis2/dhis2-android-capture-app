@@ -7,5 +7,5 @@ import com.mapbox.geojson.FeatureCollection
 @Stable
 data class MapData(
     val featureCollection: FeatureCollection,
-    val boundingBox: BoundingBox,
+    val boundingBox: BoundingBox?,
 )

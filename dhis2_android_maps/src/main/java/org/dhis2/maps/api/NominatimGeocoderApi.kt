@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.maps.model.NominatimLocation
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.android.BuildConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.api.RequestBuilder
@@ -28,39 +29,39 @@ class NominatimGeocoderApi(
     private val d2: D2,
     private val localeSelector: LocaleSelector,
 ) : GeocoderApi {
+
     override suspend fun searchFor(
         query: String,
-        topCornerLatitude: Double?,
-        topCornerLongitude: Double?,
-        bottomCornerLatitude: Double?,
-        bottomCornerLongitude: Double?,
+        visibleRegion: AvailableLatLngBounds?,
         maxResults: Int,
     ): List<LocationItemModel> {
         if (query.isEmpty()) return emptyList()
 
         val startTime = System.currentTimeMillis()
-        var searchResult = search(
-            query = query,
-            topCornerLongitude = topCornerLongitude,
-            bottomCornerLongitude = bottomCornerLongitude,
-            topCornerLatitude = topCornerLatitude,
-            bottomCornerLatitude = bottomCornerLatitude,
-            maxResults = maxResults,
-        )
-        if (searchResult.isEmpty()) {
-            while (System.currentTimeMillis() - startTime < 1000) {
-                delay(100)
+
+        val searchResult: MutableList<NominatimLocation> = mutableListOf()
+        run loop@{
+            visibleRegion?.list?.forEach { region ->
+                searchResult.addAll(
+                    search(
+                        query = query,
+                        topCornerLongitude = region.northWest.longitude,
+                        bottomCornerLongitude = region.southEast.longitude,
+                        topCornerLatitude = region.northWest.latitude,
+                        bottomCornerLatitude = region.southEast.latitude,
+                        maxResults = maxResults - searchResult.size,
+                    ),
+                )
+
+                if (searchResult.size == maxResults) {
+                    return@loop
+                }
+                while (System.currentTimeMillis() - startTime < 1000) {
+                    delay(100)
+                }
             }
-            searchResult = search(
-                query = query,
-                topCornerLongitude = topCornerLongitude,
-                bottomCornerLongitude = bottomCornerLongitude,
-                topCornerLatitude = topCornerLatitude,
-                bottomCornerLatitude = bottomCornerLatitude,
-                maxResults = maxResults,
-                bounded = 0,
-            )
         }
+
         return searchResult.mapNominatimLocationsToLocationItems()
     }
 

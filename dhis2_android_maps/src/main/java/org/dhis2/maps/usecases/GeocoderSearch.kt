@@ -1,12 +1,12 @@
 package org.dhis2.maps.usecases
 
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 
 interface GeocoderSearch {
     suspend fun getLocationFromName(
         name: String,
-        visibleRegion: LatLngBounds?,
+        visibleRegion: AvailableLatLngBounds?,
     ): List<LocationItemModel>
 
     suspend fun getLocationFromLatLng(

@@ -69,21 +69,6 @@ allprojects {
         }
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-        maven {
-            url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
-
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-
-            val mapboxDownloadsToken = System.getenv("MAPBOX_DOWNLOADS_TOKEN")
-                ?: project.properties["MAPBOX_DOWNLOADS_TOKEN"] ?: ""
-            credentials {
-                // This should always be `mapbox` (not your username).
-                username = "mapbox"
-                password = mapboxDownloadsToken as String
-            }
-        }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

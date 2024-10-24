@@ -57,3 +57,27 @@ fun LatLng.distanceTo(latLng: LatLng): Double {
 
     return earthRadiusKm * c
 }
+
+fun LatLng.getSquareVertices(sizeKm: Double): BoundingBox {
+    val earthRadius = 6371.0 // Earth's radius in kilometers
+
+    val halfSizeKm = sizeKm / 2.0
+    val latOffset = Math.toDegrees(halfSizeKm / earthRadius)
+    val lngOffset = Math.toDegrees(halfSizeKm / (earthRadius * cos(Math.toRadians(this.latitude))))
+
+    val northLat = this.latitude + latOffset
+    val southLat = this.latitude - latOffset
+    val eastLng = this.longitude + lngOffset
+    val westLng = this.longitude - lngOffset
+
+    return BoundingBox.fromLngLats(
+        /* west = */
+        westLng,
+        /* south = */
+        southLat,
+        /* east = */
+        eastLng,
+        /* north = */
+        northLat,
+    )
+}
