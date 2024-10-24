@@ -112,6 +112,10 @@ class FormValueStore(
         return d2.eventModule().events().uid(recordUid).blockingGet()?.status()
     }
 
+    fun recordUid(): String {
+        return recordUid
+    }
+
     fun completeEvent() {
         try {
             d2.eventModule().events().uid(recordUid).setStatus(EventStatus.COMPLETED)

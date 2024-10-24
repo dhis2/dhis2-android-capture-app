@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
@@ -37,6 +38,7 @@ class FormRepositoryIntegrationTest {
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val conf: EnrollmentConfiguration = mock()
+    private val preferenceProvider: PreferenceProvider = mock()
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock {
         on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
         on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
@@ -182,6 +184,7 @@ class FormRepositoryIntegrationTest {
             rulesUtilsProvider,
             legendValueProvider,
             false,
+            preferenceProvider = preferenceProvider,
         )
     }
 }
