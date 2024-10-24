@@ -25,6 +25,8 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RunWith(AndroidJUnit4::class)
 class TeiDashboardTest : BaseTest() {
@@ -168,6 +170,10 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
+        val currentDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
+        val formattedCurrentDate = currentDate.format(formatter)
+
         prepareTeiOpenedWithNoPreviousEventProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -175,8 +181,9 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
+            typeOnInputDateField(formattedCurrentDate, "Next event")
             clickOnSchedule()
-            checkEventWasCreatedWithDate(LAB_MONITORING, LAB_MONITORING_SCHEDULE_DATE)
+            checkEventWasScheduled(LAB_MONITORING, 0)
         }
     }
 
@@ -363,6 +370,5 @@ class TeiDashboardTest : BaseTest() {
         const val USER = "android"
 
         const val LAB_MONITORING = "Lab monitoring"
-        const val LAB_MONITORING_SCHEDULE_DATE = "10/09/2023"
     }
 }
