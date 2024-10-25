@@ -156,8 +156,6 @@ class TeiDashboardTest : BaseTest() {
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
-            /*clickOnMenuMoreOptions()
-            clickOnReopen()*/ //TODO (open a bug)
             clickOnMenuMoreOptions()
             clickOnTimelineEvents()
             clickOnFab()
@@ -270,7 +268,6 @@ class TeiDashboardTest : BaseTest() {
 
         eventRobot(composeTestRule) {
             waitToDebounce(600)
-//            fillRadioButtonForm(4)
             clickOnFormFabButton()
             clickOnCompleteButton()
             waitToDebounce(600)

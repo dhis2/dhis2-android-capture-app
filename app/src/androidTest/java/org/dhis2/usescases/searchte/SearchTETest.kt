@@ -168,7 +168,7 @@ class SearchTETest : BaseTest() {
     }
 
     @Test
-    fun ºshouldSuccessfullyFilterByEnrollmentStatusCompleted() {
+    fun shouldSuccessfullyFilterByEnrollmentStatusCompleted() {
         val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
             .format(
                 context.resources.getQuantityString(R.plurals.enrollment, 1)
