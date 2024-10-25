@@ -177,9 +177,6 @@ class ServerModule {
         fun getD2Configuration(context: Context): D2Configuration {
             val interceptors: MutableList<Interceptor> =
                 ArrayList()
-            context.app().appInspector.flipperInterceptor?.let { flipperInterceptor ->
-                interceptors.add(flipperInterceptor)
-            }
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(context.app().appComponent().matomoController()),

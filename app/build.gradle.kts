@@ -287,15 +287,6 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    debugImplementation(libs.analytics.flipper)
-    debugImplementation(libs.analytics.soloader)
-    debugImplementation(libs.analytics.flipper.network)
-    debugImplementation(libs.analytics.flipper.leak)
-    debugImplementation(libs.analytics.leakcanary)
-
-    releaseImplementation(libs.analytics.leakcanary.noop)
-    releaseImplementation(libs.analytics.flipper.noop)
-
     "dhisPlayServicesImplementation"(libs.google.auth)
     "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
 
