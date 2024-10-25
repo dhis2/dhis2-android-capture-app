@@ -286,40 +286,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Should set action by status if event is overdue`() {
-        initializeMocks()
-        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
-        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.OVERDUE)
-        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
-        presenter.init()
-
-        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
-        whenever(eventRepository.isEventEditable(any())) doReturn true
-
-        presenter.saveAndExit(EventStatus.OVERDUE)
-
-        verify(view).attemptToSkip()
-    }
-
-    @Test
-    fun `Should attempt to reschedule if event is skipped`() {
-        initializeMocks()
-        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
-        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.SKIPPED)
-        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
-        presenter.init()
-
-        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
-        whenever(eventRepository.isEventEditable(any())) doReturn true
-
-        presenter.saveAndExit(EventStatus.SKIPPED)
-
-        verify(view).attemptToReschedule()
-    }
-
-    @Test
     fun `Should save and finish if event is is completed and has no errors`() {
         initializeMocks()
         whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)

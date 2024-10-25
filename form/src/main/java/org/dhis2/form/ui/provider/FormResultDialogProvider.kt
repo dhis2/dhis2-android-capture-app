@@ -39,17 +39,20 @@ class FormResultDialogProvider(
             warningFields,
             !canComplete && onCompleteMessage != null,
         )
-        var canSkipErrorFix = canSkipErrorFix(
-            hasErrorFields = errorFields.isNotEmpty(),
-            hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
-            hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
-                containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
-                    containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
-            },
-            eventMode = eventMode,
-            validationStrategy = result.eventResultDetails.validationStrategy,
-        )
-        if (eventState == EventStatus.COMPLETED || eventState == null) canSkipErrorFix = false
+        val showSkipButton = when {
+            dialogType == DialogType.WARNING || dialogType == DialogType.SUCCESSFUL -> true
+            eventState != EventStatus.ACTIVE -> false
+            else -> canSkipErrorFix(
+                hasErrorFields = errorFields.isNotEmpty(),
+                hasEmptyMandatoryFields = emptyMandatoryFields.isNotEmpty(),
+                hasEmptyEventCreationMandatoryFields = with(emptyMandatoryFields) {
+                    containsValue(EventRepository.EVENT_DETAILS_SECTION_UID) ||
+                        containsValue(EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID)
+                },
+                eventMode = eventMode,
+                validationStrategy = result.eventResultDetails.validationStrategy,
+            )
+        }
 
         val model = BottomSheetDialogUiModel(
             title = getTitle(dialogType),
@@ -58,7 +61,7 @@ class FormResultDialogProvider(
             mainButton = getMainButton(dialogType, eventState),
             secondaryButton = if (result.allowDiscard) {
                 DialogButtonStyle.DiscardButton()
-            } else if (canSkipErrorFix || dialogType == DialogType.WARNING) {
+            } else if (showSkipButton) {
                 SecondaryButton(R.string.not_now)
             } else {
                 null
@@ -128,7 +131,11 @@ class FormResultDialogProvider(
     private fun getSubtitle(type: DialogType, eventState: EventStatus?, canDiscard: Boolean) = when (type) {
         DialogType.ERROR -> if (canDiscard) provider.provideErrorWithDiscard() else provider.provideErrorInfo()
         DialogType.MANDATORY -> provider.provideMandatoryInfo()
-        DialogType.WARNING -> if (eventState == EventStatus.COMPLETED) provider.provideWarningInfoCompletedEvent() else provider.provideWarningInfo()
+        DialogType.WARNING -> if (eventState == EventStatus.COMPLETED) {
+            provider.provideWarningInfoCompletedEvent()
+        } else {
+            provider.provideWarningInfo()
+        }
         DialogType.SUCCESSFUL -> provider.provideCompleteInfo()
         DialogType.COMPLETE_ERROR -> provider.provideOnCompleteErrorInfo()
     }
@@ -197,9 +204,6 @@ class FormResultDialogProvider(
         else -> {
             DialogType.SUCCESSFUL
         }
-    }
-    enum class ActionType {
-        FINISH_ADD_NEW, SKIP, RESCHEDULE, FINISH, COMPLETE_ADD_NEW, COMPLETE, CHECK_FIELDS, NONE
     }
     enum class DialogType { ERROR, MANDATORY, WARNING, SUCCESSFUL, COMPLETE_ERROR }
 }

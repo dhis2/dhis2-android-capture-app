@@ -769,6 +769,12 @@ class FormViewModel(
         }
     }
 
+    fun activateEvent() {
+        viewModelScope.launch(dispatcher.io()) {
+            repository.activateEvent()
+        }
+    }
+
     fun displayLoopWarningIfNeeded() {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {

@@ -225,20 +225,10 @@ class EventCapturePresenterImpl(
     }
 
     override fun saveAndExit(eventStatus: EventStatus?) {
-        when (eventStatus) {
-            EventStatus.OVERDUE -> {
-                view.attemptToSkip()
-            }
-            EventStatus.SKIPPED -> {
-                view.attemptToReschedule()
-            }
-            else -> {
-                if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
-                    view.saveAndFinish()
-                } else {
-                    view.finishDataEntry()
-                }
-            }
+        if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
+            view.saveAndFinish()
+        } else {
+            view.finishDataEntry()
         }
     }
 
