@@ -318,7 +318,14 @@ abstract class MapManager(
 
     private fun updateLocationState() {
         map?.apply {
-            val currentLocation = locationComponent.lastKnownLocation?.let { LatLng(it) }
+            locationComponent.isLocationComponentActivated
+            val currentLocation = with(locationComponent) {
+                if (isLocationComponentActivated) {
+                    lastKnownLocation?.let { LatLng(it) }
+                } else {
+                    null
+                }
+            }
             val mapCenter = cameraPosition.target
             val locationState = when {
                 !locationProvider.hasLocationEnabled() ||
