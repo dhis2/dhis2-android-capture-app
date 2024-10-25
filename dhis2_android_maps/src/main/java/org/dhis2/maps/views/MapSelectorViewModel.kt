@@ -205,12 +205,18 @@ class MapSelectorViewModel(
                 listOf(listOf(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))),
             )
             _currentFeature = Feature.fromGeometry(newGeometry)
+            val selectedLocation = SelectedLocation.Polygon(
+                lastPolygonLatitude = polygonPoint[0],
+                lastPolygonLongitude = polygonPoint[1],
+            )
+
             updateScreenState(
                 mapData = GetMapData(
                     _currentFeature,
                     _screenState.value.locationItems,
                     _screenState.value.captureMode,
                 ),
+                selectedLocation = selectedLocation,
             )
         }
     }
