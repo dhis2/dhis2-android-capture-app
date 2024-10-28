@@ -30,6 +30,7 @@ import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
+import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
@@ -117,18 +118,8 @@ class MapSelectorActivity : AppCompatActivity() {
                         featureCollection = screenState.mapData.featureCollection,
                         boundingBox = screenState.mapData.boundingBox,
                     )
-                    MapSelectorZoomHandler(
-                        mapManager.map,
-                        screenState.captureMode,
-                        screenState.mapData.featureCollection,
-                    )
+                    initZoom(screenState)
 
-                    Timber.tag("MAP").d(
-                        "Capture mode: ${screenState.captureMode.name}, feature selected: ${
-                            screenState.mapData.featureCollection.features()
-                                ?.any { it.getBooleanProperty("selected") }
-                        }",
-                    )
                     if (screenState.displayPolygonInfo) {
                         polygonAdapter.updateWithFeatureCollection(screenState.mapData)
                     }
@@ -165,6 +156,7 @@ class MapSelectorActivity : AppCompatActivity() {
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    initZoom(mapSelectorViewModel.screenState.value)
                     it.mapView.setOnTouchListener { _, event ->
                         if (event.action == MotionEvent.ACTION_DOWN) {
                             Timber.tag("MAP").d("Touched")
@@ -197,6 +189,14 @@ class MapSelectorActivity : AppCompatActivity() {
                 locationListener = locationListener,
             )
         }
+    }
+
+    private fun initZoom(screenState: MapSelectorScreenState) {
+        MapSelectorZoomHandler(
+            mapManager.map,
+            screenState.captureMode,
+            screenState.mapData.featureCollection,
+        )
     }
 
     private fun onLocationButtonClicked() {

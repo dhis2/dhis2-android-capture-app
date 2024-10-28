@@ -68,6 +68,11 @@ class MapSelectorViewModel(
             selectedLatitude = initialGeometry.latitude(),
             selectedLongitude = initialGeometry.longitude(),
         )
+    } else if (initialGeometry is Polygon) {
+        SelectedLocation.Polygon(
+            lastPolygonLatitude = initialGeometry.coordinates().first().last().latitude(),
+            lastPolygonLongitude = initialGeometry.coordinates().first().last().longitude(),
+        )
     } else {
         SelectedLocation.None()
     }

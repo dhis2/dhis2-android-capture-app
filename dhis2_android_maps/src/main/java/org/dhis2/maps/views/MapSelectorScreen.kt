@@ -468,12 +468,10 @@ private fun Map(
             },
         )
 
-        if (captureMode.isSwipe()) {
-            DraggableSelectedIcon(
-                captureMode = captureMode,
-                selectedLocation = selectedLocation,
-            )
-        }
+        DraggableSelectedIcon(
+            captureMode = captureMode,
+            selectedLocation = selectedLocation,
+        )
     }
 }
 
