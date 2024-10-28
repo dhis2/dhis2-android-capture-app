@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.option.OptionCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleAction
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramRuleVariable
 import org.hisp.dhis.android.core.program.ProgramRuleVariableCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType
@@ -366,6 +367,19 @@ class RuleEngineExtensionsTest {
             .build()
         val ruleEngineAction = ruleAction.toRuleEngineObject()
         assertTrue(ruleEngineAction.type == "unsupported")
+    }
+
+    @Test
+    fun `Should parse program rule action to rule action with calculated value`() {
+        val ruleAction = ProgramRuleAction.builder()
+            .uid("uid")
+            .data("")
+            .content("calculated value")
+            .programRuleActionType(ProgramRuleActionType.ASSIGN)
+            .build()
+        val ruleEngineAction = ruleAction.toRuleEngineObject()
+        assertTrue(!ruleEngineAction.values.containsKey("field"))
+        assertTrue(ruleEngineAction.values["content"] == "calculated value")
     }
 
     @Test
