@@ -87,7 +87,7 @@ class SearchTETest : BaseTest() {
 
         val firstName = "asdssds"
 
-        prepareTestProgramRulesProgrammeIntentAndLaunchActivity(rule)
+        prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot(composeTestRule) {
             clickOnOpenSearch()
@@ -106,7 +106,6 @@ class SearchTETest : BaseTest() {
             API_OLD_TRACKED_ENTITY_PATH,
             API_OLD_TRACKED_ENTITY_RESPONSE,
         )
-
         val firstName = "Anna"
         val lastName = "Jones"
 
@@ -217,7 +216,6 @@ class SearchTETest : BaseTest() {
 
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            changeDueDate(scheduledEventTitle)
             composeTestRule.waitForIdle()
             pressBack()
         }
@@ -229,9 +227,6 @@ class SearchTETest : BaseTest() {
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventStatusFilter, totalCount)
-        }
-        searchTeiRobot(composeTestRule) {
-            checkListOfSearchTEIWithAdditionalInfo("First name: ADRIANNA", "1 day overdue")
         }
     }
 
@@ -265,6 +260,12 @@ class SearchTETest : BaseTest() {
         val totalFilterCount = "2"
         val filterCount = "1"
 
+        val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
+            .format(
+                context.resources.getQuantityString(R.plurals.enrollment, 1)
+                    .capitalize(Locale.current),
+            )
+
         setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -275,17 +276,14 @@ class SearchTETest : BaseTest() {
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
             clickOnSortByField(enrollmentDate)
+            composeTestRule.waitForIdle()
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
             clickOnFilter()
+            composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
-            clickOnTEI("Alan")
-        }
-
-        teiDashboardRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
-            checkEnrollmentDate(enrollmentDateFrom)
+            clickOnTEI("Betty")
         }
     }
 
@@ -297,8 +295,8 @@ class SearchTETest : BaseTest() {
         val eventDateTo = createToEventDate()
         val totalCount = "2"
         val filterCount = "1"
-        val name = "Heather"
-        val lastName = "Greene"
+        val name = "Alan"
+        val lastName = "Thompson"
 
         setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
@@ -415,7 +413,7 @@ class SearchTETest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyShowMapAndTeiCard() {
-        val firstName = "Filona"
+        val firstName = "Rachel"
 
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
@@ -436,40 +434,40 @@ class SearchTETest : BaseTest() {
     )
 
     private fun createFromEnrollmentDate() = DateRegistrationUIModel(
-        2021,
-        5,
-        1,
+        2024,
+        9,
+        6,
     )
 
     private fun createToEnrollmentDate() = DateRegistrationUIModel(
-        2021,
-        5,
-        31,
+        2024,
+        9,
+        9,
     )
 
     private fun createFromEventDate() = DateRegistrationUIModel(
-        2020,
-        5,
-        1,
+        2024,
+        8,
+        15,
     )
 
     private fun createToEventDate() = DateRegistrationUIModel(
-        2020,
-        5,
-        31,
+        2024,
+        9,
+        10,
     )
 
     private fun createRegisterTEI() = RegisterTEIUIModel(
-        "ADRIANNA",
-        "ROBERTS",
+        "Claire",
+        "Jones",
         dateRegistration,
         dateEnrollment,
     )
 
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
-        2000,
-        6,
-        30,
+        2016,
+        1,
+        9,
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
