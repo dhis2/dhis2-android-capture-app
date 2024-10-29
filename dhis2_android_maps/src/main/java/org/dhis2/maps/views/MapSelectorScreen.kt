@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -281,10 +282,17 @@ private fun LocationInfoContent(
     when {
         displayPolygonInfo -> {
             AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp),
                 factory = { context ->
-                    RecyclerView(context)
+                    RecyclerView(context).also {
+                        configurePolygonInfoRecycler(it)
+                    }
                 },
-                update = configurePolygonInfoRecycler,
+                update = {
+                    // no-op
+                },
             )
         }
 

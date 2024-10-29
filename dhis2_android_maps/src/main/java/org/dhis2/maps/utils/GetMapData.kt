@@ -2,9 +2,7 @@ package org.dhis2.maps.utils
 
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
@@ -21,12 +19,11 @@ object GetMapData {
         currentFeature: Feature?,
         locationItems: List<LocationItemModel>,
         captureMode: MapSelectorViewModel.CaptureMode,
-        searchRegion: LatLngBounds? = null,
     ): MapData {
         val selectedFeatures = buildList {
             currentFeature?.takeIf { !captureMode.isSwipe() }
                 ?.let {
-                    add(it)
+                    add(it.withPlacesProperties(selected = true))
                 }
         }
 
@@ -35,41 +32,40 @@ object GetMapData {
             feature.withPlacesProperties()
         }
 
-        val visibleRegion = buildList {
-            searchRegion?.let {
-                listOf(
-                    Pair(it.northWest, it.northEast),
-                    Pair(it.northEast, it.southEast),
-                    Pair(it.southEast, it.southWest),
-                    Pair(it.southWest, it.northWest),
-                ).forEach { (first, second) ->
-                    add(
-                        Feature.fromGeometry(
-                            LineString.fromLngLats(
-                                listOf(
-                                    Point.fromLngLat(first.longitude, first.latitude),
-                                    Point.fromLngLat(second.longitude, second.latitude),
-                                ),
-                            ),
-                        ),
+        val locationFeatures = locationItems
+            .filter { it !is LocationItemModel.StoredResult }
+            .takeIf { captureMode.isSearch() }
+            ?.map { locationItem ->
+                Feature.fromGeometry(
+                    Point.fromLngLat(locationItem.longitude, locationItem.latitude),
+                ).also { feature ->
+                    feature.withPlacesProperties(
+                        title = locationItem.title,
+                        subtitle = locationItem.subtitle,
                     )
                 }
-            }
-        }
-
-        val locationFeatures = locationItems
-            .takeIf { captureMode.isSearch() }
-            ?.map {
-                Feature.fromGeometry(
-                    Point.fromLngLat(it.longitude, it.latitude),
-                ).also { feature ->
-                    feature.withPlacesProperties(title = it.title, subtitle = it.subtitle)
-                }
             } ?: emptyList()
-        val features = visibleRegion + selectedFeatures + polygonPointFeatures + locationFeatures
+        val features = selectedFeatures + polygonPointFeatures + locationFeatures
         return MapData(
             featureCollection = FeatureCollection.fromFeatures(features),
-            boundingBox = getBoundingBox.getEnclosingBoundingBox(features.getLatLngPointList()),
+            boundingBox = boundingBox(captureMode, selectedFeatures, locationFeatures),
+        )
+    }
+
+    private fun boundingBox(
+        captureMode: MapSelectorViewModel.CaptureMode,
+        selectedFeatures: List<Feature>,
+        locationFeatures: List<Feature>,
+    ) = when (captureMode) {
+        MapSelectorViewModel.CaptureMode.NONE -> null
+        MapSelectorViewModel.CaptureMode.GPS -> getBoundingBox.getEnclosingBoundingBox(
+            selectedFeatures.getLatLngPointList(),
+        )
+
+        MapSelectorViewModel.CaptureMode.MANUAL -> null
+        MapSelectorViewModel.CaptureMode.MANUAL_SWIPE -> null
+        MapSelectorViewModel.CaptureMode.SEARCH -> getBoundingBox.getEnclosingBoundingBox(
+            (selectedFeatures + locationFeatures).getLatLngPointList(),
         )
     }
 }

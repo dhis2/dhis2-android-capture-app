@@ -3,11 +3,11 @@ package org.dhis2.maps.usecases
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import timber.log.Timber
 import kotlin.coroutines.resume
@@ -21,17 +21,10 @@ class GeocoderSearchImpl(
 
     override suspend fun getLocationFromName(
         name: String,
-        visibleRegion: LatLngBounds?,
+        visibleRegion: AvailableLatLngBounds?,
     ): List<LocationItemModel> {
         return try {
-            geocoderApi.searchFor(
-                name,
-                visibleRegion?.northWest?.latitude,
-                visibleRegion?.northWest?.longitude,
-                visibleRegion?.southEast?.latitude,
-                visibleRegion?.southEast?.longitude,
-                maxResults,
-            )
+            geocoderApi.searchFor(name, visibleRegion, maxResults)
         } catch (e: Exception) {
             Timber.e(e)
             defaultSearchLocationProvider(name)

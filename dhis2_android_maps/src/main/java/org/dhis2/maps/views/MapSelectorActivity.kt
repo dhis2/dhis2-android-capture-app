@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationListener
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,15 +24,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.maps.camera.MapSelectorZoomHandler
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
+import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
+import timber.log.Timber
 
 class MapSelectorActivity : AppCompatActivity() {
 
@@ -110,14 +114,14 @@ class MapSelectorActivity : AppCompatActivity() {
                 )
 
                 LaunchedEffect(screenState.mapData) {
-                    this.launch {
-                        mapManager.update(
-                            featureCollection = screenState.mapData.featureCollection,
-                            boundingBox = screenState.mapData.boundingBox,
-                        )
-                        if (screenState.displayPolygonInfo) {
-                            polygonAdapter.updateWithFeatureCollection(screenState.mapData)
-                        }
+                    mapManager.update(
+                        featureCollection = screenState.mapData.featureCollection,
+                        boundingBox = screenState.mapData.boundingBox,
+                    )
+                    initZoom(screenState)
+
+                    if (screenState.displayPolygonInfo) {
+                        polygonAdapter.updateWithFeatureCollection(screenState.mapData)
                     }
                 }
             }
@@ -136,7 +140,7 @@ class MapSelectorActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "ClickableViewAccessibility")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
         mapManager =
             DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
@@ -146,11 +150,22 @@ class MapSelectorActivity : AppCompatActivity() {
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
                 onFeatureClicked = mapSelectorViewModel::onPinClicked,
+                onPointClicked = mapSelectorViewModel::onPointClicked,
             )
 
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    initZoom(mapSelectorViewModel.screenState.value)
+                    it.mapView.setOnTouchListener { _, event ->
+                        if (event.action == MotionEvent.ACTION_DOWN) {
+                            Timber.tag("MAP").d("Touched")
+                            mapSelectorViewModel.onMapTouched()
+                        } else if (event.action == MotionEvent.ACTION_UP) {
+                            mapSelectorViewModel.onMapTouched(false)
+                        }
+                        super.onTouchEvent(event)
+                    }
                     it.map?.addMoveListeners(
                         onIdle = { bounds ->
                             mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
@@ -174,6 +189,14 @@ class MapSelectorActivity : AppCompatActivity() {
                 locationListener = locationListener,
             )
         }
+    }
+
+    private fun initZoom(screenState: MapSelectorScreenState) {
+        MapSelectorZoomHandler(
+            mapManager.map,
+            screenState.captureMode,
+            screenState.mapData.featureCollection,
+        )
     }
 
     private fun onLocationButtonClicked() {
