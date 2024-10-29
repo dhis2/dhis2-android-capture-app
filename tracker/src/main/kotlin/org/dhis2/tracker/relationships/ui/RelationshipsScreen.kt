@@ -79,7 +79,7 @@ fun RelationShipsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White, shape = Shape.LargeTop)
-            .padding(horizontal = Spacing.Spacing8),
+            .padding(),
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         when (uiState) {
@@ -146,7 +146,7 @@ private fun RelationShipTypeSection(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(Spacing.Spacing16),
+            .padding(Spacing.Spacing12),
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         Row(
