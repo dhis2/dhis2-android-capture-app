@@ -688,7 +688,7 @@ class FormRepositoryImpl(
     override fun save(id: String, value: String?, extraData: String?): StoreResult {
         val result = formValueStore.save(id, value, extraData)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
-        return formValueStore.save(id, value, extraData)
+        return result
     }
 
     override fun storeFile(id: String, filePath: String?): StoreResult {
