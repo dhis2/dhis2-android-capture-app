@@ -63,8 +63,8 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
     dataElementRepository: DataElementCollectionRepository,
     optionRepository: OptionCollectionRepository,
 ): List<RuleVariable> {
-    return filter {
-        when {
+    return mapNotNull {
+        val allowVariable = when {
             it.dataElement() != null -> {
                 dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
             }
@@ -75,8 +75,11 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
 
             else -> isCalculatedValue(it)
         }
-    }.map {
-        it.toRuleVariable(attributeRepository, dataElementRepository, optionRepository)
+        if (allowVariable) {
+            it.toRuleVariable(attributeRepository, dataElementRepository, optionRepository)
+        } else {
+            null
+        }
     }
 }
 
@@ -348,14 +351,7 @@ fun ProgramRuleVariable.toRuleVariable(
     }
 
     val useCodeForOptionSet = useCodeForOptionSet() ?: false
-    val options = getOptions(
-        useCodeForOptionSet,
-        dataElement()?.uid(),
-        trackedEntityAttribute()?.uid(),
-        attributeRepository,
-        dataElementRepository,
-        optionRepository,
-    )
+    val options = emptyList<Option>()
 
     return when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.CALCULATED_VALUE ->
