@@ -52,7 +52,7 @@ fun Feature.withPlacesProperties(
     subtitle: String? = null,
 ) = this.apply {
     addStringProperty(FEATURE_PROPERTY_PLACES_ID, UUID.randomUUID().toString())
-    addBooleanProperty(FEATURE_PROPERTY_PLACES, true)
+    addBooleanProperty(FEATURE_PROPERTY_PLACES, !selected)
     addBooleanProperty(FEATURE_PROPERTY_PLACES_SELECTED, selected)
     title?.let { addStringProperty(FEATURE_PROPERTY_PLACES_TITLE, it) }
     subtitle?.let { addStringProperty(FEATURE_PROPERTY_PLACES_SUBTITLE, it) }

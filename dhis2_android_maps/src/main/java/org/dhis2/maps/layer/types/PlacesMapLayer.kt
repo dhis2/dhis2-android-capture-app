@@ -59,27 +59,6 @@ class PlacesMapLayer(
                     ),
                 )
 
-    private val selectedPlaceLayer: Layer
-        get() = style.getLayer(SELECTED_PLACE_LAYER_ID)
-            ?: SymbolLayer(SELECTED_PLACE_LAYER_ID, PLACES_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.SELECTED_PLACE_ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconAnchor(ICON_ANCHOR_BOTTOM),
-                ).withFilter(
-                    Expression.all(
-                        Expression.eq(
-                            Expression.literal(FEATURE_PROPERTY_PLACES),
-                            Expression.literal(true),
-                        ),
-                        Expression.eq(
-                            Expression.literal(FEATURE_PROPERTY_PLACES_SELECTED),
-                            Expression.literal(true),
-                        ),
-                        isPoint(),
-                    ),
-                )
-
     private val polygonLayer: Layer
         get() = style.getLayer(POLYGON_PLACE_LAYER_ID)
             ?: FillLayer(POLYGON_PLACE_LAYER_ID, PLACES_SOURCE_ID)
@@ -105,7 +84,6 @@ class PlacesMapLayer(
 
     init {
         style.addLayer(placesLayer)
-        style.addLayerAbove(selectedPlaceLayer, placesLayer.id)
         style.addLayerBelow(polygonBorderLayer, placesLayer.id)
         style.addLayerAbove(polygonLayer, polygonBorderLayer.id)
         style.addLayerAbove(boundingBoxLayer, placesLayer.id)
@@ -121,7 +99,6 @@ class PlacesMapLayer(
 
     private fun setVisibility(visibility: String) {
         placesLayer.setProperties(PropertyFactory.visibility(visibility))
-        selectedPlaceLayer.setProperties(PropertyFactory.visibility(visibility))
         visible = visibility == Property.VISIBLE
     }
 

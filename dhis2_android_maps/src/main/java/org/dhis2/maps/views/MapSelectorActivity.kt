@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationListener
 import android.os.Bundle
-import android.view.MotionEvent
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -35,7 +34,6 @@ import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
-import timber.log.Timber
 
 class MapSelectorActivity : AppCompatActivity() {
 
@@ -157,15 +155,6 @@ class MapSelectorActivity : AppCompatActivity() {
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
                     initZoom(mapSelectorViewModel.screenState.value)
-                    it.mapView.setOnTouchListener { _, event ->
-                        if (event.action == MotionEvent.ACTION_DOWN) {
-                            Timber.tag("MAP").d("Touched")
-                            mapSelectorViewModel.onMapTouched()
-                        } else if (event.action == MotionEvent.ACTION_UP) {
-                            mapSelectorViewModel.onMapTouched(false)
-                        }
-                        super.onTouchEvent(event)
-                    }
                     it.map?.addMoveListeners(
                         onIdle = { bounds ->
                             mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
