@@ -151,9 +151,14 @@ class MapSelectorActivity : AppCompatActivity() {
                 onPointClicked = mapSelectorViewModel::onPointClicked,
             )
 
+            val mapData = mapSelectorViewModel.screenState.value.mapData
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    mapManager.update(
+                        featureCollection = mapData.featureCollection,
+                        boundingBox = mapData.boundingBox,
+                    )
                     initZoom(mapSelectorViewModel.screenState.value)
                     it.map?.addMoveListeners(
                         onIdle = { bounds ->
