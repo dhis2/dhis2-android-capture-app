@@ -2,9 +2,9 @@ package org.dhis2.maps.managers
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.location.LocationListener
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationListenerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -79,7 +79,7 @@ abstract class MapManager(
 
     fun init(
         mapStyles: List<BaseMapStyle>,
-        locationListener: LocationListener? = null,
+        locationListener: LocationListenerCompat? = null,
         onInitializationFinished: () -> Unit = {},
         onMissingPermission: (PermissionsManager?) -> Unit,
     ) {
@@ -237,7 +237,7 @@ abstract class MapManager(
     private fun enableLocationComponent(
         style: Style,
         onMissingPermission: (PermissionsManager?) -> Unit,
-        locationListener: LocationListener?,
+        locationListener: LocationListenerCompat?,
     ) {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {

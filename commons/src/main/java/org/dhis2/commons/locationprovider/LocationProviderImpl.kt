@@ -8,8 +8,8 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationListenerCompat
 
 private const val FUSED_LOCATION_PROVIDER = "fused"
 
@@ -55,7 +55,7 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
         onLocationProviderChanged: () -> Unit,
     ) {
         if (hasPermission()) {
-            locationListener = object : LocationListener {
+            locationListener = object : LocationListenerCompat {
                 override fun onLocationChanged(location: Location) {
                     onNewLocation(location)
                 }
@@ -67,15 +67,10 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                 override fun onProviderDisabled(provider: String) {
                     onLocationProviderChanged()
                 }
-
-                @Deprecated("Deprecated in Java")
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                    // Need implementation for compatibility
-                }
             }
 
             locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
+                LocationManager.NETWORK_PROVIDER,
                 500,
                 0f,
                 requireNotNull(locationListener),
