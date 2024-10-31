@@ -42,13 +42,22 @@ class NominatimGeocoderApi(
         val searchResult: MutableList<NominatimLocation> = mutableListOf()
         run loop@{
             visibleRegion?.list?.forEach { region ->
+                var southEastLatitude = region.southEast.latitude
+                var southEastLongitude = region.southEast.longitude
+                if (region.northWest.latitude == region.southEast.latitude) {
+                    southEastLatitude = -southEastLatitude
+                }
+                if (region.northWest.longitude == region.southEast.longitude) {
+                    southEastLongitude = -southEastLongitude
+                }
+
                 searchResult.addAll(
                     search(
                         query = query,
                         topCornerLongitude = region.northWest.longitude,
-                        bottomCornerLongitude = region.southEast.longitude,
+                        bottomCornerLongitude = southEastLongitude,
                         topCornerLatitude = region.northWest.latitude,
-                        bottomCornerLatitude = region.southEast.latitude,
+                        bottomCornerLatitude = southEastLatitude,
                         maxResults = maxResults - searchResult.size,
                     ),
                 )
