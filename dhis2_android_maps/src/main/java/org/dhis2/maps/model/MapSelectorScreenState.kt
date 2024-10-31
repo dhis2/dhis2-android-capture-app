@@ -17,6 +17,7 @@ data class MapSelectorScreenState(
     val locationState: LocationState,
     val isManualCaptureEnabled: Boolean,
     val forcedLocationAccuracy: Int,
+    val lastGPSLocation: SelectedLocation.GPSResult?,
 ) {
 
     private fun getDoneButtonEnabledState(): Boolean {

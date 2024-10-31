@@ -190,6 +190,7 @@ class MapSelectorActivity : AppCompatActivity() {
             mapManager.map,
             screenState.captureMode,
             screenState.mapData.featureCollection,
+            screenState.lastGPSLocation,
         )
     }
 

@@ -16,6 +16,7 @@ import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL_SWIPE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.NONE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH
+import org.dhis2.maps.views.SelectedLocation
 
 const val INITIAL_ZOOM_LEVEL = 13.0
 const val SEARCH_ZOOM_LEVEL = 15.0
@@ -29,13 +30,14 @@ object MapSelectorZoomHandler {
         map: MapboxMap?,
         captureMode: MapSelectorViewModel.CaptureMode,
         featureCollection: FeatureCollection,
+        lastGPSLocation: SelectedLocation.GPSResult?,
     ) {
         val selectedFeature = getSelectedFeature(featureCollection)
 
         val cameraUpdate = when (captureMode) {
             NONE -> selectedFeature?.let {
                 initialZoomWithSelectedFeature(it)
-            } ?: initialZoomWithNoSelection()
+            } ?: initialZoomWithNoSelection(lastGPSLocation)
 
             GPS -> selectedFeature?.let { gpsZoom(it) }
             MANUAL -> null
@@ -79,7 +81,13 @@ object MapSelectorZoomHandler {
     private fun initialZoomWithSelectedFeature(selectedFeature: Feature) =
         buildCameraUpdate(selectedFeature)
 
-    private fun initialZoomWithNoSelection() = null
+    private fun initialZoomWithNoSelection(lastGPSLocation: SelectedLocation.GPSResult?) =
+        lastGPSLocation?.asLatLng()?.let {
+            CameraUpdateFactory.newLatLngZoom(
+                latLng = lastGPSLocation.asLatLng(),
+                zoom = INITIAL_ZOOM_LEVEL,
+            )
+        }
 
     private fun gpsZoom(selectedFeature: Feature) =
         buildCameraUpdate(selectedFeature, GPS_ZOOM_LEVEL)

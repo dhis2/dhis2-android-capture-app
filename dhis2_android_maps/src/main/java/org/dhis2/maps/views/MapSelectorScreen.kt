@@ -431,10 +431,12 @@ private fun Map(
                         SwipeToChangeLocationInfo(modifier = Modifier.weight(1f))
                     }
 
-                    LocationIcon(
-                        locationState = locationState,
-                        onLocationButtonClicked = onMyLocationButtonClicked,
-                    )
+                    if (!isPolygonMode) {
+                        LocationIcon(
+                            locationState = locationState,
+                            onLocationButtonClicked = onMyLocationButtonClicked,
+                        )
+                    }
                 }
             },
             map = {
