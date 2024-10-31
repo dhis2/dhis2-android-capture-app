@@ -61,7 +61,6 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
 fun List<ProgramRuleVariable>.toRuleVariableList(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
 ): List<RuleVariable> {
     return mapNotNull {
         val allowVariable = when {
@@ -76,7 +75,7 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
             else -> isCalculatedValue(it)
         }
         if (allowVariable) {
-            it.toRuleVariable(attributeRepository, dataElementRepository, optionRepository)
+            it.toRuleVariable(attributeRepository, dataElementRepository)
         } else {
             null
         }
@@ -328,7 +327,6 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
 ): RuleVariable {
     val valueType = when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
