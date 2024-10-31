@@ -57,6 +57,7 @@ class PolygonAdapter(
             }
         }
         data.add(listOf(-1.0, -1.0))
+        submitList(data)
     }
 
     inner class Holder(val binding: ItemPolygonFullBinding) :
