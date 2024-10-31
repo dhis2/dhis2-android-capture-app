@@ -142,6 +142,7 @@ fun SinglePaneMapSelector(
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
                 locationState = screenState.locationState,
                 isManualCaptureEnabled = screenState.isManualCaptureEnabled,
+                isPolygonMode = screenState.displayPolygonInfo,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -217,6 +218,7 @@ private fun TwoPaneMapSelector(
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
                 locationState = screenState.locationState,
                 isManualCaptureEnabled = screenState.isManualCaptureEnabled,
+                isPolygonMode = screenState.displayPolygonInfo,
                 loadMap = screenActions.loadMap,
                 onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
                 onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
@@ -408,6 +410,7 @@ private fun Map(
     searchOnThisAreaVisible: Boolean,
     locationState: LocationState,
     isManualCaptureEnabled: Boolean,
+    isPolygonMode: Boolean,
     loadMap: (MapView) -> Unit,
     onSearchOnAreaClick: () -> Unit,
     onMyLocationButtonClicked: () -> Unit,
@@ -468,10 +471,12 @@ private fun Map(
             },
         )
 
-        DraggableSelectedIcon(
-            captureMode = captureMode,
-            selectedLocation = selectedLocation,
-        )
+        if (!isPolygonMode) {
+            DraggableSelectedIcon(
+                captureMode = captureMode,
+                selectedLocation = selectedLocation,
+            )
+        }
     }
 }
 
