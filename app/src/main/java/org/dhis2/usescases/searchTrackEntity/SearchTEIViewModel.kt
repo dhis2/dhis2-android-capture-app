@@ -730,8 +730,7 @@ class SearchTEIViewModel(
                     SearchResult(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
                         searchRepository.getProgram(initialProgramUid)?.displayName(),
-
-                        ),
+                    ),
                 )
             }
 
@@ -873,7 +872,7 @@ class SearchTEIViewModel(
             screenState.takeIf { it is SearchList }?.let {
                 val currentScreen = it as SearchList
                 currentScreen.searchForm.isOpened || currentScreen.searchFilters.isOpened
-            } ?: false
+            } ?: false,
         )
     }
 
