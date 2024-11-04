@@ -392,7 +392,6 @@ class RuleEngineExtensionsTest {
         val ruleVariable = programRuleVariable.toRuleVariable(
             attributeRepository = trackedEntityAttributeCollectionRepository,
             dataElementRepository = dataElementRepository,
-            optionRepository = optionRepository,
         )
         assertEquals(programRuleVariable.name(), ruleVariable.name)
     }
