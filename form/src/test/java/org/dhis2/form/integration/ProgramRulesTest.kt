@@ -60,7 +60,8 @@ class ProgramRulesTest {
     private val formValueStore: FormValueStore = mock()
 
     private val ruleEngineHelper: RuleEngineHelper = mock()
-    private val rulesUtilsProvider: RulesUtilsProvider = RulesUtilsProviderImpl(d2, optionRepository)
+    private val rulesUtilsProvider: RulesUtilsProvider =
+        RulesUtilsProviderImpl(d2, optionRepository)
     private val dataEntryRepository: DataEntryRepository = mock()
 
     private lateinit var repository: FormRepository
@@ -104,6 +105,8 @@ class ProgramRulesTest {
         ).thenAnswer { invocationOnMock ->
             invocationOnMock.getArgument(0) as FieldUiModel
         }
+
+        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn StoreResult("", ValueStoreResult.VALUE_CHANGED)
 
         repository = FormRepositoryImpl(
             formValueStore = formValueStore,
@@ -369,7 +372,8 @@ class ProgramRulesTest {
 
         val items = formViewModel.items.value ?: emptyList()
 
-        val optionsToDisplay: List<Option> = items.find { it.uid == "uid006" }!!.optionSetConfiguration!!.optionsToDisplay()
+        val optionsToDisplay: List<Option> =
+            items.find { it.uid == "uid006" }!!.optionSetConfiguration!!.optionsToDisplay()
 
         assertTrue(optionsToDisplay.size == 3)
         assertTrue(optionsToDisplay[0].uid() == "Option2")
@@ -412,7 +416,8 @@ class ProgramRulesTest {
 
         val items = formViewModel.items.value ?: emptyList()
 
-        val optionsToDisplay: List<Option> = items.last().optionSetConfiguration!!.optionsToDisplay()
+        val optionsToDisplay: List<Option> =
+            items.last().optionSetConfiguration!!.optionsToDisplay()
 
         optionsToDisplay.forEach {
             assert(it.uid() != "Option2")
