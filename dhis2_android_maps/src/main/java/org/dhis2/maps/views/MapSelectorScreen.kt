@@ -464,7 +464,6 @@ private fun Map(
             captureMode = captureMode,
             selectedLocation = selectedLocation,
         )
-        // verified commit test Xavi
     }
 }
 
