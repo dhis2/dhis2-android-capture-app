@@ -91,15 +91,6 @@ class DefaultMapManager(
                 placeIconDrawable,
             )
         }
-        AppCompatResources.getDrawable(
-            mapView.context,
-            R.drawable.ic_map_pin_selected,
-        )?.let { placeIconDrawable ->
-            style?.addImage(
-                MapLayerManager.SELECTED_PLACE_ICON_ID,
-                placeIconDrawable,
-            )
-        }
     }
 
     override fun setLayer() {

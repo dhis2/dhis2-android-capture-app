@@ -482,18 +482,4 @@ class MapSelectorViewModel(
             )
         }
     }
-
-    fun onMapTouched(actionDown: Boolean = true) {
-        if (canCaptureManually()) {
-            val captureMode = if (actionDown) CaptureMode.MANUAL_SWIPE else CaptureMode.MANUAL
-            updateScreenState(
-                mapData = GetMapData(
-                    _currentFeature,
-                    _screenState.value.locationItems,
-                    captureMode,
-                ),
-                captureMode = captureMode,
-            )
-        }
-    }
 }
