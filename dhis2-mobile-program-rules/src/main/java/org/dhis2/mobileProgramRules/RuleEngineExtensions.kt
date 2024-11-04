@@ -411,33 +411,6 @@ fun ProgramRuleVariable.toRuleVariable(
     }
 }
 
-fun getOptions(
-    useCodeForOptionSet: Boolean,
-    dataElementUid: String?,
-    trackedEntityAttributeUid: String?,
-    attributeRepository: TrackedEntityAttributeCollectionRepository,
-    dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
-): List<Option> {
-    if (useCodeForOptionSet) {
-        return emptyList()
-    }
-
-    return if (dataElementUid != null) {
-        dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
-            ?.let { optionSetUid ->
-                optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
-    } else if (trackedEntityAttributeUid != null) {
-        attributeRepository.uid(trackedEntityAttributeUid).blockingGet()?.optionSet()?.uid()
-            ?.let { optionSetUid ->
-                optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
-    } else {
-        emptyList()
-    }
-}
-
 fun ValueType.toRuleValueType(): RuleValueType {
     return when {
         isInteger || isNumeric -> RuleValueType.NUMERIC
