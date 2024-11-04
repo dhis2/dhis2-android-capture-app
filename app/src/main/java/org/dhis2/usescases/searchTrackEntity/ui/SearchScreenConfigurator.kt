@@ -7,7 +7,9 @@ import org.dhis2.R
 import org.dhis2.bindings.display
 import org.dhis2.bindings.dp
 import org.dhis2.commons.animations.hide
+import org.dhis2.commons.animations.hideWithTranslation
 import org.dhis2.commons.animations.show
+import org.dhis2.commons.animations.showWithTranslation
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.usescases.searchTrackEntity.SearchAnalytics
 import org.dhis2.usescases.searchTrackEntity.SearchList
@@ -83,7 +85,6 @@ class SearchScreenConfigurator(
         }
         binding.filterRecyclerLayout.visibility = View.VISIBLE
         binding.searchContainer.visibility = View.GONE
-        if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(true)
         changeBounds(R.id.filterRecyclerLayout, 16.dp)
     }
@@ -95,7 +96,6 @@ class SearchScreenConfigurator(
         }
         binding.filterRecyclerLayout.visibility = View.GONE
         binding.searchContainer.visibility = View.GONE
-        if (isPortrait()) binding.navigationBar.show()
         filterIsOpenCallback(false)
         changeBounds(R.id.backdropGuideTop, 0)
     }
@@ -107,7 +107,6 @@ class SearchScreenConfigurator(
             binding.title.visibility = View.VISIBLE
         }
         binding.searchContainer.visibility = View.VISIBLE
-        if (isPortrait()) binding.navigationBar.hide()
         filterIsOpenCallback(false)
         changeBounds(R.id.searchContainer, 0)
     }

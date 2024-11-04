@@ -118,6 +118,9 @@ class SearchTEIViewModel(
     private val _filtersOpened = MutableLiveData(false)
     val filtersOpened: LiveData<Boolean> = _filtersOpened
 
+    private val _backdropActive = MutableLiveData<Boolean>()
+    val backdropActive: LiveData<Boolean> get() = _backdropActive
+
     private val _teTypeName = MutableLiveData("")
     val teTypeName: LiveData<String> = _teTypeName
 
@@ -728,7 +731,7 @@ class SearchTEIViewModel(
                         SearchResult.SearchResultType.SEARCH_OUTSIDE,
                         searchRepository.getProgram(initialProgramUid)?.displayName(),
 
-                    ),
+                        ),
                 )
             }
 
@@ -865,11 +868,13 @@ class SearchTEIViewModel(
         }
     }
 
-    fun searchOrFilterIsOpen(): Boolean {
-        return _screenState.value?.takeIf { it is SearchList }?.let {
-            val currentScreen = it as SearchList
-            currentScreen.searchForm.isOpened || currentScreen.searchFilters.isOpened
-        } ?: false
+    fun updateBackdrop(screenState: SearchTEScreenState) {
+        _backdropActive.postValue(
+            screenState.takeIf { it is SearchList }?.let {
+                val currentScreen = it as SearchList
+                currentScreen.searchForm.isOpened || currentScreen.searchFilters.isOpened
+            } ?: false
+        )
     }
 
     fun filterIsOpen(): Boolean {
