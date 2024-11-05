@@ -224,9 +224,9 @@ class MapSelectorViewModel(
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
                         .removeAt(index)
-                    geometry
+                    if (geometry.coordinates().first().isEmpty()) null else geometry
                 }
-                _currentFeature = Feature.fromGeometry(newGeometry)
+                _currentFeature = newGeometry?.let { Feature.fromGeometry(newGeometry) }
                 updateScreenState(
                     mapData = GetMapData(
                         _currentFeature,

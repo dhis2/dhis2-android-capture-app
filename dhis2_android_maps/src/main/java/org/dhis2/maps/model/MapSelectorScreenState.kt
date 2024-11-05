@@ -22,6 +22,10 @@ data class MapSelectorScreenState(
 
     private fun getDoneButtonEnabledState(): Boolean {
         return when {
+            displayPolygonInfo -> {
+                (mapData.featureCollection.features()?.size ?: 0) >= 4
+            }
+
             (forcedLocationAccuracy == DEFAULT_FORCED_LOCATION_ACCURACY) -> {
                 selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
             }
