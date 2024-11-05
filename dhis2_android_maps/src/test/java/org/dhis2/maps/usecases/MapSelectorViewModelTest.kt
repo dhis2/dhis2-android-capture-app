@@ -177,6 +177,9 @@ class MapSelectorViewModelTest {
 
             // When
             mapSelectorViewModelNoInitialGeometry.onNewLocation(mockedGpsResult)
+            with(awaitItem()) {
+                assertTrue(lastGPSLocation == mockedGpsResult)
+            }
 
             // Then
             with(awaitItem()) {
@@ -194,6 +197,10 @@ class MapSelectorViewModelTest {
 
             // When
             mapSelectorViewModelNoInitialGeometry.onNewLocation(mockedGpsResult)
+            with(awaitItem()) {
+                assertTrue(lastGPSLocation == mockedGpsResult)
+            }
+
             with(awaitItem()) {
                 assertTrue(accuracyRange == AccuracyRange.Good(10))
                 assertTrue(selectedLocation == mockedGpsResult)
