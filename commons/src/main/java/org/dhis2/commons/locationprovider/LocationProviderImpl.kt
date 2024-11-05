@@ -68,13 +68,19 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                     onLocationProviderChanged()
                 }
             }
-
             locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 500,
                 0f,
                 requireNotNull(locationListener),
             )
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                500,
+                0f,
+                requireNotNull(locationListener),
+            )
+
             updatesEnabled = true
         }
     }
