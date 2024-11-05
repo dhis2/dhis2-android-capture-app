@@ -31,6 +31,7 @@ class MainTest : BaseTest() {
     fun checkHomeScreenRecyclerviewHasElements() {
         startActivity()
         homeRobot {
+            composeTestRule.waitForIdle()
             checkViewIsNotEmpty(composeTestRule)
         }
     }
