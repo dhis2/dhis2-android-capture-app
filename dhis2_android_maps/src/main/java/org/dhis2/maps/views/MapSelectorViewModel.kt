@@ -329,7 +329,9 @@ class MapSelectorViewModel(
 
     fun onPinClicked(feature: Feature) {
         viewModelScope.launch(dispatchers.io()) {
-            if (feature.hasProperty(FEATURE_PROPERTY_PLACES)) {
+            if (featureType == FeatureType.POLYGON) {
+                // not implemented
+            } else if (feature.hasProperty(FEATURE_PROPERTY_PLACES)) {
                 val selectedLocation = SelectedLocation.SearchResult(
                     title = feature.getStringProperty("title"),
                     address = feature.getStringProperty("subtitle"),
