@@ -143,7 +143,7 @@ class NominatimGeocoderApi(
 
     private fun NominatimLocation.toLocationItem() = LocationItemModel.SearchResult(
         searchedTitle = name,
-        searchedSubtitle = display_name?.removePrefix("$name, ") ?: "Lat:${
+        searchedSubtitle = displayName?.removePrefix("$name, ") ?: "Lat:${
             lat.toDouble().truncate()
         } Lon:${lon.toDouble().truncate()}",
         searchedLatitude = lat.toDouble(),
