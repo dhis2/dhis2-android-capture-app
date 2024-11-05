@@ -44,7 +44,7 @@ class PolygonAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position), position)
+        holder.bind(getItem(position))
     }
 
     fun updateWithFeatureCollection(mapData: MapData) {
@@ -62,14 +62,17 @@ class PolygonAdapter(
 
     inner class Holder(val binding: ItemPolygonFullBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(point: List<Double>, index: Int) {
+        fun bind(point: List<Double>) {
             binding.let {
                 it.coordinateValue = "${point[0].truncate()}, ${point[1].truncate()}"
                 it.addPolygonButton.setOnClickListener {
                     onAddPolygonPoint(point)
                 }
                 it.removePolygonButton.setOnClickListener {
-                    onRemovePolygonPoint(index, point)
+                    val currentPosition = bindingAdapterPosition
+                    if (currentPosition != RecyclerView.NO_POSITION) {
+                        onRemovePolygonPoint(currentPosition, point)
+                    }
                 }
             }
         }
