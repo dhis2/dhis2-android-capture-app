@@ -3,7 +3,6 @@ package org.dhis2.maps.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.location.LocationListener
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -13,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.location.LocationListenerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -39,7 +39,7 @@ class MapSelectorActivity : AppCompatActivity() {
 
     private val locationProvider = MapLocationEngine(this)
 
-    private val locationListener = LocationListener { location ->
+    private val locationListener = LocationListenerCompat { location ->
         mapSelectorViewModel.onNewLocation(
             SelectedLocation.GPSResult(
                 location.latitude,
