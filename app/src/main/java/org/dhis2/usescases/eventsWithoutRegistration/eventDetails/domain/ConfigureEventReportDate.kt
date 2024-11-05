@@ -51,16 +51,16 @@ class ConfigureEventReportDate(
         val programStage = getProgramStage()
         val event = repository.getEvent()
 
-        if (event == null) {
-            return resourceProvider.provideNextEventDate(programStage?.displayEventLabel())
-        }
-
         return when (creationType) {
             SCHEDULE ->
-                programStage?.dueDateLabel() ?: resourceProvider.provideDueDate()
+                programStage?.displayDueDateLabel() ?: resourceProvider.provideDueDate()
 
             else -> {
-                programStage?.executionDateLabel() ?: resourceProvider.provideEventDate()
+                if (event == null) {
+                    resourceProvider.provideNextEventDate(programStage?.displayEventLabel())
+                } else {
+                    programStage?.displayExecutionDateLabel() ?: resourceProvider.provideEventDate()
+                }
             }
         }
     }
