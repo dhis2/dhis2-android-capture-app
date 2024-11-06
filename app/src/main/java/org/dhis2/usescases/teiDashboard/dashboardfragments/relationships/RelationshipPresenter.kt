@@ -73,7 +73,7 @@ class RelationshipPresenter internal constructor(
                 _relationshipsModels.postValue(it)
 
                 val mapItems = it.map { relationship ->
-                    MapItemModel(
+                    val mapItem = MapItemModel(
                         uid = relationship.ownerUid,
                         avatarProviderConfiguration = avatarProvider.getAvatar(
                             style = relationship.ownerStyle,
@@ -96,6 +96,10 @@ class RelationshipPresenter internal constructor(
                             ownerUid = relationship.ownerUid,
                         ),
                         state = relationship.relationship.syncState() ?: State.SYNCED,
+                    )
+                    relationshipMapsRepository.addRelationshipInfo(
+                        mapItem,
+                        relationship.relationship,
                     )
                 }
 

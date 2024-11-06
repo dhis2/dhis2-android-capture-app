@@ -2,11 +2,13 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.relationship.Relationship
 
 class RelationshipMapsRepositoryImpl(
     private val d2: D2,
@@ -52,6 +54,13 @@ class RelationshipMapsRepositoryImpl(
                 }
             }
         }
+    }
+
+    override fun addRelationshipInfo(
+        mapItem: MapItemModel,
+        relationship: Relationship
+    ): MapItemModel {
+        return trackedEntityInfoProvider.updateRelationshipInfo(mapItem, relationship)
     }
 
     override fun getEventProgram(eventUid: String?): String {
