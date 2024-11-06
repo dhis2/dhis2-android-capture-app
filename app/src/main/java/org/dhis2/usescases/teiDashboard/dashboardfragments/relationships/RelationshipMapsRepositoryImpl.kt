@@ -58,7 +58,7 @@ class RelationshipMapsRepositoryImpl(
 
     override fun addRelationshipInfo(
         mapItem: MapItemModel,
-        relationship: Relationship
+        relationship: Relationship,
     ): MapItemModel {
         return trackedEntityInfoProvider.updateRelationshipInfo(mapItem, relationship)
     }
