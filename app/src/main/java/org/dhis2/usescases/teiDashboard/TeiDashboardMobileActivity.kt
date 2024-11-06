@@ -26,6 +26,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
@@ -39,22 +40,21 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OUTreeModel
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
-import org.dhis2.form.model.EnrollmentRecords
-import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
+import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
+import org.dhis2.usescases.enrollment.buildEnrollmentForm
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.qrCodes.QrActivity
@@ -96,6 +96,12 @@ class TeiDashboardMobileActivity :
     @Inject
     lateinit var presenter: TeiDashboardContracts.Presenter
 
+    @Inject
+    lateinit var dateEditionWarningHandler: DateEditionWarningHandler
+
+    @Inject
+    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
+
     var featureConfig: FeatureConfigRepository? = null
         @Inject set
 
@@ -131,8 +137,6 @@ class TeiDashboardMobileActivity :
 
     private var elevation = 0f
     private var restartingActivity = false
-
-    private lateinit var formView: FormView
 
     private val detailsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -290,39 +294,21 @@ class TeiDashboardMobileActivity :
     private fun setFormViewForLandScape() {
         if (isLandscape() && enrollmentUid != null) {
             val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
-            formView = FormView.Builder()
-                .locationProvider(locationProvider)
-                .onItemChangeListener {
-                    // Do nothing
-                }
-                .onLoadingListener { loading ->
-                    if (loading) {
-                        showLoadingProgress(true)
-                    } else {
-                        showLoadingProgress(false)
-                    }
-                }
-                .onFinishDataEntry {
-                    dashboardViewModel.updateDashboard()
-                }
-                .enrollmentResultDialogUiProvider(
-                    EnrollmentResultDialogProvider(
-                        ResourceManager(
-                            this.context,
-                            ColorUtils(),
-                        ),
-                    ),
-                )
-                .factory(supportFragmentManager)
-                .setRecords(EnrollmentRecords(enrollmentUid!!, EnrollmentMode.CHECK))
-                .setProgramUid(programUid)
-                .build()
-
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.tei_form_view, formView)
-                .commitAllowingStateLoss()
-
-            saveButton.setOnClickListener { formView.onSaveClick() }
+            buildEnrollmentForm(
+                enrollmentUid = enrollmentUid!!,
+                programUid = programUid!!,
+                enrollmentMode = EnrollmentMode.CHECK,
+                hasWriteAccess = presenter.hasWriteAccess(),
+                locationProvider = locationProvider,
+                dateEditionWarningHandler = dateEditionWarningHandler,
+                enrollmentResultDialogProvider = enrollmentResultDialogProvider,
+                openErrorLocation = false,
+                containerId = R.id.formViewContainer,
+                loadingView = binding.toolbarProgress,
+                saveButton = saveButton,
+            ) {
+                dashboardViewModel.updateDashboard()
+            }
         }
     }
 
@@ -799,6 +785,13 @@ class TeiDashboardMobileActivity :
 
     override fun activityTeiUid(): String? {
         return teiUid
+    }
+
+    private fun showDateEditionWarning(message: String?) {
+        val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+            .setMessage(message)
+            .setPositiveButton(R.string.button_ok, null)
+        dialog.show()
     }
 
     companion object {

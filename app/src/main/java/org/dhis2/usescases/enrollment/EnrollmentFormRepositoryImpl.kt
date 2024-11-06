@@ -5,6 +5,7 @@ import org.dhis2.bindings.profilePicturePath
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -33,4 +34,11 @@ class EnrollmentFormRepositoryImpl(
 
     override fun getProgramStageUidFromEvent(eventUi: String) =
         d2.eventModule().events().uid(eventUi).blockingGet()?.programStage()
+
+    override fun hasWriteAccess(): Boolean {
+        return d2.enrollmentModule().enrollmentService().blockingGetEnrollmentAccess(
+            tei.uid(),
+            programUid,
+        ) == EnrollmentAccess.WRITE_ACCESS
+    }
 }

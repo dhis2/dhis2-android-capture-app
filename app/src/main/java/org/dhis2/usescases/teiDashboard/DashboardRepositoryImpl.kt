@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
@@ -208,7 +209,10 @@ class DashboardRepositoryImpl(
         return attributeValues
     }
 
-    private fun mapRelationShipTypes(list: List<RelationshipType>, teType: String): MutableList<Pair<RelationshipType?, String>> {
+    private fun mapRelationShipTypes(
+        list: List<RelationshipType>,
+        teType: String,
+    ): MutableList<Pair<RelationshipType?, String>> {
         val relTypeList: MutableList<Pair<RelationshipType?, String>> =
             java.util.ArrayList()
         for (relationshipType in list) {
@@ -609,6 +613,15 @@ class DashboardRepositoryImpl(
 
         return orgUnits.size > 1 ||
             orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
+    }
+
+    override fun enrollmentHasWriteAccess(): Boolean {
+        return programUid?.let {
+            d2.enrollmentModule().enrollmentService().blockingGetEnrollmentAccess(
+                teiUid,
+                it,
+            )
+        } == EnrollmentAccess.WRITE_ACCESS
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {
