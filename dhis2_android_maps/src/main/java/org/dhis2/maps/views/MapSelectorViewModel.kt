@@ -450,8 +450,10 @@ class MapSelectorViewModel(
 
     private fun canCaptureWithSwipe() = featureType == FeatureType.POINT &&
         _screenState.value.isManualCaptureEnabled &&
-            (_screenState.value.selectedLocation !is SelectedLocation.None ||
-                    _screenState.value.captureMode.isManual())
+        (
+            _screenState.value.selectedLocation !is SelectedLocation.None ||
+                _screenState.value.captureMode.isManual()
+            )
 
     fun canCaptureManually(): Boolean {
         return _screenState.value.isManualCaptureEnabled
