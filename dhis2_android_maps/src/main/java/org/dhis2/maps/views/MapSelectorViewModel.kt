@@ -6,7 +6,6 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.geometry.getPointLatLng
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES
 import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.location.LocationState.FIXED
 import org.dhis2.maps.location.LocationState.NOT_FIXED
@@ -30,6 +30,7 @@ import org.dhis2.maps.model.toAccuracyRance
 import org.dhis2.maps.usecases.GeocoderSearch
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.usecases.SearchLocationManager
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.dhis2.maps.utils.CoordinateUtils
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.GetMapData
@@ -67,14 +68,18 @@ class MapSelectorViewModel(
             selectedLatitude = initialGeometry.latitude(),
             selectedLongitude = initialGeometry.longitude(),
         )
+    } else if (initialGeometry is Polygon) {
+        SelectedLocation.Polygon(
+            lastPolygonLatitude = initialGeometry.coordinates().first().last().latitude(),
+            lastPolygonLongitude = initialGeometry.coordinates().first().last().longitude(),
+        )
     } else {
         SelectedLocation.None()
     }
 
-    private var _lastGPSLocation: SelectedLocation? = null
     private var _currentFeature: Feature? = initialGeometry?.let { Feature.fromGeometry(it) }
-    private var _currentVisibleRegion: LatLngBounds? = null
-    private var searchRegion: LatLngBounds? = null
+    private var _currentVisibleRegion: AvailableLatLngBounds? = null
+    private var searchRegion: AvailableLatLngBounds? = null
     private val _searchLocationQuery = MutableStateFlow("")
 
     private val _geometryCoordinateResultChannel = Channel<GeometryCoordinate?>()
@@ -82,16 +87,17 @@ class MapSelectorViewModel(
 
     private val _screenState = MutableStateFlow(
         MapSelectorScreenState(
-            mapData = GetMapData(_currentFeature, emptyList(), CaptureMode.NONE),
+            mapData = GetMapData(_currentFeature, emptyList(), initialCaptureMode()),
             locationItems = emptyList(),
             selectedLocation = initialSelectedLocation,
-            captureMode = if (initialCoordinates == null) CaptureMode.GPS else CaptureMode.NONE,
+            captureMode = initialCaptureMode(),
             accuracyRange = AccuracyRange.None(),
             searchOnAreaVisible = false,
             displayPolygonInfo = featureType == FeatureType.POLYGON,
             locationState = NOT_FIXED,
             isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
             forcedLocationAccuracy = mapStyleConfig.getForcedLocationAccuracy(),
+            lastGPSLocation = null,
         ),
     )
 
@@ -99,6 +105,13 @@ class MapSelectorViewModel(
 
     init {
         registerSearchListener()
+    }
+
+    private fun initialCaptureMode(): CaptureMode {
+        return when {
+            featureType == FeatureType.POINT && initialCoordinates == null -> CaptureMode.GPS
+            else -> CaptureMode.NONE
+        }
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
@@ -114,6 +127,7 @@ class MapSelectorViewModel(
         searchOnAreaVisible: Boolean = _screenState.value.searchOnAreaVisible,
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
         locationState: LocationState = _screenState.value.locationState,
+        lastGPSLocation: SelectedLocation.GPSResult? = _screenState.value.lastGPSLocation,
     ) {
         _screenState.update {
             it.copy(
@@ -125,6 +139,7 @@ class MapSelectorViewModel(
                 searchOnAreaVisible = searchOnAreaVisible,
                 displayPolygonInfo = displayPolygonInfo,
                 locationState = locationState,
+                lastGPSLocation = lastGPSLocation,
             )
         }
     }
@@ -134,19 +149,6 @@ class MapSelectorViewModel(
             val newPoint = Point.fromLngLat(point.longitude, point.latitude)
             when (featureType) {
                 FeatureType.POINT -> Feature.fromGeometry(newPoint)
-
-                FeatureType.POLYGON -> {
-                    val coordinates =
-                        (_currentFeature?.geometry() as Polygon?)?.coordinates()
-                            ?.map { points ->
-                                val newList = points.toMutableList()
-                                newList.add(newPoint)
-                                newList
-                            } ?: listOf(listOf(newPoint))
-                    Feature.fromGeometry(
-                        Polygon.fromLngLats(coordinates),
-                    )
-                }
 
                 else -> {
                     null
@@ -163,7 +165,9 @@ class MapSelectorViewModel(
 
     fun onNewLocation(gpsResult: SelectedLocation.GPSResult) {
         viewModelScope.launch(dispatchers.io()) {
-            _lastGPSLocation = gpsResult
+            updateScreenState(
+                lastGPSLocation = gpsResult,
+            )
             if (_screenState.value.canCaptureGps(gpsResult.accuracy)) {
                 _currentFeature = updateSelectedGeometry(gpsResult)
                 val mapData = when {
@@ -188,24 +192,28 @@ class MapSelectorViewModel(
 
     fun addPointToPolygon(polygonPoint: List<Double>) {
         if (featureType == FeatureType.POLYGON) {
-            viewModelScope.launch(dispatchers.io()) {
-                val newGeometry = _currentFeature?.let { feature ->
-                    val geometry = (feature.geometry() as Polygon)
-                    geometry.coordinates().first()
-                        .add(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))
-                    geometry
-                } ?: Polygon.fromLngLats(
-                    listOf(listOf(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))),
-                )
-                _currentFeature = Feature.fromGeometry(newGeometry)
-                updateScreenState(
-                    mapData = GetMapData(
-                        _currentFeature,
-                        _screenState.value.locationItems,
-                        _screenState.value.captureMode,
-                    ),
-                )
-            }
+            val newGeometry = _currentFeature?.let { feature ->
+                val geometry = (feature.geometry() as Polygon)
+                val data = geometry.coordinates().first().toMutableList()
+                data.add(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))
+                Polygon.fromLngLats(listOf(data))
+            } ?: Polygon.fromLngLats(
+                listOf(listOf(Point.fromLngLat(polygonPoint[0], polygonPoint[1]))),
+            )
+            _currentFeature = Feature.fromGeometry(newGeometry)
+            val selectedLocation = SelectedLocation.Polygon(
+                lastPolygonLatitude = polygonPoint[0],
+                lastPolygonLongitude = polygonPoint[1],
+            )
+
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    _screenState.value.locationItems,
+                    _screenState.value.captureMode,
+                ),
+                selectedLocation = selectedLocation,
+            )
         }
     }
 
@@ -216,9 +224,9 @@ class MapSelectorViewModel(
                     val geometry = (feature.geometry() as Polygon)
                     geometry.coordinates().first()
                         .removeAt(index)
-                    geometry
+                    if (geometry.coordinates().first().isEmpty()) null else geometry
                 }
-                _currentFeature = Feature.fromGeometry(newGeometry)
+                _currentFeature = newGeometry?.let { Feature.fromGeometry(newGeometry) }
                 updateScreenState(
                     mapData = GetMapData(
                         _currentFeature,
@@ -246,7 +254,7 @@ class MapSelectorViewModel(
 
     private suspend fun performLocationSearch(
         query: String = _searchLocationQuery.value,
-        regionToSearch: LatLngBounds? = _currentVisibleRegion,
+        regionToSearch: AvailableLatLngBounds? = _currentVisibleRegion,
     ) {
         if (_screenState.value.captureMode.isSearch()) {
             val filteredPreviousLocation =
@@ -321,21 +329,31 @@ class MapSelectorViewModel(
 
     fun onPinClicked(feature: Feature) {
         viewModelScope.launch(dispatchers.io()) {
-            val selectedLocation = SelectedLocation.SearchResult(
-                title = feature.getStringProperty("title"),
-                address = feature.getStringProperty("subtitle"),
-                resultLatitude = feature.getPointLatLng().latitude,
-                resultLongitude = feature.getPointLatLng().longitude,
-            )
-            _currentFeature = feature
-            updateScreenState(
-                mapData = GetMapData(
-                    feature,
-                    _screenState.value.locationItems,
-                    _screenState.value.captureMode,
-                ),
-                selectedLocation = selectedLocation,
-            )
+            if (featureType == FeatureType.POLYGON) {
+                // not implemented
+            } else if (feature.hasProperty(FEATURE_PROPERTY_PLACES)) {
+                val selectedLocation = SelectedLocation.SearchResult(
+                    title = feature.getStringProperty("title"),
+                    address = feature.getStringProperty("subtitle"),
+                    resultLatitude = feature.getPointLatLng().latitude,
+                    resultLongitude = feature.getPointLatLng().longitude,
+                )
+                _currentFeature = feature
+                updateScreenState(
+                    mapData = GetMapData(
+                        feature,
+                        _screenState.value.locationItems,
+                        _screenState.value.captureMode,
+                    ),
+                    selectedLocation = selectedLocation,
+                )
+            }
+        }
+    }
+
+    fun onPointClicked(latLng: LatLng) {
+        if (featureType == FeatureType.POLYGON) {
+            addPointToPolygon(listOf(latLng.longitude, latLng.latitude))
         }
     }
 
@@ -349,7 +367,7 @@ class MapSelectorViewModel(
         return Pair(selectedLocation, feature)
     }
 
-    fun updateCurrentVisibleRegion(mapBounds: LatLngBounds?) {
+    fun updateCurrentVisibleRegion(mapBounds: AvailableLatLngBounds?) {
         _currentVisibleRegion = mapBounds
         updateScreenState(searchOnAreaVisible = _searchLocationQuery.value.isNotBlank())
     }
@@ -369,14 +387,14 @@ class MapSelectorViewModel(
 
     fun onMyLocationButtonClick() {
         viewModelScope.launch(dispatchers.io()) {
-            _currentFeature = _lastGPSLocation?.let { updateSelectedGeometry(it) }
+            _currentFeature = _screenState.value.lastGPSLocation?.let { updateSelectedGeometry(it) }
             updateScreenState(
                 mapData = GetMapData(
                     _currentFeature,
                     _screenState.value.locationItems,
                     CaptureMode.GPS,
                 ),
-                selectedLocation = _lastGPSLocation ?: SelectedLocation.None(),
+                selectedLocation = _screenState.value.lastGPSLocation ?: SelectedLocation.None(),
                 captureMode = CaptureMode.GPS,
                 locationState = FIXED,
             )
@@ -429,7 +447,8 @@ class MapSelectorViewModel(
         }
     }
 
-    private fun canCaptureWithSwipe() = _screenState.value.isManualCaptureEnabled &&
+    private fun canCaptureWithSwipe() = featureType == FeatureType.POINT &&
+        _screenState.value.isManualCaptureEnabled &&
         _screenState.value.selectedLocation !is SelectedLocation.None
 
     fun canCaptureManually(): Boolean {
@@ -437,23 +456,31 @@ class MapSelectorViewModel(
     }
 
     fun updateLocationState(locationState: LocationState) {
-        if (locationState == FIXED && _lastGPSLocation != null) {
-            _currentFeature = updateSelectedGeometry(_lastGPSLocation!!)
-            updateScreenState(
-                mapData = GetMapData(
-                    _currentFeature,
-                    _screenState.value.locationItems,
-                    CaptureMode.GPS,
-                ),
-                selectedLocation = _lastGPSLocation ?: _screenState.value.selectedLocation,
-                captureMode = CaptureMode.GPS,
-                locationState = locationState,
-            )
-        } else {
-            updateScreenState(
-                captureMode = if (locationState == FIXED) CaptureMode.GPS else _screenState.value.captureMode,
-                locationState = locationState,
-            )
+        when {
+            _screenState.value.displayPolygonInfo -> {
+                // Location updates not available in polygons
+            }
+
+            locationState == FIXED && _screenState.value.lastGPSLocation != null -> {
+                _currentFeature = updateSelectedGeometry(_screenState.value.lastGPSLocation!!)
+                updateScreenState(
+                    mapData = GetMapData(
+                        _currentFeature,
+                        _screenState.value.locationItems,
+                        CaptureMode.GPS,
+                    ),
+                    selectedLocation = _screenState.value.lastGPSLocation!!, // Use !! since it's not null
+                    captureMode = CaptureMode.GPS,
+                    locationState = locationState,
+                )
+            }
+
+            else -> {
+                updateScreenState(
+                    captureMode = if (locationState == FIXED) CaptureMode.GPS else _screenState.value.captureMode,
+                    locationState = locationState,
+                )
+            }
         }
     }
 }

@@ -17,10 +17,15 @@ data class MapSelectorScreenState(
     val locationState: LocationState,
     val isManualCaptureEnabled: Boolean,
     val forcedLocationAccuracy: Int,
+    val lastGPSLocation: SelectedLocation.GPSResult?,
 ) {
 
     private fun getDoneButtonEnabledState(): Boolean {
         return when {
+            displayPolygonInfo -> {
+                (mapData.featureCollection.features()?.size ?: 0) >= 4
+            }
+
             (forcedLocationAccuracy == DEFAULT_FORCED_LOCATION_ACCURACY) -> {
                 selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
             }

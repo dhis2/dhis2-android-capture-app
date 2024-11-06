@@ -177,10 +177,18 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data() ?: "",
                     type = ProgramRuleActionType.ASSIGN.name,
-                    values = mutableMapOf(
-                        Pair("field", field),
-                    ).also { map ->
-                        contentToDisplay?.let { map["content"] = it }
+                    values = if (field.isNotEmpty()) {
+                        mutableMapOf(
+                            Pair("field", field),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        }
+                    } else {
+                        contentToDisplay?.let {
+                            mutableMapOf(
+                                Pair("content", it),
+                            )
+                        } ?: emptyMap()
                     },
                 )
             }

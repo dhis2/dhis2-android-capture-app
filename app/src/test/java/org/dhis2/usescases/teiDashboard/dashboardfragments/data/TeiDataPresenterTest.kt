@@ -203,7 +203,7 @@ class TeiDataPresenterTest {
             dashboardRepository.displayGenerateEvent("eventUid"),
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
-        verify(view).displayScheduleEvent(programStage = programStage, showYesNoOptions = true, eventCreationType = EventCreationType.SCHEDULE)
+        verify(view).displayScheduleEvent(programStage = null, showYesNoOptions = true, eventCreationType = EventCreationType.SCHEDULE)
     }
 
     @Test

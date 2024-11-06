@@ -11,10 +11,8 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.MapboxMap.CancelableCallback
 import org.dhis2.maps.geometry.bound.GetBoundingBox
-import timber.log.Timber
 
 const val DEFAULT_BOUND_PADDING = 50
-const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
 
 fun MapboxMap.initCameraToViewAllElements(bounds: LatLngBounds) {
     if (bounds.latitudeNorth == 0.0 && bounds.latitudeSouth == 0.0 &&
@@ -28,31 +26,17 @@ fun MapboxMap.initCameraToViewAllElements(bounds: LatLngBounds) {
     }
 }
 
-private fun calculateDurationFraction(
-    currentPosition: LatLng,
-    targetPosition: LatLng,
-): Int {
-    val distance = currentPosition.distanceTo(targetPosition)
-    return when {
-        distance < 100 -> DEFAULT_EASE_CAMERA_ANIM_DURATION
-        distance >= 100 && distance < 500 -> DEFAULT_EASE_CAMERA_ANIM_DURATION * 2
-        else -> DEFAULT_EASE_CAMERA_ANIM_DURATION * 3
-    }
-}
-
 private fun MapboxMap.zoomInToLanLngBoundsAnimation(bounds: LatLngBounds) {
-    Timber.tag("ZOOM").d("Zooming in from ${cameraPosition.zoom}. Expected: ?")
-
     this.animateCamera(
         CameraUpdateFactory.newLatLngBounds(bounds, DEFAULT_BOUND_PADDING),
-        calculateDurationFraction(cameraPosition.target ?: LatLng(), bounds.center),
+        CalculateCameraAnimationDuration(cameraPosition.target ?: LatLng(), bounds.center),
         object : CancelableCallback {
             override fun onCancel() {
-                Timber.tag("ZOOM").d("Zooming in cancelled at ${cameraPosition.zoom}. Expected: ?")
+                // no-op
             }
 
             override fun onFinish() {
-                Timber.tag("ZOOM").d("Zooming in finished at ${cameraPosition.zoom}. Expected: ?")
+                // no-op
             }
         },
     )

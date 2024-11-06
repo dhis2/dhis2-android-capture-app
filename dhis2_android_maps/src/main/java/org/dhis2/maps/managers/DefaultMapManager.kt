@@ -38,13 +38,11 @@ class DefaultMapManager(
 
     fun update(
         featureCollection: FeatureCollection,
-        boundingBox: BoundingBox,
+        boundingBox: BoundingBox?,
     ) {
         this.featureCollection = featureCollection
         this.boundingBox = boundingBox
-        if (featureCollection.features()?.isNotEmpty() == true) {
-            initCameraPosition(boundingBox)
-        }
+        boundingBox?.let { initCameraPosition(it) }
         setSource()
         setIcons()
         setLayer()
@@ -90,15 +88,6 @@ class DefaultMapManager(
         )?.let { placeIconDrawable ->
             style?.addImage(
                 MapLayerManager.PLACE_ICON_ID,
-                placeIconDrawable,
-            )
-        }
-        AppCompatResources.getDrawable(
-            mapView.context,
-            R.drawable.ic_map_pin_selected,
-        )?.let { placeIconDrawable ->
-            style?.addImage(
-                MapLayerManager.SELECTED_PLACE_ICON_ID,
                 placeIconDrawable,
             )
         }

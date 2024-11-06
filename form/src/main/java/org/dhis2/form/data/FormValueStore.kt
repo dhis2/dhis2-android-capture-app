@@ -112,6 +112,10 @@ class FormValueStore(
         return d2.eventModule().events().uid(recordUid).blockingGet()?.status()
     }
 
+    fun recordUid(): String {
+        return recordUid
+    }
+
     fun completeEvent() {
         try {
             d2.eventModule().events().uid(recordUid).setStatus(EventStatus.COMPLETED)
@@ -119,6 +123,15 @@ class FormValueStore(
             Timber.e(d2Error)
         }
     }
+
+    fun activateEvent() {
+        try {
+            d2.eventModule().events().uid(recordUid).setStatus(EventStatus.ACTIVE)
+        } catch (d2Error: D2Error) {
+            Timber.e(d2Error)
+        }
+    }
+
     private fun storeEventCategoryComboAttribute(
         uid: String,
         value: String?,

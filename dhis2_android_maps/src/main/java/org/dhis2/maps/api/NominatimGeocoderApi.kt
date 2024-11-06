@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.maps.model.NominatimLocation
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.android.BuildConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.api.RequestBuilder
@@ -28,39 +29,48 @@ class NominatimGeocoderApi(
     private val d2: D2,
     private val localeSelector: LocaleSelector,
 ) : GeocoderApi {
+
     override suspend fun searchFor(
         query: String,
-        topCornerLatitude: Double?,
-        topCornerLongitude: Double?,
-        bottomCornerLatitude: Double?,
-        bottomCornerLongitude: Double?,
+        visibleRegion: AvailableLatLngBounds?,
         maxResults: Int,
     ): List<LocationItemModel> {
         if (query.isEmpty()) return emptyList()
 
         val startTime = System.currentTimeMillis()
-        var searchResult = search(
-            query = query,
-            topCornerLongitude = topCornerLongitude,
-            bottomCornerLongitude = bottomCornerLongitude,
-            topCornerLatitude = topCornerLatitude,
-            bottomCornerLatitude = bottomCornerLatitude,
-            maxResults = maxResults,
-        )
-        if (searchResult.isEmpty()) {
-            while (System.currentTimeMillis() - startTime < 1000) {
-                delay(100)
+
+        val searchResult: MutableList<NominatimLocation> = mutableListOf()
+        run loop@{
+            visibleRegion?.list?.forEach { region ->
+                var southEastLatitude = region.southEast.latitude
+                var southEastLongitude = region.southEast.longitude
+                if (region.northWest.latitude == region.southEast.latitude) {
+                    southEastLatitude = -southEastLatitude
+                }
+                if (region.northWest.longitude == region.southEast.longitude) {
+                    southEastLongitude = -southEastLongitude
+                }
+
+                searchResult.addAll(
+                    search(
+                        query = query,
+                        topCornerLongitude = region.northWest.longitude,
+                        bottomCornerLongitude = southEastLongitude,
+                        topCornerLatitude = region.northWest.latitude,
+                        bottomCornerLatitude = southEastLatitude,
+                        maxResults = maxResults - searchResult.size,
+                    ),
+                )
+
+                if (searchResult.size == maxResults) {
+                    return@loop
+                }
+                while (System.currentTimeMillis() - startTime < 1000) {
+                    delay(100)
+                }
             }
-            searchResult = search(
-                query = query,
-                topCornerLongitude = topCornerLongitude,
-                bottomCornerLongitude = bottomCornerLongitude,
-                topCornerLatitude = topCornerLatitude,
-                bottomCornerLatitude = bottomCornerLatitude,
-                maxResults = maxResults,
-                bounded = 0,
-            )
         }
+
         return searchResult.mapNominatimLocationsToLocationItems()
     }
 
@@ -133,7 +143,7 @@ class NominatimGeocoderApi(
 
     private fun NominatimLocation.toLocationItem() = LocationItemModel.SearchResult(
         searchedTitle = name,
-        searchedSubtitle = display_name?.removePrefix("$name, ") ?: "Lat:${
+        searchedSubtitle = displayName?.removePrefix("$name, ") ?: "Lat:${
             lat.toDouble().truncate()
         } Lon:${lon.toDouble().truncate()}",
         searchedLatitude = lat.toDouble(),

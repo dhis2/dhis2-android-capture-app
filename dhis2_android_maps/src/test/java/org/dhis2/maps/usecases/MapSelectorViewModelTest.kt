@@ -18,8 +18,10 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
+import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapSelectorScreenState
+import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.dhis2.maps.views.MapSelectorViewModel
 import org.dhis2.maps.views.SelectedLocation
 import org.hisp.dhis.android.core.D2
@@ -55,7 +57,8 @@ class MapSelectorViewModelTest {
     private val programUid = null
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
 
-    private val mapStyleConfiguration = MapStyleConfiguration(d2, programUid, programConfigurationRepository)
+    private val mapStyleConfiguration =
+        MapStyleConfiguration(d2, programUid, programConfigurationRepository)
 
     private val dispatcherProvider = object : DispatcherProvider {
         override fun io() = testingDispatcher
@@ -149,8 +152,10 @@ class MapSelectorViewModelTest {
                             mockedSearchResult.latitude,
                         ),
                     ).also {
-                        it.addStringProperty("title", mockedSearchResult.title)
-                        it.addStringProperty("subtitle", mockedSearchResult.address)
+                        it.withPlacesProperties(
+                            title = mockedSearchResult.title,
+                            subtitle = mockedSearchResult.address,
+                        )
                     },
                 )
             },
@@ -172,6 +177,9 @@ class MapSelectorViewModelTest {
 
             // When
             mapSelectorViewModelNoInitialGeometry.onNewLocation(mockedGpsResult)
+            with(awaitItem()) {
+                assertTrue(lastGPSLocation == mockedGpsResult)
+            }
 
             // Then
             with(awaitItem()) {
@@ -189,6 +197,10 @@ class MapSelectorViewModelTest {
 
             // When
             mapSelectorViewModelNoInitialGeometry.onNewLocation(mockedGpsResult)
+            with(awaitItem()) {
+                assertTrue(lastGPSLocation == mockedGpsResult)
+            }
+
             with(awaitItem()) {
                 assertTrue(accuracyRange == AccuracyRange.Good(10))
                 assertTrue(selectedLocation == mockedGpsResult)
@@ -208,6 +220,7 @@ class MapSelectorViewModelTest {
         whenever(
             geocoderApi.searchFor(
                 "Address",
+                null,
                 maxResults = 10,
             ),
         ) doReturn mockedLocationItemSearchResults
@@ -280,7 +293,13 @@ class MapSelectorViewModelTest {
                 }
             },
             `when` = {
-                mapSelectorViewModel.updateCurrentVisibleRegion(LatLngBounds.world())
+                mapSelectorViewModel.updateCurrentVisibleRegion(
+                    AvailableLatLngBounds(
+                        listOf(
+                            LatLngBounds.world(),
+                        ),
+                    ),
+                )
                 1
             },
             then = { screenState ->
@@ -294,17 +313,24 @@ class MapSelectorViewModelTest {
         mapSelectorViewModel.screenState.initTest(
             given = {
                 givenSearchAction { }
-                mapSelectorViewModel.updateCurrentVisibleRegion(LatLngBounds.world())
+                mapSelectorViewModel.updateCurrentVisibleRegion(
+                    AvailableLatLngBounds(
+                        listOf(
+                            LatLngBounds.world(),
+                        ),
+                    ),
+                )
                 awaitItem()
             },
             `when` = {
                 whenever(
                     geocoderApi.searchFor(
                         "Address",
-                        LatLngBounds.world().northWest.latitude,
-                        LatLngBounds.world().northWest.longitude,
-                        LatLngBounds.world().southEast.latitude,
-                        LatLngBounds.world().southEast.longitude,
+                        AvailableLatLngBounds(
+                            listOf(
+                                LatLngBounds.world(),
+                            ),
+                        ),
                         maxResults = 10,
                     ),
                 ) doReturn mockedOtherRegionLocationItemSearchResults
@@ -343,6 +369,7 @@ class MapSelectorViewModelTest {
         whenever(
             geocoderApi.searchFor(
                 "Address",
+                null,
                 maxResults = 10,
             ),
         ) doReturn mockedLocationItemSearchResults

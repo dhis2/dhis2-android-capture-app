@@ -3,7 +3,6 @@ package org.dhis2.maps.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.location.LocationListener
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -13,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.location.LocationListenerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -23,11 +23,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import org.dhis2.maps.camera.MapSelectorZoomHandler
 import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
 import org.dhis2.maps.model.MapSelectorScreenActions
+import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
 import org.dhis2.ui.theme.Dhis2Theme
@@ -37,7 +39,7 @@ class MapSelectorActivity : AppCompatActivity() {
 
     private val locationProvider = MapLocationEngine(this)
 
-    private val locationListener = LocationListener { location ->
+    private val locationListener = LocationListenerCompat { location ->
         mapSelectorViewModel.onNewLocation(
             SelectedLocation.GPSResult(
                 location.latitude,
@@ -110,14 +112,14 @@ class MapSelectorActivity : AppCompatActivity() {
                 )
 
                 LaunchedEffect(screenState.mapData) {
-                    this.launch {
-                        mapManager.update(
-                            featureCollection = screenState.mapData.featureCollection,
-                            boundingBox = screenState.mapData.boundingBox,
-                        )
-                        if (screenState.displayPolygonInfo) {
-                            polygonAdapter.updateWithFeatureCollection(screenState.mapData)
-                        }
+                    mapManager.update(
+                        featureCollection = screenState.mapData.featureCollection,
+                        boundingBox = screenState.mapData.boundingBox,
+                    )
+                    initZoom(screenState)
+
+                    if (screenState.displayPolygonInfo) {
+                        polygonAdapter.updateWithFeatureCollection(screenState.mapData)
                     }
                 }
             }
@@ -136,7 +138,7 @@ class MapSelectorActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "ClickableViewAccessibility")
     private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
         mapManager =
             DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
@@ -146,11 +148,18 @@ class MapSelectorActivity : AppCompatActivity() {
             it.onMapClickListener = OnMapClickListener(
                 mapManager = it,
                 onFeatureClicked = mapSelectorViewModel::onPinClicked,
+                onPointClicked = mapSelectorViewModel::onPointClicked,
             )
 
+            val mapData = mapSelectorViewModel.screenState.value.mapData
             mapManager.init(
                 mapStyles = mapSelectorViewModel.fetchMapStyles(),
                 onInitializationFinished = {
+                    mapManager.update(
+                        featureCollection = mapData.featureCollection,
+                        boundingBox = mapData.boundingBox,
+                    )
+                    initZoom(mapSelectorViewModel.screenState.value)
                     it.map?.addMoveListeners(
                         onIdle = { bounds ->
                             mapSelectorViewModel.updateCurrentVisibleRegion(bounds)
@@ -174,6 +183,15 @@ class MapSelectorActivity : AppCompatActivity() {
                 locationListener = locationListener,
             )
         }
+    }
+
+    private fun initZoom(screenState: MapSelectorScreenState) {
+        MapSelectorZoomHandler(
+            mapManager.map,
+            screenState.captureMode,
+            screenState.mapData.featureCollection,
+            screenState.lastGPSLocation,
+        )
     }
 
     private fun onLocationButtonClicked() {

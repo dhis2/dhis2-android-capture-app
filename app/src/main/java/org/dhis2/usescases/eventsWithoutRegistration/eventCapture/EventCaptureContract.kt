@@ -22,8 +22,6 @@ class EventCaptureContract {
         fun finishDataEntry()
         fun saveAndFinish()
         fun showSnackBar(messageId: Int, programStage: String)
-        fun attemptToSkip()
-        fun attemptToReschedule()
         fun showEventIntegrityAlert()
         fun updateNoteBadge(numberOfNotes: Int)
         fun goBack()

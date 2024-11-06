@@ -747,12 +747,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                     searchTei.setCurrentEnrollment(enrollmentsInProgram.get(0));
                 }
             }
-
-            searchTei.setOnline(!searchItem.isOnline());
-
+            // set online parameter from the tei search item
+            searchTei.setOnline(searchItem.isOnline());
+            // If search is being conducted offline only, set the search as offline
             if (offlineOnly)
-                searchTei.setOnline(!offlineOnly);
-
+                searchTei.setOnline(false);
+            // if the local database tei is deleted, set search as online
             if (Boolean.TRUE.equals(dbTei.deleted())) {
                 searchTei.setOnline(true);
             }

@@ -28,5 +28,10 @@ sealed class SelectedLocation(
         val selectedLongitude: Double,
     ) : SelectedLocation(selectedLatitude, selectedLongitude)
 
+    data class Polygon(
+        val lastPolygonLatitude: Double,
+        val lastPolygonLongitude: Double,
+    ) : SelectedLocation(lastPolygonLatitude, lastPolygonLongitude)
+
     fun asLatLng() = LatLng(latitude, longitude)
 }

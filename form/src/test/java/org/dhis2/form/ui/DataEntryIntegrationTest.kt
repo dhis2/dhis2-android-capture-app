@@ -95,6 +95,7 @@ class DataEntryIntegrationTest {
         rulesUtilsProvider = rulesUtilsProvider,
         legendValueProvider = legendValueProvider,
         useCompose = true,
+        preferenceProvider = preferenceProvider,
     )
 
     private lateinit var formViewModel: FormViewModel
@@ -149,7 +150,6 @@ class DataEntryIntegrationTest {
             dispatcher = dispatcher,
             geometryController = geometryController,
             openErrorLocation = false,
-            preferenceProvider = preferenceProvider,
         )
     }
 

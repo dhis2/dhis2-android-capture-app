@@ -2,6 +2,7 @@ package org.dhis2.form.data
 
 import androidx.databinding.ObservableField
 import io.reactivex.Flowable
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -42,6 +43,7 @@ class FormRepositoryImplTest {
     private val ruleEngineHelper: RuleEngineHelper = mock()
     private val dataEntryRepository: DataEntryRepository = mock()
     private val formValueStore: FormValueStore = mock()
+    private val preferenceProvider: PreferenceProvider = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
@@ -88,6 +90,7 @@ class FormRepositoryImplTest {
             rulesUtilsProvider,
             legendValueProvider,
             false,
+            preferenceProvider,
         )
         repository.fetchFormItems()
     }

@@ -99,7 +99,11 @@ fun MetadataIconPreview(
     MetadataIcon(metadataIconData = metadataIconData)
 }
 
-fun String.toColor() = Color(android.graphics.Color.parseColor(this))
+fun String.toColor() = try {
+    Color(android.graphics.Color.parseColor(this))
+} catch (e: Exception) {
+    Color.Unspecified
+}
 
 class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData> {
     override val values: Sequence<MetadataIconData>

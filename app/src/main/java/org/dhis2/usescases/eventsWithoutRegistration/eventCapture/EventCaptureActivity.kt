@@ -61,8 +61,6 @@ import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.FormBottomDialog
-import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
 import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -344,47 +342,7 @@ class EventCaptureActivity :
 
     override fun saveAndFinish() {
         displayMessage(getString(R.string.saved))
-        setAction(FormBottomDialog.ActionType.FINISH)
-    }
-
-    override fun attemptToSkip() {
-        instance
-            .setAccessDataWrite(presenter.canWrite())
-            .setIsExpired(presenter.hasExpired())
-            .setSkip(true)
-            .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS)
-    }
-
-    override fun attemptToReschedule() {
-        instance
-            .setAccessDataWrite(presenter.canWrite())
-            .setIsExpired(presenter.hasExpired())
-            .setReschedule(true)
-            .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS)
-    }
-
-    private fun setAction(actionType: FormBottomDialog.ActionType) {
-        when (actionType) {
-            FormBottomDialog.ActionType.COMPLETE -> {
-                isEventCompleted = true
-                presenter.completeEvent(false)
-            }
-
-            FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter.completeEvent(true)
-            FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
-            FormBottomDialog.ActionType.SKIP -> presenter.skipEvent()
-            FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
-            }
-
-            FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
-            }
-
-            FormBottomDialog.ActionType.FINISH -> finishDataEntry()
-            FormBottomDialog.ActionType.NONE -> { // Do nothing
-            }
-        }
+        finishDataEntry()
     }
 
     override fun showSnackBar(messageId: Int, programStage: String) {

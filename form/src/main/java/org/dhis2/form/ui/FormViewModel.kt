@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -59,7 +56,6 @@ class FormViewModel(
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
     private val openErrorLocation: Boolean = false,
-    private val preferenceProvider: PreferenceProvider,
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -372,10 +368,10 @@ class FormViewModel(
                 !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0
             ) {
                 val autoCompleteValues =
-                    getListFromPreference(fieldUidModel.uid)
+                    repository.getListFromPreferences(fieldUidModel.uid)
                 if (!autoCompleteValues.contains(fieldUidModel.value)) {
                     autoCompleteValues.add(fieldUidModel.value.toString())
-                    saveListToPreference(fieldUidModel.uid, autoCompleteValues)
+                    repository.saveListToPreferences(fieldUidModel.uid, autoCompleteValues)
                 }
             }
         }
@@ -773,6 +769,12 @@ class FormViewModel(
         }
     }
 
+    fun activateEvent() {
+        viewModelScope.launch(dispatcher.io()) {
+            repository.activateEvent()
+        }
+    }
+
     fun displayLoopWarningIfNeeded() {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
@@ -839,23 +841,6 @@ class FormViewModel(
                 type = ActionType.ON_SAVE,
             )
         }
-    }
-
-    private fun getListFromPreference(uid: String): MutableList<String> {
-        val gson = Gson()
-        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
-        val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type)
-    }
-
-    private fun saveListToPreference(uid: String, list: List<String>) {
-        val gson = Gson()
-        val json = gson.toJson(list)
-        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
-    }
-
-    fun areSectionCollapsable(): Boolean {
-        return repository.areSectionCollapsable()
     }
 
     companion object {
