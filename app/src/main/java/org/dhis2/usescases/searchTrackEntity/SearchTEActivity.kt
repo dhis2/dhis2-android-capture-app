@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -392,8 +393,8 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
                 AnimatedVisibility(
                     visible = (isBackdropActive.not() && uiState.items.isNotEmpty()) || isLandscape(),
-                    enter = slideInVertically { it },
-                    exit = slideOutVertically { it },
+                    enter = slideInVertically(animationSpec = tween(200)) { it },
+                    exit = slideOutVertically(animationSpec = tween(200)) { it },
                 ) {
                     NavigationBar(
                         modifier = Modifier.fillMaxWidth(),

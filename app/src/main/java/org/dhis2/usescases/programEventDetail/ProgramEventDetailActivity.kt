@@ -9,6 +9,7 @@ import android.transition.TransitionManager
 import android.view.View
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -185,8 +186,8 @@ class ProgramEventDetailActivity :
 
                 AnimatedVisibility(
                     visible = uiState.items.size > 1 && isBackdropActive.not(),
-                    enter = slideInVertically { it },
-                    exit = slideOutVertically { it },
+                    enter = slideInVertically(animationSpec = tween(200)) { it },
+                    exit = slideOutVertically(animationSpec = tween(200)) { it },
                 ) {
                     NavigationBar(
                         modifier = Modifier.fillMaxWidth(),
@@ -321,13 +322,13 @@ class ProgramEventDetailActivity :
         val transition: Transition = ChangeBounds()
         transition.addListener(object : Transition.TransitionListener {
             override fun onTransitionStart(transition: Transition) {
+                programEventsViewModel.updateBackdrop(backDropActive)
                 if (!backDropActive) {
                     binding.clearFilters.hide()
                 }
             }
 
             override fun onTransitionEnd(transition: Transition) {
-                programEventsViewModel.updateBackdrop(backDropActive)
                 if (backDropActive) {
                     binding.clearFilters.show()
                 }
@@ -345,10 +346,10 @@ class ProgramEventDetailActivity :
                 /*No action needed*/
             }
         })
+        backDropActive = !backDropActive
+
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)
-
-        backDropActive = !backDropActive
 
         val initSet = ConstraintSet()
         initSet.clone(binding.backdropLayout)
@@ -452,12 +453,15 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
-                FilterManager.getInstance().addPeriod(datePeriod)
-            }
+            DateUtils.getInstance()
+                .fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
+                    FilterManager.getInstance().addPeriod(datePeriod)
+                }
         } else {
             val onFromToSelector =
-                OnFromToSelector { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) }
+                OnFromToSelector { datePeriods ->
+                    FilterManager.getInstance().addPeriod(datePeriods)
+                }
 
             DateUtils.getInstance().showPeriodDialog(
                 this,
