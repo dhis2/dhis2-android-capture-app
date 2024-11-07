@@ -113,7 +113,7 @@ fun SinglePaneMapSelector(
     Column(
         Modifier.fillMaxSize(),
     ) {
-        if (!screenState.isManualCaptureEnabled) {
+        if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
             MapTopBar(screenActions.onBackClicked)
         }
 
@@ -122,7 +122,7 @@ fun SinglePaneMapSelector(
                 .padding(16.dp),
             verticalArrangement = spacedBy(16.dp),
         ) {
-            if (screenState.isManualCaptureEnabled) {
+            if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
                 SearchBar(
                     locationItems = screenState.locationItems,
                     onBackClicked = screenActions.onBackClicked,
