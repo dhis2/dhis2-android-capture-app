@@ -360,6 +360,20 @@ class ProgramEventDetailActivity :
                 ConstraintSet.BOTTOM,
                 16.dp,
             )
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                16.dp,
+            )
         } else {
             initSet.connect(
                 R.id.fragmentContainer,
@@ -367,6 +381,20 @@ class ProgramEventDetailActivity :
                 R.id.backdropGuideTop,
                 ConstraintSet.BOTTOM,
                 0,
+            )
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                16.dp,
             )
         }
         initSet.applyTo(binding.backdropLayout)
