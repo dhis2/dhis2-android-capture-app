@@ -92,7 +92,7 @@ fun MapSelectorScreen(
         else -> false
     }
 
-    if (useTwoPaneLayout && screenState.isManualCaptureEnabled) {
+    if (useTwoPaneLayout && screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
         TwoPaneMapSelector(
             screenState,
             mapSelectorScreenActions,
