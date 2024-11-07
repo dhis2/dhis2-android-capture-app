@@ -14,7 +14,7 @@ object BackdropManager {
         isNavigationBarVisible: Boolean,
         backdropLayout: ConstraintLayout,
         endID: Int,
-        margin: Int
+        margin: Int,
     ) {
         val transition: Transition = ChangeBounds()
         transition.duration = changeBoundDuration
@@ -30,7 +30,7 @@ object BackdropManager {
                 ConstraintSet.BOTTOM,
                 R.id.navigationBar,
                 ConstraintSet.TOP,
-                0
+                0,
             )
         } else {
             initSet.connect(
@@ -38,7 +38,7 @@ object BackdropManager {
                 ConstraintSet.BOTTOM,
                 ConstraintSet.PARENT_ID,
                 ConstraintSet.BOTTOM,
-                0
+                0,
             )
         }
         initSet.applyTo(backdropLayout)
