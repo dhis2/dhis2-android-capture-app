@@ -121,6 +121,7 @@ class FormView : Fragment() {
     private var openErrorLocation: Boolean = false
     private var useCompose = false
     private var programUid: String? = null
+    private var fileName: String? = null
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -277,6 +278,22 @@ class FormView : Fragment() {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
                 }
+            }
+        }
+
+    private val requestStoragePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) {
+                downloadFile(fileName)
+                fileName = null
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.storage_permission_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
             }
         }
 
@@ -980,16 +997,23 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        activity?.activityResultRegistry?.let {
-            event.field.displayName?.let { filePath ->
-                fileHandler.copyAndOpen(File(filePath)) { file ->
-                    file.observe(viewLifecycleOwner) {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.file_downladed),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            downloadFile(event.field.displayName)
+        } else {
+            fileName = event.field.displayName
+            requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun downloadFile(fileName: String?) {
+        fileName?.let { filePath ->
+            fileHandler.copyAndOpen(File(filePath)) { file ->
+                file.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.file_downloaded),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
         }
