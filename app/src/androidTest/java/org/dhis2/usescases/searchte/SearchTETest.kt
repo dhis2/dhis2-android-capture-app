@@ -7,10 +7,10 @@ import dispatch.android.espresso.IdlingDispatcherProvider
 import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
 import org.dhis2.bindings.app
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_PATH
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_EVENTS_RESPONSE
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_EMPTY_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_EMPTY_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_PATH
 import org.dhis2.commons.resources.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -56,8 +56,8 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchByName() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         val firstName = "Tim"
@@ -81,8 +81,8 @@ class SearchTETest : BaseTest() {
     fun shouldShowErrorWhenCanNotFindSearchResult() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         val firstName = "asdssds"
@@ -103,8 +103,8 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchUsingMoreThanOneField() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
         val firstName = "Anna"
         val lastName = "Jones"
@@ -145,8 +145,8 @@ class SearchTETest : BaseTest() {
     fun shouldCheckDisplayInList() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         val displayInListData = createDisplayListFields()
@@ -195,13 +195,13 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterByEventStatusOverdue() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_EVENTS_PATH,
-            API_OLD_EVENTS_RESPONSE,
+            API_EVENTS_PATH,
+            API_EVENTS_EMPTY_RESPONSE,
         )
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
@@ -326,8 +326,8 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullyFilterBySync() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         val teiName = "Frank"
@@ -368,8 +368,8 @@ class SearchTETest : BaseTest() {
     fun shouldSuccessfullySearchAndFilter() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         val name = "Anna"
