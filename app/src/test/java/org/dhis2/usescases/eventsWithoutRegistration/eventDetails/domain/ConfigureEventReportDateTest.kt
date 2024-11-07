@@ -230,7 +230,7 @@ class ConfigureEventReportDateTest {
 
         // Then report date should be hidden
         assertFalse(eventDate.active)
-        assertEquals(eventDate.label, NEXT_EVENT)
+        assertEquals(DUE_DATE, eventDate.label)
     }
 
     @Test
