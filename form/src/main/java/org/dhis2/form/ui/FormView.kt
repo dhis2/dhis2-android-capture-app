@@ -121,7 +121,6 @@ class FormView : Fragment() {
     private var openErrorLocation: Boolean = false
     private var useCompose = false
     private var programUid: String? = null
-    private var fileName: String? = null
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -286,8 +285,8 @@ class FormView : Fragment() {
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
             if (granted) {
-                downloadFile(fileName)
-                fileName = null
+                downloadFile(viewModel.filePath)
+                viewModel.filePath = null
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -1000,7 +999,7 @@ class FormView : Fragment() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             downloadFile(event.field.displayName)
         } else {
-            fileName = event.field.displayName
+            viewModel.filePath = event.field.displayName
             requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
     }
