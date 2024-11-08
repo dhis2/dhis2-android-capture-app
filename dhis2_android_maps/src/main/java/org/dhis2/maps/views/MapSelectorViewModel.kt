@@ -23,6 +23,7 @@ import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES
 import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.location.LocationState.FIXED
 import org.dhis2.maps.location.LocationState.NOT_FIXED
+import org.dhis2.maps.location.LocationState.OFF
 import org.dhis2.maps.model.AccuracyRange
 import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenState
@@ -449,7 +450,10 @@ class MapSelectorViewModel(
 
     private fun canCaptureWithSwipe() = featureType == FeatureType.POINT &&
         _screenState.value.isManualCaptureEnabled &&
-        _screenState.value.selectedLocation !is SelectedLocation.None
+        (
+            _screenState.value.selectedLocation !is SelectedLocation.None ||
+                _screenState.value.captureMode.isManual()
+            )
 
     fun canCaptureManually(): Boolean {
         return _screenState.value.isManualCaptureEnabled
@@ -477,7 +481,11 @@ class MapSelectorViewModel(
 
             else -> {
                 updateScreenState(
-                    captureMode = if (locationState == FIXED) CaptureMode.GPS else _screenState.value.captureMode,
+                    captureMode = when (locationState) {
+                        FIXED -> CaptureMode.GPS
+                        OFF -> CaptureMode.MANUAL
+                        else -> _screenState.value.captureMode
+                    },
                     locationState = locationState,
                 )
             }
