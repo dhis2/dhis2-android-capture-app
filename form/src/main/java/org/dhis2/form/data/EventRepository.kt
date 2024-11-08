@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import java.util.Calendar
 import java.util.Date
 
 class EventRepository(
@@ -426,12 +427,22 @@ class EventRepository(
                 PeriodSelector(
                     type = periodType,
                     minDate = getPeriodMinDate(periodType),
-                    maxDate = dateUtils.today,
+                    maxDate = getStartOfDay(Date()),
                 )
             } else {
                 null
             }
         }
+    }
+
+    private fun getStartOfDay(date: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar[Calendar.HOUR_OF_DAY] = 0
+        calendar[Calendar.MINUTE] = 0
+        calendar[Calendar.SECOND] = 0
+        calendar[Calendar.MILLISECOND] = 0
+        return calendar.time
     }
 
     private fun getPeriodMinDate(periodType: PeriodType): Date? {
@@ -440,7 +451,7 @@ class EventRepository(
             .byUid().eq(programUid)
             .one().blockingGet()?.let { program ->
                 var minDate = dateUtils.expDate(
-                    null,
+                    event?.eventDate(),
                     program.expiryDays() ?: 0,
                     periodType,
                 )

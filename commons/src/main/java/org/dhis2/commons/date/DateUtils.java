@@ -348,9 +348,11 @@ public class DateUtils {
      * @return Min date to select
      */
     public Date expDate(@Nullable Date currentDate, int expiryDays, @Nullable PeriodType expiryPeriodType) {
-
-        Calendar calendar = getCalendar();
-
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         if (currentDate != null)
             calendar.setTime(currentDate);
 
@@ -418,7 +420,7 @@ public class DateUtils {
                 case Monthly:
                     Date firstDateOfMonth = getFirstDayOfMonth(calendar.getTime());
                     calendar.setTime(firstDateOfMonth);
-                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfMonth.getTime()) >= expiryDays) {
+                    if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfMonth.getTime()) >= expiryDays || TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfMonth.getTime()) == 0) {
                         return firstDateOfMonth;
                     } else {
                         calendar.add(Calendar.MONTH, -1);
