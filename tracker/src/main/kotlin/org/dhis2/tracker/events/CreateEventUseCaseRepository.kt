@@ -1,8 +1,6 @@
-package org.dhis2.usescases.programEventDetail.usecase
+package org.dhis2.tracker.events
 
-import kotlinx.coroutines.withContext
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventCreateProjection
@@ -11,18 +9,14 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 
-class CreateEventUseCase(
-    private val dispatcher: DispatcherProvider,
+class CreateEventUseCaseRepository(
     private val d2: D2,
-    private val dateUtils: DateUtils,
-) {
-    suspend operator fun invoke(
-        programUid: String,
-        orgUnitUid: String,
-        programStageUid: String,
-        enrollmentUid: String?,
-    ): Result<String> = withContext(dispatcher.io()) {
-        try {
+    private val dateUtils: DateUtils
+)
+
+{
+    fun createEvent(enrollmentUid: String?, programUid: String,  programStageUid: String?, orgUnitUid: String): Result<String> {
+       return try {
             val stageLastDate = getStageLastDate(enrollmentUid, programStageUid)
             val programStage = getProgramStage(programStageUid)
             val eventUid = d2.eventModule().events().blockingAdd(
@@ -49,7 +43,7 @@ class CreateEventUseCase(
             if (programStage?.periodType() == null) {
                 eventRepository.setEventDate(calendar.time ?: dateUtils.today)
             } else {
-                val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 1)
+                val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 0)
                 eventRepository.setEventDate(nextAvailablePeriod)
             }
             Result.success(eventUid)
@@ -57,6 +51,7 @@ class CreateEventUseCase(
             Result.failure(error)
         }
     }
+
     private fun getEnrollmentDate(uid: String?): Date? {
         val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
         return enrollment.enrollmentDate()
@@ -98,7 +93,7 @@ class CreateEventUseCase(
         return enrollment?.incidentDate()
     }
 
-    fun getProgramStage(programStageUid: String): ProgramStage? {
+    fun getProgramStage(programStageUid: String?): ProgramStage? {
         return d2.programModule()
             .programStages()
             .uid(programStageUid)

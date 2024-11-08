@@ -11,7 +11,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor

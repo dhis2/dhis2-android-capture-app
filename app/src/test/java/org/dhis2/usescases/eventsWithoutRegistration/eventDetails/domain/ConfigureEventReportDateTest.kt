@@ -99,8 +99,13 @@ class ConfigureEventReportDateTest {
             repository = repository,
             periodType = periodType,
             periodUtils = periodUtils,
+            enrollmentId = ENROLLMENT_ID,
         )
+        val today = "15/02/2022"
 
+        whenever(
+            repository.getEnrollmentDate(ENROLLMENT_ID),
+        ) doReturn DateUtils.uiDateFormat().parse(today)
         val tomorrow = "16/02/2022"
 
         whenever(
@@ -156,6 +161,7 @@ class ConfigureEventReportDateTest {
         whenever(
             repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn null
+
         whenever(
             repository.getProgramStage()?.generatedByEnrollmentDate(),
         ) doReturn true

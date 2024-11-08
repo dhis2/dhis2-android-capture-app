@@ -4,7 +4,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.tracker.events.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCaseRepository
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepositoryTest.Companion.ENROLLMENT_UID
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepositoryTest.Companion.PROGRAM_STAGE_UID
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope.OrderByDirection.DESC
+import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventModule
 import org.hisp.dhis.android.core.event.EventObjectRepository
@@ -33,9 +39,11 @@ class CreateEventUseCaseTest {
     }
 
     private val eventRepository: EventObjectRepository = mock()
+    private val eventCollectionRepository: EventCollectionRepository = mock()
 
     val eventModule: EventModule = mock {
         on { events() } doReturn mock()
+        on { events().uid(eventUid) } doReturn eventRepository
         on { events().uid(eventUid) } doReturn eventRepository
     }
 
@@ -46,29 +54,75 @@ class CreateEventUseCaseTest {
     private val dateUtils: DateUtils = mock {
         on { today } doReturn Date()
     }
-
-    private val createEventUseCase: CreateEventUseCase = CreateEventUseCase(
-        dispatcher = dispatcherProvider,
+    private val repository: CreateEventUseCaseRepository = CreateEventUseCaseRepository(
         d2 = d2,
         dateUtils = dateUtils,
     )
 
+    private val createEventUseCase: CreateEventUseCase = CreateEventUseCase(
+        dispatcher = dispatcherProvider,
+        repository = repository,
+    )
+
     @Test
     fun `create event with enrollment`() {
-        val enrollmentUid = "enrollmentUid"
-
         whenever(
             d2.eventModule().events().blockingAdd(any<EventCreateProjection>()),
         ) doReturn eventUid
 
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted(),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse,
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
+                .orderByEventDate(DESC),
+        ) doReturn mock()
+
+        whenever(
+            d2.eventModule().events()
+                .byEnrollmentUid().eq(ENROLLMENT_UID)
+                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+                .byDeleted().isFalse
+                .orderByDueDate(DESC),
+        ) doReturn mock()
+        whenever(
+            d2.eventModule().events().byEnrollmentUid().eq(ENROLLMENT_ID),
+        ) doReturn eventCollectionRepository
+
+        whenever(
+            repository.createEvent(ENROLLMENT_ID, PROGRAM_ID, PROGRAM_STAGE_ID, ORG_UNIT_ID),
+        ) doReturn Result.success(eventUid)
+
         runBlocking {
-            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
+            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, ENROLLMENT_ID)
             assertEquals(Result.success(eventUid), result)
         }
 
         verify(eventModule.events()).blockingAdd(
             argThat {
-                this.enrollment() == enrollmentUid &&
+                this.enrollment() == ENROLLMENT_ID &&
                     this.program() == programUid &&
                     this.programStage() == programStageUid &&
                     this.organisationUnit() == orgUnitUid
@@ -85,7 +139,7 @@ class CreateEventUseCaseTest {
         ) doReturn eventUid
 
         runBlocking {
-            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, null)
+            val result = createEventUseCase(programUid, orgUnitUid, programStageUid, ENROLLMENT_ID)
             assertEquals(Result.success(eventUid), result)
         }
 
@@ -116,5 +170,16 @@ class CreateEventUseCaseTest {
             val result = createEventUseCase(programUid, orgUnitUid, programStageUid, enrollmentUid)
             assertEquals(error, result.exceptionOrNull())
         }
+    }
+
+    companion object {
+        const val PROGRAM_STAGE_ID = "programStageId"
+        const val ENROLLMENT_ID = "enrollmentId"
+        const val PROGRAM_ID = "programId"
+
+        const val ORG_UNIT_ID = "orgUnitId"
+        const val DUE_DATE = "Due date"
+        const val EVENT_DATE = "Event date"
+        const val NEXT_EVENT = "Next event"
     }
 }
