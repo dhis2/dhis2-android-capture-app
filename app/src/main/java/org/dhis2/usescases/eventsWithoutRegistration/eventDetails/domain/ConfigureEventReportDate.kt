@@ -129,7 +129,7 @@ class ConfigureEventReportDate(
             }
             date
         }
-        return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, 0)
+        return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, 1)
     }
 
     private fun getCurrentDay() = DateUtils.getInstance().today
