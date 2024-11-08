@@ -12,18 +12,22 @@ import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 
+data class EnrollmentFormBuilderConfig(
+    val enrollmentUid: String,
+    val programUid: String,
+    val enrollmentMode: EnrollmentMode,
+    val hasWriteAccess: Boolean,
+    val openErrorLocation: Boolean,
+    @IdRes val containerId: Int,
+    val loadingView: ContentLoadingProgressBar,
+    val saveButton: FloatingActionButton,
+)
+
 fun AppCompatActivity.buildEnrollmentForm(
-    enrollmentUid: String,
-    programUid: String,
-    enrollmentMode: EnrollmentMode,
-    hasWriteAccess: Boolean,
+    config: EnrollmentFormBuilderConfig,
     locationProvider: LocationProvider,
     dateEditionWarningHandler: DateEditionWarningHandler,
     enrollmentResultDialogProvider: FormResultDialogProvider,
-    openErrorLocation: Boolean,
-    @IdRes containerId: Int,
-    loadingView: ContentLoadingProgressBar,
-    saveButton: FloatingActionButton,
     onFinish: () -> Unit,
 ): FormView {
     return FormView.Builder()
@@ -36,7 +40,12 @@ fun AppCompatActivity.buildEnrollmentForm(
         }
         .onLoadingListener { loading ->
             runOnUiThread {
-                handleLoading(hasWriteAccess, loading, loadingView, saveButton)
+                handleLoading(
+                    hasWriteAccess = config.hasWriteAccess,
+                    loading = loading,
+                    loadingView = config.loadingView,
+                    saveButton = config.saveButton,
+                )
             }
         }
         .onFinishDataEntry(onFinish)
@@ -44,19 +53,19 @@ fun AppCompatActivity.buildEnrollmentForm(
         .factory(supportFragmentManager)
         .setRecords(
             EnrollmentRecords(
-                enrollmentUid = enrollmentUid,
-                enrollmentMode = enrollmentMode,
+                enrollmentUid = config.enrollmentUid,
+                enrollmentMode = config.enrollmentMode,
             ),
         )
-        .openErrorLocation(openErrorLocation)
-        .setProgramUid(programUid)
+        .openErrorLocation(config.openErrorLocation)
+        .setProgramUid(config.programUid)
         .build().also { formView ->
 
-            saveButton.setOnClickListener { formView.onSaveClick() }
+            config.saveButton.setOnClickListener { formView.onSaveClick() }
 
             val fragmentTransition = supportFragmentManager.beginTransaction()
             fragmentTransition.replace(
-                containerId,
+                config.containerId,
                 formView,
             )
             fragmentTransition.commit()

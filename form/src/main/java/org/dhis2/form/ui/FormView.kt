@@ -82,7 +82,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -1150,7 +1149,6 @@ class FormView : Fragment() {
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-        private var enrollmentResultDialogProvider: EnrollmentResultDialogProvider? = null
         private var eventResultDialogUiProvider: FormResultDialogProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
@@ -1184,12 +1182,6 @@ class FormView : Fragment() {
          * Set a FragmentManager for instantiating the form view
          * */
         fun factory(manager: FragmentManager) = apply { fragmentManager = manager }
-
-        /**
-         *
-         */
-        fun enrollmentResultDialogUiProvider(enrollmentResultDialogProvider: EnrollmentResultDialogProvider) =
-            apply { this.enrollmentResultDialogProvider = enrollmentResultDialogProvider }
 
         /**
          *
@@ -1230,7 +1222,6 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    enrollmentResultDialogProvider,
                     eventResultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,

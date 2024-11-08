@@ -26,7 +26,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
@@ -54,6 +53,7 @@ import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
+import org.dhis2.usescases.enrollment.EnrollmentFormBuilderConfig
 import org.dhis2.usescases.enrollment.buildEnrollmentForm
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NotesFragment
@@ -295,17 +295,19 @@ class TeiDashboardMobileActivity :
         if (isLandscape() && enrollmentUid != null) {
             val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
             buildEnrollmentForm(
-                enrollmentUid = enrollmentUid!!,
-                programUid = programUid!!,
-                enrollmentMode = EnrollmentMode.CHECK,
-                hasWriteAccess = presenter.hasWriteAccess(),
+                config = EnrollmentFormBuilderConfig(
+                    enrollmentUid = enrollmentUid!!,
+                    programUid = programUid!!,
+                    enrollmentMode = EnrollmentMode.CHECK,
+                    hasWriteAccess = presenter.hasWriteAccess(),
+                    openErrorLocation = false,
+                    containerId = R.id.formViewContainer,
+                    loadingView = binding.toolbarProgress,
+                    saveButton = saveButton,
+                ),
                 locationProvider = locationProvider,
                 dateEditionWarningHandler = dateEditionWarningHandler,
                 enrollmentResultDialogProvider = enrollmentResultDialogProvider,
-                openErrorLocation = false,
-                containerId = R.id.formViewContainer,
-                loadingView = binding.toolbarProgress,
-                saveButton = saveButton,
             ) {
                 dashboardViewModel.updateDashboard()
             }
@@ -785,13 +787,6 @@ class TeiDashboardMobileActivity :
 
     override fun activityTeiUid(): String? {
         return teiUid
-    }
-
-    private fun showDateEditionWarning(message: String?) {
-        val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(message)
-            .setPositiveButton(R.string.button_ok, null)
-        dialog.show()
     }
 
     companion object {

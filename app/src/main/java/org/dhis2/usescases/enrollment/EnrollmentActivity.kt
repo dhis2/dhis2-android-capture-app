@@ -115,19 +115,21 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding.view = this
 
         formView = buildEnrollmentForm(
-            enrollmentUid = enrollmentUid,
-            programUid = programUid,
-            enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
-                enrollmentMode.name,
+            config = EnrollmentFormBuilderConfig(
+                enrollmentUid = enrollmentUid,
+                programUid = programUid,
+                enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
+                    enrollmentMode.name,
+                ),
+                hasWriteAccess = presenter.hasWriteAccess(),
+                openErrorLocation = openErrorLocation,
+                containerId = R.id.formViewContainer,
+                loadingView = binding.toolbarProgress,
+                saveButton = binding.save,
             ),
-            hasWriteAccess = presenter.hasWriteAccess(),
             locationProvider = locationProvider,
             dateEditionWarningHandler = dateEditionWarningHandler,
             enrollmentResultDialogProvider = enrollmentResultDialogProvider,
-            openErrorLocation = openErrorLocation,
-            containerId = R.id.formViewContainer,
-            loadingView = binding.toolbarProgress,
-            saveButton = binding.save,
         ) {
             presenter.finish(enrollmentMode)
         }
