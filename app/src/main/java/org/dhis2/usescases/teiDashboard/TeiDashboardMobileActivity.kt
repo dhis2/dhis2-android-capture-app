@@ -301,7 +301,7 @@ class TeiDashboardMobileActivity :
                     enrollmentMode = EnrollmentMode.CHECK,
                     hasWriteAccess = presenter.hasWriteAccess(),
                     openErrorLocation = false,
-                    containerId = R.id.formViewContainer,
+                    containerId = R.id.tei_form_view,
                     loadingView = binding.toolbarProgress,
                     saveButton = saveButton,
                 ),
