@@ -8,9 +8,13 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -272,7 +276,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     override fun onBackPressed() {
         viewModel.onBackPressed(
             isPortrait(),
-            viewModel.searchOrFilterIsOpen(),
+            viewModel.backdropActive.value ?: false,
             this.isKeyboardOpened(),
             {
                 super.onBackPressed()
@@ -369,6 +373,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         binding.navigationBar.setContent {
             DHIS2Theme {
                 val uiState by viewModel.navigationBarUIState
+                val isBackdropActive by viewModel.backdropActive.observeAsState(false)
                 var selectedItemIndex by remember(uiState) {
                     mutableIntStateOf(
                         uiState.items.indexOfFirst {
@@ -387,7 +392,9 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 }
 
                 AnimatedVisibility(
-                    visible = viewModel.searchOrFilterIsOpen().not() && uiState.items.isNotEmpty(),
+                    visible = (isBackdropActive.not() && uiState.items.isNotEmpty()) || isLandscape(),
+                    enter = slideInVertically(animationSpec = tween(200)) { it },
+                    exit = slideOutVertically(animationSpec = tween(200)) { it },
                 ) {
                     NavigationBar(
                         modifier = Modifier.fillMaxWidth(),
@@ -397,7 +404,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                         selectedItemIndex = uiState.items.indexOfFirst { it.id == page }
                         if (sessionManagerServiceImpl.isUserLoggedIn().not()) return@NavigationBar
 
-                        if (viewModel.searchOrFilterIsOpen()) {
+                        if (viewModel.backdropActive.value == true) {
                             searchScreenConfigurator.closeBackdrop()
                         }
 
@@ -511,6 +518,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     private fun observeScreenState() {
         viewModel.screenState.observe(this, searchScreenConfigurator::configure)
+        viewModel.screenState.observe(this, viewModel::updateBackdrop)
     }
 
     private fun observeDownload() {
