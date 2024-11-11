@@ -83,7 +83,6 @@ class RuleEngineHelper(
                     ruleEvents = ruleEvents.await(),
                 )
             }
-            refreshContext = false
         }
     }
 
@@ -112,18 +111,20 @@ class RuleEngineHelper(
     }
 
     private fun buildTargetEnrollment(enrollmentUid: String): RuleEnrollment {
-        if (::targetEnrollment.isInitialized.not()) {
+        if (::targetEnrollment.isInitialized.not() || refreshContext) {
             targetEnrollment = rulesRepository.getRuleEnrollment(enrollmentUid)
         }
 
+        refreshContext = false
         return targetEnrollment
     }
 
     private fun buildTargetEvent(eventUid: String): RuleEvent {
-        if (::targetEvent.isInitialized.not()) {
+        if (::targetEvent.isInitialized.not() || refreshContext) {
             targetEvent = rulesRepository.getRuleEvent(eventUid)
         }
 
+        refreshContext = false
         return targetEvent
     }
 
