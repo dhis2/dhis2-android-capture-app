@@ -57,7 +57,7 @@ class ImageDetailActivity : AppCompatActivity() {
                         file.observe(this) {
                             Toast.makeText(
                                 this,
-                                getString(R.string.file_downladed),
+                                getString(R.string.file_downloaded),
                                 Toast.LENGTH_SHORT,
                             ).show()
                         }

@@ -280,6 +280,22 @@ class FormView : Fragment() {
             }
         }
 
+    private val requestStoragePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) {
+                downloadFile(viewModel.filePath)
+                viewModel.filePath = null
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.storage_permission_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
@@ -980,16 +996,23 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        activity?.activityResultRegistry?.let {
-            event.field.displayName?.let { filePath ->
-                fileHandler.copyAndOpen(File(filePath)) { file ->
-                    file.observe(viewLifecycleOwner) {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.file_downladed),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            downloadFile(event.field.displayName)
+        } else {
+            viewModel.filePath = event.field.displayName
+            requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun downloadFile(fileName: String?) {
+        fileName?.let { filePath ->
+            fileHandler.copyAndOpen(File(filePath)) { file ->
+                file.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.file_downloaded),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
         }
