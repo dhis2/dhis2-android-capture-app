@@ -80,7 +80,7 @@ fun MapItemHorizontalPager(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 4.dp)
                 .align(alignment = Alignment.End),
-            visible = !state.isScrollInProgress && items.isNotEmpty(),
+            visible = !state.isScrollInProgress && items.isNotEmpty() && currentItem?.geometry != null,
         ) {
             FAB(
                 onClick = { currentItem?.let { onNavigate(it) } },

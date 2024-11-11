@@ -335,6 +335,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             )
             it.init(
                 presenter.fetchMapStyles(),
+                onInitializationFinished = {
+                    presenter.relationshipMapData.value?.let { data ->
+                        relationshipMapManager?.update(data.relationshipFeatures, data.boundingBox)
+                    }
+                },
             ) { permissionManager ->
                 handleMissingPermission(permissionManager)
             }
