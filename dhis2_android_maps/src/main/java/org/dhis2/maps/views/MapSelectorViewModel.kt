@@ -415,7 +415,9 @@ class MapSelectorViewModel(
 
     fun onMove(point: LatLng) {
         if (canCaptureWithSwipe()) {
-            val captureMode = if (!_screenState.value.captureMode.isSwipe()) {
+            val captureMode = if (_screenState.value.captureMode.isSearch()) {
+                CaptureMode.SEARCH
+            } else if (!_screenState.value.captureMode.isSwipe()) {
                 CaptureMode.MANUAL_SWIPE
             } else {
                 _screenState.value.captureMode
