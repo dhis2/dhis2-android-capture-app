@@ -59,7 +59,8 @@ class CreateEventUseCaseRepository(
 
     private fun getStageLastDate(enrollmentUid: String?, programStageUid: String?): Date? {
         val activeEvents =
-            d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
+            d2.eventModule().events().byEnrollmentUid()
+                .eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
