@@ -70,5 +70,7 @@ public class TeiDashboardContracts {
         Boolean checkIfEnrollmentCanBeDeleted(String enrollmentUid);
 
         void onTransferClick();
+
+        boolean hasWriteAccess();
     }
 }

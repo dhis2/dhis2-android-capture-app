@@ -114,4 +114,5 @@ interface DashboardRepository {
     fun transferTei(newOrgUnitId: String)
 
     fun teiCanBeTransferred(): Boolean
+    fun enrollmentHasWriteAccess(): Boolean
 }

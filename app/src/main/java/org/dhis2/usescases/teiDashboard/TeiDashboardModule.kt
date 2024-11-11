@@ -6,12 +6,17 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
+import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
@@ -47,6 +52,33 @@ class TeiDashboardModule(
             analyticsHelper,
             preferenceProvider,
             matomoAnalyticsController,
+        )
+    }
+
+    @Provides
+    @PerActivity
+    fun provideEnrollmentConfiguration(
+        d2: D2,
+        metadataIconProvider: MetadataIconProvider,
+    ) = enrollmentUid?.let { EnrollmentConfiguration(d2, it, metadataIconProvider) }
+
+    @Provides
+    @PerActivity
+    fun provideDateEditionWarningHandler(
+        enrollmentConfiguration: EnrollmentConfiguration?,
+        eventResourcesProvider: EventResourcesProvider,
+    ) = DateEditionWarningHandler(
+        enrollmentConfiguration,
+        eventResourcesProvider,
+    )
+
+    @Provides
+    @PerActivity
+    fun provideResultDialogProvider(
+        resourceManager: ResourceManager,
+    ): FormResultDialogProvider {
+        return FormResultDialogProvider(
+            FormResultDialogResourcesProvider(resourceManager),
         )
     }
 

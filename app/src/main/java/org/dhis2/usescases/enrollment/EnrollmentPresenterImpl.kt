@@ -12,7 +12,6 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
-import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.form.model.RowAction
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -39,7 +38,6 @@ class EnrollmentPresenterImpl(
     val view: EnrollmentView,
     val d2: D2,
     private val enrollmentObjectRepository: EnrollmentObjectRepository,
-    private val dataEntryRepository: EnrollmentRepository,
     private val teiRepository: TrackedEntityInstanceObjectRepository,
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
     private val schedulerProvider: SchedulerProvider,
@@ -48,11 +46,11 @@ class EnrollmentPresenterImpl(
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val eventCollectionRepository: EventCollectionRepository,
     private val teiAttributesProvider: TeiAttributesProvider,
+    private val dateEditionWarningHandler: DateEditionWarningHandler,
 ) {
+
     private val disposable = CompositeDisposable()
     private val backButtonProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
-    private var hasShownIncidentDateEditionWarning = false
-    private var hasShownEnrollmentDateEditionWarning = false
 
     fun init() {
         view.setSaveButtonVisible(false)
@@ -120,24 +118,6 @@ class EnrollmentPresenterImpl(
         )
     }
 
-    private fun shouldShowDateEditionWarning(uid: String): Boolean {
-        return if (uid == EnrollmentRepository.ENROLLMENT_DATE_UID &&
-            dataEntryRepository.hasEventsGeneratedByEnrollmentDate() &&
-            !hasShownEnrollmentDateEditionWarning
-        ) {
-            hasShownEnrollmentDateEditionWarning = true
-            true
-        } else if (uid == EnrollmentRepository.INCIDENT_DATE_UID &&
-            dataEntryRepository.hasEventsGeneratedByIncidentDate() &&
-            !hasShownIncidentDateEditionWarning
-        ) {
-            hasShownIncidentDateEditionWarning = true
-            true
-        } else {
-            false
-        }
-    }
-
     fun subscribeToBackButton() {
         disposable.add(
             backButtonProcessor
@@ -173,8 +153,8 @@ class EnrollmentPresenterImpl(
 
     fun updateFields(action: RowAction? = null) {
         action?.let {
-            if (shouldShowDateEditionWarning(it.id)) {
-                view.showDateEditionWarning(getProgram()?.uid())
+            dateEditionWarningHandler.shouldShowWarning(fieldUid = it.id) { message ->
+                view.showDateEditionWarning(message)
             }
         }
     }
@@ -237,6 +217,8 @@ class EnrollmentPresenterImpl(
             view.displayTeiPicture(picturePath)
         }
     }
+
+    fun hasWriteAccess() = enrollmentFormRepository.hasWriteAccess()
 
     fun showOrHideSaveButton() {
         val teiUid = teiRepository.blockingGet()?.uid() ?: ""
