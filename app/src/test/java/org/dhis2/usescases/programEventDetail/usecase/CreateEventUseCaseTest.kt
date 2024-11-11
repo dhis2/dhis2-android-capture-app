@@ -10,13 +10,13 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDeta
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope.OrderByDirection.DESC
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventCreateProjection
 import org.hisp.dhis.android.core.event.EventModule
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +27,9 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class CreateEventUseCaseTest {
 
@@ -38,6 +40,8 @@ class CreateEventUseCaseTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     private val eventRepository: EventObjectRepository = mock()
+
+    private val programStageRepository: ProgramStageCollectionRepository = mock()
 
     private val eventCollectionRepository: EventCollectionRepository = mock()
 
@@ -101,6 +105,101 @@ class CreateEventUseCaseTest {
             val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
             assertEquals(error, result.exceptionOrNull())
         }
+    }
+
+    @Test
+    fun `create event based on incident date`() {
+        val incidentDateString = "01/11/2024"
+        val enrollmentDateString = "10/10/2024"
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val incidentDate = dateFormat.parse(incidentDateString)
+
+        val enrollmentDate = dateFormat.parse(enrollmentDateString)
+
+        whenever(
+            d2.enrollmentModule(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet()?.incidentDate(),
+        ) doReturn incidentDate
+
+        whenever(
+            d2.enrollmentModule().enrollments().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first().enrollmentDate(),
+        ) doReturn (enrollmentDate)
+
+        runBlocking {
+            val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
+        }
+
+        verify(eventRepository).setEventDate(incidentDate)
+    }
+
+    @Test
+    fun `create event based on enrollment date if no incident Date`() {
+        val enrollmentDateString = "10/10/2024"
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val incidentDate = null
+
+        val enrollmentDate = dateFormat.parse(enrollmentDateString)
+
+        whenever(
+            d2.enrollmentModule(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet()?.incidentDate(),
+        ) doReturn incidentDate
+
+        whenever(
+            d2.enrollmentModule().enrollments().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first().enrollmentDate(),
+        ) doReturn (enrollmentDate)
+
+        runBlocking {
+            val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
+        }
+
+        verify(eventRepository).setEventDate(enrollmentDate)
     }
 
     companion object {
