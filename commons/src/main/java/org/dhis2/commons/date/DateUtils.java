@@ -87,18 +87,6 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    private Date getNextDate(Date date) {
-        Calendar calendar = getCalendar();
-        calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTime();
-    }
-
 
     private Date getFirstDayOfWeek(Date date) {
         Calendar calendar = getCalendar();
@@ -275,11 +263,17 @@ public class DateUtils {
 
     public void setCurrentDate(Date date) {
         currentDateCalendar = getCalendar();
-        currentDateCalendar.setTime(date);
-        currentDateCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        currentDateCalendar.set(Calendar.MINUTE, 0);
-        currentDateCalendar.set(Calendar.SECOND, 0);
-        currentDateCalendar.set(Calendar.MILLISECOND, 0);
+        currentDateCalendar.setTime(getStartOfDay(date));
+    }
+
+    public Date getStartOfDay( Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
     }
 
     /**
@@ -349,14 +343,10 @@ public class DateUtils {
      */
     public Date expDate(@Nullable Date currentDate, int expiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
         if (currentDate != null)
             calendar.setTime(currentDate);
 
-        Date date = calendar.getTime();
+        Date date = getStartOfDay( calendar.getTime());
 
         if (expiryPeriodType == null) {
             return null;
