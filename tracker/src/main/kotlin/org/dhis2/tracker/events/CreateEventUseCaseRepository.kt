@@ -50,7 +50,7 @@ class CreateEventUseCaseRepository(
         if (programStage?.periodType() == null) {
             eventRepository.setEventDate(calendar.time ?: dateUtils.today)
         } else {
-            val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 0)
+            val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 1)
             eventRepository.setEventDate(nextAvailablePeriod)
         }
     }
