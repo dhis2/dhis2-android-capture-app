@@ -208,6 +208,129 @@ class CreateEventUseCaseTest {
         verify(eventRepository).setEventDate(enrollmentDate)
     }
 
+    @Test
+    fun `should add min days from start if first event`() {
+        val targetDateString = "20/10/2024"
+        val enrollmentDateString = "10/10/2024"
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val incidentDate = null
+
+        val enrollmentDate = dateFormat.parse(enrollmentDateString)
+        val targetDate = dateFormat.parse(targetDateString)
+
+        whenever(
+            d2.enrollmentModule(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet()?.incidentDate(),
+        ) doReturn incidentDate
+
+        whenever(
+            d2.enrollmentModule().enrollments().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first().enrollmentDate(),
+        ) doReturn (enrollmentDate)
+
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID)) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.minDaysFromStart()) doReturn 10
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.standardInterval()) doReturn 15
+
+        runBlocking {
+            val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
+        }
+
+        verify(eventRepository).setEventDate(targetDate)
+    }
+
+    @Test
+    fun `should add standard interval days from start if not first event`() {
+        val targetDateString = "26/10/2024"
+        val enrollmentDateString = "01/10/2024"
+        val lastStageDateString = "11/10/2024"
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val incidentDate = null
+
+        val enrollmentDate = dateFormat.parse(enrollmentDateString)
+        val targetDate = dateFormat.parse(targetDateString)
+        val lastStageDate = dateFormat.parse(lastStageDateString)
+
+        whenever(
+            d2.enrollmentModule(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet()?.incidentDate(),
+        ) doReturn incidentDate
+
+        whenever(
+            d2.enrollmentModule().enrollments().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first().enrollmentDate(),
+        ) doReturn (enrollmentDate)
+
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID)) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.minDaysFromStart()) doReturn 10
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.standardInterval()) doReturn 15
+        whenever(
+            d2.eventModule().events().byEnrollmentUid()
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet(),
+        ) doReturn listOf(mock())
+        whenever(
+            d2.eventModule().events().byEnrollmentUid()
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()[0].eventDate(),
+        ) doReturn lastStageDate
+        runBlocking {
+            val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
+        }
+
+        verify(eventRepository).setEventDate(targetDate)
+    }
+
     companion object {
         const val PROGRAM_STAGE_ID = "programStageId"
         const val ENROLLMENT_ID = "enrollmentId"
