@@ -13,7 +13,6 @@ class CreateEventUseCaseRepository(
     private val d2: D2,
     private val dateUtils: DateUtils
 )
-
 {
     fun createEvent(enrollmentUid: String?, programUid: String,  programStageUid: String?, orgUnitUid: String): Result<String> {
        return try {
@@ -27,28 +26,32 @@ class CreateEventUseCaseRepository(
                     organisationUnit(orgUnitUid)
                 }.build(),
             )
-            val eventDate = stageLastDate ?: when (programStage?.generatedByEnrollmentDate()) {
-                true -> getEnrollmentDate(enrollmentUid)
-                else -> getEnrollmentIncidentDate(enrollmentUid)
-                    ?: getEnrollmentDate(enrollmentUid)
-            }
-            val eventRepository = d2.eventModule().events().uid(eventUid)
-            val calendar = DateUtils.getInstance().getCalendarByDate(eventDate)
-            if (stageLastDate == null) {
-                val minDaysFromStart = getMinDaysFromStartByProgramStage(programStage)
-                calendar.add(DAY_OF_YEAR, minDaysFromStart)
-            } else {
-                calendar.add(DAY_OF_YEAR, programStage?.standardInterval() ?: 0)
-            }
-            if (programStage?.periodType() == null) {
-                eventRepository.setEventDate(calendar.time ?: dateUtils.today)
-            } else {
-                val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 0)
-                eventRepository.setEventDate(nextAvailablePeriod)
-            }
+            setEventDate(enrollmentUid, eventUid, programStage, stageLastDate)
             Result.success(eventUid)
         } catch (error: D2Error) {
             Result.failure(error)
+        }
+    }
+
+    private fun setEventDate(enrollmentUid: String?, eventUid: String, programStage: ProgramStage?, stageLastDate: Date?) {
+        val eventDate = stageLastDate ?: when (programStage?.generatedByEnrollmentDate()) {
+            true -> getEnrollmentDate(enrollmentUid)
+            else -> getEnrollmentIncidentDate(enrollmentUid)
+                ?: getEnrollmentDate(enrollmentUid)
+        }
+        val eventRepository = d2.eventModule().events().uid(eventUid)
+        val calendar = DateUtils.getInstance().getCalendarByDate(eventDate)
+        if (stageLastDate == null) {
+            val minDaysFromStart = getMinDaysFromStartByProgramStage(programStage)
+            calendar.add(DAY_OF_YEAR, minDaysFromStart)
+        } else {
+            calendar.add(DAY_OF_YEAR, programStage?.standardInterval() ?: 0)
+        }
+        if (programStage?.periodType() == null) {
+            eventRepository.setEventDate(calendar.time ?: dateUtils.today)
+        } else {
+            val nextAvailablePeriod = dateUtils.getNextPeriod(programStage.periodType(), calendar.time ?: dateUtils.today, 0)
+            eventRepository.setEventDate(nextAvailablePeriod)
         }
     }
 
