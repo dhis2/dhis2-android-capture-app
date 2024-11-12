@@ -18,11 +18,6 @@ on:
         description: 'tag'
         required: true
         type: string
-      is_patch:
-        description: 'Is the new version a patch'
-        required: true
-        type: boolean
-        default: false
   
 jobs:
   Build-Apk:
@@ -69,20 +64,8 @@ jobs:
         whatsNewDirectory: whatsnew
         userFraction: 0.99
 
-
-    - name: Github Patch Release
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        draft: true
-        generateReleaseNotes: true
-        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
-        tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
-
-    - name: Github New Release
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
+    - name: Upload to Github
+      if: ${{ (inputs.github_release }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
