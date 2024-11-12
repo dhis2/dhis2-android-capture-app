@@ -12,6 +12,7 @@ data class MapSelectorScreenState(
     val selectedLocation: SelectedLocation,
     val captureMode: MapSelectorViewModel.CaptureMode,
     val accuracyRange: AccuracyRange,
+    val searching: Boolean,
     val searchOnAreaVisible: Boolean,
     val displayPolygonInfo: Boolean,
     val locationState: LocationState,

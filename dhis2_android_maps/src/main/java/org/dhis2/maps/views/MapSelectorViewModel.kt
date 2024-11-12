@@ -99,6 +99,7 @@ class MapSelectorViewModel(
             isManualCaptureEnabled = mapStyleConfig.isManualCaptureEnabled(),
             forcedLocationAccuracy = mapStyleConfig.getForcedLocationAccuracy(),
             lastGPSLocation = null,
+            searching = false,
         ),
     )
 
@@ -129,6 +130,7 @@ class MapSelectorViewModel(
         displayPolygonInfo: Boolean = _screenState.value.displayPolygonInfo,
         locationState: LocationState = _screenState.value.locationState,
         lastGPSLocation: SelectedLocation.GPSResult? = _screenState.value.lastGPSLocation,
+        searching: Boolean = _screenState.value.searching,
     ) {
         _screenState.update {
             it.copy(
@@ -141,6 +143,7 @@ class MapSelectorViewModel(
                 displayPolygonInfo = displayPolygonInfo,
                 locationState = locationState,
                 lastGPSLocation = lastGPSLocation,
+                searching = searching,
             )
         }
     }
@@ -258,6 +261,7 @@ class MapSelectorViewModel(
         regionToSearch: AvailableLatLngBounds? = _currentVisibleRegion,
     ) {
         if (_screenState.value.captureMode.isSearch()) {
+            updateScreenState(searching = true)
             val filteredPreviousLocation =
                 searchLocationManager.getAvailableLocations(query)
             val searchItems = geocoder.getLocationFromName(query, regionToSearch)
@@ -273,6 +277,7 @@ class MapSelectorViewModel(
                 locationItems = locationItems,
                 selectedLocation = SelectedLocation.None(),
                 searchOnAreaVisible = false,
+                searching = false,
             )
         }
     }

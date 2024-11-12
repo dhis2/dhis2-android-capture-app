@@ -52,7 +52,7 @@ android {
     }
 
     configurations.all {
-        resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
     }
 }
 
