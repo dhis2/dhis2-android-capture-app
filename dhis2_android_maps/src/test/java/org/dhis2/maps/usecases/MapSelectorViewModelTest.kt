@@ -339,7 +339,7 @@ class MapSelectorViewModelTest {
                 ) doReturn mockedOtherRegionLocationItemSearchResults
 
                 mapSelectorViewModel.onSearchOnAreaClick()
-                1
+                2
             },
             then = { screenState ->
                 assertEquals(false, screenState.searchOnAreaVisible)
