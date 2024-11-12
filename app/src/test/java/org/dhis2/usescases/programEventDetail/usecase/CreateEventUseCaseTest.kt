@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.event.EventModule
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -34,6 +35,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -324,6 +326,68 @@ class CreateEventUseCaseTest {
                 .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()[0].eventDate(),
         ) doReturn lastStageDate
+        runBlocking {
+            val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
+        }
+
+        verify(eventRepository).setEventDate(targetDate)
+    }
+
+    @Test
+    fun `should create an event in next period if current period already has an event`() {
+        val targetDateString = "01/11/2024"
+        val enrollmentDateString = "01/10/2024"
+        val lastStageDateString = "11/10/2024"
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val incidentDate = null
+
+        val enrollmentDate = dateFormat.parse(enrollmentDateString)
+        val targetDate = dateFormat.parse(targetDateString)
+        val lastStageDate = dateFormat.parse(lastStageDateString)
+
+        whenever(
+            d2.enrollmentModule(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().uid(ENROLLMENT_ID).blockingGet()?.incidentDate(),
+        ) doReturn incidentDate
+
+        whenever(
+            d2.enrollmentModule().enrollments().byUid(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first(),
+        ) doReturn mock()
+        whenever(
+            d2.enrollmentModule().enrollments().byUid().eq(ENROLLMENT_ID).blockingGet().first().enrollmentDate(),
+        ) doReturn (enrollmentDate)
+        val calendar = Calendar.getInstance()
+        calendar.time = lastStageDate
+        whenever(d2.programModule()) doReturn mock()
+        whenever(d2.programModule().programStages()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID)) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()) doReturn mock()
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.minDaysFromStart()) doReturn 10
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.standardInterval()) doReturn 15
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.periodType()) doReturn PeriodType.Monthly
+        whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.periodType()) doReturn PeriodType.Monthly
+        whenever(dateUtils.getNextPeriod(PeriodType.Monthly, calendar.time, 0)) doReturn targetDate
+
         runBlocking {
             val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
         }
