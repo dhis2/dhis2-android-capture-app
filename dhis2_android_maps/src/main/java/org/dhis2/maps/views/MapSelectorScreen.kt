@@ -131,12 +131,14 @@ fun SinglePaneMapSelector(
                 SearchBar(
                     searching = screenState.searching,
                     locationItems = screenState.locationItems,
-                    onBackClicked = screenActions.onBackClicked,
-                    onClearLocation = screenActions.onClearLocation,
-                    onSearchLocation = screenActions.onSearchLocation,
-                    onLocationSelected = screenActions.onLocationSelected,
-                    onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                    onButtonMode = screenActions.onButtonMode,
+                    searchBarActions = SearchBarActions(
+                        onBackClicked = screenActions.onBackClicked,
+                        onClearLocation = screenActions.onClearLocation,
+                        onSearchLocation = screenActions.onSearchLocation,
+                        onLocationSelected = screenActions.onLocationSelected,
+                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                        onButtonMode = screenActions.onButtonMode,
+                    ),
                 )
             }
 
@@ -196,14 +198,16 @@ private fun TwoPaneMapSelector(
                 SearchBar(
                     searching = screenState.searching,
                     locationItems = screenState.locationItems,
-                    onBackClicked = screenActions.onBackClicked,
-                    onClearLocation = screenActions.onClearLocation,
-                    onSearchLocation = screenActions.onSearchLocation,
-                    onLocationSelected = screenActions.onLocationSelected,
-                    onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                    onButtonMode = {
-                        // no-op
-                    },
+                    searchBarActions = SearchBarActions(
+                        onBackClicked = screenActions.onBackClicked,
+                        onClearLocation = screenActions.onClearLocation,
+                        onSearchLocation = screenActions.onSearchLocation,
+                        onLocationSelected = screenActions.onLocationSelected,
+                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                        onButtonMode = {
+                            // no-op
+                        },
+                    ),
                 )
             }
 
@@ -246,16 +250,20 @@ private fun TwoPaneMapSelector(
     }
 }
 
+private data class SearchBarActions(
+    val onBackClicked: () -> Unit,
+    val onClearLocation: () -> Unit,
+    val onSearchLocation: (String) -> Unit,
+    val onLocationSelected: (LocationItemModel) -> Unit,
+    val onSearchCaptureMode: () -> Unit,
+    val onButtonMode: () -> Unit,
+)
+
 @Composable
 private fun SearchBar(
     searching: Boolean,
     locationItems: List<LocationItemModel>,
-    onBackClicked: () -> Unit,
-    onClearLocation: () -> Unit,
-    onSearchLocation: (String) -> Unit,
-    onLocationSelected: (LocationItemModel) -> Unit,
-    onSearchCaptureMode: () -> Unit,
-    onButtonMode: () -> Unit,
+    searchBarActions: SearchBarActions,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -270,25 +278,25 @@ private fun SearchBar(
     LocationBar(
         currentResults = locationItems,
         searchAction = OnSearchAction.OnOneItemSelect,
-        onBackClicked = onBackClicked,
-        onClearLocation = onClearLocation,
+        onBackClicked = searchBarActions.onBackClicked,
+        onClearLocation = searchBarActions.onClearLocation,
         onSearchLocation = {
             timeLeft = 1000
-            onSearchLocation(it)
+            searchBarActions.onSearchLocation(it)
         },
         searching = searching,
         onLocationSelected = {
             scope.launch {
                 delay(1000)
                 if (timeLeft == 0) {
-                    onLocationSelected(it)
+                    searchBarActions.onLocationSelected(it)
                 }
             }
         },
         onModeChanged = {
             when (it) {
-                SearchBarMode.BUTTON -> onButtonMode()
-                SearchBarMode.SEARCH -> onSearchCaptureMode()
+                SearchBarMode.BUTTON -> searchBarActions.onButtonMode()
+                SearchBarMode.SEARCH -> searchBarActions.onSearchCaptureMode()
             }
         },
     )
