@@ -50,11 +50,15 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,6 +67,7 @@ import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
 import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -124,6 +129,7 @@ fun SinglePaneMapSelector(
         ) {
             if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
                 SearchBar(
+                    searching = screenState.searching,
                     locationItems = screenState.locationItems,
                     onBackClicked = screenActions.onBackClicked,
                     onClearLocation = screenActions.onClearLocation,
@@ -179,34 +185,47 @@ private fun TwoPaneMapSelector(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .fillMaxSize()
-                .padding(top = 56.dp),
+                .fillMaxSize(),
             verticalArrangement = spacedBy(16.dp),
         ) {
-            SearchBar(
-                locationItems = screenState.locationItems,
-                onBackClicked = screenActions.onBackClicked,
-                onClearLocation = screenActions.onClearLocation,
-                onSearchLocation = screenActions.onSearchLocation,
-                onLocationSelected = screenActions.onLocationSelected,
-                onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                onButtonMode = {
-                    // no-op
-                },
-            )
+            if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
+                MapTopBar(screenActions.onBackClicked)
+            }
 
-            LocationInfoContent(
-                selectedLocation = screenState.selectedLocation,
-                captureMode = screenState.captureMode,
-                displayPolygonInfo = screenState.displayPolygonInfo,
-                accuracyRange = screenState.accuracyRange,
-                configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
-            )
+            if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
+                SearchBar(
+                    searching = screenState.searching,
+                    locationItems = screenState.locationItems,
+                    onBackClicked = screenActions.onBackClicked,
+                    onClearLocation = screenActions.onClearLocation,
+                    onSearchLocation = screenActions.onSearchLocation,
+                    onLocationSelected = screenActions.onLocationSelected,
+                    onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                    onButtonMode = {
+                        // no-op
+                    },
+                )
+            }
 
-            DoneButton(
-                enabled = screenState.doneButtonEnabled,
-                onDoneButtonClicked = screenActions.onDoneButtonClick,
-            )
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Column {
+                    LocationInfoContent(
+                        selectedLocation = screenState.selectedLocation,
+                        captureMode = screenState.captureMode,
+                        displayPolygonInfo = screenState.displayPolygonInfo,
+                        accuracyRange = screenState.accuracyRange,
+                        configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
+                    )
+
+                    DoneButton(
+                        enabled = screenState.doneButtonEnabled,
+                        onDoneButtonClicked = screenActions.onDoneButtonClick,
+                    )
+                }
+            }
         }
 
         Column(Modifier.weight(0.7f)) {
@@ -229,6 +248,7 @@ private fun TwoPaneMapSelector(
 
 @Composable
 private fun SearchBar(
+    searching: Boolean,
     locationItems: List<LocationItemModel>,
     onBackClicked: () -> Unit,
     onClearLocation: () -> Unit,
@@ -256,6 +276,7 @@ private fun SearchBar(
             timeLeft = 1000
             onSearchLocation(it)
         },
+        searching = searching,
         onLocationSelected = {
             scope.launch {
                 delay(1000)
@@ -417,7 +438,8 @@ private fun Map(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(8.dp))
+            .background(SurfaceColor.ContainerLow),
         contentAlignment = Alignment.Center,
     ) {
         MapScreen(
@@ -606,3 +628,100 @@ private fun MapTopBar(onBackClicked: () -> Unit) {
         ),
     )
 }
+
+@Preview(device = "id:pixel_8a", showBackground = true)
+@Composable
+fun TestPortraitMap(
+    @PreviewParameter(ScreenStateParamProvider::class) screenState: MapSelectorScreenState,
+) {
+    MapSelectorScreen(
+        screenState = screenState,
+        mapSelectorScreenActions = previewActions,
+    )
+}
+
+@Preview(device = "id:pixel_tablet", showBackground = true)
+@Composable
+fun TestLandscapeMap(
+    @PreviewParameter(ScreenStateParamProvider::class) screenState: MapSelectorScreenState,
+) {
+    TwoPaneMapSelector(
+        screenState = screenState,
+        screenActions = previewActions,
+    )
+}
+
+private class ScreenStateParamProvider : PreviewParameterProvider<MapSelectorScreenState> {
+    override val values: Sequence<MapSelectorScreenState>
+        get() = sequenceOf(
+            searchScreenState,
+            gpsScreenState,
+        )
+}
+
+private val searchScreenState = MapSelectorScreenState(
+    mapData = MapData(
+        featureCollection = FeatureCollection.fromFeatures(emptyList()),
+        boundingBox = null,
+    ),
+    locationItems = listOf(
+        LocationItemModel.StoredResult(
+            storedTitle = "title",
+            storedSubtitle = "subtitle",
+            storedLatitude = 0.0,
+            storedLongitude = 0.0,
+        ),
+        LocationItemModel.SearchResult(
+            searchedTitle = "title",
+            searchedSubtitle = "subtitle",
+            searchedLatitude = 0.0,
+            searchedLongitude = 0.0,
+        ),
+    ),
+    selectedLocation = SelectedLocation.None(),
+    captureMode = MapSelectorViewModel.CaptureMode.SEARCH,
+    accuracyRange = AccuracyRange.None(),
+    searchOnAreaVisible = true,
+    displayPolygonInfo = false,
+    locationState = LocationState.OFF,
+    isManualCaptureEnabled = true,
+    forcedLocationAccuracy = 10,
+    lastGPSLocation = null,
+    searching = false,
+)
+
+private val gpsScreenState = MapSelectorScreenState(
+    mapData = MapData(
+        featureCollection = FeatureCollection.fromFeatures(emptyList()),
+        boundingBox = null,
+    ),
+    locationItems = emptyList(),
+    selectedLocation = SelectedLocation.GPSResult(
+        selectedLatitude = 0.0,
+        selectedLongitude = 0.0,
+        accuracy = 5f,
+    ),
+    captureMode = MapSelectorViewModel.CaptureMode.GPS,
+    accuracyRange = AccuracyRange.VeryGood(5),
+    searchOnAreaVisible = true,
+    displayPolygonInfo = false,
+    locationState = LocationState.FIXED,
+    isManualCaptureEnabled = true,
+    forcedLocationAccuracy = 10,
+    lastGPSLocation = null,
+    searching = false,
+)
+
+private val previewActions = MapSelectorScreenActions(
+    onBackClicked = { },
+    loadMap = {},
+    configurePolygonInfoRecycler = {},
+    onClearLocation = {},
+    onSearchLocation = {},
+    onLocationSelected = {},
+    onSearchCaptureMode = {},
+    onButtonMode = {},
+    onSearchOnAreaClick = {},
+    onMyLocationButtonClick = {},
+    onDoneButtonClick = {},
+)

@@ -233,6 +233,9 @@ class MapSelectorViewModelTest {
             assertTrue(state1.captureMode == MapSelectorViewModel.CaptureMode.SEARCH)
             assertTrue(state1.locationItems.isEmpty())
             mapSelectorViewModel.onSearchLocation("Address")
+            val searchingItem = awaitItem()
+            assertTrue(searchingItem.searching)
+            assertTrue(searchingItem.locationItems.isEmpty())
             val item2 = awaitItem()
             assertTrue(item2.locationItems == mockedLocationItemSearchResults)
             assertTrue(!item2.searchOnAreaVisible)
@@ -377,6 +380,7 @@ class MapSelectorViewModelTest {
         viewModel.initSearchMode()
         awaitItem()
         viewModel.onSearchLocation("Address")
+        assertTrue(awaitItem().searching)
         with(awaitItem()) {
             assertTrue(locationItems.isNotEmpty())
             assertTrue(captureMode == MapSelectorViewModel.CaptureMode.SEARCH)
