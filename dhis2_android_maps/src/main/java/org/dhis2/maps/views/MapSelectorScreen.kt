@@ -81,6 +81,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SearchBarMode
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
@@ -329,6 +330,8 @@ private fun LocationInfoContent(
 
         (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
             LocationItem(
+                modifier = Modifier
+                    .height(64.dp),
                 locationItemModel = LocationItemModel.SearchResult(
                     searchedTitle = stringResource(R.string.selected_location),
                     searchedSubtitle = stringResource(
@@ -351,6 +354,8 @@ private fun LocationInfoContent(
 
         captureMode.isSwipe() -> {
             LocationItem(
+                modifier = Modifier
+                    .height(64.dp),
                 locationItemModel = LocationItemModel.SearchResult(
                     searchedTitle = stringResource(R.string.drop_to_select),
                     searchedSubtitle = stringResource(
@@ -385,6 +390,8 @@ private fun LocationInfoContent(
         captureMode.isSearch() -> {
             if (selectedLocation is SelectedLocation.None) {
                 LocationItem(
+                    modifier = Modifier
+                        .height(64.dp),
                     locationItemModel = LocationItemModel.SearchResult(
                         searchedTitle = stringResource(R.string.select_location_title),
                         searchedSubtitle = stringResource(R.string.selet_location_subtitle),
@@ -403,6 +410,8 @@ private fun LocationInfoContent(
             } else if (selectedLocation is SelectedLocation.SearchResult) {
                 with(selectedLocation) {
                     LocationItem(
+                        modifier = Modifier
+                            .height(64.dp),
                         locationItemModel = LocationItemModel.SearchResult(
                             searchedTitle = title
                                 .takeIf { it.isNotBlank() }
@@ -426,6 +435,25 @@ private fun LocationInfoContent(
                         },
                     ) { }
                 }
+            } else if (selectedLocation is SelectedLocation.ManualResult) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(Spacing.Spacing10),
+                    horizontalArrangement = spacedBy(Spacing.Spacing16),
+                ) {
+                }
+            }
+        }
+        else -> {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .padding(Spacing.Spacing10),
+                horizontalArrangement = spacedBy(Spacing.Spacing16),
+            ) {
             }
         }
     }
