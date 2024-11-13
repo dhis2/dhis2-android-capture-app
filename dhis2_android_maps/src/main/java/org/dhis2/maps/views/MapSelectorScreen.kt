@@ -310,86 +310,61 @@ private fun LocationInfoContent(
     accuracyRange: AccuracyRange,
     configurePolygonInfoRecycler: (RecyclerView) -> Unit,
 ) {
-    when {
-        displayPolygonInfo -> {
-            AndroidView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 200.dp),
-                factory = { context ->
-                    RecyclerView(context).also {
-                        configurePolygonInfoRecycler(it)
-                    }
-                },
-                update = {
-                    // no-op
-                },
-            )
-        }
-
-        (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
-            LocationItem(
-                locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = stringResource(R.string.selected_location),
-                    searchedSubtitle = stringResource(
-                        R.string.latitude_longitude,
-                        selectedLocation.latitude.truncate(),
-                        selectedLocation.longitude.truncate(),
-                    ),
-                    searchedLatitude = selectedLocation.latitude,
-                    searchedLongitude = selectedLocation.longitude,
-                ),
-                icon = {
-                    LocationItemIcon(
-                        icon = Icons.Outlined.Place,
-                        tintedColor = SurfaceColor.Primary,
-                        bgColor = SurfaceColor.PrimaryContainer,
-                    )
-                },
-            ) { }
-        }
-
-        captureMode.isSwipe() -> {
-            LocationItem(
-                locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = stringResource(R.string.drop_to_select),
-                    searchedSubtitle = stringResource(
-                        R.string.latitude_longitude,
-                        selectedLocation.latitude.truncate(),
-                        selectedLocation.longitude.truncate(),
-                    ),
-                    searchedLatitude = selectedLocation.latitude,
-                    searchedLongitude = selectedLocation.longitude,
-                ),
-                icon = {
-                    LocationItemIcon(
-                        icon = Icons.Outlined.TouchApp,
-                        tintedColor = TextColor.OnWarningContainer,
-                        bgColor = SurfaceColor.WarningContainer,
-                    )
-                },
-            ) { }
-        }
-
-        captureMode.isGps() -> {
-            Box(
-                modifier = Modifier
-                    .height(64.dp)
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                AccuracyIndicator(accuracyRange = accuracyRange)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp),
+    ) {
+        when {
+            displayPolygonInfo -> {
+                AndroidView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 200.dp),
+                    factory = { context ->
+                        RecyclerView(context).also {
+                            configurePolygonInfoRecycler(it)
+                        }
+                    },
+                    update = {
+                        // no-op
+                    },
+                )
             }
-        }
 
-        captureMode.isSearch() -> {
-            if (selectedLocation is SelectedLocation.None) {
+            (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = stringResource(R.string.select_location_title),
-                        searchedSubtitle = stringResource(R.string.selet_location_subtitle),
-                        searchedLatitude = 0.0,
-                        searchedLongitude = 0.0,
+                        searchedTitle = stringResource(R.string.selected_location),
+                        searchedSubtitle = stringResource(
+                            R.string.latitude_longitude,
+                            selectedLocation.latitude.truncate(),
+                            selectedLocation.longitude.truncate(),
+                        ),
+                        searchedLatitude = selectedLocation.latitude,
+                        searchedLongitude = selectedLocation.longitude,
+                    ),
+                    icon = {
+                        LocationItemIcon(
+                            icon = Icons.Outlined.Place,
+                            tintedColor = SurfaceColor.Primary,
+                            bgColor = SurfaceColor.PrimaryContainer,
+                        )
+                    },
+                ) { }
+            }
+
+            captureMode.isSwipe() -> {
+                LocationItem(
+                    locationItemModel = LocationItemModel.SearchResult(
+                        searchedTitle = stringResource(R.string.drop_to_select),
+                        searchedSubtitle = stringResource(
+                            R.string.latitude_longitude,
+                            selectedLocation.latitude.truncate(),
+                            selectedLocation.longitude.truncate(),
+                        ),
+                        searchedLatitude = selectedLocation.latitude,
+                        searchedLongitude = selectedLocation.longitude,
                     ),
                     icon = {
                         LocationItemIcon(
@@ -398,33 +373,63 @@ private fun LocationInfoContent(
                             bgColor = SurfaceColor.WarningContainer,
                         )
                     },
+                ) { }
+            }
+
+            captureMode.isGps() -> {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
+                    AccuracyIndicator(accuracyRange = accuracyRange)
                 }
-            } else if (selectedLocation is SelectedLocation.SearchResult) {
-                with(selectedLocation) {
+            }
+
+            captureMode.isSearch() -> {
+                if (selectedLocation is SelectedLocation.None) {
                     LocationItem(
                         locationItemModel = LocationItemModel.SearchResult(
-                            searchedTitle = title
-                                .takeIf { it.isNotBlank() }
-                                ?: stringResource(R.string.selected_location),
-                            searchedSubtitle = address
-                                .takeIf { it.isNotBlank() }
-                                ?: stringResource(
-                                    R.string.latitude_longitude,
-                                    selectedLocation.latitude.truncate(),
-                                    selectedLocation.longitude.truncate(),
-                                ),
-                            searchedLatitude = latitude,
-                            searchedLongitude = longitude,
+                            searchedTitle = stringResource(R.string.select_location_title),
+                            searchedSubtitle = stringResource(R.string.selet_location_subtitle),
+                            searchedLatitude = 0.0,
+                            searchedLongitude = 0.0,
                         ),
                         icon = {
                             LocationItemIcon(
-                                icon = Icons.Outlined.Place,
-                                tintedColor = SurfaceColor.Primary,
-                                bgColor = SurfaceColor.PrimaryContainer,
+                                icon = Icons.Outlined.TouchApp,
+                                tintedColor = TextColor.OnWarningContainer,
+                                bgColor = SurfaceColor.WarningContainer,
                             )
                         },
-                    ) { }
+                    ) {
+                    }
+                } else if (selectedLocation is SelectedLocation.SearchResult) {
+                    with(selectedLocation) {
+                        LocationItem(
+                            locationItemModel = LocationItemModel.SearchResult(
+                                searchedTitle = title
+                                    .takeIf { it.isNotBlank() }
+                                    ?: stringResource(R.string.selected_location),
+                                searchedSubtitle = address
+                                    .takeIf { it.isNotBlank() }
+                                    ?: stringResource(
+                                        R.string.latitude_longitude,
+                                        selectedLocation.latitude.truncate(),
+                                        selectedLocation.longitude.truncate(),
+                                    ),
+                                searchedLatitude = latitude,
+                                searchedLongitude = longitude,
+                            ),
+                            icon = {
+                                LocationItemIcon(
+                                    icon = Icons.Outlined.Place,
+                                    tintedColor = SurfaceColor.Primary,
+                                    bgColor = SurfaceColor.PrimaryContainer,
+                                )
+                            },
+                        ) { }
+                    }
                 }
             }
         }
