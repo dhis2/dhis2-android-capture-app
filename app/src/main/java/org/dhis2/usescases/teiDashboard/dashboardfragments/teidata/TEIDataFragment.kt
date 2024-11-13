@@ -139,7 +139,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         return FragmentTeiDataBinding.inflate(inflater, container, false).also { binding ->
             this.binding = binding
             dashboardViewModel.groupByStage.observe(viewLifecycleOwner) { group ->
-                showLoadingProgress(false)
+                showLoadingProgress(true)
                 presenter.onGroupingChanged(group)
             }
 

@@ -108,7 +108,6 @@ class TroubleshootingRepository(
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
                 d2.dataElementModule().dataElements(),
-                d2.optionModule().options(),
             ).mapNotNull {
                 val ruleValueType = it.fieldType
                 val valueKey = when (it) {
