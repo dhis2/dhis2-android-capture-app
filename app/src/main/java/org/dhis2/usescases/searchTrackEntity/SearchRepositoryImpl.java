@@ -736,7 +736,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                     .blockingGet();
 
-            if (!enrollmentsInProgram.isEmpty()) {
+            if (selectedProgram != null && !enrollmentsInProgram.isEmpty()) {
                 for (Enrollment enrollment : enrollmentsInProgram) {
                     if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);
