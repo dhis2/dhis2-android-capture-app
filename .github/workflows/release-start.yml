@@ -79,7 +79,7 @@ jobs:
         uses: flex-development/gh-commit@1.0.0
         with:
           message: 'Update version to ${{ env.DEVELOPMENT_VERSION }}'
-          ref: $DEVELOPMENT_BRANCH
+          ref: ${{ env.DEVELOPMENT_BRANCH }}
 
       - name: create pull request
         run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
