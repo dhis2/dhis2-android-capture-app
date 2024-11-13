@@ -16,6 +16,8 @@ import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL_SWIPE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.NONE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH
+import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_MANUAL
+import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_SWIPE
 import org.dhis2.maps.views.SelectedLocation
 
 const val INITIAL_ZOOM_LEVEL = 13.0
@@ -38,13 +40,13 @@ object MapSelectorZoomHandler {
             NONE -> selectedFeature?.let {
                 initialZoomWithSelectedFeature(it)
             } ?: initialZoomWithNoSelection(lastGPSLocation)
-
             GPS -> selectedFeature?.let { gpsZoom(it) }
             MANUAL -> null
             MANUAL_SWIPE -> null
-            SEARCH -> selectedFeature?.let {
+            SEARCH, SEARCH_MANUAL -> selectedFeature?.let {
                 searchZoomWithSelectedFeature(it)
-            } ?: searchZoomWithNoSelection(featureCollection)
+            }
+            SEARCH_SWIPE -> null
         }
 
         map?.let { mapboxMap ->

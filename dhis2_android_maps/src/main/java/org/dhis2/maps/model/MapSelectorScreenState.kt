@@ -26,7 +26,12 @@ data class MapSelectorScreenState(
             displayPolygonInfo -> {
                 (mapData.featureCollection.features()?.size ?: 0) >= 4
             }
-
+            (captureMode.isSearchSwipe()) -> {
+                false
+            }
+            (captureMode.isSearchManual()) -> {
+                selectedLocation !is SelectedLocation.None
+            }
             (forcedLocationAccuracy == DEFAULT_FORCED_LOCATION_ACCURACY) -> {
                 selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
             }

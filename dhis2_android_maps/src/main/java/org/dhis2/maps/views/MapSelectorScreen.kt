@@ -332,7 +332,7 @@ private fun LocationInfoContent(
                 )
             }
 
-            (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
+            (captureMode.isManual() or captureMode.isNone() || captureMode.isSearchManual()) && selectedLocation is SelectedLocation.ManualResult -> {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
                         searchedTitle = stringResource(R.string.selected_location),
@@ -354,7 +354,7 @@ private fun LocationInfoContent(
                 ) { }
             }
 
-            captureMode.isSwipe() -> {
+            captureMode.isSwipe() || captureMode.isSearchSwipe() -> {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
                         searchedTitle = stringResource(R.string.drop_to_select),
@@ -386,7 +386,7 @@ private fun LocationInfoContent(
                 }
             }
 
-            captureMode.isSearch() -> {
+            captureMode.isSearch() || captureMode.isSearchManual() -> {
                 if (selectedLocation is SelectedLocation.None) {
                     LocationItem(
                         locationItemModel = LocationItemModel.SearchResult(
@@ -583,7 +583,7 @@ private fun DraggableSelectedIcon(
             mutableStateOf(0.dp)
         }
         val iconOffset by animateDpAsState(
-            if (captureMode.isSwipe()) {
+            if (captureMode.isSwipe() || captureMode.isSearchSwipe()) {
                 (-15).dp
             } else {
                 0.dp
