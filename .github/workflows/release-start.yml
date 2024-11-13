@@ -39,17 +39,17 @@ jobs:
       # override vName with new version
     - name: Create release branch
       run: |
-        git checkout -b $RELEASE_BRANCH
-        git push origin $RELEASE_BRANCH
+        git checkout -b ${{ env.RELEASE_BRANCH }}
+        git push origin ${{ env.RELEASE_BRANCH }}
 
     - name: Run Python script to update release branch version
-      run: python scripts/updateVersionName.py $RELEASE_VERSION
+      run: python scripts/updateVersionName.py ${{ env.RELEASE_VERSION }}
 
     - name: Commit and Push Changes
       uses: flex-development/gh-commit@1.0.0
       with:
-        message: 'Update version to $RELEASE_VERSION'
-        ref: $RELEASE_BRANCH
+        message: 'Update version to ${{ env.RELEASE_VERSION }}'
+        ref: ${{ env.RELEASE_BRANCH }}
 
   update_version:
     # The type of runner that the job will run on
@@ -69,19 +69,19 @@ jobs:
 
       - name: Create release branch
         run: |
-          git checkout -b $DEVELOPMENT_BRANCH
-          git push origin $DEVELOPMENT_BRANCH
+          git checkout -b ${{ env.DEVELOPMENT_BRANCH }}
+          git push origin ${{ env.DEVELOPMENT_BRANCH }}
 
       - name: Run Python script to update base branch version
-        run: python scripts/updateVersionName.py $DEVELOPMENT_VERSION
+        run: python scripts/updateVersionName.py ${{ env.DEVELOPMENT_VERSION }}
 
       - name: Commit and Push Changes
         uses: flex-development/gh-commit@1.0.0
         with:
-          message: 'Update version to $DEVELOPMENT_VERSION'
+          message: 'Update version to ${{ env.DEVELOPMENT_VERSION }}'
           ref: $DEVELOPMENT_BRANCH
 
       - name: create pull request
-        run: gh pr create -B develop -H update_version_to$DEVELOPMENT_VERSION --title 'Merge $DEVELOPMENT_BRANCH into develop' --body 'Created by Github action'
+        run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
