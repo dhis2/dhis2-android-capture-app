@@ -43,10 +43,10 @@ object MapSelectorZoomHandler {
             GPS -> selectedFeature?.let { gpsZoom(it) }
             MANUAL -> null
             MANUAL_SWIPE -> null
-            SEARCH, SEARCH_MANUAL -> selectedFeature?.let {
+            SEARCH -> selectedFeature?.let {
                 searchZoomWithSelectedFeature(it)
             }
-            SEARCH_SWIPE -> null
+            SEARCH_SWIPE, SEARCH_MANUAL -> null
         }
 
         map?.let { mapboxMap ->
