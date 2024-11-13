@@ -386,7 +386,7 @@ class CreateEventUseCaseTest {
         whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.standardInterval()) doReturn 15
         whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.periodType()) doReturn PeriodType.Monthly
         whenever(d2.programModule().programStages().uid(PROGRAM_STAGE_ID).blockingGet()?.periodType()) doReturn PeriodType.Monthly
-        whenever(dateUtils.getNextPeriod(PeriodType.Monthly, calendar.time, 0)) doReturn targetDate
+        whenever(dateUtils.getNextPeriod(PeriodType.Monthly, calendar.time, 1)) doReturn targetDate
 
         runBlocking {
             val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
