@@ -23,6 +23,9 @@ jobs:
   create_branch:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.release_version_name }}
+      RELEASE_BRANCH: 'release/${{ inputs.release_version_name }}'
 
     steps:
     - name: Check out code
@@ -35,20 +38,25 @@ jobs:
 
       # override vName with new version
     - name: Create release branch
-      run: git checkout -b release/${{ inputs.release_version_name }}
+      run: |
+        git checkout -b ${{ RELEASE_BRANCH }}
+        git push origin ${{ RELEASE_BRANCH }}
 
     - name: Run Python script to update release branch version
-      run: python scripts/updateVersionName.py ${{ inputs.release_version_name }}
+      run: python scripts/updateVersionName.py ${{ RELEASE_VERSION }}
 
     - name: Commit and Push Changes
       uses: flex-development/gh-commit@1.0.0
       with:
-        message: 'Update version to ${{ inputs.release_version_name }}'
-        ref: 'release/${{ inputs.release_version_name }}'
+        message: 'Update version to ${{ RELEASE_VERSION }}'
+        ref: ${{ RELEASE_BRANCH }}
 
   update_version:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
+      DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
 
     steps:
       - name: Check out code
@@ -60,18 +68,18 @@ jobs:
           python-version: 3.12.1
 
       - name: Create release branch
-        run: git checkout -b update_version_to${{ inputs.development_version_name }}
+        run: git checkout -b ${{ DEVELOPMENT_BRANCH }}
 
       - name: Run Python script to update base branch version
-        run: python scripts/updateVersionName.py ${{ inputs.development_version_name }}
+        run: python scripts/updateVersionName.py ${{ DEVELOPMENT_VERSION }}
 
       - name: Commit and Push Changes
         uses: flex-development/gh-commit@1.0.0
         with:
-          message: 'Update version to ${{ inputs.development_version_name }}'
-          ref: 'update_version_to${{ inputs.development_version_name }}'
+          message: 'Update version to ${{ DEVELOPMENT_VERSION }}'
+          ref: ${{ DEVELOPMENT_BRANCH }}
 
       - name: create pull request
-        run: gh pr create -B develop -H update_version_to${{ inputs.development_version_name }} --title 'Merge update_version_to${{ inputs.development_version_name }} into develop' --body 'Created by Github action'
+        run: gh pr create -B develop -H update_version_to${{ DEVELOPMENT_VERSION }} --title 'Merge ${{ DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
