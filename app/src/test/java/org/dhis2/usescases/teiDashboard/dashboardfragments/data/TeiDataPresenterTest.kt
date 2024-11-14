@@ -22,8 +22,8 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts

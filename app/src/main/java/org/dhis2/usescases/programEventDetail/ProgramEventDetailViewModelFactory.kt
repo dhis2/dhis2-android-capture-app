@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
 @Suppress("UNCHECKED_CAST")

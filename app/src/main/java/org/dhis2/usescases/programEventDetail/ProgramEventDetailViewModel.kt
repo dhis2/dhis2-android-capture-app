@@ -23,7 +23,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.NavigationBarUIState
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
