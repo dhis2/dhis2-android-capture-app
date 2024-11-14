@@ -8,11 +8,13 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -64,29 +66,29 @@ class ConfigureEventReportDateTest {
     }
 
     @Test
-    fun `Should return current day when new event`() = runBlocking {
+    fun `Should return tomorrow when new daily event`() = runBlocking {
         // Given the creation of new event
-        whenever(repository.getEvent()) doReturn null
-        whenever(programStage.displayEventLabel()) doReturn null
-
+        // And periodType is daily
+        val periodType = PeriodType.Daily
         configureEventReportDate = ConfigureEventReportDate(
             resourceProvider = resourcesProvider,
             repository = repository,
+            periodType = periodType,
             periodUtils = periodUtils,
         )
-        val currentDay =
-            DateUtils.uiDateFormat().format(DateUtils.getInstance().today)
+
+        val tomorrow = "16/02/2022"
+
+        whenever(
+            periodUtils.getPeriodUIString(any(), any(), any()),
+        ) doReturn tomorrow
 
         // When reportDate is invoked
         val eventDate = configureEventReportDate.invoke().first()
 
-        // Then report date should be active
-        assert(eventDate.active)
-        // Then reportDate should be the current day
-        assert(eventDate.dateValue == currentDay)
-        assert(eventDate.label == NEXT_EVENT)
+        // Then date should be tomorrow
+        assert(eventDate.dateValue == tomorrow)
     }
-
     @Test
     fun `Get next period when creating scheduled event`() = runBlocking {
         // Given the creation of new scheduled event
