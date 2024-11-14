@@ -289,7 +289,7 @@ class SchedulingViewModel(
             val programUid = event.program() ?: return@launch
 
             d2.eventModule().events().uid(launchMode.eventUid).run {
-                setEventDate(dateUtils.today)
+                setEventDate(dateUtils.getStartOfDay(Date()))
                 setStatus(EventStatus.ACTIVE)
             }
 

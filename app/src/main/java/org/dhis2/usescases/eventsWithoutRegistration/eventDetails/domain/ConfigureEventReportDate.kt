@@ -127,12 +127,12 @@ class ConfigureEventReportDate(
             periodType?.let {
                 return getDateBasedOnPeriodType(date.time)
             }
-            date
+            return date.time
         }
-        return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, 0)
+        return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, 1)
     }
 
-    private fun getCurrentDay() = DateUtils.getInstance().today
+    private fun getCurrentDay() = DateUtils.getInstance().getStartOfDay(Date())
 
     private fun getMinDate(initialDate: Date?): Date? {
         repository.getProgram()?.let { program ->
@@ -188,7 +188,7 @@ class ConfigureEventReportDate(
             when (creationType) {
                 ADDNEW,
                 DEFAULT,
-                -> DateUtils.getInstance().today
+                -> DateUtils.getInstance().getStartOfDay(Date())
 
                 else -> null
             }
