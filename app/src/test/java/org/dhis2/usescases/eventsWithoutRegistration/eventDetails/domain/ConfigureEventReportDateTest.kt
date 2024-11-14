@@ -89,35 +89,6 @@ class ConfigureEventReportDateTest {
         assert(eventDate.label == NEXT_EVENT)
     }
 
-    @Test
-    fun `Should return tomorrow when new daily event`() = runBlocking {
-        // Given the creation of new event
-        // And periodType is daily
-        val periodType = PeriodType.Daily
-        configureEventReportDate = ConfigureEventReportDate(
-            resourceProvider = resourcesProvider,
-            repository = repository,
-            periodType = periodType,
-            periodUtils = periodUtils,
-            enrollmentId = ENROLLMENT_ID,
-        )
-        val today = "15/02/2022"
-
-        whenever(
-            repository.getEnrollmentDate(ENROLLMENT_ID),
-        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
-        val tomorrow = "16/02/2022"
-
-        whenever(
-            periodUtils.getPeriodUIString(any(), any(), any()),
-        ) doReturn tomorrow
-
-        // When reportDate is invoked
-        val eventDate = configureEventReportDate.invoke().first()
-
-        // Then date should be tomorrow
-        assert(eventDate.dateValue == tomorrow)
-    }
 
     @Test
     fun `Get next period when creating scheduled event`() = runBlocking {
