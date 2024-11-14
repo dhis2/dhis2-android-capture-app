@@ -31,3 +31,4 @@ jobs:
         uses: flex-development/gh-commit@1.0.0
         with:
           message: "Update release notes"
+          token: ${{ secrets.DHIS2_BOT_NPM_TOKEN }}
