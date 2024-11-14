@@ -89,6 +89,7 @@ class ConfigureEventReportDateTest {
         // Then date should be tomorrow
         assert(eventDate.dateValue == tomorrow)
     }
+
     @Test
     fun `Get next period when creating scheduled event`() = runBlocking {
         // Given the creation of new scheduled event
