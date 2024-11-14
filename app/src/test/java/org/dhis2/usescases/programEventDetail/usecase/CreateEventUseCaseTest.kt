@@ -6,14 +6,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.tracker.events.CreateEventUseCaseRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepositoryTest.Companion.PROGRAM_STAGE_UID
-import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.tracker.events.CreateEventUseCaseRepository
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepositoryTest.Companion.PROGRAM_STAGE_UID
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventCollectionRepository
@@ -54,9 +47,7 @@ class CreateEventUseCaseTest {
         on { events().uid(EVENT_ID) } doReturn eventRepository
     }
 
-    private val dateUtils: DateUtils = mock {
-        on { today } doReturn Date()
-    }
+    private val dateUtils: DateUtils = DateUtils.getInstance()
 
     private lateinit var repository: CreateEventUseCaseRepository
 
@@ -88,7 +79,6 @@ class CreateEventUseCaseTest {
             result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, null)
             assertEquals(Result.success(EVENT_ID), result)
         }
-
         verify(eventRepository).setEventDate(any<Date>())
     }
 
@@ -106,14 +96,6 @@ class CreateEventUseCaseTest {
             val result = createEventUseCase(PROGRAM_ID, ORG_UNIT_ID, PROGRAM_STAGE_ID, ENROLLMENT_ID)
             assertEquals(error, result.exceptionOrNull())
         }
-    }
-
-    companion object {
-        const val PROGRAM_STAGE_ID = "programStageId"
-        const val ENROLLMENT_ID = "enrollmentId"
-        const val PROGRAM_ID = "programId"
-        const val EVENT_ID = "eventId"
-        const val ORG_UNIT_ID = "orgUnitId"
     }
 
     private fun mockD2Resources() {
@@ -140,21 +122,21 @@ class CreateEventUseCaseTest {
 
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted(),
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted(),
         ) doReturn mock()
 
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse,
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
 
@@ -168,22 +150,29 @@ class CreateEventUseCaseTest {
         ) doReturn eventCollectionRepository
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted(),
+                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted(),
         ) doReturn mock()
 
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse,
+                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse,
         ) doReturn mock()
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
         whenever(
             d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_UID).byDeleted().isFalse
+                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
+    }
+    companion object {
+        const val PROGRAM_STAGE_ID = "programStageId"
+        const val ENROLLMENT_ID = "enrollmentId"
+        const val PROGRAM_ID = "programId"
+        const val EVENT_ID = "eventId"
+        const val ORG_UNIT_ID = "orgUnitId"
     }
 }
