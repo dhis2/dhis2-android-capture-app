@@ -69,5 +69,6 @@ object GetMapData {
         )
         MapSelectorViewModel.CaptureMode.SEARCH_SWIPE -> null
         MapSelectorViewModel.CaptureMode.SEARCH_MANUAL -> null
+        MapSelectorViewModel.CaptureMode.SEARCH_PIN_CLICKED -> null
     }
 }

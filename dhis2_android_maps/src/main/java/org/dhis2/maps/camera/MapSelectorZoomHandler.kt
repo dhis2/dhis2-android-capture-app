@@ -17,6 +17,7 @@ import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.MANUAL_SWIPE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.NONE
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_MANUAL
+import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_PIN_CLICKED
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_SWIPE
 import org.dhis2.maps.views.SelectedLocation
 
@@ -43,7 +44,7 @@ object MapSelectorZoomHandler {
             GPS -> selectedFeature?.let { gpsZoom(it) }
             MANUAL -> null
             MANUAL_SWIPE -> null
-            SEARCH -> selectedFeature?.let {
+            SEARCH, SEARCH_PIN_CLICKED -> selectedFeature?.let {
                 searchZoomWithSelectedFeature(it)
             }
             SEARCH_SWIPE, SEARCH_MANUAL -> null

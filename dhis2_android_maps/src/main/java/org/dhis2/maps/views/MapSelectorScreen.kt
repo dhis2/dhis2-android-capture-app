@@ -583,7 +583,7 @@ private fun DraggableSelectedIcon(
             mutableStateOf(0.dp)
         }
         val iconOffset by animateDpAsState(
-            if (captureMode.isSwipe() || captureMode.isSearchSwipe()) {
+            if (captureMode.isSwipe() || captureMode.isSearchSwipe() || captureMode.isSearchPinClicked()) {
                 (-15).dp
             } else {
                 0.dp
