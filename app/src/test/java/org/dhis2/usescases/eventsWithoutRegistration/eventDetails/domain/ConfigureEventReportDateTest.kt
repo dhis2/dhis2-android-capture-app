@@ -105,7 +105,7 @@ class ConfigureEventReportDateTest {
 
         whenever(
             repository.getEnrollmentDate(ENROLLMENT_ID),
-        ) doReturn DateUtils.uiDateFormat().parse(today)
+        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
         val tomorrow = "16/02/2022"
 
         whenever(
