@@ -53,6 +53,9 @@ class MapSelectorViewModel(
         MANUAL,
         MANUAL_SWIPE,
         SEARCH,
+        SEARCH_SWIPE,
+        SEARCH_MANUAL,
+        SEARCH_PIN_CLICKED,
         ;
 
         fun isNone() = this == NONE
@@ -60,6 +63,10 @@ class MapSelectorViewModel(
         fun isManual() = this == MANUAL
         fun isSwipe() = this == MANUAL_SWIPE
         fun isSearch() = this == SEARCH
+        fun isSearchSwipe() = this == SEARCH_SWIPE
+        fun isSearchManual() = this == SEARCH_MANUAL
+        fun isSearchMode() = (this == SEARCH_MANUAL || this == SEARCH_SWIPE || this == SEARCH)
+        fun isSearchPinClicked() = this == SEARCH_PIN_CLICKED
     }
 
     private val initialGeometry =
@@ -260,7 +267,7 @@ class MapSelectorViewModel(
         query: String = _searchLocationQuery.value,
         regionToSearch: AvailableLatLngBounds? = _currentVisibleRegion,
     ) {
-        if (_screenState.value.captureMode.isSearch()) {
+        if (_screenState.value.captureMode.isSearch() || _screenState.value.captureMode.isSearchManual()) {
             updateScreenState(searching = true)
             val filteredPreviousLocation =
                 searchLocationManager.getAvailableLocations(query)
@@ -352,6 +359,7 @@ class MapSelectorViewModel(
                         _screenState.value.captureMode,
                     ),
                     selectedLocation = selectedLocation,
+                    captureMode = CaptureMode.SEARCH_PIN_CLICKED,
                 )
             }
         }
@@ -415,7 +423,11 @@ class MapSelectorViewModel(
 
     fun onMove(point: LatLng) {
         if (canCaptureWithSwipe()) {
-            val captureMode = if (!_screenState.value.captureMode.isSwipe()) {
+            val captureMode = if (_screenState.value.captureMode.isSearchMode() ||
+                _screenState.value.captureMode.isSearchPinClicked()
+            ) {
+                CaptureMode.SEARCH_SWIPE
+            } else if (!_screenState.value.captureMode.isSwipe()) {
                 CaptureMode.MANUAL_SWIPE
             } else {
                 _screenState.value.captureMode
@@ -449,6 +461,17 @@ class MapSelectorViewModel(
                     CaptureMode.MANUAL,
                 ),
                 captureMode = CaptureMode.MANUAL,
+            )
+        } else if (_screenState.value.captureMode.isSearchSwipe() ||
+            _screenState.value.captureMode.isSearchPinClicked()
+        ) {
+            updateScreenState(
+                mapData = GetMapData(
+                    _currentFeature,
+                    screenState.value.locationItems,
+                    CaptureMode.SEARCH_MANUAL,
+                ),
+                captureMode = CaptureMode.SEARCH_MANUAL,
             )
         }
     }
