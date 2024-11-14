@@ -50,7 +50,7 @@ jobs:
       with:
         message: 'Update version to ${{ env.RELEASE_VERSION }}'
         ref: ${{ env.RELEASE_BRANCH }}
-        token: ${{ secrets.DHIS2_BOT_NPM_TOKEN }}
+        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
   update_version:
     # The type of runner that the job will run on
@@ -81,7 +81,7 @@ jobs:
         with:
           message: 'Update version to ${{ env.DEVELOPMENT_VERSION }}'
           ref: ${{ env.DEVELOPMENT_BRANCH }}
-          token: ${{ secrets.DHIS2_BOT_NPM_TOKEN }}
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       - name: create pull request
         run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
