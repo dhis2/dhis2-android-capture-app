@@ -8,13 +8,11 @@ import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.event.Event
-import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -88,7 +86,6 @@ class ConfigureEventReportDateTest {
         assert(eventDate.dateValue == currentDay)
         assert(eventDate.label == NEXT_EVENT)
     }
-
 
     @Test
     fun `Get next period when creating scheduled event`() = runBlocking {
