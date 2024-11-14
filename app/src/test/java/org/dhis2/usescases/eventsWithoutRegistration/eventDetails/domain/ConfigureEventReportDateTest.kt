@@ -75,8 +75,16 @@ class ConfigureEventReportDateTest {
             repository = repository,
             periodType = periodType,
             periodUtils = periodUtils,
+            enrollmentId = ENROLLMENT_ID,
         )
+        val today = "15/02/2022"
 
+        whenever(
+            repository.getEnrollmentDate(ENROLLMENT_ID),
+        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
+        whenever(
+            repository.getEnrollmentIncidentDate(ENROLLMENT_ID),
+        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
         val tomorrow = "16/02/2022"
 
         whenever(
