@@ -6,6 +6,7 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.bindings.trackedEntityTypeForTei
 import org.dhis2.commons.data.TeiAttributesInfo
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_TEI
 import org.dhis2.commons.matomo.Categories.Companion.TRACKER_LIST
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
@@ -31,6 +32,8 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceObjectRepository
 import timber.log.Timber
+import java.util.Calendar.DAY_OF_YEAR
+import java.util.Date
 
 private const val TAG = "EnrollmentPresenter"
 
@@ -237,5 +240,23 @@ class EnrollmentPresenterImpl(
         return event?.status() == EventStatus.SCHEDULE ||
             event?.status() == EventStatus.SKIPPED ||
             event?.status() == EventStatus.OVERDUE
+    }
+
+    fun suggestedReportDateIsNotFutureDate(eventUid: String): Boolean {
+        return try {
+            val event = eventCollectionRepository.uid(eventUid).blockingGet()
+            val programStage = d2.programModule().programStages().uid(event?.programStage()).blockingGet()
+            val enrollment = enrollmentObjectRepository.blockingGet()
+            val generatedByEnrollment = programStage?.generatedByEnrollmentDate() ?: false
+            val startDate = if (generatedByEnrollment) enrollment?.enrollmentDate() else enrollment?.incidentDate()
+            val calendar = DateUtils.getInstance().getCalendarByDate(startDate)
+            calendar.add(DAY_OF_YEAR, programStage?.minDaysFromStart() ?: 0)
+            val minStartReportEventDate = calendar.time
+            val currentDate = DateUtils.getInstance().getStartOfDay(Date())
+            return minStartReportEventDate.before(currentDate) || minStartReportEventDate == currentDate
+        } catch (e: Exception) {
+            Timber.d(e.message)
+            true
+        }
     }
 }

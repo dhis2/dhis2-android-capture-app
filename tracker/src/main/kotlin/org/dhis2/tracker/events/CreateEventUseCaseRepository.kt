@@ -45,8 +45,12 @@ class CreateEventUseCaseRepository(
         } else {
             currentDate
         }
-        val eventRepository = d2.eventModule().events().uid(eventUid)
-        eventRepository.setEventDate(eventDate)
+
+        if(eventDate.before(currentDate) || eventDate == currentDate) {
+            val eventRepository = d2.eventModule().events().uid(eventUid)
+            eventRepository.setEventDate(eventDate)
+        }
+
     }
 
     private fun getStageLastDate(enrollmentUid: String?, programStageUid: String?): Date? {
