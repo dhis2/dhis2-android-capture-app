@@ -317,4 +317,7 @@ dependencies {
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
     androidTestImplementation(libs.dispatcher.dispatchEspresso)
+
+    implementation("org.unifiedpush.android:connector:3.0.0-rc2")
+    implementation("org.unifiedpush.android:connector-ui:1.1.0-rc3")
 }

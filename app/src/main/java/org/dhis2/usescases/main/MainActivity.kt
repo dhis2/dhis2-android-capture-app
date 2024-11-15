@@ -51,6 +51,10 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.unifiedpush.android.connector.INSTANCE_DEFAULT
+import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.android.connector.ui.SelectDistributorDialogsBuilder
+import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
 import java.io.File
 import javax.inject.Inject
 
@@ -193,8 +197,33 @@ class MainActivity :
         }
 
         checkNotificationPermission()
+        registerForPushNotifications()
 
         registerOnBackPressedCallback()
+    }
+
+    private fun registerForPushNotifications() {
+        SelectDistributorDialogsBuilder(
+            context,
+            object : UnifiedPushFunctions {
+                override fun getAckDistributor(): String? =
+                    UnifiedPush.getAckDistributor(context)
+
+                override fun getDistributors(): List<String> =
+                    UnifiedPush.getDistributors(context)
+
+                override fun registerApp(instance: String) =
+                    UnifiedPush.registerApp(context, instance)
+
+                override fun saveDistributor(distributor: String) =
+                    UnifiedPush.saveDistributor(context, distributor)
+
+                override fun tryUseDefaultDistributor(callback: (Boolean) -> Unit) {
+                    UnifiedPush.tryUseDefaultDistributor(context, callback)
+                }
+            }
+        ).run()
+
     }
 
     private fun checkNotificationPermission() {
