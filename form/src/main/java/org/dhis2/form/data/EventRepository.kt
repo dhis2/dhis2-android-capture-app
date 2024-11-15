@@ -477,7 +477,7 @@ class EventRepository(
         }
         val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
 
-        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), 1)
+        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), if (stageLastDate == null) 0 else 1)
     }
 
     private fun getStageLastDate(): Date? {
