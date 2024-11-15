@@ -172,10 +172,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        if (presenter.isEventScheduleOrSkipped(eventUid)) {
+        val suggestedEventDateIsNotFutureDate = presenter.suggestedReportDateIsNotFutureDate(eventUid)
+        if (presenter.isEventScheduleOrSkipped(eventUid) && suggestedEventDateIsNotFutureDate) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)
-        } else {
+        } else if (suggestedEventDateIsNotFutureDate) {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
                 EventCaptureActivity.getActivityBundle(
@@ -185,6 +186,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
+        } else {
+            openDashboard(presenter.getEnrollment()?.uid()!!)
         }
     }
 

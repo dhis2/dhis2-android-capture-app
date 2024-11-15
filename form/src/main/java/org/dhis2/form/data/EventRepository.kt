@@ -43,7 +43,6 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import java.util.Calendar.DAY_OF_YEAR
 import java.util.Date
 
 class EventRepository(
@@ -477,13 +476,8 @@ class EventRepository(
                 ?: getEnrollmentDate(enrollmentUid)
         }
         val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
-        if (stageLastDate == null) {
-            val minDaysFromStart = getMinDaysFromStartByProgramStage(programStage)
-            calendar.add(DAY_OF_YEAR, minDaysFromStart)
-        } else {
-            calendar.add(DAY_OF_YEAR, programStage?.standardInterval() ?: 0)
-        }
-        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), 1)
+
+        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), if (stageLastDate == null) 0 else 1)
     }
 
     private fun getStageLastDate(): Date? {
@@ -499,7 +493,7 @@ class EventRepository(
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet().filter { it.uid() != eventUid }
 
         var activeDate: Date? = null
         var scheduleDate: Date? = null
@@ -514,10 +508,6 @@ class EventRepository(
             activeDate.before(scheduleDate) -> scheduleDate
             else -> activeDate
         }
-    }
-
-    private fun getMinDaysFromStartByProgramStage(programStage: ProgramStage?): Int {
-        return programStage?.minDaysFromStart() ?: 0
     }
 
     private fun getEnrollmentDate(uid: String?): Date? {
