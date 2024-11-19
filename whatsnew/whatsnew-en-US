@@ -1,10 +1,8 @@
-This is a patch version that fixes:
-- Working lists aren't applied even when active.
-- Cannot navigate to event details or sync event after navigating back from details.
-- Login error in landscape.
-- Data entry not saving more than one value.
-- Incorrect workflow of Org unit when creating event.
-- Crash when rotating device in settings activity.
-- Option set not working well in data set if the code of option contains character "_".
-
-Also stability issues. You can find all the details on Github.
+Capture Coordinates: Improved accuracy, search, and manual capture.
+Transfer Flows: Easier access and step-by-step guidance.
+Relationship Section: Redesigned module.
+Unique Attribute Sorting: QR/barcodes sorted for quick searches.
+Biometric Login: For single accounts.
+Line Listings: Category Option filters, text improvements.
+UX Updates: Dynamic home screen, revamped menus, and scheduling dialog.
+Custom Tracker Terminology: Tailor terms like “event” per program.
