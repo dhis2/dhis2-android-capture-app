@@ -13,11 +13,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.material.composethemeadapter.MdcTheme
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
@@ -41,7 +48,6 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.compositions.LocalInteraction
-import org.dhis2.ui.theme.descriptionTextStyle
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import kotlin.math.roundToInt
 
@@ -169,7 +175,15 @@ class GraphToTable {
                                     R.string.line_listing_max_results,
                                     LINE_LISTING_MAX_ROWS,
                                 ),
-                                style = descriptionTextStyle,
+                                style = TextStyle(
+                                    color = Color(0xFF667685),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = FontFamily(Font(org.dhis2.ui.R.font.roboto_regular)),
+                                    lineHeight = 16.sp,
+                                    letterSpacing = (0.4).sp,
+                                    textAlign = TextAlign.End,
+                                ),
                             )
                         }
                     }
