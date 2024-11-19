@@ -66,7 +66,7 @@ jobs:
         userFraction: 0.99
 
     - name: Upload to Github
-      if: ${{ (inputs.github_release }}
+      if: ${{ inputs.github_release }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
