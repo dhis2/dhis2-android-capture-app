@@ -20,6 +20,7 @@ import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.KeyboardActionType
+import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -76,6 +77,12 @@ class DataEntryIntegrationTest {
         on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
     }
 
+    private val legendValueItem: LegendValue = LegendValue(
+        color = 0,
+        label = "Legend",
+        emptyList(),
+    )
+
     private val ruleEngineRepository: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
 
@@ -88,6 +95,7 @@ class DataEntryIntegrationTest {
         rulesUtilsProvider = rulesUtilsProvider,
         legendValueProvider = legendValueProvider,
         useCompose = true,
+        preferenceProvider = preferenceProvider,
     )
 
     private lateinit var formViewModel: FormViewModel
@@ -128,17 +136,25 @@ class DataEntryIntegrationTest {
             fieldUiModel
         }
 
+        whenever(
+            legendValueProvider.provideLegendValue(
+                "INPUT_NUMBER_WITH_LEGEND_UID",
+                "25",
+            ),
+        ).thenAnswer {
+            legendValueItem
+        }
+
         formViewModel = FormViewModel(
             repository = repository,
             dispatcher = dispatcher,
             geometryController = geometryController,
             openErrorLocation = false,
-            preferenceProvider = preferenceProvider,
         )
     }
 
     @Test
-    fun shouldDataEntrySuccessfully() = runTest {
+    fun shouldAllowDataEntryCorrectly() = runTest {
         val observedItems = mutableListOf<List<FieldUiModel>>()
         val observer = Observer<List<FieldUiModel>> { items ->
             observedItems.add(items)
@@ -200,6 +216,22 @@ class DataEntryIntegrationTest {
         )
         formViewModel.submitIntent(enterAgeIntent)
 
+        // focus on input field with legend
+        val focusOnLegendFieldIntent = FormIntent.OnFocus(
+            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+            value = "",
+        )
+        formViewModel.submitIntent(focusOnLegendFieldIntent)
+
+        // enter value on input field with legend
+        val enterValueOnLegendFieldIntent = FormIntent.OnTextChange(
+            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+            value = "25",
+            valueType = ValueType.NUMBER,
+        )
+
+        formViewModel.submitIntent(enterValueOnLegendFieldIntent)
+
         // Focus on gender
         val focusOnGenderIntent = FormIntent.OnFocus(
             uid = "oZg33kd9taw",
@@ -221,6 +253,9 @@ class DataEntryIntegrationTest {
             observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
         )
         assert(
+            observedItems.last().find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
+        )
+        assert(
             observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
         )
         assert(
@@ -235,14 +270,12 @@ class DataEntryIntegrationTest {
         return listOf(
             SectionUiModelImpl(
                 uid = "EVENT_DETAILS_SECTION_UID",
-                layoutId = 0,
                 label = "Event details",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "EVENT_REPORT_DATE_UID",
-                layoutId = 0,
                 label = "Report date",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -253,7 +286,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_ORG_UNIT_UID",
-                layoutId = 0,
                 label = "Org unit",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -264,7 +296,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_COORDINATE_UID",
-                layoutId = 0,
                 label = "Coordinates",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -274,14 +305,12 @@ class DataEntryIntegrationTest {
             ),
             SectionUiModelImpl(
                 uid = "EVENT_DATA_SECTION_UID",
-                layoutId = 0,
                 label = "Event data",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "qrur9Dvnyt5",
-                layoutId = 0,
                 label = "Age (years)",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -291,8 +320,17 @@ class DataEntryIntegrationTest {
                 keyboardActionType = KeyboardActionType.NEXT,
             ),
             FieldUiModelImpl(
+                uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                label = "Weight (kg)",
+                programStageSection = "EVENT_DATA_SECTION_UID",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.NUMBER,
+                mandatory = true,
+                keyboardActionType = KeyboardActionType.NEXT,
+            ),
+            FieldUiModelImpl(
                 uid = "oZg33kd9taw",
-                layoutId = 0,
                 label = "Gender",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -321,7 +359,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "F3ogKBuviRA",
-                layoutId = 0,
                 label = "Household location",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),

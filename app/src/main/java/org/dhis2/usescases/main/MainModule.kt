@@ -6,10 +6,11 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
@@ -22,7 +23,7 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
 @Module
-class MainModule(val view: MainView) {
+class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
 
     @Provides
     @PerActivity
@@ -31,7 +32,6 @@ class MainModule(val view: MainView) {
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         workManagerController: WorkManagerController,
-        filterManager: FilterManager,
         filterRepository: FilterRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
         userManager: UserManager,
@@ -47,7 +47,6 @@ class MainModule(val view: MainView) {
             schedulerProvider,
             preferences,
             workManagerController,
-            filterManager,
             filterRepository,
             matomoAnalyticsController,
             userManager,
@@ -56,6 +55,7 @@ class MainModule(val view: MainView) {
             syncStatusController,
             versionRepository,
             dispatcherProvider,
+            forceToNotSynced,
         )
     }
 
@@ -77,14 +77,10 @@ class MainModule(val view: MainView) {
 
     @Provides
     @PerActivity
-    fun providePageConfigurator(homeRepository: HomeRepository): NavigationPageConfigurator {
-        return HomePageConfigurator(homeRepository)
-    }
-
-    @Provides
-    @PerActivity
-    fun providesNewFilterAdapter(): FiltersAdapter {
-        return FiltersAdapter()
+    fun providePageConfigurator(
+        homeRepository: HomeRepository,
+    ): NavigationPageConfigurator {
+        return HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
     }
 
     @Provides
@@ -92,10 +88,11 @@ class MainModule(val view: MainView) {
     fun provideDeleteUserData(
         workManagerController: WorkManagerController,
         preferencesProvider: PreferenceProvider,
+        filterManager: FilterManager,
     ): DeleteUserData {
         return DeleteUserData(
             workManagerController,
-            FilterManager.getInstance(),
+            filterManager,
             preferencesProvider,
         )
     }

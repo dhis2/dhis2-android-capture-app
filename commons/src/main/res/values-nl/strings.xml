@@ -23,8 +23,6 @@
     <string name="event_overview">Details</string>
     <string name="select_option">Selecteer optie</string>
     <string name="search">Zoek</string>
-    <string name="jira_issue_sent">Probleem verzonden</string>
-    <string name="jira_issue_sent_error">Fout bij verzenden</string>
     <string name="events">evenementen</string>
     <string name="data_sets">Gegevensreeksen</string>
     <string name="tei">TEI</string>

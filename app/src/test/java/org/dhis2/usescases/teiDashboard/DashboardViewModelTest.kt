@@ -7,10 +7,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.setMain
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.utils.analytics.ACTIVE_FOLLOW_UP
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.FOLLOW_UP
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -32,6 +34,8 @@ class DashboardViewModelTest {
     private val repository: DashboardRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val testingDispatcher = StandardTestDispatcher()
+    private val pageConfigurator: NavigationPageConfigurator = mock()
+    private val resoourcesManager: ResourceManager = mock()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -162,6 +166,8 @@ class DashboardViewModelTest {
                 return testingDispatcher
             }
         },
+        pageConfigurator,
+        resoourcesManager,
     ).also {
         testingDispatcher.scheduler.advanceUntilIdle()
     }

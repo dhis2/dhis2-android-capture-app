@@ -187,7 +187,6 @@ class GroupAnalyticsFragment : Fragment() {
 
     private fun showOUTreeSelector(chartModel: ChartModel, lineListingColumnId: Int?) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 chartModel.graph.orgUnitsSelected(lineListingColumnId).toMutableList(),
             )

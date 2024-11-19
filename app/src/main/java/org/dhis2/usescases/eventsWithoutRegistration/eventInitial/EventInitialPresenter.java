@@ -199,31 +199,6 @@ public class EventInitialPresenter {
         }
     }
 
-    public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
-                                       Date dueDate, String orgUnitUid, String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry) {
-        if (program != null) {
-            preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
-            compositeDisposable.add(
-                    eventInitialRepository.permanentReferral(
-                                    enrollmentUid,
-                                    trackedEntityInstanceUid,
-                                    program.uid(),
-                                    programStageModel,
-                                    dueDate,
-                                    orgUnitUid,
-                                    categoryOptionComboUid,
-                                    categoryOptionsUid,
-                                    geometry)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    view::onEventCreated,
-                                    t -> view.renderError(t.getMessage())
-                            )
-            );
-        }
-    }
-
     public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
                               String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry) {
         if (program != null) {

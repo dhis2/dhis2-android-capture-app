@@ -38,6 +38,7 @@ class DateToPositionTest {
             PeriodType.Monthly,
             PeriodType.BiMonthly,
             PeriodType.Quarterly,
+            PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,

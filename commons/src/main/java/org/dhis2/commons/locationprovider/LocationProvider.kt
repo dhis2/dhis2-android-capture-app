@@ -13,4 +13,6 @@ interface LocationProvider {
     fun stopLocationUpdates()
 
     fun hasLocationEnabled(): Boolean
+
+    fun hasUpdatesEnabled(): Boolean
 }

@@ -9,7 +9,7 @@ class OUTreeRepository(
 
     fun orgUnits(name: String? = null): List<OrganisationUnit> {
         availableOrgUnits = orgUnitRepositoryConfiguration.orgUnitRepository(name)
-        return availableOrgUnits.withParents().sortedBy { it.displayNamePath()?.joinToString(" ") }
+        return availableOrgUnits.order().sortedBy { it.displayNamePath()?.joinToString(" ") }
     }
 
     fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
@@ -29,14 +29,20 @@ class OUTreeRepository(
             selectedOrgUnits,
         )
     }
-    private fun List<OrganisationUnit>.withParents(): List<OrganisationUnit> {
+
+    private fun List<OrganisationUnit>.order(): List<OrganisationUnit> {
         val listWithParents = this.toMutableList()
+        val minLevel = minOfOrNull { it.level() ?: 0 }
         this.forEach { organisationUnit ->
-            organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() }?.forEach { parentUid ->
-                if (!listWithParents.any { it.uid() == parentUid }) {
-                    orgUnitRepositoryConfiguration.orgUnit(parentUid)
-                        ?.let { listWithParents.add(it) }
+            var isParentInParentList = false
+            organisationUnit.path()?.split("/")?.filter { it.isNotEmpty() && it != organisationUnit.uid() }?.forEach { parentUid ->
+                if (listWithParents.any { it.uid() == parentUid }) {
+                    isParentInParentList = true
                 }
+            }
+            if (!isParentInParentList && listWithParents.indexOf(organisationUnit) != 0) {
+                listWithParents.remove(organisationUnit)
+                listWithParents.add(0, organisationUnit.toBuilder().level(minLevel).build())
             }
         }
         return listWithParents

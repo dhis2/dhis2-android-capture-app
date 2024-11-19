@@ -143,8 +143,6 @@
     <string name="delete">Smazat</string>
     <string name="total">Celkem</string>
     <string name="most_recent_event_date">Datum poslední události</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Seznam zápisů</string>
     <string name="active_programs">Aktivní programy</string>
     <string name="to_enroll_programs">Programy k zápisu</string>
     <string name="enroll">Zapsat</string>
@@ -305,7 +303,6 @@
     <string name="qr_error_attr">Tento atribut nelze přidat</string>
     <string name="qr_error_enrollment">Tento zápis nelze přidat</string>
 
-    <string name="jira_report">Nahlásit problém do Jira</string>
     <string name="about">O nás</string>
     <string name="programs_to_enroll">Programy k zápisu</string>
     <string name="select_all">vybrat vše</string>
@@ -369,10 +366,6 @@
     <string name="date_dialog_tigle">Vyberte data, která chcete filtrovat</string>
     <string name="select_option">Vyberte možnost</string>
     <string name="issue_reported">Problém byl nahlášen</string>
-    <string name="jira_credential_error">Zkontrolujte, zda je váš uživatel a heslo jira správné</string>
-    <string name="jira_issue_error">Chyba při hlášení problému</string>
-    <string name="jira_fields_error">Všechna pole jsou povinná</string>
-    <string name="dialog_generate_new_event">Generovat novou událost</string>
     <string name="message_generate_new_event">Chcete vytvořit další událost?</string>
     <string name="event_completed_title">Události byly dokončeny</string>
     <string name="event_completed_message">Všechny události v tomto programu jsou dokončeny. Chcete také ukončit program?</string>
@@ -415,7 +408,6 @@
     <string name="tuto_main_10">Odhlaste se a změňte uživatele nebo server. Budete se moci znovu přihlásit, i když nemáte připojení k internetu.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">vztahy</string>
-    <string name="empty_relationships">Neexistují žádné vztahy, kliknutím na „+“ přidáte nový.</string>
     <string name="empty_tei_add">Nejsou zaregistrovány žádné události, kliknutím na „+“ přidáte novou.</string>
     <string name="empty_tei_no_add">Nejsou registrovány žádné události.</string>
     <string name="qr_data_values">Datové hodnoty</string>
@@ -685,12 +677,9 @@
     <string name="download_tei_error">Vybraný %s nelze stáhnout.</string>
     <string name="completed_by">Dokončeno %s : %s</string>
     <string name="updated_time">Aktualizováno: %s</string>
-    <string name="action_done">Hotovo!</string>
     <string name="validation_internal_error_datasets">Nemohli jsme zkontrolovat kvalitu dat. Kontaktujte svého správce</string>
     <string name="are_you_sure">Jste si jist?</string>
     <string name="reopen_question">Chcete znovu otevřít soubor dat?</string>
-    <string name="group_events_by_stage">Skupinové akce podle fáze</string>
-    <string name="show_events_timeline">Zobrazit časovou osu událostí</string>
     <string name="filters_title_date">Datum</string>
     <string name="filters_title_event_date">Datum události</string>
     <string name="tei_type_has_no_attributes">%s nemá žádné veřejné atributy. Vyberte program</string>
@@ -714,19 +703,7 @@
     <string name="metada_first_sync_error">Při synchronizaci se serverem jsme našli chybu. Pokud je to možné, sdílejte chybu se správcem systému.</string>
     <string name="error_init_session">Nemohli jsme zahájit relaci s vaším uživatelem</string>
     <string name="enrollment_date_edition_warning">Jsou plánované události, které nebudou znovu naplánovány</string>
-    <string name="jira_issue_sent">Problém odeslán</string>
-    <string name="jira_issue_sent_error">Chyba při odesílání problému</string>
     <string name="section_charts">Grafy</string>
-    <string name="navigation_list_view">Zobrazení seznamu</string>
-    <string name="navigation_table_view">Zobrazení tabulky</string>
-    <string name="navigation_map_view">Zobrazení mapy</string>
-    <string name="navigation_analytics">Analýza</string>
-    <string name="navigation_tasks">Úkoly</string>
-    <string name="navigation_programs">Programy</string>
-    <string name="navigation_relationships">Vztahy</string>
-    <string name="navigation_notes">Poznámky</string>
-    <string name="navigation_data_entry">Vstup dat</string>
-    <string name="navigation_tei_data">Detaily</string>
     <string name="show_bar_graph">Zobrazit jako lištu</string>
     <string name="show_line_graph">Zobrazit jako čáru</string>
     <string name="show_table_graph">Zobrazit jako tabulku</string>

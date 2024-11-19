@@ -1,11 +1,11 @@
 package org.dhis2.form.ui
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -35,7 +34,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.binding.getFeatureType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.validation.validators.FieldMaskValidator
@@ -58,7 +56,6 @@ class FormViewModel(
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
     private val openErrorLocation: Boolean = false,
-    private val preferenceProvider: PreferenceProvider,
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -93,6 +90,10 @@ class FormViewModel(
         capacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    var filePath: String? = null
 
     init {
         viewModelScope.launch {
@@ -162,6 +163,12 @@ class FormViewModel(
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
                         _queryData.value = it
+                    }
+                    if (repository.hasLegendSet(result.first.id)) {
+                        handler.removeCallbacksAndMessages(null)
+                        handler.postDelayed({
+                            processCalculatedItems(skipProgramRules = true)
+                        }, 500L)
                     }
                 }
 
@@ -339,7 +346,7 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = getSaveIntent(it)
+                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
                 val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
@@ -359,12 +366,14 @@ class FormViewModel(
 
     private fun checkAutoCompleteForLastFocusedItem(fieldUidModel: FieldUiModel) =
         getLastFocusedTextItem()?.let {
-            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE && !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0) {
+            if (fieldUidModel.renderingType == UiRenderType.AUTOCOMPLETE &&
+                !fieldUidModel.value.isNullOrEmpty() && fieldUidModel.value?.trim()?.length != 0
+            ) {
                 val autoCompleteValues =
-                    getListFromPreference(fieldUidModel.uid)
+                    repository.getListFromPreferences(fieldUidModel.uid)
                 if (!autoCompleteValues.contains(fieldUidModel.value)) {
                     autoCompleteValues.add(fieldUidModel.value.toString())
-                    saveListToPreference(fieldUidModel.uid, autoCompleteValues)
+                    repository.saveListToPreferences(fieldUidModel.uid, autoCompleteValues)
                 }
             }
         }
@@ -391,16 +400,6 @@ class FormViewModel(
                 it.valueType == ValueType.DATE ||
                 it.valueType == ValueType.TIME
             )
-    }
-
-    private fun getSaveIntent(field: FieldUiModel) = when (field.valueType) {
-        ValueType.COORDINATE -> FormIntent.SaveCurrentLocation(
-            field.uid,
-            field.value,
-            getFeatureType(field.renderingType).name,
-        )
-
-        else -> FormIntent.OnSave(field.uid, field.value, field.valueType, field.fieldMask)
     }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction {
@@ -734,7 +733,7 @@ class FormViewModel(
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
-                repository.runDataIntegrityCheck(allowDiscard = backButtonPressed ?: false)
+                repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
             }
             try {
                 _dataIntegrityResult.postValue(result.await())
@@ -760,6 +759,24 @@ class FormViewModel(
         }
     }
 
+    fun completeEvent() {
+        viewModelScope.launch {
+            try {
+                async(dispatcher.io()) {
+                    repository.completeEvent()
+                }.await()
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    fun activateEvent() {
+        viewModelScope.launch(dispatcher.io()) {
+            repository.activateEvent()
+        }
+    }
+
     fun displayLoopWarningIfNeeded() {
         viewModelScope.launch {
             val result = async(dispatcher.io()) {
@@ -781,7 +798,7 @@ class FormViewModel(
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(getSaveIntent(it))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
         }
         submitIntent(FormIntent.OnFinish())
     }
@@ -826,23 +843,6 @@ class FormViewModel(
                 type = ActionType.ON_SAVE,
             )
         }
-    }
-
-    private fun getListFromPreference(uid: String): MutableList<String> {
-        val gson = Gson()
-        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
-        val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type)
-    }
-
-    private fun saveListToPreference(uid: String, list: List<String>) {
-        val gson = Gson()
-        val json = gson.toJson(list)
-        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
-    }
-
-    fun areSectionCollapsable(): Boolean {
-        return repository.areSectionCollapsable()
     }
 
     companion object {

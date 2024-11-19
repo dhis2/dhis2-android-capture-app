@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultRegistry
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
@@ -21,10 +22,10 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCaseRepository
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
-import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
@@ -171,10 +172,17 @@ class TEIDataModule(
     @Provides
     fun provideCreateEventUseCase(
         dispatcherProvider: DispatcherProvider,
-        d2: D2,
-        dateUtils: DateUtils,
+        repository: CreateEventUseCaseRepository,
     ) = CreateEventUseCase(
         dispatcher = dispatcherProvider,
+        repository = repository,
+    )
+
+    @Provides
+    fun provideCreateEventUseCaseRepository(
+        d2: D2,
+        dateUtils: DateUtils,
+    ) = CreateEventUseCaseRepository(
         d2 = d2,
         dateUtils = dateUtils,
     )

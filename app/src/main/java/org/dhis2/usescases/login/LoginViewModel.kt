@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,8 +28,7 @@ import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.fingerprint.FingerPrintController
-import org.dhis2.data.fingerprint.Type
+import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.TestingCredential
@@ -45,7 +43,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import retrofit2.Response
 import timber.log.Timber
 import java.io.File
 
@@ -57,7 +54,7 @@ class LoginViewModel(
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
     private val dispatchers: DispatcherProvider,
-    private val fingerPrintController: FingerPrintController,
+    private val biometricController: BiometricController,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
     private val network: NetworkUtils,
@@ -66,8 +63,6 @@ class LoginViewModel(
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
     var disposable: CompositeDisposable = CompositeDisposable()
-
-    private var canHandleBiometrics: Boolean? = null
 
     val serverUrl = MutableLiveData<String>()
     val userName = MutableLiveData<String>()
@@ -80,6 +75,9 @@ class LoginViewModel(
 
     private val _hasAccounts = MutableLiveData<Boolean>()
     val hasAccounts: LiveData<Boolean> = _hasAccounts
+
+    private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
+    val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
 
     private val _displayMoreActions = MutableLiveData<Boolean>(true)
     val displayMoreActions: LiveData<Boolean> = _displayMoreActions
@@ -107,17 +105,16 @@ class LoginViewModel(
                                     )
                                 val user = preferenceProvider.getString(SECURE_USER_NAME, "")
                                 if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
-                                    view.setUrl(serverUrl)
-                                    view.setUser(user)
+                                    setAccountInfo(serverUrl, user)
                                 } else {
-                                    view.setUrl(view.getDefaultServerProtocol())
+                                    setAccountInfo(view.getDefaultServerProtocol(), null)
                                 }
                             }
                         },
                         { exception -> Timber.e(exception) },
                     ),
             )
-        } ?: view.setUrl(view.getDefaultServerProtocol())
+        } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
         displayManageAccount()
     }
 
@@ -134,34 +131,34 @@ class LoginViewModel(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         { systemInfo ->
-                            if (systemInfo.contextPath() != null) {
-                                view.setUrl(systemInfo.contextPath() ?: "")
-                                view.setUser(userManager.userName().blockingGet())
-                            } else {
-                                val isSessionLocked =
-                                    preferenceProvider.getBoolean(SESSION_LOCKED, false)
-                                if (!isSessionLocked) {
-                                    val serverUrl =
-                                        preferenceProvider.getString(
-                                            SECURE_SERVER_URL,
-                                            view.getDefaultServerProtocol(),
-                                        )
-                                    val user = preferenceProvider.getString(SECURE_USER_NAME, "")
-                                    if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
-                                        view.setUrl(serverUrl)
-                                        view.setUser(user)
-                                    }
-                                } else {
-                                    view.setUrl(view.getDefaultServerProtocol())
-                                }
-                            }
+                            setServerAndUserInfo(systemInfo.contextPath())
+                            checkBiometricVisibility()
                         },
                         { Timber.e(it) },
                     ),
             )
-        } ?: view.setUrl(view.getDefaultServerProtocol())
+        } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
+    }
 
-        showBiometricButtonIfVersionIsGreaterThanM(view)
+    private fun setServerAndUserInfo(contextPath: String?) {
+        contextPath?.let {
+            setAccountInfo(it, userManager?.userName()?.blockingGet())
+        } ?: {
+            val isSessionLocked =
+                preferenceProvider.getBoolean(SESSION_LOCKED, false)
+            val serverUrl =
+                preferenceProvider.getString(
+                    SECURE_SERVER_URL,
+                    view.getDefaultServerProtocol(),
+                )
+            val user = preferenceProvider.getString(SECURE_USER_NAME, "")
+
+            if (!isSessionLocked && !serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
+                setAccountInfo(serverUrl, user)
+            } else {
+                setAccountInfo(view.getDefaultServerProtocol(), null)
+            }
+        }
     }
 
     private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
@@ -175,31 +172,19 @@ class LoginViewModel(
         }
     }
 
-    private fun showBiometricButtonIfVersionIsGreaterThanM(view: LoginContracts.View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            disposable.add(
-                Observable.just(fingerPrintController.hasFingerPrint())
-                    .filter { canHandleBiometrics ->
-                        this.canHandleBiometrics = canHandleBiometrics
-                        canHandleBiometrics && preferenceProvider.contains(SECURE_SERVER_URL)
-                    }
-                    .subscribeOn(schedulers.io())
-                    .observeOn(schedulers.ui())
-                    .subscribe(
-                        { view.showBiometricButton() },
-                        { Timber.e(it) },
-                    ),
-            )
-        }
+    fun checkBiometricVisibility() {
+        _canLoginWithBiometrics.value =
+            biometricController.hasBiometric() &&
+            userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
+            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false &&
+            preferenceProvider.contains(SECURE_PASS)
     }
 
     fun onLoginButtonClick() {
         try {
             view.hideKeyboard()
             analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-            increment()
             logIn()
-            decrement()
         } catch (throwable: Throwable) {
             Timber.e(throwable)
             handleError(throwable)
@@ -208,6 +193,7 @@ class LoginViewModel(
 
     private fun logIn() {
         _loginProgressVisible.postValue(true)
+        increment()
         disposable.add(
             Observable.just(view.initLogin())
                 .flatMap { userManager ->
@@ -223,11 +209,14 @@ class LoginViewModel(
                                     setValue(SESSION_LOCKED, false)
                                 }
                                 deletePin()
-                                Response.success<Any>(null)
+                                Result.success(null)
                             }
                         }
                 }
-                .doOnTerminate { _loginProgressVisible.postValue(false) }
+                .doOnTerminate {
+                    decrement()
+                    _loginProgressVisible.postValue(false)
+                }
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
@@ -266,13 +255,13 @@ class LoginViewModel(
         userManager?.let { userManager ->
             disposable.add(
                 userManager.handleAuthData(serverUrl, data, requestCode)
-                    .map<Response<Any>> {
+                    .map {
                         run {
                             with(preferenceProvider) {
                                 setValue(SESSION_LOCKED, false)
                             }
                             deletePin()
-                            Response.success(null)
+                            Result.success(null)
                         }
                     }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
@@ -318,8 +307,8 @@ class LoginViewModel(
     }
 
     @VisibleForTesting
-    fun handleResponse(userResponse: Response<*>) {
-        if (userResponse.isSuccessful) {
+    fun handleResponse(userResponse: Result<*>) {
+        if (userResponse.isSuccess) {
             updateServerUrls()
             updateLoginUsers()
             val displayTrackingMessage = hasToDisplayTrackingMessage()
@@ -366,80 +355,21 @@ class LoginViewModel(
             ?.blockingGet()?.value() == null
     }
 
-    fun canHandleBiometrics(): Boolean? {
-        return canHandleBiometrics
+    fun saveUserCredentials(userPass: String? = null) {
+        if (!preferenceProvider.areSameCredentials(serverUrl.value!!, userName.value!!)) {
+            preferenceProvider.saveUserCredentials(
+                serverUrl.value!!,
+                userName.value!!,
+                userPass,
+            )
+        }
     }
 
-    fun areSameCredentials(): Boolean {
-        return (
-            preferenceProvider.areCredentialsSet() &&
-                preferenceProvider.areSameCredentials(
-                    serverUrl.value!!,
-                    userName.value!!,
-                    password.value!!,
-                )
-            ).also { areSameCredentials -> if (!areSameCredentials) saveUserCredentials() }
-    }
-
-    private fun saveUserCredentials() {
-        preferenceProvider.saveUserCredentials(
-            serverUrl.value!!,
-            userName.value!!,
-            "",
-        )
-    }
-
-    fun onFingerprintClick() {
-        disposable.add(
-
-            fingerPrintController.authenticate()
-                .map { result ->
-                    if (preferenceProvider.contains(
-                            SECURE_SERVER_URL,
-                            SECURE_USER_NAME,
-                            SECURE_PASS,
-                        )
-                    ) {
-                        Result.success(result)
-                    } else {
-                        Result.failure(Exception(EMPTY_CREDENTIALS))
-                    }
-                }
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    {
-                        it.fold(
-                            onSuccess = { data ->
-                                when (data.type) {
-                                    Type.SUCCESS ->
-                                        view.showCredentialsData(
-                                            data,
-                                            preferenceProvider.getString(SECURE_SERVER_URL)!!,
-                                            preferenceProvider.getString(SECURE_USER_NAME)!!,
-                                            preferenceProvider.getString(SECURE_PASS)!!,
-                                        )
-
-                                    Type.INFO -> {
-                                        /*Do nothing*/
-                                    }
-
-                                    Type.ERROR ->
-                                        view.showCredentialsData(
-                                            data,
-                                            it.getOrNull()?.message!!,
-                                        )
-                                }
-                            },
-                            onFailure = {
-                                view.showEmptyCredentialsMessage()
-                            },
-                        )
-                    },
-                    {
-                        view.displayMessage(AUTH_ERROR)
-                    },
-                ),
-        )
+    fun authenticateWithBiometric() {
+        biometricController.authenticate {
+            password.value = preferenceProvider.getString(SECURE_PASS)
+            logIn()
+        }
     }
 
     fun onAccountRecovery() {
@@ -540,6 +470,7 @@ class LoginViewModel(
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
+        checkBiometricVisibility()
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
@@ -562,6 +493,8 @@ class LoginViewModel(
     fun setAccountInfo(serverUrl: String?, userName: String?) {
         this.serverUrl.value = serverUrl
         this.userName.value = userName
+        view.setUrl(serverUrl)
+        view.setUser(userName)
     }
 
     fun onImportDataBase(file: File) {
@@ -582,8 +515,6 @@ class LoginViewModel(
                 result.fold(
                     onSuccess = {
                         setAccountInfo(it.serverUrl, it.username)
-                        view.setUrl(it.serverUrl)
-                        view.setUser(it.username)
                         displayManageAccount()
                         view.displayMessage(resourceManager.getString(R.string.importing_successful))
                     },
@@ -601,4 +532,9 @@ class LoginViewModel(
     fun setDisplayMoreActions(shouldDisplayMoreActions: Boolean) {
         _displayMoreActions.postValue(shouldDisplayMoreActions)
     }
+
+    fun shouldAskForBiometrics(): Boolean =
+        biometricController.hasBiometric() &&
+            !preferenceProvider.areCredentialsSet() &&
+            hasAccounts.value == false
 }

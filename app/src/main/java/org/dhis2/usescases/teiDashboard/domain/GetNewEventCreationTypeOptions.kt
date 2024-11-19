@@ -4,7 +4,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventCreationType.ADDNEW
 import org.dhis2.commons.data.EventCreationType.REFERAL
 import org.dhis2.commons.data.EventCreationType.SCHEDULE
-import org.dhis2.usescases.teiDashboard.data.ProgramConfigurationRepository
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.hisp.dhis.android.core.program.ProgramStage
 
 class GetNewEventCreationTypeOptions(
@@ -16,15 +16,10 @@ class GetNewEventCreationTypeOptions(
         programUid: String,
     ): List<EventCreationType> {
         val options: MutableList<EventCreationType> = mutableListOf()
-
-        programStage?.let {
-            if (shouldShowScheduleEvents(it)) {
-                options.add(SCHEDULE)
-            }
-        } ?: options.add(SCHEDULE)
-
         options.add(ADDNEW)
-
+        if (programStage == null || shouldShowScheduleEvents(programStage)) {
+            options.add(SCHEDULE)
+        }
         if (shouldShowReferralEvents(programUid)) {
             options.add(REFERAL)
         }

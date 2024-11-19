@@ -22,7 +22,9 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.event.EventObjectRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
+import timber.log.Timber
 import java.io.File
 
 class FormValueStore(
@@ -103,6 +105,30 @@ class FormValueStore(
                     saveDataElement(uid, value)
                 }
             }
+        }
+    }
+
+    fun eventState(): EventStatus? {
+        return d2.eventModule().events().uid(recordUid).blockingGet()?.status()
+    }
+
+    fun recordUid(): String {
+        return recordUid
+    }
+
+    fun completeEvent() {
+        try {
+            d2.eventModule().events().uid(recordUid).setStatus(EventStatus.COMPLETED)
+        } catch (d2Error: D2Error) {
+            Timber.e(d2Error)
+        }
+    }
+
+    fun activateEvent() {
+        try {
+            d2.eventModule().events().uid(recordUid).setStatus(EventStatus.ACTIVE)
+        } catch (d2Error: D2Error) {
+            Timber.e(d2Error)
         }
     }
 

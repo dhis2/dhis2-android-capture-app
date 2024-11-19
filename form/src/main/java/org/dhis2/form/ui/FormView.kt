@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package org.dhis2.form.ui
 
 import android.Manifest
@@ -15,8 +13,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -26,20 +22,16 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
@@ -68,11 +60,14 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
-import org.dhis2.form.databinding.ViewFormBinding
 import org.dhis2.form.di.Injector
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
@@ -87,19 +82,23 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
+import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
 import java.util.Calendar
@@ -116,24 +115,12 @@ class FormView : Fragment() {
     private var completionListener: ((percentage: Float) -> Unit)? = null
     private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
     private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-    private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+    private var formResultDialogUiProvider: FormResultDialogProvider? = null
+
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
     private var useCompose = false
-
-    val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            // Not needed
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            viewModel.items.value?.find { it.focused }?.onTextChange(p0)
-        }
-
-        override fun afterTextChanged(p0: Editable?) {
-            // Not needed
-        }
-    }
+    private var programUid: String? = null
 
     private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { qrData ->
@@ -293,6 +280,22 @@ class FormView : Fragment() {
             }
         }
 
+    private val requestStoragePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) {
+                downloadFile(viewModel.filePath)
+                viewModel.filePath = null
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.storage_permission_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
@@ -303,10 +306,6 @@ class FormView : Fragment() {
         )
     }
 
-    private lateinit var binding: ViewFormBinding
-    private lateinit var dataEntryHeaderHelper: DataEntryHeaderHelper
-    private lateinit var adapter: DataEntryAdapter
-    private lateinit var alertDialogView: View
     private lateinit var dialogDelegate: DialogDelegate
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
@@ -335,88 +334,33 @@ class FormView : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         val contextWrapper = ContextThemeWrapper(context, R.style.searchFormInputText)
-        binding = DataBindingUtil.inflate(inflater, R.layout.view_form, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        dataEntryHeaderHelper = DataEntryHeaderHelper(binding.headerContainer, binding.recyclerView)
         dialogDelegate = DialogDelegate()
         formSectionMapper = FormSectionMapper()
-        binding.recyclerView.layoutManager =
-            object : LinearLayoutManager(contextWrapper, VERTICAL, false) {
-                override fun onInterceptFocusSearch(focused: View, direction: Int): View {
-                    return focused
-                }
-            }
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                dataEntryHeaderHelper.checkSectionHeader(recyclerView)
-            }
-        })
         FormFileProvider.init(contextWrapper.applicationContext)
 
-        if (useCompose) {
-            return ComposeView(requireContext()).apply {
-                setViewCompositionStrategy(
-                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+            )
+            setContent {
+                val items by viewModel.items.observeAsState()
+                val sections = items?.let {
+                    formSectionMapper.mapFromFieldUiModelList(it)
+                } ?: emptyList()
+                Form(
+                    sections = sections,
+                    intentHandler = ::intentHandler,
+                    uiEventHandler = ::uiEventHandler,
+                    resources = Injector.provideResourcesManager(context),
                 )
-                setContent {
-                    val items by viewModel.items.observeAsState()
-                    val sections = items?.let {
-                        formSectionMapper.mapFromFieldUiModelList(it)
-                    } ?: emptyList()
-                    Form(
-                        sections = sections,
-                        intentHandler = ::intentHandler,
-                        uiEventHandler = ::uiEventHandler,
-                        resources = Injector.provideResourcesManager(context),
-                    )
-                }
             }
-        } else {
-            return binding.root
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         FormCountingIdlingResource.increment()
-        dataEntryHeaderHelper.observeHeaderChanges(viewLifecycleOwner)
-        adapter = DataEntryAdapter(
-            viewModel.areSectionCollapsable(),
-        )
-
-        binding.recyclerView.adapter = adapter
-
-        adapter.onIntent = { intent ->
-            if (intent is FormIntent.OnNext) {
-                scrollToPosition(intent.position!!)
-            }
-            intentHandler(intent)
-        }
-
-        adapter.onRecyclerViewUiEvents = { uiEvent ->
-            uiEventHandler(uiEvent)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
-                val hasToShowFab = checkLastItem()
-                scrollCallback?.invoke(hasToShowFab)
-            }
-        } else {
-            binding.recyclerView.setOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    val hasToShowFab = checkLastItem()
-                    scrollCallback?.invoke(hasToShowFab)
-                }
-            })
-        }
-
-        binding.recyclerView.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                view.closeKeyboard()
-            }
-        }
 
         setObservers()
     }
@@ -440,12 +384,6 @@ class FormView : Fragment() {
         ) { loading ->
             if (onLoadingListener != null) {
                 onLoadingListener?.invoke(loading)
-            } else {
-                if (loading) {
-                    binding.progress.show()
-                } else {
-                    binding.progress.hide()
-                }
             }
         }
 
@@ -492,12 +430,20 @@ class FormView : Fragment() {
         }
     }
 
+    private fun manageSuccessfulResult(result: SuccessfulResult) {
+        if (result.eventResultDetails.eventStatus != null) {
+            showDataEntryResultDialog(result)
+        } else {
+            onFinishDataEntry?.invoke()
+        }
+    }
+
     private fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
         if (onDataIntegrityCheck != null) {
             onDataIntegrityCheck?.invoke(result)
         } else {
             when (result) {
-                is SuccessfulResult -> onFinishDataEntry?.invoke()
+                is SuccessfulResult -> manageSuccessfulResult(result)
                 else -> showDataEntryResultDialog(result)
             }
         }
@@ -515,25 +461,143 @@ class FormView : Fragment() {
         ).show()
     }
 
-    private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
-        resultDialogUiProvider?.provideDataEntryUiModel(result)
-            ?.let { (uiModel, fieldsWithIssues) ->
-                BottomSheetDialog(
-                    bottomSheetDialogUiModel = uiModel,
-                    onSecondaryButtonClicked = {
-                        if (result.allowDiscard) {
-                            viewModel.discardChanges()
-                        }
-                        onFinishDataEntry?.invoke()
-                    },
-                    content = { bottomSheetDialog ->
-                        ErrorFieldList(
-                            fieldsWithIssues = fieldsWithIssues,
-                            onItemClick = { bottomSheetDialog.dismiss() },
-                        )
-                    },
-                ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+    @Composable
+    private fun DialogContent(fieldsWithIssues: List<FieldWithIssue>, bottomSheetDialog: BottomSheetDialog): Unit? {
+        return if (fieldsWithIssues.isEmpty()) {
+            null
+        } else {
+            fieldsWithIssues.takeIf { it.isNotEmpty() }?.let {
+                ErrorFieldList(
+                    fieldsWithIssues = fieldsWithIssues,
+                    onItemClick = { bottomSheetDialog.dismiss() },
+                )
             }
+        }
+    }
+
+    private fun showDataEntryResultDialog(result: DataIntegrityCheckResult) {
+        formResultDialogUiProvider?.let {
+            val modelAndFieldsWithIssuesList = getDialogModelBasedOnResult(result)
+            val fieldsWithIssues = modelAndFieldsWithIssuesList?.second ?: emptyList()
+
+            val showBottomSheetDialog = {
+                modelAndFieldsWithIssuesList?.first?.let { model ->
+                    BottomSheetDialog(
+                        bottomSheetDialogUiModel = model,
+                        onSecondaryButtonClicked = {
+                            manageSecondaryButtonAction(result.allowDiscard)
+                        },
+                        onMainButtonClicked = { bottomSheetDialog ->
+                            manageMainButtonAction(
+                                fieldsWithIssues,
+                                result.eventResultDetails.eventStatus == EventStatus.COMPLETED,
+                                bottomSheetDialog,
+                            )
+                        },
+                        showDivider = fieldsWithIssues.isNotEmpty(),
+                        content = { bottomSheetDialog ->
+                            DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                        },
+                    ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
+                }
+            }
+
+            when (result.eventResultDetails.eventStatus) {
+                EventStatus.ACTIVE, null -> showBottomSheetDialog()
+                EventStatus.COMPLETED -> if (fieldsWithIssues.isEmpty()) {
+                    onFinishDataEntry?.invoke()
+                } else {
+                    showBottomSheetDialog()
+                }
+                EventStatus.SKIPPED -> {
+                    if (fieldsWithIssues.isEmpty()) {
+                        viewModel.activateEvent()
+                    }
+                    showBottomSheetDialog()
+                }
+                else -> onFinishDataEntry?.invoke()
+            }
+            if (result.eventResultDetails.eventStatus == null && result is NotSavedResult) {
+                onFinishDataEntry?.invoke()
+            }
+        }
+    }
+
+    private fun manageMainButtonAction(
+        fieldsWithIssues: List<FieldWithIssue>,
+        isEventCompleted: Boolean,
+        bottomSheetDialog: BottomSheetDialog,
+    ) {
+        val errorsInField = fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
+        if (errorsInField) {
+            bottomSheetDialog.dismiss()
+        } else if (isEventCompleted) {
+            onFinishDataEntry?.invoke()
+        } else {
+            viewModel.completeEvent()
+            onFinishDataEntry?.invoke()
+        }
+    }
+
+    private fun manageSecondaryButtonAction(backClicked: Boolean) {
+        if (backClicked) {
+            viewModel.discardChanges()
+            onFinishDataEntry?.invoke()
+        } else {
+            onFinishDataEntry?.invoke()
+        }
+    }
+
+    private fun getDialogModelBasedOnResult(result: DataIntegrityCheckResult): Pair<BottomSheetDialogUiModel, List<FieldWithIssue>>? {
+        return when (result) {
+            is FieldsWithErrorResult -> {
+                formResultDialogUiProvider?.invoke(
+                    canComplete = result.canComplete,
+                    onCompleteMessage = result.onCompleteMessage,
+                    errorFields = result.fieldUidErrorList,
+                    emptyMandatoryFields = result.mandatoryFields,
+                    warningFields = result.warningFields,
+                    eventMode = result.eventResultDetails.eventMode,
+                    eventState = result.eventResultDetails.eventStatus,
+
+                    result = result,
+                )
+            }
+            is FieldsWithWarningResult -> formResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = result.fieldUidWarningList,
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            is MissingMandatoryResult -> formResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = result.errorFields,
+                emptyMandatoryFields = result.mandatoryFields,
+                warningFields = result.warningFields,
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            is SuccessfulResult -> formResultDialogUiProvider?.invoke(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = emptyList(),
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            NotSavedResult -> null
+        }
     }
 
     private fun showLoopWarning() {
@@ -563,24 +627,9 @@ class FormView : Fragment() {
             .show()
     }
 
-    private fun scrollToPosition(position: Int) {
-        val viewHolder = binding.recyclerView.findViewHolderForLayoutPosition(position + 1)
-        if (viewHolder == null) {
-            try {
-                binding.recyclerView.smoothScrollToPosition(position + 1)
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
-    }
-
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
             is RecyclerViewUiEvents.OpenCustomCalendar -> showCustomCalendar(uiEvent)
-            is RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar -> showYearMonthDayAgeCalendar(
-                uiEvent,
-            )
-
             is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
             is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
                 uiEvent,
@@ -703,49 +752,9 @@ class FormView : Fragment() {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
         viewModel.displayLoopWarningIfNeeded()
-        val layoutManager: LinearLayoutManager =
-            binding.recyclerView.layoutManager as LinearLayoutManager
-        val myFirstPositionIndex = layoutManager.findFirstVisibleItemPosition()
-        val myFirstPositionView = layoutManager.findViewByPosition(myFirstPositionIndex)
-
-        if (!useCompose) {
-            handleKeyBoardOnFocusChange(items)
-        }
-
-        var offset = 0
-        myFirstPositionView?.let {
-            offset = it.top
-        }
-
-        adapter.swap(
-            items,
-        ) {
-            dataEntryHeaderHelper.onItemsUpdatedCallback()
-            viewModel.onItemsRendered()
-            onFieldItemsRendered?.invoke(items.isEmpty())
-        }
-        layoutManager.scrollToPositionWithOffset(myFirstPositionIndex, offset)
+        viewModel.onItemsRendered()
+        onFieldItemsRendered?.invoke(items.isEmpty())
         FormCountingIdlingResource.decrement()
-    }
-
-    private fun checkLastItem(): Boolean {
-        val layoutManager =
-            binding.recyclerView.layoutManager as LinearLayoutManager
-        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-        return lastVisiblePosition != -1 && (
-            lastVisiblePosition == adapter.itemCount - 1 ||
-                adapter.getItemViewType(lastVisiblePosition) == R.layout.form_section
-            )
-    }
-
-    private fun handleKeyBoardOnFocusChange(items: List<FieldUiModel>) {
-        items.firstOrNull { it.focused }?.let { fieldUiModel ->
-            fieldUiModel.valueType?.let { valueType ->
-                if (!viewModel.valueTypeIsTextField(valueType)) {
-                    view?.closeKeyboard()
-                }
-            }
-        }
     }
 
     private fun intentHandler(intent: FormIntent) {
@@ -816,37 +825,6 @@ class FormView : Fragment() {
             .show(childFragmentManager, "timePicker")
     }
 
-    private fun showYearMonthDayAgeCalendar(
-        intent: RecyclerViewUiEvents.OpenYearMonthDayAgeCalendar,
-    ) {
-        alertDialogView =
-            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_age, null)
-        val yearPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_year)
-        val monthPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_month)
-        val dayPicker = alertDialogView.findViewById<TextInputEditText>(R.id.input_days)
-        yearPicker.setText(intent.year.toString())
-        monthPicker.setText(intent.month.toString())
-        dayPicker.setText(intent.day.toString())
-
-        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
-            .setView(alertDialogView)
-            .setPositiveButton(R.string.action_accept) { _, _ ->
-                val dateIntent = dialogDelegate.handleYearMonthDayInput(
-                    intent.uid,
-                    negativeOrZero(yearPicker.text.toString()),
-                    negativeOrZero(monthPicker.text.toString()),
-                    negativeOrZero(dayPicker.text.toString()),
-                )
-                intentHandler(dateIntent)
-            }
-            .setNegativeButton(R.string.clear) { _, _ ->
-                val clearIntent = FormIntent.ClearValue(intent.uid)
-                intentHandler(clearIntent)
-            }
-            .create()
-            .show()
-    }
-
     private fun showDescriptionLabelDialog(
         intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog,
     ) {
@@ -900,13 +878,13 @@ class FormView : Fragment() {
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
         onActivityForResult?.invoke()
         mapContent.launch(
-            MapSelectorActivity.create(requireContext(), event.uid, event.featureType, event.value),
+            MapSelectorActivity
+                .create(requireContext(), event.uid, event.featureType, event.value, programUid),
         )
     }
 
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
         viewModel.clearFocus()
-        onEditionFinish()
         onActivityForResult?.invoke()
         val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
             when (it) {
@@ -1018,16 +996,23 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        activity?.activityResultRegistry?.let {
-            event.field.displayName?.let { filePath ->
-                fileHandler.copyAndOpen(File(filePath)) { file ->
-                    file.observe(viewLifecycleOwner) {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.file_downladed),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            downloadFile(event.field.displayName)
+        } else {
+            viewModel.filePath = event.field.displayName
+            requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun downloadFile(fileName: String?) {
+        fileName?.let { filePath ->
+            fileHandler.copyAndOpen(File(filePath)) { file ->
+                file.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.file_downloaded),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
         }
@@ -1035,7 +1020,6 @@ class FormView : Fragment() {
 
     private fun displayQRImage(event: RecyclerViewUiEvents.DisplayQRCode) {
         viewModel.clearFocus()
-        onEditionFinish()
         QRDetailBottomDialog(
             event.label,
             event.value,
@@ -1057,7 +1041,6 @@ class FormView : Fragment() {
 
     private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(
                 uiEvent.value?.let { listOf(it) } ?: emptyList(),
             )
@@ -1131,20 +1114,11 @@ class FormView : Fragment() {
         }.show(this@FormView.childFragmentManager)
     }
 
-    fun onEditionFinish() {
-        binding.recyclerView.requestFocus()
-    }
-
-    private fun negativeOrZero(value: String): Int {
-        return if (value.isEmpty()) 0 else -Integer.valueOf(value)
-    }
-
     fun onBackPressed() {
         viewModel.runDataIntegrityCheck(backButtonPressed = true)
     }
 
     fun onSaveClick() {
-        onEditionFinish()
         viewModel.saveDataEntry()
     }
 
@@ -1155,17 +1129,17 @@ class FormView : Fragment() {
     internal fun setConfiguration(
         locationProvider: LocationProvider?,
         completionListener: ((percentage: Float) -> Unit)?,
-        resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+        eventResultDialogUiProvider: FormResultDialogProvider?,
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
-        useCompose: Boolean,
+        programUid: String?,
     ) {
         this.locationProvider = locationProvider
         this.completionListener = completionListener
-        this.resultDialogUiProvider = resultDialogUiProvider
+        this.formResultDialogUiProvider = eventResultDialogUiProvider
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
-        this.useCompose = useCompose
+        this.programUid = programUid
     }
 
     internal fun setCallbackConfiguration(
@@ -1198,14 +1172,10 @@ class FormView : Fragment() {
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-        private var resultDialogUiProvider: EnrollmentResultDialogUiProvider? = null
+        private var eventResultDialogUiProvider: FormResultDialogProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
-        private var useComposeForms: Boolean = false
-
-        fun useComposeForm(useCompose: Boolean) = apply {
-            this.useComposeForms = useCompose
-        }
+        private var programUid: String? = null
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -1239,14 +1209,8 @@ class FormView : Fragment() {
         /**
          *
          */
-        fun resultDialogUiProvider(resultDialogUiProvider: EnrollmentResultDialogUiProvider) =
-            apply { this.resultDialogUiProvider = resultDialogUiProvider }
-
-        /**
-         * Listener for the current activity to know if a activityForResult is called
-         * */
-        fun activityForResultListener(callback: () -> Unit) =
-            apply { this.onActivityForResult = callback }
+        fun eventCompletionResultDialogProvider(eventResultDialogUiProvider: FormResultDialogProvider?) =
+            apply { this.eventResultDialogUiProvider = eventResultDialogUiProvider }
 
         fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
@@ -1256,16 +1220,12 @@ class FormView : Fragment() {
         fun onDataIntegrityResult(callback: (result: DataIntegrityCheckResult) -> Unit) =
             apply { this.onDataIntegrityCheck = callback }
 
-        fun onFieldItemsRendered(callback: (fieldsEmpty: Boolean) -> Unit) =
-            apply { this.onFieldItemsRendered = callback }
-
         fun setRecords(records: FormRepositoryRecords) = apply { this.records = records }
-
-        fun setActionIconsActivation(activate: Boolean) =
-            apply { this.actionIconsActive = activate }
 
         fun openErrorLocation(openErrorLocation: Boolean) =
             apply { this.openErrorLocation = openErrorLocation }
+
+        fun setProgramUid(programUid: String?) = apply { this.programUid = programUid }
 
         fun build(): FormView {
             if (fragmentManager == null) {
@@ -1285,10 +1245,10 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    resultDialogUiProvider,
+                    eventResultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,
-                    useComposeForms,
+                    programUid,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(

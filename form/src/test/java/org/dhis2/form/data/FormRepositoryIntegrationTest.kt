@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
@@ -9,10 +10,8 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
-import org.dhis2.form.ui.provider.LayoutProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.provider.UiStyleProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -39,6 +38,7 @@ class FormRepositoryIntegrationTest {
     private val formValueStore: FormValueStore = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val conf: EnrollmentConfiguration = mock()
+    private val preferenceProvider: PreferenceProvider = mock()
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock {
         on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
         on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
@@ -152,8 +152,6 @@ class FormRepositoryIntegrationTest {
     }
 
     private fun mockFormRepository(enrollmentMode: EnrollmentMode = EnrollmentMode.NEW): FormRepositoryImpl {
-        val styleProvider: UiStyleProvider = mock()
-        val layoutProvider: LayoutProvider = mock()
         val hintProvider: HintProvider = mock()
         val displayNameProvider: DisplayNameProvider = mock()
         val uiEventTypesProvider: UiEventTypesProvider = mock()
@@ -162,8 +160,6 @@ class FormRepositoryIntegrationTest {
         val autoCompleteProvider: AutoCompleteProvider = mock()
 
         val fieldFactory = FieldViewModelFactoryImpl(
-            styleProvider,
-            layoutProvider,
             hintProvider,
             displayNameProvider,
             uiEventTypesProvider,
@@ -188,6 +184,7 @@ class FormRepositoryIntegrationTest {
             rulesUtilsProvider,
             legendValueProvider,
             false,
+            preferenceProvider = preferenceProvider,
         )
     }
 }

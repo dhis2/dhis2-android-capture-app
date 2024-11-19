@@ -105,6 +105,7 @@ class PeriodStepProviderImpl(
 
             PeriodType.BiMonthly,
             PeriodType.Quarterly,
+            PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.FinancialApril,
@@ -181,7 +182,9 @@ class PeriodStepProviderImpl(
                 DateTime(currentPeriod.startDate()),
             ).months / 2
 
-            PeriodType.Quarterly -> Months.monthsBetween(
+            PeriodType.Quarterly,
+            PeriodType.QuarterlyNov,
+            -> Months.monthsBetween(
                 DateTime(initialPeriod.startDate()),
                 DateTime(currentPeriod.startDate()),
             ).months / 3

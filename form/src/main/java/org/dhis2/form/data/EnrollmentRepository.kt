@@ -6,6 +6,7 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
@@ -16,6 +17,7 @@ import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramSection
@@ -92,6 +94,14 @@ class EnrollmentRepository(
 
     override fun isEvent(): Boolean {
         return false
+    }
+
+    override fun eventMode(): EventMode? {
+        return null
+    }
+
+    override fun validationStrategy(): ValidationStrategy? {
+        return null
     }
 
     private fun getSingleSectionList(): MutableList<FieldUiModel> {

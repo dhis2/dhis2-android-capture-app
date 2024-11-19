@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
+import org.dhis2.databinding.FragmentComposeHolderBinding
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
@@ -48,16 +48,18 @@ class EventListFragment : FragmentGlobalAbstract() {
             programEventsViewModel.eventClicked.value = Pair(eventUid, orgUnitUid)
         }
 
-        return ComposeView(requireContext()).apply {
+        val binding = FragmentComposeHolderBinding.inflate(inflater, container, false)
+        binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
                 EventListScreen(
-                    eventListViewModel,
-                    workingListViewModel,
+                    eventListViewModel = eventListViewModel,
+                    workingListViewModel = workingListViewModel,
                 )
             }
         }
+        return binding.root
     }
 
     override fun onResume() {

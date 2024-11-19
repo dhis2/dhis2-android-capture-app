@@ -1,6 +1,11 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.outlined.Map
 import app.cash.turbine.test
 import com.mapbox.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,6 +15,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.R
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -22,9 +28,11 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -244,14 +252,9 @@ class SearchTEIViewModelTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `Should fetch map results`() {
-        whenever(
-            mapDataRepository.getTrackerMapData(
-                testingProgram(),
-                viewModel.queryData,
-            ),
-        ) doReturn TrackerMapData(
-            mutableListOf(),
+        val trackerMapData = TrackerMapData(
             EventsByProgramStage("tag", mapOf()),
+            mutableListOf(),
             hashMapOf(),
             BoundingBox.fromLngLats(
                 0.0,
@@ -259,14 +262,22 @@ class SearchTEIViewModelTest {
                 0.0,
                 0.0,
             ),
-            mutableListOf(),
             mutableMapOf(),
         )
+        whenever(
+            mapDataRepository.getTrackerMapData(
+                testingProgram(),
+                viewModel.queryData,
+            ),
+        ) doReturn trackerMapData
 
-        viewModel.fetchMapResults()
-        testingDispatcher.scheduler.advanceUntilIdle()
-        val mapResult = viewModel.mapResults.value
-        assertTrue(mapResult != null)
+        runTest {
+            viewModel.fetchMapResults()
+            testingDispatcher.scheduler.advanceUntilIdle()
+            viewModel.mapResults.test {
+                assertTrue(awaitItem() == trackerMapData)
+            }
+        }
     }
 
     @Test
@@ -304,8 +315,8 @@ class SearchTEIViewModelTest {
                 viewModel.queryData,
             ),
         ) doReturn TrackerMapData(
-            mutableListOf(),
             EventsByProgramStage("tag", mapOf()),
+            mutableListOf(),
             hashMapOf(),
             BoundingBox.fromLngLats(
                 0.0,
@@ -313,7 +324,6 @@ class SearchTEIViewModelTest {
                 0.0,
                 0.0,
             ),
-            mutableListOf(),
             mutableMapOf(),
         )
         setCurrentProgram(testingProgram())
@@ -676,11 +686,117 @@ class SearchTEIViewModelTest {
         assertTrue(expectedMap == formattedMap)
     }
 
+    @Test
+    fun `when there is only one navigation item, navigation items list should be empty`() {
+        // given
+        val searchNavPageConfigurator: SearchPageConfigurator = mock {
+            on { displayListView() } doReturn true
+            on { displayMapView() } doReturn true
+            on { displayAnalytics() } doReturn false
+        }
+
+        val viewModel = SearchTEIViewModel(
+            initialProgramUid = initialProgram,
+            initialQuery = initialQuery,
+            searchRepository = repository,
+            searchRepositoryKt = repositoryKt,
+            searchNavPageConfigurator = mock {
+                on { initVariables() } doReturn searchNavPageConfigurator
+            },
+            mapDataRepository = mapDataRepository,
+            networkUtils = networkUtils,
+            dispatchers = object : DispatcherProvider {
+                override fun io(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun computation(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun ui(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+            },
+            mapStyleConfig = mapStyleConfiguration,
+            resourceManager = resourceManager,
+            displayNameProvider = displayNameProvider,
+            filterManager = filterManager,
+        )
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        // then
+        val navBarUIState = viewModel.navigationBarUIState.value
+        assertTrue(navBarUIState.items.isEmpty())
+    }
+
+    @Test
+    fun `when there is more than one navigation item, navigation items list should not be empty`() {
+        // given
+        val searchNavPageConfigurator: SearchPageConfigurator = mock {
+            on { displayListView() } doReturn true
+            on { displayMapView() } doReturn true
+            on { displayAnalytics() } doReturn false
+        }
+
+        val viewModel = SearchTEIViewModel(
+            initialProgramUid = initialProgram,
+            initialQuery = initialQuery,
+            searchRepository = repository,
+            searchRepositoryKt = repositoryKt,
+            searchNavPageConfigurator = mock {
+                on { initVariables() } doReturn searchNavPageConfigurator
+            },
+            mapDataRepository = mapDataRepository,
+            networkUtils = networkUtils,
+            dispatchers = object : DispatcherProvider {
+                override fun io(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun computation(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+
+                override fun ui(): CoroutineDispatcher {
+                    return testingDispatcher
+                }
+            },
+            mapStyleConfig = mapStyleConfiguration,
+            resourceManager = mock {
+                on { getString(R.string.navigation_list_view) } doReturn "List"
+                on { getString(R.string.navigation_map_view) } doReturn "Map"
+            },
+            displayNameProvider = displayNameProvider,
+            filterManager = filterManager,
+        )
+        testingDispatcher.scheduler.advanceUntilIdle()
+
+        // then
+        val navBarUIState = viewModel.navigationBarUIState.value
+        assertTrue(navBarUIState.items.isNotEmpty())
+        assertTrue(
+            navBarUIState.items == listOf(
+                NavigationBarItem(
+                    id = NavigationPage.LIST_VIEW,
+                    icon = Icons.AutoMirrored.Outlined.List,
+                    selectedIcon = Icons.AutoMirrored.Filled.List,
+                    label = "List",
+                ),
+                NavigationBarItem(
+                    id = NavigationPage.MAP_VIEW,
+                    icon = Icons.Outlined.Map,
+                    selectedIcon = Icons.Filled.Map,
+                    label = "Map",
+                ),
+            ),
+        )
+    }
+
     private fun getMalformedDateFieldUIModels(): List<FieldUiModel> {
         return listOf(
             FieldUiModelImpl(
                 uid = "uid1",
-                layoutId = 3,
                 label = "Date",
                 value = "04",
                 autocompleteList = emptyList(),
@@ -694,7 +810,6 @@ class SearchTEIViewModelTest {
         return listOf(
             FieldUiModelImpl(
                 uid = "uid1",
-                layoutId = 1,
                 label = "Org Unit",
                 value = "orgUnitUid",
                 displayName = "Friendly OrgUnit Name",
@@ -704,7 +819,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid2",
-                layoutId = 2,
                 label = "Gender",
                 value = "M",
                 displayName = "Male",
@@ -714,7 +828,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid3",
-                layoutId = 3,
                 label = "Date",
                 value = "2024-02-21",
                 autocompleteList = emptyList(),
@@ -723,7 +836,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid4",
-                layoutId = 4,
                 label = "Date and Time",
                 value = "2024-02-21T01:00",
                 autocompleteList = emptyList(),
@@ -732,7 +844,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid5",
-                layoutId = 5,
                 label = "Boolean",
                 value = "false",
                 autocompleteList = emptyList(),
@@ -741,7 +852,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid6",
-                layoutId = 6,
                 label = "Yes Only",
                 value = "true",
                 autocompleteList = emptyList(),
@@ -750,7 +860,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid7",
-                layoutId = 7,
                 label = "Text",
                 value = "Text value",
                 autocompleteList = emptyList(),
@@ -759,7 +868,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid8",
-                layoutId = 8,
                 label = "Other field",
                 value = null,
                 autocompleteList = emptyList(),
@@ -768,7 +876,6 @@ class SearchTEIViewModelTest {
             ),
             FieldUiModelImpl(
                 uid = "uid9",
-                layoutId = 9,
                 label = "Percentage",
                 value = "18",
                 autocompleteList = emptyList(),

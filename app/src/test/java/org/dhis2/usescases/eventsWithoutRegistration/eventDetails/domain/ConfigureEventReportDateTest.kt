@@ -10,6 +10,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.Even
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -23,6 +24,7 @@ class ConfigureEventReportDateTest {
     private val resourcesProvider: EventDetailResourcesProvider = mock {
         on { provideDueDate() } doReturn DUE_DATE
         on { provideEventDate() } doReturn EVENT_DATE
+        on { provideNextEventDate(label = null) } doReturn NEXT_EVENT
     }
 
     private val programStage: ProgramStage = mock()
@@ -64,28 +66,6 @@ class ConfigureEventReportDateTest {
     }
 
     @Test
-    fun `Should return current day when new event`() = runBlocking {
-        // Given the creation of new event
-        configureEventReportDate = ConfigureEventReportDate(
-            resourceProvider = resourcesProvider,
-            repository = repository,
-            periodUtils = periodUtils,
-        )
-        val currentDay =
-            DateUtils.uiDateFormat().format(DateUtils.getInstance().today)
-
-        // When reportDate is invoked
-        val eventDate = configureEventReportDate.invoke().first()
-
-        // Then report date should be active
-        assert(eventDate.active)
-        // Then reportDate should be the current day
-        assert(eventDate.dateValue == currentDay)
-        // Then default label should be displayed
-        assert(eventDate.label == EVENT_DATE)
-    }
-
-    @Test
     fun `Should return tomorrow when new daily event`() = runBlocking {
         // Given the creation of new event
         // And periodType is daily
@@ -95,8 +75,16 @@ class ConfigureEventReportDateTest {
             repository = repository,
             periodType = periodType,
             periodUtils = periodUtils,
+            enrollmentId = ENROLLMENT_ID,
         )
+        val today = "15/02/2022"
 
+        whenever(
+            repository.getEnrollmentDate(ENROLLMENT_ID),
+        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
+        whenever(
+            repository.getEnrollmentIncidentDate(ENROLLMENT_ID),
+        ) doReturn DateUtils.getInstance().getStartOfDay(DateUtils.uiDateFormat().parse(today))
         val tomorrow = "16/02/2022"
 
         whenever(
@@ -152,6 +140,7 @@ class ConfigureEventReportDateTest {
         whenever(
             repository.getStageLastDate(ENROLLMENT_ID),
         ) doReturn null
+
         whenever(
             repository.getProgramStage()?.generatedByEnrollmentDate(),
         ) doReturn true
@@ -215,17 +204,18 @@ class ConfigureEventReportDateTest {
 
         // And with hidden due date
         whenever(programStage.hideDueDate()) doReturn true
-        whenever(programStage.dueDateLabel()) doReturn DUE_DATE
         whenever(repository.getStageLastDate(ENROLLMENT_ID)) doReturn DateUtils.getInstance().today
         whenever(repository.getMinDaysFromStartByProgramStage()) doReturn 6
         whenever(repository.getProgramStage()) doReturn programStage
+        whenever(repository.getEvent()) doReturn null
+        whenever(programStage.displayEventLabel()) doReturn null
 
         // When report date is invoked
         val eventDate = configureEventReportDate.invoke().first()
 
         // Then report date should be hidden
         assertFalse(eventDate.active)
-        assert(eventDate.label == DUE_DATE)
+        assertEquals(DUE_DATE, eventDate.label)
     }
 
     @Test
@@ -254,5 +244,6 @@ class ConfigureEventReportDateTest {
         const val EVENT_ID = "eventId"
         const val DUE_DATE = "Due date"
         const val EVENT_DATE = "Event date"
+        const val NEXT_EVENT = "Next event"
     }
 }

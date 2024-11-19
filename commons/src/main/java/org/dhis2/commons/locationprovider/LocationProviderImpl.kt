@@ -9,24 +9,25 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationListenerCompat
 
 private const val FUSED_LOCATION_PROVIDER = "fused"
 
-class LocationProviderImpl(val context: Context) : LocationProvider {
+open class LocationProviderImpl(val context: Context) : LocationProvider {
 
-    private val locationManager: LocationManager by lazy { initLocationManager() }
+    private val locationManager: LocationManager by lazy {
+        context.getSystemService(LOCATION_SERVICE) as LocationManager
+    }
 
     private val locationProvider: String by lazy { initLocationProvider() }
-
-    private fun initLocationManager(): LocationManager {
-        return context.getSystemService(LOCATION_SERVICE) as LocationManager
-    }
 
     private fun initLocationProvider(): String {
         return FUSED_LOCATION_PROVIDER
     }
 
     private var locationListener: LocationListener? = null
+
+    private var updatesEnabled: Boolean = false
 
     @SuppressLint("MissingPermission")
     override fun getLastKnownLocation(
@@ -38,32 +39,49 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
             onPermissionNeeded()
         } else if (!hasLocationEnabled()) {
             onLocationDisabled()
-            requestLocationUpdates(onNewLocation)
         } else {
             locationManager.getLastKnownLocation(locationProvider).apply {
                 if (this != null && latitude != 0.0 && longitude != 0.0) {
                     onNewLocation(this)
                 }
-                requestLocationUpdates(onNewLocation)
             }
+            requestLocationUpdates(onNewLocation, onLocationDisabled)
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun requestLocationUpdates(onNewLocation: (Location) -> Unit) {
+    private fun requestLocationUpdates(
+        onNewLocation: (Location) -> Unit,
+        onLocationProviderChanged: () -> Unit,
+    ) {
         if (hasPermission()) {
-            locationListener = LocationListener { location ->
-                // TODO: (To improve accuracy check that location.accuracy is less than 5m)
-                onNewLocation(location)
-                stopLocationUpdates()
-            }
+            locationListener = object : LocationListenerCompat {
+                override fun onLocationChanged(location: Location) {
+                    onNewLocation(location)
+                }
 
+                override fun onProviderEnabled(provider: String) {
+                    onLocationProviderChanged()
+                }
+
+                override fun onProviderDisabled(provider: String) {
+                    onLocationProviderChanged()
+                }
+            }
             locationManager.requestLocationUpdates(
-                locationProvider,
-                1000L,
-                5f,
-                locationListener!!,
+                LocationManager.NETWORK_PROVIDER,
+                500,
+                0f,
+                requireNotNull(locationListener),
             )
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                500,
+                0f,
+                requireNotNull(locationListener),
+            )
+
+            updatesEnabled = true
         }
     }
 
@@ -82,6 +100,9 @@ class LocationProviderImpl(val context: Context) : LocationProvider {
     override fun stopLocationUpdates() {
         locationListener?.let {
             locationManager.removeUpdates(it)
+            updatesEnabled = false
         }
     }
+
+    override fun hasUpdatesEnabled() = updatesEnabled
 }
