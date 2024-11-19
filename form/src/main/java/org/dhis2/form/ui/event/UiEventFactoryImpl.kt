@@ -1,27 +1,13 @@
 package org.dhis2.form.ui.event
 
 import android.content.Intent
-import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.extensions.toDate
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiEventType.ADD_FILE
 import org.dhis2.form.model.UiEventType.ADD_PICTURE
-import org.dhis2.form.model.UiEventType.ADD_SIGNATURE
-import org.dhis2.form.model.UiEventType.AGE_CALENDAR
-import org.dhis2.form.model.UiEventType.COPY_TO_CLIPBOARD
-import org.dhis2.form.model.UiEventType.DATE_TIME
-import org.dhis2.form.model.UiEventType.EMAIL
 import org.dhis2.form.model.UiEventType.OPEN_FILE
-import org.dhis2.form.model.UiEventType.OPTION_SET
-import org.dhis2.form.model.UiEventType.ORG_UNIT
-import org.dhis2.form.model.UiEventType.PHONE_NUMBER
-import org.dhis2.form.model.UiEventType.QR_CODE
-import org.dhis2.form.model.UiEventType.REQUEST_CURRENT_LOCATION
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHARE_IMAGE
-import org.dhis2.form.model.UiEventType.SHOW_DESCRIPTION
-import org.dhis2.form.model.UiEventType.SHOW_PICTURE
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
@@ -44,7 +30,7 @@ class UiEventFactoryImpl(
         var uiEvent: RecyclerViewUiEvents? = null
         try {
             uiEvent = when (uiEventType) {
-                DATE_TIME -> {
+                /*DATE_TIME -> {
                     when (valueType) {
                         ValueType.DATE -> RecyclerViewUiEvents.OpenCustomCalendar(
                             uid,
@@ -69,25 +55,25 @@ class UiEventFactoryImpl(
 
                         else -> null
                     }
-                }
+                }*/
 
-                AGE_CALENDAR -> RecyclerViewUiEvents.OpenCustomCalendar(
+                /*AGE_CALENDAR -> RecyclerViewUiEvents.OpenCustomCalendar(
                     uid = uid,
                     label = label,
                     date = value?.toDate(),
                     allowFutureDates = allowFutureDates ?: false,
-                )
+                )*/
 
-                ORG_UNIT -> RecyclerViewUiEvents.OpenOrgUnitDialog(
+                /*ORG_UNIT -> RecyclerViewUiEvents.OpenOrgUnitDialog(
                     uid,
                     label,
                     value,
                     fieldUiModel.orgUnitSelectorScope,
-                )
+                )*/
 
-                REQUEST_CURRENT_LOCATION -> RecyclerViewUiEvents.RequestCurrentLocation(
+                /*REQUEST_CURRENT_LOCATION -> RecyclerViewUiEvents.RequestCurrentLocation(
                     uid = uid,
-                )
+                )*/
 
                 REQUEST_LOCATION_BY_MAP -> RecyclerViewUiEvents.RequestLocationByMap(
                     uid = uid,
@@ -95,13 +81,13 @@ class UiEventFactoryImpl(
                     value = value,
                 )
 
-                SHOW_DESCRIPTION -> RecyclerViewUiEvents.ShowDescriptionLabelDialog(
+                /*SHOW_DESCRIPTION -> RecyclerViewUiEvents.ShowDescriptionLabelDialog(
                     title = label,
                     message = description,
-                )
+                )*/
 
                 ADD_PICTURE -> RecyclerViewUiEvents.AddImage(uid)
-                SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
+                /*SHOW_PICTURE -> RecyclerViewUiEvents.ShowImage(
                     label,
                     value ?: "",
                 )
@@ -131,16 +117,15 @@ class UiEventFactoryImpl(
                     }
                 }
 
-                OPTION_SET -> RecyclerViewUiEvents.OpenOptionSetDialog(fieldUiModel)
-                ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)
+                ADD_SIGNATURE -> RecyclerViewUiEvents.AddSignature(uid, label)*/
                 ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
                 OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
-                EMAIL -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_SENDTO, value, uid)
+                /*EMAIL -> RecyclerViewUiEvents.OpenChooserIntent(Intent.ACTION_SENDTO, value, uid)
                 PHONE_NUMBER -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_DIAL,
                     value,
                     uid,
-                )
+                )*/
 
                 SHARE_IMAGE -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SEND,

@@ -1,7 +1,9 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -311,10 +313,30 @@ class SearchRepositoryImplKt(
                 .blockingGet()?.let { attribute ->
 
                     val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration.config(
+                        OptionSetConfiguration(
+                            d2.optionModule().options()
+                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                .getPagingData(10)
+                                .map { pagingData ->
+                                    pagingData.map { option ->
+                                        OptionSetConfiguration.OptionData(
+                                            option,
+                                            metadataIconProvider(
+                                                option.style(),
+                                                program?.style()?.color()?.toColor()
+                                                    ?: SurfaceColor.Primary,
+                                            ),
+                                        )
+                                    }
+                                },
+                        )
+                        /*OptionSetConfiguration.config(
                             d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .blockingCount(),
+                            d2.optionModule().options()
+                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                .getPagingData(10)
                         ) {
                             val options = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
@@ -334,7 +356,7 @@ class SearchRepositoryImplKt(
                                 options = options,
                                 metadataIconMap = metadataIconMap,
                             )
-                        }
+                        }*/
                     }
                     createField(
                         trackedEntityAttribute = attribute,
@@ -361,29 +383,22 @@ class SearchRepositoryImplKt(
                 .blockingGet()?.let { attribute ->
 
                     val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration.config(
+                        OptionSetConfiguration(
                             d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .blockingCount(),
-                        ) {
-                            val options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-
-                            val metadataIconMap =
-                                options.associate {
-                                    it.uid() to metadataIconProvider(
-                                        it.style(),
-                                        SurfaceColor.Primary,
-                                    )
-                                }
-
-                            OptionSetConfiguration.OptionConfigData(
-                                options = options,
-                                metadataIconMap = metadataIconMap,
-                            )
-                        }
+                                .getPagingData(10)
+                                .map { pagingData ->
+                                    pagingData.map { option ->
+                                        OptionSetConfiguration.OptionData(
+                                            option,
+                                            metadataIconProvider(
+                                                option.style(),
+                                                SurfaceColor.Primary,
+                                            ),
+                                        )
+                                    }
+                                },
+                        )
                     }
 
                     createField(

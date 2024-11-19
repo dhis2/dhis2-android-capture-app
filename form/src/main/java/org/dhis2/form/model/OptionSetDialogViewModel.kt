@@ -37,8 +37,10 @@ class OptionSetDialogViewModel(
             searchOptionSetOption(
                 field.optionSet,
                 textToSearch,
-                field.optionSetConfiguration?.optionsToShow ?: emptyList(),
-                field.optionSetConfiguration?.optionsToHide ?: emptyList(),
+                /*field.optionSetConfiguration?.optionsToShow ?:*/
+                emptyList(),
+                /*field.optionSetConfiguration?.optionsToHide ?:*/
+                emptyList(),
             )
         }
     }

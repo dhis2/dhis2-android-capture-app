@@ -216,7 +216,16 @@ class FormViewModel(
 
             ActionType.ON_ADD_IMAGE_FINISHED -> handleOnAddImageFinishedAction(action)
             ActionType.ON_STORE_FILE -> handleOnStoreFileAction(action)
+            ActionType.ON_FETCH_OPTIONS -> handleFetchOptionsAction(action)
         }
+    }
+
+    private fun handleFetchOptionsAction(action: RowAction): StoreResult {
+        repository.fetchOptions(action.id, action.extraData!!)
+        return StoreResult(
+            action.id,
+            ValueStoreResult.VALUE_CHANGED,
+        )
     }
 
     private fun handleOnSaveAction(action: RowAction): StoreResult {
@@ -545,6 +554,14 @@ class FormViewModel(
                     valueType = intent.valueType,
                 )
             }
+
+            is FormIntent.FetchOptions ->
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    extraData = intent.optionSetUid,
+                    actionType = ActionType.ON_FETCH_OPTIONS,
+                )
         }
     }
 

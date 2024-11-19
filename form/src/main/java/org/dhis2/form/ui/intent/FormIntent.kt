@@ -89,4 +89,11 @@ sealed class FormIntent {
         val valueType: ValueType?,
         val allowFutureDates: Boolean = true,
     ) : FormIntent()
+
+    data class FetchOptions(
+        val uid: String,
+        val optionSetUid: String,
+        val value: String?,
+        val query: String,
+    ) : FormIntent()
 }

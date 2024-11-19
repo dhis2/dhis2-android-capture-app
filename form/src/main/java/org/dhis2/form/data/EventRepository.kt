@@ -49,12 +49,12 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
-    private val metadataIconProvider: MetadataIconProvider,
+    metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val dateUtils: DateUtils,
     private val eventMode: EventMode,
-) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
+) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
 
     private var event = d2.eventModule().events().uid(eventUid).blockingGet()
 
@@ -65,7 +65,7 @@ class EventRepository(
             .blockingGet()
     }
 
-    private val defaultStyleColor by lazy {
+    override val defaultStyleColor by lazy {
         programStage?.program()?.uid()?.let {
             d2.program(it)?.style()?.color()?.toColor()
         } ?: SurfaceColor.Primary
@@ -189,7 +189,8 @@ class EventRepository(
     }
 
     override fun validationStrategy(): ValidationStrategy? {
-        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()?.validationStrategy()
+        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()
+            ?.validationStrategy()
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {
@@ -632,21 +633,16 @@ class EventRepository(
                         .byCode()
                         .eq(dataValue).one().blockingGet()?.displayName()
             }
-            val optionCount =
-                d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                    .blockingCount()
-            optionSetConfig = OptionSetConfiguration.config(optionCount) {
-                val options = d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
 
-                val metadataIconMap =
-                    options.associate { it.uid() to metadataIconProvider(it.style(), defaultStyleColor) }
-
-                OptionSetConfiguration.OptionConfigData(
-                    options = options,
-                    metadataIconMap = metadataIconMap,
-                )
-            }
+            optionSetConfig = OptionSetConfiguration(
+                optionFlow = options(
+                    optionSetUid = optionSet!!,
+                    "",
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                ),
+            )
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)

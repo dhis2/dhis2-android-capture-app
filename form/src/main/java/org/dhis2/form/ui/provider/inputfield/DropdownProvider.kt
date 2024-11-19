@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -19,14 +20,14 @@ fun ProvideDropdownInput(
     modifier: Modifier,
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
+    fetchOptions: (query: String) -> Unit,
 ) {
     var selectedItem by remember(fieldUiModel) {
         mutableStateOf(DropdownItem(fieldUiModel.displayName ?: ""))
     }
 
-    val selectableOptions = fieldUiModel.optionSetConfiguration?.optionsToDisplay()
+    val optionsData = fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()
 
-    val dropdownItems = selectableOptions?.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
     InputDropDown(
         modifier = modifier,
         inputStyle = inputStyle,
@@ -37,14 +38,22 @@ fun ProvideDropdownInput(
         legendData = fieldUiModel.legend(),
         isRequiredField = fieldUiModel.mandatory,
         onResetButtonClicked = { fieldUiModel.onClear() },
-        dropdownItems = dropdownItems ?: emptyList(),
-        onItemSelected = { newSelectedItem ->
+        fetchItem = { index ->
+            DropdownItem(optionsData?.get(index)?.option?.displayName() ?: "")
+        },
+        onSearchOption = { query ->
+            fetchOptions(query)
+        },
+        itemCount = optionsData?.itemCount ?: 0,
+        useDropDown = (optionsData?.itemCount ?: 0) < 15,
+        onItemSelected = { index, newSelectedItem ->
             selectedItem = newSelectedItem
             fieldUiModel.onSave(
-                selectableOptions?.firstOrNull {
-                    it.displayName() == newSelectedItem.label
-                }?.code(),
+                optionsData?.get(index)?.option?.code(),
             )
+        },
+        loadOptions = {
+            fetchOptions("")
         },
     )
 }
