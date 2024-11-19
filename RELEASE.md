@@ -1,89 +1,58 @@
-# Release notes - Android App for DHIS2 - 3.0.1
 
-### Bug
+## NEW FUNCTIONALITY AND WEB PARITY
 
-[ANDROAPP-5753](https://dhis2.atlassian.net/browse/ANDROAPP-5753) Formatting Issues with Attribute Values on TEI Card Dashboard
+**New Capture Coordinates process:** The 3.1 version introduces a list of new features designed to enhance the capture coordinates process. These improvements aim to provide greater accuracy, flexibility, and control over location data capture.
+- **Accuracy:** The capture coordinates process now includes a feature that displays the precision of the captured location. This allows users to see how accurate their location data is in real-time. This parameter can also be restricted using the Android Settings WebApp.
+- **Search Functionality:** A new search functionality has been added, allowing users to look up specific locations by name or address. Users are also able to navigate through the map and perform area searches to discover other locations within a specified region.
+- **Block Manual Capture:** Using the Android Settings Web App, administrators now have the option to block manual location capture. When this setting is enabled, users can only capture the current location and cannot manually select or search a different one. This ensures that location data remains consistent and accurate.
 
-[ANDROAPP-5808](https://dhis2.atlassian.net/browse/ANDROAPP-5808) GS1 QR code input does not display popup if Scanned QR code is not GS1 type
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6330) | [Card1](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-disabled-manual-capture.png) | [Card2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-map-accuracy.png) | [Card3](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-map-search.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_common_features_map_accuracy)
 
-[ANDROAPP-5873](https://dhis2.atlassian.net/browse/ANDROAPP-5873) Thread lock when app is unable to download reserved values
+**Improve transfers flow:** Significant enhancements to the transfer flow, aimed at making the process more user-friendly and transparent. The transfer button has been moved to a more accessible location within the three dot menu in the TEI Dashboard, ensuring that users can easily find and initiate transfers without unnecessary navigation. It also has introduced new dialogs throughout the transfer process. These dialogs provide clear, step-by-step guidance, ensuring that users understand each part of the process.
 
-[ANDROAPP-5953](https://dhis2.atlassian.net/browse/ANDROAPP-5953) Option set not working well in data set if the code of option constains character "\_"
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6228) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_transfers)
 
-[ANDROAPP-6051](https://dhis2.atlassian.net/browse/ANDROAPP-6051) No feedback is received after the database import is complete
+**New relationship section:** Major updates have been made in the relationship tabs,  enhancing both functionality and user experience. Relationship cards have been updated with the new design to offer a more intuitive and visually appealing experience. The new design emphasizes clarity and usability, making it easier to view and manage relationships at a glance.
 
-[ANDROAPP-6057](https://dhis2.atlassian.net/browse/ANDROAPP-6057) Form scrolling improvement to prevent overlap with save button
+To prevent accidental deletions and enhance user control, a new confirmation dialog also has been added when deleting a relationship. This dialog will prompt users to confirm their action, ensuring that relationships are only deleted intentionally.
 
-[ANDROAPP-6088](https://dhis2.atlassian.net/browse/ANDROAPP-6088) Turning off a working list does not scroll user back to top of screen
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6362) | [Card1](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-relationship-sections.png) | [Card2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-new-relationship-cards.png) | [Card3](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-relationship-deletion.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_common_features_relationships)
 
-[ANDROAPP-6094](https://dhis2.atlassian.net/browse/ANDROAPP-6094) Data set duplicates records in unavailable capture OUs
+**Sort of unique attributes in the search screen:** Aimed at aligning it with the web instance for a more consistent user experience, this version of the Android app, by default, sorts the unique attributes (QR, barcode) at the top of the list of searchable attributes. Users can quickly and easily find the attributes for a more exact search.
 
-[ANDROAPP-6101](https://dhis2.atlassian.net/browse/ANDROAPP-6101) User is allowed to save errors when the event is with status "complete"
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6039) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_unique_qrBar_search)
 
-[ANDROAPP-6116](https://dhis2.atlassian.net/browse/ANDROAPP-6116) App doesn't respect program specification constraints when displaying the list of available relationship types
+**Support of biometric dialog:** An enhancement to the biometric authentication feature has been made in 3.1.0. When there is only one account configured, the user can configure biometric authentication (fingerprint or face ID).
 
-[ANDROAPP-6131](https://dhis2.atlassian.net/browse/ANDROAPP-6131) Event program displays no events created message on intial load
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-4676) | [Documentation](https://docs.dhis2.org/en/use/android-app/android-specific-features.html#capture_app_generic_biometrics_login)
 
-[ANDROAPP-6132](https://dhis2.atlassian.net/browse/ANDROAPP-6132) Double tap on event/enrollment creation could generate duplicates
+**Line Listing improvements:** This version of the Android App introduces support for the Category Option Dimension in line listings. This enhancement enables users to apply category options directly within line listings to filter data according to precise criteria, improving data exploration and decision-making processes. This feature greatly enhances the versatility and utility of line listings, empowering users to perform more sophisticated reporting.
 
-[ANDROAPP-6137](https://dhis2.atlassian.net/browse/ANDROAPP-6137) Category Combo section shows incorrect number of fields
+Additionally, it has been improved the text alignment within the Line Listing tables to support left alignment. This enhancement ensures better readability and a cleaner presentation of data, making it easier for users to review and analyze their information quickly.
 
-[ANDROAPP-6146](https://dhis2.atlassian.net/browse/ANDROAPP-6146) Incomplete "Download" label when exporting a DB
+[Jira1](https://dhis2.atlassian.net/browse/ANDROAPP-6353) | [Jira2](https://dhis2.atlassian.net/browse/ANDROAPP-6121) | [Documentation](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#capture_app_visual_event_visualizations)
 
-[ANDROAPP-6158](https://dhis2.atlassian.net/browse/ANDROAPP-6158) Data set - Sections without DE's never stops displaying the loading icon
+## USER EXPERIENCE
 
-[ANDROAPP-6174](https://dhis2.atlassian.net/browse/ANDROAPP-6174) When same day \(eg. 20 June\) is chosen for a future month, the scheduled date always shows "Today"
+**Responsive Home Screen:** In this Android App version a new dynamic home screen that adapts to the number of programs available has been implemented. This update replaces the old static list that didn’t adjust to the screen, providing a more responsive and user-friendly interface.The responsive design makes better use of screen real estate, providing a more engaging and functional home screen layout.
 
-[ANDROAPP-6181](https://dhis2.atlassian.net/browse/ANDROAPP-6181) ConcurrentModificationException
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-5394) | [Card](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-responsive-home-screen.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/android-specific-features.html#capture_app_home)
 
-[ANDROAPP-6182](https://dhis2.atlassian.net/browse/ANDROAPP-6182) \(RuntimeException\) Crash when rotating device in schedule screen
+**Scheduled events dialog:** As a continuation of the new schedule dialog introduced in the version 3.0, a new  intuitive and user-friendly schedule dialog has been implemented to enhance the overall user experience, making it easier to book, reschedule, or cancel events.
 
-[ANDROAPP-6183](https://dhis2.atlassian.net/browse/ANDROAPP-6183) \(UnsupportedOperationException\) crash when opening a map
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-6229) | [Card1](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-schedule-new.png) | [Card2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-enter-cancel-reschedule.png) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_scheduling)
 
-[ANDROAPP-6184](https://dhis2.atlassian.net/browse/ANDROAPP-6184) \(RuntimeException\) crash when rotating device in settings activity
+**Improve menus and navigation bar:** A revamped of the menus and navigation bar has been made to be more user-friendly and accessible. It includes a cleaner, more modern look that improves readability and usability. These updates are designed to provide a more efficient and enjoyable user experience.
 
-[ANDROAPP-6185](https://dhis2.atlassian.net/browse/ANDROAPP-6185) Event report date is not updated when changing the due date \(keeping the overdue status\)
+[Jira1](https://dhis2.atlassian.net/browse/ANDROAPP-6036) | [Jira2](https://dhis2.atlassian.net/browse/ANDROAPP-6113) | [Card1](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-menu.png) | [Card2](https://s3.eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/release+notes+3.1/release+cards/Android-3-1-navigation-bar.png) | [Documentation
+](https://docs.dhis2.org/en/use/android-app/visual-configurations.html#capture_app_visual_menu_bars_update)
+## CROSS PRODUCT
 
-[ANDROAPP-6187](https://dhis2.atlassian.net/browse/ANDROAPP-6187) Form is not refreshed when changing from closed org unit to open one
+**Support for customized Tracker terminology:** Some DHIS2 terminology is not familiar for the end users. For this reason, we are gradually enabling the possibility to customize it to each particular use case. In this version, the term "event" (program label context) is customizable. The admin user will be able to configure it for each program using the Maintenance App, and the Android Capture App will display the customized term instead of the generic one.
 
-[ANDROAPP-6193](https://dhis2.atlassian.net/browse/ANDROAPP-6193) App asks device location permission after granting location permission
+[Jira](https://dhis2.atlassian.net/browse/ANDROAPP-5947) | [Documentation](https://docs.dhis2.org/en/use/android-app/program-features.html#capture_app_programs_common_features_customized_terminology)
 
-[ANDROAPP-6197](https://dhis2.atlassian.net/browse/ANDROAPP-6197) Incorrect header in TEI Dashboard card
+---
 
-[ANDROAPP-6198](https://dhis2.atlassian.net/browse/ANDROAPP-6198) Android adding '.0' to Data Element causing sync error
-
-[ANDROAPP-6209](https://dhis2.atlassian.net/browse/ANDROAPP-6209) NaN displayed in program indicators
-
-[ANDROAPP-6212](https://dhis2.atlassian.net/browse/ANDROAPP-6212) Cannot share database due to device permissions
-
-[ANDROAPP-6225](https://dhis2.atlassian.net/browse/ANDROAPP-6225) RuntimeException: Unable to start activity ComponentInfo\{com.dhis2/org.dhis2.usescases.searchTrackEntity.SearchTEAc...
-
-[ANDROAPP-6272](https://dhis2.atlassian.net/browse/ANDROAPP-6272) ApplicationNotResponding: ANR for at least 5000 ms.
-
-[ANDROAPP-6273](https://dhis2.atlassian.net/browse/ANDROAPP-6273) ApplicationNotResponding: ANR for at least 5000 ms.
-
-[ANDROAPP-6277](https://dhis2.atlassian.net/browse/ANDROAPP-6277) Working lists aren't applied even when active
-
-[ANDROAPP-6315](https://dhis2.atlassian.net/browse/ANDROAPP-6315) Fix Mobile ui breaking changes in capture app
-
-[ANDROAPP-6318](https://dhis2.atlassian.net/browse/ANDROAPP-6318) Order of TEIs change when moving between landscape and portrait
-
-[ANDROAPP-6332](https://dhis2.atlassian.net/browse/ANDROAPP-6332) \[DEFECT\] Incorrect workflow of Org unit when creating event
-
-[ANDROAPP-6345](https://dhis2.atlassian.net/browse/ANDROAPP-6345) Keyboard malfunction after stock distribution
-
-[ANDROAPP-6346](https://dhis2.atlassian.net/browse/ANDROAPP-6346) \[ANR\]  jdk.internal.misc.Unsafe in park
-
-[ANDROAPP-6379](https://dhis2.atlassian.net/browse/ANDROAPP-6379) Time recorded when creating notes
-
-[ANDROAPP-6380](https://dhis2.atlassian.net/browse/ANDROAPP-6380) Keyboard navigation
-
-[ANDROAPP-6407](https://dhis2.atlassian.net/browse/ANDROAPP-6407) \[Defect\] Data entry not saving more than one value
-
-[ANDROAPP-6414](https://dhis2.atlassian.net/browse/ANDROAPP-6414) Clicking save, not now or sync several times
-
-[ANDROAPP-6415](https://dhis2.atlassian.net/browse/ANDROAPP-6415) Login error in landscape
-
-[ANDROAPP-6416](https://dhis2.atlassian.net/browse/ANDROAPP-6416) Percentage input is showing %  twice
-
-[ANDROAPP-6417](https://dhis2.atlassian.net/browse/ANDROAPP-6417) Cannot navigate to event details or sync event after navigating back from details 
+##### **DETAILS**
+You can find the list of all new features and all bugs fixed in 3.1.0 [here.](https://dhis2.atlassian.net/projects/ANDROAPP/versions/10851/tab/release-report-all-issues)

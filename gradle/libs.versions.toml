@@ -1,14 +1,14 @@
 [versions]
 sdk = "34"
 minSdk = "21"
-vCode = "136"
+vCode = "137"
 vName = "3.1.0"
 gradle = "8.6.1"
 kotlin = '2.0.20'
 hilt = '2.47'
 jacoco = '0.8.10'
-designSystem = "0.4.0-SNAPSHOT"
-dhis2sdk = "1.11.0-SNAPSHOT"
+designSystem = "0.4.0"
+dhis2sdk = "1.11.0"
 ruleEngine = "3.0.0"
 expressionParser = "1.1.0"
 appcompat = "1.6.1"
