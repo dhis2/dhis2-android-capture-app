@@ -44,7 +44,11 @@ fun TimelineEventsHeader(
             )
         }
         if (timelineEventsHeaderModel.displayEventCreationButton) {
-            NewEventOptions(timelineEventsHeaderModel.options, onOptionSelected)
+            NewEventOptions(
+                options = timelineEventsHeaderModel.options,
+                addButtonTestTag = TEST_ADD_EVENT_BUTTON_IN_TIMELINE,
+                onOptionSelected = onOptionSelected,
+            )
         }
     }
 }
@@ -57,3 +61,5 @@ private fun TimelineEventHeaderPreview() {
         onOptionSelected = {},
     )
 }
+
+const val TEST_ADD_EVENT_BUTTON_IN_TIMELINE = "TEST_ADD_EVENT_BUTTON_IN_TIMELINE"
