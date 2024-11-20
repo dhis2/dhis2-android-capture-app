@@ -175,37 +175,18 @@
                 android:resource="@xml/provider_paths"
                 tools:replace="android:resource" />
         </provider>
-        <receiver android:exported="true"  android:enabled="true"  android:name=".usescases.pushnotifications.NotificationReceiver">
-            <intent-filter>
-                <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
-                <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
-                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
-                <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
-            </intent-filter>
-        </receiver>
 
-        <!-- Broadcast receiver for UnifiedPush distributor; must match https://github.com/UnifiedPush/UP-spec/blob/main/specifications.md -->
+        <service android:name=".usescases.pushnotifications.SubscriberService"/>
+
+        <!-- Subscriber service restart on reboot -->
         <receiver
-            android:name=".usescases.pushnotifications.distributor.BroadcastReceiver"
+            android:name=".usescases.pushnotifications.SubscriberService$StartReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="org.unifiedpush.android.distributor.REGISTER"/>
-                <action android:name="org.unifiedpush.android.distributor.UNREGISTER"/>
-                <action android:name="org.unifiedpush.android.distributor.feature.BYTES_MESSAGE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-
-        <!-- Broadcast receiver to send messages via intents -->
-        <receiver
-            android:name=".usescases.pushnotifications.distributor.BroadcastService$BroadcastReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name=".usescases.pushnotifications.distributor.Constants.SEND_MESSAGE"/>
-            </intent-filter>
-        </receiver>
-
 
     </application>
 

@@ -270,6 +270,8 @@ private fun SearchBar(
                 SearchBarMode.SEARCH -> onSearchCaptureMode()
             }
         },
+        mode = SearchBarMode.SEARCH,
+        searching = false,
     )
 }
 
@@ -494,7 +496,7 @@ private fun SwipeToChangeLocationInfo(
                 shape = Shape.Full,
             )
             .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = spacedBy(8.dp),
     ) {
         Icon(
