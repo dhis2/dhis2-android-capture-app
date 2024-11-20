@@ -12,6 +12,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -81,15 +82,21 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideDataEntryRepository(
+    fun provideEnrollmentConfiguration(
         d2: D2,
+        metadataIconProvider: MetadataIconProvider,
+    ) = EnrollmentConfiguration(d2, enrollmentUid, metadataIconProvider)
+
+    @Provides
+    @PerActivity
+    fun provideDataEntryRepository(
         modelFactory: FieldViewModelFactory,
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-        metadataIconProvider: MetadataIconProvider,
+        enrollmentConfiguration: EnrollmentConfiguration,
     ): EnrollmentRepository {
         return EnrollmentRepository(
             fieldFactory = modelFactory,
-            conf = EnrollmentConfiguration(d2, enrollmentUid, metadataIconProvider),
+            conf = enrollmentConfiguration,
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
         )
@@ -131,10 +138,19 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
+    fun provideDateEditionWarningHandler(
+        enrollmentConfiguration: EnrollmentConfiguration,
+        eventResourcesProvider: EventResourcesProvider,
+    ) = DateEditionWarningHandler(
+        enrollmentConfiguration,
+        eventResourcesProvider,
+    )
+
+    @Provides
+    @PerActivity
     fun providePresenter(
         d2: D2,
         enrollmentObjectRepository: EnrollmentObjectRepository,
-        dataEntryRepository: EnrollmentRepository,
         teiRepository: TrackedEntityInstanceObjectRepository,
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         schedulerProvider: SchedulerProvider,
@@ -143,12 +159,12 @@ class EnrollmentModule(
         matomoAnalyticsController: MatomoAnalyticsController,
         eventCollectionRepository: EventCollectionRepository,
         teiAttributesProvider: TeiAttributesProvider,
+        dateEditionWarningHandler: DateEditionWarningHandler,
     ): EnrollmentPresenterImpl {
         return EnrollmentPresenterImpl(
             enrollmentView,
             d2,
             enrollmentObjectRepository,
-            dataEntryRepository,
             teiRepository,
             programRepository,
             schedulerProvider,
@@ -157,6 +173,7 @@ class EnrollmentModule(
             matomoAnalyticsController,
             eventCollectionRepository,
             teiAttributesProvider,
+            dateEditionWarningHandler,
         )
     }
 

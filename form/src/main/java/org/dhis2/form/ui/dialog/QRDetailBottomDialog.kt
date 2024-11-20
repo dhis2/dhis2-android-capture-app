@@ -221,7 +221,7 @@ QRDetailBottomDialog(
                             file.observe(viewLifecycleOwner) {
                                 Toast.makeText(
                                     requireContext(),
-                                    getString(R.string.file_downladed),
+                                    getString(R.string.file_downloaded),
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }

@@ -233,6 +233,9 @@ class MapSelectorViewModelTest {
             assertTrue(state1.captureMode == MapSelectorViewModel.CaptureMode.SEARCH)
             assertTrue(state1.locationItems.isEmpty())
             mapSelectorViewModel.onSearchLocation("Address")
+            val searchingItem = awaitItem()
+            assertTrue(searchingItem.searching)
+            assertTrue(searchingItem.locationItems.isEmpty())
             val item2 = awaitItem()
             assertTrue(item2.locationItems == mockedLocationItemSearchResults)
             assertTrue(!item2.searchOnAreaVisible)
@@ -336,7 +339,7 @@ class MapSelectorViewModelTest {
                 ) doReturn mockedOtherRegionLocationItemSearchResults
 
                 mapSelectorViewModel.onSearchOnAreaClick()
-                1
+                2
             },
             then = { screenState ->
                 assertEquals(false, screenState.searchOnAreaVisible)
@@ -377,6 +380,7 @@ class MapSelectorViewModelTest {
         viewModel.initSearchMode()
         awaitItem()
         viewModel.onSearchLocation("Address")
+        assertTrue(awaitItem().searching)
         with(awaitItem()) {
             assertTrue(locationItems.isNotEmpty())
             assertTrue(captureMode == MapSelectorViewModel.CaptureMode.SEARCH)
@@ -441,6 +445,63 @@ class MapSelectorViewModelTest {
         with(mapSelectorViewModel) {
             assertTrue(canCaptureManually())
         }
+    }
+
+    @Test
+    fun shouldSwitchCaptureModeToSearchPinClickedWhenPinClicked() = runTest {
+        mapSelectorViewModelNoInitialGeometry.screenState.initTest(
+            given = { givenSearchAction(mapSelectorViewModelNoInitialGeometry) {} },
+            `when` = {
+                mapSelectorViewModelNoInitialGeometry.onPinClicked(
+                    Feature.fromGeometry(
+                        Point.fromLngLat(
+                            mockedSearchResult.longitude,
+                            mockedSearchResult.latitude,
+                        ),
+                    ).also {
+                        it.withPlacesProperties(
+                            title = mockedSearchResult.title,
+                            subtitle = mockedSearchResult.address,
+                        )
+                    },
+                )
+                1
+            },
+            then = { screenState ->
+                assertTrue(screenState.captureMode.isSearchPinClicked())
+            },
+        )
+    }
+
+    @Test
+    fun shouldSwitchCaptureModeToSearchManualWhenPinClickedFinishMove() = runTest {
+        mapSelectorViewModelNoInitialGeometry.screenState.initTest(
+            given = {
+                givenSearchAction(mapSelectorViewModelNoInitialGeometry) {}
+                mapSelectorViewModelNoInitialGeometry.onPinClicked(
+                    Feature.fromGeometry(
+                        Point.fromLngLat(
+                            mockedSearchResult.longitude,
+                            mockedSearchResult.latitude,
+                        ),
+                    ).also {
+                        it.withPlacesProperties(
+                            title = mockedSearchResult.title,
+                            subtitle = mockedSearchResult.address,
+                        )
+                    },
+                )
+                val item = awaitItem()
+                assertTrue(item.captureMode.isSearchPinClicked())
+            },
+            `when` = {
+                mapSelectorViewModelNoInitialGeometry.onMoveEnd()
+                1
+            },
+            then = { screenState ->
+                assertTrue(screenState.captureMode.isSearchManual())
+            },
+        )
     }
 
     private val mockedLocationItemSearchResults = listOf(

@@ -82,7 +82,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.mapper.FormSectionMapper
-import org.dhis2.form.ui.provider.EnrollmentResultDialogProvider
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -278,6 +277,22 @@ class FormView : Fragment() {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
                 }
+            }
+        }
+
+    private val requestStoragePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) {
+                downloadFile(viewModel.filePath)
+                viewModel.filePath = null
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.storage_permission_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
             }
         }
 
@@ -981,16 +996,23 @@ class FormView : Fragment() {
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {
-        activity?.activityResultRegistry?.let {
-            event.field.displayName?.let { filePath ->
-                fileHandler.copyAndOpen(File(filePath)) { file ->
-                    file.observe(viewLifecycleOwner) {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.file_downladed),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            downloadFile(event.field.displayName)
+        } else {
+            viewModel.filePath = event.field.displayName
+            requestStoragePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun downloadFile(fileName: String?) {
+        fileName?.let { filePath ->
+            fileHandler.copyAndOpen(File(filePath)) { file ->
+                file.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.file_downloaded),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
         }
@@ -1150,7 +1172,6 @@ class FormView : Fragment() {
         private var onPercentageUpdate: ((percentage: Float) -> Unit)? = null
         private var onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)? = null
         private var onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)? = null
-        private var enrollmentResultDialogProvider: EnrollmentResultDialogProvider? = null
         private var eventResultDialogUiProvider: FormResultDialogProvider? = null
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
@@ -1184,12 +1205,6 @@ class FormView : Fragment() {
          * Set a FragmentManager for instantiating the form view
          * */
         fun factory(manager: FragmentManager) = apply { fragmentManager = manager }
-
-        /**
-         *
-         */
-        fun enrollmentResultDialogUiProvider(enrollmentResultDialogProvider: EnrollmentResultDialogProvider) =
-            apply { this.enrollmentResultDialogProvider = enrollmentResultDialogProvider }
 
         /**
          *
@@ -1230,7 +1245,6 @@ class FormView : Fragment() {
                     onPercentageUpdate,
                     onDataIntegrityCheck,
                     onFieldItemsRendered,
-                    enrollmentResultDialogProvider,
                     eventResultDialogUiProvider,
                     actionIconsActive,
                     openErrorLocation,

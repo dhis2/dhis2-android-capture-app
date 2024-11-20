@@ -162,10 +162,9 @@ class SchedulingViewModel(
         resourceManager = resourceManager,
         eventResourcesProvider = eventResourcesProvider,
     )
-
     private fun loadProgramStage(event: Event? = null) {
         viewModelScope.launch {
-            val selectedDate = event?.dueDate()
+            val selectedDate = event?.dueDate() ?: configureEventReportDate.getNextScheduleDate()
             configureEventReportDate(selectedDate = selectedDate).collect {
                 _eventDate.value = it
             }
@@ -290,7 +289,7 @@ class SchedulingViewModel(
             val programUid = event.program() ?: return@launch
 
             d2.eventModule().events().uid(launchMode.eventUid).run {
-                setEventDate(dateUtils.today)
+                setEventDate(dateUtils.getStartOfDay(Date()))
                 setStatus(EventStatus.ACTIVE)
             }
 

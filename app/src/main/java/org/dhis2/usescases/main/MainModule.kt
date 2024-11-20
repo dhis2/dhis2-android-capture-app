@@ -88,10 +88,11 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
     fun provideDeleteUserData(
         workManagerController: WorkManagerController,
         preferencesProvider: PreferenceProvider,
+        filterManager: FilterManager,
     ): DeleteUserData {
         return DeleteUserData(
             workManagerController,
-            FilterManager.getInstance(),
+            filterManager,
             preferencesProvider,
         )
     }

@@ -34,7 +34,7 @@ object GetMapData {
 
         val locationFeatures = locationItems
             .filter { it !is LocationItemModel.StoredResult }
-            .takeIf { captureMode.isSearch() }
+            .takeIf { captureMode.isSearchMode() }
             ?.map { locationItem ->
                 Feature.fromGeometry(
                     Point.fromLngLat(locationItem.longitude, locationItem.latitude),
@@ -67,5 +67,8 @@ object GetMapData {
         MapSelectorViewModel.CaptureMode.SEARCH -> getBoundingBox.getEnclosingBoundingBox(
             (selectedFeatures + locationFeatures).getLatLngPointList(),
         )
+        MapSelectorViewModel.CaptureMode.SEARCH_SWIPE -> null
+        MapSelectorViewModel.CaptureMode.SEARCH_MANUAL -> null
+        MapSelectorViewModel.CaptureMode.SEARCH_PIN_CLICKED -> null
     }
 }

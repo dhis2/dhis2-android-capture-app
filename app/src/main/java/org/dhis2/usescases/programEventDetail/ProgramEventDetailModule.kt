@@ -26,9 +26,10 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.tracker.data.ProfilePictureProvider
+import org.dhis2.tracker.events.CreateEventUseCase
+import org.dhis2.tracker.events.CreateEventUseCaseRepository
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
@@ -181,10 +182,18 @@ class ProgramEventDetailModule(
     @PerActivity
     fun provideCreateEventUseCase(
         dispatcher: DispatcherProvider,
-        d2: D2,
-        dateUtils: DateUtils,
+        repository: CreateEventUseCaseRepository,
     ) = CreateEventUseCase(
         dispatcher = dispatcher,
+        repository = repository,
+    )
+
+    @Provides
+    @PerActivity
+    fun provideCreateEventUseCaseRepository(
+        d2: D2,
+        dateUtils: DateUtils,
+    ) = CreateEventUseCaseRepository(
         d2 = d2,
         dateUtils = dateUtils,
     )

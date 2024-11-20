@@ -301,7 +301,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getToday());
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getStartOfDay(new Date()));
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
@@ -736,7 +736,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                     .blockingGet();
 
-            if (!enrollmentsInProgram.isEmpty()) {
+            if (selectedProgram != null && !enrollmentsInProgram.isEmpty()) {
                 for (Enrollment enrollment : enrollmentsInProgram) {
                     if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);

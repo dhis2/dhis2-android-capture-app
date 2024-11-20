@@ -74,7 +74,7 @@
         <item quantity="many">En %d años</item>
     </plurals>
     <string name="open_with">Abrir con</string>
-    <string name="file_downladed">Archivo descargado con éxito</string>
+    <string name="file_downloaded">Archivo descargado con éxito</string>
     <string name="dialog_layer_enrollment_coordinates_v2">Mostrar coordenadas de %s</string>
     <string name="enrollment_data_section_label_V2">Datos de %s</string>
     <string name="enrollment_coordinates_V2">Coordenadas de %s</string>

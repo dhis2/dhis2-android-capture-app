@@ -93,6 +93,8 @@ class FormViewModel(
 
     private val handler = Handler(Looper.getMainLooper())
 
+    var filePath: String? = null
+
     init {
         viewModelScope.launch {
             _pendingIntents

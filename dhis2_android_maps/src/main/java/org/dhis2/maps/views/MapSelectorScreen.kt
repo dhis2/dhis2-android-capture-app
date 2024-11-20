@@ -50,11 +50,15 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,6 +67,7 @@ import org.dhis2.maps.R
 import org.dhis2.maps.location.AccuracyIndicator
 import org.dhis2.maps.location.LocationState
 import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.MapData
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -92,7 +97,7 @@ fun MapSelectorScreen(
         else -> false
     }
 
-    if (useTwoPaneLayout && screenState.isManualCaptureEnabled) {
+    if (useTwoPaneLayout && screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
         TwoPaneMapSelector(
             screenState,
             mapSelectorScreenActions,
@@ -113,7 +118,7 @@ fun SinglePaneMapSelector(
     Column(
         Modifier.fillMaxSize(),
     ) {
-        if (!screenState.isManualCaptureEnabled) {
+        if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
             MapTopBar(screenActions.onBackClicked)
         }
 
@@ -122,15 +127,18 @@ fun SinglePaneMapSelector(
                 .padding(16.dp),
             verticalArrangement = spacedBy(16.dp),
         ) {
-            if (screenState.isManualCaptureEnabled) {
+            if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
                 SearchBar(
+                    searching = screenState.searching,
                     locationItems = screenState.locationItems,
-                    onBackClicked = screenActions.onBackClicked,
-                    onClearLocation = screenActions.onClearLocation,
-                    onSearchLocation = screenActions.onSearchLocation,
-                    onLocationSelected = screenActions.onLocationSelected,
-                    onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                    onButtonMode = screenActions.onButtonMode,
+                    searchBarActions = SearchBarActions(
+                        onBackClicked = screenActions.onBackClicked,
+                        onClearLocation = screenActions.onClearLocation,
+                        onSearchLocation = screenActions.onSearchLocation,
+                        onLocationSelected = screenActions.onLocationSelected,
+                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                        onButtonMode = screenActions.onButtonMode,
+                    ),
                 )
             }
 
@@ -179,34 +187,49 @@ private fun TwoPaneMapSelector(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .fillMaxSize()
-                .padding(top = 56.dp),
+                .fillMaxSize(),
             verticalArrangement = spacedBy(16.dp),
         ) {
-            SearchBar(
-                locationItems = screenState.locationItems,
-                onBackClicked = screenActions.onBackClicked,
-                onClearLocation = screenActions.onClearLocation,
-                onSearchLocation = screenActions.onSearchLocation,
-                onLocationSelected = screenActions.onLocationSelected,
-                onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                onButtonMode = {
-                    // no-op
-                },
-            )
+            if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
+                MapTopBar(screenActions.onBackClicked)
+            }
 
-            LocationInfoContent(
-                selectedLocation = screenState.selectedLocation,
-                captureMode = screenState.captureMode,
-                displayPolygonInfo = screenState.displayPolygonInfo,
-                accuracyRange = screenState.accuracyRange,
-                configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
-            )
+            if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
+                SearchBar(
+                    searching = screenState.searching,
+                    locationItems = screenState.locationItems,
+                    searchBarActions = SearchBarActions(
+                        onBackClicked = screenActions.onBackClicked,
+                        onClearLocation = screenActions.onClearLocation,
+                        onSearchLocation = screenActions.onSearchLocation,
+                        onLocationSelected = screenActions.onLocationSelected,
+                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                        onButtonMode = {
+                            // no-op
+                        },
+                    ),
+                )
+            }
 
-            DoneButton(
-                enabled = screenState.doneButtonEnabled,
-                onDoneButtonClicked = screenActions.onDoneButtonClick,
-            )
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Column {
+                    LocationInfoContent(
+                        selectedLocation = screenState.selectedLocation,
+                        captureMode = screenState.captureMode,
+                        displayPolygonInfo = screenState.displayPolygonInfo,
+                        accuracyRange = screenState.accuracyRange,
+                        configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
+                    )
+
+                    DoneButton(
+                        enabled = screenState.doneButtonEnabled,
+                        onDoneButtonClicked = screenActions.onDoneButtonClick,
+                    )
+                }
+            }
         }
 
         Column(Modifier.weight(0.7f)) {
@@ -227,15 +250,20 @@ private fun TwoPaneMapSelector(
     }
 }
 
+private data class SearchBarActions(
+    val onBackClicked: () -> Unit,
+    val onClearLocation: () -> Unit,
+    val onSearchLocation: (String) -> Unit,
+    val onLocationSelected: (LocationItemModel) -> Unit,
+    val onSearchCaptureMode: () -> Unit,
+    val onButtonMode: () -> Unit,
+)
+
 @Composable
 private fun SearchBar(
+    searching: Boolean,
     locationItems: List<LocationItemModel>,
-    onBackClicked: () -> Unit,
-    onClearLocation: () -> Unit,
-    onSearchLocation: (String) -> Unit,
-    onLocationSelected: (LocationItemModel) -> Unit,
-    onSearchCaptureMode: () -> Unit,
-    onButtonMode: () -> Unit,
+    searchBarActions: SearchBarActions,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -250,24 +278,25 @@ private fun SearchBar(
     LocationBar(
         currentResults = locationItems,
         searchAction = OnSearchAction.OnOneItemSelect,
-        onBackClicked = onBackClicked,
-        onClearLocation = onClearLocation,
+        onBackClicked = searchBarActions.onBackClicked,
+        onClearLocation = searchBarActions.onClearLocation,
         onSearchLocation = {
             timeLeft = 1000
-            onSearchLocation(it)
+            searchBarActions.onSearchLocation(it)
         },
+        searching = searching,
         onLocationSelected = {
             scope.launch {
                 delay(1000)
                 if (timeLeft == 0) {
-                    onLocationSelected(it)
+                    searchBarActions.onLocationSelected(it)
                 }
             }
         },
         onModeChanged = {
             when (it) {
-                SearchBarMode.BUTTON -> onButtonMode()
-                SearchBarMode.SEARCH -> onSearchCaptureMode()
+                SearchBarMode.BUTTON -> searchBarActions.onButtonMode()
+                SearchBarMode.SEARCH -> searchBarActions.onSearchCaptureMode()
             }
         },
     )
@@ -281,86 +310,61 @@ private fun LocationInfoContent(
     accuracyRange: AccuracyRange,
     configurePolygonInfoRecycler: (RecyclerView) -> Unit,
 ) {
-    when {
-        displayPolygonInfo -> {
-            AndroidView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 200.dp),
-                factory = { context ->
-                    RecyclerView(context).also {
-                        configurePolygonInfoRecycler(it)
-                    }
-                },
-                update = {
-                    // no-op
-                },
-            )
-        }
-
-        (captureMode.isManual() or captureMode.isNone()) && selectedLocation is SelectedLocation.ManualResult -> {
-            LocationItem(
-                locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = stringResource(R.string.selected_location),
-                    searchedSubtitle = stringResource(
-                        R.string.latitude_longitude,
-                        selectedLocation.latitude.truncate(),
-                        selectedLocation.longitude.truncate(),
-                    ),
-                    searchedLatitude = selectedLocation.latitude,
-                    searchedLongitude = selectedLocation.longitude,
-                ),
-                icon = {
-                    LocationItemIcon(
-                        icon = Icons.Outlined.Place,
-                        tintedColor = SurfaceColor.Primary,
-                        bgColor = SurfaceColor.PrimaryContainer,
-                    )
-                },
-            ) { }
-        }
-
-        captureMode.isSwipe() -> {
-            LocationItem(
-                locationItemModel = LocationItemModel.SearchResult(
-                    searchedTitle = stringResource(R.string.drop_to_select),
-                    searchedSubtitle = stringResource(
-                        R.string.latitude_longitude,
-                        selectedLocation.latitude.truncate(),
-                        selectedLocation.longitude.truncate(),
-                    ),
-                    searchedLatitude = selectedLocation.latitude,
-                    searchedLongitude = selectedLocation.longitude,
-                ),
-                icon = {
-                    LocationItemIcon(
-                        icon = Icons.Outlined.TouchApp,
-                        tintedColor = TextColor.OnWarningContainer,
-                        bgColor = SurfaceColor.WarningContainer,
-                    )
-                },
-            ) { }
-        }
-
-        captureMode.isGps() -> {
-            Box(
-                modifier = Modifier
-                    .height(64.dp)
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                AccuracyIndicator(accuracyRange = accuracyRange)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp),
+    ) {
+        when {
+            displayPolygonInfo -> {
+                AndroidView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 200.dp),
+                    factory = { context ->
+                        RecyclerView(context).also {
+                            configurePolygonInfoRecycler(it)
+                        }
+                    },
+                    update = {
+                        // no-op
+                    },
+                )
             }
-        }
 
-        captureMode.isSearch() -> {
-            if (selectedLocation is SelectedLocation.None) {
+            (captureMode.isManual() or captureMode.isNone() || captureMode.isSearchManual()) && selectedLocation is SelectedLocation.ManualResult -> {
                 LocationItem(
                     locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = stringResource(R.string.select_location_title),
-                        searchedSubtitle = stringResource(R.string.selet_location_subtitle),
-                        searchedLatitude = 0.0,
-                        searchedLongitude = 0.0,
+                        searchedTitle = stringResource(R.string.selected_location),
+                        searchedSubtitle = stringResource(
+                            R.string.latitude_longitude,
+                            selectedLocation.latitude.truncate(),
+                            selectedLocation.longitude.truncate(),
+                        ),
+                        searchedLatitude = selectedLocation.latitude,
+                        searchedLongitude = selectedLocation.longitude,
+                    ),
+                    icon = {
+                        LocationItemIcon(
+                            icon = Icons.Outlined.Place,
+                            tintedColor = SurfaceColor.Primary,
+                            bgColor = SurfaceColor.PrimaryContainer,
+                        )
+                    },
+                ) { }
+            }
+
+            captureMode.isSwipe() || captureMode.isSearchSwipe() -> {
+                LocationItem(
+                    locationItemModel = LocationItemModel.SearchResult(
+                        searchedTitle = stringResource(R.string.drop_to_select),
+                        searchedSubtitle = stringResource(
+                            R.string.latitude_longitude,
+                            selectedLocation.latitude.truncate(),
+                            selectedLocation.longitude.truncate(),
+                        ),
+                        searchedLatitude = selectedLocation.latitude,
+                        searchedLongitude = selectedLocation.longitude,
                     ),
                     icon = {
                         LocationItemIcon(
@@ -369,33 +373,63 @@ private fun LocationInfoContent(
                             bgColor = SurfaceColor.WarningContainer,
                         )
                     },
+                ) { }
+            }
+
+            captureMode.isGps() -> {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
+                    AccuracyIndicator(accuracyRange = accuracyRange)
                 }
-            } else if (selectedLocation is SelectedLocation.SearchResult) {
-                with(selectedLocation) {
+            }
+
+            captureMode.isSearch() || captureMode.isSearchManual() -> {
+                if (selectedLocation is SelectedLocation.None) {
                     LocationItem(
                         locationItemModel = LocationItemModel.SearchResult(
-                            searchedTitle = title
-                                .takeIf { it.isNotBlank() }
-                                ?: stringResource(R.string.selected_location),
-                            searchedSubtitle = address
-                                .takeIf { it.isNotBlank() }
-                                ?: stringResource(
-                                    R.string.latitude_longitude,
-                                    selectedLocation.latitude.truncate(),
-                                    selectedLocation.longitude.truncate(),
-                                ),
-                            searchedLatitude = latitude,
-                            searchedLongitude = longitude,
+                            searchedTitle = stringResource(R.string.select_location_title),
+                            searchedSubtitle = stringResource(R.string.selet_location_subtitle),
+                            searchedLatitude = 0.0,
+                            searchedLongitude = 0.0,
                         ),
                         icon = {
                             LocationItemIcon(
-                                icon = Icons.Outlined.Place,
-                                tintedColor = SurfaceColor.Primary,
-                                bgColor = SurfaceColor.PrimaryContainer,
+                                icon = Icons.Outlined.TouchApp,
+                                tintedColor = TextColor.OnWarningContainer,
+                                bgColor = SurfaceColor.WarningContainer,
                             )
                         },
-                    ) { }
+                    ) {
+                    }
+                } else if (selectedLocation is SelectedLocation.SearchResult) {
+                    with(selectedLocation) {
+                        LocationItem(
+                            locationItemModel = LocationItemModel.SearchResult(
+                                searchedTitle = title
+                                    .takeIf { it.isNotBlank() }
+                                    ?: stringResource(R.string.selected_location),
+                                searchedSubtitle = address
+                                    .takeIf { it.isNotBlank() }
+                                    ?: stringResource(
+                                        R.string.latitude_longitude,
+                                        selectedLocation.latitude.truncate(),
+                                        selectedLocation.longitude.truncate(),
+                                    ),
+                                searchedLatitude = latitude,
+                                searchedLongitude = longitude,
+                            ),
+                            icon = {
+                                LocationItemIcon(
+                                    icon = Icons.Outlined.Place,
+                                    tintedColor = SurfaceColor.Primary,
+                                    bgColor = SurfaceColor.PrimaryContainer,
+                                )
+                            },
+                        ) { }
+                    }
                 }
             }
         }
@@ -417,7 +451,8 @@ private fun Map(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(8.dp))
+            .background(SurfaceColor.ContainerLow),
         contentAlignment = Alignment.Center,
     ) {
         MapScreen(
@@ -548,7 +583,7 @@ private fun DraggableSelectedIcon(
             mutableStateOf(0.dp)
         }
         val iconOffset by animateDpAsState(
-            if (captureMode.isSwipe()) {
+            if (captureMode.isSwipe() || captureMode.isSearchSwipe() || captureMode.isSearchPinClicked()) {
                 (-15).dp
             } else {
                 0.dp
@@ -606,3 +641,100 @@ private fun MapTopBar(onBackClicked: () -> Unit) {
         ),
     )
 }
+
+@Preview(device = "id:pixel_8a", showBackground = true)
+@Composable
+fun TestPortraitMap(
+    @PreviewParameter(ScreenStateParamProvider::class) screenState: MapSelectorScreenState,
+) {
+    MapSelectorScreen(
+        screenState = screenState,
+        mapSelectorScreenActions = previewActions,
+    )
+}
+
+@Preview(device = "id:pixel_tablet", showBackground = true)
+@Composable
+fun TestLandscapeMap(
+    @PreviewParameter(ScreenStateParamProvider::class) screenState: MapSelectorScreenState,
+) {
+    TwoPaneMapSelector(
+        screenState = screenState,
+        screenActions = previewActions,
+    )
+}
+
+private class ScreenStateParamProvider : PreviewParameterProvider<MapSelectorScreenState> {
+    override val values: Sequence<MapSelectorScreenState>
+        get() = sequenceOf(
+            searchScreenState,
+            gpsScreenState,
+        )
+}
+
+private val searchScreenState = MapSelectorScreenState(
+    mapData = MapData(
+        featureCollection = FeatureCollection.fromFeatures(emptyList()),
+        boundingBox = null,
+    ),
+    locationItems = listOf(
+        LocationItemModel.StoredResult(
+            storedTitle = "title",
+            storedSubtitle = "subtitle",
+            storedLatitude = 0.0,
+            storedLongitude = 0.0,
+        ),
+        LocationItemModel.SearchResult(
+            searchedTitle = "title",
+            searchedSubtitle = "subtitle",
+            searchedLatitude = 0.0,
+            searchedLongitude = 0.0,
+        ),
+    ),
+    selectedLocation = SelectedLocation.None(),
+    captureMode = MapSelectorViewModel.CaptureMode.SEARCH,
+    accuracyRange = AccuracyRange.None(),
+    searchOnAreaVisible = true,
+    displayPolygonInfo = false,
+    locationState = LocationState.OFF,
+    isManualCaptureEnabled = true,
+    forcedLocationAccuracy = 10,
+    lastGPSLocation = null,
+    searching = false,
+)
+
+private val gpsScreenState = MapSelectorScreenState(
+    mapData = MapData(
+        featureCollection = FeatureCollection.fromFeatures(emptyList()),
+        boundingBox = null,
+    ),
+    locationItems = emptyList(),
+    selectedLocation = SelectedLocation.GPSResult(
+        selectedLatitude = 0.0,
+        selectedLongitude = 0.0,
+        accuracy = 5f,
+    ),
+    captureMode = MapSelectorViewModel.CaptureMode.GPS,
+    accuracyRange = AccuracyRange.VeryGood(5),
+    searchOnAreaVisible = true,
+    displayPolygonInfo = false,
+    locationState = LocationState.FIXED,
+    isManualCaptureEnabled = true,
+    forcedLocationAccuracy = 10,
+    lastGPSLocation = null,
+    searching = false,
+)
+
+private val previewActions = MapSelectorScreenActions(
+    onBackClicked = { },
+    loadMap = {},
+    configurePolygonInfoRecycler = {},
+    onClearLocation = {},
+    onSearchLocation = {},
+    onLocationSelected = {},
+    onSearchCaptureMode = {},
+    onButtonMode = {},
+    onSearchOnAreaClick = {},
+    onMyLocationButtonClick = {},
+    onDoneButtonClick = {},
+)

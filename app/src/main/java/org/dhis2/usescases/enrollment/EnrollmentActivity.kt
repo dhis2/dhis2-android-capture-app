@@ -15,13 +15,10 @@ import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
-import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
@@ -49,16 +46,13 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     lateinit var resourceManager: ResourceManager
 
     @Inject
-    lateinit var eventResourcesProvider: EventResourcesProvider
-
-    @Inject
     lateinit var presenter: EnrollmentPresenterImpl
 
     @Inject
-    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
+    lateinit var dateEditionWarningHandler: DateEditionWarningHandler
 
     @Inject
-    lateinit var featureConfig: FeatureConfigRepository
+    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -106,32 +100,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             ),
         )?.inject(this)
 
-        formView = FormView.Builder()
-            .locationProvider(locationProvider)
-            .onItemChangeListener { action -> presenter.updateFields(action) }
-            .onLoadingListener { loading ->
-                if (loading) {
-                    showProgress()
-                } else {
-                    hideProgress()
-                    presenter.showOrHideSaveButton()
-                }
-            }
-            .onFinishDataEntry { presenter.finish(mode) }
-            .eventCompletionResultDialogProvider(enrollmentResultDialogProvider)
-            .factory(supportFragmentManager)
-            .setRecords(
-                EnrollmentRecords(
-                    enrollmentUid = enrollmentUid,
-                    enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
-                        enrollmentMode.name,
-                    ),
-                ),
-            )
-            .openErrorLocation(openErrorLocation)
-            .setProgramUid(programUid)
-            .build()
-
         super.onCreate(savedInstanceState)
 
         if (presenter.getEnrollment() == null ||
@@ -141,17 +109,29 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
 
         forRelationship = intent.getBooleanExtra(FOR_RELATIONSHIP, false)
+        mode = enrollmentMode
+
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        mode = enrollmentMode
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.formViewContainer, formView)
-        fragmentTransaction.commit()
-
-        binding.save.setOnClickListener {
-            performSaveClick()
+        formView = buildEnrollmentForm(
+            config = EnrollmentFormBuilderConfig(
+                enrollmentUid = enrollmentUid,
+                programUid = programUid,
+                enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
+                    enrollmentMode.name,
+                ),
+                hasWriteAccess = presenter.hasWriteAccess(),
+                openErrorLocation = openErrorLocation,
+                containerId = R.id.formViewContainer,
+                loadingView = binding.toolbarProgress,
+                saveButton = binding.save,
+            ),
+            locationProvider = locationProvider,
+            dateEditionWarningHandler = dateEditionWarningHandler,
+            enrollmentResultDialogProvider = enrollmentResultDialogProvider,
+        ) {
+            presenter.finish(enrollmentMode)
         }
 
         presenter.init()
@@ -192,10 +172,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        if (presenter.isEventScheduleOrSkipped(eventUid)) {
+        val suggestedEventDateIsNotFutureDate = presenter.suggestedReportDateIsNotFutureDate(eventUid)
+        if (presenter.isEventScheduleOrSkipped(eventUid) && suggestedEventDateIsNotFutureDate) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)
-        } else {
+        } else if (suggestedEventDateIsNotFutureDate) {
             val eventCreationIntent = Intent(abstracContext, EventCaptureActivity::class.java)
             eventCreationIntent.putExtras(
                 EventCaptureActivity.getActivityBundle(
@@ -205,6 +186,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 ),
             )
             startActivityForResult(eventCreationIntent, RQ_EVENT)
+        } else {
+            openDashboard(presenter.getEnrollment()?.uid()!!)
         }
     }
 
@@ -350,27 +333,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         formView.onSaveClick()
     }
 
-    override fun showProgress() {
-        runOnUiThread {
-            binding.toolbarProgress.show()
-        }
-    }
-
-    override fun hideProgress() {
-        runOnUiThread {
-            binding.toolbarProgress.hide()
-        }
-    }
-
-    override fun showDateEditionWarning(programUid: String?) {
+    override fun showDateEditionWarning(message: String?) {
         val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(
-                eventResourcesProvider.formatWithProgramEventLabel(
-                    R.string.enrollment_date_edition_warning_event_label,
-                    programUid,
-                    2,
-                ),
-            )
+            .setMessage(message)
             .setPositiveButton(R.string.button_ok, null)
         dialog.show()
     }
