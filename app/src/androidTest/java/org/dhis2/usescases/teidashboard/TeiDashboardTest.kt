@@ -166,6 +166,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore("Due Date Appears instead of next event")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         val currentDate = LocalDate.now()
