@@ -264,6 +264,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onBackClick() {
+        clearFilterClick();
         view.onBackClicked();
     }
 
