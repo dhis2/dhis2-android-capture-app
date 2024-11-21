@@ -139,12 +139,14 @@ class ProgramEventDetailModule(
         resourceManager: ResourceManager,
         metadataIconProvider: MetadataIconProvider,
         profilePictureProvider: ProfilePictureProvider,
+        dateUtils: DateUtils,
     ) = EventInfoProvider(
         d2,
         resourceManager,
         DateLabelProvider(context, resourceManager),
         metadataIconProvider,
         profilePictureProvider,
+        dateUtils,
     )
 
     @Provides
