@@ -389,39 +389,17 @@ public class SearchRepositoryImpl implements SearchRepository {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
 
-        EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
-                .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().beforeOrEqual(new Date());
-
         EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
 
         if (selectedProgram != null) {
-            scheduledEvents = scheduledEvents.byProgramUid().eq(selectedProgram.uid()).orderByDueDate(RepositoryScope.OrderByDirection.DESC);
-            overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid()).orderByDueDate(RepositoryScope.OrderByDirection.DESC);
+            overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid());
         }
 
-        int count;
-        List<Event> scheduleList = scheduledEvents.blockingGet();
-        List<Event> overdueList = overdueEvents.blockingGet();
-        count = overdueList.size() + scheduleList.size();
+        List<Event> overdueList = overdueEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
-        if (count > 0) {
+        if (!overdueList.isEmpty()) {
             tei.setHasOverdue(true);
-            Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = !overdueList.isEmpty() ? overdueList.get(0).dueDate() : null;
-            Date dateToShow = null;
-            if (scheduleDate != null && overdueDate != null) {
-                if (scheduleDate.before(overdueDate)) {
-                    dateToShow = overdueDate;
-                } else {
-                    dateToShow = scheduleDate;
-                }
-            } else if (scheduleDate != null) {
-                dateToShow = scheduleDate;
-            } else if (overdueDate != null) {
-                dateToShow = overdueDate;
-            }
-            tei.setOverdueDate(dateToShow);
+            tei.setOverdueDate(overdueList.get(0).dueDate());
         }
     }
 
