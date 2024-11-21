@@ -279,11 +279,11 @@ class EventInfoProvider(
             EventStatus.SCHEDULE -> {
                 val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
                 val color = if (dateUtils.isEventDueDateOverdue(dueDate)) AdditionalInfoItemColor.ERROR.color else AdditionalInfoItemColor.SUCCESS.color
-
+                val iconVector = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
                 AdditionalInfoItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Event,
+                            imageVector = iconVector,
                             contentDescription = text,
                             tint = color,
                         )

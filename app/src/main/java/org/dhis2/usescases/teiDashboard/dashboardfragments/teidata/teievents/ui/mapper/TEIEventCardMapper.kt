@@ -196,10 +196,11 @@ class TEIEventCardMapper(
             EventStatus.SCHEDULE -> {
                 val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
                 val color = if (dateUtils.isEventDueDateOverdue(dueDate)) AdditionalInfoItemColor.ERROR.color else AdditionalInfoItemColor.SUCCESS.color
+                val icon = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
                 AdditionalInfoItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Event,
+                            imageVector = icon,
                             contentDescription = text,
                             tint = color,
                         )
