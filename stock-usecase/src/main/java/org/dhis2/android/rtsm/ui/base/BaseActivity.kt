@@ -18,7 +18,7 @@ import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.commons.Constants.AUDIO_RECORDING_REQUEST_CODE
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_MESSAGE
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
-import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.checkPermission
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.showErrorMessage
 import org.dhis2.android.rtsm.utils.ActivityManager.Companion.showInfoMessage

@@ -9,12 +9,12 @@ import org.dhis2.android.rtsm.MainDispatcherRule
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.SearchResult
 import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
 import org.dhis2.android.rtsm.services.StockTableDimensionStore

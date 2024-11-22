@@ -24,8 +24,8 @@ import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
 import org.dhis2.android.rtsm.data.GroupAnalyticsFactory
 import org.dhis2.android.rtsm.data.OperationState
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.exceptions.UserIntentParcelCreationException
 import org.dhis2.android.rtsm.services.MetadataManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider

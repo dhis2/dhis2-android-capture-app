@@ -1,7 +1,7 @@
 package org.dhis2.android.rtsm.utils
 
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionType
 
 object ConfigUtils {
 

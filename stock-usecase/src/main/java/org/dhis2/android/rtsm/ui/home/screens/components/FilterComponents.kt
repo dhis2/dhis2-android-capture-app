@@ -14,8 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import org.dhis2.android.rtsm.data.OperationState
-import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.data.models.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult

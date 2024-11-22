@@ -29,7 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult

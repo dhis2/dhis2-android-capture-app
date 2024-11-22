@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 

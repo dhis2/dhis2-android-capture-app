@@ -22,11 +22,11 @@ import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
 import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
 import org.dhis2.android.rtsm.services.StockTableDimensionStore

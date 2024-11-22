@@ -4,9 +4,9 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.RuleEngineHelper
 import org.dhis2.android.rtsm.utils.printRuleEffects

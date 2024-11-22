@@ -1,10 +1,10 @@
 package org.dhis2.android.rtsm.ui.home.model
 
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.data.TransactionType.CORRECTION
-import org.dhis2.android.rtsm.data.TransactionType.DISCARD
-import org.dhis2.android.rtsm.data.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.data.models.TransactionItem
+import org.dhis2.android.rtsm.data.models.TransactionType.CORRECTION
+import org.dhis2.android.rtsm.data.models.TransactionType.DISCARD
+import org.dhis2.android.rtsm.data.models.TransactionType.DISTRIBUTION
 import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.UIText
 import org.hisp.dhis.android.core.option.Option

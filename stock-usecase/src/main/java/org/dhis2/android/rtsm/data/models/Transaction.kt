@@ -2,7 +2,6 @@ package org.dhis2.android.rtsm.data.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import org.dhis2.android.rtsm.data.TransactionType
 
 class Transaction(
     val transactionType: TransactionType,

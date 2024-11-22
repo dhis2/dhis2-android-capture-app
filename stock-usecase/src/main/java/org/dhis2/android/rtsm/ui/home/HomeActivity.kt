@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.data.AppConfig
-import org.dhis2.android.rtsm.data.TransactionType
+import org.dhis2.android.rtsm.data.models.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.NetworkUtils
