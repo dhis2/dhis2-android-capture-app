@@ -1,5 +1,5 @@
 //Sets cron schedule just for PUSH job
-String con_string = JOB_NAME == 'android-multibranch-PUSH' ? '0 0 * * *' : ''
+String cron_string = JOB_NAME == 'android-multibranch-PUSH' ? '0 0 * * *' : ''
 
 pipeline {
     agent {
