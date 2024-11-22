@@ -343,7 +343,7 @@ public class DateUtils {
      */
     public Boolean isEventDueDateOverdue(Date dueDate) {
         Date currentDate = getStartOfDay(new Date());
-
+        if(dueDate.equals(currentDate)) return false;
         return dueDate.before(currentDate);
     }
 
