@@ -81,7 +81,7 @@ fun ProvideInputDate(
                 yearRange = yearRange,
             ),
             inputTextFieldValue = value,
-            inputState = state
+            inputState = state,
         )
         InputDateTime(
             state = inputState,
