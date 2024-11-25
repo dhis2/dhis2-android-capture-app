@@ -97,7 +97,6 @@ public class DataSetDetailPresenter {
     }
 
     public void onBackClick() {
-        clearFilterClick();
         view.back();
     }
 

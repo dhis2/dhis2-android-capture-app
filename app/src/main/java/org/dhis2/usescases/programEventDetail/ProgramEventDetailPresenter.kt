@@ -129,7 +129,6 @@ class ProgramEventDetailPresenter(
     }
 
     fun onBackClick() {
-        clearFilterClick()
         view.back()
     }
 
