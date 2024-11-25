@@ -158,7 +158,7 @@ class MainPresenter(
             Completable.fromCallable {
                 workManagerController.cancelAllWork()
                 syncStatusController.restore()
-                FilterManager.getInstance().clearAllFilters()
+                filterManager.clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
                 preferences.setValue(Preference.PIN_ENABLED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()

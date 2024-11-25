@@ -8,7 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.dhis2.commons.filters.data.FilterRepository
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
@@ -52,7 +52,7 @@ class MainPresenterTest {
     private val view: MainView = mock()
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
-    private val filterRepository: FilterRepository = mock()
+    private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
@@ -82,7 +82,7 @@ class MainPresenterTest {
                 schedulers,
                 preferences,
                 workManagerController,
-                filterRepository,
+                filterManager,
                 matomoAnalyticsController,
                 userManager,
                 deleteUserData,
@@ -103,6 +103,7 @@ class MainPresenterTest {
         verify(view).renderUsername(any())
         verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
         verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
+        verify(filterManager).clearAllFilters()
     }
 
     @Test
@@ -120,6 +121,7 @@ class MainPresenterTest {
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
         verify(userManager.d2.dataStoreModule().localDataStore().value(PIN)).blockingDeleteIfExist()
+        verify(filterManager).clearAllFilters()
         verify(view).goToLogin(1, false)
     }
 
