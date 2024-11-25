@@ -35,15 +35,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
-import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import org.hisp.dhis.mobile.ui.designsystem.component.state.InputDateTimeData
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputDateTimeState
 import java.time.format.DateTimeParseException
 
 @Composable
@@ -70,46 +69,40 @@ fun ProvideInputDate(
         } else {
             IntRange(1924, 2124)
         }
-        InputDateTime(
-            InputDateTimeModel(
+        val inputState = rememberInputDateTimeState(
+            InputDateTimeData(
                 title = uiModel.eventDate.label ?: "",
                 allowsManualInput = uiModel.allowsManualInput,
-                inputTextFieldValue = value,
                 actionType = DateTimeActionType.DATE,
-                state = state,
                 visualTransformation = DateTransformation(),
-                onValueChanged = {
-                    value = it ?: TextFieldValue()
-                    state = getInputShellStateBasedOnValue(it?.text)
-                    it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
-                },
                 isRequired = uiModel.required,
-                onFocusChanged = { focused ->
-                    if (!focused && !isValid(value.text)) {
-                        state = InputShellState.ERROR
-                    }
-                },
                 is24hourFormat = uiModel.is24HourFormat,
                 selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
                 yearRange = yearRange,
             ),
+            inputTextFieldValue = value,
+            inputState = state
+        )
+        InputDateTime(
+            state = inputState,
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
+            onValueChanged = {
+                value = it ?: TextFieldValue()
+                state = getInputShellStateBasedOnValue(it?.text)
+                it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
+            },
+            onFocusChanged = { focused ->
+                if (!focused && !isValid(value.text) && state == InputShellState.FOCUSED) {
+                    state = InputShellState.ERROR
+                }
+            },
         )
     }
 }
 
 fun isValidDateFormat(dateString: String): Boolean {
-    val year = dateString.substring(4, 8)
-    val month = dateString.substring(2, 4)
-    val day = dateString.substring(0, 2)
-
-    val formattedDate = "$year-$month-$day"
-
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
     return try {
-        LocalDate.parse(formattedDate, formatter)
-        when (ValueType.DATE.validator.validate(formattedDate)) {
+        when (ValueType.DATE.validator.validate(dateString)) {
             is Result.Failure -> false
             is Result.Success -> true
         }
@@ -120,7 +113,7 @@ fun isValidDateFormat(dateString: String): Boolean {
 
 fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
     dateString?.let {
-        return if (isValid(it) && !isValidDateFormat(it)) {
+        return if (!isValidDateFormat(it)) {
             InputShellState.ERROR
         } else {
             InputShellState.FOCUSED
@@ -132,7 +125,7 @@ fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
 fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
     if (dateString.isEmpty()) {
         uiModel.onClear?.invoke()
-    } else if (isValid(dateString) && isValidDateFormat(dateString)) {
+    } else if (isValidDateFormat(dateString)) {
         formatUIDateToStored(dateString)?.let { dateValues ->
             uiModel.onDateSelected(dateValues)
         }
@@ -163,14 +156,11 @@ private fun formatStoredDateToUI(dateValue: String): String? {
 }
 
 fun formatUIDateToStored(dateValue: String?): InputDateValues? {
-    return if (dateValue?.length != 8) {
+    return if (dateValue?.length != 10) {
         null
     } else {
-        val year = dateValue.substring(4, 8).toInt()
-        val month = dateValue.substring(2, 4).toInt()
-        val day = dateValue.substring(0, 2).toInt()
-
-        InputDateValues(day, month, year)
+        val date = kotlinx.datetime.LocalDate.Formats.ISO.parse(dateValue)
+        InputDateValues(date.dayOfMonth, date.monthNumber, date.year)
     }
 }
 
