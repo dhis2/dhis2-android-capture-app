@@ -359,6 +359,16 @@ class ProgramRulesTest {
             ),
         )
 
+        whenever(
+            dataEntryRepository.options(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            ),
+        )doReturn emptyFlow()
+
         val intent = FormIntent.OnSave(
             uid = "uid004",
             value = "value04",
@@ -401,6 +411,16 @@ class ProgramRulesTest {
             ),
         )
 
+        whenever(
+            dataEntryRepository.options(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            ),
+        )doReturn emptyFlow()
+
         val intent = FormIntent.OnSave(
             uid = "uid004",
             value = "value04",
@@ -409,7 +429,7 @@ class ProgramRulesTest {
 
         whenever(formValueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
             "uid007",
-            ValueStoreResult.VALUE_CHANGED,
+            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
         )
 
         formViewModel.submitIntent(intent)
