@@ -166,7 +166,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Due Date Appears instead of next event")
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
         val currentDate = LocalDate.now()
@@ -180,7 +179,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnScheduleNew()
-            typeOnInputDateField(formattedCurrentDate, "Next event")
+            typeOnInputDateField(formattedCurrentDate, "Due date")
             clickOnSchedule()
             waitToDebounce(1000)
             checkEventWasScheduled(LAB_MONITORING, 0)
