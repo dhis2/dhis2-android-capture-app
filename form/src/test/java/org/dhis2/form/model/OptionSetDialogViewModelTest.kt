@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -94,11 +95,8 @@ class OptionSetDialogViewModelTest {
     @Test
     fun `Should search and filter options to hide`() {
         val optionsToHide = listOf("Option1")
-        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
-            options = emptyList(),
-            optionsToHide = optionsToHide,
-            optionsToShow = emptyList(),
-            emptyMap(),
+        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration(
+            emptyFlow(),
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()
@@ -114,11 +112,8 @@ class OptionSetDialogViewModelTest {
     @Test
     fun `Should search and filter options to show`() {
         val optionsToShow = listOf("Option1")
-        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
-            options = emptyList(),
-            optionsToHide = emptyList(),
-            optionsToShow = optionsToShow,
-            emptyMap(),
+        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration(
+            emptyFlow(),
         )
         viewModel.onSearchingOption("test")
         assertTrue(viewModel.searchValue.value == "test")
@@ -135,11 +130,8 @@ class OptionSetDialogViewModelTest {
     fun `Should search and filter options to show and hide`() {
         val optionsToShow = listOf("Option1")
         val optionsToHide = listOf("Option1")
-        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration.DefaultOptionSet(
-            options = emptyList(),
-            optionsToHide = optionsToHide,
-            optionsToShow = optionsToShow,
-            emptyMap(),
+        whenever(field.optionSetConfiguration) doReturn OptionSetConfiguration(
+            emptyFlow(),
         )
         viewModel.onSearchingOption("test")
         testingDispatcher.scheduler.advanceUntilIdle()

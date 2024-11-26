@@ -6,6 +6,7 @@ import io.reactivex.Flowable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -31,9 +32,7 @@ import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
@@ -48,6 +47,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class ProgramRulesTest {
@@ -106,7 +106,10 @@ class ProgramRulesTest {
             invocationOnMock.getArgument(0) as FieldUiModel
         }
 
-        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn StoreResult("", ValueStoreResult.VALUE_CHANGED)
+        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn StoreResult(
+            "",
+            ValueStoreResult.VALUE_CHANGED,
+        )
 
         repository = FormRepositoryImpl(
             formValueStore = formValueStore,
@@ -372,13 +375,21 @@ class ProgramRulesTest {
 
         val items = formViewModel.items.value ?: emptyList()
 
-        val optionsToDisplay: List<Option> =
-            items.find { it.uid == "uid006" }!!.optionSetConfiguration!!.optionsToDisplay()
+        verify(dataEntryRepository).options(
+            optionSetUid = "optionSetUid",
+            query = "",
+            optionsToHide = emptyList(),
+            optionGroupsToHide = emptyList(),
+            optionGroupsToShow = listOf("optionGroupId"),
+        )
+        /*
+                val optionsToDisplay: List<Option> =
+                    items.find { it.uid == "uid006" }!!.optionSetConfiguration!!.optionsToDisplay()
 
-        assertTrue(optionsToDisplay.size == 3)
-        assertTrue(optionsToDisplay[0].uid() == "Option2")
-        assertTrue(optionsToDisplay[1].uid() == "Option3")
-        assertTrue(optionsToDisplay[2].uid() == "Option4")
+                assertTrue(optionsToDisplay.size == 3)
+                assertTrue(optionsToDisplay[0].uid() == "Option2")
+                assertTrue(optionsToDisplay[1].uid() == "Option3")
+                assertTrue(optionsToDisplay[2].uid() == "Option4")*/
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -414,15 +425,13 @@ class ProgramRulesTest {
         formViewModel.submitIntent(intent)
         advanceUntilIdle()
 
-        val items = formViewModel.items.value ?: emptyList()
-
-        val optionsToDisplay: List<Option> =
-            items.last().optionSetConfiguration!!.optionsToDisplay()
-
-        optionsToDisplay.forEach {
-            assert(it.uid() != "Option2")
-        }
-        assert(optionsToDisplay.size == 4)
+        verify(dataEntryRepository).options(
+            optionSetUid = "optionSetUid",
+            query = "",
+            optionsToHide = listOf("Option2"),
+            optionGroupsToHide = emptyList(),
+            optionGroupsToShow = emptyList(),
+        )
     }
 
     private fun provideItemList() = listOf(
@@ -486,11 +495,8 @@ class ProgramRulesTest {
             value = "value06",
             label = "field6",
             valueType = ValueType.MULTI_TEXT,
-            optionSetConfiguration = OptionSetConfiguration.DefaultOptionSet(
-                options = "optionSetUid".listOfOptions(),
-                optionsToHide = listOf(),
-                optionsToShow = listOf("Option2", "Option3", "Option4"),
-                optionMetadataIcon = mapOf(),
+            optionSetConfiguration = OptionSetConfiguration(
+                emptyFlow(),
             ),
             autocompleteList = null,
             programStageSection = "section2",
@@ -501,31 +507,10 @@ class ProgramRulesTest {
             value = "value07",
             label = "field7",
             valueType = ValueType.MULTI_TEXT,
-            optionSetConfiguration = OptionSetConfiguration.DefaultOptionSet(
-                options = "optionSetUid".listOfOptions(),
-                optionsToHide = listOf("Option2"),
-                optionsToShow = listOf(),
-                optionMetadataIcon = mapOf(),
-            ),
+            optionSetConfiguration = OptionSetConfiguration(emptyFlow()),
             autocompleteList = null,
             programStageSection = "section2",
             optionSet = "optionSetUid",
         ),
     )
-
-    private fun String.listOfOptions(): List<Option> {
-        val optionSetUid = ObjectWithUid.create(this)
-        val options: MutableList<Option> = mutableListOf()
-        repeat(5) { index ->
-            options.add(
-                Option.builder()
-                    .uid("Option$index")
-                    .displayName("name$index")
-                    .code("code$index")
-                    .optionSet(optionSetUid)
-                    .build(),
-            )
-        }
-        return options.toList()
-    }
 }
