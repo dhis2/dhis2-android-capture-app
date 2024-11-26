@@ -373,8 +373,6 @@ class ProgramRulesTest {
         formViewModel.submitIntent(intent)
         advanceUntilIdle()
 
-        val items = formViewModel.items.value ?: emptyList()
-
         verify(dataEntryRepository).options(
             optionSetUid = "optionSetUid",
             query = "",
@@ -382,14 +380,6 @@ class ProgramRulesTest {
             optionGroupsToHide = emptyList(),
             optionGroupsToShow = listOf("optionGroupId"),
         )
-        /*
-                val optionsToDisplay: List<Option> =
-                    items.find { it.uid == "uid006" }!!.optionSetConfiguration!!.optionsToDisplay()
-
-                assertTrue(optionsToDisplay.size == 3)
-                assertTrue(optionsToDisplay[0].uid() == "Option2")
-                assertTrue(optionsToDisplay[1].uid() == "Option3")
-                assertTrue(optionsToDisplay[2].uid() == "Option4")*/
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
