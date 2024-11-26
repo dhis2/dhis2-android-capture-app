@@ -330,33 +330,6 @@ class SearchRepositoryImplKt(
                                     }
                                 },
                         )
-                        /*OptionSetConfiguration.config(
-                            d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .blockingCount(),
-                            d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .getPagingData(10)
-                        ) {
-                            val options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-
-                            val metadataIconMap =
-                                options.associate {
-                                    it.uid() to metadataIconProvider(
-                                        it.style(),
-                                        program?.style()?.color()?.toColor()
-                                            ?: SurfaceColor.Primary,
-                                    )
-                                }
-
-                            OptionSetConfiguration.OptionConfigData(
-                                options = options,
-                                metadataIconMap = metadataIconMap,
-                            )
-                        }*/
                     }
                     createField(
                         trackedEntityAttribute = attribute,

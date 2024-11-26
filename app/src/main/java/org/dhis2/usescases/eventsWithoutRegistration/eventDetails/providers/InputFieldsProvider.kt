@@ -341,7 +341,7 @@ fun ProvideEmptyCategorySelector(
         },
         fetchItem = { DropdownItem(option) },
         itemCount = 1,
-        onSearchOption = { query -> },
+        onSearchOption = { /*no-op*/ },
         loadOptions = { /*no-op*/ },
         isRequiredField = false,
     )
