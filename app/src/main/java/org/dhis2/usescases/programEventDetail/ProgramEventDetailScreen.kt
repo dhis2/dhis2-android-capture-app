@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -31,11 +33,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.R
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.model.SnackbarMessage
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 
 @Composable
 fun ProgramEventDetailScreen(
@@ -48,16 +53,25 @@ fun ProgramEventDetailScreen(
     val context = LocalContext.current
     val isBackdropActive by programEventsViewModel.backdropActive.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
-    val snackbarMessage by programEventsViewModel.snackbarMessage.collectAsState("")
+    val snackbarMessage by programEventsViewModel.snackbarMessage.collectAsState(SnackbarMessage())
 
     LaunchedEffect(snackbarMessage) {
-        if (snackbarMessage.isNotEmpty()) {
-            snackbarHostState.showSnackbar(snackbarMessage)
+        if (snackbarMessage.message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(snackbarMessage.message)
         }
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
+                    snackbarData = data,
+                    containerColor = SurfaceColor.SurfaceBright,
+                    contentColor = TextColor.OnSurface,
+                )
+            }
+        },
         floatingActionButton = {
             val writePermission by programEventsViewModel.writePermission.observeAsState(
                 false,

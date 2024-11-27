@@ -23,6 +23,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.model.SnackbarMessage
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -64,7 +65,7 @@ class ProgramEventDetailViewModel(
     private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
     val navigationBarUIState: State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
 
-    private val _snackbarMessage = MutableSharedFlow<String>()
+    private val _snackbarMessage = MutableSharedFlow<SnackbarMessage>()
     val snackbarMessage = _snackbarMessage.asSharedFlow()
 
     init {
@@ -174,7 +175,7 @@ class ProgramEventDetailViewModel(
 
     fun displayMessage(msg: String) {
         viewModelScope.launch(dispatcher.io()) {
-            _snackbarMessage.emit(msg)
+            _snackbarMessage.emit(SnackbarMessage(message = msg))
         }
     }
 }
