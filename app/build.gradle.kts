@@ -143,7 +143,8 @@ android {
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
         }
         getByName("release") {
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
@@ -165,13 +166,6 @@ android {
         }
 
         create("dhisPlayServices") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-
-        create("dhisUITesting") {
             applicationId = "com.dhis2"
             dimension = "default"
             versionCode = libs.versions.vCode.get().toInt()

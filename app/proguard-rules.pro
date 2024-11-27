@@ -18,8 +18,62 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+-dontwarn autovalue.shaded.com.google$.errorprone.annotations.$CanIgnoreReturnValue
+-dontwarn autovalue.shaded.com.google$.errorprone.annotations.concurrent.$LazyInit
+-dontwarn com.android.org.conscrypt.SSLParametersImpl
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn javax.lang.model.SourceVersion
+-dontwarn javax.lang.model.element.Element
+-dontwarn javax.lang.model.element.Modifier
+-dontwarn javax.lang.model.type.TypeMirror
+-dontwarn javax.lang.model.type.TypeVisitor
+-dontwarn javax.lang.model.util.SimpleTypeVisitor7
+-dontwarn javax.management.InstanceAlreadyExistsException
+-dontwarn javax.management.MBeanServer
+-dontwarn javax.management.ObjectInstance
+-dontwarn javax.management.ObjectName
+-dontwarn javax.naming.Context
+-dontwarn javax.naming.InitialContext
+-dontwarn javax.naming.NameNotFoundException
+-dontwarn javax.naming.NoInitialContextException
+-dontwarn org.apache.harmony.xnet.provider.jsse.SSLParametersImpl
+-dontwarn org.bouncycastle.jsse.BCSSLParameters
+-dontwarn org.bouncycastle.jsse.BCSSLSocket
+-dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
+-dontwarn org.dhis2.tracker.NavigationBarUIState
+-dontwarn org.dhis2.tracker.TEIDashboardItems
+-dontwarn org.dhis2.tracker.data.ProfilePictureProvider
+-dontwarn org.dhis2.tracker.events.CreateEventUseCase
+-dontwarn org.dhis2.tracker.events.CreateEventUseCaseRepository
+-dontwarn org.dhis2.tracker.relationships.data.EventRelationshipsRepository
+-dontwarn org.dhis2.tracker.relationships.data.RelationshipsRepository
+-dontwarn org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository
+-dontwarn org.dhis2.tracker.relationships.domain.DeleteRelationships
+-dontwarn org.dhis2.tracker.relationships.domain.GetRelationshipsByType
+-dontwarn org.dhis2.tracker.relationships.model.ListSelectionState
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipDirection
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipItem
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipModel
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipOwnerType
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipSection
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipTopBarIconState$List
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipTopBarIconState$Map
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipTopBarIconState$Selecting
+-dontwarn org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
+-dontwarn org.dhis2.tracker.relationships.ui.RelationshipsScreenKt
+-dontwarn org.dhis2.tracker.relationships.ui.RelationshipsUiState$Success
+-dontwarn org.dhis2.tracker.relationships.ui.RelationshipsUiState
+-dontwarn org.dhis2.tracker.relationships.ui.RelationshipsViewModel
+-dontwarn org.dhis2.tracker.ui.AvatarProvider
+-dontwarn org.joda.convert.FromString
+-dontwarn org.joda.convert.ToString
+-dontwarn org.openjsse.javax.net.ssl.SSLParameters
+-dontwarn org.openjsse.javax.net.ssl.SSLSocket
+-dontwarn org.openjsse.net.ssl.OpenJSSE
+-dontwarn org.slf4j.impl.StaticLoggerBinder
