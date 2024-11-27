@@ -16,6 +16,7 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
@@ -62,6 +63,9 @@ class ProgramEventDetailViewModel(
 
     private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
     val navigationBarUIState: State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
+
+    private val _snackbarMessage = MutableSharedFlow<String>()
+    val snackbarMessage = _snackbarMessage.asSharedFlow()
 
     init {
         viewModelScope.launch { loadBottomBarItems() }
@@ -165,6 +169,12 @@ class ProgramEventDetailViewModel(
             ).getOrNull()?.let { eventUid ->
                 _shouldNavigateToEventDetails.emit(eventUid)
             }
+        }
+    }
+
+    fun displayMessage(msg: String) {
+        viewModelScope.launch(dispatcher.io()) {
+            _snackbarMessage.emit(msg)
         }
     }
 }

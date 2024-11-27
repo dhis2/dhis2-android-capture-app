@@ -25,8 +25,8 @@ public class HelpManager {
     private NestedScrollView scrollView;
 
     public enum TutorialName {
-        SETTINGS_FRAGMENT, PROGRAM_FRAGMENT, TEI_DASHBOARD, TEI_SEARCH, PROGRAM_EVENT_LIST,
-        EVENT_DETAIL, EVENT_SUMMARY, EVENT_INITIAL
+        SETTINGS_FRAGMENT, PROGRAM_FRAGMENT, TEI_DASHBOARD,
+        EVENT_INITIAL
     }
 
     public static HelpManager getInstance() {
@@ -67,8 +67,6 @@ public class HelpManager {
             case PROGRAM_FRAGMENT -> help = programFragmentTutorial(activity, stepCondition);
             case SETTINGS_FRAGMENT -> help = settingsFragmentTutorial(activity);
             case TEI_DASHBOARD -> help = teiDashboardTutorial(activity);
-            case TEI_SEARCH -> help = teiSearchTutorial(activity);
-            case PROGRAM_EVENT_LIST -> help = programEventListTutorial(activity, stepCondition);
             case EVENT_INITIAL -> help = eventInitialTutorial(activity, stepCondition);
         }
         if (!help.isEmpty())
@@ -96,48 +94,6 @@ public class HelpManager {
             steps.add(tuto1);
 
         }
-        return steps;
-    }
-
-    private List<FancyShowCaseView> programEventListTutorial(ActivityGlobalAbstract activity, SparseBooleanArray stepCondition) {
-        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-
-        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_program_event_1))
-                .enableAutoTextPosition()
-                .closeOnTouch(true)
-                .build();
-        steps.add(tuto1);
-
-        if (stepCondition.get(2)) {
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(activity)
-                    .title(activity.getString(R.string.tuto_program_event_2))
-                    .enableAutoTextPosition()
-                    .focusOn(activity.findViewById(R.id.addEventButton))
-                    .closeOnTouch(true)
-                    .build();
-            steps.add(tuto2);
-        }
-        return steps;
-    }
-
-    private List<FancyShowCaseView> teiSearchTutorial(ActivityGlobalAbstract activity) {
-        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_search_1_v2))
-                .enableAutoTextPosition()
-                .closeOnTouch(true)
-                .build();
-        FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(activity)
-                .title(activity.getString(R.string.tuto_search_2))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .focusOn(activity.findViewById(R.id.program_spinner))
-                .closeOnTouch(true)
-                .build();
-
-        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-        steps.add(tuto1);
-        steps.add(tuto2);
         return steps;
     }
 
