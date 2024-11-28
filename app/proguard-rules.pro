@@ -24,6 +24,26 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 
+# Keep Hilt-generated components and entry points
+-keep class dagger.** { *; }
+-keep class hilt.** { *; }
+-keep class dagger.hilt.** { *; }
+-keep class androidx.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class dagger.internal.** { *; }
+-keep class dagger.multibindings.** { *; }
+-keep interface dagger.hilt.EntryPoint
+-keep interface dagger.hilt.InstallIn
+-keep @dagger.hilt.components.SingletonComponent class *
+# Keep DataBinding classes
+-keep class androidx.databinding.** { *; }
+-keep class **.databinding.** { *; }
+
+# Keep @Provides, @Binds, and other annotations
+-keepattributes *Annotation*
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
+
 -dontwarn autovalue.shaded.com.google$.errorprone.annotations.$CanIgnoreReturnValue
 -dontwarn autovalue.shaded.com.google$.errorprone.annotations.concurrent.$LazyInit
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
