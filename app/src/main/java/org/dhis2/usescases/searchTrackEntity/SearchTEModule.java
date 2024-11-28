@@ -155,6 +155,7 @@ public class SearchTEModule {
                                       SearchTEIRepository searchTEIRepository,
                                       ThemeManager themeManager,
                                       MetadataIconProvider metadataIconProvider) {
+        ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new SearchRepositoryImpl(teiType,
                 initialProgram,
                 d2,
@@ -167,7 +168,8 @@ public class SearchTEModule {
                 networkUtils,
                 searchTEIRepository,
                 themeManager,
-                metadataIconProvider);
+                metadataIconProvider,
+                profilePictureProvider);
     }
 
     @Provides

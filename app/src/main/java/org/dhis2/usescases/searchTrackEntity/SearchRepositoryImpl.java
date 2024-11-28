@@ -33,6 +33,7 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.model.RelationshipDirection;
 import org.dhis2.tracker.relationships.model.RelationshipModel;
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType;
@@ -121,6 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private HashMap<String, List<String>> trackedEntityTypeAttributesUidsCache = new HashMap();
 
     private final MetadataIconProvider metadataIconProvider;
+    private final ProfilePictureProvider profilePictureProvider;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -134,7 +136,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          NetworkUtils networkUtils,
                          SearchTEIRepository searchTEIRepository,
                          ThemeManager themeManager,
-                         MetadataIconProvider metadataIconProvider
+                         MetadataIconProvider metadataIconProvider,
+                         ProfilePictureProvider profilePictureProvider
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -155,6 +158,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 currentProgram,
                 resources);
         this.metadataIconProvider = metadataIconProvider;
+        this.profilePictureProvider = profilePictureProvider;
     }
 
 
@@ -746,7 +750,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             } else {
                 searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));
             }
-            searchTei.setProfilePicture(profilePicturePath(dbTei, selectedProgram));
+            searchTei.setProfilePicture(profilePictureProvider.invoke(dbTei, selectedProgram != null ? selectedProgram.uid() : null));
         } else {
             searchTei.setTei(teiFromItem);
             searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));

@@ -20,6 +20,7 @@ import java.text.DecimalFormat
 
 fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = this.apply { setValue(initialValue) }
 
+@Deprecated("Use ProfilePictureProvider instead")
 fun TrackedEntityInstance.profilePicturePath(d2: D2, programUid: String?): String {
     var path: String? = null
 
