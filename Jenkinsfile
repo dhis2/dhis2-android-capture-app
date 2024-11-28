@@ -20,7 +20,7 @@ pipeline {
         stage('Print env variables') {
             steps {
                 script {
-                    echo $cron_string
+                    echo "$cron_string"
                     echo cron_string
                     echo JOB_NAME
                     echo env.JOB_NAME
