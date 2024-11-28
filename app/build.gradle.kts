@@ -1,5 +1,4 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -146,7 +145,7 @@ android {
             isShrinkResources = true
             isMinifyEnabled = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
