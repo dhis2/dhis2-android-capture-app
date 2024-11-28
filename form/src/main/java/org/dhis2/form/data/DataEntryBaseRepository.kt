@@ -1,9 +1,16 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package org.dhis2.form.data
 
 import androidx.compose.ui.graphics.Color
 import androidx.paging.PagingData
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.FormBaseConfiguration
@@ -13,6 +20,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import timber.log.Timber
 
 abstract class DataEntryBaseRepository(
     private val conf: FormBaseConfiguration,
@@ -69,25 +77,34 @@ abstract class DataEntryBaseRepository(
 
     override fun options(
         optionSetUid: String,
-        query: String,
         optionsToHide: List<String>,
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
-    ): Flow<PagingData<OptionSetConfiguration.OptionData>> {
-        return conf.options(
-            optionSetUid,
-            query,
-            optionsToHide,
-            optionGroupsToHide,
-            optionGroupsToShow,
-        ).map { pagingData ->
-            pagingData.map { option ->
-                OptionSetConfiguration.OptionData(
-                    option,
-                    metadataIconProvider(option.style(), defaultStyleColor),
-                )
-            }
-        }
+    ): Pair<MutableStateFlow<String>, Flow<PagingData<OptionSetConfiguration.OptionData>>> {
+        val searchFlow = MutableStateFlow("")
+        return Pair(
+            searchFlow,
+            searchFlow.debounce(300)
+                .flatMapLatest { query ->
+                    conf.options(
+                        optionSetUid,
+                        query,
+                        optionsToHide,
+                        optionGroupsToHide,
+                        optionGroupsToShow,
+                    ).map { pagingData ->
+                        pagingData.map { option ->
+                            OptionSetConfiguration.OptionData(
+                                option,
+                                metadataIconProvider(option.style(), defaultStyleColor),
+                            )
+                        }
+                    }
+                }
+                .catch {
+                    Timber.e(it)
+                },
+        )
     }
 
     override fun dateFormatConfiguration(): String? {

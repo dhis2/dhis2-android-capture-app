@@ -801,18 +801,19 @@ class FormRepositoryImpl(
     }
 
     override fun fetchOptions(uid: String, optionSetUid: String) {
-        val flow = dataEntryRepository.options(
-            optionSetUid,
-            query = "",
-            ruleEffectsResult?.optionsToHide(uid) ?: emptyList(),
-            ruleEffectsResult?.optionGroupsToHide(uid) ?: emptyList(),
-            ruleEffectsResult?.optionGroupsToShow(uid) ?: emptyList(),
+        val (searchEmitter, flow) = dataEntryRepository.options(
+            optionSetUid = optionSetUid,
+            optionsToHide = ruleEffectsResult?.optionsToHide(uid) ?: emptyList(),
+            optionGroupsToHide = ruleEffectsResult?.optionGroupsToHide(uid) ?: emptyList(),
+            optionGroupsToShow = ruleEffectsResult?.optionGroupsToShow(uid) ?: emptyList(),
         )
 
-        val newConf = OptionSetConfiguration(flow)
+        val newConf = OptionSetConfiguration(
+            searchEmitter = searchEmitter,
+            optionFlow = flow,
+        )
 
         itemList.let { list ->
-
             list.find { item ->
                 item.uid == uid
             }?.let { item ->

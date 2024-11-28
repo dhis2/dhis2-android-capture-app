@@ -1,12 +1,15 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.launch
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -20,13 +23,28 @@ fun ProvideDropdownInput(
     modifier: Modifier,
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
-    fetchOptions: (query: String) -> Unit,
+    fetchOptions: () -> Unit,
 ) {
     var selectedItem by remember(fieldUiModel) {
         mutableStateOf(DropdownItem(fieldUiModel.displayName ?: ""))
     }
 
-    val optionsData = fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()
+    val optionSetConfiguration by remember(fieldUiModel) {
+        mutableStateOf(fieldUiModel.optionSetConfiguration)
+    }
+
+    val optionsData = optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()
+
+    val useDropdown by remember {
+        derivedStateOf {
+            optionSetConfiguration?.searchEmitter?.value?.isEmpty() == true && (
+                optionsData?.itemCount
+                    ?: 0
+                ) < 15
+        }
+    }
+
+    val scope = rememberCoroutineScope()
 
     InputDropDown(
         modifier = modifier,
@@ -42,18 +60,19 @@ fun ProvideDropdownInput(
             DropdownItem(optionsData?.get(index)?.option?.displayName() ?: "")
         },
         onSearchOption = { query ->
-            fetchOptions(query)
+            scope.launch { fieldUiModel.optionSetConfiguration?.searchEmitter?.emit(query) }
         },
         itemCount = optionsData?.itemCount ?: 0,
-        useDropDown = (optionsData?.itemCount ?: 0) < 15,
+        useDropDown = useDropdown,
         onItemSelected = { index, newSelectedItem ->
             selectedItem = newSelectedItem
             fieldUiModel.onSave(
                 optionsData?.get(index)?.option?.code(),
             )
         },
-        loadOptions = {
-            fetchOptions("")
+        loadOptions = fetchOptions,
+        onDismiss = {
+            scope.launch { fieldUiModel.optionSetConfiguration?.searchEmitter?.emit("") }
         },
     )
 }

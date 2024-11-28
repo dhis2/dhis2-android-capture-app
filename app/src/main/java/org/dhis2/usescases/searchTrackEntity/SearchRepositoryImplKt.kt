@@ -314,7 +314,8 @@ class SearchRepositoryImplKt(
 
                     val optionSetConfiguration = attribute.optionSet()?.let {
                         OptionSetConfiguration(
-                            d2.optionModule().options()
+                            searchEmitter = null,
+                            optionFlow = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .getPagingData(10)
                                 .map { pagingData ->
@@ -357,7 +358,8 @@ class SearchRepositoryImplKt(
 
                     val optionSetConfiguration = attribute.optionSet()?.let {
                         OptionSetConfiguration(
-                            d2.optionModule().options()
+                            searchEmitter = null,
+                            optionFlow = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .getPagingData(10)
                                 .map { pagingData ->

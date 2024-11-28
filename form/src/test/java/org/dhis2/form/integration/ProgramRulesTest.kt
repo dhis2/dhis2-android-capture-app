@@ -6,6 +6,7 @@ import io.reactivex.Flowable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -365,9 +366,8 @@ class ProgramRulesTest {
                 any(),
                 any(),
                 any(),
-                any(),
             ),
-        )doReturn emptyFlow()
+        ) doReturn Pair(MutableStateFlow(""), emptyFlow())
 
         val intent = FormIntent.OnSave(
             uid = "uid004",
@@ -385,7 +385,6 @@ class ProgramRulesTest {
 
         verify(dataEntryRepository).options(
             optionSetUid = "optionSetUid",
-            query = "",
             optionsToHide = emptyList(),
             optionGroupsToHide = emptyList(),
             optionGroupsToShow = listOf("optionGroupId"),
@@ -417,9 +416,8 @@ class ProgramRulesTest {
                 any(),
                 any(),
                 any(),
-                any(),
             ),
-        )doReturn emptyFlow()
+        ) doReturn Pair(MutableStateFlow(""), emptyFlow())
 
         val intent = FormIntent.OnSave(
             uid = "uid004",
@@ -437,7 +435,6 @@ class ProgramRulesTest {
 
         verify(dataEntryRepository).options(
             optionSetUid = "optionSetUid",
-            query = "",
             optionsToHide = listOf("Option2"),
             optionGroupsToHide = emptyList(),
             optionGroupsToShow = emptyList(),
@@ -506,6 +503,7 @@ class ProgramRulesTest {
             label = "field6",
             valueType = ValueType.MULTI_TEXT,
             optionSetConfiguration = OptionSetConfiguration(
+                MutableStateFlow(""),
                 emptyFlow(),
             ),
             autocompleteList = null,
@@ -517,7 +515,10 @@ class ProgramRulesTest {
             value = "value07",
             label = "field7",
             valueType = ValueType.MULTI_TEXT,
-            optionSetConfiguration = OptionSetConfiguration(emptyFlow()),
+            optionSetConfiguration = OptionSetConfiguration(
+                MutableStateFlow(""),
+                emptyFlow(),
+            ),
             autocompleteList = null,
             programStageSection = "section2",
             optionSet = "optionSetUid",

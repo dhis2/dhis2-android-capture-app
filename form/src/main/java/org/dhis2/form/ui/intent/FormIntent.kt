@@ -94,6 +94,5 @@ sealed class FormIntent {
         val uid: String,
         val optionSetUid: String,
         val value: String?,
-        val query: String,
     ) : FormIntent()
 }

@@ -176,8 +176,15 @@ class EnrollmentRepository(
 
         var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {
+            val (searchEmitter, optionFlow) = options(
+                optionSetUid = optionSet,
+                optionsToHide = emptyList(),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = emptyList(),
+            )
             optionSetConfig = OptionSetConfiguration(
-                options(optionSet, "", emptyList(), emptyList(), emptyList()),
+                searchEmitter = searchEmitter,
+                optionFlow = optionFlow,
             )
         }
 

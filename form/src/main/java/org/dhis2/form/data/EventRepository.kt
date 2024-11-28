@@ -441,7 +441,8 @@ class EventRepository(
             .withTrackedEntityType()
             .byUid().eq(programUid)
             .one().blockingGet()?.let { program ->
-                val firstAvailablePeriodDate = getFirstAvailablePeriod(event?.enrollment(), programStage)
+                val firstAvailablePeriodDate =
+                    getFirstAvailablePeriod(event?.enrollment(), programStage)
                 var minDate = dateUtils.expDate(
                     firstAvailablePeriodDate,
                     program.expiryDays() ?: 0,
@@ -478,7 +479,11 @@ class EventRepository(
         }
         val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
 
-        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), if (stageLastDate == null) 0 else 1)
+        return dateUtils.getNextPeriod(
+            programStage?.periodType(),
+            calendar.time ?: event?.eventDate(),
+            if (stageLastDate == null) 0 else 1,
+        )
     }
 
     private fun getStageLastDate(): Date? {
@@ -489,12 +494,14 @@ class EventRepository(
                 .eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().filter { it.uid() != eventUid }
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .filter { it.uid() != eventUid }
         val scheduleEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet().filter { it.uid() != eventUid }
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .filter { it.uid() != eventUid }
 
         var activeDate: Date? = null
         var scheduleDate: Date? = null
@@ -633,15 +640,15 @@ class EventRepository(
                         .byCode()
                         .eq(dataValue).one().blockingGet()?.displayName()
             }
-
+            val (searchEmitter, optionFlow) = options(
+                optionSetUid = optionSet!!,
+                optionsToHide = emptyList(),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = emptyList(),
+            )
             optionSetConfig = OptionSetConfiguration(
-                optionFlow = options(
-                    optionSetUid = optionSet!!,
-                    "",
-                    emptyList(),
-                    emptyList(),
-                    emptyList(),
-                ),
+                searchEmitter = searchEmitter,
+                optionFlow = optionFlow,
             )
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)

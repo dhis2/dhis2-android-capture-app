@@ -113,13 +113,12 @@ fun FieldProvider(
             fieldUiModel = fieldUiModel,
             intentHandler = intentHandler,
             context = context,
-            fetchOptions = { query ->
+            fetchOptions = {
                 intentHandler(
                     FormIntent.FetchOptions(
                         fieldUiModel.uid,
                         fieldUiModel.optionSet!!,
                         value = fieldUiModel.value,
-                        query = query,
                     ),
                 )
             },
@@ -486,7 +485,7 @@ fun ProvideByOptionSet(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     context: Context,
-    fetchOptions: (query: String) -> Unit,
+    fetchOptions: () -> Unit,
 ) {
     when (fieldUiModel.renderingType) {
         UiRenderType.HORIZONTAL_RADIOBUTTONS,

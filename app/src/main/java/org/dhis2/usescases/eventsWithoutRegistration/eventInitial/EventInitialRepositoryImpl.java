@@ -330,6 +330,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 dataValue = option.get(0).displayName();
             }
             optionSetConfig = new OptionSetConfiguration(
+                    null,
                     OptionSetConfiguration.Companion.optionDataFlow(
                             d2.optionModule().options().byOptionSetUid().eq(optionSet).getPagingData(10),
                             option1 -> metadataIconProvider.invoke(option1.style()))
