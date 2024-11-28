@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.viewinterop.AndroidView
 import org.dhis2.R
 import org.dhis2.commons.network.NetworkUtils
@@ -92,6 +93,7 @@ fun ProgramEventDetailScreen(
                 exit = scaleOut(),
             ) {
                 FAB(
+                    modifier = Modifier.testTag("ADD_EVENT_BUTTON"),
                     onClick = presenter::addEvent,
                     icon = {
                         Icon(

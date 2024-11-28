@@ -35,7 +35,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun clickOnAddEvent() {
-        onView(withId(R.id.addEventButton)).perform(click())
+        composeTestRule.onNodeWithTag("ADD_EVENT_BUTTON").performClick()
     }
 
     fun clickOnMap() {
