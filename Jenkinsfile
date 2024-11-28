@@ -24,10 +24,8 @@ pipeline {
                     echo cron_string
                     echo JOB_NAME
                     echo env.JOB_NAME
-                    echo $JOB_NAME
                     echo JOB_BASE_NAME
                     echo env.JOB_BASE_NAME
-                    echo $JOB_BASE_NAME
                 }
             }
         }
