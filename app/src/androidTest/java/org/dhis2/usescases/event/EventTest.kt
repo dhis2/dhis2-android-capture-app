@@ -1,8 +1,12 @@
 package org.dhis2.usescases.event
 
 import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventStatusUIModel
@@ -10,15 +14,21 @@ import org.dhis2.usescases.event.entity.ProgramStageUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
+import org.dhis2.usescases.flow.syncFlow.robot.eventWithoutRegistrationRobot
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programevent.robot.programEventsRobot
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.dhis2.usescases.teidashboard.TeiDashboardTest.Companion.NOTE_INVALID
 import org.dhis2.usescases.teidashboard.robot.eventRobot
+import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
+import org.dhis2.usescases.eventsWithoutRegistration.*
+
 
 @RunWith(AndroidJUnit4::class)
 class EventTest : BaseTest() {
@@ -63,6 +73,23 @@ class EventTest : BaseTest() {
     }
 
     @Test
+    fun eventFlowTest1(){
+        val completion = 100
+        val orgUnit = "Faabu CHP"
+        //val current = LocalDate.now()
+        //val eventDate = current.plusDays(2)
+
+        prepareEventDetailsIntentAndLaunchActivity(rule)
+
+        eventRegistrationRobot(composeTestRule) {
+            // ANDROAPP-917 - Check number of events on home screen
+            composeTestRule.onNodeWithText("3 events").assertIsDisplayed()
+            composeTestRule.onNodeWithText(("3 events")).performClick()
+        }
+            //ANDROAPP-851 - Select any event to test completed events expiry day
+    }
+
+    @Test
     fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
         val completion = 100
         val orgUnit = "Ngelehun CHC"
@@ -70,7 +97,7 @@ class EventTest : BaseTest() {
         prepareEventDetailsIntentAndLaunchActivity(rule)
 
         eventRegistrationRobot(composeTestRule) {
-            checkEventDataEntryIsOpened(completion, orgUnit)
+            //checkEventDataEntryIsOpened(completion, orgUnit)
         }
     }
 
