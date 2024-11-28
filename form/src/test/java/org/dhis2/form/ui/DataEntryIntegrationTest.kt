@@ -7,6 +7,8 @@ import androidx.paging.PagingData
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -256,7 +258,8 @@ class DataEntryIntegrationTest {
             observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
         )
         assert(
-            observedItems.last().find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
+            observedItems.last()
+                .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
         )
         assert(
             observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
@@ -270,6 +273,7 @@ class DataEntryIntegrationTest {
     }
 
     private fun provideMalariaCaseRegistrationEventItems(): List<FieldUiModel> {
+        val optionSearchFlow = MutableStateFlow("")
         return listOf(
             SectionUiModelImpl(
                 uid = "EVENT_DETAILS_SECTION_UID",
@@ -338,31 +342,34 @@ class DataEntryIntegrationTest {
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
                 optionSetConfiguration = OptionSetConfiguration(
-                    flow {
-                        PagingData.from(
-                            listOf(
-                                OptionSetConfiguration.OptionData(
-                                    Option.builder()
-                                        .uid("rBvjJYbMCVx")
-                                        .code("Male")
-                                        .displayName("Male")
-                                        .name("Male")
-                                        .sortOrder(1)
-                                        .build(),
-                                    MetadataIconData.defaultIcon(),
+                    optionSearchFlow,
+                    optionSearchFlow.flatMapLatest {
+                        flow {
+                            PagingData.from(
+                                listOf(
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("rBvjJYbMCVx")
+                                            .code("Male")
+                                            .displayName("Male")
+                                            .name("Male")
+                                            .sortOrder(1)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("Mnp3oXrpAbK")
+                                            .code("Female")
+                                            .displayName("Female")
+                                            .name("Female")
+                                            .sortOrder(2)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
                                 ),
-                                OptionSetConfiguration.OptionData(
-                                    Option.builder()
-                                        .uid("Mnp3oXrpAbK")
-                                        .code("Female")
-                                        .displayName("Female")
-                                        .name("Female")
-                                        .sortOrder(2)
-                                        .build(),
-                                    MetadataIconData.defaultIcon(),
-                                ),
-                            ),
-                        )
+                            )
+                        }
                     },
                 ),
                 valueType = ValueType.MULTI_TEXT,
