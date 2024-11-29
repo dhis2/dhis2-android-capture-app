@@ -1,8 +1,15 @@
+@file:OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+
 package org.dhis2.usescases.searchTrackEntity
 
 import androidx.paging.PagingData
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
@@ -311,26 +318,28 @@ class SearchRepositoryImplKt(
             d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(programAttribute.trackedEntityAttribute()!!.uid())
                 .blockingGet()?.let { attribute ->
-
+                    val searchFlow = MutableStateFlow("")
                     val optionSetConfiguration = attribute.optionSet()?.let {
                         OptionSetConfiguration(
-                            searchEmitter = null,
-                            optionFlow = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .getPagingData(10)
-                                .map { pagingData ->
-                                    pagingData.map { option ->
-                                        OptionSetConfiguration.OptionData(
-                                            option,
-                                            metadataIconProvider(
-                                                option.style(),
-                                                program?.style()?.color()?.toColor()
-                                                    ?: SurfaceColor.Primary,
-                                            ),
-                                        )
+                            searchEmitter = searchFlow,
+                            optionFlow = searchFlow.debounce(300).flatMapLatest {
+                                d2.optionModule().options()
+                                    .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                    .getPagingData(10)
+                                    .map { pagingData ->
+                                        pagingData.map { option ->
+                                            OptionSetConfiguration.OptionData(
+                                                option,
+                                                metadataIconProvider(
+                                                    option.style(),
+                                                    program?.style()?.color()?.toColor()
+                                                        ?: SurfaceColor.Primary,
+                                                ),
+                                            )
+                                        }
                                     }
-                                },
-                            onSearch = { /*no-op*/ },
+                            },
+                            onSearch = { searchFlow.value = it },
                         )
                     }
                     createField(
@@ -356,10 +365,10 @@ class SearchRepositoryImplKt(
             d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(typeAttribute.trackedEntityAttribute()!!.uid())
                 .blockingGet()?.let { attribute ->
-
+                    val searchEmitter = MutableStateFlow("")
                     val optionSetConfiguration = attribute.optionSet()?.let {
                         OptionSetConfiguration(
-                            searchEmitter = null,
+                            searchEmitter = searchEmitter,
                             optionFlow = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                 .getPagingData(10)
@@ -374,7 +383,7 @@ class SearchRepositoryImplKt(
                                         )
                                     }
                                 },
-                            onSearch = { /*no-op*/ },
+                            onSearch = { searchEmitter.value = it },
                         )
                     }
 

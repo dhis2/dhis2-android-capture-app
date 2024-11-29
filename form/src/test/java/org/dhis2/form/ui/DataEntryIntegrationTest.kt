@@ -343,6 +343,7 @@ class DataEntryIntegrationTest {
                 autocompleteList = emptyList(),
                 optionSetConfiguration = OptionSetConfiguration(
                     optionSearchFlow,
+                    { optionSearchFlow.value = it },
                     optionSearchFlow.flatMapLatest {
                         flow {
                             PagingData.from(

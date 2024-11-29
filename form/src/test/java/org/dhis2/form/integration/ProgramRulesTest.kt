@@ -504,6 +504,7 @@ class ProgramRulesTest {
             valueType = ValueType.MULTI_TEXT,
             optionSetConfiguration = OptionSetConfiguration(
                 MutableStateFlow(""),
+                {},
                 emptyFlow(),
             ),
             autocompleteList = null,
@@ -517,6 +518,7 @@ class ProgramRulesTest {
             valueType = ValueType.MULTI_TEXT,
             optionSetConfiguration = OptionSetConfiguration(
                 MutableStateFlow(""),
+                {},
                 emptyFlow(),
             ),
             autocompleteList = null,
