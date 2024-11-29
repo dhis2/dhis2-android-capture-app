@@ -4,15 +4,16 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
+import org.hamcrest.Matchers.not
 
 fun eventRegistrationRobot(
     composeTestRule: ComposeTestRule,
@@ -35,9 +36,25 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         }
     }
 
-    fun checkEventDataEntryIsOpened(completion: Int, orgUnit: String) {
+    fun checkPercentComplete(completion: Int){
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(completion)))
-        composeTestRule.onNodeWithText(orgUnit).performScrollTo().assertIsDisplayed()
+    }
+
+    fun syncButtonAvaialble(){
+        onView(withId(R.id.syncButton)).check(matches(isDisplayed()))
+    }
+
+    fun formActionButtonUnavailable(){
+        onView(withId(R.id.actionButton)).check(matches(not(isDisplayed())))
+    }
+
+    fun checkIsEditable(){
+        //onView(withId(R.id.reopenButton)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithText("Re-open form to edit").assertIsDisplayed()
+    }
+
+    fun clickGoBack(){
+        onView((withId(R.id.buttonBack))).perform(click())
     }
 
     fun clickOnShare() {

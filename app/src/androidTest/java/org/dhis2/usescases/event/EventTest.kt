@@ -5,8 +5,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
+import org.dhis2.common.filters.filterRobotCommon
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.event.entity.EventStatusUIModel
@@ -28,6 +30,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
 import org.dhis2.usescases.eventsWithoutRegistration.*
+import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.dhis2.usescases.teidashboard.TeiDashboardTest.Companion.NOTE_EXISTING_TEXT
 
 
 @RunWith(AndroidJUnit4::class)
@@ -74,30 +78,104 @@ class EventTest : BaseTest() {
 
     @Test
     fun eventFlowTest1(){
+        val antenatalCare = "lxAQ7Zs9VYR"
         val completion = 100
-        val orgUnit = "Faabu CHP"
-        //val current = LocalDate.now()
-        //val eventDate = current.plusDays(2)
-
-        prepareEventDetailsIntentAndLaunchActivity(rule)
-
-        eventRegistrationRobot(composeTestRule) {
-            // ANDROAPP-917 - Check number of events on home screen
-            composeTestRule.onNodeWithText("3 events").assertIsDisplayed()
-            composeTestRule.onNodeWithText(("3 events")).performClick()
-        }
-            //ANDROAPP-851 - Select any event to test completed events expiry day
-    }
-
-    @Test
-    fun shouldShowEventDetailsWhenClickOnDetailsInsideSpecificEvent() {
-        val completion = 100
+        val closedOrgUnit = "Faabu CHP"
         val orgUnit = "Ngelehun CHC"
+        val currentDate = LocalDate.now()
+        val futureDate = currentDate.plusDays(2)
 
-        prepareEventDetailsIntentAndLaunchActivity(rule)
+        //prepareEventDetailsIntentAndLaunchActivity(rule)
+        prepareProgramAndLaunchActivity(antenatalCare)
+
+        eventWithoutRegistrationRobot(composeTestRule) {
+            //ANDROAPP-851 - Select an event to test - completed events expiry day
+            clickOnEventAtPosition(2)
+
+            eventRegistrationRobot(composeTestRule) {
+                // ANDROAPP-853 - Check if event is uneditable
+                //@todo - improve
+                checkIsEditable()
+                // ANDROAPP-4836 - Check save button is unavailable
+                formActionButtonUnavailable()
+                clickGoBack()
+            }
+        }
+
+        programEventsRobot(composeTestRule) {
+            clickOnAddEvent()
+        }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(closedOrgUnit)
+        }
+        //@todo - all fields disabled except org unit
+
 
         eventRegistrationRobot(composeTestRule) {
-            //checkEventDataEntryIsOpened(completion, orgUnit)
+            clickGoBack()
+            eventRobot(composeTestRule) {
+                clickOnNotNow()
+            }
+        }
+
+        programEventsRobot(composeTestRule) {
+            clickOnAddEvent()
+        }
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+        //@todo - click on date field and enter future date
+        //ANDROAPP-906 - enter future date
+
+        //filterRobotCommon {
+        //    val day = currentDate.dayOfMonth
+        //    val month = currentDate.monthValue
+        //    val year = currentDate.year
+        //    selectDate(year, month, day)
+        //}
+
+        eventRegistrationRobot(composeTestRule) {
+            // ANDROAPP-4836 - Check save button is unavailable
+            //formActionButtonUnavailable()
+            // ANDROAPP-4836 - Check Refresh button is available
+            //syncButtonAvaialble()
+            clickGoBack()
+            eventRobot(composeTestRule) {
+                clickOnNotNow()
+            }
+        }
+
+        eventWithoutRegistrationRobot(composeTestRule) {
+            clickOnEventAtPosition(0)
+            eventRegistrationRobot(composeTestRule) {
+                // ANDROAPP-4836 - Check save button is unavailable
+                //formActionButtonUnavailable()
+                // ANDROAPP-4836 - Check Refresh button is available
+                syncButtonAvaialble()
+            }
+        }
+
+        //ANDROAPP-4171 - Create and Save note
+        teiDashboardRobot(composeTestRule) {
+            goToNotes()
+        }
+
+        noteRobot {
+            clickOnFabAddNewNote()
+            typeNote(NOTE_EXISTING_TEXT)
+            clickOnClearButton()
+            clickYesOnAlertDialog()
+            checkNoteWasNotCreated(NOTE_EXISTING_TEXT)
+        }
+
+        //ANDROAPP-1543 - Delete Event
+        eventRobot(composeTestRule) {
+            openMenuMoreOptions()
+            clickOnDelete()
+            clickOnDeleteDialog()
+        }
+        programEventsRobot(composeTestRule) {
+            checkEventWasDeleted("07/04/2024")
         }
     }
 
@@ -194,8 +272,11 @@ class EventTest : BaseTest() {
     )
 
     private fun prepareProgramAndLaunchActivity(programUid: String) {
-        Intent().apply {
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            ProgramEventDetailActivity::class.java,
+        ).apply {
             putExtra(ProgramEventDetailActivity.EXTRA_PROGRAM_UID, programUid)
-        }.also { eventListRule.launch(it) }
+        }.also { rule.launch(it) }
     }
 }
