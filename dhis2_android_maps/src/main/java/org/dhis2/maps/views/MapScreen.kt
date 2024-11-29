@@ -5,16 +5,23 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.location.LocationState
@@ -34,7 +41,15 @@ fun MapScreen(
     onItem: @Composable LazyItemScope.(item: MapItemModel) -> Unit,
 
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    var pagerMaxHeight by remember { mutableStateOf(Dp.Unspecified) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                pagerMaxHeight = (it.size.height * 0.7).dp
+            },
+    ) {
         map()
         Column(
             modifier = Modifier
@@ -46,7 +61,8 @@ fun MapScreen(
         MapItemHorizontalPager(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .testTag("MAP_CAROUSEL"),
+                .testTag("MAP_CAROUSEL")
+                .heightIn(max = pagerMaxHeight),
             state = listState,
             items = items,
             onItem = onItem,
