@@ -113,6 +113,15 @@ fun FieldProvider(
             fieldUiModel = fieldUiModel,
             intentHandler = intentHandler,
             context = context,
+            fetchOptions = {
+                intentHandler(
+                    FormIntent.FetchOptions(
+                        fieldUiModel.uid,
+                        fieldUiModel.optionSet!!,
+                        value = fieldUiModel.value,
+                    ),
+                )
+            },
         )
 
         fieldUiModel.eventCategories != null -> ProvideCategorySelectorInput(
@@ -476,6 +485,7 @@ fun ProvideByOptionSet(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     context: Context,
+    fetchOptions: () -> Unit,
 ) {
     when (fieldUiModel.renderingType) {
         UiRenderType.HORIZONTAL_RADIOBUTTONS,
@@ -527,6 +537,7 @@ fun ProvideByOptionSet(
                 modifier = modifier,
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
+                fetchOptions = fetchOptions,
             )
         }
     }

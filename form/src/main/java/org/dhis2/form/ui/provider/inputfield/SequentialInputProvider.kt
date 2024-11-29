@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -23,10 +24,21 @@ internal fun ProvideSequentialInput(
     context: Context,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val inputCardDataList = rememberInputCardList(
-        options = fieldUiModel.optionSetConfiguration?.optionsToDisplay(),
-        optionMetadataIconMap = fieldUiModel.optionSetConfiguration?.optionMetadataIcon,
-    )
+    val inputCardDataList: MutableList<ImageCardData> = mutableListOf()
+
+    fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+        repeat(paging.itemCount) { index ->
+            val optionData = paging[index]
+            inputCardDataList.add(
+                imageCardDataWithUidAndLabel(
+                    optionData!!.metadataIconData.imageCardData,
+                    optionData.option.code() ?: "",
+                    optionData.option.displayName() ?: "",
+                ),
+            )
+        }
+    }
+
     var matrixSelectedItem by rememberSelectedOption(
         fieldUiModel = fieldUiModel,
         inputCardDataList = inputCardDataList,

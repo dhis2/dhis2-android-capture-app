@@ -29,7 +29,7 @@ fun rememberInputCardList(
     } ?: emptyList()
 }
 
-private fun imageCardDataWithUidAndLabel(
+fun imageCardDataWithUidAndLabel(
     imageCardData: ImageCardData,
     optionCode: String,
     label: String,

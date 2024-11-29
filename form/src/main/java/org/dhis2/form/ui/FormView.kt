@@ -3,22 +3,16 @@ package org.dhis2.form.ui
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -32,9 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat.CLOCK_12H
-import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
@@ -48,14 +39,9 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.PeriodDialog
-import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
-import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
-import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
@@ -75,9 +61,7 @@ import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
-import org.dhis2.form.ui.dialog.OptionSetDialog
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
-import org.dhis2.form.ui.event.DialogDelegate
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
@@ -92,16 +76,12 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
-import org.dhis2.ui.dialogs.signature.SignatureDialog
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
-import java.util.Calendar
 import java.util.Date
 
 class FormView : Fragment() {
@@ -236,50 +216,6 @@ class FormView : Fragment() {
             }
         }
 
-    private val requestLocationPermissions =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions(),
-        ) { result ->
-            if (result.values.all { isGranted -> isGranted }) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                displayCoordinatesPermissionDeclined()
-            }
-        }
-
-    private val permissionSettings =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) {
-            val result = requireActivity().checkCallingOrSelfPermission(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            )
-            if (result == PackageManager.PERMISSION_GRANTED) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
-                }
-            }
-        }
-
-    private val locationDisabledSettings =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (locationProvider?.hasLocationEnabled() == true) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
-                }
-            }
-        }
-
     private val requestStoragePermissions =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
@@ -306,7 +242,6 @@ class FormView : Fragment() {
         )
     }
 
-    private lateinit var dialogDelegate: DialogDelegate
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
@@ -334,7 +269,6 @@ class FormView : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         val contextWrapper = ContextThemeWrapper(context, R.style.searchFormInputText)
-        dialogDelegate = DialogDelegate()
         formSectionMapper = FormSectionMapper()
 
         FormFileProvider.init(contextWrapper.applicationContext)
@@ -462,7 +396,10 @@ class FormView : Fragment() {
     }
 
     @Composable
-    private fun DialogContent(fieldsWithIssues: List<FieldWithIssue>, bottomSheetDialog: BottomSheetDialog): Unit? {
+    private fun DialogContent(
+        fieldsWithIssues: List<FieldWithIssue>,
+        bottomSheetDialog: BottomSheetDialog,
+    ): Unit? {
         return if (fieldsWithIssues.isEmpty()) {
             null
         } else {
@@ -509,12 +446,14 @@ class FormView : Fragment() {
                 } else {
                     showBottomSheetDialog()
                 }
+
                 EventStatus.SKIPPED -> {
                     if (fieldsWithIssues.isEmpty()) {
                         viewModel.activateEvent()
                     }
                     showBottomSheetDialog()
                 }
+
                 else -> onFinishDataEntry?.invoke()
             }
             if (result.eventResultDetails.eventStatus == null && result is NotSavedResult) {
@@ -528,7 +467,8 @@ class FormView : Fragment() {
         isEventCompleted: Boolean,
         bottomSheetDialog: BottomSheetDialog,
     ) {
-        val errorsInField = fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
+        val errorsInField =
+            fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
         if (errorsInField) {
             bottomSheetDialog.dismiss()
         } else if (isEventCompleted) {
@@ -563,6 +503,7 @@ class FormView : Fragment() {
                     result = result,
                 )
             }
+
             is FieldsWithWarningResult -> formResultDialogUiProvider?.invoke(
                 canComplete = result.canComplete,
                 onCompleteMessage = result.onCompleteMessage,
@@ -609,42 +550,13 @@ class FormView : Fragment() {
             .show()
     }
 
-    private fun displayCoordinatesPermissionDeclined() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
-            .setTitle(getString(R.string.info))
-            .setMessage(getString(R.string.location_permission_denied))
-            .setPositiveButton(R.string.action_accept) { _, _ ->
-                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.fromParts("package", requireActivity().packageName, null)
-                permissionSettings.launch(intent)
-            }
-            .setNegativeButton(R.string.action_close) { _, _ ->
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
-                }
-            }
-            .setCancelable(false)
-            .show()
-    }
-
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
-            is RecyclerViewUiEvents.OpenCustomCalendar -> showCustomCalendar(uiEvent)
-            is RecyclerViewUiEvents.OpenTimePicker -> showTimePicker(uiEvent)
-            is RecyclerViewUiEvents.ShowDescriptionLabelDialog -> showDescriptionLabelDialog(
-                uiEvent,
-            )
-
-            is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
             is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
             is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
-            is RecyclerViewUiEvents.ShowImage -> showFullPicture(uiEvent)
-            is RecyclerViewUiEvents.CopyToClipboard -> copyToClipboard(uiEvent.value)
-            is RecyclerViewUiEvents.OpenOptionSetDialog -> showOptionSetDialog(uiEvent)
-            is RecyclerViewUiEvents.AddSignature -> showSignatureDialog(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
@@ -732,22 +644,6 @@ class FormView : Fragment() {
         }
     }
 
-    private fun copyToClipboard(value: String?) {
-        val clipboard =
-            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        value?.let {
-            if (it.isNotEmpty()) {
-                val clip = ClipData.newPlainText("copy", it)
-                clipboard.setPrimaryClip(clip)
-                Toast.makeText(
-                    context,
-                    requireContext().getString(R.string.copied_text),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-        }
-    }
-
     private fun render(items: List<FieldUiModel>) {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
@@ -760,119 +656,6 @@ class FormView : Fragment() {
     private fun intentHandler(intent: FormIntent) {
         FormCountingIdlingResource.increment()
         viewModel.submitIntent(intent)
-    }
-
-    private fun showCustomCalendar(intent: RecyclerViewUiEvents.OpenCustomCalendar) {
-        val dialog = CalendarPicker(requireContext()).apply {
-            setTitle(intent.label)
-            setInitialDate(intent.date)
-            isFutureDatesAllowed(intent.allowFutureDates)
-            setListener(object : OnDatePickerListener {
-                override fun onNegativeClick() {
-                    intentHandler(FormIntent.ClearValue(intent.uid))
-                }
-
-                override fun onPositiveClick(datePicker: DatePicker) {
-                    when (intent.isDateTime) {
-                        true -> uiEventHandler(
-                            dialogDelegate.handleDateTimeInput(
-                                intent.uid,
-                                intent.label,
-                                intent.date,
-                                datePicker.year,
-                                datePicker.month,
-                                datePicker.dayOfMonth,
-                            ),
-                        )
-
-                        else -> intentHandler(
-                            dialogDelegate.handleDateInput(
-                                intent.uid,
-                                datePicker.year,
-                                datePicker.month,
-                                datePicker.dayOfMonth,
-                            ),
-                        )
-                    }
-                }
-            })
-        }
-        dialog.show()
-    }
-
-    private fun showTimePicker(intent: RecyclerViewUiEvents.OpenTimePicker) {
-        val calendar = Calendar.getInstance()
-        intent.date?.let { calendar.time = it }
-        val is24HourFormat = DateFormat.is24HourFormat(requireContext())
-        MaterialTimePicker.Builder()
-            .setTheme(R.style.TimePicker)
-            .setTimeFormat(CLOCK_24H.takeIf { is24HourFormat } ?: CLOCK_12H)
-            .setHour(calendar[Calendar.HOUR_OF_DAY])
-            .setMinute(calendar[Calendar.MINUTE])
-            .setTitleText(intent.label)
-            .build().apply {
-                addOnPositiveButtonClickListener {
-                    intentHandler(
-                        dialogDelegate.handleTimeInput(
-                            intent.uid,
-                            if (intent.isDateTime == true) intent.date else null,
-                            hour,
-                            minute,
-                        ),
-                    )
-                }
-            }
-            .show(childFragmentManager, "timePicker")
-    }
-
-    private fun showDescriptionLabelDialog(
-        intent: RecyclerViewUiEvents.ShowDescriptionLabelDialog,
-    ) {
-        CustomDialog(
-            requireContext(),
-            intent.title,
-            intent.message ?: requireContext().getString(R.string.empty_description),
-            requireContext().getString(R.string.action_close),
-            null,
-            Constants.DESCRIPTION_DIALOG,
-            null,
-        ).show()
-    }
-
-    private fun requestCurrentLocation(event: RecyclerViewUiEvents.RequestCurrentLocation) {
-        locationProvider?.getLastKnownLocation(
-            { location ->
-                val geometry = GeometryHelper.createPointGeometry(
-                    location.longitude.truncate(),
-                    location.latitude.truncate(),
-                )
-                val intent = FormIntent.SelectLocationFromCoordinates(
-                    event.uid,
-                    geometry.coordinates(),
-                    FeatureType.POINT.name,
-                )
-
-                intentHandler(intent)
-            },
-            {
-                requestLocationPermissions.launch(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                )
-            },
-            {
-                LocationSettingLauncher.requestEnableLocationSetting(
-                    requireContext(),
-                    {
-                        locationDisabledSettings.launch(
-                            LocationSettingLauncher.locationSourceSettingIntent(),
-                        )
-                    },
-                    {
-                        viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
-                    },
-                )
-            },
-        )
     }
 
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {
@@ -972,16 +755,6 @@ class FormView : Fragment() {
             .show()
     }
 
-    private fun showFullPicture(event: RecyclerViewUiEvents.ShowImage) {
-        val intent = ImageDetailActivity.intent(
-            title = event.label,
-            imagePath = event.value,
-            context = requireActivity(),
-        )
-
-        startActivity(intent)
-    }
-
     private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
         onSavePicture = { file ->
             intentHandler(
@@ -1075,43 +848,6 @@ class FormView : Fragment() {
                 .setCancelable(false)
                 .show()
         }
-    }
-
-    private fun showOptionSetDialog(uiEvent: RecyclerViewUiEvents.OpenOptionSetDialog) {
-        OptionSetDialog(
-            field = uiEvent.field,
-            onClearValue = {
-                intentHandler(FormIntent.ClearValue(uiEvent.field.uid))
-            },
-        ) { code ->
-            intentHandler(
-                FormIntent.OnSave(
-                    uiEvent.field.uid,
-                    code,
-                    uiEvent.field.valueType,
-                ),
-            )
-        }.show(this@FormView.childFragmentManager)
-    }
-
-    private fun showSignatureDialog(uiEvent: RecyclerViewUiEvents.AddSignature) {
-        SignatureDialog(uiEvent.label) {
-            val file = File(
-                FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                TEMP_FILE,
-            )
-            file.outputStream().use { out ->
-                it.compress(Bitmap.CompressFormat.PNG, 85, out)
-                out.flush()
-            }
-            intentHandler(
-                FormIntent.OnStoreFile(
-                    uiEvent.uid,
-                    file.path,
-                    ValueType.IMAGE,
-                ),
-            )
-        }.show(this@FormView.childFragmentManager)
     }
 
     fun onBackPressed() {

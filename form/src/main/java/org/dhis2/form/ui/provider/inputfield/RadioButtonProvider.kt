@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -21,14 +22,24 @@ internal fun ProvideRadioButtonInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
-        RadioButtonData(
-            uid = option.uid(),
-            selected = fieldUiModel.displayName == option.displayName(),
-            enabled = true,
-            textInput = option.displayName() ?: "",
-        )
-    } ?: emptyList()
+    val dataMap = buildMap {
+        fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+            repeat(paging.itemCount) { index ->
+                val optionData = paging[index]
+                put(
+                    optionData?.option?.code() ?: "",
+                    RadioButtonData(
+                        uid = optionData?.option?.uid() ?: "",
+                        selected = fieldUiModel.displayName == optionData?.option?.displayName(),
+                        enabled = true,
+                        textInput = optionData?.option?.displayName() ?: "",
+                    ),
+                )
+            }
+        }
+    }
+
+    val (codeList, data) = dataMap.toList().unzip()
 
     InputRadioButton(
         modifier = modifier,
@@ -42,11 +53,11 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
+            val selectedIndex = data.indexOf(item)
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
-                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                        ?.find { it.uid() == item?.uid }?.code(),
+                    codeList[selectedIndex],
                     fieldUiModel.valueType,
                 ),
             )
