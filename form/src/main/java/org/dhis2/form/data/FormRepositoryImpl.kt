@@ -810,6 +810,9 @@ class FormRepositoryImpl(
 
         val newConf = OptionSetConfiguration(
             searchEmitter = searchEmitter,
+            onSearch = { query ->
+                searchEmitter.value = query
+            },
             optionFlow = flow,
         )
 

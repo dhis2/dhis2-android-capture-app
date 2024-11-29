@@ -45,6 +45,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import timber.log.Timber;
 
@@ -331,6 +332,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             }
             optionSetConfig = new OptionSetConfiguration(
                     null,
+                    query -> null,
                     OptionSetConfiguration.Companion.optionDataFlow(
                             d2.optionModule().options().byOptionSetUid().eq(optionSet).getPagingData(10),
                             option1 -> metadataIconProvider.invoke(option1.style()))

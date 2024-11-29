@@ -185,6 +185,7 @@ class EnrollmentRepository(
             optionSetConfig = OptionSetConfiguration(
                 searchEmitter = searchEmitter,
                 optionFlow = optionFlow,
+                onSearch = { searchEmitter.value = it },
             )
         }
 

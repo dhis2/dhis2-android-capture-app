@@ -649,6 +649,7 @@ class EventRepository(
             optionSetConfig = OptionSetConfiguration(
                 searchEmitter = searchEmitter,
                 optionFlow = optionFlow,
+                onSearch = { searchEmitter.value = it },
             )
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)

@@ -5,11 +5,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.launch
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -44,8 +42,6 @@ fun ProvideDropdownInput(
         }
     }
 
-    val scope = rememberCoroutineScope()
-
     InputDropDown(
         modifier = modifier,
         inputStyle = inputStyle,
@@ -60,7 +56,7 @@ fun ProvideDropdownInput(
             DropdownItem(optionsData?.get(index)?.option?.displayName() ?: "")
         },
         onSearchOption = { query ->
-            scope.launch { fieldUiModel.optionSetConfiguration?.searchEmitter?.emit(query) }
+            fieldUiModel.optionSetConfiguration?.onSearch?.invoke(query)
         },
         itemCount = optionsData?.itemCount ?: 0,
         useDropDown = useDropdown,
@@ -72,7 +68,7 @@ fun ProvideDropdownInput(
         },
         loadOptions = fetchOptions,
         onDismiss = {
-            scope.launch { fieldUiModel.optionSetConfiguration?.searchEmitter?.emit("") }
+            fieldUiModel.optionSetConfiguration?.onSearch?.invoke("")
         },
     )
 }

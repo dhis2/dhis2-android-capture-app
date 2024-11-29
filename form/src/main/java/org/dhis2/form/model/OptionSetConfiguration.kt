@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.option.Option
 
 data class OptionSetConfiguration(
     val searchEmitter: MutableStateFlow<String>? = null,
+    val onSearch: (String) -> Unit,
     val optionFlow: Flow<PagingData<OptionData>>,
 ) {
     companion object {

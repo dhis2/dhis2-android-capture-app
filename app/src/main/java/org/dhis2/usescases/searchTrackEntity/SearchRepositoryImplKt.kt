@@ -330,6 +330,7 @@ class SearchRepositoryImplKt(
                                         )
                                     }
                                 },
+                            onSearch = { /*no-op*/ },
                         )
                     }
                     createField(
@@ -373,6 +374,7 @@ class SearchRepositoryImplKt(
                                         )
                                     }
                                 },
+                            onSearch = { /*no-op*/ },
                         )
                     }
 
