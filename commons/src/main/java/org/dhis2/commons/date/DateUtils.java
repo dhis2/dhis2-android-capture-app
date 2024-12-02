@@ -33,7 +33,10 @@ public class DateUtils {
     public static final String WEEKLY_FORMAT_EXPRESSION = "w yyyy";
     public static final String MONTHLY_FORMAT_EXPRESSION = "MMM yyyy";
     public static final String YEARLY_FORMAT_EXPRESSION = "yyyy";
-    public static final String SIMPLE_DATE_FORMAT = "MM/dd/yyyy";
+    //EyeSeeTea customization
+    //public static final String SIMPLE_DATE_FORMAT = "MM/dd/yyyy";
+    public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
+
     public static final String TIME_12H_EXPRESSION = "hh:mm a";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {

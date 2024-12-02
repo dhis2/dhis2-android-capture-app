@@ -108,4 +108,4 @@ fun Date?.toOverdueUiText(
 }
 
 fun Date?.toUi(): String? =
-    this?.let { SimpleDateFormat("d/M/yyyy", Locale.getDefault()).format(this) }
+    this?.let { SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(this) }
