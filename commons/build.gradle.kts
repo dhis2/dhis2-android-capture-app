@@ -126,6 +126,7 @@ dependencies {
     api(libs.analytics.sentry.compose)
     implementation(libs.github.treeView)
     api(libs.dhis2.mobile.designsystem) {
+        exclude(group = "tech.annexflow.compose", module = "constraintlayout-compose-multiplatform-android")
         isChanging = true
     }
     coreLibraryDesugaring(libs.desugar)

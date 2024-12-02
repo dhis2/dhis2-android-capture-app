@@ -3,7 +3,7 @@ package org.dhis2.data.forms.dataentry.tablefields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.composetable.model.DropdownOption;
+
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeViewModel;
@@ -14,6 +14,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.SectionRenderingType;
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.DropdownOption;
 
 import java.util.List;
 

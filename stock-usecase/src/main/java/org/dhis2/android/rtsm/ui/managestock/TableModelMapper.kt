@@ -3,16 +3,17 @@ package org.dhis2.android.rtsm.ui.managestock
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.composetable.model.RowHeader
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
+
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZeroOrPositiveFailure
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderRow
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableRowModel
 import javax.inject.Inject
 
 const val STOCK_TABLE_ID = "STOCK"

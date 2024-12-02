@@ -1,7 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.composetable.model.KeyboardInputType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.KeyboardInputType
 
 fun ValueType.toKeyBoardInputType(): KeyboardInputType? {
     return when (this) {

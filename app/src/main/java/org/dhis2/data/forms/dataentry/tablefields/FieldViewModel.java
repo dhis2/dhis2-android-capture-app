@@ -3,7 +3,8 @@ package org.dhis2.data.forms.dataentry.tablefields;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.composetable.model.DropdownOption;
+
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.DropdownOption;
 
 import java.util.List;
 

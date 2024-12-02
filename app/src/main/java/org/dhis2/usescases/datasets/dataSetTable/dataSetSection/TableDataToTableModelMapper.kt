@@ -1,14 +1,15 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import org.dhis2.R
-import org.dhis2.composetable.model.RowHeader
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
+
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderRow
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableRowModel
 import java.util.SortedMap
 
 class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) {
