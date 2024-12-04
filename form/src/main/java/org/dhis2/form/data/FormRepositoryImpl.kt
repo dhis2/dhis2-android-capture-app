@@ -48,6 +48,7 @@ class FormRepositoryImpl(
     private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
+    private val fieldsWithOptionEffects = mutableListOf<FieldUiModel>()
 
     private val disableCollapsableSections: Boolean? =
         dataEntryRepository.disableCollapsableSections()
@@ -522,9 +523,22 @@ class FormRepositoryImpl(
                 }
             }
 
+        fieldsWithOptionEffects.forEach { field ->
+            field.optionSet?.let { optionSetUid ->
+                fetchOptions(field.uid, optionSetUid)
+            }
+        }
+
+        fieldsWithOptionEffects.clear()
+
         ruleEffectsResult?.fieldsWithOptionEffects()?.forEach { fieldWithOptionEffect ->
-            itemList.find { it.uid == fieldWithOptionEffect }?.let {
-                it.optionSet?.let { optionSetUid -> fetchOptions(it.uid, optionSetUid) }
+            val item = itemList.find { it.uid == fieldWithOptionEffect }
+
+            item?.let { field ->
+                field.optionSet?.let { optionSetUid ->
+                    fetchOptions(field.uid, optionSetUid)
+                }
+                fieldsWithOptionEffects.add(field)
             }
         }
 

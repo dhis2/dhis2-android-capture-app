@@ -41,12 +41,28 @@ open class FormBaseConfiguration(private val d2: D2) {
                     .getPagingData(10)
         }.map { pagingData ->
             pagingData.filter { option ->
-                !optionsToHide.contains(option.uid()) &&
-                    !optionGroupsToHide.contains(option.uid()) &&
-                    (
-                        optionGroupsToShow.isEmpty() ||
-                            optionGroupsToShow.contains(option.uid())
-                        )
+
+                val optionInGroupToHide = d2.optionModule().optionGroups()
+                    .withOptions()
+                    .byUid().`in`(optionGroupsToHide)
+                    .blockingGet().find { optionGroup ->
+                        optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                    } != null
+
+                val optionInGroupToShow = d2.optionModule().optionGroups()
+                    .withOptions()
+                    .byUid().`in`(optionGroupsToShow)
+                    .blockingGet().find { optionGroup ->
+                        optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                    } != null
+
+                val hideOption = if (optionGroupsToShow.isEmpty()) {
+                    optionsToHide.contains(option.uid()) || optionInGroupToHide
+                } else {
+                    !optionInGroupToShow
+                }
+
+                !hideOption
             }
         }
     }
