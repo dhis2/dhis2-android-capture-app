@@ -153,9 +153,8 @@ fun DataSetTableScreen(
         if (isKeyboardOpen == Keyboard.Closed) {
             if (tableConfiguration.textInputViewMode) {
                 focusManager.clearFocus(true)
-            } else if (bottomSheetState.bottomSheetState.isExpanded) {
+            } else {
                 collapseBottomSheet(true)
-                bottomSheetState.bottomSheetState.collapse()
             }
         }
     }
