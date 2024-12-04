@@ -1,10 +1,10 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
 
 class DataValueContract {
     interface View : AbstractActivityContracts.View {

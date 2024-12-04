@@ -13,14 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.composetable.TableConfigurationState
-import org.dhis2.composetable.TableScreenState
-import org.dhis2.composetable.TableState
-import org.dhis2.composetable.actions.Validator
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.model.ValidationResult
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.form.model.ValueStoreResult.ERROR_UPDATING_VALUE
@@ -30,6 +22,14 @@ import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.TableDataToTable
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableConfigurationState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableScreenState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.Validator
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TextInputModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.ValidationResult
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 

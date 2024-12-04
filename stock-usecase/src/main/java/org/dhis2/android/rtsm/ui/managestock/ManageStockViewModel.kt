@@ -41,15 +41,16 @@ import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.composetable.TableConfigurationState
-import org.dhis2.composetable.TableScreenState
-import org.dhis2.composetable.TableState
-import org.dhis2.composetable.actions.Validator
-import org.dhis2.composetable.model.KeyboardInputType
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TextInputModel
-import org.dhis2.composetable.model.ValidationResult
+
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableConfigurationState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableScreenState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.Validator
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.KeyboardInputType
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TextInputModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.ValidationResult
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
 import java.util.Collections

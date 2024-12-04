@@ -30,24 +30,25 @@ import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.table.CellModel
-import org.dhis2.composetable.actions.TableInteractions
-import org.dhis2.composetable.actions.TableResizeActions
-import org.dhis2.composetable.model.RowHeader
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.model.TableHeader
-import org.dhis2.composetable.model.TableHeaderCell
-import org.dhis2.composetable.model.TableHeaderRow
-import org.dhis2.composetable.model.TableModel
-import org.dhis2.composetable.model.TableRowModel
-import org.dhis2.composetable.ui.DataTable
-import org.dhis2.composetable.ui.LocalTableSelection
-import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableConfiguration
-import org.dhis2.composetable.ui.TableDimensions
-import org.dhis2.composetable.ui.TableSelection
-import org.dhis2.composetable.ui.TableTheme
-import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.TableInteractions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.TableResizeActions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableHeaderRow
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableRowModel
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.DataTable
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.LocalTableSelection
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableColors
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableConfiguration
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableDimensions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableSelection
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableTheme
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.compositions.LocalInteraction
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import kotlin.math.roundToInt
 
@@ -207,7 +208,7 @@ class GraphToTable {
         TableDimensions(
             cellVerticalPadding = 11.dp,
             maxRowHeaderWidth = with(localDensity) {
-                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
+                (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
                     .roundToInt()
             },
             tableHorizontalPadding = 0.dp,
@@ -222,7 +223,7 @@ class GraphToTable {
             defaultRowHeaderWidth = 0,
             cellVerticalPadding = 11.dp,
             maxRowHeaderWidth = with(localDensity) {
-                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
+                (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
                     .roundToInt()
             },
             tableHorizontalPadding = 0.dp,

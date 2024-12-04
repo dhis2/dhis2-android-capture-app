@@ -31,14 +31,7 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.composetable.actions.TableResizeActions
-import org.dhis2.composetable.model.TableCell
-import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableConfiguration
-import org.dhis2.composetable.ui.TableDimensions
-import org.dhis2.composetable.ui.TableTheme
-import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeView
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinatesView
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.YesNoView
@@ -55,6 +48,14 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.TableResizeActions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.DataSetTableScreen
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableColors
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableConfiguration
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableDimensions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableTheme
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
