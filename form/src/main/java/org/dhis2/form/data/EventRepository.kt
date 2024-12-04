@@ -38,7 +38,6 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
@@ -428,7 +427,7 @@ class EventRepository(
                 PeriodSelector(
                     type = periodType,
                     minDate = getPeriodMinDate(periodType),
-                    maxDate = dateUtils.getStartOfDay(Date()),
+                    maxDate = null,
                 )
             } else {
                 null
@@ -436,57 +435,56 @@ class EventRepository(
         }
     }
 
-    private fun getPeriodMinDate(periodType: PeriodType): Date? {
-        d2.programModule().programs()
-            .withTrackedEntityType()
-            .byUid().eq(programUid)
-            .one().blockingGet()?.let { program ->
-                val firstAvailablePeriodDate =
-                    getFirstAvailablePeriod(event?.enrollment(), programStage)
-                var minDate = dateUtils.expDate(
-                    firstAvailablePeriodDate,
-                    program.expiryDays() ?: 0,
-                    periodType,
-                )
-                val lastPeriodDate = dateUtils.getNextPeriod(
-                    periodType,
-                    minDate,
-                    -1,
-                    true,
-                )
+    private fun D2.generatePeriod(
+        periodType: PeriodType,
+        date: Date = Date(),
+        offset: Int = 0,
+    ) = d2.periodModule().periodHelper()
+        .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
 
-                if (lastPeriodDate.after(
-                        dateUtils.getNextPeriod(
-                            program.expiryPeriodType(),
-                            minDate,
-                            0,
-                        ),
-                    )
-                ) {
-                    minDate = dateUtils.getNextPeriod(periodType, lastPeriodDate, 0)
-                }
-                return minDate
+    private fun getPeriodMinDate(periodType: PeriodType): Date? {
+        val program = programUid?.let { d2.program(it) }
+
+        val expiryDays = program?.expiryDays()
+
+        return if (expiryDays == null) {
+            null
+        } else {
+            val currentDate = Date()
+            val currentPeriod = d2.generatePeriod(periodType)
+            val previousPeriodLastDay =
+                d2.generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays)
+                    .startDate()
+            if (currentDate.after(previousPeriodLastDay)) {
+                currentDate
+            } else {
+                d2.generatePeriod(periodType, offset = -1).startDate()
             }
-        return null
+        }
     }
 
-    private fun getFirstAvailablePeriod(enrollmentUid: String?, programStage: ProgramStage?): Date {
+  /*  private fun getFirstAvailablePeriod(enrollmentUid: String?, programStage: ProgramStage?): Date {
         val stageLastDate = getStageLastDate()
         val minEventDate = stageLastDate ?: when (programStage?.generatedByEnrollmentDate()) {
             true -> getEnrollmentDate(enrollmentUid)
-            else -> getEnrollmentIncidentDate(enrollmentUid)
-                ?: getEnrollmentDate(enrollmentUid)
+            else -> getEnrollmentIncidentDate(enrollmentUid) ?: getEnrollmentDate(enrollmentUid)
         }
         val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
 
         return dateUtils.getNextPeriod(
-            programStage?.periodType(),
-            calendar.time ?: event?.eventDate(),
-            if (stageLastDate == null) 0 else 1,
+   */
+    /* period = */
+  /* programStage?.periodType(),
+   */
+    /* currentDate = */
+  /* calendar.time ?: event?.eventDate(),
+   */
+    /* page = */
+  /* if (stageLastDate == null) 0 else 1
         )
-    }
+    }*/
 
-    private fun getStageLastDate(): Date? {
+    /*private fun getStageLastDate(): Date? {
         val enrollmentUid = event?.enrollment()
         val programStageUid = programStage?.uid()
         val activeEvents =
@@ -526,7 +524,7 @@ class EventRepository(
     private fun getEnrollmentIncidentDate(uid: String?): Date? {
         val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
         return enrollment?.incidentDate()
-    }
+    }*/
 
     private fun createEventDetailsSection(): FieldUiModel {
         return fieldFactory.createSection(
