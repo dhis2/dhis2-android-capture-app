@@ -2,11 +2,14 @@ package org.dhis2.form.data
 
 import androidx.databinding.ObservableField
 import io.reactivex.Flowable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -30,6 +33,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -200,6 +204,14 @@ class FormRepositoryImplTest {
                     mutableMapOf(Pair("field", "uid001")),
                 ),
             ),
+            RuleEffect(
+                "rule2",
+                RuleAction(
+                    "option1",
+                    ProgramRuleActionType.HIDEOPTION.name,
+                    mutableMapOf(Pair("field", "uid004")),
+                ),
+            ),
         )
 
         whenever(dataEntryRepository.isEvent()) doReturn true
@@ -215,12 +227,21 @@ class FormRepositoryImplTest {
             fieldsToUpdate = listOf(FieldWithNewValue("uid001", "newValue")),
             configurationErrors = emptyList(),
             stagesToHide = emptyList(),
-            optionsToHide = emptyMap(),
+            optionsToHide = mapOf(
+                "uid004" to listOf("option1"),
+            ),
             optionGroupsToHide = emptyMap(),
             optionGroupsToShow = emptyMap(),
         )
 
-        verify(rulesUtilsProvider, times(1)).applyRuleEffects(
+        whenever(dataEntryRepository.options(any(), any(), any(), any()))doReturn Pair(
+            MutableStateFlow(""),
+            emptyFlow(),
+        )
+
+        repository.composeList()
+
+        verify(rulesUtilsProvider, atLeast(1)).applyRuleEffects(
             any(),
             any(),
             any(),
@@ -439,6 +460,21 @@ class FormRepositoryImplTest {
             programStageSection = "section1",
             uiEventFactory = null,
             optionSetConfiguration = null,
+            autocompleteList = null,
+        ),
+        FieldUiModelImpl(
+            uid = "uid004",
+            value = null,
+            label = "field4",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            optionSet = "optionSetUid",
+            optionSetConfiguration = OptionSetConfiguration(
+                MutableStateFlow(""),
+                {},
+                emptyFlow(),
+            ),
             autocompleteList = null,
         ),
     )

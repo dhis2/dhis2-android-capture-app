@@ -45,16 +45,16 @@ open class FormBaseConfiguration(private val d2: D2) {
                 val optionInGroupToHide = d2.optionModule().optionGroups()
                     .withOptions()
                     .byUid().`in`(optionGroupsToHide)
-                    .blockingGet().find { optionGroup ->
+                    .blockingGet().any { optionGroup ->
                         optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
-                    } != null
+                    }
 
                 val optionInGroupToShow = d2.optionModule().optionGroups()
                     .withOptions()
                     .byUid().`in`(optionGroupsToShow)
-                    .blockingGet().find { optionGroup ->
+                    .blockingGet().any { optionGroup ->
                         optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
-                    } != null
+                    }
 
                 val hideOption = if (optionGroupsToShow.isEmpty()) {
                     optionsToHide.contains(option.uid()) || optionInGroupToHide
