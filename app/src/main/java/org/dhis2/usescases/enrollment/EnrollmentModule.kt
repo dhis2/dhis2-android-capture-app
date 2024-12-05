@@ -84,8 +84,7 @@ class EnrollmentModule(
     @PerActivity
     fun provideEnrollmentConfiguration(
         d2: D2,
-        metadataIconProvider: MetadataIconProvider,
-    ) = EnrollmentConfiguration(d2, enrollmentUid, metadataIconProvider)
+    ) = EnrollmentConfiguration(d2, enrollmentUid)
 
     @Provides
     @PerActivity
@@ -93,12 +92,14 @@ class EnrollmentModule(
         modelFactory: FieldViewModelFactory,
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
         enrollmentConfiguration: EnrollmentConfiguration,
+        metadataIconProvider: MetadataIconProvider,
     ): EnrollmentRepository {
         return EnrollmentRepository(
             fieldFactory = modelFactory,
             conf = enrollmentConfiguration,
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
+            metadataIconProvider = metadataIconProvider,
         )
     }
 

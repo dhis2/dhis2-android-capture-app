@@ -3,9 +3,6 @@ package org.dhis2.form.ui
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -44,9 +41,7 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
-import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.R
@@ -82,8 +77,6 @@ import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
-import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
-import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
@@ -219,50 +212,6 @@ class FormView : Fragment() {
             } else {
                 viewModel.getFocusedItemUid()?.let {
                     viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            }
-        }
-
-    private val requestLocationPermissions =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions(),
-        ) { result ->
-            if (result.values.all { isGranted -> isGranted }) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                displayCoordinatesPermissionDeclined()
-            }
-        }
-
-    private val permissionSettings =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) {
-            val result = requireActivity().checkCallingOrSelfPermission(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            )
-            if (result == PackageManager.PERMISSION_GRANTED) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
-                }
-            }
-        }
-
-    private val locationDisabledSettings =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (locationProvider?.hasLocationEnabled() == true) {
-                viewModel.getFocusedItemUid()?.let {
-                    requestCurrentLocation(RecyclerViewUiEvents.RequestCurrentLocation(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
                 }
             }
         }
@@ -601,27 +550,8 @@ class FormView : Fragment() {
             .show()
     }
 
-    private fun displayCoordinatesPermissionDeclined() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
-            .setTitle(getString(R.string.info))
-            .setMessage(getString(R.string.location_permission_denied))
-            .setPositiveButton(R.string.action_accept) { _, _ ->
-                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.fromParts("package", requireActivity().packageName, null)
-                permissionSettings.launch(intent)
-            }
-            .setNegativeButton(R.string.action_close) { _, _ ->
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(it))
-                }
-            }
-            .setCancelable(false)
-            .show()
-    }
-
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
         when (uiEvent) {
-            is RecyclerViewUiEvents.RequestCurrentLocation -> requestCurrentLocation(uiEvent)
             is RecyclerViewUiEvents.RequestLocationByMap -> requestLocationByMap(uiEvent)
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
             is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
@@ -714,22 +644,6 @@ class FormView : Fragment() {
         }
     }
 
-    private fun copyToClipboard(value: String?) {
-        val clipboard =
-            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        value?.let {
-            if (it.isNotEmpty()) {
-                val clip = ClipData.newPlainText("copy", it)
-                clipboard.setPrimaryClip(clip)
-                Toast.makeText(
-                    context,
-                    requireContext().getString(R.string.copied_text),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-        }
-    }
-
     private fun render(items: List<FieldUiModel>) {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
@@ -742,42 +656,6 @@ class FormView : Fragment() {
     private fun intentHandler(intent: FormIntent) {
         FormCountingIdlingResource.increment()
         viewModel.submitIntent(intent)
-    }
-
-    private fun requestCurrentLocation(event: RecyclerViewUiEvents.RequestCurrentLocation) {
-        locationProvider?.getLastKnownLocation(
-            { location ->
-                val geometry = GeometryHelper.createPointGeometry(
-                    location.longitude.truncate(),
-                    location.latitude.truncate(),
-                )
-                val intent = FormIntent.SelectLocationFromCoordinates(
-                    event.uid,
-                    geometry.coordinates(),
-                    FeatureType.POINT.name,
-                )
-
-                intentHandler(intent)
-            },
-            {
-                requestLocationPermissions.launch(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                )
-            },
-            {
-                LocationSettingLauncher.requestEnableLocationSetting(
-                    requireContext(),
-                    {
-                        locationDisabledSettings.launch(
-                            LocationSettingLauncher.locationSourceSettingIntent(),
-                        )
-                    },
-                    {
-                        viewModel.submitIntent(FormIntent.OnCancelRequestCoordinates(event.uid))
-                    },
-                )
-            },
-        )
     }
 
     private fun requestLocationByMap(event: RecyclerViewUiEvents.RequestLocationByMap) {

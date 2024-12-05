@@ -161,7 +161,8 @@ private fun ButtonBlock(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    val eventLabel = selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
+                    val eventLabel =
+                        selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
@@ -233,15 +234,31 @@ fun ProvideScheduleNewEventForm(
     launchMode: LaunchMode,
 ) {
     if (programStages.size > 1 && launchMode !is LaunchMode.EnterEvent) {
+        var dropdownItems by remember {
+            mutableStateOf(
+                programStages.map { DropdownItem(it.displayName().orEmpty()) },
+            )
+        }
         InputDropDown(
             title = stringResource(id = R.string.program_stage),
             state = InputShellState.UNFOCUSED,
-            dropdownItems = programStages.map { DropdownItem(it.displayName().orEmpty()) },
+            fetchItem = { index -> dropdownItems[index] },
+            itemCount = dropdownItems.size,
+            onSearchOption = { query ->
+                dropdownItems = if (query.isNotEmpty()) {
+                    dropdownItems.filter { it.label.contains(query) }
+                } else {
+                    programStages.map { DropdownItem(it.displayName().orEmpty()) }
+                }
+            },
+            useDropDown = dropdownItems.size < 15,
+            loadOptions = {
+                /*no-op*/
+            },
             selectedItem = DropdownItem(selectedProgramStage?.displayName().orEmpty()),
             onResetButtonClicked = {},
-            onItemSelected = { item ->
-                programStages.find { it.displayName() == item.label }
-                    ?.let { viewModel.updateStage(it) }
+            onItemSelected = { index, _ ->
+                programStages[index].let { viewModel.updateStage(it) }
             },
         )
     }

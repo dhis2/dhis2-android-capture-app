@@ -1,7 +1,16 @@
+@file:OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+
 package org.dhis2.usescases.searchTrackEntity
 
 import androidx.paging.PagingData
+import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -309,32 +318,29 @@ class SearchRepositoryImplKt(
             d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(programAttribute.trackedEntityAttribute()!!.uid())
                 .blockingGet()?.let { attribute ->
-
+                    val searchFlow = MutableStateFlow("")
                     val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration.config(
-                            d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .blockingCount(),
-                        ) {
-                            val options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-
-                            val metadataIconMap =
-                                options.associate {
-                                    it.uid() to metadataIconProvider(
-                                        it.style(),
-                                        program?.style()?.color()?.toColor()
-                                            ?: SurfaceColor.Primary,
-                                    )
-                                }
-
-                            OptionSetConfiguration.OptionConfigData(
-                                options = options,
-                                metadataIconMap = metadataIconMap,
-                            )
-                        }
+                        OptionSetConfiguration(
+                            searchEmitter = searchFlow,
+                            optionFlow = searchFlow.debounce(300).flatMapLatest {
+                                d2.optionModule().options()
+                                    .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                    .getPagingData(10)
+                                    .map { pagingData ->
+                                        pagingData.map { option ->
+                                            OptionSetConfiguration.OptionData(
+                                                option,
+                                                metadataIconProvider(
+                                                    option.style(),
+                                                    program?.style()?.color()?.toColor()
+                                                        ?: SurfaceColor.Primary,
+                                                ),
+                                            )
+                                        }
+                                    }
+                            },
+                            onSearch = { searchFlow.value = it },
+                        )
                     }
                     createField(
                         trackedEntityAttribute = attribute,
@@ -359,31 +365,26 @@ class SearchRepositoryImplKt(
             d2.trackedEntityModule().trackedEntityAttributes()
                 .uid(typeAttribute.trackedEntityAttribute()!!.uid())
                 .blockingGet()?.let { attribute ->
-
+                    val searchEmitter = MutableStateFlow("")
                     val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration.config(
-                            d2.optionModule().options()
+                        OptionSetConfiguration(
+                            searchEmitter = searchEmitter,
+                            optionFlow = d2.optionModule().options()
                                 .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .blockingCount(),
-                        ) {
-                            val options = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .blockingGet()
-
-                            val metadataIconMap =
-                                options.associate {
-                                    it.uid() to metadataIconProvider(
-                                        it.style(),
-                                        SurfaceColor.Primary,
-                                    )
-                                }
-
-                            OptionSetConfiguration.OptionConfigData(
-                                options = options,
-                                metadataIconMap = metadataIconMap,
-                            )
-                        }
+                                .getPagingData(10)
+                                .map { pagingData ->
+                                    pagingData.map { option ->
+                                        OptionSetConfiguration.OptionData(
+                                            option,
+                                            metadataIconProvider(
+                                                option.style(),
+                                                SurfaceColor.Primary,
+                                            ),
+                                        )
+                                    }
+                                },
+                            onSearch = { searchEmitter.value = it },
+                        )
                     }
 
                     createField(

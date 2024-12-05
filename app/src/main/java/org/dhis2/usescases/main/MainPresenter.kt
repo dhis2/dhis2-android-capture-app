@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
 import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.commons.matomo.Actions.Companion.QR_SCANNER
@@ -57,7 +56,7 @@ class MainPresenter(
     private val schedulerProvider: SchedulerProvider,
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val filterRepository: FilterRepository,
+    private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
     private val deleteUserData: DeleteUserData,
@@ -78,6 +77,7 @@ class MainPresenter(
     val downloadingVersion = MutableLiveData(false)
 
     fun init() {
+        filterManager.clearAllFilters()
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
             repository.user()
@@ -158,7 +158,7 @@ class MainPresenter(
             Completable.fromCallable {
                 workManagerController.cancelAllWork()
                 syncStatusController.restore()
-                FilterManager.getInstance().clearAllFilters()
+                filterManager.clearAllFilters()
                 preferences.setValue(Preference.SESSION_LOCKED, false)
                 preferences.setValue(Preference.PIN_ENABLED, false)
                 userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
@@ -223,10 +223,6 @@ class MainPresenter(
 
     fun onClickSyncManager() {
         matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
-    }
-
-    fun setOpeningFilterToNone() {
-        filterRepository.collapseAllFilters()
     }
 
     fun isPinStored() = repository.isPinStored()

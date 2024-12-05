@@ -81,7 +81,11 @@ private fun ProvideCategorySelector(
     }
 
     if (category.options.isNotEmpty()) {
-        val dropdownItems = category.options.map { DropdownItem(it.name) }
+        var dropdownItems by remember {
+            mutableStateOf(
+                category.options.map { DropdownItem(it.name) },
+            )
+        }
 
         InputDropDown(
             modifier = modifier,
@@ -92,16 +96,26 @@ private fun ProvideCategorySelector(
             onResetButtonClicked = {
                 onCategoryOptionSelected(null)
             },
-            onItemSelected = { newSelectedItem ->
+            onItemSelected = { _, newSelectedItem ->
                 onCategoryOptionSelected(
                     category.options.firstOrNull {
                         it.name == newSelectedItem.label
                     },
                 )
             },
-            dropdownItems = dropdownItems,
+            fetchItem = { index -> dropdownItems[index] },
+            itemCount = dropdownItems.size,
+            onSearchOption = { query ->
+                dropdownItems = if (query.isNotEmpty()) {
+                    dropdownItems.filter { it.label.contains(query) }
+                } else {
+                    category.options.map { DropdownItem(it.name) }
+                }
+            },
             isRequiredField = fieldUiModel.mandatory,
             legendData = fieldUiModel.legend(),
+            loadOptions = {
+            },
         )
     } else {
         ProvideEmptyCategorySelector(
@@ -122,6 +136,8 @@ fun ProvideEmptyCategorySelector(
         mutableStateOf("")
     }
 
+    val emptyItems = listOf(DropdownItem(stringResource(id = R.string.no_options)))
+
     InputDropDown(
         modifier = modifier,
         title = name,
@@ -131,11 +147,17 @@ fun ProvideEmptyCategorySelector(
         onResetButtonClicked = {
             selectedItem = ""
         },
-        onItemSelected = { newSelectedDropdownItem ->
+        onItemSelected = { _, newSelectedDropdownItem ->
             selectedItem = newSelectedDropdownItem.label
         },
-        dropdownItems = listOf(DropdownItem(stringResource(id = R.string.no_options))),
+        fetchItem = { index ->
+            emptyItems[index]
+        },
+        itemCount = 1,
+        onSearchOption = { /*no-op*/ },
         isRequiredField = false,
+        loadOptions = {
+        },
     )
 }
 

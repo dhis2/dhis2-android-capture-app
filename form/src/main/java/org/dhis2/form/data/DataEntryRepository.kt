@@ -1,8 +1,12 @@
 package org.dhis2.form.data
 
+import androidx.paging.PagingData
 import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValidationStrategy
 
 interface DataEntryRepository {
@@ -37,4 +41,11 @@ interface DataEntryRepository {
     fun disableCollapsableSections(): Boolean?
 
     fun getSpecificDataEntryItems(uid: String): List<FieldUiModel>
+
+    fun options(
+        optionSetUid: String,
+        optionsToHide: List<String>,
+        optionGroupsToHide: List<String>,
+        optionGroupsToShow: List<String>,
+    ): Pair<MutableStateFlow<String>, Flow<PagingData<OptionSetConfiguration.OptionData>>>
 }

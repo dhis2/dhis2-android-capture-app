@@ -49,12 +49,12 @@ class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val eventUid: String,
     private val d2: D2,
-    private val metadataIconProvider: MetadataIconProvider,
+    metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val dateUtils: DateUtils,
     private val eventMode: EventMode,
-) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory) {
+) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
 
     private var event = d2.eventModule().events().uid(eventUid).blockingGet()
 
@@ -65,7 +65,7 @@ class EventRepository(
             .blockingGet()
     }
 
-    private val defaultStyleColor by lazy {
+    override val defaultStyleColor by lazy {
         programStage?.program()?.uid()?.let {
             d2.program(it)?.style()?.color()?.toColor()
         } ?: SurfaceColor.Primary
@@ -189,7 +189,8 @@ class EventRepository(
     }
 
     override fun validationStrategy(): ValidationStrategy? {
-        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()?.validationStrategy()
+        return d2.programModule().programStages().uid(programStage?.uid()).blockingGet()
+            ?.validationStrategy()
     }
 
     private fun getEventDetails(): MutableList<FieldUiModel> {
@@ -440,7 +441,8 @@ class EventRepository(
             .withTrackedEntityType()
             .byUid().eq(programUid)
             .one().blockingGet()?.let { program ->
-                val firstAvailablePeriodDate = getFirstAvailablePeriod(event?.enrollment(), programStage)
+                val firstAvailablePeriodDate =
+                    getFirstAvailablePeriod(event?.enrollment(), programStage)
                 var minDate = dateUtils.expDate(
                     firstAvailablePeriodDate,
                     program.expiryDays() ?: 0,
@@ -477,7 +479,11 @@ class EventRepository(
         }
         val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
 
-        return dateUtils.getNextPeriod(programStage?.periodType(), calendar.time ?: event?.eventDate(), if (stageLastDate == null) 0 else 1)
+        return dateUtils.getNextPeriod(
+            programStage?.periodType(),
+            calendar.time ?: event?.eventDate(),
+            if (stageLastDate == null) 0 else 1,
+        )
     }
 
     private fun getStageLastDate(): Date? {
@@ -488,12 +494,14 @@ class EventRepository(
                 .eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet().filter { it.uid() != eventUid }
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .filter { it.uid() != eventUid }
         val scheduleEvents =
             d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
                 .eq(programStageUid)
                 .byDeleted().isFalse
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet().filter { it.uid() != eventUid }
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .filter { it.uid() != eventUid }
 
         var activeDate: Date? = null
         var scheduleDate: Date? = null
@@ -632,21 +640,17 @@ class EventRepository(
                         .byCode()
                         .eq(dataValue).one().blockingGet()?.displayName()
             }
-            val optionCount =
-                d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                    .blockingCount()
-            optionSetConfig = OptionSetConfiguration.config(optionCount) {
-                val options = d2.optionModule().options().byOptionSetUid().eq(optionSet)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
-
-                val metadataIconMap =
-                    options.associate { it.uid() to metadataIconProvider(it.style(), defaultStyleColor) }
-
-                OptionSetConfiguration.OptionConfigData(
-                    options = options,
-                    metadataIconMap = metadataIconMap,
-                )
-            }
+            val (searchEmitter, optionFlow) = options(
+                optionSetUid = optionSet!!,
+                optionsToHide = emptyList(),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = emptyList(),
+            )
+            optionSetConfig = OptionSetConfiguration(
+                searchEmitter = searchEmitter,
+                optionFlow = optionFlow,
+                onSearch = { searchEmitter.value = it },
+            )
         }
         val fieldRendering = getValueTypeDeviceRendering(programStageDataElement)
         val objectStyle = getObjectStyle(de)

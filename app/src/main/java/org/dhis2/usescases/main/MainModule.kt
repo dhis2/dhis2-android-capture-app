@@ -6,7 +6,6 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
@@ -32,7 +31,7 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         workManagerController: WorkManagerController,
-        filterRepository: FilterRepository,
+        filterManager: FilterManager,
         matomoAnalyticsController: MatomoAnalyticsController,
         userManager: UserManager,
         deleteUserData: DeleteUserData,
@@ -47,7 +46,7 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
             schedulerProvider,
             preferences,
             workManagerController,
-            filterRepository,
+            filterManager,
             matomoAnalyticsController,
             userManager,
             deleteUserData,

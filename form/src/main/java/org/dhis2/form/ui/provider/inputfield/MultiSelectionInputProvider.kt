@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -16,15 +17,24 @@ internal fun ProvideMultiSelectionInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val optionsToDisplay = fieldUiModel.optionSetConfiguration?.optionsToDisplay() ?: emptyList()
-    val data = optionsToDisplay.map { option ->
-        CheckBoxData(
-            uid = option.uid(),
-            checked = option.code()?.let { fieldUiModel.value?.split(",")?.contains(it) } ?: false,
-            enabled = true,
-            textInput = option.displayName() ?: "",
-        )
+    val dataMap = buildMap {
+        fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+            repeat(paging.itemCount) { index ->
+                val optionData = paging[index]
+                put(
+                    optionData?.option?.code() ?: "",
+                    CheckBoxData(
+                        uid = optionData?.option?.uid() ?: "",
+                        checked = optionData?.option?.code()?.let { fieldUiModel.value?.split(",")?.contains(it) } ?: false,
+                        enabled = true,
+                        textInput = optionData?.option?.displayName() ?: "",
+                    ),
+                )
+            }
+        }
     }
+
+    val (codeList, data) = dataMap.toList().unzip()
 
     InputMultiSelection(
         modifier = modifier,
@@ -35,8 +45,9 @@ internal fun ProvideMultiSelectionInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemsSelected = {
-            val checkedValues = it.filter { item -> item.checked }.mapNotNull {
-                optionsToDisplay.find { option -> option.uid() == it.uid }?.code()
+            val checkedValues = it.filter { item -> item.checked }.map { checkBoxData ->
+                val selectedIndex = data.indexOf(checkBoxData)
+                codeList[selectedIndex]
             }
 
             intentHandler(

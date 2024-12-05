@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.SectionUiModelImpl
@@ -43,6 +44,7 @@ class FormRepositoryIntegrationTest {
         on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
         on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
     }
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     private val program: Program = mock {
         on { uid() } doReturn "programUid"
@@ -173,6 +175,7 @@ class FormRepositoryIntegrationTest {
             conf,
             enrollmentMode,
             enrollmentFormLabelsProvider,
+            metadataIconProvider,
         )
 
         return FormRepositoryImpl(

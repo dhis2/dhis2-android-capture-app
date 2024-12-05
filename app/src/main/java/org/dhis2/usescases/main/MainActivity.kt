@@ -222,7 +222,6 @@ class MainActivity :
     }
 
     override fun onPause() {
-        presenter.setOpeningFilterToNone()
         presenter.onDetach()
         super.onPause()
     }

@@ -16,28 +16,16 @@ class OptionSetPresenter(
     val d2: D2,
     val schedulerProvider: SchedulerProvider,
 ) {
-
-    private lateinit var optionSetOptionHandler: OptionSetOptionsHandler
     var disposable: CompositeDisposable = CompositeDisposable()
     private var optionSetUid: String? = null
 
     fun init(optionSet: FieldUiModel) {
         this.optionSetUid = optionSet.optionSet
-        this.optionSetOptionHandler = OptionSetOptionsHandler(
-            optionSet.optionSetConfiguration?.optionsToHide,
-            optionSet.optionSetConfiguration?.optionsToShow,
-            null,
-        )
         getOptions()
     }
 
     fun init(optionSetTable: TableSpinnerViewModel) {
         this.optionSetUid = optionSetTable.optionSet()
-        this.optionSetOptionHandler = OptionSetOptionsHandler(
-            optionSetTable.optionsToHide,
-            null,
-            optionSetTable.optionGroupsToHide,
-        )
         getOptions()
     }
 
@@ -49,17 +37,6 @@ class OptionSetPresenter(
                 .map { textToSearch ->
                     var optionRepository = d2.optionModule().options()
                         .byOptionSetUid().eq(optionSetUid)
-
-                    val(finalOptionsToHide, finalOptionsToShow) =
-                        optionSetOptionHandler.handleOptions()
-
-                    if (finalOptionsToShow.isNotEmpty()) {
-                        optionRepository = optionRepository.byUid().`in`(finalOptionsToShow)
-                    }
-
-                    if (finalOptionsToHide.isNotEmpty()) {
-                        optionRepository = optionRepository.byUid().notIn(finalOptionsToHide)
-                    }
 
                     if (textToSearch.isNotEmpty()) {
                         optionRepository = optionRepository.byDisplayName().like("%$textToSearch%")

@@ -1,6 +1,7 @@
 package org.dhis2.form.data
 
 import junit.framework.TestCase.assertTrue
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ORG_UNIT_UID
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -20,6 +21,7 @@ class EnrollmentRepositoryTest {
     private val conf: EnrollmentConfiguration = mock()
     private val enrollmentMode: EnrollmentMode = mock()
     private val enrolmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock()
+    private val metadataIconProvider: MetadataIconProvider = mock()
     lateinit var repository: DataEntryRepository
     val programSection: ProgramSection = mock()
 
@@ -56,6 +58,7 @@ class EnrollmentRepositoryTest {
             conf,
             enrollmentMode,
             enrolmentFormLabelsProvider,
+            metadataIconProvider,
         )
     }
 

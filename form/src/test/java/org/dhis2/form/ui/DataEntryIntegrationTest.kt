@@ -3,9 +3,13 @@ package org.dhis2.form.ui
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.databinding.ObservableField
 import androidx.lifecycle.Observer
+import androidx.paging.PagingData
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -30,6 +34,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Before
@@ -253,7 +258,8 @@ class DataEntryIntegrationTest {
             observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
         )
         assert(
-            observedItems.last().find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
+            observedItems.last()
+                .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
         )
         assert(
             observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
@@ -267,6 +273,7 @@ class DataEntryIntegrationTest {
     }
 
     private fun provideMalariaCaseRegistrationEventItems(): List<FieldUiModel> {
+        val optionSearchFlow = MutableStateFlow("")
         return listOf(
             SectionUiModelImpl(
                 uid = "EVENT_DETAILS_SECTION_UID",
@@ -334,24 +341,37 @@ class DataEntryIntegrationTest {
                 label = "Gender",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
-                optionSetConfiguration = OptionSetConfiguration.DefaultOptionSet(
-                    options = listOf(
-                        Option.builder()
-                            .uid("rBvjJYbMCVx")
-                            .code("Male")
-                            .displayName("Male")
-                            .name("Male")
-                            .sortOrder(1)
-                            .build(),
-                        Option.builder()
-                            .uid("Mnp3oXrpAbK")
-                            .code("Female")
-                            .displayName("Female")
-                            .name("Female")
-                            .sortOrder(2)
-                            .build(),
-                    ),
-                    optionMetadataIcon = emptyMap(),
+                optionSetConfiguration = OptionSetConfiguration(
+                    optionSearchFlow,
+                    { optionSearchFlow.value = it },
+                    optionSearchFlow.flatMapLatest {
+                        flow {
+                            PagingData.from(
+                                listOf(
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("rBvjJYbMCVx")
+                                            .code("Male")
+                                            .displayName("Male")
+                                            .name("Male")
+                                            .sortOrder(1)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("Mnp3oXrpAbK")
+                                            .code("Female")
+                                            .displayName("Female")
+                                            .name("Female")
+                                            .sortOrder(2)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
+                                ),
+                            )
+                        }
+                    },
                 ),
                 valueType = ValueType.MULTI_TEXT,
                 mandatory = true,
