@@ -159,6 +159,8 @@ class EventDetailsRepository(
         else -> OrganisationUnit.Scope.SCOPE_DATA_CAPTURE
     }
 
+    fun isScheduling(): Boolean = eventCreationType == EventCreationType.SCHEDULE
+
     fun getOrganisationUnit(orgUnitUid: String): OrganisationUnit? {
         return d2.organisationUnitModule().organisationUnits()
             .byUid()

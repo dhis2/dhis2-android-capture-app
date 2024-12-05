@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.ActivityResultObservable
@@ -38,12 +39,12 @@ import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.periods.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FieldsWithErrorResult
@@ -82,7 +83,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
-import java.util.Date
 
 class FormView : Fragment() {
 
@@ -431,7 +431,7 @@ class FormView : Fragment() {
                             )
                         },
                         showDivider = fieldsWithIssues.isNotEmpty(),
-                        content = { bottomSheetDialog ->
+                        content = { bottomSheetDialog, _ ->
                             DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
                         },
                     ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
@@ -562,22 +562,34 @@ class FormView : Fragment() {
     }
 
     private fun showPeriodDialog(uiEvent: RecyclerViewUiEvents.SelectPeriod) {
-        PeriodDialog()
-            .setTitle(uiEvent.title)
-            .setPeriod(uiEvent.periodType)
-            .setMinDate(uiEvent.minDate)
-            .setMaxDate(uiEvent.maxDate)
-            .setPossitiveListener { selectedDate: Date ->
-                val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
-                intentHandler(
-                    FormIntent.OnSave(
-                        uiEvent.uid,
-                        dateString,
-                        ValueType.DATE,
-                    ),
-                )
-            }
-            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = uiEvent.title,
+                iconResource = -1,
+            ),
+            onSecondaryButtonClicked = {
+            },
+            onMainButtonClicked = { bottomSheetDialog ->
+            },
+            showDivider = true,
+            content = { bottomSheetDialog, scrollState ->
+                val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
+                PeriodSelectorContent(
+                    periods = periods,
+                    scrollState = scrollState,
+                ) { selectedDate ->
+                    val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
+                    intentHandler(
+                        FormIntent.OnSave(
+                            uiEvent.uid,
+                            dateString,
+                            ValueType.DATE,
+                        ),
+                    )
+                    bottomSheetDialog.dismiss()
+                }
+            },
+        ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {

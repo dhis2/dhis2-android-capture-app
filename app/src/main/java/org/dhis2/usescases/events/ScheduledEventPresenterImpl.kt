@@ -1,9 +1,18 @@
 package org.dhis2.usescases.events
 
+import androidx.paging.PagingData
+import androidx.paging.map
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
+import org.dhis2.commons.bindings.event
+import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.periods.Period
+import org.dhis2.commons.periods.PeriodUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
@@ -12,6 +21,7 @@ import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import timber.log.Timber
@@ -27,6 +37,7 @@ class ScheduledEventPresenterImpl(
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
+    private val periodUseCase = PeriodUseCase(d2)
 
     override fun init() {
         disposable = CompositeDisposable()
@@ -106,9 +117,51 @@ class ScheduledEventPresenterImpl(
         } else {
             null
         }
-        val minDateString = if (minDate == null) null else SimpleDateFormat("ddMMyyyy", Locale.US).format(minDate)
-        val maxDateString = if (isDueDate) DEFAULT_MAX_DATE else SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis() - 1000))
+        val minDateString =
+            if (minDate == null) null else SimpleDateFormat("ddMMyyyy", Locale.US).format(minDate)
+        val maxDateString = if (isDueDate) {
+            DEFAULT_MAX_DATE
+        } else {
+            SimpleDateFormat(
+                "ddMMyyyy",
+                Locale.US,
+            ).format(Date(System.currentTimeMillis() - 1000))
+        }
         return SelectableDates(minDateString ?: DEFAULT_MIN_DATE, maxDateString)
+    }
+
+    override fun fetchPeriods(scheduling: Boolean): Flow<PagingData<Period>> {
+        return with(periodUseCase) {
+            val event = d2.event(eventUid) ?: return emptyFlow()
+            val stage = event.programStage()?.let { d2.programStage(it) } ?: return emptyFlow()
+            val unavailableDates = getEventUnavailableDates(
+                programStageUid = stage.uid(),
+                enrollmentUid = event.enrollment(),
+                currentEventUid = eventUid,
+            )
+            fetchPeriods(
+                periodType = stage.periodType() ?: PeriodType.Daily,
+                selectedDate = if (scheduling) {
+                    event.dueDate()
+                } else {
+                    event.eventDate()
+                },
+                initialDate = getEventPeriodMinDate(
+                    programStage = stage,
+                    isScheduling = scheduling,
+                    eventEnrollmentUid = event.enrollment(),
+                ),
+                maxDate = getEventPeriodMaxDate(
+                    programStage = stage,
+                    isScheduling = scheduling,
+                    eventEnrollmentUid = event.enrollment(),
+                ),
+            ).map { paging ->
+                paging.map { period ->
+                    period.copy(enabled = unavailableDates.contains(period.startDate).not())
+                }
+            }
+        }
     }
 
     override fun setDueDate(date: Date) {
