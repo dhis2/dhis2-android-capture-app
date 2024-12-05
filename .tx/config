@@ -1,6 +1,8 @@
 [main]
 host     = https://www.transifex.com
-lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419
+lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR,
+es_419: b+es+419, ar_EG: ar-rEG, sw_TZ: sw-rTZ, hi_IN: hi, en_US: en-rUS, ar_IQ: ar-rIQ,
+ko_KR: ko-rKR, zh_HK: zh-rHK, ar_SD: ar-rSD
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:stock-strings-xml]
 file_filter  = stock-usecase/src/main/res/values-<lang>/strings.xml
@@ -8,6 +10,7 @@ source_file  = stock-usecase/src/main/res/values/strings.xml
 source_lang  = en
 type         = ANDROID
 minimum_perc = 0
+resource_name = LMIS
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:analytics-strings-xml]
 file_filter  = dhis_android_analytics/src/main/res/values-<lang>/strings.xml

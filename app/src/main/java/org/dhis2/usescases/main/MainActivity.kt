@@ -27,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dispatch.core.dispatcherProvider
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -93,13 +94,7 @@ class MainActivity :
 
     private var isPinLayoutVisible = false
 
-    private val mainNavigator = MainNavigator(
-        supportFragmentManager,
-        { /*no-op*/ },
-    ) { titleRes, _, showBottomNavigation ->
-        setTitle(getString(titleRes))
-        setBottomNavigationVisibility(showBottomNavigation)
-    }
+    private lateinit var mainNavigator: MainNavigator
 
     private val navigationLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -138,6 +133,14 @@ class MainActivity :
             )
             mainComponent.inject(this@MainActivity)
         } ?: navigateTo<LoginActivity>(true)
+        mainNavigator = MainNavigator(
+            dispatcherProvider = presenter.dispatcherProvider,
+            supportFragmentManager,
+            { /*no-op*/ },
+        ) { titleRes, _, showBottomNavigation ->
+            setTitle(getString(titleRes))
+            setBottomNavigationVisibility(showBottomNavigation)
+        }
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 

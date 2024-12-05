@@ -6,6 +6,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.test.platform.app.InstrumentationRegistry
+import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
 fun orgUnitSelectorRobot(
@@ -19,11 +21,14 @@ fun orgUnitSelectorRobot(
 
 class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun selectTreeOrgUnit(orgUnitName: String) {
+        val doneText =
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.done)
         composeTestRule.onNodeWithTag("ORG_TREE_ITEM_$orgUnitName")
             .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Done").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Done").performClick()
+        composeTestRule.onNodeWithText(doneText)
+            .assertIsDisplayed()
+            .performClick()
     }
 }

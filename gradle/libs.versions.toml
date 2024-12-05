@@ -2,13 +2,13 @@
 sdk = "34"
 minSdk = "21"
 vCode = "138"
-vName = "3.1.0.1"
-gradle = "8.6.1"
+vName = "3.1.1"
+gradle = "8.7.2"
 kotlin = '2.0.20'
 hilt = '2.47'
 jacoco = '0.8.10'
-designSystem = "0.4.0.1"
-dhis2sdk = "1.11.0.1"
+designSystem = "0.4.1-SNAPSHOT"
+dhis2sdk = "1.11.1-SNAPSHOT"
 ruleEngine = "3.0.0"
 expressionParser = "1.1.0"
 appcompat = "1.6.1"
@@ -49,13 +49,6 @@ mapboxannotation = "0.8.0"
 matomo = "4.1.2"
 sentry = "7.14.0"
 timber = "5.0.1"
-flipper = "0.161.0"
-flippernoop = "0.161.0"
-soloader = "0.10.4"
-flippernetwork = "0.161.0"
-flipperleak = "0.161.0"
-leakcannary = "2.9.1"
-leakcannarynoop = "1.6.3"
 rxlint = "1.6"
 crashactivity = "2.3.0"
 zxing = "3.5.0"
@@ -168,13 +161,6 @@ barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-androi
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 analytics-matomo = { group = "com.github.matomo-org", name = "matomo-sdk-android", version.ref = "matomo" }
-analytics-flipper = { group = "com.facebook.flipper", name = "flipper", version.ref = "flipper" }
-analytics-flipper-network = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "flippernetwork" }
-analytics-flipper-leak = { group = "com.facebook.flipper", name = "flipper-leakcanary-plugin", version.ref = "flipperleak" }
-analytics-flipper-noop = { group = "com.facebook.flipper", name = "flipper-noop", version.ref = "flippernoop" }
-analytics-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "soloader" }
-analytics-leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcannary" }
-analytics-leakcanary-noop = { group = "com.squareup.leakcanary", name = "leakcanary-android-no-op", version.ref = "leakcannarynoop" }
 analytics-rxlint = { group = "nl.littlerobots.rxlint", name = "rxlint", version.ref = "rxlint" }
 analytics-customactivityoncrash = { group = "cat.ereza", name = "customactivityoncrash", version.ref = "crashactivity" }
 analytics-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
@@ -238,8 +224,6 @@ table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx"
 stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-workgcm", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash", "dagger-hilt-android"]
 stock-core = ["desugar"]
 stock-kapt = ["dagger-hilt-compiler"]
-stock-debugImplementation = ["analytics-flipper", "analytics-soloader"]
-stock-releaseImplementation = ["analytics-flipper-noop"]
 stock-test = ["test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
 tracker-implementation = ["androidx-lifecycle-viewmodel-compose", "androidx-activity-compose"]
 tracker-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-testCore", "test-archCoreTesting", "test-kotlinCoroutines"]
