@@ -1,5 +1,9 @@
 package org.dhis2.form.data
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import org.dhis2.commons.periods.Period
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl
@@ -76,6 +80,8 @@ abstract class DataEntryBaseRepository(
         }
         return optionsFromGroups
     }
+
+    override fun fetchPeriods(): Flow<PagingData<Period>> = emptyFlow()
 
     override fun dateFormatConfiguration(): String? {
         return conf.dateFormatConfiguration()
