@@ -1,6 +1,5 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -21,7 +20,6 @@ internal fun ProvideMatrixInput(
     modifier: Modifier,
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
-    context: Context,
     intentHandler: (FormIntent) -> Unit,
 ) {
     val inputCardDataList: MutableList<ImageCardData> = mutableListOf()
