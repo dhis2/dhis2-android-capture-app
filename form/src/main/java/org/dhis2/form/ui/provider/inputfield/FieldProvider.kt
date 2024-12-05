@@ -1,6 +1,5 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
@@ -23,7 +22,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -68,7 +66,6 @@ fun FieldProvider(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
 ) {
-    val context = LocalContext.current
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
     var visibleArea by remember { mutableStateOf(Rect.Zero) }
@@ -112,7 +109,6 @@ fun FieldProvider(
             inputStyle = inputStyle,
             fieldUiModel = fieldUiModel,
             intentHandler = intentHandler,
-            context = context,
             fetchOptions = {
                 intentHandler(
                     FormIntent.FetchOptions(
@@ -484,7 +480,6 @@ fun ProvideByOptionSet(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    context: Context,
     fetchOptions: () -> Unit,
 ) {
     when (fieldUiModel.renderingType) {
@@ -516,7 +511,6 @@ fun ProvideByOptionSet(
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                context = context,
             )
         }
 
@@ -526,7 +520,6 @@ fun ProvideByOptionSet(
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                context = context,
             )
         }
 
