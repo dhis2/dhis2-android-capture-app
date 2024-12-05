@@ -14,17 +14,20 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 import org.dhis2.bindings.app
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.dialogs.PeriodDialog
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
+import org.dhis2.commons.periods.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.model.EventMode
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import java.util.Date
 import javax.inject.Inject
 
 class SchedulingDialog : BottomSheetDialogFragment() {
@@ -168,6 +171,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                 override fun onNegativeClick() {
                     // Unused
                 }
+
                 override fun onPositiveClick(datePicker: DatePicker) {
                     viewModel.onDateSet(
                         datePicker.year,
@@ -181,14 +185,27 @@ class SchedulingDialog : BottomSheetDialogFragment() {
     }
 
     private fun showPeriodDialog() {
-        PeriodDialog()
-            .setPeriod(viewModel.eventDate.value.periodType)
-            .setMinDate(viewModel.eventDate.value.minDate)
-            .setMaxDate(viewModel.eventDate.value.maxDate)
-            .setPossitiveListener { selectedDate: Date ->
-                viewModel.setUpEventReportDate(selectedDate)
-            }
-            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = "PeriodType title", // TODO:6660
+                iconResource = -1,
+            ),
+            onSecondaryButtonClicked = {
+            },
+            onMainButtonClicked = { _ ->
+            },
+            showDivider = true,
+            content = { bottomSheetDialog, scrollState ->
+                val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
+                PeriodSelectorContent(
+                    periods = periods,
+                    scrollState = scrollState,
+                ) { selectedDate ->
+                    viewModel.setUpEventReportDate(selectedDate)
+                    bottomSheetDialog.dismiss()
+                }
+            },
+        ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     sealed interface LaunchMode : Parcelable {

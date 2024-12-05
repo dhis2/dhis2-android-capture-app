@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.periods.PeriodUseCase
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.DhisPeriodUtils
@@ -30,6 +31,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModelFactory
@@ -103,6 +105,18 @@ class EventDetailsModule(
 
     @Provides
     @PerFragment
+    fun provideConfigurePeriodSelector(
+        eventDetailsRepository: EventDetailsRepository,
+        periodUseCase: PeriodUseCase,
+    ): ConfigurePeriodSelector {
+        return ConfigurePeriodSelector(
+            eventDetailRepository = eventDetailsRepository,
+            periodUseCase = periodUseCase,
+        )
+    }
+
+    @Provides
+    @PerFragment
     fun eventDetailsViewModelFactory(
         eventDetailsRepository: EventDetailsRepository,
         resourcesProvider: EventDetailResourcesProvider,
@@ -112,6 +126,7 @@ class EventDetailsModule(
         locationProvider: LocationProvider,
         eventDetailResourcesProvider: EventDetailResourcesProvider,
         metadataIconProvider: MetadataIconProvider,
+        configurePeriodSelector: ConfigurePeriodSelector,
     ): EventDetailsViewModelFactory {
         return EventDetailsViewModelFactory(
             ConfigureEventDetails(
@@ -152,6 +167,7 @@ class EventDetailsModule(
                 resourcesProvider = resourcesProvider,
             ),
             eventDetailResourcesProvider = eventDetailResourcesProvider,
+            configurePeriodSelector = configurePeriodSelector,
         )
     }
 }
