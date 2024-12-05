@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.EventMode
@@ -14,6 +15,7 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
+import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -25,6 +27,7 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.util.Date
 
@@ -33,7 +36,8 @@ class EnrollmentRepository(
     private val conf: EnrollmentConfiguration,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
-) : DataEntryBaseRepository(conf, fieldFactory) {
+    metadataIconProvider: MetadataIconProvider,
+) : DataEntryBaseRepository(conf, fieldFactory, metadataIconProvider) {
 
     override val programUid by lazy {
         conf.program()?.uid()
@@ -43,17 +47,23 @@ class EnrollmentRepository(
         conf.sections()
     }
 
+    override val defaultStyleColor by lazy {
+        conf.program()?.style()?.color()?.toColor() ?: SurfaceColor.Primary
+    }
+
     private fun canBeEdited(): Boolean {
         val selectedProgram = conf.program()
         val programAccess = selectedProgram?.access()?.data()?.write() == true
         val teTypeAccess = conf.trackedEntityType()?.access()?.data()?.write() == true
         return programAccess && teTypeAccess
     }
+
     override fun getSpecificDataEntryItems(uid: String): List<FieldUiModel> {
         return when (uid) {
             ORG_UNIT_UID -> {
                 getEnrollmentData()
             }
+
             else -> {
                 emptyList()
             }
@@ -166,7 +176,17 @@ class EnrollmentRepository(
 
         var optionSetConfig: OptionSetConfiguration? = null
         if (!optionSet.isNullOrEmpty()) {
-            optionSetConfig = conf.optionSetConfig(optionSet)
+            val (searchEmitter, optionFlow) = options(
+                optionSetUid = optionSet,
+                optionsToHide = emptyList(),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = emptyList(),
+            )
+            optionSetConfig = OptionSetConfiguration(
+                searchEmitter = searchEmitter,
+                optionFlow = optionFlow,
+                onSearch = { searchEmitter.value = it },
+            )
         }
 
         var (error, warning) = getConflictErrorsAndWarnings(attribute.uid(), dataValue)
@@ -288,7 +308,12 @@ class EnrollmentRepository(
 
     private fun getEnrollmentData(): MutableList<FieldUiModel> {
         val enrollmentDataList = ArrayList<FieldUiModel>()
-        enrollmentDataList.add(getEnrollmentDataSection(conf.program()?.displayName(), conf.program()?.description()))
+        enrollmentDataList.add(
+            getEnrollmentDataSection(
+                conf.program()?.displayName(),
+                conf.program()?.description(),
+            ),
+        )
 
         enrollmentDataList.add(
             getEnrollmentDateField(
@@ -342,12 +367,14 @@ class EnrollmentRepository(
             (selectedOrgUnit?.closedDate() == null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
                 maxDate = Date(System.currentTimeMillis())
             }
+
             (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.FALSE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {
-                maxDate = if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
-                    selectedOrgUnit.closedDate()
-                } else {
-                    Date(System.currentTimeMillis())
-                }
+                maxDate =
+                    if (selectedOrgUnit.closedDate()!!.before(Date(System.currentTimeMillis()))) {
+                        selectedOrgUnit.closedDate()
+                    } else {
+                        Date(System.currentTimeMillis())
+                    }
             }
 
             (selectedOrgUnit?.closedDate() != null && java.lang.Boolean.TRUE == selectedProgram?.selectEnrollmentDatesInFuture()) -> {

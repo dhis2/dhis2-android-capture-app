@@ -50,7 +50,6 @@ class GeometryController(private val geometryParser: GeometryParser) {
 
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
                 when (uiEvent) {
-                    is RecyclerViewUiEvents.RequestCurrentLocation -> currentLocation(uiEvent.uid)
                     is RecyclerViewUiEvents.RequestLocationByMap -> mapRequest(
                         uiEvent.uid,
                         uiEvent.featureType.name,
