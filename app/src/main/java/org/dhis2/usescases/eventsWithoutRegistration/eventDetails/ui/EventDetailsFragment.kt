@@ -27,6 +27,7 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PROGRAM_STAGE_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -163,17 +164,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             }
         }
 
-        viewModel.showPeriods = {
-            showPeriodDialog()
-        }
+        viewModel.showPeriods = ::showPeriodDialog
 
-        viewModel.showOrgUnits = {
-            showOrgUnitDialog()
-        }
+        viewModel.showOrgUnits = ::showOrgUnitDialog
 
-        viewModel.showNoOrgUnits = {
-            showNoOrgUnitsDialog()
-        }
+        viewModel.showNoOrgUnits = ::showNoOrgUnitsDialog
 
         viewModel.requestLocationPermissions = {
             requestLocationPermissions.launch(
@@ -256,7 +251,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     uiModel = EventInputDateUiModel(
                         eventDate = date,
                         detailsEnabled = details.enabled,
-                        onDateClick = { showPeriodDialog() },
+                        onDateClick = {
+                            viewModel.getPeriodType()?.let {
+                                showPeriodDialog(it)
+                            }
+                        },
                         onDateSelected = {},
                         onClear = { viewModel.onClearEventReportDate() },
                         required = true,
@@ -316,10 +315,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
     }
 
-    private fun showPeriodDialog() {
+    private fun showPeriodDialog(periodType: PeriodType) {
         BottomSheetDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = "PeriodType title", // TODO:6660
+                title = getString(periodType.toUiStringResource()),
                 iconResource = -1,
             ),
             onSecondaryButtonClicked = {
