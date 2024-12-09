@@ -1,7 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
-import org.dhis2.composetable.model.TableModel
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
 
 class TableDimensionStore(
     val d2: D2,

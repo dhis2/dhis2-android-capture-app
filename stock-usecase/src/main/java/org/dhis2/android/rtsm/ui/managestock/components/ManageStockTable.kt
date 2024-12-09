@@ -25,14 +25,14 @@ import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
-import org.dhis2.composetable.TableScreenState
-import org.dhis2.composetable.actions.TableResizeActions
-import org.dhis2.composetable.ui.DataSetTableScreen
-import org.dhis2.composetable.ui.TableColors
-import org.dhis2.composetable.ui.TableConfiguration
-import org.dhis2.composetable.ui.TableDimensions
-import org.dhis2.composetable.ui.TableTheme
-import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.TableScreenState
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.TableResizeActions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.DataSetTableScreen
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableColors
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableConfiguration
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableDimensions
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.TableTheme
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
 import kotlin.math.roundToInt
 
 @Composable

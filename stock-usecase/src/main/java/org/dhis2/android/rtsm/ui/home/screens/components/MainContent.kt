@@ -58,8 +58,8 @@ import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.ui.managestock.STOCK_TABLE_ID
 import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
-import org.dhis2.composetable.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.actions.TableResizeActions
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

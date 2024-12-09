@@ -57,6 +57,9 @@ dependencies {
 
     implementation(libs.bundles.uicomponents.implementation)
     api(libs.bundles.uicomponents.api)
+    implementation(libs.dhis2.mobile.designsystem){
+        exclude(group = "tech.annexflow.compose", module = "constraintlayout-compose-multiplatform-android")
+    }
     debugApi(libs.bundles.uicomponents.debugapi)
     androidTestImplementation(libs.bundles.uicomponents.androidtest)
 }

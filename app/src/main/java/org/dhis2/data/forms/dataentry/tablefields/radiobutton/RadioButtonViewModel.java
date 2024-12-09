@@ -5,9 +5,9 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.composetable.model.DropdownOption;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.DropdownOption;
 
 import java.util.List;
 import java.util.Locale;
