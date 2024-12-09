@@ -12,6 +12,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.periods.PeriodSelectorContent
 import org.dhis2.databinding.ActivityEventScheduledBinding
@@ -198,7 +199,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
     private fun showPeriodDialog(periodType: PeriodType?, scheduling: Boolean) {
         BottomSheetDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = "PeriodType title", // TODO:6660
+                title = getString((periodType ?: PeriodType.Daily).toUiStringResource()),
                 iconResource = -1,
             ),
             onSecondaryButtonClicked = {

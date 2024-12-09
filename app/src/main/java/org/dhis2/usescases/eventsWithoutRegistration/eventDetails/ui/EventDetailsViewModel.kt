@@ -56,7 +56,7 @@ class EventDetailsViewModel(
     private val configurePeriodSelector: ConfigurePeriodSelector,
 ) : ViewModel() {
 
-    var showPeriods: (() -> Unit)? = null
+    var showPeriods: ((periodType: PeriodType) -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
     var requestLocationPermissions: (() -> Unit)? = null
@@ -243,7 +243,7 @@ class EventDetailsViewModel(
 
     fun showPeriodDialog() {
         periodType?.let {
-            showPeriods?.invoke()
+            showPeriods?.invoke(it)
         }
     }
 
