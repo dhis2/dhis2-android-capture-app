@@ -311,9 +311,19 @@ class ChartsRepositoryImpl(
                 if (filters.isNotEmpty()) {
                     filters.forEach { (columnIndex, value) ->
                         lineListHeaderCache[trackerVisualizationUid]?.get(columnIndex)?.let {
-                            filteredRepository = filteredRepository.withColumn(
-                                column = it.withFilters(value),
-                            )
+                            if (it is TrackerLineListItem.Category) {
+                                val filterCategories = d2.categoryModule().categoryOptions()
+                                    .byDisplayName().like(value)
+                                    .blockingGetUids()
+
+                                filteredRepository = filteredRepository.withColumn(
+                                    column = it.withFilters(value, filterCategories),
+                                )
+                            } else {
+                                filteredRepository = filteredRepository.withColumn(
+                                    column = it.withFilters(value),
+                                )
+                            }
                         }
                     }
                 }
