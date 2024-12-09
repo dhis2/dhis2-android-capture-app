@@ -19,6 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 import org.dhis2.bindings.app
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -28,6 +29,7 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.hisp.dhis.android.core.period.PeriodType
 import javax.inject.Inject
 
 class SchedulingDialog : BottomSheetDialogFragment() {
@@ -142,8 +144,8 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             showCalendarDialog()
         }
 
-        viewModel.showPeriods = {
-            showPeriodDialog()
+        viewModel.showPeriods = { periodType ->
+            showPeriodDialog(periodType)
         }
 
         return ComposeView(requireContext()).apply {
@@ -184,10 +186,10 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         dialog.show()
     }
 
-    private fun showPeriodDialog() {
+    private fun showPeriodDialog(periodType: PeriodType) {
         BottomSheetDialog(
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = "PeriodType title", // TODO:6660
+                title = getString(periodType.toUiStringResource()),
                 iconResource = -1,
             ),
             onSecondaryButtonClicked = {

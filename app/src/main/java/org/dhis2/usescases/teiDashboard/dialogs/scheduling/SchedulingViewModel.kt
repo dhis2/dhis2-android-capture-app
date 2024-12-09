@@ -60,7 +60,7 @@ class SchedulingViewModel(
     lateinit var configureEventCatCombo: ConfigureEventCatCombo
 
     var showCalendar: (() -> Unit)? = null
-    var showPeriods: (() -> Unit)? = null
+    var showPeriods: ((periodType: PeriodType) -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
     var onEventSkipped: ((String?) -> Unit)? = null
     var onDueDateUpdated: (() -> Unit)? = null
@@ -263,7 +263,7 @@ class SchedulingViewModel(
 
     fun showPeriodDialog() {
         programStage.value?.periodType()?.let {
-            showPeriods?.invoke()
+            showPeriods?.invoke(it)
         }
     }
 
