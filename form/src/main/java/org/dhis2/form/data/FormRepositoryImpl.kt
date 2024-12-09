@@ -7,6 +7,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -47,6 +48,7 @@ class FormRepositoryImpl(
     private var runDataIntegrity: Boolean = false
     private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
+    private val fieldsWithOptionEffects = mutableListOf<FieldUiModel>()
 
     private val disableCollapsableSections: Boolean? =
         dataEntryRepository.disableCollapsableSections()
@@ -234,48 +236,87 @@ class FormRepositoryImpl(
             (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
                 getSuccessfulResult(eventStatus)
             }
+
             (itemsWithErrors.isNotEmpty()) -> {
-                getFieldWithErrorResult(eventStatus, itemsWithErrors, itemsWithWarning, validationStrategy, backPressed)
+                getFieldWithErrorResult(
+                    eventStatus,
+                    itemsWithErrors,
+                    itemsWithWarning,
+                    validationStrategy,
+                    backPressed,
+                )
             }
+
             (mandatoryItemsWithoutValue.isNotEmpty()) -> {
-                getMissingMandatoryResult(eventStatus, itemsWithErrors, itemsWithWarning, validationStrategy, backPressed)
+                getMissingMandatoryResult(
+                    eventStatus,
+                    itemsWithErrors,
+                    itemsWithWarning,
+                    validationStrategy,
+                    backPressed,
+                )
             }
+
             else -> {
                 getFieldWithWarningResult(eventStatus, itemsWithWarning, validationStrategy)
             }
         }
     }
 
-    private fun getFieldWithWarningResult(eventStatus: EventStatus?, itemsWithWarning: List<FieldWithIssue>, validationStrategy: ValidationStrategy?): FieldsWithWarningResult {
+    private fun getFieldWithWarningResult(
+        eventStatus: EventStatus?,
+        itemsWithWarning: List<FieldWithIssue>,
+        validationStrategy: ValidationStrategy?,
+    ): FieldsWithWarningResult {
         return when (eventStatus) {
             EventStatus.ACTIVE -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
                 )
             }
+
             EventStatus.COMPLETED -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        null,
+                    ),
                 )
             }
+
             else -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
                 )
             }
         }
     }
 
-    private fun getMissingMandatoryResult(eventStatus: EventStatus?, itemsWithErrors: List<FieldWithIssue>, itemsWithWarning: List<FieldWithIssue>, validationStrategy: ValidationStrategy?, backPressed: Boolean): DataIntegrityCheckResult {
+    private fun getMissingMandatoryResult(
+        eventStatus: EventStatus?,
+        itemsWithErrors: List<FieldWithIssue>,
+        itemsWithWarning: List<FieldWithIssue>,
+        validationStrategy: ValidationStrategy?,
+        backPressed: Boolean,
+    ): DataIntegrityCheckResult {
         return when (eventStatus) {
             EventStatus.ACTIVE -> {
                 MissingMandatoryResult(
@@ -285,10 +326,15 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
 
                 )
             }
+
             EventStatus.COMPLETED -> {
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -297,9 +343,14 @@ class FormRepositoryImpl(
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), null),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        null,
+                    ),
                 )
             }
+
             else -> {
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -308,7 +359,11 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
                 )
             }
         }
@@ -330,9 +385,14 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
                 )
             }
+
             EventStatus.COMPLETED -> {
                 FieldsWithErrorResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -341,9 +401,14 @@ class FormRepositoryImpl(
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), dataEntryRepository.validationStrategy()),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        dataEntryRepository.validationStrategy(),
+                    ),
                 )
             }
+
             else -> {
                 FieldsWithErrorResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -352,7 +417,11 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy,
+                    ),
                 )
             }
         }
@@ -364,25 +433,40 @@ class FormRepositoryImpl(
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), dataEntryRepository.validationStrategy()),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        dataEntryRepository.validationStrategy(),
+                    ),
                 )
             }
+
             EventStatus.COMPLETED -> {
                 SuccessfulResult(
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), dataEntryRepository.validationStrategy()),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        dataEntryRepository.validationStrategy(),
+                    ),
                 )
             }
+
             else -> {
                 SuccessfulResult(
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(formValueStore.eventState(), dataEntryRepository.eventMode(), validationStrategy = dataEntryRepository.validationStrategy()),
+                    eventResultDetails = EventResultDetails(
+                        formValueStore.eventState(),
+                        dataEntryRepository.eventMode(),
+                        validationStrategy = dataEntryRepository.validationStrategy(),
+                    ),
                 )
             }
         }
     }
+
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float {
         return completionPercentage
     }
@@ -438,6 +522,26 @@ class FormRepositoryImpl(
                     updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
                 }
             }
+
+        fieldsWithOptionEffects.forEach { field ->
+            field.optionSet?.let { optionSetUid ->
+                fetchOptions(field.uid, optionSetUid)
+            }
+        }
+
+        fieldsWithOptionEffects.clear()
+
+        ruleEffectsResult?.fieldsWithOptionEffects()?.forEach { fieldWithOptionEffect ->
+            val item = itemList.find { it.uid == fieldWithOptionEffect }
+
+            item?.let { field ->
+                field.optionSet?.let { optionSetUid ->
+                    fetchOptions(field.uid, optionSetUid)
+                }
+                fieldsWithOptionEffects.add(field)
+            }
+        }
+
         return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true &&
             calculationLoop < loopThreshold
         ) {
@@ -707,6 +811,35 @@ class FormRepositoryImpl(
             ActionType.ON_NEXT -> getNextItem(action.id)
             ActionType.ON_FINISH -> null
             else -> action.id
+        }
+    }
+
+    override fun fetchOptions(uid: String, optionSetUid: String) {
+        val (searchEmitter, flow) = dataEntryRepository.options(
+            optionSetUid = optionSetUid,
+            optionsToHide = ruleEffectsResult?.optionsToHide(uid) ?: emptyList(),
+            optionGroupsToHide = ruleEffectsResult?.optionGroupsToHide(uid) ?: emptyList(),
+            optionGroupsToShow = ruleEffectsResult?.optionGroupsToShow(uid) ?: emptyList(),
+        )
+
+        val newConf = OptionSetConfiguration(
+            searchEmitter = searchEmitter,
+            onSearch = { query ->
+                searchEmitter.value = query
+            },
+            optionFlow = flow,
+        )
+
+        itemList.let { list ->
+            list.find { item ->
+                item.uid == uid
+            }?.let { item ->
+                item.optionSetConfiguration = newConf
+                itemList = list.updated(
+                    list.indexOf(item),
+                    item,
+                )
+            }
         }
     }
 

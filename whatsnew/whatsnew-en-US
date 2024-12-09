@@ -1,8 +1,6 @@
-Capture Coordinates: Improved accuracy, search, and manual capture.
-Transfer Flows: Easier access and step-by-step guidance.
-Relationship Section: Redesigned module.
-Unique Attribute Sorting: QR/barcodes sorted for quick searches.
-Biometric Login: For single accounts.
-Line Listings: Category Option filters, text improvements.
-UX Updates: Dynamic home screen, revamped menus, and scheduling dialog.
-Custom Tracker Terminology: Tailor terms like “event” per program.
+This is a patch version that fixes:
+- ANDROAPP-6653 Large option sets freeze the app
+- ANDROAPP-6665 Filters persists when exiting the program or data set
+- ANDROAPP-6691 NullPointerException: Dataset table
+
+You can find all the details on Jira and Github.

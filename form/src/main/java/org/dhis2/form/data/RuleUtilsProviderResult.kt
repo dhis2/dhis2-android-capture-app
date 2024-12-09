@@ -49,6 +49,9 @@ data class RuleUtilsProviderResult(
     fun optionGroupsToShow(fieldUid: String): List<String> {
         return optionGroupsToShow[fieldUid] ?: mutableListOf()
     }
+
+    fun fieldsWithOptionEffects(): List<String> =
+        (optionsToHide.keys + optionGroupsToHide.keys + optionGroupsToShow.keys).toList()
 }
 
 data class FieldWithNewValue(val fieldUid: String, val newValue: String?)

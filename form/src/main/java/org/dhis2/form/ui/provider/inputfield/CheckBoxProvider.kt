@@ -2,6 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
@@ -22,14 +23,24 @@ internal fun ProvideCheckBoxInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val data = fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.map { option ->
-        CheckBoxData(
-            uid = option.uid(),
-            checked = fieldUiModel.displayName == option.displayName(),
-            enabled = true,
-            textInput = option.displayName() ?: "",
-        )
-    } ?: emptyList()
+    val dataMap = buildMap {
+        fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+            repeat(paging.itemCount) { index ->
+                val optionData = paging[index]
+                put(
+                    optionData?.option?.code() ?: "",
+                    CheckBoxData(
+                        uid = optionData?.option?.uid() ?: "",
+                        checked = fieldUiModel.displayName == optionData?.option?.displayName(),
+                        enabled = true,
+                        textInput = optionData?.option?.displayName() ?: "",
+                    ),
+                )
+            }
+        }
+    }
+
+    val (codeList, data) = dataMap.toList().unzip()
 
     InputCheckBox(
         modifier = modifier,
@@ -42,11 +53,11 @@ internal fun ProvideCheckBoxInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemChange = { item ->
+            val selectedIndex = data.indexOf(item)
             intentHandler(
                 FormIntent.OnSave(
                     fieldUiModel.uid,
-                    fieldUiModel.optionSetConfiguration?.optionsToDisplay()
-                        ?.find { it.uid() == item.uid }?.code(),
+                    codeList[selectedIndex],
                     fieldUiModel.valueType,
                 ),
             )

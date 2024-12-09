@@ -85,6 +85,8 @@ fun ProvideEmptyPeriodSelector(
         mutableStateOf("")
     }
 
+    val options = listOf(DropdownItem(stringResource(id = R.string.no_periods)))
+
     InputDropDown(
         modifier = modifier,
         title = name,
@@ -94,10 +96,19 @@ fun ProvideEmptyPeriodSelector(
         onResetButtonClicked = {
             selectedItem = ""
         },
-        onItemSelected = { newSelectedDropdownItem ->
+        onItemSelected = { _, newSelectedDropdownItem ->
             selectedItem = newSelectedDropdownItem.label
         },
-        dropdownItems = listOf(DropdownItem(stringResource(id = R.string.no_periods))),
+        itemCount = 1,
+        fetchItem = {
+            options[it]
+        },
+        loadOptions = {
+            /*no-op*/
+        },
+        onSearchOption = {
+            /*no-op*/
+        },
         isRequiredField = false,
     )
 }

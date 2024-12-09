@@ -52,10 +52,16 @@ fun ProvideInputDate(
 ) {
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
-        val textSelection = TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
+        val textSelection =
+            TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
         var value by remember(uiModel.eventDate.dateValue) {
             if (uiModel.eventDate.dateValue != null) {
-                mutableStateOf(TextFieldValue(formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "", textSelection))
+                mutableStateOf(
+                    TextFieldValue(
+                        formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "",
+                        textSelection,
+                    ),
+                )
             } else {
                 mutableStateOf(TextFieldValue())
             }
@@ -65,7 +71,10 @@ fun ProvideInputDate(
             mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
         val yearRange = if (uiModel.selectableDates != null) {
-            IntRange(uiModel.selectableDates.initialDate.substring(4, 8).toInt(), uiModel.selectableDates.endDate.substring(4, 8).toInt())
+            IntRange(
+                uiModel.selectableDates.initialDate.substring(4, 8).toInt(),
+                uiModel.selectableDates.endDate.substring(4, 8).toInt(),
+            )
         } else {
             IntRange(1924, 2124)
         }
@@ -77,7 +86,10 @@ fun ProvideInputDate(
                 visualTransformation = DateTransformation(),
                 isRequired = uiModel.required,
                 is24hourFormat = uiModel.is24HourFormat,
-                selectableDates = uiModel.selectableDates ?: SelectableDates("01011924", "12312124"),
+                selectableDates = uiModel.selectableDates ?: SelectableDates(
+                    "01011924",
+                    "12312124",
+                ),
                 yearRange = yearRange,
             ),
             inputTextFieldValue = value,
@@ -236,15 +248,23 @@ fun ProvideCategorySelector(
                 selectedItem = null
                 eventCatComboUiModel.onClearCatCombo(eventCatComboUiModel.category)
             },
-            onItemSelected = { newSelectedDropdownItem ->
+            onItemSelected = { _, newSelectedDropdownItem ->
                 selectedItem = newSelectedDropdownItem.label
                 eventCatComboUiModel.onOptionSelected(selectableOptions.firstOrNull { it.displayName() == newSelectedDropdownItem.label })
             },
-            dropdownItems = dropdownItems,
+            fetchItem = { index -> dropdownItems[index] },
+            itemCount = dropdownItems.size,
+            onSearchOption = { /*no-op*/ },
+            loadOptions = { /*no-op*/ },
+            useDropDown = dropdownItems.size < 15,
             isRequiredField = eventCatComboUiModel.required,
         )
     } else {
-        ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
+        ProvideEmptyCategorySelector(
+            modifier = modifier,
+            name = eventCatComboUiModel.category.name,
+            option = eventCatComboUiModel.noOptionsText,
+        )
     }
 }
 
@@ -306,10 +326,13 @@ fun ProvideEmptyCategorySelector(
         onResetButtonClicked = {
             selectedItem = ""
         },
-        onItemSelected = { newSelectedDropdownItem ->
+        onItemSelected = { _, newSelectedDropdownItem ->
             selectedItem = newSelectedDropdownItem.label
         },
-        dropdownItems = listOf(DropdownItem(option)),
+        fetchItem = { DropdownItem(option) },
+        itemCount = 1,
+        onSearchOption = { /*no-op*/ },
+        loadOptions = { /*no-op*/ },
         isRequiredField = false,
     )
 }

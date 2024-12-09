@@ -141,10 +141,10 @@ object Injector {
             conf = EnrollmentConfiguration(
                 provideD2(),
                 enrollmentRecords.enrollmentUid,
-                metadataIconProvider,
             ),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
+            metadataIconProvider = metadataIconProvider,
         )
     }
 
