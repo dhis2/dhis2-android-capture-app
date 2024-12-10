@@ -1,7 +1,7 @@
 package org.dhis2.android.rtsm.services
 
-import org.dhis2.composetable.model.TableModel
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableModel
 import javax.inject.Inject
 
 class StockTableDimensionStore @Inject constructor(

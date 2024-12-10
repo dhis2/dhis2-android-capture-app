@@ -9,8 +9,6 @@ import org.dhis2.bindings.decimalFormat
 import org.dhis2.commons.bindings.dataValueConflicts
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.composetable.model.DropdownOption
-import org.dhis2.composetable.model.TableCell
 import org.dhis2.data.dhislogic.AUTH_DATAVALUE_ADD
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl
@@ -34,6 +32,8 @@ import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.DropdownOption
+import org.hisp.dhis.mobile.ui.designsystem.component.composetable.model.TableCell
 import java.util.SortedMap
 
 class DataValueRepository(
