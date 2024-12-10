@@ -8,9 +8,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
@@ -32,16 +34,17 @@ fun <T> MoreOptionsWithDropDownMenuButton(
     ) {
         onMenuToggle(!expanded)
     }
-
     DropDownMenu(
         modifier = Modifier.widthIn(max = 0.7.dw),
         items = dropDownMenuItems,
         expanded = expanded,
+        offset = DpOffset(x = -Spacing.Spacing16, y = Spacing.Spacing0),
         onDismissRequest = { onMenuToggle(false) },
-    ) { itemId ->
-        onMenuToggle(false)
-        onItemClick(itemId)
-    }
+        onItemClick = { itemId ->
+            onMenuToggle(false)
+            onItemClick(itemId)
+        },
+    )
 }
 
 inline val Double.dw: Dp
