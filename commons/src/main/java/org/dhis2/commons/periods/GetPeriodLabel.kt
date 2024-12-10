@@ -89,12 +89,6 @@ class GetPeriodLabel(
 
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
-            ->
-                formattedDate = FROM_TO_LABEL.format(
-                    SimpleDateFormat(MONTH_YEAR_FULL_FORMAT, locale).format(periodStartDate),
-                    SimpleDateFormat(MONTH_YEAR_FULL_FORMAT, locale).format(periodEndDate),
-                )
-
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
