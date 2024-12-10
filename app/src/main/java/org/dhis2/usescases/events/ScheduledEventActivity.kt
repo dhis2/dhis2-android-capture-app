@@ -204,7 +204,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
             ),
             onSecondaryButtonClicked = {
             },
-            onMainButtonClicked = { bottomSheetDialog ->
+            onMainButtonClicked = { _ ->
             },
             showDivider = true,
             content = { bottomSheetDialog, scrollState ->

@@ -569,7 +569,7 @@ class FormView : Fragment() {
             ),
             onSecondaryButtonClicked = {
             },
-            onMainButtonClicked = { bottomSheetDialog ->
+            onMainButtonClicked = { _ ->
             },
             showDivider = true,
             content = { bottomSheetDialog, scrollState ->
