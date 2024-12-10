@@ -171,7 +171,7 @@ class GetRelationshipsByTypeTest {
                     lastUpdated = "5 days ago"
                 )
             ),
-            teiTypeUid = "teiType1"
+            creationTEITypeUid = "teiType1"
         ),
         RelationshipSection(
             title = "Relationship 2",
@@ -193,7 +193,7 @@ class GetRelationshipsByTypeTest {
                     lastUpdated = "5 days ago"
                 )
             ),
-            teiTypeUid = "teiType2"
+            creationTEITypeUid = "teiType2"
         )
     )
 }

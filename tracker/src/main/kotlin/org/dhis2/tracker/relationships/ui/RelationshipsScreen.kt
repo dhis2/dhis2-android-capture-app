@@ -330,7 +330,7 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     )
                 ),
-                teiTypeUid = null,
+                creationTEITypeUid = null,
             ),
             RelationshipSection(
                 title = "Empty relation ship",
@@ -339,7 +339,7 @@ fun RelationShipScreenPreview() {
                     .displayName("Empty relation ship")
                     .build(),
                 relationships = emptyList(),
-                teiTypeUid = "teiTypeUid",
+                creationTEITypeUid = "teiTypeUid",
             )
         )
     )

@@ -33,7 +33,7 @@ class TrackerRelationshipsRepository(
             .withConstraints()
             .byAvailableForTrackedEntityInstance(teiUid)
             .blockingGet().map { relationshipType ->
-                val secondaryTeTypeUid = when {
+                val creationTEITypeUid = when {
                     relationshipType.fromConstraint()?.trackedEntityType()
                         ?.uid() == teTypeUid ->
                         relationshipType.toConstraint()?.trackedEntityType()?.uid()
@@ -44,7 +44,7 @@ class TrackerRelationshipsRepository(
 
                     else -> null
                 }
-                Pair(relationshipType, secondaryTeTypeUid)
+                Pair(relationshipType, creationTEITypeUid)
             }
         )
     }
@@ -228,15 +228,25 @@ class TrackerRelationshipsRepository(
     }
 
     override fun getRelationshipTitle(relationshipType: RelationshipType): String {
-        val teTypeUid = d2.trackedEntityModule().trackedEntityInstances()
+        val teiTypeUid = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid)
             .blockingGet()?.trackedEntityType()
-        return when (teTypeUid) {
-            relationshipType.fromConstraint()?.trackedEntityType()?.uid() -> {
+        val teiProgramUid = d2.enrollmentModule().enrollments()
+            .uid(enrollmentUid).blockingGet()?.program()
+        return when {
+            teiProgramUid == relationshipType.fromConstraint()?.program()?.uid() -> {
                 relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
             }
 
-            relationshipType.toConstraint()?.trackedEntityType()?.uid() -> {
+            teiProgramUid == relationshipType.toConstraint()?.program()?.uid() -> {
+                relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
+            }
+
+            teiTypeUid == relationshipType.fromConstraint()?.trackedEntityType()?.uid() -> {
+                relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
+            }
+
+            teiTypeUid == relationshipType.toConstraint()?.trackedEntityType()?.uid() -> {
                 relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
             }
 
