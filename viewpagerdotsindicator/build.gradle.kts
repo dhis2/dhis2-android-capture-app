@@ -9,11 +9,13 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
+
+        consumerProguardFiles("consumer-rules.pro")
     }
     namespace = "com.tbuonomo.viewpagerdotsindicator"
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
