@@ -323,7 +323,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             ),
             onSecondaryButtonClicked = {
             },
-            onMainButtonClicked = { bottomSheetDialog ->
+            onMainButtonClicked = { _ ->
             },
             showDivider = true,
             content = { bottomSheetDialog, scrollState ->
