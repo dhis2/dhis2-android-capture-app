@@ -141,7 +141,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             uiState = uiState,
                             relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
-                                it.teiTypeUid?.let { teiTypeUid ->
+                                it.creationTEITypeUid?.let { teiTypeUid ->
                                     goToRelationShip(
                                         relationshipTypeModel = it.relationshipType,
                                         teiTypeUid = teiTypeUid,

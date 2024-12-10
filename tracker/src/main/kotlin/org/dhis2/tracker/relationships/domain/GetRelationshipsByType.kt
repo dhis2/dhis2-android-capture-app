@@ -1,7 +1,6 @@
 package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
@@ -25,7 +24,7 @@ class GetRelationshipsByType(
             ) { types, relationships ->
                 types.map { type ->
                     val relationshipType = type.first
-                    val teiTypeUid = type.second
+                    val creationTEITypeUid = type.second // TEI type uid of new relationship
 
                     // Filter relationships once based on relationshipType
                     val filteredRelationships = relationships.filter {
@@ -33,10 +32,12 @@ class GetRelationshipsByType(
                     }
 
                     RelationshipSection(
-                        title = relationshipsRepository.getRelationshipTitle(relationshipType),
+                        title = relationshipsRepository.getRelationshipTitle(
+                            relationshipType = relationshipType,
+                        ),
                         relationshipType = relationshipType,
                         relationships = filteredRelationships.map { mapToRelationshipItem(it) },
-                        teiTypeUid = teiTypeUid
+                        creationTEITypeUid = creationTEITypeUid
                     )
                 }
             }
