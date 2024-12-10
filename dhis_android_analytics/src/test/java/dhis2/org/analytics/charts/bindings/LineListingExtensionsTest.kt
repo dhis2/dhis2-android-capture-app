@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.bindings
 
+import org.hisp.dhis.android.core.analytics.trackerlinelist.DataFilter
 import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.junit.Test
 
@@ -14,8 +15,9 @@ class LineListingExtensionsTest {
 
         assert(item.filters.isEmpty())
 
-        val result = item.withFilters("categoryDisplayName")
+        val result = item.withFilters("categoryDisplayName", listOf("categoryUid"))
 
         assert((result as TrackerLineListItem.Category).filters.size == 1)
+        assert((result.filters.first() as DataFilter.In).values.isNotEmpty())
     }
 }
