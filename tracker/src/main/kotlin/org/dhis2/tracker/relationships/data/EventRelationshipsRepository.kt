@@ -154,21 +154,24 @@ class EventRelationshipsRepository(
         )
     }
 
-    override fun getRelationshipTitle(relationshipType: RelationshipType): String {
+    override fun getRelationshipDirectionInfo(relationshipType: RelationshipType): Pair<String, RelationshipDirection> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val programStageUid = event?.programStage() ?: ""
         return when (programStageUid) {
-            relationshipType.fromConstraint()?.programStage()?.uid() -> {
-                relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
-            }
+            relationshipType.fromConstraint()?.programStage()?.uid() -> Pair(
+                relationshipType.fromToName() ?: relationshipType.displayName() ?: "",
+                RelationshipDirection.TO,
+            )
 
-            relationshipType.toConstraint()?.program()?.uid() -> {
-                relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
-            }
+            relationshipType.toConstraint()?.program()?.uid() -> Pair(
+                relationshipType.toFromName() ?: relationshipType.displayName() ?: "",
+                RelationshipDirection.FROM,
+            )
 
-            else -> {
-                relationshipType.displayName() ?: ""
-            }
+            else -> Pair(
+                relationshipType.displayName() ?: "",
+                RelationshipDirection.FROM,
+            )
         }
     }
 

@@ -19,8 +19,10 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
@@ -154,22 +156,38 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun addRelationship(selectedTei: String, relationshipTypeUid: String) {
+    fun addRelationship(selectedTei: String, relationshipSection: RelationshipSection) {
         if (teiUid != null) {
-            addTeiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
+            addTeiToTeiRelationship(teiUid, selectedTei, relationshipSection)
         } else if (eventUid != null) {
-            addEventToTeiRelationship(eventUid, selectedTei, relationshipTypeUid)
+            addEventToTeiRelationship(
+                eventUid,
+                selectedTei,
+                relationshipSection.relationshipType.uid(),
+            )
         }
     }
 
     private fun addTeiToTeiRelationship(
         teiUid: String,
         selectedTei: String,
-        relationshipTypeUid: String,
+        relationshipSection: RelationshipSection,
     ) {
         try {
-            val relationship =
-                RelationshipHelper.teiToTeiRelationship(teiUid, selectedTei, relationshipTypeUid)
+            val relationshipTypeUid = relationshipSection.relationshipType.uid()
+            val relationship = when (relationshipSection.direction) {
+                RelationshipDirection.FROM -> RelationshipHelper.teiToTeiRelationship(
+                    selectedTei,
+                    teiUid,
+                    relationshipTypeUid,
+                )
+
+                RelationshipDirection.TO -> RelationshipHelper.teiToTeiRelationship(
+                    teiUid,
+                    selectedTei,
+                    relationshipTypeUid,
+                )
+            }
             d2.relationshipModule().relationships().blockingAdd(relationship)
         } catch (e: D2Error) {
             view.displayMessage(e.errorDescription())

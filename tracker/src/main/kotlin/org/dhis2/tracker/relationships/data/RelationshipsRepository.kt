@@ -5,6 +5,7 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.hisp.dhis.android.core.D2
@@ -28,7 +29,7 @@ abstract class RelationshipsRepository(
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipModel>>
-    abstract fun getRelationshipTitle(relationshipType: RelationshipType): String
+    abstract fun getRelationshipDirectionInfo(relationshipType: RelationshipType): Pair<String, RelationshipDirection>
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {

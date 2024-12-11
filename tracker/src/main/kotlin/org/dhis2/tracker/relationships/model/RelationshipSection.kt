@@ -7,6 +7,7 @@ data class RelationshipSection(
     val relationships: List<RelationshipItem>,
     val creationTEITypeUid: String?,
     val relationshipType: RelationshipType,
+    val direction: RelationshipDirection,
 ) {
     fun canAddRelationship(): Boolean = creationTEITypeUid != null
 }

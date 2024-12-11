@@ -67,8 +67,12 @@ class GetRelationshipsByTypeTest {
         //Given a list of relationship types and relationships
         whenever(relationshipsRepository.getRelationshipTypes()) doReturn getRelationshipTypesMock()
         whenever(relationshipsRepository.getRelationships()) doReturn getRelationshipsMock()
-        whenever(relationshipsRepository.getRelationshipTitle(relationshipType1)) doReturn "Relationship 1"
-        whenever(relationshipsRepository.getRelationshipTitle(relationshipType2)) doReturn "Relationship 2"
+        whenever(
+            relationshipsRepository.getRelationshipDirectionInfo(relationshipType1)
+        ) doReturn Pair("Relationship 1", RelationshipDirection.TO)
+        whenever(
+            relationshipsRepository.getRelationshipDirectionInfo(relationshipType2)
+        ) doReturn Pair("Relationship 2", RelationshipDirection.TO)
         whenever(dateLabelProvider.span(any())) doReturn "5 days ago"
 
         // When calling the use case to get the relationships grouped by type
@@ -153,7 +157,6 @@ class GetRelationshipsByTypeTest {
     private val relationshipSections = listOf(
         RelationshipSection(
             title = "Relationship 1",
-            relationshipType = relationshipType1,
             relationships = listOf(
                 RelationshipItem(
                     uid = "uid1",
@@ -171,11 +174,12 @@ class GetRelationshipsByTypeTest {
                     lastUpdated = "5 days ago"
                 )
             ),
-            creationTEITypeUid = "teiType1"
+            creationTEITypeUid = "teiType1",
+            relationshipType = relationshipType1,
+            direction = RelationshipDirection.TO
         ),
         RelationshipSection(
             title = "Relationship 2",
-            relationshipType = relationshipType2,
             relationships = listOf(
                 RelationshipItem(
                     uid = "uid2",
@@ -193,7 +197,9 @@ class GetRelationshipsByTypeTest {
                     lastUpdated = "5 days ago"
                 )
             ),
-            creationTEITypeUid = "teiType2"
+            creationTEITypeUid = "teiType2",
+            relationshipType = relationshipType2,
+            direction = RelationshipDirection.TO
         )
     )
 }
