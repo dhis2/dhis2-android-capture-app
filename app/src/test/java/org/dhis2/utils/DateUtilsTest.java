@@ -28,6 +28,8 @@ public class DateUtilsTest {
 
     @Test
     public void expiryPeriodAndDaysInRange() throws ParseException {
+        Locale.setDefault(new Locale("es", "ES"));
+
         String testDateInRange = "2018-07-31";
         Date dateInRange = DateUtils.oldUiDateFormat().parse(testDateInRange);
 
@@ -82,8 +84,6 @@ public class DateUtilsTest {
         assertEquals("2018-07-26", DateUtils.oldUiDateFormat().format(minDateWeeklyThursday));
         assertEquals("2018-07-28", DateUtils.oldUiDateFormat().format(minDateWeeklySaturday));
         assertEquals("2018-07-29", DateUtils.oldUiDateFormat().format(minDateWeeklySunday));
-        Log.d("CHECK", "minDateBiWeekly: " + DateUtils.oldUiDateFormat().format(minDateBiWeekly));
-        Log.d("CHECK", "expected: 2018-07-16");
         assertEquals("2018-07-16", DateUtils.oldUiDateFormat().format(minDateBiWeekly));
         assertEquals("2018-06-18", DateUtils.oldUiDateFormat().format(minDateBiWeekly2));
         assertEquals("2018-07-01", DateUtils.oldUiDateFormat().format(minDateMonthly));
