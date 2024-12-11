@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.R
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.databinding.ItemDateBinding
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
@@ -28,12 +28,11 @@ private class PeriodAdapter(
         const val DEFAULT_PERIODS_SIZE = 10
     }
 
-    private val datePeriods: MutableList<Date>
+    private val datePeriods: MutableList<Date> = ArrayList()
     private var lastDate: Date
     private var currentDate = DateUtils.getInstance().today
 
     init {
-        datePeriods = ArrayList()
         lastDate = DateUtils.getInstance().getNextPeriod(
             periodType,
             organisationUnit?.closedDate() ?: DateUtils.getInstance().today,
@@ -73,7 +72,7 @@ private class PeriodAdapter(
                 ),
             )
             holder.itemView.setOnClickListener {
-                listener(datePeriods[holder.adapterPosition])
+                listener(datePeriods[holder.bindingAdapterPosition])
             }
         }
     }
@@ -136,7 +135,7 @@ private class PeriodAdapter(
         return if (isFuturePeriodsConfigured && isPeriodInTheFuture) {
             val isInsideInitialPeriodDate =
                 DateUtils.getInstance()
-                    .isInsideFutureInputPeriod(inputPeriodModel, openFuturePeriods)
+                    .isInsideFutureInputPeriod(inputPeriodModel.endPeriodDate(), openFuturePeriods)
 
             isInsideInitialPeriodDate && isInsideOpenDates && isInsideCloseDates
         } else {

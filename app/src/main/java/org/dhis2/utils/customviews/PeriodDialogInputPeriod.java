@@ -10,10 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.dialogs.PeriodDialog;
 import org.dhis2.databinding.DialogPeriodDatesBinding;
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
-import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.ArrayList;
@@ -84,12 +84,6 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
         if (!isAllowed && !isEmpty) {
             binding.noPeriods.setText(getString(R.string.there_is_no_available_period));
         }else{
-            boolean withInputPeriod = false;
-
-            if(isAllowed && !isEmpty){
-                withInputPeriod = true;
-            }
-
             PeriodAdapter periodAdapter = new PeriodAdapter(
                     getPeriod(),
                     openFuturePeriods != null ? openFuturePeriods : 0,
@@ -97,7 +91,7 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                         getPossitiveListener().onDateSet(date);
                         return Unit.INSTANCE;
                     },
-                    withInputPeriod,
+                    isAllowed && !isEmpty,
                     organisationUnit,
                     inputPeriod,
                     periodUtils);
