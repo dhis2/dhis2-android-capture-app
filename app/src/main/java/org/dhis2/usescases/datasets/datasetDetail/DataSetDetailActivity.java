@@ -23,6 +23,7 @@ import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
@@ -32,7 +33,6 @@ import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
@@ -197,7 +197,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             DateUtils.getInstance().showPeriodDialog(
                     this,
                     datePeriods -> filterManager.addPeriod(datePeriods),
-                    true
+                    true,
+                    () -> filterManager.addPeriod(null)
             );
         }
     }

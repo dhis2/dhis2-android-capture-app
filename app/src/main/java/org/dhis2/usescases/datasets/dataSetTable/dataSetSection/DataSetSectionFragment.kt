@@ -27,6 +27,7 @@ import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants.ACCESS_DATA
 import org.dhis2.commons.Constants.DATA_SET_SECTION
 import org.dhis2.commons.Constants.DATA_SET_UID
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -46,7 +47,6 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.optionset.OptionSetDialog
