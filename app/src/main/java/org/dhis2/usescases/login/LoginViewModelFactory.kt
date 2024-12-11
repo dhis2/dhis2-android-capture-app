@@ -12,6 +12,7 @@ import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.server.UserManager
 import org.dhis2.utils.analytics.AnalyticsHelper
 
+@Suppress("UNCHECKED_CAST")
 class LoginViewModelFactory(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
