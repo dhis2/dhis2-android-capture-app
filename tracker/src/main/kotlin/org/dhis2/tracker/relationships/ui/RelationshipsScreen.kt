@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.ListSelectionState
+import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
@@ -288,10 +289,6 @@ fun RelationShipScreenPreview() {
         data = listOf(
             RelationshipSection(
                 title = "Relationship type",
-                relationshipType = RelationshipType.builder()
-                    .uid("")
-                    .displayName("Relationship type")
-                    .build(),
                 relationships = listOf(
                     RelationshipItem(
                         uid = "uidA",
@@ -331,15 +328,21 @@ fun RelationShipScreenPreview() {
                     )
                 ),
                 creationTEITypeUid = null,
+                relationshipType = RelationshipType.builder()
+                    .uid("")
+                    .displayName("Relationship type")
+                    .build(),
+                direction = RelationshipDirection.TO,
             ),
             RelationshipSection(
                 title = "Empty relation ship",
+                relationships = emptyList(),
+                creationTEITypeUid = "teiTypeUid",
                 relationshipType = RelationshipType.builder()
                     .uid("")
                     .displayName("Empty relation ship")
                     .build(),
-                relationships = emptyList(),
-                creationTEITypeUid = "teiTypeUid",
+                direction = RelationshipDirection.TO,
             )
         )
     )

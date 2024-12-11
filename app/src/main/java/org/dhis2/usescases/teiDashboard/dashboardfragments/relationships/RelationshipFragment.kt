@@ -41,6 +41,7 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.tracker.relationships.ui.DeleteRelationshipsConfirmation
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
@@ -53,7 +54,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.OnDialogClickListener
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
@@ -81,7 +81,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     @Inject
     lateinit var relationShipsViewModel: RelationshipsViewModel
 
-    private var relationshipType: RelationshipType? = null
+    private var relationshipSection: RelationshipSection? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private lateinit var mapButtonObservable: MapButtonObservable
 
@@ -92,7 +92,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             }
 
             is RelationshipResult.Success -> {
-                presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipType!!.uid())
+                relationshipSection?.let { relationshipSection ->
+                    presenter.addRelationship(it.teiUidToAddAsRelationship, relationshipSection)
+                }
             }
         }
     }
@@ -143,7 +145,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             onCreateRelationshipClick = {
                                 it.creationTEITypeUid?.let { teiTypeUid ->
                                     goToRelationShip(
-                                        relationshipTypeModel = it.relationshipType,
+                                        relationshipSection = it,
                                         teiTypeUid = teiTypeUid,
                                     )
                                 }
@@ -402,9 +404,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         )
     }
 
-    private fun goToRelationShip(relationshipTypeModel: RelationshipType, teiTypeUid: String) {
-        relationshipType = relationshipTypeModel
-        presenter.goToAddRelationship(teiTypeUid, relationshipType!!)
+    private fun goToRelationShip(relationshipSection: RelationshipSection, teiTypeUid: String) {
+        this.relationshipSection = relationshipSection
+        presenter.goToAddRelationship(teiTypeUid, relationshipSection.relationshipType)
     }
 
     override fun showPermissionError() {

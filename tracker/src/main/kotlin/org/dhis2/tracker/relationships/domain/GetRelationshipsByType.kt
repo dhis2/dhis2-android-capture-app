@@ -31,13 +31,16 @@ class GetRelationshipsByType(
                         it.relationshipType.uid() == relationshipType.uid()
                     }
 
+                    val (title, direction) = relationshipsRepository.getRelationshipDirectionInfo(
+                        relationshipType = relationshipType,
+                    )
+
                     RelationshipSection(
-                        title = relationshipsRepository.getRelationshipTitle(
-                            relationshipType = relationshipType,
-                        ),
+                        title = title,
                         relationshipType = relationshipType,
                         relationships = filteredRelationships.map { mapToRelationshipItem(it) },
-                        creationTEITypeUid = creationTEITypeUid
+                        creationTEITypeUid = creationTEITypeUid,
+                        direction = direction,
                     )
                 }
             }

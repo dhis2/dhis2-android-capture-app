@@ -4,12 +4,9 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
-import org.hisp.dhis.android.core.enrollment.EnrollmentModule
+import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceCollectionRepository
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModule
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -24,26 +21,17 @@ class TrackerRelationshipsRepositoryTest {
     private val resources: ResourceManager = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
 
-    private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val trackedEntityModule: TrackedEntityModule = mock()
-    private val trackedEntityInstances: TrackedEntityInstanceCollectionRepository = mock()
-    private val enrollmentModule: EnrollmentModule = mock()
-    private val enrollment: EnrollmentCollectionRepository = mock()
+    private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+    private val enrollment: Enrollment = mock()
 
     @Before
     fun setup() {
-        whenever(d2.trackedEntityModule()) doReturn trackedEntityModule
-        whenever(trackedEntityModule.trackedEntityInstances()) doReturn trackedEntityInstances
-        whenever(trackedEntityInstances.uid("teiUid")) doReturn mock()
-        whenever(trackedEntityInstances.uid("teiUid").blockingGet()) doReturn mock()
         whenever(
-            trackedEntityInstances.uid("teiUid").blockingGet()?.trackedEntityType()
-        ) doReturn "trackedEntityTypeUid"
-
-        whenever(d2.enrollmentModule()) doReturn enrollmentModule
-        whenever(enrollmentModule.enrollments()) doReturn enrollment
-        whenever(enrollment.uid("enrollmentUid")) doReturn mock()
-        whenever(enrollment.uid("enrollmentUid").blockingGet()) doReturn mock()
+            d2.enrollmentModule()
+                .enrollments()
+                .uid("enrollmentUid")
+                .blockingGet()
+        ) doReturn enrollment
 
         trackerRelationshipsRepository = TrackerRelationshipsRepository(
             d2 = d2,
@@ -71,11 +59,11 @@ class TrackerRelationshipsRepositoryTest {
         }
 
         //When getting the relationship title
-        whenever(enrollment.uid("enrollmentUid").blockingGet()?.program()) doReturn "programUid_1"
-        val title = trackerRelationshipsRepository.getRelationshipTitle(relationshipType)
+        whenever(enrollment.program()) doReturn "programUid_1"
+        val title = trackerRelationshipsRepository.getRelationshipDirectionInfo(relationshipType)
 
         //Then the title should be the one from the From constraint
-        assert(title == relationshipName)
+        assert(title.first == relationshipName)
     }
 
     @Test
@@ -95,11 +83,11 @@ class TrackerRelationshipsRepositoryTest {
         }
 
         //When getting the relationship title
-        whenever(enrollment.uid("enrollmentUid").blockingGet()?.program()) doReturn "programUid_2"
+        whenever(enrollment.program()) doReturn "programUid_2"
 
-        val title = trackerRelationshipsRepository.getRelationshipTitle(relationshipType)
+        val title = trackerRelationshipsRepository.getRelationshipDirectionInfo(relationshipType)
 
         //Then the title should be the one from the To constraint
-        assert(title == relationshipName)
+        assert(title.first == relationshipName)
     }
 }
