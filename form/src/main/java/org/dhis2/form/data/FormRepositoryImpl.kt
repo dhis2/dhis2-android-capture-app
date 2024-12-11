@@ -285,7 +285,7 @@ class FormRepositoryImpl(
             EventStatus.COMPLETED -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
-                    canComplete = false,
+                    canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     eventResultDetails = EventResultDetails(
                         formValueStore.eventState(),
@@ -443,7 +443,7 @@ class FormRepositoryImpl(
 
             EventStatus.COMPLETED -> {
                 SuccessfulResult(
-                    canComplete = false,
+                    canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     eventResultDetails = EventResultDetails(
                         formValueStore.eventState(),
