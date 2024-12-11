@@ -12,7 +12,7 @@ class NetworkUtils(val context: Context) {
         try {
             val manager = context.getSystemService(
                 Context.CONNECTIVITY_SERVICE,
-            ) as ConnectivityManager
+            ) as ConnectivityManager?
             if (manager != null) {
                 val netInfo = manager.activeNetworkInfo
                 isOnline = netInfo != null && netInfo.isConnectedOrConnecting
