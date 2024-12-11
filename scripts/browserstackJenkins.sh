@@ -20,7 +20,7 @@ shards=$(jq -n \
 json=$(jq -n \
                 --argjson app_url $app_url \
                 --argjson test_url $test_url \
-                --argjson devices ["$browserstack_device_list"] \
+                --argjson devices ["$browserstack_device_list_landscape"] \
                 --argjson class ["$browserstack_class"] \
                 --arg logs "$browserstack_device_logs" \
                 --arg video "$browserstack_video" \
@@ -33,7 +33,8 @@ json=$(jq -n \
                 --arg allowDeviceMockServer "$browserstack_allowDeviceMockServer" \
                 --argjson shards "$shards" \
                 --arg buildTag "$buildTag" \
-                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards, buildTag: $buildTag}')
+                --arg deviceOrientation "$browserstack_deviceOrientation" \
+                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards, buildTag: $buildTag, deviceOrientation: $deviceOrientation}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 

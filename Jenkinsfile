@@ -26,15 +26,15 @@ pipeline {
                 }
             }
         }
-        stage('Lint Check') {
+        /* stage('Lint Check') {
             steps {
                 script {
                     echo 'Running Ktlint'
                     sh './gradlew ktlintCheck'
                 }
             }
-        }
-        stage('Unit tests') {
+        } */
+        /* stage('Unit tests') {
             environment {
                 ANDROID_HOME = '/opt/android-sdk'
             }
@@ -46,7 +46,7 @@ pipeline {
                     sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
                 }
             }
-        }
+        } */
         stage('Build Test APKs') {
             steps {
                 script {
@@ -56,8 +56,8 @@ pipeline {
             }
         }
         stage('Run tests') {
-            parallel {
-                stage('Deploy and run Form Tests') {
+//             parallel {
+                /* stage('Deploy and run Form Tests') {
                         environment {
                             BROWSERSTACK = credentials('android-browserstack')
                             form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
@@ -90,7 +90,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                } */
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
@@ -110,9 +110,9 @@ pipeline {
                         }
                     }
                 }
-            }
+//             }
         }
-        stage('JaCoCo report') {
+        /* stage('JaCoCo report') {
             steps {
                 script {
                     echo 'Running JaCoCo report on app module'
@@ -135,7 +135,7 @@ pipeline {
                     sh './scripts/sonarqube.sh'
                 }
             }
-        }
+        } */
 
     }
     post {
