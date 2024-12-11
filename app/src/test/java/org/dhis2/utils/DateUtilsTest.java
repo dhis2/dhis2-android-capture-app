@@ -27,7 +27,7 @@ public class DateUtilsTest {
     @Test
     public void expiryPeriodAndDaysInRange() throws ParseException {
         String testDateInRange = "2018-07-31";
-        Date dateInRange = org.dhis2.commons.date.DateUtils.oldUiDateFormat().parse(testDateInRange);
+        Date dateInRange = DateUtils.oldUiDateFormat().parse(testDateInRange);
 
         String testDateInRange2 = "2018-07-01";
         Date dateInRange2 = DateUtils.oldUiDateFormat().parse(testDateInRange2);
@@ -563,7 +563,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
 
     }
 
@@ -573,7 +573,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
 
     }
 
