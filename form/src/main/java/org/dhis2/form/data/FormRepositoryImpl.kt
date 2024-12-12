@@ -234,7 +234,7 @@ class FormRepositoryImpl(
 
         return when {
             (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
-                getSuccessfulResult(eventStatus)
+                getSuccessfulResult()
             }
 
             (itemsWithErrors.isNotEmpty()) -> {
@@ -427,44 +427,16 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun getSuccessfulResult(eventStatus: EventStatus?): SuccessfulResult {
-        return when (eventStatus) {
-            EventStatus.ACTIVE -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-
-            EventStatus.COMPLETED -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-
-            else -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: false,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy = dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-        }
+    private fun getSuccessfulResult(): SuccessfulResult {
+        return SuccessfulResult(
+            canComplete = ruleEffectsResult?.canComplete ?: true,
+            onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+            eventResultDetails = EventResultDetails(
+                formValueStore.eventState(),
+                dataEntryRepository.eventMode(),
+                dataEntryRepository.validationStrategy(),
+            ),
+        )
     }
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float {
