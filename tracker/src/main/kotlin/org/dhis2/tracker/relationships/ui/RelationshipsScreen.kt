@@ -16,14 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,20 +80,20 @@ fun RelationShipsScreen(
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
     onRelationShipSelected: (String) -> Unit,
-    snackbarMessage: String?,
 ) {
-    val scaffoldState = rememberScaffoldState()
-    val snackbarHostState = scaffoldState.snackbarHostState
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(snackbarMessage) {
-        snackbarMessage?.let { message ->
-            snackbarHostState.showSnackbar(message)
+    LaunchedEffect(uiState.snackbarMessage) {
+        uiState.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
         }
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
@@ -374,7 +375,6 @@ fun RelationShipScreenPreview() {
         onCreateRelationshipClick = {},
         onRelationshipClick = {},
         onRelationShipSelected = {},
-        snackbarMessage = null,
     )
 }
 

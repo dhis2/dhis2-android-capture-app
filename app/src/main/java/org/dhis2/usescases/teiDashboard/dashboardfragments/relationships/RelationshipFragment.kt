@@ -140,8 +140,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     val uiState by relationShipsViewModel.relationshipsUiState.collectAsState()
                     val relationshipSelectionState by relationShipsViewModel.relationshipSelectionState.collectAsState()
                     val showDeleteConfirmation by relationShipsViewModel.showDeleteConfirmation.collectAsState()
-                    val snackbarMessage =
-                        relationShipsViewModel.snackbarMessage.collectAsState(initial = null)
 
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
@@ -163,7 +161,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                                 )
                             },
                             onRelationShipSelected = relationShipsViewModel::updateSelectedList,
-                            snackbarMessage = snackbarMessage.value,
                         )
                     }
 
