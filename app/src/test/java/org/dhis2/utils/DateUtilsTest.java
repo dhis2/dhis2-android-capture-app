@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Log;
-
 import org.dhis2.R;
 import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.commons.date.DateUtils;
@@ -644,7 +642,7 @@ public class DateUtilsTest {
                 DateUtils.oldUiDateFormat().parse("2022-11-05")
         );
 
-        assertEquals(true, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
+        assertTrue(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
     }
 
     @Test
@@ -659,7 +657,7 @@ public class DateUtilsTest {
                 DateUtils.oldUiDateFormat().parse("2022-11-15")
         );
 
-        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
+        assertFalse(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
     }
 
     @Test
@@ -673,7 +671,7 @@ public class DateUtilsTest {
                 new Date()
         );
 
-        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 0));
+        assertFalse(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 0));
     }
 
     @Test

@@ -130,15 +130,13 @@ public class DateDialog extends DialogFragment {
                     activity,
                     fromToSelector,
                     true,
-                    () -> {
-                        disposable.add(new RxDateDialog((ActivityGlobalAbstract) requireActivity(), Period.WEEKLY)
-                                .createForFilter().show()
-                                .subscribe(
-                                        periods -> fromToSelector.onFromToSelected(new ArrayList<>()),
-                                        Timber::d
-                                )
-                        );
-                    }
+                    () -> disposable.add(new RxDateDialog((ActivityGlobalAbstract) requireActivity(), Period.WEEKLY)
+                            .createForFilter().show()
+                            .subscribe(
+                                    periods -> fromToSelector.onFromToSelected(new ArrayList<>()),
+                                    Timber::d
+                            )
+                    )
             );
             dismiss();
         }
