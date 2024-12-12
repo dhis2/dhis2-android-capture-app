@@ -12,6 +12,7 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
@@ -175,7 +176,13 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providePeriodUseCase(d2: D2) = GetEventPeriods(d2)
+    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository =
+        EventPeriodRepository(d2)
+
+    @Provides
+    @PerServer
+    fun providePeriodUseCase(eventPeriodRepository: EventPeriodRepository) =
+        GetEventPeriods(eventPeriodRepository)
 
     companion object {
         @JvmStatic
