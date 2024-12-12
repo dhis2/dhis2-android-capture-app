@@ -23,7 +23,7 @@ import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
-import org.dhis2.commons.periods.PeriodSelectorContent
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog

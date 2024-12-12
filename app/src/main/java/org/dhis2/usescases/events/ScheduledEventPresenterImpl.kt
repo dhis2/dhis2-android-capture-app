@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.map
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.periods.Period
-import org.dhis2.commons.periods.PeriodUseCase
+import org.dhis2.commons.periods.data.EventPeriodRepository
+import org.dhis2.commons.periods.domain.GetEventPeriods
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MIN_DATE
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
@@ -37,7 +38,7 @@ class ScheduledEventPresenterImpl(
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
-    private val periodUseCase = PeriodUseCase(d2)
+    private val periodUseCase = GetEventPeriods(EventPeriodRepository(d2))
 
     override fun init() {
         disposable = CompositeDisposable()
@@ -134,33 +135,19 @@ class ScheduledEventPresenterImpl(
         return with(periodUseCase) {
             val event = d2.event(eventUid) ?: return emptyFlow()
             val stage = event.programStage()?.let { d2.programStage(it) } ?: return emptyFlow()
-            val unavailableDates = getEventUnavailableDates(
-                programStageUid = stage.uid(),
-                enrollmentUid = event.enrollment(),
-                currentEventUid = eventUid,
-            )
+
             fetchPeriods(
+                eventUid = eventUid,
                 periodType = stage.periodType() ?: PeriodType.Daily,
                 selectedDate = if (scheduling) {
                     event.dueDate()
                 } else {
                     event.eventDate()
                 },
-                initialDate = getEventPeriodMinDate(
-                    programStage = stage,
-                    isScheduling = scheduling,
-                    eventEnrollmentUid = event.enrollment(),
-                ),
-                maxDate = getEventPeriodMaxDate(
-                    programStage = stage,
-                    isScheduling = scheduling,
-                    eventEnrollmentUid = event.enrollment(),
-                ),
-            ).map { paging ->
-                paging.map { period ->
-                    period.copy(enabled = unavailableDates.contains(period.startDate).not())
-                }
-            }
+                programStage = stage,
+                isScheduling = scheduling,
+                eventEnrollmentUid = event.enrollment(),
+            )
         }
     }
 

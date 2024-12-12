@@ -1,9 +1,5 @@
-package org.dhis2.commons.periods
+package org.dhis2.commons.periods.data
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.eventsBy
 import org.dhis2.commons.bindings.program
@@ -13,25 +9,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
-class PeriodUseCase(private val d2: D2) {
-    private val periodHelper = d2.periodModule().periodHelper()
-    fun fetchPeriods(
-        periodType: PeriodType,
-        selectedDate: Date?,
-        initialDate: Date,
-        maxDate: Date?,
-    ): Flow<PagingData<Period>> = Pager(
-        config = PagingConfig(pageSize = 10, maxSize = 100),
-        pagingSourceFactory = {
-            PeriodSource(
-                periodHelper = periodHelper,
-                periodType = periodType,
-                initialDate = initialDate,
-                maxDate = maxDate,
-                selectedDate = selectedDate,
-            )
-        },
-    ).flow
+class EventPeriodRepository(private val d2: D2) {
 
     fun getEventPeriodMinDate(
         programStage: ProgramStage,
@@ -52,18 +30,18 @@ class PeriodUseCase(private val d2: D2) {
                 enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
             }
         } else {
-            d2.generatePeriod(periodType, offset = 1).startDate()
+            generatePeriod(periodType, offset = 1).startDate()
         } ?: Date()
 
-        val currentPeriod = d2.generatePeriod(periodType)
+        val currentPeriod = generatePeriod(periodType)
         val previousPeriodLastDay =
-            d2.generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
+            generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
                 .startDate()
 
         return if (currentDate.after(previousPeriodLastDay)) {
             currentPeriod.startDate()
         } else {
-            d2.generatePeriod(periodType, offset = -1).startDate()
+            generatePeriod(periodType, offset = -1).startDate()
         } ?: Date()
     }
 
@@ -91,7 +69,7 @@ class PeriodUseCase(private val d2: D2) {
             Date()
         } ?: Date()
 
-        val currentPeriod = d2.generatePeriod(periodType, currentDate)
+        val currentPeriod = generatePeriod(periodType, currentDate)
 
         return currentPeriod.startDate()
     }
@@ -113,11 +91,11 @@ class PeriodUseCase(private val d2: D2) {
             }
         }
     }
-}
 
-private fun D2.generatePeriod(
-    periodType: PeriodType,
-    date: Date = Date(),
-    offset: Int = 0,
-) = periodModule().periodHelper()
-    .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
+    fun generatePeriod(
+        periodType: PeriodType,
+        date: Date = Date(),
+        offset: Int = 0,
+    ) = d2.periodModule().periodHelper()
+        .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
+}

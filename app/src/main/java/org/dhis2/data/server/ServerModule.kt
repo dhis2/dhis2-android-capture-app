@@ -12,7 +12,7 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
-import org.dhis2.commons.periods.PeriodUseCase
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
@@ -175,7 +175,7 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providePeriodUseCase(d2: D2) = PeriodUseCase(d2)
+    fun providePeriodUseCase(d2: D2) = GetEventPeriods(d2)
 
     companion object {
         @JvmStatic

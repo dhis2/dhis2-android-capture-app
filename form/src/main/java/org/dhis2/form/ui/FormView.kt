@@ -44,7 +44,7 @@ import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.periods.PeriodSelectorContent
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FieldsWithErrorResult

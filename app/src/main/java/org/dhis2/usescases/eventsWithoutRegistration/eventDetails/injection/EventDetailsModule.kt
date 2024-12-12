@@ -6,7 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.periods.PeriodUseCase
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.DhisPeriodUtils
@@ -107,7 +107,7 @@ class EventDetailsModule(
     @PerFragment
     fun provideConfigurePeriodSelector(
         eventDetailsRepository: EventDetailsRepository,
-        periodUseCase: PeriodUseCase,
+        periodUseCase: GetEventPeriods,
     ): ConfigurePeriodSelector {
         return ConfigurePeriodSelector(
             eventDetailRepository = eventDetailsRepository,

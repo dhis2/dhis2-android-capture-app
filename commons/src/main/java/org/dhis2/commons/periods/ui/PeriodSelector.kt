@@ -1,4 +1,4 @@
-package org.dhis2.commons.periods
+package org.dhis2.commons.periods.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import org.dhis2.commons.R
+import org.dhis2.commons.periods.model.Period
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
@@ -42,15 +45,27 @@ fun PeriodSelectorContent(
                 item { ProgressItem(contentPadding = PaddingValues(Spacing8)) }
 
             is LoadState.NotLoading ->
-                items(periods.itemCount) { index ->
-                    val period = periods[index]
-                    ListItem(
-                        contentPadding = PaddingValues(Spacing8),
-                        label = period?.name ?: "",
-                        selected = period?.selected == true,
-                        enabled = period?.enabled == true,
-                    ) {
-                        period?.startDate?.let(onPeriodSelected)
+                if (periods.itemCount == 0) {
+                    item {
+                        ListItem(
+                            contentPadding = PaddingValues(Spacing8),
+                            label = stringResource(R.string.no_periods),
+                            selected = false,
+                            enabled = false,
+                            onItemClick = {},
+                        )
+                    }
+                } else {
+                    items(periods.itemCount) { index ->
+                        val period = periods[index]
+                        ListItem(
+                            contentPadding = PaddingValues(Spacing8),
+                            label = period?.name ?: "",
+                            selected = period?.selected == true,
+                            enabled = period?.enabled == true,
+                        ) {
+                            period?.startDate?.let(onPeriodSelected)
+                        }
                     }
                 }
         }

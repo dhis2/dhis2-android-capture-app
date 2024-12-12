@@ -32,7 +32,7 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.periods.PeriodSelectorContent
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
