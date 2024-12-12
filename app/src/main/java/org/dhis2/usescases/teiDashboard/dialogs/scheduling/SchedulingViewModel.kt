@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,9 +50,8 @@ class SchedulingViewModel(
     private val dispatchersProvider: DispatcherProvider,
     private val launchMode: LaunchMode,
     private val dateUtils: DateUtils,
+    private val getEventPeriods: GetEventPeriods,
 ) : ViewModel() {
-
-    private val periodUseCase = GetEventPeriods(d2)
 
     lateinit var repository: EventDetailsRepository
     lateinit var configureEventReportDate: ConfigureEventReportDate
@@ -338,30 +336,13 @@ class SchedulingViewModel(
         val programStage = programStage.value ?: return emptyFlow()
         val periodType = programStage.periodType() ?: PeriodType.Daily
         val enrollmentUid = enrollment.value?.uid() ?: return emptyFlow()
-        return with(periodUseCase) {
-            val unavailableDates = getEventUnavailableDates(
-                programStage.uid(),
-                enrollmentUid,
-                null,
-            )
-            fetchPeriods(
-                periodType = periodType,
-                selectedDate = eventDate.value.currentDate,
-                initialDate = getEventPeriodMinDate(
-                    programStage = programStage,
-                    isScheduling = true,
-                    eventEnrollmentUid = enrollmentUid,
-                ),
-                maxDate = getEventPeriodMaxDate(
-                    programStage = programStage,
-                    isScheduling = true,
-                    eventEnrollmentUid = enrollmentUid,
-                ),
-            ).map { paging ->
-                paging.map { period ->
-                    period.copy(enabled = unavailableDates.contains(period.startDate).not())
-                }
-            }
-        }
+        return getEventPeriods.fetchPeriods(
+            eventUid = null,
+            periodType = periodType,
+            selectedDate = eventDate.value.currentDate,
+            programStage = programStage,
+            isScheduling = true,
+            eventEnrollmentUid = enrollmentUid,
+        )
     }
 }

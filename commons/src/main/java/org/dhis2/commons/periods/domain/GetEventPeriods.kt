@@ -19,7 +19,7 @@ class GetEventPeriods(
     private val periodLabelProvider: PeriodLabelProvider = PeriodLabelProvider(),
 ) {
     fun fetchPeriods(
-        eventUid: String,
+        eventUid: String?,
         periodType: PeriodType,
         selectedDate: Date?,
         programStage: ProgramStage,

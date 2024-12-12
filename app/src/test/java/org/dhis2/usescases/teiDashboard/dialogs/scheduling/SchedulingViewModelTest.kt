@@ -96,6 +96,7 @@ class SchedulingViewModelTest {
                 showYesNoOptions = false,
                 eventCreationType = EventCreationType.SCHEDULE,
             ),
+            getEventPeriods = mock(),
         )
     }
 
