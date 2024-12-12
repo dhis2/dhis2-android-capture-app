@@ -10,6 +10,8 @@ import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.relationship.Relationship
+import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -224,6 +226,20 @@ class TrackerRelationshipsRepository(
                     fromDescription,
                 )
             }
+        )
+    }
+
+    override fun createRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        direction: RelationshipDirection,
+    ): Relationship {
+        val (fromUid, toUid) = when (direction) {
+            RelationshipDirection.FROM -> Pair(selectedTeiUid, teiUid)
+            RelationshipDirection.TO -> Pair(teiUid, selectedTeiUid)
+        }
+        return RelationshipHelper.teiToTeiRelationship(
+            fromUid, toUid, relationshipTypeUid
         )
     }
 

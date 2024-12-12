@@ -5,8 +5,9 @@ import android.content.Context;
 import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
-import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -20,6 +21,7 @@ import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
+import org.dhis2.tracker.relationships.domain.AddRelationship;
 import org.dhis2.tracker.relationships.domain.DeleteRelationships;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
@@ -150,12 +152,16 @@ public class RelationshipModule {
     RelationshipsViewModel provideRelationshipsViewModel(
             GetRelationshipsByType getRelationshipsByType,
             DeleteRelationships deleteRelationships,
-            DispatcherProvider dispatcherProvider
+            DispatcherProvider dispatcherProvider,
+            AddRelationship addRelationship,
+            D2ErrorUtils d2ErrorUtils
     ) {
         return new RelationshipsViewModel(
+                dispatcherProvider,
                 getRelationshipsByType,
                 deleteRelationships,
-                dispatcherProvider
+                addRelationship,
+                d2ErrorUtils
         );
     }
 
@@ -186,6 +192,15 @@ public class RelationshipModule {
             RelationshipsRepository relationshipsRepository
     ) {
         return new DeleteRelationships(relationshipsRepository);
+    }
+
+    @Provides
+    @PerFragment
+    AddRelationship provideAddRelationship(
+            DispatcherProvider dispatcherProvider,
+            RelationshipsRepository relationshipsRepository
+    ) {
+        return new AddRelationship(dispatcherProvider, relationshipsRepository);
     }
 
     @Provides
@@ -232,5 +247,13 @@ public class RelationshipModule {
             MetadataIconProvider metadataIconProvider
     ) {
         return new AvatarProvider(metadataIconProvider);
+    }
+
+    @Provides
+    @PerFragment
+    D2ErrorUtils provideD2ErrorUtils(
+            NetworkUtils networkUtils
+    ) {
+        return new D2ErrorUtils(moduleContext, networkUtils);
     }
 }

@@ -19,22 +19,16 @@ import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
-import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
 import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
-import timber.log.Timber
 
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,
@@ -144,81 +138,9 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun deleteRelationship(relationshipUid: String) {
-        try {
-            d2.relationshipModule().relationships().withItems().uid(relationshipUid)
-                .blockingDelete()
-        } catch (e: D2Error) {
-            Timber.d(e)
-        } finally {
-            analyticsHelper.setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-            updateRelationships.onNext(true)
-        }
-    }
-
-    fun addRelationship(selectedTei: String, relationshipSection: RelationshipSection) {
-        if (teiUid != null) {
-            addTeiToTeiRelationship(teiUid, selectedTei, relationshipSection)
-        } else if (eventUid != null) {
-            addEventToTeiRelationship(
-                eventUid,
-                selectedTei,
-                relationshipSection.relationshipType.uid(),
-            )
-        }
-    }
-
-    private fun addTeiToTeiRelationship(
-        teiUid: String,
-        selectedTei: String,
-        relationshipSection: RelationshipSection,
-    ) {
-        try {
-            val relationshipTypeUid = relationshipSection.relationshipType.uid()
-            val relationship = when (relationshipSection.direction) {
-                RelationshipDirection.FROM -> RelationshipHelper.teiToTeiRelationship(
-                    selectedTei,
-                    teiUid,
-                    relationshipTypeUid,
-                )
-
-                RelationshipDirection.TO -> RelationshipHelper.teiToTeiRelationship(
-                    teiUid,
-                    selectedTei,
-                    relationshipTypeUid,
-                )
-            }
-            d2.relationshipModule().relationships().blockingAdd(relationship)
-        } catch (e: D2Error) {
-            view.displayMessage(e.errorDescription())
-        } finally {
-            updateRelationships.onNext(true)
-        }
-    }
-
-    private fun addEventToTeiRelationship(
-        eventUid: String,
-        selectedTei: String,
-        relationshipTypeUid: String,
-    ) {
-        try {
-            val relationship =
-                RelationshipHelper.eventToTeiRelationship(
-                    eventUid,
-                    selectedTei,
-                    relationshipTypeUid,
-                )
-            d2.relationshipModule().relationships().blockingAdd(relationship)
-        } catch (e: D2Error) {
-            view.displayMessage(e.errorDescription())
-        } finally {
-            updateRelationships.onNext(true)
-        }
-    }
-
     fun openDashboard(teiUid: String) {
         if (d2.trackedEntityModule()
-                .trackedEntityInstances().uid(teiUid).blockingGet()!!.state() !=
+                .trackedEntityInstances().uid(teiUid).blockingGet()?.aggregatedSyncState() !=
             State.RELATIONSHIP
         ) {
             if (d2.enrollmentModule().enrollments()
@@ -239,7 +161,7 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun openEvent(eventUid: String, eventProgramUid: String) {
+    private fun openEvent(eventUid: String, eventProgramUid: String) {
         view.openEventFor(eventUid, eventProgramUid)
     }
 
