@@ -28,7 +28,7 @@ import java.util.Date
 
 class GetRelationshipsByTypeTest {
 
-    lateinit var getRelationshipsByType: GetRelationshipsByType
+    private lateinit var getRelationshipsByType: GetRelationshipsByType
 
     private val relationshipsRepository: RelationshipsRepository = mock()
     private val dateLabelProvider: DateLabelProvider = mock()
