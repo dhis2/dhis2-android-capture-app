@@ -1,7 +1,7 @@
 package org.dhis2.composetable
 
 import androidx.annotation.DrawableRes
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -103,7 +103,7 @@ class TableRobot(
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = TableColors().copy(primary = MaterialTheme.colorScheme.primary),
                 tableConfiguration = TableConfiguration(headerActionsEnabled = false),
                 tableResizeActions = object : TableResizeActions {}
             ) {
@@ -140,7 +140,7 @@ class TableRobot(
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = TableColors().copy(primary = MaterialTheme.colorScheme.primary),
                 tableConfiguration = tableConfiguration,
                 tableResizeActions = object : TableResizeActions {}
             ) {
@@ -187,7 +187,7 @@ class TableRobot(
 
             val model by remember { mutableStateOf(screenState) }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = TableColors().copy(primary = MaterialTheme.colorScheme.primary),
                 tableConfiguration = TableConfiguration(),
                 tableResizeActions = object : TableResizeActions {}
             ) {

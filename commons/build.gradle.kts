@@ -99,7 +99,6 @@ dependencies {
     api(libs.google.gson)
     api(libs.dagger)
     kapt(libs.dagger.compiler)
-    api(libs.google.material.themeadapter)
     api(libs.barcodeScanner.zxing)
     api(libs.rx.java)
     api(libs.rx.android)

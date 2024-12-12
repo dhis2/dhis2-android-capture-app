@@ -22,11 +22,11 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -131,7 +131,7 @@ private fun SearchBar(
                 modifier = Modifier
                     .border(
                         width = 2.dp,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(16.dp),
                     )
                     .padding(horizontal = 12.dp),
@@ -140,7 +140,7 @@ private fun SearchBar(
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "",
-                    tint = MaterialTheme.colors.primary,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Box(Modifier.weight(1f)) {
@@ -148,7 +148,7 @@ private fun SearchBar(
                         Text(
                             text = stringResource(id = R.string.search),
                             style = LocalTextStyle.current.copy(
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                                 fontSize = 16.sp,
                             ),
                         )
@@ -162,7 +162,7 @@ private fun SearchBar(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "",
-                                tint = MaterialTheme.colors.primary,
+                                tint = MaterialTheme.colorScheme.primary,
                             )
                         },
                     )

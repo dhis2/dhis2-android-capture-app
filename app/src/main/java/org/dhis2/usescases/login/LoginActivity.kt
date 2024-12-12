@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.databinding.DataBindingUtil
-import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -64,6 +63,7 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -202,7 +202,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         binding.topbar.setContent {
             val displayMoreActions by presenter.displayMoreActions().observeAsState(true)
-            MdcTheme {
+            DHIS2Theme {
                 LoginTopBar(
                     version = buildInfo(),
                     displayMoreActions = displayMoreActions,
