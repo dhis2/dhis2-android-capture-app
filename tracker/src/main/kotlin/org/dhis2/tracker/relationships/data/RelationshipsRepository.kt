@@ -11,9 +11,11 @@ import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
@@ -29,7 +31,15 @@ abstract class RelationshipsRepository(
 ) {
     abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
     abstract fun getRelationships(): Flow<List<RelationshipModel>>
-    abstract fun getRelationshipDirectionInfo(relationshipType: RelationshipType): Pair<String, RelationshipDirection>
+    abstract fun getRelationshipDirectionInfo(
+        relationshipType: RelationshipType
+    ): Pair<String, RelationshipDirection>
+
+    abstract fun createRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        direction: RelationshipDirection,
+    ): Relationship
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
@@ -234,5 +244,14 @@ abstract class RelationshipsRepository(
             .withItems()
             .uid(relationshipUid)
             .blockingDelete()
+    }
+
+    fun addRelationship(relationship: Relationship): Result<String> {
+        return try {
+            val relationshipUid = d2.relationshipModule().relationships().blockingAdd(relationship)
+            Result.success(relationshipUid)
+        } catch (error: D2Error) {
+            Result.failure(error)
+        }
     }
 }

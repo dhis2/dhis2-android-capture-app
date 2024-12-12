@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.relationship.Relationship
+import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemEvent
 import org.hisp.dhis.android.core.relationship.RelationshipType
@@ -54,6 +55,20 @@ class EventRelationshipsRepository(
                     Pair(relationshipType, secondaryUid)
                 }
             }
+        )
+    }
+
+    override fun createRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        direction: RelationshipDirection,
+    ): Relationship {
+        val (fromUid, toUid) = when (direction) {
+            RelationshipDirection.FROM -> Pair(selectedTeiUid, eventUid)
+            RelationshipDirection.TO -> Pair(eventUid, selectedTeiUid)
+        }
+        return RelationshipHelper.eventToTeiRelationship(
+            fromUid,toUid,relationshipTypeUid
         )
     }
 

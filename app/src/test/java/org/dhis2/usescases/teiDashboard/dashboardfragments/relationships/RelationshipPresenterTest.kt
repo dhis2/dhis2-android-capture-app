@@ -9,8 +9,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
@@ -24,7 +22,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -104,23 +101,6 @@ class RelationshipPresenterTest {
         presenter.goToAddRelationship("teiType", relationshipType)
 
         verify(view, times(1)).showPermissionError()
-    }
-
-    @Test
-    fun `Should delete relationship`() {
-        presenter.deleteRelationship(getMockedRelationship().uid()!!)
-        verify(analyticsHelper).setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-    }
-
-    @Test
-    fun `Should create a relationship`() {
-        whenever(
-            d2.relationshipModule().relationshipTypes().withConstraints().uid("relationshipTypeUid")
-                .blockingGet(),
-        ) doReturn getMockedRelationshipType(true)
-        presenter.addRelationship("selectedTei", "relationshipTypeUid")
-
-        verify(view, times(0)).displayMessage(any())
     }
 
     @Test

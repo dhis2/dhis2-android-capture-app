@@ -16,13 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,58 +78,75 @@ fun RelationShipsScreen(
     relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: (RelationshipSection) -> Unit,
     onRelationshipClick: (RelationshipItem) -> Unit,
-    onRelationShipSelected: (String) -> Unit
+    onRelationShipSelected: (String) -> Unit,
+    snackbarMessage: String?,
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White, shape = Shape.LargeTop)
-            .padding(),
-        verticalArrangement = spacedBy(Spacing.Spacing4),
-    ) {
-        when (uiState) {
-            is RelationshipsUiState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = scaffoldState.snackbarHostState
+
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.White, shape = Shape.LargeTop)
+                .padding(),
+            verticalArrangement = spacedBy(Spacing.Spacing4),
+            contentPadding = contentPadding,
+        ) {
+            when (uiState) {
+                is RelationshipsUiState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        }
                     }
                 }
-            }
 
-            is RelationshipsUiState.Empty,
-            is RelationshipsUiState.Error -> {
-                item { NoRelationships() }
-            }
+                is RelationshipsUiState.Empty,
+                is RelationshipsUiState.Error -> {
+                    item { NoRelationships() }
+                }
 
-            is RelationshipsUiState.Success -> {
-                items(uiState.data) { item ->
-                    RelationShipTypeSection(
-                        title = item.title,
-                        description = if (item.relationships.isEmpty()) {
-                            stringResource(id = R.string.no_data)
-                        } else {
-                            null
-                        },
-                        relationships = item.relationships,
-                        canAddRelationship = item.canAddRelationship(),
-                        relationshipSelectionState = relationshipSelectionState,
-                        onCreateRelationshipClick = {
-                            onCreateRelationshipClick(item)
-                        },
-                        onRelationshipClick = {
-                            onRelationshipClick(it)
-                        },
-                        onRelationshipSelected = onRelationShipSelected,
-                    )
+                is RelationshipsUiState.Success -> {
+                    items(uiState.data) { item ->
+                        RelationShipTypeSection(
+                            title = item.title,
+                            description = if (item.relationships.isEmpty()) {
+                                stringResource(id = R.string.no_data)
+                            } else {
+                                null
+                            },
+                            relationships = item.relationships,
+                            canAddRelationship = item.canAddRelationship(),
+                            relationshipSelectionState = relationshipSelectionState,
+                            onCreateRelationshipClick = {
+                                onCreateRelationshipClick(item)
+                            },
+                            onRelationshipClick = {
+                                onRelationshipClick(it)
+                            },
+                            onRelationshipSelected = onRelationShipSelected,
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -353,6 +374,7 @@ fun RelationShipScreenPreview() {
         onCreateRelationshipClick = {},
         onRelationshipClick = {},
         onRelationShipSelected = {},
+        snackbarMessage = null,
     )
 }
 
