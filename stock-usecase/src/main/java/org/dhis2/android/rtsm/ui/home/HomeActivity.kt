@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.colorResource
-import com.google.android.material.composethemeadapter.MdcTheme
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -38,6 +37,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.commons.sync.SyncStatusItem
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -66,7 +66,7 @@ class HomeActivity : AppCompatActivity() {
             manageStockViewModel.setHelperText(helperText)
             updateTheme(settingsUiState.selectedTransactionItem.type)
             manageStockViewModel.setThemeColor(Color(colorResource(themeColor).toArgb()))
-            MdcTheme {
+            DHIS2Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(colorResource(themeColor).toArgb()),

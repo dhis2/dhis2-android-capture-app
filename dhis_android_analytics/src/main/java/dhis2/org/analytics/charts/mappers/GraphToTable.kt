@@ -4,8 +4,8 @@ import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.material.composethemeadapter.MdcTheme
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
@@ -48,6 +47,7 @@ import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.compositions.LocalInteraction
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import kotlin.math.roundToInt
 
@@ -76,7 +76,7 @@ class GraphToTable {
             dimensionsForLinelisting(localDensity, conf)
         }
 
-        return MdcTheme {
+        return DHIS2Theme {
             var dimensions by remember {
                 mutableStateOf(
                     tableDimensions,
@@ -123,8 +123,8 @@ class GraphToTable {
 
             TableTheme(
                 tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                    primary = MaterialTheme.colorScheme.primary,
+                    primaryLight = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                     disabledCellText = TableTheme.colors.cellText,
                     disabledCellBackground = TableTheme.colors.tableBackground,
                 ),
