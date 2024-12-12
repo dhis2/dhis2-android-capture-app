@@ -1,4 +1,4 @@
-package org.dhis2.commons.periods
+package org.dhis2.commons.periods.model
 
 import java.util.Date
 

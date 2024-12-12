@@ -14,7 +14,7 @@ import org.dhis2.R
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
-import org.dhis2.commons.periods.PeriodSelectorContent
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog

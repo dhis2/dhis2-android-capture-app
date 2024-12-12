@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.periods.Period
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode

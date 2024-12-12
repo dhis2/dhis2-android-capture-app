@@ -318,4 +318,5 @@
     <string name="period_six_monthly_title">Six monthly</string>
     <string name="period_yearly_title">Year</string>
     <string name="period_financial_year_title">Financial year</string>
+    <string name="no_periods">No periods available\n</string>
 </resources>

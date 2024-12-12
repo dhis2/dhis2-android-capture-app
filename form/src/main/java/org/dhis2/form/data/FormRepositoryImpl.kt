@@ -4,7 +4,7 @@ import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
-import org.dhis2.commons.periods.Period
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID

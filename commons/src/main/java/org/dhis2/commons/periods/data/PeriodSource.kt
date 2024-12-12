@@ -1,21 +1,20 @@
-package org.dhis2.commons.periods
+package org.dhis2.commons.periods.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import org.dhis2.commons.periods.model.Period
 import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.period.internal.PeriodHelper
 import java.util.Date
 import java.util.Locale
 
-class PeriodSource(
-    private val periodHelper: PeriodHelper,
+internal class PeriodSource(
+    private val eventPeriodRepository: EventPeriodRepository,
+    private val periodLabelProvider: PeriodLabelProvider,
     private val selectedDate: Date?,
     private val periodType: PeriodType,
     private val initialDate: Date,
     private val maxDate: Date?,
 ) : PagingSource<Int, Period>() {
-
-    private val periodLabel = GetPeriodLabel()
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> {
         return try {
@@ -24,11 +23,10 @@ class PeriodSource(
             val position = params.key ?: 1
             val periods: List<Period> = buildList {
                 repeat(periodsPerPage) { indexInPage ->
-                    val period = periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                    val period = eventPeriodRepository.generatePeriod(
                         periodType,
                         initialDate,
                         position - 1 + indexInPage,
-
                     )
                     if (maxDate == null || period.startDate()
                             ?.before(maxDate) == true || period.startDate() == maxDate
@@ -36,7 +34,7 @@ class PeriodSource(
                         add(
                             Period(
                                 id = period.periodId()!!,
-                                name = periodLabel(
+                                name = periodLabelProvider(
                                     periodType = periodType,
                                     periodId = period.periodId()!!,
                                     periodStartDate = period.startDate()!!,

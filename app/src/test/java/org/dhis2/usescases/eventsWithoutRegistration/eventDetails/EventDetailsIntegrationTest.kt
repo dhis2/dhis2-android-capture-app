@@ -5,7 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.commons.periods.PeriodUseCase
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -57,7 +57,7 @@ class EventDetailsIntegrationTest {
     private val eventResourcesProvider: EventResourcesProvider = mock()
     private val periodUtils: DhisPeriodUtils = mock()
     private val preferencesProvider: PreferenceProvider = mock()
-    private val periodUseCase: PeriodUseCase = mock()
+    private val periodUseCase: GetEventPeriods = mock()
 
     // Preconditions, data source
     private val style: ObjectStyle = mock()

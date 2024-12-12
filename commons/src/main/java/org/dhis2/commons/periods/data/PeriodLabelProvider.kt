@@ -1,20 +1,19 @@
-package org.dhis2.commons.periods
+package org.dhis2.commons.periods.data
 
 import org.apache.commons.text.WordUtils
+import org.dhis2.commons.periods.model.DAILY_FORMAT
+import org.dhis2.commons.periods.model.FROM_TO_LABEL
+import org.dhis2.commons.periods.model.MONTH_DAY_SHORT_FORMAT
+import org.dhis2.commons.periods.model.MONTH_FULL_FORMAT
+import org.dhis2.commons.periods.model.MONTH_YEAR_FULL_FORMAT
+import org.dhis2.commons.periods.model.YEARLY_FORMAT
 import org.hisp.dhis.android.core.period.PeriodType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
 
-private const val MONTH_FULL_FORMAT = "MMMM"
-private const val MONTH_DAY_SHORT_FORMAT = "MMM d"
-private const val MONTH_YEAR_FULL_FORMAT = "MMMM yyyy"
-private const val YEARLY_FORMAT = "yyyy"
-private const val DAILY_FORMAT = "dd/MM/yyyy"
-private const val FROM_TO_LABEL = "%s - %s"
-
-class GetPeriodLabel(
+class PeriodLabelProvider(
     private val defaultQuarterlyLabel: String = "Q%d %s (%s - %s)",
     private val defaultWeeklyLabel: String = "Week %d: %s - %s, %s",
     private val defaultBiWeeklyLabel: String = "Period %d: %s - %s",

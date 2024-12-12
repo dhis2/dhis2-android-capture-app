@@ -18,8 +18,8 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
-import org.dhis2.commons.periods.Period
-import org.dhis2.commons.periods.PeriodUseCase
+import org.dhis2.commons.periods.domain.GetEventPeriods
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -53,7 +53,7 @@ class SchedulingViewModel(
     private val dateUtils: DateUtils,
 ) : ViewModel() {
 
-    private val periodUseCase = PeriodUseCase(d2)
+    private val periodUseCase = GetEventPeriods(d2)
 
     lateinit var repository: EventDetailsRepository
     lateinit var configureEventReportDate: ConfigureEventReportDate
