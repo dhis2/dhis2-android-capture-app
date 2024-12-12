@@ -3,10 +3,8 @@ package org.dhis2.tracker.relationships.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -40,9 +38,6 @@ class RelationshipsViewModel(
 
     private val _showDeleteConfirmation = MutableStateFlow(false)
     val showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
-
-    private val _snackbarMessage = MutableSharedFlow<String>()
-    val snackbarMessage = _snackbarMessage.asSharedFlow()
 
     fun refreshRelationships() {
         viewModelScope.launch(dispatcher.io()) {
@@ -162,7 +157,7 @@ class RelationshipsViewModel(
 
     private fun showSnackbar(message: String) {
         viewModelScope.launch {
-            _snackbarMessage.emit(message)
+            _relationshipsUiState.value.sendSnackbarMessage(message)
         }
     }
 }
