@@ -28,7 +28,6 @@ recyclerview = "1.3.1"
 compose = "1.5.4"
 composePaging = "3.3.0"
 composeLifecycle = "2.8.1"
-composeTheme = "1.2.1"
 composeConstraintLayout = "1.0.1"
 activityCompose = "1.8.2"
 viewModelCompose = "2.7.0"
@@ -135,7 +134,6 @@ google-auth = { group = "com.google.android.gms", name = "play-services-auth", v
 google-auth-apiphone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version = "18.0.1" }
 google-autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autovalue" } #TODO: this should be removed
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-google-material-themeadapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeTheme" }
 google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -208,7 +206,7 @@ deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window","androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
-uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material-themeadapter", "google-material3-themeadapter"]
+uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
 uicomponents-debugapi = ["androidx-compose-uitooling"]
 uicomponents-androidtest = ["test-junit-ext"]
 analytics-implementation = ["androidx-cardview", "androidx-constraintlayout"]

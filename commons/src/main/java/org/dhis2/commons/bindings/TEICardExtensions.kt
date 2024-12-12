@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.Dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.commons.R
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.databinding.ItemFieldValueBinding
@@ -33,6 +32,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.util.Date
 
@@ -85,7 +85,7 @@ fun List<Program>.getEnrollmentIconsData(
 fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
     parent.apply {
         setContent {
-            MdcTheme {
+            DHIS2Theme {
                 Row(
                     horizontalArrangement = spacedBy(Dp(4f)),
                     verticalAlignment = Alignment.CenterVertically,
