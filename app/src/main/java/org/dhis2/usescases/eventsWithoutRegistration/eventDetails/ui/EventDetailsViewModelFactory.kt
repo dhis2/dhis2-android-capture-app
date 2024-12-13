@@ -13,7 +13,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateO
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.period.PeriodType
 
-@Suppress("UNCHECKED_CAST")
 class EventDetailsViewModelFactory(
     private val configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
