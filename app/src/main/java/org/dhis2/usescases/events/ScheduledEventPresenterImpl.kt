@@ -36,7 +36,7 @@ class ScheduledEventPresenterImpl(
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
-    private val periodUseCase = GetEventPeriods(EventPeriodRepository(d2))
+    private val getEventPeriods = GetEventPeriods(EventPeriodRepository(d2))
 
     override fun init() {
         disposable = CompositeDisposable()
@@ -130,23 +130,21 @@ class ScheduledEventPresenterImpl(
     }
 
     override fun fetchPeriods(scheduling: Boolean): Flow<PagingData<Period>> {
-        return with(periodUseCase) {
-            val event = d2.event(eventUid) ?: return emptyFlow()
-            val stage = event.programStage()?.let { d2.programStage(it) } ?: return emptyFlow()
+        val event = d2.event(eventUid) ?: return emptyFlow()
+        val stage = event.programStage()?.let { d2.programStage(it) } ?: return emptyFlow()
 
-            fetchPeriods(
-                eventUid = eventUid,
-                periodType = stage.periodType() ?: PeriodType.Daily,
-                selectedDate = if (scheduling) {
-                    event.dueDate()
-                } else {
-                    event.eventDate()
-                },
-                programStage = stage,
-                isScheduling = scheduling,
-                eventEnrollmentUid = event.enrollment(),
-            )
-        }
+        return getEventPeriods(
+            eventUid = eventUid,
+            periodType = stage.periodType() ?: PeriodType.Daily,
+            selectedDate = if (scheduling) {
+                event.dueDate()
+            } else {
+                event.eventDate()
+            },
+            programStage = stage,
+            isScheduling = scheduling,
+            eventEnrollmentUid = event.enrollment(),
+        )
     }
 
     override fun setDueDate(date: Date) {

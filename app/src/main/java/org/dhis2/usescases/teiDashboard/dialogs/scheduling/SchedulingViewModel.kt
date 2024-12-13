@@ -336,7 +336,7 @@ class SchedulingViewModel(
         val programStage = programStage.value ?: return emptyFlow()
         val periodType = programStage.periodType() ?: PeriodType.Daily
         val enrollmentUid = enrollment.value?.uid() ?: return emptyFlow()
-        return getEventPeriods.fetchPeriods(
+        return getEventPeriods(
             eventUid = null,
             periodType = periodType,
             selectedDate = eventDate.value.currentDate,
