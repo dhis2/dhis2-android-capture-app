@@ -1,13 +1,11 @@
 package org.dhis2.usescases.events
 
 import androidx.paging.PagingData
-import androidx.paging.map
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
