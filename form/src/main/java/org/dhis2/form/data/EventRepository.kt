@@ -60,7 +60,7 @@ class EventRepository(
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
 
-    private val periodUseCase = GetEventPeriods(
+    private val getEventPeriods = GetEventPeriods(
         EventPeriodRepository(d2),
     )
 
@@ -478,20 +478,18 @@ class EventRepository(
         val periodType = programStage?.periodType() ?: PeriodType.Daily
         val stage = programStage ?: return flowOf()
         val eventEnrollmentUid = event?.enrollment() ?: return flowOf()
-        return with(periodUseCase) {
-            this.fetchPeriods(
-                eventUid = eventUid,
-                periodType = periodType,
-                selectedDate = if (eventMode == EventMode.SCHEDULE) {
-                    event?.dueDate()
-                } else {
-                    event?.eventDate()
-                },
-                programStage = stage,
-                isScheduling = eventMode == EventMode.SCHEDULE,
-                eventEnrollmentUid = eventEnrollmentUid,
-            )
-        }
+        return getEventPeriods(
+            eventUid = eventUid,
+            periodType = periodType,
+            selectedDate = if (eventMode == EventMode.SCHEDULE) {
+                event?.dueDate()
+            } else {
+                event?.eventDate()
+            },
+            programStage = stage,
+            isScheduling = eventMode == EventMode.SCHEDULE,
+            eventEnrollmentUid = eventEnrollmentUid,
+        )
     }
 
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {

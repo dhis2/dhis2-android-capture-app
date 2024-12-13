@@ -111,7 +111,7 @@ class EventDetailsModule(
     ): ConfigurePeriodSelector {
         return ConfigurePeriodSelector(
             eventDetailRepository = eventDetailsRepository,
-            periodUseCase = periodUseCase,
+            getEventPeriods = periodUseCase,
         )
     }
 

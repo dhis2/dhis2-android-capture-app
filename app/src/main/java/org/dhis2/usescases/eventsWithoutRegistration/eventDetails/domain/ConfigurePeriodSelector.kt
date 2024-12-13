@@ -10,25 +10,23 @@ import org.hisp.dhis.android.core.period.PeriodType
 
 class ConfigurePeriodSelector(
     private val eventDetailRepository: EventDetailsRepository,
-    private val periodUseCase: GetEventPeriods,
+    private val getEventPeriods: GetEventPeriods,
 ) {
     operator fun invoke(): Flow<PagingData<Period>> {
         val programStage = eventDetailRepository.getProgramStage() ?: return emptyFlow()
         val event = eventDetailRepository.getEvent() ?: return emptyFlow()
         val periodType = programStage.periodType() ?: PeriodType.Daily
-        return with(periodUseCase) {
-            fetchPeriods(
-                eventUid = event.uid(),
-                periodType = periodType,
-                selectedDate = if (eventDetailRepository.isScheduling()) {
-                    event.dueDate()
-                } else {
-                    event.eventDate()
-                },
-                programStage = programStage,
-                isScheduling = eventDetailRepository.isScheduling(),
-                eventEnrollmentUid = event.enrollment(),
-            )
-        }
+        return getEventPeriods(
+            eventUid = event.uid(),
+            periodType = periodType,
+            selectedDate = if (eventDetailRepository.isScheduling()) {
+                event.dueDate()
+            } else {
+                event.eventDate()
+            },
+            programStage = programStage,
+            isScheduling = eventDetailRepository.isScheduling(),
+            eventEnrollmentUid = event.enrollment(),
+        )
     }
 }
