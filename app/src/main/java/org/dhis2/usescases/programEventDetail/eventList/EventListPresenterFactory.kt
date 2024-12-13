@@ -8,7 +8,6 @@ import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapper
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 
-@Suppress("UNCHECKED_CAST")
 class EventListPresenterFactory(
     private val filterManager: FilterManager,
     private val programEventDetailRepository: ProgramEventDetailRepository,
