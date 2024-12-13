@@ -35,14 +35,17 @@ data class TableModel(
     ): Pair<TableCell, TableSelection.CellSelection>? = when {
         !successValidation ->
             cellSelection
+
         cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
             cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
+
         cellSelection.rowIndex < tableRows.size - 1 ->
             cellSelection.copy(
                 columnIndex = 0,
                 rowIndex = cellSelection.rowIndex + 1,
                 globalIndex = cellSelection.globalIndex + 1,
             )
+
         else -> null
     }?.let { nextCell ->
         val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
@@ -57,10 +60,14 @@ data class TableModel(
             tableRows.size == 1 && tableRows.size == cell.rowIndex -> {
                 tableRows[0].values[cell.columnIndex]?.takeIf { it.error != null }
             }
+
             tableRows.size == cell.rowIndex -> {
                 tableRows[cell.rowIndex - 1].values[cell.columnIndex]?.takeIf { it.error != null }
             }
-            else -> tableRows[cell.rowIndex].values[cell.columnIndex]?.takeIf { it.error != null }
+
+            else -> tableRows.getOrNull(cell.rowIndex)
+                ?.values?.get(cell.columnIndex)
+                ?.takeIf { it.error != null }
         }
     }
 
