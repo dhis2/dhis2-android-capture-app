@@ -9,7 +9,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
 
-@Suppress("UNCHECKED_CAST")
 class SearchTeiViewModelFactory(
     private val searchRepository: SearchRepository,
     private val searchRepositoryKt: SearchRepositoryKt,

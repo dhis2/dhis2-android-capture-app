@@ -8,7 +8,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract.View
 import org.dhis2.utils.analytics.AnalyticsHelper
 
-@Suppress("UNCHECKED_CAST")
 class DataSetTableViewModelFactory(
     private val view: View,
     private val dataSetTableRepository: DataSetTableRepositoryImpl,
