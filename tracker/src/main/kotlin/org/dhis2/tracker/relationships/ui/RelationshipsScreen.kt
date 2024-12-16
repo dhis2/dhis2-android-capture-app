@@ -44,9 +44,10 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
-import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -74,10 +75,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun RelationShipsScreen(
-    uiState: RelationshipsUiState<List<RelationshipSection>>,
+    uiState: RelationshipsUiState,
     relationshipSelectionState: ListSelectionState,
-    onCreateRelationshipClick: (RelationshipSection) -> Unit,
-    onRelationshipClick: (RelationshipItem) -> Unit,
+    onCreateRelationshipClick: (RelationshipSectionUiState) -> Unit,
+    onRelationshipClick: (RelationshipItemUiState) -> Unit,
     onRelationShipSelected: (String) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -154,11 +155,11 @@ private fun RelationShipTypeSection(
     modifier: Modifier = Modifier,
     title: String,
     description: String?,
-    relationships: List<RelationshipItem>,
+    relationships: List<RelationshipItemUiState>,
     canAddRelationship: Boolean,
     relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: () -> Unit,
-    onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationshipClick: (RelationshipItemUiState) -> Unit,
     onRelationshipSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -308,11 +309,11 @@ fun NoRelationshipsPreview() {
 fun RelationShipScreenPreview() {
     val mockUiState = RelationshipsUiState.Success(
         data = listOf(
-            RelationshipSection(
+            RelationshipSectionUiState(
                 uid = "uid1",
                 title = "Relationship type",
                 relationships = listOf(
-                    RelationshipItem(
+                    RelationshipItemUiState(
                         uid = "uidA",
                         title = "First name: Peter",
                         description = null,
@@ -330,7 +331,7 @@ fun RelationShipScreenPreview() {
                         canOpen = true,
                         lastUpdated = "Yesterday",
                     ),
-                    RelationshipItem(
+                    RelationshipItemUiState(
                         uid = "uidB",
                         title = "First name: Mario",
                         description = null,
@@ -352,7 +353,7 @@ fun RelationShipScreenPreview() {
                 side = RelationshipConstraintSide.FROM,
                 entityToAdd = null,
             ),
-            RelationshipSection(
+            RelationshipSectionUiState(
                 uid = "uid2",
                 title = "Empty relation ship",
                 relationships = emptyList(),
