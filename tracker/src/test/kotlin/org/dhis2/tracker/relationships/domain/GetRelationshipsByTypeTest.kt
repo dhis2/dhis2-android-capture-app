@@ -6,10 +6,10 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationshipDirection
-import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.relationship.Relationship
@@ -160,10 +160,10 @@ class GetRelationshipsByTypeTest {
     }
 
     private val relationshipSections = listOf(
-        RelationshipSection(
+        RelationshipSectionUiState(
             title = "Relationship 1",
             relationships = listOf(
-                RelationshipItem(
+                RelationshipItemUiState(
                     uid = "uid1",
                     title = "MainValue1: Value1",
                     description = "Description 1",
@@ -183,10 +183,10 @@ class GetRelationshipsByTypeTest {
             relationshipType = relationshipType1,
             direction = RelationshipDirection.TO
         ),
-        RelationshipSection(
+        RelationshipSectionUiState(
             title = "Relationship 2",
             relationships = listOf(
-                RelationshipItem(
+                RelationshipItemUiState(
                     uid = "uid2",
                     title = "MainValue2: Value2",
                     description = "Description 2",

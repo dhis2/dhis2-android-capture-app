@@ -14,7 +14,8 @@ import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
 import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
-import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper
+import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 
 class RelationshipsViewModel(
     private val dispatcher: DispatcherProvider,
@@ -22,11 +23,12 @@ class RelationshipsViewModel(
     private val deleteRelationships: DeleteRelationships,
     private val addRelationship: AddRelationship,
     private val d2ErrorUtils: D2ErrorUtils,
+    private val relationshipsUiStateMapper: RelationshipsUiStateMapper,
 ) : ViewModel() {
 
     private val _relationshipsUiState =
-        MutableStateFlow<RelationshipsUiState<List<RelationshipSection>>>(RelationshipsUiState.Loading)
-    val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> =
+        MutableStateFlow<RelationshipsUiState>(RelationshipsUiState.Loading)
+    val relationshipsUiState: StateFlow<RelationshipsUiState> =
         _relationshipsUiState.asStateFlow()
 
     private val _relationshipSelectionState = MutableStateFlow(ListSelectionState())
@@ -41,7 +43,7 @@ class RelationshipsViewModel(
             _relationshipsUiState.value = if (relationships.isEmpty()) {
                 RelationshipsUiState.Empty
             } else {
-                RelationshipsUiState.Success(relationships)
+                RelationshipsUiState.Success(relationshipsUiStateMapper.map(relationships))
             }
         }
     }

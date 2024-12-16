@@ -25,6 +25,7 @@ import org.dhis2.tracker.relationships.domain.AddRelationship;
 import org.dhis2.tracker.relationships.domain.DeleteRelationships;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
+import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper;
 import org.dhis2.tracker.ui.AvatarProvider;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
@@ -154,14 +155,16 @@ public class RelationshipModule {
             DeleteRelationships deleteRelationships,
             DispatcherProvider dispatcherProvider,
             AddRelationship addRelationship,
-            D2ErrorUtils d2ErrorUtils
+            D2ErrorUtils d2ErrorUtils,
+            RelationshipsUiStateMapper relationshipsUiStateMapper
     ) {
         return new RelationshipsViewModel(
                 dispatcherProvider,
                 getRelationshipsByType,
                 deleteRelationships,
                 addRelationship,
-                d2ErrorUtils
+                d2ErrorUtils,
+                relationshipsUiStateMapper
         );
     }
 
@@ -176,13 +179,11 @@ public class RelationshipModule {
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
             RelationshipsRepository relationshipsRepository,
-            DateLabelProvider dateLabelProvider,
-            AvatarProvider avatarProvider
+            DispatcherProvider dispatcherProvider
     ) {
         return new GetRelationshipsByType(
                 relationshipsRepository,
-                dateLabelProvider,
-                avatarProvider
+                dispatcherProvider
         );
     }
 
@@ -255,5 +256,14 @@ public class RelationshipModule {
             NetworkUtils networkUtils
     ) {
         return new D2ErrorUtils(moduleContext, networkUtils);
+    }
+
+    @Provides
+    @PerFragment
+    RelationshipsUiStateMapper provideRelationshipsUiStateMapper(
+            AvatarProvider avatarProvider,
+            DateLabelProvider dateLabelProvider
+    ) {
+        return new RelationshipsUiStateMapper(avatarProvider, dateLabelProvider);
     }
 }

@@ -41,12 +41,12 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
-import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.tracker.relationships.ui.DeleteRelationshipsConfirmation
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
-import org.dhis2.tracker.relationships.ui.RelationshipsUiState
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
+import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.theme.Dhis2Theme
@@ -81,7 +81,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     @Inject
     lateinit var relationShipsViewModel: RelationshipsViewModel
 
-    private var relationshipSection: RelationshipSection? = null
+    private var relationshipSection: RelationshipSectionUiState? = null
     private var relationshipMapManager: RelationshipMapManager? = null
     private lateinit var mapButtonObservable: MapButtonObservable
 
