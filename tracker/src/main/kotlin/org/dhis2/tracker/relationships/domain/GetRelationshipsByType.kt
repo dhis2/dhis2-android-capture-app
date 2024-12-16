@@ -1,7 +1,7 @@
 package org.dhis2.tracker.relationships.domain
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationshipItem
@@ -17,33 +17,18 @@ class GetRelationshipsByType(
     private val dateLabelProvider: DateLabelProvider,
     private val avatarProvider: AvatarProvider,
 ) {
-    operator fun invoke(): Flow<List<RelationshipSection>> =
-        relationshipsRepository.getRelationshipTypes()
-            .combine(
-                relationshipsRepository.getRelationships()
-            ) { types, relationships ->
-                types.map { type ->
-                    val relationshipType = type.first
-                    val creationTEITypeUid = type.second // TEI type uid of new relationship
+    suspend operator fun invoke(): List<RelationshipSection> = withContext(Dispatchers.IO) {
+        relationshipsRepository.getRelationshipTypes().map { relationshipType ->
 
-                    // Filter relationships once based on relationshipType
-                    val filteredRelationships = relationships.filter {
-                        it.relationshipType.uid() == relationshipType.uid()
-                    }
-
-                    val (title, direction) = relationshipsRepository.getRelationshipDirectionInfo(
-                        relationshipType = relationshipType,
-                    )
-
-                    RelationshipSection(
-                        title = title,
-                        relationshipType = relationshipType,
-                        relationships = filteredRelationships.map { mapToRelationshipItem(it) },
-                        creationTEITypeUid = creationTEITypeUid,
-                        direction = direction,
-                    )
-                }
-            }
+            RelationshipSection(
+                uid = relationshipType.uid,
+                title = relationshipType.title,
+                relationships = relationshipType.relationships.map { mapToRelationshipItem(it) },
+                side = relationshipType.side,
+                entityToAdd = relationshipType.entityToAdd,
+            )
+        }
+    }
 
     private fun mapToRelationshipItem(relationship: RelationshipModel): RelationshipItem {
         return RelationshipItem(

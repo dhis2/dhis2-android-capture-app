@@ -60,7 +60,10 @@ class TrackerRelationshipsRepositoryTest {
 
         //When getting the relationship title
         whenever(enrollment.program()) doReturn "programUid_1"
-        val title = trackerRelationshipsRepository.getRelationshipDirectionInfo(relationshipType)
+        val title = trackerRelationshipsRepository.getRelationshipTitle(
+            relationshipType,
+            relationshipSide
+        )
 
         //Then the title should be the one from the From constraint
         assert(title.first == relationshipName)
@@ -85,7 +88,10 @@ class TrackerRelationshipsRepositoryTest {
         //When getting the relationship title
         whenever(enrollment.program()) doReturn "programUid_2"
 
-        val title = trackerRelationshipsRepository.getRelationshipDirectionInfo(relationshipType)
+        val title = trackerRelationshipsRepository.getRelationshipTitle(
+            relationshipType,
+            relationshipSide
+        )
 
         //Then the title should be the one from the To constraint
         assert(title.first == relationshipName)

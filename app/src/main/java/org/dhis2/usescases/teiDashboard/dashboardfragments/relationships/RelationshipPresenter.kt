@@ -27,7 +27,6 @@ import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 
 class RelationshipPresenter internal constructor(
@@ -122,16 +121,19 @@ class RelationshipPresenter internal constructor(
         }
     }
 
-    fun goToAddRelationship(teiTypeToAdd: String, relationshipType: RelationshipType) {
-        val writeAccess =
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+    fun goToAddRelationship(
+        relationshipTypeUid: String,
+        teiTypeToAdd: String?,
+    ) {
+        val writeAccess = relationshipsRepository.hasWritePermission(relationshipTypeUid)
 
         if (writeAccess) {
             analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
-            if (teiUid != null) {
-                view.goToAddRelationship(teiUid, teiTypeToAdd)
-            } else if (eventUid != null) {
-                view.goToAddRelationship(eventUid, teiTypeToAdd)
+
+            val originUid = teiUid ?: eventUid
+
+            if (originUid != null && teiTypeToAdd != null) {
+                view.goToAddRelationship(originUid, teiTypeToAdd)
             }
         } else {
             view.showPermissionError()

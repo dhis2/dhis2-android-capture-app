@@ -2,12 +2,9 @@ package org.dhis2.tracker.relationships.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.D2ErrorUtils
@@ -16,10 +13,9 @@ import org.dhis2.tracker.relationships.domain.AddRelationship
 import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
 import org.dhis2.tracker.relationships.model.ListSelectionState
-import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipSection
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class RelationshipsViewModel(
     private val dispatcher: DispatcherProvider,
     private val getRelationshipsByType: GetRelationshipsByType,
@@ -40,18 +36,13 @@ class RelationshipsViewModel(
     val showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
 
     fun refreshRelationships() {
-        viewModelScope.launch(dispatcher.io()) {
-            getRelationshipsByType()
-                .flatMapLatest {
-                    if (it.isEmpty()) {
-                        flowOf(RelationshipsUiState.Empty)
-                    } else {
-                        flowOf(RelationshipsUiState.Success(it))
-                    }
-                }
-                .collect {
-                    _relationshipsUiState.value = it
-                }
+        viewModelScope.launch {
+            val relationships = getRelationshipsByType()
+            _relationshipsUiState.value = if (relationships.isEmpty()) {
+                RelationshipsUiState.Empty
+            } else {
+                RelationshipsUiState.Success(relationships)
+            }
         }
     }
 
@@ -135,13 +126,13 @@ class RelationshipsViewModel(
     fun onAddRelationship(
         selectedTeiUid: String,
         relationshipTypeUid: String,
-        direction: RelationshipDirection,
+        relationshipSide: RelationshipConstraintSide,
     ) {
         viewModelScope.launch(dispatcher.io()) {
             addRelationship(
                 selectedTeiUid = selectedTeiUid,
                 relationshipTypeUid = relationshipTypeUid,
-                direction = direction,
+                relationshipSide = relationshipSide,
             ).fold(
                 onSuccess = {
                     refreshRelationships()
