@@ -351,7 +351,7 @@ class FormViewModel(
                         it.value,
                         it.valueType,
                         it.fieldMask,
-                        it.allowFutureDates
+                        it.allowFutureDates,
                     ),
                 )
                 repository.updateErrorList(action)
@@ -366,7 +366,7 @@ class FormViewModel(
                     it.value,
                     it.valueType,
                     it.fieldMask,
-                    it.allowFutureDates
+                    it.allowFutureDates,
                 )
                 val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
