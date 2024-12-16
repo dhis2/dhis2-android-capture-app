@@ -43,13 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.ListSelectionState
-import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipItem
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -132,7 +131,7 @@ fun RelationShipsScreen(
                                 null
                             },
                             relationships = item.relationships,
-                            canAddRelationship = item.canAddRelationship(),
+                            canAddRelationship = item.entityToAdd != null,
                             relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
                                 onCreateRelationshipClick(item)
@@ -310,6 +309,7 @@ fun RelationShipScreenPreview() {
     val mockUiState = RelationshipsUiState.Success(
         data = listOf(
             RelationshipSection(
+                uid = "uid1",
                 title = "Relationship type",
                 relationships = listOf(
                     RelationshipItem(
@@ -349,22 +349,15 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     )
                 ),
-                creationTEITypeUid = null,
-                relationshipType = RelationshipType.builder()
-                    .uid("")
-                    .displayName("Relationship type")
-                    .build(),
-                direction = RelationshipDirection.TO,
+                side = RelationshipConstraintSide.FROM,
+                entityToAdd = null,
             ),
             RelationshipSection(
+                uid = "uid2",
                 title = "Empty relation ship",
                 relationships = emptyList(),
-                creationTEITypeUid = "teiTypeUid",
-                relationshipType = RelationshipType.builder()
-                    .uid("")
-                    .displayName("Empty relation ship")
-                    .build(),
-                direction = RelationshipDirection.TO,
+                side = RelationshipConstraintSide.FROM,
+                entityToAdd = null,
             )
         )
     )

@@ -1,9 +1,9 @@
 package org.dhis2.tracker.relationships.model
 
-data class RelationshipSection(
+data class RelationshipType(
     val uid: String,
     val title: String,
-    val relationships: List<RelationshipItem>,
+    val relationships : List<RelationshipModel>,
     val side: RelationshipConstraintSide,
-    val entityToAdd: String?
+    val entityToAdd: String?,
 )

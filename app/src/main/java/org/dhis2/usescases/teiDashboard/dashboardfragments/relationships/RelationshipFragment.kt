@@ -95,8 +95,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 relationshipSection?.let { relationshipSection ->
                     relationShipsViewModel.onAddRelationship(
                         selectedTeiUid = it.teiUidToAddAsRelationship,
-                        relationshipTypeUid = relationshipSection.relationshipType.uid(),
-                        direction = relationshipSection.direction,
+                        relationshipTypeUid = relationshipSection.uid,
+                        relationshipSide = relationshipSection.side,
                     )
                 }
             }
@@ -147,12 +147,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             uiState = uiState,
                             relationshipSelectionState = relationshipSelectionState,
                             onCreateRelationshipClick = {
-                                it.creationTEITypeUid?.let { teiTypeUid ->
-                                    goToRelationShip(
-                                        relationshipSection = it,
-                                        teiTypeUid = teiTypeUid,
-                                    )
-                                }
+                                relationshipSection = it
+                                presenter.goToAddRelationship(
+                                    it.uid,
+                                    it.entityToAdd,
+                                )
                             },
                             onRelationshipClick = {
                                 presenter.onRelationshipClicked(
@@ -406,11 +405,6 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 teiTypeUidToAdd,
             ),
         )
-    }
-
-    private fun goToRelationShip(relationshipSection: RelationshipSection, teiTypeUid: String) {
-        this.relationshipSection = relationshipSection
-        presenter.goToAddRelationship(teiTypeUid, relationshipSection.relationshipType)
     }
 
     override fun showPermissionError() {

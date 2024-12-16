@@ -3,7 +3,7 @@ package org.dhis2.tracker.relationships.domain
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
-import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 
 class AddRelationship(
     private val dispatcher: DispatcherProvider,
@@ -12,12 +12,12 @@ class AddRelationship(
     suspend operator fun invoke(
         selectedTeiUid: String,
         relationshipTypeUid: String,
-        direction: RelationshipDirection,
+        relationshipSide: RelationshipConstraintSide,
     ): Result<String> = withContext(dispatcher.io()) {
         val relationship = repository.createRelationship(
             selectedTeiUid = selectedTeiUid,
             relationshipTypeUid = relationshipTypeUid,
-            direction = direction,
+            relationshipSide = relationshipSide,
         )
         repository.addRelationship(relationship)
     }

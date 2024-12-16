@@ -1,7 +1,6 @@
 package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.date.DateLabelProvider
@@ -68,10 +67,16 @@ class GetRelationshipsByTypeTest {
         whenever(relationshipsRepository.getRelationshipTypes()) doReturn getRelationshipTypesMock()
         whenever(relationshipsRepository.getRelationships()) doReturn getRelationshipsMock()
         whenever(
-            relationshipsRepository.getRelationshipDirectionInfo(relationshipType1)
+            relationshipsRepository.getRelationshipTitle(
+                relationshipType1,
+                relationshipSide
+            )
         ) doReturn Pair("Relationship 1", RelationshipDirection.TO)
         whenever(
-            relationshipsRepository.getRelationshipDirectionInfo(relationshipType2)
+            relationshipsRepository.getRelationshipTitle(
+                relationshipType2,
+                relationshipSide
+            )
         ) doReturn Pair("Relationship 2", RelationshipDirection.TO)
         whenever(dateLabelProvider.span(any())) doReturn "5 days ago"
 
