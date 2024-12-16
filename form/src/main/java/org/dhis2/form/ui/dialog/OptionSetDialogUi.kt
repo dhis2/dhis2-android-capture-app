@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -45,6 +44,8 @@ import org.dhis2.form.model.OptionSetDialogViewModel
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
 @Composable
 fun OptionSetDialogScreen(
@@ -90,7 +91,7 @@ fun OptionSetDialogScreen(
             ) {
                 when (searchValue.isNotEmpty()) {
                     true -> Text(stringResource(R.string.no_option_found))
-                    else -> CircularProgressIndicator()
+                    else -> ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
                 }
             }
         }
