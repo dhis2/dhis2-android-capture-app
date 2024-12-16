@@ -343,10 +343,16 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         if (previousActionItem == null) previousActionItem = rowAction
         if (previousActionItem?.value != it.value && previousActionItem?.id == it.uid) {
-            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
+            val error = checkFieldError(it.valueType, it.value, it.fieldMask, it.allowFutureDates)
             if (error != null) {
                 val action = rowActionFromIntent(
-                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
+                    FormIntent.OnSave(
+                        it.uid,
+                        it.value,
+                        it.valueType,
+                        it.fieldMask,
+                        it.allowFutureDates
+                    ),
                 )
                 repository.updateErrorList(action)
                 StoreResult(
@@ -355,7 +361,13 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
+                val intent = FormIntent.OnSave(
+                    it.uid,
+                    it.value,
+                    it.valueType,
+                    it.fieldMask,
+                    it.allowFutureDates
+                )
                 val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
