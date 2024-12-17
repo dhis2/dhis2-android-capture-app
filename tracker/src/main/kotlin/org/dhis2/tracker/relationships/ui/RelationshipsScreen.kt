@@ -42,9 +42,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
-import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.ui.state.ListSelectionState
 import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState

@@ -1,4 +1,4 @@
-package org.dhis2.tracker.relationships.model
+package org.dhis2.tracker.relationships.ui.state
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List

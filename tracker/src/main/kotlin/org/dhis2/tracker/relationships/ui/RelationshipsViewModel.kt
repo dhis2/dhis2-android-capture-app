@@ -12,9 +12,9 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.relationships.domain.AddRelationship
 import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
-import org.dhis2.tracker.relationships.model.ListSelectionState
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper
+import org.dhis2.tracker.relationships.ui.state.ListSelectionState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 
 class RelationshipsViewModel(
