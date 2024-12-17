@@ -82,7 +82,7 @@ class GranularSyncRepository(
 
             ConflictType.TEI -> {
                 val enrollment = d2.enrollment(syncContext.recordUid())
-                d2.observeTei(enrollment?.trackedEntityInstance()!!)
+                d2.observeTei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
                     .map { it.aggregatedSyncState() }
             }
 
