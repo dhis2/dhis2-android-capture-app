@@ -86,7 +86,7 @@ class TrackedEntityInstanceInfoProvider(
                     ValueType.IMAGE,
                     ValueType.FILE_RESOURCE,
                     ValueType.COORDINATE,
-                ).contains(attribute.valueType)
+                ).contains(attribute.valueType) && attribute.value != null
         }.map { attribute ->
             AdditionalInfoItem(
                 key = attribute.displayFormName,
