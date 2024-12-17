@@ -10,6 +10,7 @@ import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -46,6 +47,7 @@ class ProgramRepositoryImplTest {
     private val filterPresenter: FilterPresenter =
         Mockito.mock(FilterPresenter::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisProgramUtils: DhisProgramUtils = mock()
+    private val dhis2TeiUtils: DhisTrackedEntityInstanceUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
@@ -60,6 +62,7 @@ class ProgramRepositoryImplTest {
             d2,
             filterPresenter,
             dhisProgramUtils,
+            dhis2TeiUtils,
             resourceManager,
             metadataIconProvider,
             scheduler,

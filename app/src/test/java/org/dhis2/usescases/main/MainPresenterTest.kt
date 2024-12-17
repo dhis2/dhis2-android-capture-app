@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
@@ -53,6 +54,8 @@ class MainPresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
+    private val filterRepository: FilterRepository = mock()
+
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
@@ -83,6 +86,7 @@ class MainPresenterTest {
                 preferences,
                 workManagerController,
                 filterManager,
+                filterRepository,
                 matomoAnalyticsController,
                 userManager,
                 deleteUserData,
