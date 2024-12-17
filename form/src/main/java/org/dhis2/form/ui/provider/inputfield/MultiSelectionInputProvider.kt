@@ -45,9 +45,13 @@ internal fun ProvideMultiSelectionInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemsSelected = {
-            val checkedValues = it.filter { item -> item.checked }.map { checkBoxData ->
-                val selectedIndex = data.indexOf(checkBoxData)
-                codeList[selectedIndex]
+            val checkedValues = it.mapNotNull { checkBoxData ->
+                if (checkBoxData.checked) {
+                    val selectedIndex = data.indexOfFirst { originalData -> originalData.uid == checkBoxData.uid }
+                    codeList[selectedIndex]
+                } else {
+                    null
+                }
             }
 
             intentHandler(
