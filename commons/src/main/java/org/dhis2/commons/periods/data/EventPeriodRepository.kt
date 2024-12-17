@@ -22,8 +22,8 @@ class EventPeriodRepository(private val d2: D2) {
 
         val expiryDays = program?.expiryDays()
 
-        val currentDate = if (!isScheduling && expiryDays == null) {
-            val enrollment = eventEnrollmentUid?.let { d2.enrollment(it) }
+        val currentDate = if (!isScheduling && eventEnrollmentUid != null) {
+            val enrollment = d2.enrollment(eventEnrollmentUid)
             if (programStage.generatedByEnrollmentDate() == true) {
                 enrollment?.enrollmentDate()
             } else {
@@ -33,7 +33,7 @@ class EventPeriodRepository(private val d2: D2) {
             generatePeriod(periodType, offset = 1).startDate()
         } ?: Date()
 
-        val currentPeriod = generatePeriod(periodType)
+        val currentPeriod = generatePeriod(periodType, currentDate)
         val previousPeriodLastDay =
             generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
                 .startDate()
