@@ -9,6 +9,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
+import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
@@ -21,6 +22,7 @@ internal class ProgramRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
     private val dhisProgramUtils: DhisProgramUtils,
+    private val dhisTeiUtils: DhisTrackedEntityInstanceUtils,
     private val resourceManager: ResourceManager,
     private val metadataIconProvider: MetadataIconProvider,
     private val schedulerProvider: SchedulerProvider,
@@ -67,8 +69,13 @@ internal class ProgramRepositoryImpl(
                             programViewModelMapper.map(
                                 dataSet,
                                 it,
-                                it.dataSetInstanceCount(),
+                                if (filterPresenter.isAssignedToMeApplied()) {
+                                    0
+                                } else {
+                                    it.dataSetInstanceCount()
+                                },
                                 resourceManager.defaultDataSetLabel(),
+                                filterPresenter.areFiltersActive(),
                                 metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
                             )
                         }
@@ -107,6 +114,8 @@ internal class ProgramRepositoryImpl(
                     0,
                     recordLabel,
                     state,
+                    hasOverdue = false,
+                    filtersAreActive = false,
                     metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 ).copy(
                     stockConfig = if (d2.isStockProgram(program.uid())) {
@@ -121,15 +130,19 @@ internal class ProgramRepositoryImpl(
     private fun List<ProgramUiModel>.applyFilters(): List<ProgramUiModel> {
         return map { programModel ->
             val program = d2.programModule().programs().uid(programModel.uid).blockingGet()
-            val count =
+            val (count, hasOverdue) =
                 if (program?.programType() == WITHOUT_REGISTRATION) {
                     getSingleEventCount(program)
                 } else if (program?.programType() == WITH_REGISTRATION) {
                     getTrackerTeiCount(program)
                 } else {
-                    0
+                    Pair(0, false)
                 }
-            programModel.copy(count = count)
+            programModel.copy(
+                count = count,
+                hasOverdueEvent = hasOverdue,
+                filtersAreActive = filterPresenter.areFiltersActive(),
+            )
         }
     }
 
@@ -156,13 +169,20 @@ internal class ProgramRepositoryImpl(
         }
     }
 
-    private fun getSingleEventCount(program: Program): Int {
-        return filterPresenter.filteredEventProgram(program)
-            .blockingGet().filter { event -> event.syncState() != State.RELATIONSHIP }.size
+    private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {
+        return Pair(
+            filterPresenter.filteredEventProgram(program)
+                .blockingGet().filter { event -> event.syncState() != State.RELATIONSHIP }.size,
+            false,
+        )
     }
 
-    private fun getTrackerTeiCount(program: Program): Int {
-        return filterPresenter.filteredTrackerProgram(program)
-            .offlineFirst().blockingCount()
+    private fun getTrackerTeiCount(program: Program): Pair<Int, Boolean> {
+        val teiIds = filterPresenter.filteredTrackerProgram(program)
+            .offlineFirst().blockingGetUids()
+        val mCount = teiIds.size
+        val mOverdue = dhisTeiUtils.hasOverdueInProgram(teiIds, program)
+
+        return Pair(mCount, mOverdue)
     }
 }
