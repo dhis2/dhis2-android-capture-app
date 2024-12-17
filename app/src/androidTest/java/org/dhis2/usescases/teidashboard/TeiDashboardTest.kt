@@ -246,9 +246,11 @@ class TeiDashboardTest : BaseTest() {
 
         teiDashboardRobot(composeTestRule) {
             goToAnalytics()
+            composeTestRule.waitForIdle()
         }
 
         indicatorsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             checkDetails("0", "4817")
         }
     }
