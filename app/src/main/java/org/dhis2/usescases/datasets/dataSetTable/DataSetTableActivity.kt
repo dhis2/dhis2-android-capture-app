@@ -22,7 +22,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.shape.CornerFamily
@@ -326,14 +325,6 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             resources.getQuantityText(R.plurals.error_message, violations.size)
         binding.BSLayout.violationsViewPager.adapter =
             ValidationResultViolationsAdapter(this, violations)
-
-        binding.BSLayout.violationsViewPager.registerOnPageChangeCallback(
-            object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-                }
-            },
-        )
         binding.BSLayout.dotsIndicator.setViewPager(binding.BSLayout.violationsViewPager)
         behavior = BottomSheetBehavior.from(binding.BSLayout.bottomSheetLayout)
         behavior!!.addBottomSheetCallback(object : BottomSheetCallback() {
