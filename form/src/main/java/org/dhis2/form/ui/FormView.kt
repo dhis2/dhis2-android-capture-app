@@ -75,7 +75,6 @@ import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
@@ -467,9 +466,7 @@ class FormView : Fragment() {
         isEventCompleted: Boolean,
         bottomSheetDialog: BottomSheetDialog,
     ) {
-        val errorsInField =
-            fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
-        if (errorsInField) {
+        if (fieldsWithIssues.any { it.issueType.shouldShowError() }) {
             bottomSheetDialog.dismiss()
         } else if (isEventCompleted) {
             onFinishDataEntry?.invoke()
