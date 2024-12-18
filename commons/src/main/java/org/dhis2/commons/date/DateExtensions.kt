@@ -2,6 +2,7 @@ package org.dhis2.commons.date
 
 import android.content.Context
 import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import org.dhis2.commons.R
 import org.dhis2.commons.resources.ResourceManager
 import org.joda.time.Days
@@ -14,6 +15,7 @@ import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import org.hisp.dhis.android.core.period.PeriodType as Dhis2PeriodType
 
 val defaultCurrentDate: Date
     get() = Date()
@@ -88,6 +90,7 @@ fun Date?.toOverdueOrScheduledUiText(
             isOverdue,
         )
     }
+
     val currentDay = with(DateUtils.getInstance()) {
         setCurrentDate(currentDate)
         calendar.time
@@ -112,6 +115,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 resourceManager.getString(R.string.overdue_today)
             }
         }
+
         period.years >= 1 -> {
             getString(
                 resourceManager,
@@ -121,6 +125,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 isOverdue,
             )
         }
+
         period.months >= 3 && period.years < 1 -> {
             getString(
                 resourceManager,
@@ -130,6 +135,7 @@ fun Date?.toOverdueOrScheduledUiText(
                 isOverdue,
             )
         }
+
         period.days in 0..89 && period.months in 0..2 -> {
             val intervalDays = if (this.time > currentDay.time) {
                 Interval(currentDay.time, this.time)
@@ -139,6 +145,7 @@ fun Date?.toOverdueOrScheduledUiText(
 
             getOverdueDaysString(intervalDays, isOverdue)
         }
+
         else -> {
             getOverdueDaysString(period.days, isOverdue)
         }
@@ -161,3 +168,35 @@ private fun getString(
 
 fun Date?.toUi(): String? =
     this?.let { DateUtils.uiDateFormat().format(this) }
+
+@StringRes
+fun Dhis2PeriodType.toUiStringResource() =
+    when (this) {
+        Dhis2PeriodType.Weekly,
+        Dhis2PeriodType.WeeklySaturday,
+        Dhis2PeriodType.WeeklySunday,
+        Dhis2PeriodType.WeeklyThursday,
+        Dhis2PeriodType.WeeklyWednesday,
+        -> R.string.period_weekly_title
+
+        Dhis2PeriodType.BiWeekly -> R.string.period_biweekly_title
+        Dhis2PeriodType.Monthly -> R.string.period_monthly_title
+        Dhis2PeriodType.BiMonthly -> R.string.period_bi_monthly_title
+        Dhis2PeriodType.Quarterly,
+        Dhis2PeriodType.QuarterlyNov,
+        -> R.string.period_quarter_title
+
+        Dhis2PeriodType.SixMonthly,
+        Dhis2PeriodType.SixMonthlyApril,
+        Dhis2PeriodType.SixMonthlyNov,
+        -> R.string.period_six_monthly_title
+
+        Dhis2PeriodType.Yearly -> R.string.period_yearly_title
+        Dhis2PeriodType.FinancialApril,
+        Dhis2PeriodType.FinancialJuly,
+        Dhis2PeriodType.FinancialOct,
+        Dhis2PeriodType.FinancialNov,
+        -> R.string.period_financial_year_title
+
+        Dhis2PeriodType.Daily -> R.string.period_daily_title
+    }
