@@ -79,7 +79,7 @@ class TrackerRelationshipsRepository(
             .blockingGet()
 
         val relationships = d2.relationshipModule().relationships()
-            .getByItem(
+            .byItem(
                 RelationshipItem.builder()
                     .trackedEntityInstance(
                         RelationshipItemTrackedEntityInstance.builder()
@@ -88,9 +88,11 @@ class TrackerRelationshipsRepository(
                     ).relationshipItemType(constraintType)
                     .build(),
             )
-            .filter {
-                it.relationshipType() == relationshipSection.uid
-            }.mapNotNull { relationship ->
+            .byRelationshipType().eq(relationshipSection.uid)
+            .byDeleted().isFalse
+            .withItems()
+            .blockingGet()
+            .mapNotNull { relationship ->
                 mapToRelationshipModel(
                     relationship = relationship,
                     relationshipType = relationshipType,
