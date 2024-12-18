@@ -36,6 +36,7 @@ class GetRelationshipsByTypeTest {
 
     @Test
     fun `invoke should return relationship sections grouped by type`() = runTest {
+
         //Given a list of relationship types and relationships
         whenever(relationshipsRepository.getRelationshipTypes()) doReturn getRelationshipSectionsMock()
         whenever(
@@ -52,21 +53,19 @@ class GetRelationshipsByTypeTest {
 
         // When calling the use case to get the relationships grouped by type
             val result = getRelationshipsByType()
-            assertEquals(expectedResult, result)
-
 
         // Then a list of RelationshipSections with their relationships should be returned
+        val expectedResult = listOf(
+            relationshipSection1.copy(
+                relationships = listOf(relationshipModel1),
+            ),
+            relationshipSection2.copy(
+                relationships = listOf(relationshipModel2),
+            )
+        )
+        assertEquals(expectedResult, result)
 
     }
-
-    private val expectedResult = listOf(
-        relationshipSection1.copy(
-            relationships = listOf(relationshipModel1),
-        ),
-        relationshipSection2.copy(
-            relationships = listOf(relationshipModel2),
-        )
-    )
 
     private fun getRelationshipSectionsMock(): List<RelationshipSection> {
         return listOf(

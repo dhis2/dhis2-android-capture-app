@@ -5,12 +5,11 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.relationshipSection1
 import org.dhis2.tracker.relationships.relationshipSection2
+import org.dhis2.tracker.relationships.relationshipTypeEventToTei
+import org.dhis2.tracker.relationships.relationshipTypeTeiToTei
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipConstraintType
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.relationship.RelationshipTypeWithEntitySide
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertEquals
@@ -34,7 +33,7 @@ class TrackerRelationshipsRepositoryTest {
 
     private val teiUid = "teiUid"
     private val enrollmentUid = "enrollmentUid"
-    private val trackedEntityType = "trackedEntityType"
+    private val trackedEntityType = "trackedEntityType1"
 
     @Before
     fun setup() {
@@ -85,30 +84,12 @@ class TrackerRelationshipsRepositoryTest {
 
 
         //Then a relationshipSectionList is returned
-        assertEquals(relationshipTypes, expectedResult)
+        val expectedResult = listOf(
+            relationshipSection1,
+            relationshipSection2,
+        )
+        assertEquals(expectedResult, relationshipTypes)
     }
-
-
-
-    private val relationshipTypeTeiToTei = RelationshipType.builder()
-        .uid("relationshipTypeUid1")
-        .fromToName("RelationshipType1 FROM")
-        .toFromName("RelationshipType1 TO")
-        .displayName("Tei to Tei relationship")
-        .fromConstraint(
-            RelationshipConstraint.builder()
-                .trackedEntityType(
-                    ObjectWithUid.create(trackedEntityType)
-                ).build()
-        )
-        .toConstraint(
-            RelationshipConstraint.builder()
-                .trackedEntityType(
-                    ObjectWithUid.create("trackedEntityTypeUid2")
-                )
-                .build()
-        )
-        .build()
 
     private val relationshipWithEntitySideList = listOf(
         RelationshipTypeWithEntitySide(
@@ -116,18 +97,8 @@ class TrackerRelationshipsRepositoryTest {
             entitySide = RelationshipConstraintType.FROM
         ),
         RelationshipTypeWithEntitySide(
-            relationshipType = RelationshipType.builder()
-                .uid("relationshipTypeUid2")
-                .fromToName("RelationshipType2 FROM")
-                .toFromName("RelationshipType2 TO")
-                .displayName("relationshipType2")
-                .build(),
+            relationshipType = relationshipTypeEventToTei,
             entitySide = RelationshipConstraintType.FROM
         )
-    )
-
-    private val expectedResult = listOf(
-        relationshipSection1,
-        relationshipSection2,
     )
 }
