@@ -7,6 +7,7 @@ import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.EventMode
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.junit.Assert.assertTrue
@@ -96,6 +97,54 @@ class FormResultDialogProviderTest {
             result = completedEventWithNoErrors,
         )
         assertTrue(noErrorsInFormModel.first.mainButton == DialogButtonStyle.CompleteButton)
+    }
+
+    @Test
+    fun `Should configure to show warning on complete message`() {
+        val completedEventWithNoErrors = SuccessfulResult(
+            canComplete = true,
+            onCompleteMessage = "Warning on complete",
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.CHECK,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        val noErrorsInFormModel = formResultDialogProvider.invoke(
+            canComplete = completedEventWithNoErrors.canComplete,
+            onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            eventMode = completedEventWithNoErrors.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = completedEventWithNoErrors.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = completedEventWithNoErrors,
+        )
+        assertTrue(noErrorsInFormModel.second.first().issueType == IssueType.WARNING_ON_COMPLETE)
+    }
+
+    @Test
+    fun `Should configure to show error on complete message`() {
+        val completedEventWithNoErrors = SuccessfulResult(
+            canComplete = false,
+            onCompleteMessage = "error on complete",
+            eventResultDetails = EventResultDetails(
+                eventStatus = EventStatus.ACTIVE,
+                eventMode = EventMode.NEW,
+                validationStrategy = ValidationStrategy.ON_COMPLETE,
+            ),
+        )
+        val noErrorsInFormModel = formResultDialogProvider.invoke(
+            canComplete = completedEventWithNoErrors.canComplete,
+            onCompleteMessage = completedEventWithNoErrors.onCompleteMessage,
+            errorFields = emptyList(),
+            emptyMandatoryFields = emptyMap(),
+            warningFields = emptyList(),
+            eventMode = completedEventWithNoErrors.eventResultDetails.eventMode ?: EventMode.NEW,
+            eventState = completedEventWithNoErrors.eventResultDetails.eventStatus ?: EventStatus.ACTIVE,
+            result = completedEventWithNoErrors,
+        )
+        assertTrue(noErrorsInFormModel.second.first().issueType == IssueType.ERROR_ON_COMPLETE)
     }
 
     @Test

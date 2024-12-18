@@ -62,7 +62,6 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            openEventDetailsSection()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }
