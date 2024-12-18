@@ -145,7 +145,7 @@ private fun ButtonBlock(
                     modifier = Modifier.fillMaxWidth(),
                     style = ButtonStyle.FILLED,
                     enabled = !scheduleNew ||
-                        !date.dateValue.isNullOrEmpty() &&
+                        date.isValid &&
                         catCombo.isCompleted,
                     text = buttonTitle(scheduleNew),
                     onClick = {
@@ -166,7 +166,7 @@ private fun ButtonBlock(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
-                        enabled = !date.dateValue.isNullOrEmpty(),
+                        enabled = date.isValid,
                         text = stringResource(R.string.enter_event, eventLabel),
                         onClick = {
                             viewModel.enterEvent(launchMode)
@@ -272,6 +272,7 @@ fun ProvideScheduleNewEventForm(
                 onDateClick = {},
                 onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
                 onClear = { viewModel.onClearEventReportDate() },
+                onError = { viewModel.onDateError() },
             ),
         )
     } else {

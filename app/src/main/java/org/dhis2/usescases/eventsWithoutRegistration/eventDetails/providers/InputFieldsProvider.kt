@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import org.dhis2.R
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
@@ -100,8 +101,12 @@ fun ProvideInputDate(
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
             onValueChanged = {
                 value = it ?: TextFieldValue()
-                state = getInputShellStateBasedOnValue(it?.text)
-                it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
+                it?.let { dateValue ->
+                    manageActionBasedOnValue(
+                        uiModel = uiModel,
+                        dateString = dateValue.text,
+                    )
+                }
             },
             onFocusChanged = { focused ->
                 if (!focused && !isValid(value.text) && state == InputShellState.FOCUSED) {
@@ -123,25 +128,31 @@ fun isValidDateFormat(dateString: String): Boolean {
     }
 }
 
-fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
-    dateString?.let {
-        return if (!isValidDateFormat(it)) {
-            InputShellState.ERROR
-        } else {
-            InputShellState.FOCUSED
-        }
-    }
-    return InputShellState.FOCUSED
-}
-
 fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
     if (dateString.isEmpty()) {
         uiModel.onClear?.invoke()
     } else if (isValidDateFormat(dateString)) {
         formatUIDateToStored(dateString)?.let { dateValues ->
-            uiModel.onDateSelected(dateValues)
+            if (uiModel.selectableDates?.let { dateValues.isInRange(it) } == true) {
+                uiModel.onDateSelected(dateValues)
+            } else {
+                uiModel.onError?.invoke()
+            }
         }
+    } else {
+        uiModel.onError?.invoke()
     }
+}
+
+fun InputDateValues.isInRange(selectableDates: SelectableDates): Boolean {
+    val format = LocalDate.Format {
+        dayOfMonth()
+        monthNumber()
+        year()
+    }
+    val date = LocalDate(year, month, day)
+    return format.parse(selectableDates.initialDate) <= date &&
+        format.parse(selectableDates.endDate) >= date
 }
 
 private fun isValid(valueString: String) = valueString.length == 8
@@ -171,7 +182,7 @@ fun formatUIDateToStored(dateValue: String?): InputDateValues? {
     return if (dateValue?.length != 10) {
         null
     } else {
-        val date = kotlinx.datetime.LocalDate.Formats.ISO.parse(dateValue)
+        val date = LocalDate.Formats.ISO.parse(dateValue)
         InputDateValues(date.dayOfMonth, date.monthNumber, date.year)
     }
 }
