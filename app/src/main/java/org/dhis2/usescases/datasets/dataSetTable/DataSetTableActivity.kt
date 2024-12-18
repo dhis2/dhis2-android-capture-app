@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.LockReset
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -22,6 +23,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.shape.CornerFamily
@@ -44,6 +46,7 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
+import org.dhis2.commons.ui.PagerIndicator
 import org.dhis2.databinding.ActivityDatasetTableBinding
 import org.dhis2.usescases.datasets.dataSetTable.dataSetDetail.DataSetDetailFragment.Companion.create
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSection
@@ -325,7 +328,24 @@ class DataSetTableActivity : ActivityGlobalAbstract(), DataSetTableContract.View
             resources.getQuantityText(R.plurals.error_message, violations.size)
         binding.BSLayout.violationsViewPager.adapter =
             ValidationResultViolationsAdapter(this, violations)
-        binding.BSLayout.dotsIndicator.setViewPager(binding.BSLayout.violationsViewPager)
+        binding.BSLayout.dotsIndicator.setContent {
+            var currentPage by remember { mutableIntStateOf(0) }
+            binding.BSLayout.violationsViewPager.registerOnPageChangeCallback(
+                object : OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        currentPage = position
+                    }
+                },
+            )
+            if (violations.isNotEmpty()) {
+                PagerIndicator(
+                    pageCount = violations.size,
+                    currentPage = currentPage,
+                    dotIndicatorColor = SurfaceColor.Error,
+                )
+            }
+        }
         behavior = BottomSheetBehavior.from(binding.BSLayout.bottomSheetLayout)
         behavior!!.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
