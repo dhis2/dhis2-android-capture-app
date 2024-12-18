@@ -92,6 +92,7 @@ dependencies {
     implementation(project(":dhis_android_analytics"))
 
     implementation(libs.bundles.stock.implementation)
+    implementation(project(":aggregates"))
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
     kapt(libs.bundles.stock.kapt)
