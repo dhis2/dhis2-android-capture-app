@@ -8,6 +8,7 @@ import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -28,66 +29,78 @@ class TrackerRelationshipsRepository(
     private val profilePictureProvider: ProfilePictureProvider,
 ) : RelationshipsRepository(d2, resources) {
 
-    override suspend fun getRelationshipTypes(): List<org.dhis2.tracker.relationships.model.RelationshipType> {
+    override suspend fun getRelationshipTypes(): List<RelationshipSection> {
+        val tei = d2.trackedEntityModule().trackedEntityInstances()
+            .uid(teiUid).blockingGet() ?: return emptyList()
+        val programUid = d2.enrollmentModule().enrollments()
+            .uid(enrollmentUid).blockingGet()?.program()
+
+        return d2.relationshipModule().relationshipService( )
+            .getRelationshipTypesForTrackedEntities(
+                trackedEntityType = tei.trackedEntityType()!!,
+                programUid = programUid,
+            ).map { relationshipWithEntitySide ->
+                RelationshipSection(
+                    uid = relationshipWithEntitySide.relationshipType.uid(),
+                    title = getRelationshipTitle(
+                        relationshipWithEntitySide.relationshipType,
+                        relationshipWithEntitySide.entitySide,
+                    ),
+                    relationships = emptyList(),
+                    side = when (relationshipWithEntitySide.entitySide) {
+                        RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
+                        RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
+                    },
+                    entityToAdd = when (relationshipWithEntitySide.entitySide) {
+                        RelationshipConstraintType.FROM ->
+                            relationshipWithEntitySide.relationshipType.toConstraint()
+                                ?.trackedEntityType()?.uid()
+
+                        RelationshipConstraintType.TO ->
+                            relationshipWithEntitySide.relationshipType.fromConstraint()
+                                ?.trackedEntityType()?.uid()
+                    }
+                )
+            }
+    }
+
+    override suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid).blockingGet()
         val programUid = d2.enrollmentModule().enrollments()
             .uid(enrollmentUid).blockingGet()?.program()
+        val constraintType = when (relationshipSection.side) {
+            RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
+            RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
+        }
+        val relationshipType = d2.relationshipModule().relationshipTypes()
+            .withConstraints()
+            .uid(relationshipSection.uid)
+            .blockingGet()
 
-        val relationshipsWithEntitySide = d2.relationshipModule().relationshipService()
-            .getRelationshipTypesForTrackedEntities(
-                trackedEntityType = tei!!.trackedEntityType()!!,
-                programUid = programUid,
-            )
-
-        val relationships = d2.relationshipModule().relationships().getByItem(
-            RelationshipItem.builder().trackedEntityInstance(
-                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
+        val relationships = d2.relationshipModule().relationships()
+            .getByItem(
+                RelationshipItem.builder()
+                    .trackedEntityInstance(
+                        RelationshipItemTrackedEntityInstance.builder()
+                            .trackedEntityInstance(teiUid)
+                            .build(),
+                    ).relationshipItemType(constraintType)
                     .build(),
-            ).build(),
-        )
-
-        return relationshipsWithEntitySide.map {
-            val filteredRelationships = relationships.filter { relationship ->
-                val sameSide = when (it.entitySide) {
-                    RelationshipConstraintType.FROM -> {
-                        relationship.from()?.trackedEntityInstance()
-                            ?.trackedEntityInstance() == teiUid
-                    }
-
-                    RelationshipConstraintType.TO -> {
-                        relationship.to()?.trackedEntityInstance()
-                            ?.trackedEntityInstance() == teiUid
-                    }
-                }
-                relationship.relationshipType() == it.relationshipType.uid() && sameSide
+            )
+            .filter {
+                it.relationshipType() == relationshipSection.uid
             }.mapNotNull { relationship ->
                 mapToRelationshipModel(
                     relationship = relationship,
-                    relationshipType = it.relationshipType,
+                    relationshipType = relationshipType,
                     tei = tei,
                     programUid = programUid,
                 )
             }
-            org.dhis2.tracker.relationships.model.RelationshipType(
-                uid = it.relationshipType.uid(),
-                title = getRelationshipTitle(
-                    it.relationshipType,
-                    it.entitySide,
-                ),
-                relationships = filteredRelationships,
-                side = when (it.entitySide) {
-                    RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
-                    RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
-                },
-                entityToAdd = when (it.entitySide) {
-                    RelationshipConstraintType.FROM ->
-                        it.relationshipType.toConstraint()?.trackedEntityType()?.uid()
-                    RelationshipConstraintType.TO ->
-                        it.relationshipType.fromConstraint()?.trackedEntityType()?.uid()
-                }
-            )
-        }
+        return relationshipSection.copy(
+            relationships = relationships
+        )
     }
 
     override fun getRelationships(): Flow<List<RelationshipModel>> {
@@ -135,7 +148,7 @@ class TrackerRelationshipsRepository(
 
     private fun mapToRelationshipModel(
         relationship: Relationship,
-        relationshipType: RelationshipType,
+        relationshipType: RelationshipType?,
         tei: TrackedEntityInstance?,
         programUid: String?
     ): RelationshipModel? {
@@ -163,7 +176,7 @@ class TrackerRelationshipsRepository(
                 fromGeometry = tei?.geometry()
                 fromValues = getTeiAttributesForRelationship(
                     teiUid,
-                    relationshipType.fromConstraint(),
+                    relationshipType?.fromConstraint(),
                     relationship.created()
                 )
                 fromProfilePic = tei?.let { profilePictureProvider(it, programUid) }
@@ -180,7 +193,7 @@ class TrackerRelationshipsRepository(
                     toGeometry = toTei?.geometry()
                     toValues = getTeiAttributesForRelationship(
                         toTei?.uid(),
-                        relationshipType.toConstraint(),
+                        relationshipType?.toConstraint(),
                         relationship.created()
                     )
                     toProfilePic = toTei?.let { profilePictureProvider(it, programUid) }
@@ -199,7 +212,7 @@ class TrackerRelationshipsRepository(
                     toGeometry = toEvent?.geometry()
                     toValues = getEventValuesForRelationship(
                         toEvent?.uid(),
-                        relationshipType.toConstraint(),
+                        relationshipType?.toConstraint(),
                         relationship.created(),
                     )
                     toProfilePic = ""
@@ -218,7 +231,7 @@ class TrackerRelationshipsRepository(
                 toGeometry = tei?.geometry()
                 toValues = getTeiAttributesForRelationship(
                     teiUid,
-                    relationshipType.toConstraint(),
+                    relationshipType?.toConstraint(),
                     relationship.created(),
                 )
                 toProfilePic = tei?.let { profilePictureProvider(it, programUid) }
@@ -235,7 +248,7 @@ class TrackerRelationshipsRepository(
                     fromGeometry = fromTei?.geometry()
                     fromValues = getTeiAttributesForRelationship(
                         fromTei?.uid(),
-                        relationshipType.fromConstraint(),
+                        relationshipType?.fromConstraint(),
                         relationship.created(),
                     )
                     fromProfilePic = fromTei?.let { profilePictureProvider(it, programUid) }
@@ -253,7 +266,7 @@ class TrackerRelationshipsRepository(
                     fromGeometry = fromEvent?.geometry()
                     fromValues = getEventValuesForRelationship(
                         fromEvent?.uid(),
-                        relationshipType.fromConstraint(),
+                        relationshipType?.fromConstraint(),
                         relationship.created(),
                     )
                     fromProfilePic = ""
@@ -276,7 +289,6 @@ class TrackerRelationshipsRepository(
             relationship,
             fromGeometry,
             toGeometry,
-            relationshipType,
             direction,
             relationshipOwnerUid,
             relationshipOwnerType,

@@ -8,6 +8,7 @@ import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
@@ -26,75 +27,66 @@ class EventRelationshipsRepository(
     private val profilePictureProvider: ProfilePictureProvider,
 ) : RelationshipsRepository(d2, resources) {
 
-    override suspend fun getRelationshipTypes(): List<org.dhis2.tracker.relationships.model.RelationshipType> {
+    override suspend fun getRelationshipTypes(): List<RelationshipSection> {
         val event = d2.eventModule().events().uid(eventUid).blockingGet()
         val programStageUid = event?.programStage() ?: ""
 
-        val relationshipWithEntitySide = d2.relationshipModule().relationshipService()
+        return d2.relationshipModule().relationshipService()
             .getRelationshipTypesForEvents(
                 programStageUid = programStageUid,
-            )
+            ).map { relationshipWithEntitySide ->
+                RelationshipSection(
+                    uid = relationshipWithEntitySide.relationshipType.uid(),
+                    title = getRelationshipTitle(
+                        relationshipWithEntitySide.relationshipType,
+                        relationshipWithEntitySide.entitySide,
+                    ),
+                    relationships = emptyList(),
+                    side = when (relationshipWithEntitySide.entitySide) {
+                        RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
+                        RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
+                    },
+                    entityToAdd = when (relationshipWithEntitySide.entitySide) {
+                        RelationshipConstraintType.FROM ->
+                            relationshipWithEntitySide.relationshipType.toConstraint()
+                                ?.trackedEntityType()?.uid()
 
-        val relationships = d2.relationshipModule().relationships().getByItem(
-            RelationshipItem.builder().event(
-                RelationshipItemEvent.builder().event(eventUid).build(),
-            ).build(),
-        )
-
-        return relationshipWithEntitySide.map {
-            val filteredRelationships = relationships.filter { relationship ->
-                val sameSide = when (it.entitySide) {
-                    RelationshipConstraintType.FROM -> {
-                        relationship.from()?.event()?.event() == eventUid
+                        RelationshipConstraintType.TO ->
+                            relationshipWithEntitySide.relationshipType.fromConstraint()
+                                ?.trackedEntityType()?.uid()
                     }
+                )
+            }
+    }
 
-                    RelationshipConstraintType.TO -> {
-                        relationship.to()?.event()?.event() == eventUid
-                    }
-                }
-                relationship.relationshipType() == it.relationshipType.uid() && sameSide
+    override suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection {
+        val constraintType = when (relationshipSection.side) {
+            RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
+            RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
+        }
+        val relationshipType = d2.relationshipModule().relationshipTypes()
+            .withConstraints()
+            .uid(relationshipSection.uid)
+            .blockingGet()
+
+        val relationships = d2.relationshipModule().relationships()
+            .getByItem(
+                RelationshipItem.builder()
+                    .event(
+                        RelationshipItemEvent.builder().event(eventUid).build(),
+                    ).relationshipItemType(constraintType)
+                    .build(),
+            ).filter {
+                it.relationshipType() == relationshipSection.uid
             }.mapNotNull { relationship ->
                 mapToRelationshipModel(
                     relationship = relationship,
-                    relationshipType = it.relationshipType,
+                    relationshipType = relationshipType,
                     eventUid = eventUid,
                 )
             }
-            org.dhis2.tracker.relationships.model.RelationshipType(
-                uid = it.relationshipType.uid(),
-                title = getRelationshipTitle(
-                    it.relationshipType,
-                    it.entitySide,
-                ),
-                relationships = filteredRelationships,
-                side = when (it.entitySide) {
-                    RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
-                    RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
-                },
-                entityToAdd = when (it.entitySide) {
-                    RelationshipConstraintType.FROM ->
-                        it.relationshipType.toConstraint()?.trackedEntityType()?.uid()
-                    RelationshipConstraintType.TO ->
-                        it.relationshipType.fromConstraint()?.trackedEntityType()?.uid()
-                }
-            )
-
-        }
-
-
-    }
-
-    override fun createRelationship(
-        selectedTeiUid: String,
-        relationshipTypeUid: String,
-        relationshipSide: RelationshipConstraintSide,
-    ): Relationship {
-        val (fromUid, toUid) = when (relationshipSide) {
-            RelationshipConstraintSide.FROM -> Pair(eventUid, selectedTeiUid)
-            RelationshipConstraintSide.TO -> Pair(selectedTeiUid, eventUid)
-        }
-        return RelationshipHelper.eventToTeiRelationship(
-            fromUid, toUid, relationshipTypeUid
+        return relationshipSection.copy(
+            relationships = relationships
         )
     }
 
@@ -118,9 +110,23 @@ class EventRelationshipsRepository(
         )
     }
 
+    override fun createRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        relationshipSide: RelationshipConstraintSide,
+    ): Relationship {
+        val (fromUid, toUid) = when (relationshipSide) {
+            RelationshipConstraintSide.FROM -> Pair(eventUid, selectedTeiUid)
+            RelationshipConstraintSide.TO -> Pair(selectedTeiUid, eventUid)
+        }
+        return RelationshipHelper.eventToTeiRelationship(
+            fromUid, toUid, relationshipTypeUid
+        )
+    }
+
     private fun mapToRelationshipModel(
         relationship: Relationship,
-        relationshipType: RelationshipType,
+        relationshipType: RelationshipType?,
         eventUid: String,
     ): RelationshipModel? {
         val relationshipOwnerUid: String?
@@ -187,7 +193,6 @@ class EventRelationshipsRepository(
             relationship,
             fromGeometry,
             toGeometry,
-            relationshipType,
             direction,
             relationshipOwnerUid,
             RelationshipOwnerType.TEI,
@@ -299,18 +304,18 @@ class EventRelationshipsRepository(
     private fun getValues(
         direction: RelationshipDirection,
         relationshipOwnerUid: String?,
-        relationshipType: RelationshipType,
+        relationshipType: RelationshipType?,
         relationship: Relationship
     ) = if (direction == RelationshipDirection.FROM) {
         Pair(
             getTeiAttributesForRelationship(
                 relationshipOwnerUid,
-                relationshipType.fromConstraint(),
+                relationshipType?.fromConstraint(),
                 relationship.created(),
             ),
             getEventValuesForRelationship(
                 eventUid,
-                relationshipType.toConstraint(),
+                relationshipType?.toConstraint(),
                 relationship.created(),
             ),
         )
@@ -318,12 +323,12 @@ class EventRelationshipsRepository(
         Pair(
             getEventValuesForRelationship(
                 eventUid,
-                relationshipType.fromConstraint(),
+                relationshipType?.fromConstraint(),
                 relationship.created(),
             ),
             getTeiAttributesForRelationship(
                 relationshipOwnerUid,
-                relationshipType.toConstraint(),
+                relationshipType?.toConstraint(),
                 relationship.created(),
             ),
         )

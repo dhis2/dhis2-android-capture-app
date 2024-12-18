@@ -40,10 +40,6 @@ class RelationshipPresenterTest {
     private val relationshipMapsRepository: RelationshipMapsRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
-    private val relationshipConstrain: RelationshipConstraint = mock()
-    private val relationshipType: RelationshipType = mock {
-        on { fromConstraint() } doReturn relationshipConstrain
-    }
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
     private val relationshipsRepository: RelationshipsRepository = mock()
     private val avatarProvider: AvatarProvider = mock()
@@ -82,23 +78,27 @@ class RelationshipPresenterTest {
 
     @Test
     fun `If user has permission should create a new relationship`() {
+        val relationshipTypeUid = "relationshipTypeUid"
+        val teiTypeToAdd = "teiTypeToAdd"
+
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
+            relationshipsRepository.hasWritePermission(relationshipTypeUid),
         ) doReturn true
 
-        presenter.goToAddRelationship("teiType", relationshipType)
+        presenter.goToAddRelationship(relationshipTypeUid, teiTypeToAdd)
 
-        verify(view, times(1)).goToAddRelationship("teiUid", "teiType")
+        verify(view, times(1)).goToAddRelationship("teiUid", teiTypeToAdd)
         verify(view, times(0)).showPermissionError()
     }
 
     @Test
     fun `If user don't have permission should show an error`() {
+        val relationshipTypeUid = "relationshipTypeUid"
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
+            relationshipsRepository.hasWritePermission(relationshipTypeUid),
         ) doReturn false
 
-        presenter.goToAddRelationship("teiType", relationshipType)
+        presenter.goToAddRelationship(relationshipTypeUid, "teiTypeToAdd")
 
         verify(view, times(1)).showPermissionError()
     }
@@ -193,7 +193,7 @@ class RelationshipPresenterTest {
     private fun getMockedTei(state: State): TrackedEntityInstance {
         return TrackedEntityInstance.builder()
             .uid("teiUid")
-            .state(state)
+            .aggregatedSyncState(state)
             .build()
     }
 
