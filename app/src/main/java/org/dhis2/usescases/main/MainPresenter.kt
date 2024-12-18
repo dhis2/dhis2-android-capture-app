@@ -367,4 +367,8 @@ class MainPresenter(
     fun getSingleItemData(): HomeItemData? {
         return repository.singleHomeItemData()
     }
+
+    fun hasFilters(): Boolean {
+        return filterRepository.homeFilters().isNotEmpty()
+    }
 }

@@ -459,7 +459,7 @@ class MainActivity :
     }
 
     private fun setFilterButtonVisibility(showFilterButton: Boolean) {
-        binding.filterActionButton.visibility = if (showFilterButton) {
+        binding.filterActionButton.visibility = if (showFilterButton && presenter.hasFilters()) {
             View.VISIBLE
         } else {
             View.GONE
