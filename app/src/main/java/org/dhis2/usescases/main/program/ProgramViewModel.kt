@@ -55,7 +55,7 @@ class ProgramViewModel internal constructor(
                         schedulerProvider.io(),
                     ).startWith(Unit).switchMap {
                         programRepository.homeItems(
-                            syncStatusController.observeDownloadProcess().value!!,
+                            syncStatusController.observeDownloadProcess().value,
                         )
                     }
                 }
