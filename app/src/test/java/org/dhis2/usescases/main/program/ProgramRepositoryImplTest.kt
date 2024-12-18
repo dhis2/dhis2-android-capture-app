@@ -132,9 +132,9 @@ class ProgramRepositoryImplTest {
     fun `Should return list of program ProgramViewModels`() {
         val syncStatusData = SyncStatusData(true)
         initWheneverForPrograms()
-        val testOvserver = programRepository.programModels(syncStatusData).test()
+        val testObserver = programRepository.programModels(syncStatusData).test()
 
-        testOvserver
+        testObserver
             .assertNoErrors()
             .assertValue {
                 it.size == mockedPrograms().size &&
@@ -178,6 +178,8 @@ class ProgramRepositoryImplTest {
             Event.builder().uid("9").syncState(State.SYNCED).build(),
             Event.builder().uid("10").syncState(State.RELATIONSHIP).build(),
         )
+        whenever(dhis2TeiUtils.hasOverdueInProgram(any(), any())) doReturn false
+        whenever(filterPresenter.areFiltersActive()) doReturn false
         whenever(
             filterPresenter.filteredTrackerProgram(any()),
         ) doReturn mock()
@@ -185,8 +187,8 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredTrackerProgram(any()).offlineFirst(),
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingCount(),
-        ) doReturn 2
+            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGetUids(),
+        ) doReturn listOf("0", "1")
     }
 
     private fun mockedDataSetInstanceSummaries(): List<DataSetInstanceSummary> {
