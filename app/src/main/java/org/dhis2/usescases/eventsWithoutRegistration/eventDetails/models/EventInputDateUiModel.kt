@@ -14,4 +14,5 @@ data class EventInputDateUiModel(
     val showField: Boolean = true,
     val is24HourFormat: Boolean = true,
     val selectableDates: SelectableDates? = null,
+    val onError: (() -> Unit)? = null,
 )
