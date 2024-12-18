@@ -451,7 +451,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                         relationship,
                         fromTei.geometry(),
                         toTei.geometry(),
-                        relationshipType,
                         direction,
                         relationshipTEIUid,
                         RelationshipOwnerType.TEI,

@@ -8,7 +8,7 @@ import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
 import org.hisp.dhis.android.core.relationship.RelationshipConstraintType
+import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import java.util.Date
@@ -30,7 +31,10 @@ abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
 ) {
-    abstract suspend fun getRelationshipTypes(): List<RelationshipType>
+    abstract suspend fun getRelationshipTypes(): List<RelationshipSection>
+
+    abstract suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection
+
     abstract fun getRelationships(): Flow<List<RelationshipModel>>
 
     abstract fun createRelationship(
@@ -259,7 +263,7 @@ abstract class RelationshipsRepository(
             .blockingGet()
 
     protected fun getRelationshipTitle(
-        relationshipType: org.hisp.dhis.android.core.relationship.RelationshipType,
+        relationshipType: RelationshipType,
         entitySide: RelationshipConstraintType
     ): String {
         return when (entitySide) {

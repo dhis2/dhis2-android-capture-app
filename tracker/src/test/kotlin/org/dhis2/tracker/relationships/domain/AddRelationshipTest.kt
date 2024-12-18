@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
-import org.dhis2.tracker.relationships.model.RelationshipDirection
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.hisp.dhis.android.core.relationship.Relationship
 import org.junit.Before
 import org.junit.Test
@@ -34,7 +34,7 @@ class AddRelationshipTest {
         // Given user tries to add a relationship
         val selectedTeiUid = "selectedTeiUid"
         val relationshipTypeUid = "relationshipTypeUid"
-        val direction = RelationshipDirection.TO
+        val side = RelationshipConstraintSide.TO
 
         val relationship = Relationship.builder()
             .uid("relationshipUid")
@@ -42,13 +42,13 @@ class AddRelationshipTest {
 
         // When
         whenever(
-            repository.createRelationship(selectedTeiUid, relationshipTypeUid, direction)
+            repository.createRelationship(selectedTeiUid, relationshipTypeUid, side)
         ) doReturn relationship
         whenever(
             repository.addRelationship(relationship)
         ) doReturn Result.success("relationshipUid")
 
-        val result = addRelationship(selectedTeiUid, relationshipTypeUid, direction)
+        val result = addRelationship(selectedTeiUid, relationshipTypeUid, side)
 
         // Then
         assert(result.isSuccess)
@@ -59,7 +59,7 @@ class AddRelationshipTest {
         // Given user tries to add a relationship
         val selectedTeiUid = "selectedTeiUid"
         val relationshipTypeUid = "relationshipTypeUid"
-        val direction = RelationshipDirection.TO
+        val side = RelationshipConstraintSide.TO
 
         val relationship = Relationship.builder()
             .uid("relationshipUid")
@@ -67,13 +67,13 @@ class AddRelationshipTest {
 
         // When
         whenever(
-            repository.createRelationship(selectedTeiUid, relationshipTypeUid, direction)
+            repository.createRelationship(selectedTeiUid, relationshipTypeUid, side)
         ) doReturn relationship
         whenever(
             repository.addRelationship(relationship)
         ) doReturn Result.failure(Exception("Failed to add relationship"))
 
-        val result = addRelationship(selectedTeiUid, relationshipTypeUid, direction)
+        val result = addRelationship(selectedTeiUid, relationshipTypeUid, side)
 
         // Then there is an error when adding relationship
         assert(result.isFailure)

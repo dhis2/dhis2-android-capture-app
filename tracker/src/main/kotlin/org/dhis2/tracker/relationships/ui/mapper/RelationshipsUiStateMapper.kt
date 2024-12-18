@@ -2,7 +2,7 @@ package org.dhis2.tracker.relationships.ui.mapper
 
 import org.dhis2.commons.date.DateLabelProvider
 import org.dhis2.tracker.relationships.model.RelationshipModel
-import org.dhis2.tracker.relationships.model.RelationshipType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.ui.AvatarProvider
@@ -12,7 +12,7 @@ class RelationshipsUiStateMapper(
     private val dateLabelProvider: DateLabelProvider,
 ) {
 
-    fun map(relationships: List<RelationshipType>): List<RelationshipSectionUiState> {
+    fun map(relationships: List<RelationshipSection>): List<RelationshipSectionUiState> {
         return relationships.map { relationshipType ->
             RelationshipSectionUiState(
                 uid = relationshipType.uid,
