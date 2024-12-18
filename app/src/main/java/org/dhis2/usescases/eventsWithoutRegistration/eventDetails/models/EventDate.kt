@@ -13,4 +13,7 @@ data class EventDate(
     val scheduleInterval: Int = 0,
     val allowFutureDates: Boolean = true,
     val periodType: PeriodType? = null,
-)
+    val error: Boolean = false,
+) {
+    val isValid = !dateValue.isNullOrEmpty() && !error
+}
