@@ -99,13 +99,11 @@
                 app:layout_constraintTop_toTopOf="@id/title"
                 app:srcCompat="@drawable/ic_arrow_up" />
 
-            <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+            <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/dotsIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
-                app:dotsColor="@color/dots_error_selected"
-                app:dotsSize="12dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintStart_toStartOf="@id/startGuideline"
                 app:layout_constraintTop_toTopOf="parent" />
