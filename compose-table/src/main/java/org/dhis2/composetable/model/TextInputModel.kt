@@ -12,6 +12,7 @@ data class TextInputModel(
     val selection: TextRange? = null,
     val error: String? = null,
     val warning: String? = null,
+    val regex: Regex? = null,
     private val clearable: Boolean = false,
 ) {
     fun showClearButton() = clearable && currentValue?.isNotEmpty() == true
