@@ -62,7 +62,6 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
-import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup;
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
@@ -418,9 +417,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         );
         for (Relationship relationship : relationships) {
             if (relationship.from().trackedEntityInstance() != null) {
-                RelationshipType relationshipType =
-                        d2.relationshipModule().relationshipTypes().uid(relationship.relationshipType()).blockingGet();
-
                 String relationshipTEIUid;
                 RelationshipDirection direction;
                 if (!searchTeiModel.getTei().uid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
