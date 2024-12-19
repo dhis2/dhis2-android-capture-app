@@ -147,7 +147,7 @@ class FormView : Fragment() {
 
                     override fun onRequestPermissionsResult(
                         requestCode: Int,
-                        permissions: Array<String?>,
+                        permissions: Array<out String>,
                         grantResults: IntArray,
                     ) {
                         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
