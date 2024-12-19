@@ -289,7 +289,7 @@ class TeiDataPresenterTest {
             ),
         ) doReturn (Result.success(eventUid))
 
-        teiDataPresenter.onOrgUnitForNewEventSelected(
+        teiDataPresenter.onNewEventSelected(
             orgUnitUid,
             programStageUid,
         )
@@ -319,7 +319,7 @@ class TeiDataPresenterTest {
 
         whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
 
-        teiDataPresenter.onOrgUnitForNewEventSelected(
+        teiDataPresenter.onNewEventSelected(
             orgUnitUid,
             programStageUid,
         )

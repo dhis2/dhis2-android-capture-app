@@ -603,7 +603,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             )
             .onSelection { selectedOrgUnits ->
                 if (selectedOrgUnits.isNotEmpty()) {
-                    presenter.onOrgUnitForNewEventSelected(
+                    presenter.onNewEventSelected(
                         orgUnitUid = selectedOrgUnits.first().uid(),
                         programStageUid = programStageUid,
                     )
