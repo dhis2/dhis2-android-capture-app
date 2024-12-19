@@ -1,4 +1,4 @@
-package org.dhis2.tracker.relationships.model
+package org.dhis2.tracker.relationships.ui.state
 
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectionState
 

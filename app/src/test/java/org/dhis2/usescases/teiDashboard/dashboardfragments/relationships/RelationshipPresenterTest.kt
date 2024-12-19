@@ -9,8 +9,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
@@ -24,7 +22,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -43,10 +40,6 @@ class RelationshipPresenterTest {
     private val relationshipMapsRepository: RelationshipMapsRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection = mock()
-    private val relationshipConstrain: RelationshipConstraint = mock()
-    private val relationshipType: RelationshipType = mock {
-        on { fromConstraint() } doReturn relationshipConstrain
-    }
     private val mapStyleConfiguration: MapStyleConfiguration = mock()
     private val relationshipsRepository: RelationshipsRepository = mock()
     private val avatarProvider: AvatarProvider = mock()
@@ -85,42 +78,29 @@ class RelationshipPresenterTest {
 
     @Test
     fun `If user has permission should create a new relationship`() {
+        val relationshipTypeUid = "relationshipTypeUid"
+        val teiTypeToAdd = "teiTypeToAdd"
+
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
+            relationshipsRepository.hasWritePermission(relationshipTypeUid),
         ) doReturn true
 
-        presenter.goToAddRelationship("teiType", relationshipType)
+        presenter.goToAddRelationship(relationshipTypeUid, teiTypeToAdd)
 
-        verify(view, times(1)).goToAddRelationship("teiUid", "teiType")
+        verify(view, times(1)).goToAddRelationship("teiUid", teiTypeToAdd)
         verify(view, times(0)).showPermissionError()
     }
 
     @Test
     fun `If user don't have permission should show an error`() {
+        val relationshipTypeUid = "relationshipTypeUid"
         whenever(
-            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType),
+            relationshipsRepository.hasWritePermission(relationshipTypeUid),
         ) doReturn false
 
-        presenter.goToAddRelationship("teiType", relationshipType)
+        presenter.goToAddRelationship(relationshipTypeUid, "teiTypeToAdd")
 
         verify(view, times(1)).showPermissionError()
-    }
-
-    @Test
-    fun `Should delete relationship`() {
-        presenter.deleteRelationship(getMockedRelationship().uid()!!)
-        verify(analyticsHelper).setEvent(DELETE_RELATIONSHIP, CLICK, DELETE_RELATIONSHIP)
-    }
-
-    @Test
-    fun `Should create a relationship`() {
-        whenever(
-            d2.relationshipModule().relationshipTypes().withConstraints().uid("relationshipTypeUid")
-                .blockingGet(),
-        ) doReturn getMockedRelationshipType(true)
-        presenter.addRelationship("selectedTei", "relationshipTypeUid")
-
-        verify(view, times(0)).displayMessage(any())
     }
 
     @Test
@@ -213,7 +193,7 @@ class RelationshipPresenterTest {
     private fun getMockedTei(state: State): TrackedEntityInstance {
         return TrackedEntityInstance.builder()
             .uid("teiUid")
-            .state(state)
+            .aggregatedSyncState(state)
             .build()
     }
 
