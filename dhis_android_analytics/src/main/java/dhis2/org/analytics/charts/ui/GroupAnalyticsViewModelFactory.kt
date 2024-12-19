@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 
-@Suppress("UNCHECKED_CAST")
 class GroupAnalyticsViewModelFactory(
     private val mode: AnalyticMode,
     private val uid: String?,

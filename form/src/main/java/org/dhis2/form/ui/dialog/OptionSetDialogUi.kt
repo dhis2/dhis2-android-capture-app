@@ -18,15 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -45,6 +44,8 @@ import org.dhis2.form.model.OptionSetDialogViewModel
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
 @Composable
 fun OptionSetDialogScreen(
@@ -90,7 +91,7 @@ fun OptionSetDialogScreen(
             ) {
                 when (searchValue.isNotEmpty()) {
                     true -> Text(stringResource(R.string.no_option_found))
-                    else -> CircularProgressIndicator()
+                    else -> ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
                 }
             }
         }
@@ -131,7 +132,7 @@ private fun SearchBar(
                 modifier = Modifier
                     .border(
                         width = 2.dp,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(16.dp),
                     )
                     .padding(horizontal = 12.dp),
@@ -140,7 +141,7 @@ private fun SearchBar(
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "",
-                    tint = MaterialTheme.colors.primary,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Box(Modifier.weight(1f)) {
@@ -148,7 +149,7 @@ private fun SearchBar(
                         Text(
                             text = stringResource(id = R.string.search),
                             style = LocalTextStyle.current.copy(
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                                 fontSize = 16.sp,
                             ),
                         )
@@ -162,7 +163,7 @@ private fun SearchBar(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "",
-                                tint = MaterialTheme.colors.primary,
+                                tint = MaterialTheme.colorScheme.primary,
                             )
                         },
                     )

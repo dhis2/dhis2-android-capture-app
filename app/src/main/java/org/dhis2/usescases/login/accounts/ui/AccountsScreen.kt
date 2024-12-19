@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -45,60 +44,58 @@ fun AccountsScreen(
     onAddAccountClicked: () -> Unit,
     onImportDatabase: () -> Unit,
 ) {
-    MaterialTheme {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(colorResource(id = R.color.colorPrimary)),
-        ) {
-            LoginTopBar(
-                version = LocalContext.current.buildInfo(),
-                onImportDatabase = onImportDatabase,
-            )
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.colorPrimary)),
+    ) {
+        LoginTopBar(
+            version = LocalContext.current.buildInfo(),
+            onImportDatabase = onImportDatabase,
+        )
 
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(Color.White),
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .background(Color.White),
+        ) {
+            LazyColumn(
+                Modifier
+                    .weight(1f)
+                    .padding(top = 16.dp),
             ) {
-                LazyColumn(
-                    Modifier
-                        .weight(1f)
-                        .padding(top = 16.dp),
-                ) {
-                    items(accounts) {
-                        AccountItem(
-                            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            it,
-                            onAccountClicked,
-                        )
-                    }
+                items(accounts) {
+                    AccountItem(
+                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        it,
+                        onAccountClicked,
+                    )
                 }
-                Column(Modifier.padding(16.dp)) {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(id = R.color.colorPrimary),
-                            contentColor = Color.White,
+            }
+            Column(Modifier.padding(16.dp)) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = colorResource(id = R.color.colorPrimary),
+                        contentColor = Color.White,
+                    ),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 5.dp,
+                        pressedElevation = 15.dp,
+                        disabledElevation = 0.dp,
+                    ),
+                    onClick = { onAddAccountClicked() },
+                ) {
+                    Text(
+                        text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
+                        fontFamily = FontFamily(
+                            Font(R.font.rubik_regular, FontWeight.Medium),
                         ),
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = 5.dp,
-                            pressedElevation = 15.dp,
-                            disabledElevation = 0.dp,
-                        ),
-                        onClick = { onAddAccountClicked() },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.add_accout).toUpperCase(Locale.current),
-                            fontFamily = FontFamily(
-                                Font(R.font.rubik_regular, FontWeight.Medium),
-                            ),
-                        )
-                    }
+                    )
                 }
             }
         }

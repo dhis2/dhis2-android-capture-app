@@ -7,11 +7,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.rememberBackdropScaffoldState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -162,11 +162,11 @@ private fun getScrimColor(settingsUiState: SettingsUiState): Color {
         if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
             Color.Unspecified
         } else {
-            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.60f)
         }
     } else {
         if (!settingsUiState.hasFacilitySelected()) {
-            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.60f)
         } else {
             Color.Unspecified
         }

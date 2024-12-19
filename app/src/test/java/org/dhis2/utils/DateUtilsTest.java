@@ -1,10 +1,16 @@
 package org.dhis2.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.dhis2.R;
 import org.dhis2.bindings.StringExtensionsKt;
-import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
-import org.dhis2.utils.DateUtils;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.date.Period;
+import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
@@ -16,17 +22,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-
 public class DateUtilsTest {
 
     @Test
     public void expiryPeriodAndDaysInRange() throws ParseException {
+        Locale.setDefault(new Locale("es", "ES"));
+
         String testDateInRange = "2018-07-31";
         Date dateInRange = DateUtils.oldUiDateFormat().parse(testDateInRange);
 
@@ -522,9 +523,9 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, null, 0));
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-02"), null, EventStatus.ACTIVE, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-02-28"), null, EventStatus.ACTIVE, 0, null, 0));
 
     }
 
@@ -564,7 +565,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 0));
 
     }
 
@@ -574,7 +575,7 @@ public class DateUtilsTest {
         Date currentDate = DateUtils.oldUiDateFormat().parse("2019-03-01");
         DateUtils.getInstance().setCurrentDate(currentDate);
 
-        assertTrue(!DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
+        assertFalse(DateUtils.getInstance().isEventExpired(toDate("2019-03-01"), null, EventStatus.COMPLETED, 0, null, 1));
 
     }
 
@@ -641,7 +642,7 @@ public class DateUtilsTest {
                 DateUtils.oldUiDateFormat().parse("2022-11-05")
         );
 
-        assertEquals(true, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 5));
+        assertTrue(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
     }
 
     @Test
@@ -656,7 +657,7 @@ public class DateUtilsTest {
                 DateUtils.oldUiDateFormat().parse("2022-11-15")
         );
 
-        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 5));
+        assertFalse(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 5));
     }
 
     @Test
@@ -670,11 +671,11 @@ public class DateUtilsTest {
                 new Date()
         );
 
-        assertEquals(false, DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod, 0));
+        assertFalse(DateUtils.getInstance().isInsideFutureInputPeriod(inputPeriod.endPeriodDate(), 0));
     }
 
     @Test
-    public void shouldParseDate(){
+    public void shouldParseDate() {
         String testDate = "2022-01-01'T'12:01:01.001";
         Date date = StringExtensionsKt.toDate(testDate);
         assertNotNull(date);

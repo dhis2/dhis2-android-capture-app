@@ -21,12 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.ui.theme.programColorDark
 import org.dhis2.ui.theme.programColorLight
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @Composable
 fun MetadataIcon(
@@ -79,7 +79,7 @@ fun ComposeView.setUpMetadataIcon(
         handleComposeDispose()
     }
     setContent {
-        MdcTheme {
+        DHIS2Theme {
             MetadataIcon(metadataIconData = metadataIconData)
         }
     }
