@@ -1,6 +1,8 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose") version "1.7.1"
     id("com.android.library")
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 kotlin {
@@ -14,7 +16,7 @@ kotlin {
 
     jvm("desktop")
 
-    listOf(
+    /*listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -23,11 +25,18 @@ kotlin {
             baseName = "aggregates"
             isStatic = true
         }
-    }
+    }*/
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.material3)
+            api(compose.materialIconsExtended)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
+            implementation(libs.dhis2.mobile.designsystem)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -36,6 +45,12 @@ kotlin {
         androidMain.dependencies {  }
 
         androidUnitTest.dependencies {  }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.common)
+            }
+        }
     }
 }
 
