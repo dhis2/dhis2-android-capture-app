@@ -268,11 +268,13 @@ abstract class RelationshipsRepository(
     ): String {
         return when (entitySide) {
             RelationshipConstraintType.FROM -> {
-                relationshipType.fromToName() ?: relationshipType.displayName() ?: ""
+                relationshipType.fromToName() ?: relationshipType.displayName()
+                ?: resources.getString(R.string.relationship)
             }
 
             RelationshipConstraintType.TO -> {
-                relationshipType.toFromName() ?: relationshipType.displayName() ?: ""
+                relationshipType.toFromName() ?: relationshipType.displayName()
+                ?: resources.getString(R.string.relationship)
             }
         }
     }
