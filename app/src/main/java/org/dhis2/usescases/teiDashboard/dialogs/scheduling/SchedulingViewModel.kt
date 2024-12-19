@@ -215,10 +215,9 @@ class SchedulingViewModel(
                 d2.eventModule().events().uid(eventUid).run {
                     setDueDate(dueDate.currentDate)
                     setStatus(EventStatus.SCHEDULE)
+                    onDueDateUpdated?.invoke()
                 }
             }
-
-            onDueDateUpdated?.invoke()
         }
     }
 

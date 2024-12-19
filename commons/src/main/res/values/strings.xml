@@ -304,6 +304,7 @@
     <string name="empty_tei_event_label_add">There are no %s registered, click "+" to add a new one.</string>
     <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
     <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
+    <string name="enrollment_reopen">re-open</string>
 
     <string name="sync_retry">Retry sync</string>
     <string name="syncing">Synchronizing...</string>

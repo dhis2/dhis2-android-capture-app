@@ -16,12 +16,14 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.model.SnackbarMessage
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -62,6 +64,9 @@ class ProgramEventDetailViewModel(
 
     private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
     val navigationBarUIState: State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
+
+    private val _snackbarMessage = MutableSharedFlow<SnackbarMessage>()
+    val snackbarMessage = _snackbarMessage.asSharedFlow()
 
     init {
         viewModelScope.launch { loadBottomBarItems() }
@@ -165,6 +170,12 @@ class ProgramEventDetailViewModel(
             ).getOrNull()?.let { eventUid ->
                 _shouldNavigateToEventDetails.emit(eventUid)
             }
+        }
+    }
+
+    fun displayMessage(msg: String) {
+        viewModelScope.launch(dispatcher.io()) {
+            _snackbarMessage.emit(SnackbarMessage(message = msg))
         }
     }
 }

@@ -10,6 +10,9 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.usescases.about.AboutFragment
 import org.dhis2.usescases.main.program.ProgramFragment
@@ -18,6 +21,7 @@ import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
 
 class MainNavigator(
+    private val dispatcherProvider: dispatch.core.DispatcherProvider,
     private val fragmentManager: FragmentManager,
     private val onTransitionStart: () -> Unit,
     private val onScreenChanged: (
@@ -133,38 +137,50 @@ class MainNavigator(
             onTransitionStart()
             currentScreen.value = screen
             currentFragment = fragment
-            val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-            transaction.apply {
-                if (sharedView == null) {
-                    val (enterAnimation, exitAnimation) = if (useFadeInTransition) {
-                        Pair(android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        Pair(R.anim.fragment_enter_right, R.anim.fragment_exit_left)
-                    }
-                    val (enterPopAnimation, exitPopAnimation) = if (useFadeInTransition) {
-                        Pair(android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        Pair(R.anim.fragment_enter_left, R.anim.fragment_exit_right)
-                    }
-                    setCustomAnimations(
-                        enterAnimation,
-                        exitAnimation,
-                        enterPopAnimation,
-                        exitPopAnimation,
-                    )
-                } else {
-                    setReorderingAllowed(true)
-                    addSharedElement(sharedView, "contenttest")
-                }
-            }
-                .replace(R.id.fragment_container, fragment, fragment::class.simpleName)
-                .commitAllowingStateLoss()
 
-            onScreenChanged(
-                screen.title,
-                isPrograms(),
-                isHome(),
-            )
+            CoroutineScope(dispatcherProvider.main).launch {
+                withContext(dispatcherProvider.io) {
+                    val transaction: FragmentTransaction = fragmentManager.beginTransaction()
+                    transaction.apply {
+                        if (sharedView == null) {
+                            val (enterAnimation, exitAnimation) = getEnterExitAnimation(useFadeInTransition)
+                            val (enterPopAnimation, exitPopAnimation) = getEnterExitPopAnimation(useFadeInTransition)
+                            setCustomAnimations(
+                                enterAnimation,
+                                exitAnimation,
+                                enterPopAnimation,
+                                exitPopAnimation,
+                            )
+                        } else {
+                            setReorderingAllowed(true)
+                            addSharedElement(sharedView, "contenttest")
+                        }
+                    }
+                        .replace(R.id.fragment_container, fragment, fragment::class.simpleName)
+                        .commitAllowingStateLoss()
+                }
+                onScreenChanged(
+                    screen.title,
+                    isPrograms(),
+                    isHome(),
+                )
+            }
+        }
+    }
+
+    private fun getEnterExitPopAnimation(useFadeInTransition: Boolean): Pair<Int, Int> {
+        return if (useFadeInTransition) {
+            Pair(android.R.anim.fade_in, android.R.anim.fade_out)
+        } else {
+            Pair(R.anim.fragment_enter_left, R.anim.fragment_exit_right)
+        }
+    }
+
+    private fun getEnterExitAnimation(useFadeInTransition: Boolean): Pair<Int, Int> {
+        return if (useFadeInTransition) {
+            Pair(android.R.anim.fade_in, android.R.anim.fade_out)
+        } else {
+            Pair(R.anim.fragment_enter_right, R.anim.fragment_exit_left)
         }
     }
 }

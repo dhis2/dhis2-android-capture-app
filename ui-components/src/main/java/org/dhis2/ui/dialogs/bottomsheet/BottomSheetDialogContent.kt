@@ -243,11 +243,13 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
                 color = textPrimary,
                 fontSize = 14.sp,
             )
-            Text(
-                text = fieldWithIssue.message,
-                color = textSecondary,
-                fontSize = 14.sp,
-            )
+            if (fieldWithIssue.message.isNotEmpty()) {
+                Text(
+                    text = fieldWithIssue.message,
+                    color = textSecondary,
+                    fontSize = 14.sp,
+                )
+            }
         }
     }
 }
@@ -308,7 +310,7 @@ fun DialogPreview3() {
 fun DialogPreview4() {
     val fieldsWithIssues = listOf(
         FieldWithIssue("Uid", "Age", IssueType.ERROR, ERROR_MESSAGE),
-        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ""),
         FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
         FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
         FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),

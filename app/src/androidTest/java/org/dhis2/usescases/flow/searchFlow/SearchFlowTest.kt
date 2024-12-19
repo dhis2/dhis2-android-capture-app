@@ -7,8 +7,8 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.R
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_EMPTY_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_PATH
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
@@ -43,8 +43,8 @@ class SearchFlowTest : BaseTest() {
     fun shouldCreateTEIAndFilterByEnrollment() {
         mockWebServerRobot.addResponse(
             ResponseController.GET,
-            API_OLD_TRACKED_ENTITY_PATH,
-            API_OLD_TRACKED_ENTITY_RESPONSE,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
         )
 
         setDatePicker()

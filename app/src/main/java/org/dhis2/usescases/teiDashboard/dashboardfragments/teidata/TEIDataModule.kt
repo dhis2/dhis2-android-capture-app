@@ -92,6 +92,7 @@ class TEIDataModule(
         d2: D2,
         periodUtils: DhisPeriodUtils,
         metadataIconProvider: MetadataIconProvider,
+        dateUtils: DateUtils,
     ): TeiDataRepository {
         return TeiDataRepositoryImpl(
             d2,
@@ -100,6 +101,7 @@ class TEIDataModule(
             enrollmentUid,
             periodUtils,
             metadataIconProvider,
+            dateUtils,
         )
     }
 
@@ -165,8 +167,9 @@ class TEIDataModule(
     @PerFragment
     fun providesTEIEventCardMapper(
         resourceManager: ResourceManager,
+        dateUtils: DateUtils,
     ): TEIEventCardMapper {
-        return TEIEventCardMapper(resourceManager)
+        return TEIEventCardMapper(resourceManager, dateUtils)
     }
 
     @Provides
@@ -191,5 +194,5 @@ class TEIDataModule(
     fun provideD2ErrorUtils() = D2ErrorUtils(view.context, NetworkUtils(view.context))
 
     @Provides
-    fun provideDateUtils() = DateUtils.getInstance()
+    fun provideDateUtils(): DateUtils = DateUtils.getInstance()
 }

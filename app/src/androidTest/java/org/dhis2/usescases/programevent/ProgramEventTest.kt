@@ -52,7 +52,7 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldOpenExistingEvent() {
-        val eventDate = "15/03/2020"
+        val eventDate = "07/04/2024"
         val eventOrgUnit = "Ngelehun CHC"
 
         prepareProgramAndLaunchActivity(antenatalCare)
@@ -62,14 +62,13 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
-            openEventDetailsSection()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }
 
     @Test
     fun shouldCompleteAnEventAndReopenIt() {
-        val eventDate = "15/03/2020"
+        val eventDate = "07/04/2024"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
@@ -95,7 +94,7 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldDeleteEvent() {
-        val eventDate = "15/03/2020"
+        val eventDate = "07/04/2024"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 

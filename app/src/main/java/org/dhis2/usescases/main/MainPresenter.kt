@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
 import org.dhis2.commons.matomo.Actions.Companion.OPEN_ANALYTICS
 import org.dhis2.commons.matomo.Actions.Companion.QR_SCANNER
@@ -40,6 +42,7 @@ import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.TRUE
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
@@ -57,6 +60,7 @@ class MainPresenter(
     private val preferences: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val filterManager: FilterManager,
+    private val filterRepository: FilterRepository,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     private val userManager: UserManager,
     private val deleteUserData: DeleteUserData,
@@ -77,7 +81,6 @@ class MainPresenter(
     val downloadingVersion = MutableLiveData(false)
 
     fun init() {
-        filterManager.clearAllFilters()
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
             repository.user()
@@ -117,6 +120,54 @@ class MainPresenter(
         trackDhis2Server()
     }
 
+    fun initFilters() {
+        disposable.add(
+            Flowable.just(filterRepository.homeFilters())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { filters ->
+                        if (filters.isEmpty()) {
+                            view.hideFilters()
+                        } else {
+                            view.setFilters(filters)
+                        }
+                    },
+                    { Timber.e(it) },
+                ),
+        )
+
+        disposable.add(
+            filterManager.asFlowable()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { filterManager -> view.updateFilters(filterManager.totalFilters) },
+                    { Timber.e(it) },
+                ),
+        )
+
+        disposable.add(
+            filterManager.periodRequest
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { periodRequest -> view.showPeriodRequest(periodRequest.first) },
+                    { Timber.e(it) },
+                ),
+        )
+
+        disposable.add(
+            filterManager.ouTreeFlowable()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { view.openOrgUnitTreeSelector() },
+                    { Timber.e(it) },
+                ),
+        )
+    }
+
     fun trackDhis2Server() {
         disposable.add(
             repository.getServerVersion()
@@ -143,6 +194,10 @@ class MainPresenter(
             )
             preferences.setValue("$DHIS2${getUserUid()}", currentDhis2Server)
         }
+    }
+
+    fun setOrgUnitFilters(selectedOrgUnits: List<OrganisationUnit>) {
+        filterManager.addOrgUnits(selectedOrgUnits)
     }
 
     private fun getUserUid(): String {
@@ -201,6 +256,10 @@ class MainPresenter(
         view.back()
     }
 
+    fun showFilter() {
+        view.showHideFilter()
+    }
+
     fun onDetach() {
         disposable.clear()
     }
@@ -219,6 +278,7 @@ class MainPresenter(
 
     fun onNavigateBackToHome() {
         view.goToHome()
+        initFilters()
     }
 
     fun onClickSyncManager() {
@@ -306,5 +366,9 @@ class MainPresenter(
 
     fun getSingleItemData(): HomeItemData? {
         return repository.singleHomeItemData()
+    }
+
+    fun hasFilters(): Boolean {
+        return filterRepository.homeFilters().isNotEmpty()
     }
 }

@@ -2,11 +2,8 @@
 
 name: Release start
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
     inputs:
       release_version_name:
         description: 'New release version name'
@@ -18,72 +15,87 @@ on:
         required: true
         type: string
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   create_branch:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.release_version_name }}
+      RELEASE_BRANCH: 'release/${{ inputs.release_version_name }}'
+      TEMP_RELEASE_BRANCH: 'tmp_release/${{ inputs.release_version_name }}'
 
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.12.1
 
-    - name: setup git config
+      # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
+      # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
+      # rejects the commit even though the user identified by the token is included in the bypass list.
+    - name: Create auxiliary branch
       run: |
-        # setup the username and email.
-        git config user.name "GitHub Actions Bot"
-        git config user.email "<android@dhis2.org>"
-
-      # override vName with new version
-    - name: Create release branch
-      run: git checkout -b release/${{ inputs.release_version_name }}
+        git checkout -b ${{ env.TEMP_RELEASE_BRANCH }}
+        git push origin ${{ env.TEMP_RELEASE_BRANCH }}
 
     - name: Run Python script to update release branch version
-      run: python scripts/updateVersionName.py ${{ inputs.release_version_name }}
+      run: python scripts/updateVersionName.py ${{ env.RELEASE_VERSION }}
 
-    - name: Push
+      # Uses the GH API to create the signed commit.
+    - name: Commit and Push Changes to auxiliary branch
+      uses: flex-development/gh-commit@1.0.0
+      with:
+        message: 'Update version to ${{ env.RELEASE_VERSION }}'
+        ref: ${{ env.TEMP_RELEASE_BRANCH }}
+        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+      # Fetch the remote commit (signed commit) and create a new branch with the RELEASE_BRANCH name.
+      # This is required because the RELEASE_BRANCH is protected.
+    - name: Create and push release branch
       run: |
-        git add .
-        git commit -m "Update version to ${{ inputs.release_version_name }}"
-        git push origin release/${{ inputs.release_version_name }}
+        git reset --hard
+        git pull origin ${{ env.TEMP_RELEASE_BRANCH }}
+        git checkout -b ${{ env.RELEASE_BRANCH }}
+        git push origin ${{ env.RELEASE_BRANCH }}
+        git push origin --delete ${{ env.TEMP_RELEASE_BRANCH }}
 
   update_version:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
+      DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12.1
 
-      - name: setup git config
+      - name: Create development branch
         run: |
-          # setup the username and email.
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<android@dhis2.org>"
-
-      - name: Create release branch
-        run: git checkout -b update_version_to${{ inputs.development_version_name }}
+          git checkout -b ${{ env.DEVELOPMENT_BRANCH }}
+          git push origin ${{ env.DEVELOPMENT_BRANCH }}
 
       - name: Run Python script to update base branch version
-        run: python scripts/updateVersionName.py ${{ inputs.development_version_name }}
+        run: python scripts/updateVersionName.py ${{ env.DEVELOPMENT_VERSION }}
 
       - name: Commit and Push Changes
-        run: |
-          git add .
-          git commit -m "Update version to ${{ inputs.development_version_name }}"
-          git push origin update_version_to${{ inputs.development_version_name }}
+        uses: flex-development/gh-commit@1.0.0
+        with:
+          message: 'Update version to ${{ env.DEVELOPMENT_VERSION }}'
+          ref: ${{ env.DEVELOPMENT_BRANCH }}
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
-      - name: create pull request
-        run: gh pr create -B develop -H update_version_to${{ inputs.development_version_name }} --title 'Merge update_version_to${{ inputs.development_version_name }} into develop' --body 'Created by Github action'
+      - name: Create pull request
+        run: gh pr create -B develop -H update_version_to${{ env.DEVELOPMENT_VERSION }} --title 'Merge ${{ env.DEVELOPMENT_BRANCH }} into develop' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

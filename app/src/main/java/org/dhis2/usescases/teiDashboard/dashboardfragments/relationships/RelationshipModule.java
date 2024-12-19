@@ -4,6 +4,8 @@ import android.content.Context;
 
 import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
+import org.dhis2.commons.date.DateUtils;
+import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerFragment;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
@@ -96,7 +98,8 @@ public class RelationshipModule {
             D2 d2,
             ResourceManager resourceManager,
             MetadataIconProvider metadataIconProvider,
-            DateLabelProvider dateLabelProvider
+            DateLabelProvider dateLabelProvider,
+            DateUtils dateUtils
     ) {
         RelationshipConfiguration config;
         if (teiUid != null) {
@@ -119,7 +122,8 @@ public class RelationshipModule {
                         resourceManager,
                         dateLabelProvider,
                         metadataIconProvider,
-                        profilePictureProvider
+                        profilePictureProvider,
+                        dateUtils
                 )
         );
     }
@@ -153,6 +157,13 @@ public class RelationshipModule {
                 deleteRelationships,
                 dispatcherProvider
         );
+    }
+
+    @Provides
+    @PerFragment
+    DateUtils provideDateUtils(
+    ) {
+        return DateUtils.getInstance();
     }
 
     @Provides

@@ -385,6 +385,9 @@ class RulesUtilsProviderImpl(
         val message = warningOnCompletion.content() + " " + data
         if (model != null) {
             fieldViewModels[fieldUid] = model.setWarning(message)
+            fieldsWithWarnings.add(
+                FieldWithError(fieldUid, message),
+            )
         }
 
         messageOnComplete = message

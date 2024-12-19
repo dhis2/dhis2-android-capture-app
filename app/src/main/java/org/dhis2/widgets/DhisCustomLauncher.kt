@@ -21,7 +21,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
         val remoteViews = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
         val configIntent = Intent(context, SplashActivity::class.java)
 
-        val configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, 0)
+        val configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, PendingIntent.FLAG_IMMUTABLE)
 
         remoteViews.setOnClickPendingIntent(R.id.appwidget_image, configPendingIntent)
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews)
@@ -80,7 +80,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
 
         private fun getPendingIntent(context: Context): PendingIntent {
             val intent = Intent(context, SplashActivity::class.java)
-            return PendingIntent.getActivity(context, 0, intent, 0)
+            return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         }
     }
 }

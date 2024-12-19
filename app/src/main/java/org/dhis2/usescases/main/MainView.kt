@@ -26,6 +26,8 @@
 package org.dhis2.usescases.main
 
 import androidx.annotation.UiThread
+import org.dhis2.commons.filters.FilterItem
+import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.general.AbstractActivityContracts
 import java.io.File
 
@@ -36,11 +38,23 @@ interface MainView : AbstractActivityContracts.View {
 
     fun openDrawer(gravity: Int)
 
+    fun showHideFilter()
+
     fun onLockClick()
 
     fun changeFragment(id: Int)
 
+    fun updateFilters(totalFilters: Int)
+
+    fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest)
+
+    fun openOrgUnitTreeSelector()
+
     fun goToHome()
+
+    fun setFilters(filters: List<FilterItem>)
+
+    fun hideFilters()
 
     fun showGranularSync()
 

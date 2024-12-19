@@ -33,7 +33,6 @@ import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
 import org.dhis2.commons.service.SessionManagerModule;
 import org.dhis2.commons.sync.SyncComponentProvider;
-import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dispatcher.DispatcherModule;
 import org.dhis2.data.server.SSLContextInitializer;
 import org.dhis2.data.server.ServerComponent;
@@ -103,15 +102,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     private boolean fromBackGround = false;
     private boolean recreated;
-    private AppInspector appInspector;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-
-        appInspector = new AppInspector(this).init();
 
         MapController.Companion.init(this);
 
@@ -358,10 +354,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
             }
             Timber.d(e);
         });
-    }
-
-    public AppInspector getAppInspector() {
-        return appInspector;
     }
 
     @Override

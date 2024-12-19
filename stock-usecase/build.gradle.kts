@@ -95,13 +95,7 @@ dependencies {
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
     kapt(libs.bundles.stock.kapt)
-    debugImplementation(libs.bundles.stock.debugImplementation)
-    releaseImplementation(libs.bundles.stock.releaseImplementation)
     testImplementation(libs.bundles.stock.test)
-
-    debugImplementation(libs.analytics.flipper.network) {
-        exclude("com.squareup.okhttp3")
-    }
 }
 
 kapt {

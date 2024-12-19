@@ -1,10 +1,13 @@
+//Sets cron schedule just for PUSH job
+String cron_string = JOB_NAME.startsWith('android-multibranch-PUSH') ? '0 0 * * *' : ''
+
 pipeline {
     agent {
         label "ec2-android"
     }
 
     triggers {
-        cron('0 0 * * *')
+        cron(cron_string)
     }
 
     options {

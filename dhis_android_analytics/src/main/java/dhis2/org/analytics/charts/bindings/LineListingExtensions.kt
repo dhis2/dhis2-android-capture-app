@@ -9,7 +9,10 @@ import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 
-fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
+fun TrackerLineListItem.withFilters(
+    value: String,
+    categories: List<String> = emptyList(),
+): TrackerLineListItem {
     return when (this) {
         TrackerLineListItem.CreatedBy -> this
         TrackerLineListItem.LastUpdatedBy -> this
@@ -51,7 +54,7 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
 
         is TrackerLineListItem.OrganisationUnitItem -> this.copy(
             filters = this.filters + listOf(
-                OrganisationUnitFilter.Absolute(value),
+                OrganisationUnitFilter.Like(value),
             ),
         )
 
@@ -78,10 +81,9 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
                 EnumFilter.Like(value),
             ),
         )
-
         is TrackerLineListItem.Category -> this.copy(
             filters = this.filters + listOf(
-                DataFilter.Like(value),
+                DataFilter.In(categories),
             ),
         )
     }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -31,6 +32,7 @@ class OUTreeViewModel(
     }
 
     private fun fetchInitialOrgUnits(name: String? = null) {
+        CountingIdlingResourceSingleton.increment()
         viewModelScope.launch(dispatchers.io()) {
             val orgUnits = repository.orgUnits(name)
             val treeNodes = ArrayList<OrgTreeItem>()
@@ -53,6 +55,7 @@ class OUTreeViewModel(
                     ),
                 )
             }
+            CountingIdlingResourceSingleton.decrement()
             _treeNodes.update { treeNodes }
         }
     }
@@ -101,6 +104,7 @@ class OUTreeViewModel(
     }
 
     fun onOrgUnitCheckChanged(orgUnitUid: String, isChecked: Boolean) {
+        CountingIdlingResourceSingleton.increment()
         viewModelScope.launch(dispatchers.io()) {
             if (singleSelection) {
                 selectedOrgUnits.clear()
@@ -119,11 +123,13 @@ class OUTreeViewModel(
                     ),
                 )
             }
+            CountingIdlingResourceSingleton.decrement()
             _treeNodes.update { treeNodeList }
         }
     }
 
     fun clearAll() {
+        CountingIdlingResourceSingleton.increment()
         viewModelScope.launch(dispatchers.io()) {
             selectedOrgUnits.clear()
             val treeNodeList = treeNodes.value.map { currentTreeNode ->
@@ -132,6 +138,7 @@ class OUTreeViewModel(
                     selectedChildrenCount = 0,
                 )
             }
+            CountingIdlingResourceSingleton.decrement()
             _treeNodes.update { treeNodeList }
         }
     }

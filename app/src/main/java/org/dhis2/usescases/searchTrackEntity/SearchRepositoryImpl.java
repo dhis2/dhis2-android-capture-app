@@ -33,6 +33,7 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.model.RelationshipDirection;
 import org.dhis2.tracker.relationships.model.RelationshipModel;
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType;
@@ -121,6 +122,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private HashMap<String, List<String>> trackedEntityTypeAttributesUidsCache = new HashMap();
 
     private final MetadataIconProvider metadataIconProvider;
+    private final ProfilePictureProvider profilePictureProvider;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -134,7 +136,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          NetworkUtils networkUtils,
                          SearchTEIRepository searchTEIRepository,
                          ThemeManager themeManager,
-                         MetadataIconProvider metadataIconProvider
+                         MetadataIconProvider metadataIconProvider,
+                         ProfilePictureProvider profilePictureProvider
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -155,6 +158,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 currentProgram,
                 resources);
         this.metadataIconProvider = metadataIconProvider;
+        this.profilePictureProvider = profilePictureProvider;
     }
 
 
@@ -389,39 +393,17 @@ public class SearchRepositoryImpl implements SearchRepository {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
 
-        EventCollectionRepository scheduledEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
-                .byStatus().eq(EventStatus.SCHEDULE)
-                .byDueDate().beforeOrEqual(new Date());
-
         EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
 
         if (selectedProgram != null) {
-            scheduledEvents = scheduledEvents.byProgramUid().eq(selectedProgram.uid()).orderByDueDate(RepositoryScope.OrderByDirection.DESC);
-            overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid()).orderByDueDate(RepositoryScope.OrderByDirection.DESC);
+            overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid());
         }
 
-        int count;
-        List<Event> scheduleList = scheduledEvents.blockingGet();
-        List<Event> overdueList = overdueEvents.blockingGet();
-        count = overdueList.size() + scheduleList.size();
+        List<Event> overdueList = overdueEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
-        if (count > 0) {
+        if (!overdueList.isEmpty()) {
             tei.setHasOverdue(true);
-            Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = !overdueList.isEmpty() ? overdueList.get(0).dueDate() : null;
-            Date dateToShow = null;
-            if (scheduleDate != null && overdueDate != null) {
-                if (scheduleDate.before(overdueDate)) {
-                    dateToShow = overdueDate;
-                } else {
-                    dateToShow = scheduleDate;
-                }
-            } else if (scheduleDate != null) {
-                dateToShow = scheduleDate;
-            } else if (overdueDate != null) {
-                dateToShow = overdueDate;
-            }
-            tei.setOverdueDate(dateToShow);
+            tei.setOverdueDate(overdueList.get(0).dueDate());
         }
     }
 
@@ -768,7 +750,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             } else {
                 searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));
             }
-            searchTei.setProfilePicture(profilePicturePath(dbTei, selectedProgram));
+            searchTei.setProfilePicture(profilePictureProvider.invoke(dbTei, selectedProgram != null ? selectedProgram.uid() : null));
         } else {
             searchTei.setTei(teiFromItem);
             searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));

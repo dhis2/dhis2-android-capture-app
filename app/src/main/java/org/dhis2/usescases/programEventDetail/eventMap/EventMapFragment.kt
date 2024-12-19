@@ -221,6 +221,7 @@ class EventMapFragment :
     }
 
     override fun onDestroy() {
+        programEventsViewModel.setProgress(false)
         presenter.onDestroy()
         super.onDestroy()
     }

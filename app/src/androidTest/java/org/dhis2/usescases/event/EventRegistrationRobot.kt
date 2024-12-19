@@ -35,10 +35,9 @@ class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot()
         }
     }
 
-    fun checkEventDataEntryIsOpened(completion: Int, email: String, composeTestRule: ComposeTestRule) {
+    fun checkEventDataEntryIsOpened(completion: Int, orgUnit: String) {
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(completion)))
-        composeTestRule.onNodeWithText(email).performScrollTo()
-        composeTestRule.onNodeWithText(email).assertIsDisplayed()
+        composeTestRule.onNodeWithText(orgUnit).performScrollTo().assertIsDisplayed()
     }
 
     fun clickOnShare() {

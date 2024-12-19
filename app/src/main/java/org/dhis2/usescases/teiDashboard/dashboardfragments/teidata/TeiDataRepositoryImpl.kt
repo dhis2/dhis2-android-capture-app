@@ -33,6 +33,7 @@ class TeiDataRepositoryImpl(
     private val enrollmentUid: String?,
     private val periodUtils: DhisPeriodUtils,
     private val metadataIconProvider: MetadataIconProvider,
+    private val dateUtils: DateUtils,
 ) : TeiDataRepository {
 
     override fun getTEIEnrollmentEvents(
@@ -379,7 +380,7 @@ class TeiDataRepositoryImpl(
     private fun checkEventStatus(events: List<Event>): List<Event> {
         return events.mapNotNull { event ->
             if (event.status() == EventStatus.SCHEDULE &&
-                event.dueDate()?.before(DateUtils.getInstance().today) == true
+                dateUtils.isEventDueDateOverdue(event.dueDate())
             ) {
                 d2.eventModule().events().uid(event.uid()).setStatus(EventStatus.OVERDUE)
                 d2.eventModule().events().uid(event.uid()).blockingGet()

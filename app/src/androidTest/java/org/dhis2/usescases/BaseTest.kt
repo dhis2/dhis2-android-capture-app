@@ -6,6 +6,8 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
+import java.util.concurrent.TimeUnit
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.BaseRobot
@@ -22,16 +24,15 @@ import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
-import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
-import java.util.concurrent.TimeUnit
 
 open class BaseTest {
 
@@ -86,6 +87,7 @@ open class BaseTest {
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
             OnMapReadyIdlingResourceSingleton.countingIdlingResource,
+            AnalyticsCountingIdlingResource.countingIdlingResource,
         )
     }
 
@@ -98,6 +100,7 @@ open class BaseTest {
                 SearchIdlingResourceSingleton.countingIdlingResource,
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
+                AnalyticsCountingIdlingResource.countingIdlingResource,
             )
     }
 
