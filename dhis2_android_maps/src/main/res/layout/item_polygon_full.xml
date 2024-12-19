@@ -11,13 +11,8 @@
             type="Boolean" />
 
         <variable
-            name="viewModel"
-            type="org.dhis2.maps.geometry.polygon.PolygonViewModel" />
-
-        <variable
-            name="point"
-            type="org.dhis2.maps.geometry.polygon.PolygonViewModel.PolygonPoint" />
-
+            name="coordinateValue"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,7 +30,7 @@
             android:layout_height="wrap_content" />
 
         <EditText
-            android:text="@{point.toString()}"
+            android:text="@{coordinateValue}"
             android:textSize="12sp"
             tools:text="5646465456,54654654"
             android:layout_marginEnd="40dp"
@@ -48,7 +43,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:onClick="@{() -> viewModel.add(point)}"
+            android:id="@+id/addPolygonButton"
             android:visibility="@{isLast ? View.VISIBLE : View.GONE}"
             app:tint="@color/blue_fab"
             style="@style/ActionIconUnwrap"
@@ -60,7 +55,7 @@
             android:layout_height="30dp" />
 
         <ImageView
-            android:onClick="@{() -> viewModel.remove(point)}"
+            android:id="@+id/removePolygonButton"
             android:visibility="@{isLast ? View.GONE : View.VISIBLE}"
             app:tint="@color/red_a14"
             app:srcCompat="@drawable/ic_close"

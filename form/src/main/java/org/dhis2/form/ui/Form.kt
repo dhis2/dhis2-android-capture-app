@@ -28,10 +28,10 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
-import org.dhis2.form.data.EventRepository
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -69,6 +69,7 @@ fun Form(
     }
     LazyColumn(
         modifier = Modifier
+            .testTag("FORM_VIEW")
             .fillMaxSize()
             .background(
                 Color.White,
@@ -86,7 +87,10 @@ fun Form(
                 indication = null,
                 onClick = { focusManager.clearFocus() },
             ),
-        contentPadding = PaddingValues(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing16),
+        contentPadding = PaddingValues(
+            horizontal = Spacing.Spacing16,
+            vertical = Spacing.Spacing16,
+        ),
         state = scrollState,
     ) {
         if (sections.isNotEmpty()) {
@@ -105,17 +109,15 @@ fun Form(
                         focusManager.clearFocus()
                     }
                 }
-
-                val completedAndTotalFields = totalAndCompletedFields(section)
                 Section(
                     title = section.title,
                     isLastSection = getNextSection(section, sections) == null,
-                    description = sectionDescription(section),
-                    completedFields = completedAndTotalFields.second,
-                    totalFields = completedAndTotalFields.first,
+                    description = if (section.fields.isNotEmpty()) section.description else null,
+                    completedFields = section.completeFields,
+                    totalFields = section.totalFields,
                     state = section.state,
-                    errorCount = section.errorCount(),
-                    warningCount = section.warningCount(),
+                    errorCount = section.errors,
+                    warningCount = section.warnings,
                     warningMessage = section.warningMessage?.let { resources.getString(it) },
                     onNextSection = onNextSection,
                     onSectionClick = {
@@ -138,7 +140,12 @@ fun Form(
                                     resources = resources,
                                     focusManager = focusManager,
                                     onNextClicked = {
-                                        manageOnNextEvent(focusManager, index, section, onNextSection)
+                                        manageOnNextEvent(
+                                            focusManager,
+                                            index,
+                                            section,
+                                            onNextSection,
+                                        )
                                     },
                                 )
                             }
@@ -167,26 +174,6 @@ private fun manageOnNextEvent(
     } else {
         focusManager.moveFocus(FocusDirection.Down)
     }
-}
-
-private fun sectionDescription(section: FormSection): String? {
-    return if (section.fields.isNotEmpty()) section.description else null
-}
-
-private fun totalAndCompletedFields(section: FormSection): Pair<Int, Int> {
-    var totalFields = section.fields.size
-    var completedFields = section.completedFields()
-    if (section.uid == EventRepository.EVENT_CATEGORY_COMBO_SECTION_UID && section.fields.first().eventCategories != null) {
-        completedFields = section.fields.first().eventCategories?.associate { category ->
-            category.options.find { option ->
-                section.fields.first().value?.split(",")?.contains(option.uid) == true
-            }?.let {
-                category.uid to it
-            } ?: (category.uid to null)
-        }?.count { it.value != null } ?: 0
-        totalFields = section.fields.first().eventCategories?.size ?: 1
-    }
-    return Pair(totalFields, completedFields)
 }
 
 fun shouldDisplayNoFieldsWarning(sections: List<FormSection>): Boolean {

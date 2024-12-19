@@ -78,6 +78,12 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
                 EnumFilter.Like(value),
             ),
         )
+
+        is TrackerLineListItem.Category -> this.copy(
+            filters = this.filters + listOf(
+                DataFilter.Like(value),
+            ),
+        )
     }
 }
 

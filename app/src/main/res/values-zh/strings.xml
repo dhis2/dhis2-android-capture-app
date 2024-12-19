@@ -140,8 +140,6 @@
     <string name="delete">删除</string>
     <string name="total">总共</string>
     <string name="most_recent_event_date">最近事件日期</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">注册清单</string>
     <string name="active_programs">活动项目</string>
     <string name="to_enroll_programs">注册的项目</string>
     <string name="enroll">注册</string>
@@ -299,7 +297,6 @@
     <string name="qr_error_attr">该属性不能被添加</string>
     <string name="qr_error_enrollment">该注册不能添加</string>
 
-    <string name="jira_report">报告Jira问题</string>
     <string name="about">关于</string>
     <string name="programs_to_enroll">注册的项目</string>
     <string name="select_all">全选</string>
@@ -363,10 +360,6 @@
     <string name="date_dialog_tigle">选择过滤日期</string>
     <string name="select_option">选择选项</string>
     <string name="issue_reported">报告的问题</string>
-    <string name="jira_credential_error">检查你的jira用户和密码是正确的</string>
-    <string name="jira_issue_error">报告问题发生错误</string>
-    <string name="jira_fields_error">所有的字段都是强制的</string>
-    <string name="dialog_generate_new_event">生成新事件</string>
     <string name="message_generate_new_event">你要创建另外的事件？</string>
     <string name="event_completed_title">完成的事件</string>
     <string name="event_completed_message">该项目的所有事件已经完成。你同时要关闭该项目吗？</string>
@@ -409,7 +402,6 @@
     <string name="tuto_main_10">退出以便改变用户或服务器，你将可以再次登录即使没有互联网。</string>
     <string name="text_plus_colon">%s：</string>
     <string name="relationships">关系</string>
-    <string name="empty_relationships">还没有现存的关系。点击“+”添加一个新的</string>
     <string name="empty_tei_add">没有注册事件，单击“ +”添加一个新事件。</string>
     <string name="empty_tei_no_add">没有注册事件。</string>
     <string name="qr_data_values">数据值</string>
@@ -596,8 +588,8 @@
     <string name="filter_event_status_skipped">跳过的</string>
     <string name="event_tei_limits">事件：%s 最大：%s%s 当前：%s ，实体：%s 最大：%s%s 当前：%s</string>
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
-    <string name="enrollment_data_hide">隐藏注册数据</string>
-    <string name="enrollment_data_show">显示注册数据</string>
+    <string name="enrollment_data_hide">隐藏加入数据</string>
+    <string name="enrollment_data_show">显示加入数据</string>
     <string name="sms_enabled">短信模块被激活</string>
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
@@ -679,12 +671,9 @@
     <string name="download_tei_error">选择的%s不能下载</string>
     <string name="completed_by">%s完成：%s</string>
     <string name="updated_time">已更新：%s</string>
-    <string name="action_done">完成！</string>
     <string name="validation_internal_error_datasets">不能检查质量，联系管理员</string>
     <string name="are_you_sure">你确信？</string>
     <string name="reopen_question">你要重新打开数据集？</string>
-    <string name="group_events_by_stage">按阶段分组事件</string>
-    <string name="show_events_timeline">按时间轴显示事件</string>
     <string name="filters_title_date">日期</string>
     <string name="filters_title_event_date">事件日期</string>
     <string name="tei_type_has_no_attributes">%s没有公有属性，请选择一个项目</string>
@@ -692,7 +681,7 @@
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
     <string name="coordinates_error">坐标值无效</string>
     <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
-    <string name="break_glass_error_v2">您无法在此项目中注册来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
+    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
@@ -708,19 +697,7 @@
     <string name="metada_first_sync_error">与您的服务器同步时发现错误。如果可能，与系统管理员共享错误。</string>
     <string name="error_init_session">我们无法与您的用户发起会话</string>
     <string name="enrollment_date_edition_warning">还有计划的事件，不能重新安排</string>
-    <string name="jira_issue_sent">问题已发送</string>
-    <string name="jira_issue_sent_error">发送问题时出错</string>
     <string name="section_charts">图表</string>
-    <string name="navigation_list_view">列表显示</string>
-    <string name="navigation_table_view">表格显示</string>
-    <string name="navigation_map_view">地图显示</string>
-    <string name="navigation_analytics">分析工具</string>
-    <string name="navigation_tasks">任务</string>
-    <string name="navigation_programs">项目</string>
-    <string name="navigation_relationships">关系</string>
-    <string name="navigation_notes">笔记</string>
-    <string name="navigation_data_entry">数据输入</string>
-    <string name="navigation_tei_data">详情</string>
     <string name="show_bar_graph">查看柱状图</string>
     <string name="show_line_graph">查看折线图</string>
     <string name="show_table_graph">查看表格</string>

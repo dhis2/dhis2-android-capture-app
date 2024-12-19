@@ -3,9 +3,13 @@ package org.dhis2.form.ui
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.databinding.ObservableField
 import androidx.lifecycle.Observer
+import androidx.paging.PagingData
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -20,6 +24,7 @@ import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.KeyboardActionType
+import org.dhis2.form.model.LegendValue
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -29,6 +34,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Before
@@ -76,6 +82,12 @@ class DataEntryIntegrationTest {
         on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
     }
 
+    private val legendValueItem: LegendValue = LegendValue(
+        color = 0,
+        label = "Legend",
+        emptyList(),
+    )
+
     private val ruleEngineRepository: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
 
@@ -88,6 +100,7 @@ class DataEntryIntegrationTest {
         rulesUtilsProvider = rulesUtilsProvider,
         legendValueProvider = legendValueProvider,
         useCompose = true,
+        preferenceProvider = preferenceProvider,
     )
 
     private lateinit var formViewModel: FormViewModel
@@ -128,17 +141,25 @@ class DataEntryIntegrationTest {
             fieldUiModel
         }
 
+        whenever(
+            legendValueProvider.provideLegendValue(
+                "INPUT_NUMBER_WITH_LEGEND_UID",
+                "25",
+            ),
+        ).thenAnswer {
+            legendValueItem
+        }
+
         formViewModel = FormViewModel(
             repository = repository,
             dispatcher = dispatcher,
             geometryController = geometryController,
             openErrorLocation = false,
-            preferenceProvider = preferenceProvider,
         )
     }
 
     @Test
-    fun shouldDataEntrySuccessfully() = runTest {
+    fun shouldAllowDataEntryCorrectly() = runTest {
         val observedItems = mutableListOf<List<FieldUiModel>>()
         val observer = Observer<List<FieldUiModel>> { items ->
             observedItems.add(items)
@@ -200,6 +221,22 @@ class DataEntryIntegrationTest {
         )
         formViewModel.submitIntent(enterAgeIntent)
 
+        // focus on input field with legend
+        val focusOnLegendFieldIntent = FormIntent.OnFocus(
+            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+            value = "",
+        )
+        formViewModel.submitIntent(focusOnLegendFieldIntent)
+
+        // enter value on input field with legend
+        val enterValueOnLegendFieldIntent = FormIntent.OnTextChange(
+            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+            value = "25",
+            valueType = ValueType.NUMBER,
+        )
+
+        formViewModel.submitIntent(enterValueOnLegendFieldIntent)
+
         // Focus on gender
         val focusOnGenderIntent = FormIntent.OnFocus(
             uid = "oZg33kd9taw",
@@ -221,6 +258,10 @@ class DataEntryIntegrationTest {
             observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
         )
         assert(
+            observedItems.last()
+                .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
+        )
+        assert(
             observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
         )
         assert(
@@ -232,17 +273,16 @@ class DataEntryIntegrationTest {
     }
 
     private fun provideMalariaCaseRegistrationEventItems(): List<FieldUiModel> {
+        val optionSearchFlow = MutableStateFlow("")
         return listOf(
             SectionUiModelImpl(
                 uid = "EVENT_DETAILS_SECTION_UID",
-                layoutId = 0,
                 label = "Event details",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "EVENT_REPORT_DATE_UID",
-                layoutId = 0,
                 label = "Report date",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -253,7 +293,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_ORG_UNIT_UID",
-                layoutId = 0,
                 label = "Org unit",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -264,7 +303,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "EVENT_COORDINATE_UID",
-                layoutId = 0,
                 label = "Coordinates",
                 programStageSection = "EVENT_DETAILS_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -274,14 +312,12 @@ class DataEntryIntegrationTest {
             ),
             SectionUiModelImpl(
                 uid = "EVENT_DATA_SECTION_UID",
-                layoutId = 0,
                 label = "Event data",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 selectedField = ObservableField(""),
             ),
             FieldUiModelImpl(
                 uid = "qrur9Dvnyt5",
-                layoutId = 0,
                 label = "Age (years)",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
@@ -291,29 +327,51 @@ class DataEntryIntegrationTest {
                 keyboardActionType = KeyboardActionType.NEXT,
             ),
             FieldUiModelImpl(
+                uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                label = "Weight (kg)",
+                programStageSection = "EVENT_DATA_SECTION_UID",
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                valueType = ValueType.NUMBER,
+                mandatory = true,
+                keyboardActionType = KeyboardActionType.NEXT,
+            ),
+            FieldUiModelImpl(
                 uid = "oZg33kd9taw",
-                layoutId = 0,
                 label = "Gender",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
-                optionSetConfiguration = OptionSetConfiguration.DefaultOptionSet(
-                    options = listOf(
-                        Option.builder()
-                            .uid("rBvjJYbMCVx")
-                            .code("Male")
-                            .displayName("Male")
-                            .name("Male")
-                            .sortOrder(1)
-                            .build(),
-                        Option.builder()
-                            .uid("Mnp3oXrpAbK")
-                            .code("Female")
-                            .displayName("Female")
-                            .name("Female")
-                            .sortOrder(2)
-                            .build(),
-                    ),
-                    optionMetadataIcon = emptyMap(),
+                optionSetConfiguration = OptionSetConfiguration(
+                    optionSearchFlow,
+                    { optionSearchFlow.value = it },
+                    optionSearchFlow.flatMapLatest {
+                        flow {
+                            PagingData.from(
+                                listOf(
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("rBvjJYbMCVx")
+                                            .code("Male")
+                                            .displayName("Male")
+                                            .name("Male")
+                                            .sortOrder(1)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
+                                    OptionSetConfiguration.OptionData(
+                                        Option.builder()
+                                            .uid("Mnp3oXrpAbK")
+                                            .code("Female")
+                                            .displayName("Female")
+                                            .name("Female")
+                                            .sortOrder(2)
+                                            .build(),
+                                        MetadataIconData.defaultIcon(),
+                                    ),
+                                ),
+                            )
+                        }
+                    },
                 ),
                 valueType = ValueType.MULTI_TEXT,
                 mandatory = true,
@@ -321,7 +379,6 @@ class DataEntryIntegrationTest {
             ),
             FieldUiModelImpl(
                 uid = "F3ogKBuviRA",
-                layoutId = 0,
                 label = "Household location",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),

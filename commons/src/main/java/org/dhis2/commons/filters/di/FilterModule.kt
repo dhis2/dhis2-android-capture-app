@@ -8,6 +8,7 @@ import org.dhis2.commons.filters.FilterResources
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 
 @Module
@@ -38,8 +39,11 @@ class FilterModule {
 
     @Provides
     @PerServer
-    fun provideFilterResources(resourceManager: ResourceManager): FilterResources {
-        return FilterResources(resourceManager)
+    fun provideFilterResources(
+        resourceManager: ResourceManager,
+        eventResourcesProvider: EventResourcesProvider,
+    ): FilterResources {
+        return FilterResources(resourceManager, eventResourcesProvider)
     }
 
     @Provides

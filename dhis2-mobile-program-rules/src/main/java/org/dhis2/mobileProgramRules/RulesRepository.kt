@@ -2,7 +2,6 @@ package org.dhis2.mobileProgramRules
 
 import android.os.Build
 import android.text.TextUtils.isEmpty
-import io.reactivex.Single
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -11,8 +10,6 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programStage
-import org.dhis2.commons.rules.toRuleEngineInstant
-import org.dhis2.commons.rules.toRuleEngineLocalDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -71,21 +68,7 @@ class RulesRepository(private val d2: D2) {
             .toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
                 d2.dataElementModule().dataElements(),
-                d2.optionModule().options(),
             )
-    }
-
-    fun ruleVariablesProgramStages(programUid: String): Single<List<RuleVariable>> {
-        return d2.programModule().programRuleVariables().byProgramUid().eq(programUid).get()
-            .toFlowable().flatMapIterable { list -> list }
-            .map {
-                it.toRuleVariable(
-                    d2.trackedEntityModule().trackedEntityAttributes(),
-                    d2.dataElementModule().dataElements(),
-                    d2.optionModule().options(),
-                )
-            }
-            .toList()
     }
 
     suspend fun constants(): Map<String, String> {

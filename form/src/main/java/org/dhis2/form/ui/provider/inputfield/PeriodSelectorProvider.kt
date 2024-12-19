@@ -7,6 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.res.stringResource
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -14,7 +17,10 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import java.util.Date
 
 @Composable
 fun ProvidePeriodSelector(
@@ -24,38 +30,85 @@ fun ProvidePeriodSelector(
     focusRequester: FocusRequester,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
 ) {
-    var selectedItem by remember(fieldUiModel.displayName) {
-        mutableStateOf(
-            fieldUiModel.displayName,
+    val currentDate = DateUtils.getInstance().getStartOfDay(Date())
+    if ((fieldUiModel.periodSelector?.minDate?.after(currentDate) == true)) {
+        ProvideEmptyPeriodSelector(
+            modifier = modifier,
+            name = fieldUiModel.label,
+            inputStyle = inputStyle,
+        )
+    } else {
+        var selectedItem by remember(fieldUiModel.displayName) {
+            mutableStateOf(
+                fieldUiModel.displayName,
+            )
+        }
+
+        DropdownInputField(
+            modifier = modifier,
+            title = fieldUiModel.label,
+            state = fieldUiModel.inputState(),
+            inputStyle = inputStyle,
+            legendData = fieldUiModel.legend(),
+            supportingTextData = fieldUiModel.supportingText(),
+            isRequiredField = fieldUiModel.mandatory,
+            selectedItem = DropdownItem(selectedItem ?: ""),
+            onResetButtonClicked = {
+                selectedItem = null
+                fieldUiModel.onClear()
+            },
+            onDropdownIconClick = {
+                uiEventHandler(
+                    RecyclerViewUiEvents.SelectPeriod(
+                        uid = fieldUiModel.uid,
+                        title = fieldUiModel.label,
+                        periodType = fieldUiModel.periodSelector!!.type,
+                        minDate = fieldUiModel.periodSelector!!.minDate,
+                        maxDate = fieldUiModel.periodSelector!!.maxDate,
+                    ),
+                )
+            },
+            onFocusChanged = {},
+            focusRequester = focusRequester,
+            expanded = false,
         )
     }
+}
 
-    DropdownInputField(
+@Composable
+fun ProvideEmptyPeriodSelector(
+    modifier: Modifier = Modifier,
+    name: String,
+    inputStyle: InputStyle,
+) {
+    var selectedItem by remember {
+        mutableStateOf("")
+    }
+
+    val options = listOf(DropdownItem(stringResource(id = R.string.no_periods)))
+
+    InputDropDown(
         modifier = modifier,
-        title = fieldUiModel.label,
-        state = fieldUiModel.inputState(),
+        title = name,
+        state = InputShellState.UNFOCUSED,
         inputStyle = inputStyle,
-        legendData = fieldUiModel.legend(),
-        supportingTextData = fieldUiModel.supportingText(),
-        isRequiredField = fieldUiModel.mandatory,
-        selectedItem = DropdownItem(selectedItem ?: ""),
+        selectedItem = DropdownItem(selectedItem),
         onResetButtonClicked = {
-            selectedItem = null
-            fieldUiModel.onClear()
+            selectedItem = ""
         },
-        onDropdownIconClick = {
-            uiEventHandler(
-                RecyclerViewUiEvents.SelectPeriod(
-                    uid = fieldUiModel.uid,
-                    title = fieldUiModel.label,
-                    periodType = fieldUiModel.periodSelector!!.type,
-                    minDate = fieldUiModel.periodSelector!!.minDate,
-                    maxDate = fieldUiModel.periodSelector!!.maxDate,
-                ),
-            )
+        onItemSelected = { _, newSelectedDropdownItem ->
+            selectedItem = newSelectedDropdownItem.label
         },
-        onFocusChanged = {},
-        focusRequester = focusRequester,
-        expanded = false,
+        itemCount = 1,
+        fetchItem = {
+            options[it]
+        },
+        loadOptions = {
+            /*no-op*/
+        },
+        onSearchOption = {
+            /*no-op*/
+        },
+        isRequiredField = false,
     )
 }

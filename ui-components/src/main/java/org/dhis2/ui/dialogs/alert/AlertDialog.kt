@@ -19,7 +19,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.ui.theme.Dhis2Theme
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
@@ -180,7 +180,8 @@ fun Dhis2AlertDialogUi(
                 }
             },
             confirmButton = {
-                TextButton(
+                Button(
+                    text = confirmButton.text,
                     modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
                     onClick = {
                         confirmButtonClick.value = true
@@ -194,14 +195,13 @@ fun Dhis2AlertDialogUi(
                             }
                         } ?: confirmButton.onClick.invoke()
                     },
-                ) {
-                    Text(text = confirmButton.text)
-                }
+                )
             },
             dismissButton = {
-                TextButton(onClick = dismissButton.onClick) {
-                    Text(text = dismissButton.text)
-                }
+                Button(
+                    text = dismissButton.text,
+                    onClick = dismissButton.onClick,
+                )
             },
         )
     }

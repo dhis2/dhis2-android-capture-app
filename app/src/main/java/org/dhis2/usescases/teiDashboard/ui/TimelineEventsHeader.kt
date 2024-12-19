@@ -38,10 +38,8 @@ fun TimelineEventsHeader(
         ) {
             Title(text = stringResource(id = R.string.timeline))
             Description(
-                text = stringResource(
-                    id = R.string.event_count,
-                    timelineEventsHeaderModel.eventCount,
-                ),
+                text =
+                "${timelineEventsHeaderModel.eventCount} ${timelineEventsHeaderModel.eventLabel}",
                 textColor = TextColor.OnSurfaceLight,
             )
         }
@@ -55,7 +53,7 @@ fun TimelineEventsHeader(
 @Composable
 private fun TimelineEventHeaderPreview() {
     TimelineEventsHeader(
-        timelineEventsHeaderModel = TimelineEventsHeaderModel(true, 3, listOf()),
+        timelineEventsHeaderModel = TimelineEventsHeaderModel(true, 3, "events", listOf()),
         onOptionSelected = {},
     )
 }

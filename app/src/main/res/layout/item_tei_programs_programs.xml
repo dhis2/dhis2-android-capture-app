@@ -13,7 +13,7 @@
 
         <variable
             name="program"
-            type="org.dhis2.usescases.main.program.ProgramViewModel" />
+            type="org.dhis2.usescases.main.program.ProgramUiModel" />
 
         <variable
             name="style"

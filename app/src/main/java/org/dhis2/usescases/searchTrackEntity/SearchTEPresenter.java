@@ -31,6 +31,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ObjectStyleUtils;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -303,7 +304,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         allOrgUnits -> {
                             if (allOrgUnits.size() > 1) {
                                 new OUTreeFragment.Builder()
-                                        .showAsDialog()
                                         .singleSelection()
                                         .onSelection(selectedOrgUnits -> {
                                             if (!selectedOrgUnits.isEmpty())

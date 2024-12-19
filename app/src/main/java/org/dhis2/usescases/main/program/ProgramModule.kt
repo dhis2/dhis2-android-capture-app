@@ -1,28 +1,25 @@
 package org.dhis2.usescases.main.program
 
+// TODO: review EyeSeeTea
+/*import org.dhis2.data.notifications.NotificationD2Repository
+import org.dhis2.data.notifications.NotificationsApi
+import org.dhis2.data.notifications.UserGroupsApi*/
+
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
-import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.matomo.MatomoAnalyticsController
-import org.dhis2.commons.prefs.BasicPreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
-import org.dhis2.data.notifications.NotificationD2Repository
-import org.dhis2.data.notifications.NotificationsApi
 import org.dhis2.data.notifications.UserD2Repository
-import org.dhis2.data.notifications.UserGroupsApi
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.usescases.notifications.domain.GetNotifications
-import org.dhis2.usescases.notifications.domain.MarkNotificationAsRead
-import org.dhis2.usescases.notifications.domain.NotificationRepository
 import org.dhis2.usescases.notifications.domain.UserRepository
-import org.dhis2.usescases.notifications.presentation.NotificationsPresenter
 import org.dhis2.usescases.notifications.presentation.NotificationsView
 import org.hisp.dhis.android.core.D2
 
@@ -34,18 +31,18 @@ class ProgramModule(
 
     @Provides
     @PerFragment
-    internal fun programPresenter(
+    internal fun programViewModelFactory(
         programRepository: ProgramRepository,
-        schedulerProvider: SchedulerProvider,
-        filterManager: FilterManager,
+        dispatcherProvider: DispatcherProvider,
+        featureConfigRepository: FeatureConfigRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
         syncStatusController: SyncStatusController,
-    ): ProgramPresenter {
-        return ProgramPresenter(
+    ): ProgramViewModelFactory {
+        return ProgramViewModelFactory(
             view,
             programRepository,
-            schedulerProvider,
-            filterManager,
+            featureConfigRepository,
+            dispatcherProvider,
             matomoAnalyticsController,
             syncStatusController,
         )
@@ -57,7 +54,6 @@ class ProgramModule(
         d2: D2,
         filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
-        dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
         colorUtils: ColorUtils,
         metadataIconProvider: MetadataIconProvider,
@@ -66,7 +62,6 @@ class ProgramModule(
             d2,
             filterPresenter,
             dhisProgramUtils,
-            dhisTrackedEntityInstanceUtils,
             ResourceManager(view.context, colorUtils),
             metadataIconProvider,
             schedulerProvider,
@@ -79,6 +74,8 @@ class ProgramModule(
         return ProgramAnimation()
     }
 
+    // TODO: review EyeSeeTea
+    /*
     @Provides
     @PerFragment
     internal fun notificationsPresenter(
@@ -101,27 +98,23 @@ class ProgramModule(
         return MarkNotificationAsRead(notificationRepository, userRepository)
     }
 
-    @Provides
+  @Provides
     @PerFragment
     internal fun getNotifications(
         notificationRepository: NotificationRepository,
     ): GetNotifications {
         return GetNotifications(notificationRepository)
-    }
+    }*/
 
-    @Provides
+
+/*    @Provides
     @PerFragment
     internal fun notificationsRepository(
         d2: D2,
         preferences: BasicPreferenceProvider
     ): NotificationRepository {
-        val biometricsConfigApi = d2.retrofit().create(
-            NotificationsApi::class.java
-        )
-
-        val userGroupsApi = d2.retrofit().create(
-            UserGroupsApi::class.java
-        )
+        val biometricsConfigApi = NotificationsApi(d2.httpServiceClient())
+        val userGroupsApi = UserGroupsApi(d2.httpServiceClient())
 
         return NotificationD2Repository(
             d2,
@@ -129,7 +122,7 @@ class ProgramModule(
             biometricsConfigApi,
             userGroupsApi
         )
-    }
+    }*/
 
     @Provides
     @PerFragment

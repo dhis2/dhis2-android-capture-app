@@ -5,26 +5,13 @@
 Refer to App Widget Documentation for margin information
 http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
-    <dimen name="widget_margin">8dp</dimen>
     <dimen name="padding_12">12dp</dimen>
-    <dimen name="padding_6">6dp</dimen>
     <dimen name="default_start_margin">16dp</dimen>
     <dimen name="default_top_margin">10dp</dimen>
-    <dimen name="section_margin">20dp</dimen>
-    <dimen name="item_margin">10dp</dimen>
     <dimen name="primaryTextSize">17sp</dimen>
     <dimen name="textSize_12">12sp</dimen>
     <dimen name="secondaryTextSize">10sp</dimen>
-    <dimen name="sectionSelectorHeight">48dp</dimen>
-    <dimen name="sectionSelectorWidth">150dp</dimen>
-    <dimen name="itemSectionSelectorHeight">48dp</dimen>
-    <dimen name="padding_5">5dp</dimen>
-    <dimen name="padding_8">8dp</dimen>
     <dimen name="rounded_16">16dp</dimen>
     <dimen name="elevation">16dp</dimen>
-    <dimen name="item_carousel_height">72dp</dimen>
-    <dimen name="item_carousel_corner_radius">6dp</dimen>
     <dimen name="padding_16">16dp</dimen>
-    <dimen name="row_header_min_width">90dp</dimen>
-    <dimen name="search_list_top_margin">80dp</dimen>
 </resources>

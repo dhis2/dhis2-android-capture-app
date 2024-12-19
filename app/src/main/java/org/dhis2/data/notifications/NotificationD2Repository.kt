@@ -1,3 +1,6 @@
+// TODO: review EyeSeeTea
+
+/*
 package org.dhis2.data.notifications
 
 import com.google.gson.reflect.TypeToken
@@ -126,4 +129,5 @@ class NotificationD2Repository(
         return notificationsByAll + notificationsByUserGroup + notificationsByUser
     }
 }
+*/
 

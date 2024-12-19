@@ -25,6 +25,7 @@ class PinPresenter(
         when {
             pinStored == pin -> {
                 preferenceProvider.setValue(Preference.SESSION_LOCKED, true)
+                preferenceProvider.setValue(Preference.PIN_ENABLED, true)
                 onPinCorrect()
             }
             attempts < 2 -> onError()

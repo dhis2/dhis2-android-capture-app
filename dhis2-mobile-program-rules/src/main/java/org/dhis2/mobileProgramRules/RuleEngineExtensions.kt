@@ -3,7 +3,6 @@ package org.dhis2.mobileProgramRules
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.dhis2.commons.rules.toRuleEngineInstant
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
@@ -62,10 +61,9 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
 fun List<ProgramRuleVariable>.toRuleVariableList(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
 ): List<RuleVariable> {
-    return filter {
-        when {
+    return mapNotNull {
+        val allowVariable = when {
             it.dataElement() != null -> {
                 dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
             }
@@ -76,8 +74,11 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
 
             else -> isCalculatedValue(it)
         }
-    }.map {
-        it.toRuleVariable(attributeRepository, dataElementRepository, optionRepository)
+        if (allowVariable) {
+            it.toRuleVariable(attributeRepository, dataElementRepository)
+        } else {
+            null
+        }
     }
 }
 
@@ -104,6 +105,8 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             else -> ""
         }
 
+    val contentToDisplay = displayContent() ?: content()
+
     return when (programRuleActionType()) {
         ProgramRuleActionType.HIDEFIELD ->
             RuleAction(
@@ -112,7 +115,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -123,7 +126,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("location", location() ?: "indicators"),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -134,7 +137,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("location", location()!!),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -176,10 +179,18 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data() ?: "",
                     type = ProgramRuleActionType.ASSIGN.name,
-                    values = mutableMapOf(
-                        Pair("field", field),
-                    ).also { map ->
-                        content()?.let { map["content"] = it }
+                    values = if (field.isNotEmpty()) {
+                        mutableMapOf(
+                            Pair("field", field),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        }
+                    } else {
+                        contentToDisplay?.let {
+                            mutableMapOf(
+                                Pair("content", it),
+                            )
+                        } ?: emptyMap()
                     },
                 )
             }
@@ -191,7 +202,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             values = mutableMapOf(
                 Pair("field", field),
             ).also { map ->
-                content()?.let { map["content"] = it }
+                contentToDisplay?.let { map["content"] = it }
             },
         )
 
@@ -201,7 +212,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             values = mutableMapOf(
                 Pair("field", field),
             ).also { map ->
-                content()?.let { map["content"] = it }
+                contentToDisplay?.let { map["content"] = it }
             },
         )
 
@@ -212,7 +223,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -223,7 +234,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -235,7 +246,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     values = mutableMapOf(
                         Pair("programStage", stageUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        contentToDisplay?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -250,7 +261,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 values = mutableMapOf(
                     Pair("field", field),
                 ).also { map ->
-                    content()?.let { map["content"] = it }
+                    contentToDisplay?.let { map["content"] = it }
                 },
             )
 
@@ -263,7 +274,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("option", optionUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        contentToDisplay?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -280,7 +291,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("optionGroup", optionGroupUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        contentToDisplay?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -297,7 +308,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("field", field),
                         Pair("optionGroup", optionGroupUid),
                     ).also { map ->
-                        content()?.let { map["content"] = it }
+                        contentToDisplay?.let { map["content"] = it }
                     },
                 )
             } ?: RuleAction(
@@ -316,7 +327,6 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
 ): RuleVariable {
     val valueType = when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
@@ -339,14 +349,7 @@ fun ProgramRuleVariable.toRuleVariable(
     }
 
     val useCodeForOptionSet = useCodeForOptionSet() ?: false
-    val options = getOptions(
-        useCodeForOptionSet,
-        dataElement()?.uid(),
-        trackedEntityAttribute()?.uid(),
-        attributeRepository,
-        dataElementRepository,
-        optionRepository,
-    )
+    val options = emptyList<Option>()
 
     return when (programRuleVariableSourceType()) {
         ProgramRuleVariableSourceType.CALCULATED_VALUE ->
@@ -405,33 +408,6 @@ fun ProgramRuleVariable.toRuleVariable(
             )
 
         else -> throw IllegalArgumentException("Unsupported variable ")
-    }
-}
-
-fun getOptions(
-    useCodeForOptionSet: Boolean,
-    dataElementUid: String?,
-    trackedEntityAttributeUid: String?,
-    attributeRepository: TrackedEntityAttributeCollectionRepository,
-    dataElementRepository: DataElementCollectionRepository,
-    optionRepository: OptionCollectionRepository,
-): List<Option> {
-    if (useCodeForOptionSet) {
-        return emptyList()
-    }
-
-    return if (dataElementUid != null) {
-        dataElementRepository.uid(dataElementUid).blockingGet()?.optionSet()?.uid()
-            ?.let { optionSetUid ->
-                optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
-    } else if (trackedEntityAttributeUid != null) {
-        attributeRepository.uid(trackedEntityAttributeUid).blockingGet()?.optionSet()?.uid()
-            ?.let { optionSetUid ->
-                optionRepository.byOptionSetUid().eq(optionSetUid).blockingGet()
-            }?.map { option -> Option(option.name()!!, option.code() ?: "") } ?: emptyList()
-    } else {
-        emptyList()
     }
 }
 

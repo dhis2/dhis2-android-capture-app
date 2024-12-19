@@ -4,12 +4,12 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
-import org.dhis2.usescases.main.program.ProgramViewModel
+import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentService
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +18,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class TeiProgramListPresenterTest {
 
@@ -155,8 +156,8 @@ class TeiProgramListPresenterTest {
         verify(view).displayMessage("This is a test message")
     }
 
-    private fun mockedProgramViewModel(): ProgramViewModel {
-        return ProgramViewModel(
+    private fun mockedProgramViewModel(): ProgramUiModel {
+        return ProgramUiModel(
             "uid",
             "programName",
             MetadataIconData(
@@ -171,10 +172,9 @@ class TeiProgramListPresenterTest {
             true,
             accessDataWrite = true,
             state = State.SYNCED,
-            hasOverdueEvent = false,
-            filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = Date(),
         )
     }
 

@@ -154,6 +154,7 @@ class D2ErrorUtils(
 
             D2ErrorCode.DATABASE_IMPORT_FAILED -> "Database import failed"
             D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> "Invalid file"
+            D2ErrorCode.INCORRECT_TWO_FACTOR_CODE -> TODO()
         }
     }
 

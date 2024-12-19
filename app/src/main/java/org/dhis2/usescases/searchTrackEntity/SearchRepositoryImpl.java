@@ -12,10 +12,6 @@ import org.dhis2.commons.bindings.ValueExtensionsKt;
 import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.commons.data.RelationshipDirection;
-import org.dhis2.commons.data.RelationshipOwnerType;
-import org.dhis2.commons.data.RelationshipViewModel;
-import org.dhis2.commons.data.SearchTeiModel;
 import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.date.DateUtils;
@@ -37,7 +33,9 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
-import org.dhis2.ui.MetadataIconData;
+import org.dhis2.tracker.relationships.model.RelationshipDirection;
+import org.dhis2.tracker.relationships.model.RelationshipModel;
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.teiDownload.TeiDownloader;
 import org.dhis2.utils.ValueUtils;
@@ -303,7 +301,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getToday());
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getStartOfDay(new Date()));
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return Pair.create(enrollmentUid, uid);
                         })
@@ -368,7 +366,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         String value = attribute.getValue();
         String transformedValue;
         if (value != null) {
-            transformedValue =  ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
+            transformedValue = ValueUtils.Companion.transformValue(d2, value, attribute.getValueType(), attribute.getOptionSet());
         } else {
             transformedValue = sortingValueSetter.getUnknownLabel();
         }
@@ -410,7 +408,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (count > 0) {
             tei.setHasOverdue(true);
             Date scheduleDate = !scheduleList.isEmpty() ? scheduleList.get(0).dueDate() : null;
-            Date overdueDate = !overdueList.isEmpty()  ? overdueList.get(0).dueDate() : null;
+            Date overdueDate = !overdueList.isEmpty() ? overdueList.get(0).dueDate() : null;
             Date dateToShow = null;
             if (scheduleDate != null && overdueDate != null) {
                 if (scheduleDate.before(overdueDate)) {
@@ -428,7 +426,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private void setRelationshipsInfo(@NonNull SearchTeiModel searchTeiModel, Program selectedProgram) {
-        List<RelationshipViewModel> relationshipViewModels = new ArrayList<>();
+        List<RelationshipModel> relationshipModels = new ArrayList<>();
         List<Relationship> relationships = d2.relationshipModule().relationships().getByItem(
                 RelationshipItem.builder().trackedEntityInstance(
                         RelationshipItemTrackedEntityInstance.builder()
@@ -467,7 +465,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 for (TrackedEntityAttributeValue attributeValue : toAttr) {
                     toValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(), attributeValue.value()));
                 }
-                relationshipViewModels.add(new RelationshipViewModel(
+                relationshipModels.add(new RelationshipModel(
                         relationship,
                         fromTei.geometry(),
                         toTei.geometry(),
@@ -481,13 +479,17 @@ public class SearchRepositoryImpl implements SearchRepository {
                         profilePicturePath(toTei, selectedProgram.uid()),
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
-                        MetadataIconData.Companion.defaultIcon(),
-                        true
+                        null,
+                        true,
+                        null,
+                        null,
+                        null,
+                        null
                 ));
             }
         }
 
-        searchTeiModel.setRelationships(relationshipViewModels);
+        searchTeiModel.setRelationships(relationshipModels);
     }
 
     private String profilePicturePath(TrackedEntityInstance tei, String programUid) {
@@ -734,7 +736,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
                     .blockingGet();
 
-            if (!enrollmentsInProgram.isEmpty()) {
+            if (selectedProgram != null && !enrollmentsInProgram.isEmpty()) {
                 for (Enrollment enrollment : enrollmentsInProgram) {
                     if (enrollment.status() == EnrollmentStatus.ACTIVE) {
                         searchTei.setCurrentEnrollment(enrollment);
@@ -745,12 +747,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                     searchTei.setCurrentEnrollment(enrollmentsInProgram.get(0));
                 }
             }
-
-            searchTei.setOnline(!searchItem.isOnline());
-
+            // set online parameter from the tei search item
+            searchTei.setOnline(searchItem.isOnline());
+            // If search is being conducted offline only, set the search as offline
             if (offlineOnly)
-                searchTei.setOnline(!offlineOnly);
-
+                searchTei.setOnline(false);
+            // if the local database tei is deleted, set search as online
             if (Boolean.TRUE.equals(dbTei.deleted())) {
                 searchTei.setOnline(true);
             }
@@ -937,6 +939,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     private boolean displayOrgUnit() {
         return d2.organisationUnitModule().organisationUnits()
                 .byProgramUids(Collections.singletonList(currentProgram))
-                .blockingGet().size() > 1;
+                .blockingCount() > 1;
     }
 }

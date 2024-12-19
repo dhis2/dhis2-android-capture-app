@@ -40,14 +40,13 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.DataSetFilter
 import org.hisp.dhis.android.core.settings.HomeFilter
 import org.hisp.dhis.android.core.settings.ProgramFilter
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQueryCollectionRepository
-import timber.log.Timber
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
+import timber.log.Timber
 import javax.inject.Inject
 
-data class TextFilter(val dataElement: String, val text: String)
-
-class FilterRepository @Inject constructor(
+class FilterRepository
+@Inject
+constructor(
     private val d2: D2,
     val resources: FilterResources,
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig,
@@ -193,32 +192,6 @@ class FilterRepository @Inject constructor(
             .eventQuery()
             .byIncludeDeleted().eq(false)
             .byProgram().eq(programUid)
-    }
-
-    fun eventsByProgramAndTextFilter(
-        programUid: String,
-        textFilter: TextFilter?
-    ): EventQueryCollectionRepository {
-
-        if (textFilter != null && textFilter.dataElement.isNotBlank() && textFilter.text.isNotBlank()) {
-            val uidsByTextFilter =
-                getEventUIdsFilteredByValue(textFilter.dataElement, textFilter.text)
-
-            return d2.eventModule()
-                .eventQuery()
-                .byIncludeDeleted()
-                .eq(false)
-                .byProgram()
-                .eq(programUid)
-                .byUid().`in`(if (uidsByTextFilter.isNotEmpty()) uidsByTextFilter else listOf(textFilter.text))
-        } else {
-            return d2.eventModule()
-                .eventQuery()
-                .byIncludeDeleted()
-                .eq(false)
-                .byProgram()
-                .eq(programUid)
-        }
     }
 
     fun applyOrgUnitFilter(
@@ -562,7 +535,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventDateLabel(),
+            resources.filterEventDateLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.ENROLLMENT_DATE] = EnrollmentDateFilter(
             ProgramType.TRACKER,
@@ -594,7 +567,7 @@ class FilterRepository @Inject constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramUidAndUserAssignment = d2.programModule()
@@ -724,7 +697,7 @@ class FilterRepository @Inject constructor(
             programType,
             observableSortingInject,
             observableOpenFilter,
-            resources.filterEventStatusLabel(),
+            resources.filterEventStatusLabel(program.uid()),
         )
 
         val stagesByProgramAndUserAssignment = d2.programModule()

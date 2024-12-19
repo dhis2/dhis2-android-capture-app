@@ -30,15 +30,17 @@ class SyncFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(MAIN_BUTTON_TAG, useUnmergedTree = true).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkSyncWasSuccessfully() {
         val expectedTitle = InstrumentationRegistry.getInstrumentation()
-            .targetContext.getString(R.string.sync_dialog_title_not_synced)
-        composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle))
+            .targetContext.getString(R.string.sync_dialog_title_synced)
+        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedTitle), 2_000L)
+        composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle, true))
     }
 
     fun checkSyncFailed() {
         val expectedTitle = InstrumentationRegistry.getInstrumentation()
-            .targetContext.getString(R.string.sync_dialog_title_not_synced)
+            .targetContext.getString(R.string.sync_dialog_title_error)
         composeTestRule.onNodeWithTag(TITLE, useUnmergedTree = true).assert(hasText(expectedTitle))
     }
 

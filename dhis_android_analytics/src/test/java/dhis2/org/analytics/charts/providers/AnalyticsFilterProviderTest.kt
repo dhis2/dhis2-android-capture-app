@@ -73,7 +73,7 @@ class AnalyticsFilterProviderTest {
 
     @Test
     fun `Should return null if visualization periods is not saved`() {
-        val repo = mockValueSaved(false)
+        mockValueSaved(false)
         val result = analyticsFilterProvider.visualizationPeriod("uid")
         assertTrue(result == null)
     }

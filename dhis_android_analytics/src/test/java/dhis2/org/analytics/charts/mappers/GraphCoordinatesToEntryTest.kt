@@ -4,8 +4,8 @@ import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
-import junit.framework.Assert.assertTrue
 import org.hisp.dhis.android.core.period.PeriodType
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 import java.util.Date

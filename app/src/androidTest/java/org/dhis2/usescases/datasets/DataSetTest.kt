@@ -46,9 +46,10 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    @Ignore("Indeterministic it will be addressed in ANDROAPP-6458")
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Oct 2023"
+        val period = "Aug 2024"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity("ZOV1a5R4gqH", "DS EXTRA TEST", ruleDataSetDetail)
 

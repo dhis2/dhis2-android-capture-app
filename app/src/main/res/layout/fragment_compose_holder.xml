@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+  <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.compose.ui.platform.ComposeView
+      android:id="@+id/composeView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:clipToPadding="false"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_scrollFlags="scroll|enterAlwaysCollapsed" />
+
+
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
