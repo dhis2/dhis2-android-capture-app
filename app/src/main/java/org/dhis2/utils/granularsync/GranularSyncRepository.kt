@@ -82,7 +82,7 @@ class GranularSyncRepository(
 
             ConflictType.TEI -> {
                 val enrollment = d2.enrollment(syncContext.recordUid())
-                d2.observeTei(enrollment?.trackedEntityInstance()!!)
+                d2.observeTei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
                     .map { it.aggregatedSyncState() }
             }
 
@@ -121,7 +121,7 @@ class GranularSyncRepository(
 
                 ConflictType.TEI -> {
                     val enrollment = d2.enrollment(syncContext.recordUid())
-                    d2.observeTei(enrollment?.trackedEntityInstance()!!)
+                    d2.observeTei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
                         .map { SyncDate(it.lastUpdated()) }
                 }
 
@@ -966,7 +966,7 @@ class GranularSyncRepository(
                     d2.enrollmentModule().enrollments().uid(syncContext.recordUid()).blockingGet()
                 d2.trackedEntityModule().trackedEntityTypes().uid(
                     d2.trackedEntityModule().trackedEntityInstances()
-                        .uid(enrollment?.trackedEntityInstance()!!)
+                        .uid(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
                         .blockingGet()?.trackedEntityType(),
                 )
                     .get().map { it.displayName() }
