@@ -209,14 +209,7 @@ private fun TextInputContent(
                         },
                     value = textFieldValueState,
                     onValueChange = {
-                        textFieldValueState = it
-                        onTextChanged(
-                            textInputModel.copy(
-                                currentValue = it.text,
-                                selection = it.selection,
-                                error = null,
-                            ),
-                        )
+                        textFieldValueState = manageOnValueChanged(textFieldValueState, it, onTextChanged, textInputModel)
                     },
                     textStyle = TextStyle.Default.copy(
                         fontSize = 12.sp,
@@ -268,6 +261,32 @@ private fun TextInputContent(
                 fontSize = 10.sp,
             )
         }
+    }
+}
+
+fun manageOnValueChanged(textFieldValueState: TextFieldValue, newValue: TextFieldValue, onTextChanged: (TextInputModel) -> Unit, textInputModel: TextInputModel): TextFieldValue {
+    return if (textInputModel.regex != null) {
+        if (textInputModel.regex.matches(newValue.text)) {
+            onTextChanged(
+                textInputModel.copy(
+                    currentValue = newValue.text,
+                    selection = newValue.selection,
+                    error = null,
+                ),
+            )
+            newValue
+        } else {
+            textFieldValueState
+        }
+    } else {
+        onTextChanged(
+            textInputModel.copy(
+                currentValue = newValue.text,
+                selection = newValue.selection,
+                error = null,
+            ),
+        )
+        newValue
     }
 }
 

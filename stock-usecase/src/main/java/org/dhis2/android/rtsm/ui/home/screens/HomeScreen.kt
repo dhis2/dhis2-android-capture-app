@@ -111,15 +111,16 @@ fun HomeScreen(
         ) { targetIndex ->
             when (targetIndex) {
                 BottomNavigation.ANALYTICS.id -> {
-                    DHIS2Theme() {}
-                    AnalyticsScreen(
-                        viewModel = viewModel,
-                        backAction = { manageStockViewModel.onHandleBackNavigation() },
-                        themeColor = themeColor,
-                        modifier = Modifier.padding(paddingValues),
-                        scaffoldState = scaffoldState,
-                        supportFragmentManager = supportFragmentManager,
-                    )
+                    DHIS2Theme() {
+                        AnalyticsScreen(
+                            viewModel = viewModel,
+                            backAction = { manageStockViewModel.onHandleBackNavigation() },
+                            themeColor = themeColor,
+                            modifier = Modifier.padding(paddingValues),
+                            scaffoldState = scaffoldState,
+                            supportFragmentManager = supportFragmentManager,
+                        )
+                    }
                 }
 
                 BottomNavigation.DATA_ENTRY.id -> {

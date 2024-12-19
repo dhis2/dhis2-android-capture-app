@@ -50,6 +50,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
 import java.util.Collections
@@ -329,7 +330,15 @@ class ManageStockViewModel @Inject constructor(
             currentValue = cell.value,
             keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage,
+            regex = getRegExBasedOnTransactionType(),
         )
+    }
+
+    private fun getRegExBasedOnTransactionType(): Regex? {
+        return when (transaction.value?.transactionType) {
+            TransactionType.CORRECTION -> null
+            else -> RegExValidations.POSITIVE_INTEGER.regex
+        }
     }
 
     fun onSaveValueChange(cell: TableCell) {
