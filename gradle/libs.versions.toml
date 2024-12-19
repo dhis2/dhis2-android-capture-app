@@ -6,8 +6,8 @@ vCode = "136"
 vName = "3.0.1-psi-fork-1"
 kotlinCompilerExtensionVersion = "1.5.6"
 dhis2AndroidSdkCode = "294"
-gradle = "8.2.2"
-kotlin = '1.9.21'
+gradle = "8.6.1"
+kotlin = '2.0.20'
 hilt = '2.47'
 hiltCompiler = '1.0.0'
 jacoco = '0.8.10'
@@ -72,7 +72,7 @@ openid = "0.8.1"
 conscrypt = "2.5.2"
 gson = "2.9.0"
 gsonconverter = "2.9.0"
-okHttp = "4.10.0"
+okHttp = "4.12.0"
 jodatime = "2.10.5"
 glide = "4.9.0"
 guava = "31.1-android"
@@ -102,21 +102,25 @@ maplibre = "10.2.0"
 #SDK
 #gradle = "8.2.0"
 #kotlin = "1.9.21"
-ktlint = "11.5.1"
+ktlint = "12.1.1"
 #jacoco = "0.8.10"
 sonarqube = "3.3"
-detekt = "1.18.0"
+detekt = "1.21.0"
 dokka = "1.9.20"
+nexusPublish = "2.0.0"
+
 targetSdkVersion = "34"
 minSdkVersion = "21"
+
 libraryDesugaring = "2.0.4"
 #annotation = "1.6.0"
 paging = "3.2.1"
+
 jackson = "2.13.4"
 autoValueSDK = "1.10.2"
 autoValueCursor = "2.0.1"
-retrofit = "2.9.0"
-#okHttp = "4.10.0"
+#okHttp = "4.12.0"
+ktor = "2.1.3"
 rxJava = "2.2.21"
 #rxAndroid = "2.1.1"
 sqlCipher = "4.5.5"
@@ -124,10 +128,12 @@ sqlLite = "2.2.0"
 zip4j = "2.11.5"
 smsCompression = "0.2.0"
 expressionParserSDK = "1.0.36"
-kotlinxDatetime = "0.4.1"
+
+kotlinxDatetime = "0.6.0"
 coroutines = "1.6.4"
-koin = "3.5.0"
-koinKsp = "1.3.0"
+koin = "3.5.6"
+koinKsp = "1.3.1"
+
 coreTesting = "2.2.0"
 jUnit = "4.13.2"
 mockitoSDK = "3.4.6"
@@ -136,10 +142,10 @@ truth = "1.1.3"
 testRunner = "1.5.2"
 testRules = "1.5.0"
 equalsVerifier = "3.14"
-flipperSDK = "0.83.0"
-soloaderSDK = "0.10.5"
 liveDataTesting = "1.3.0"
+
 appauth = "0.8.1"
+
 listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
 
 #Eyeseetea
@@ -287,10 +293,12 @@ deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ktlint = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint" }
-#jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
+
 desugaring = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "libraryDesugaring" }
+
 #rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxJava" }
 #rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxAndroid" }
+
 #androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
@@ -298,42 +306,52 @@ androidx-paging-testing = { group = "androidx.paging", name = "paging-testing", 
 google-auto-value-annotation = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueSDK" }
 google-auto-value = { group = "com.google.auto.value", name = "auto-value", version.ref = "autoValueSDK" }
 google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+
 auto-value-cursor = { group = "com.gabrielittner.auto.value", name = "auto-value-cursor", version.ref = "autoValueCursor" }
 auto-value-cursor-annotations = { group = "com.gabrielittner.auto.value", name = "auto-value-cursor-annotations", version.ref = "autoValueCursor" }
+
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinKsp" }
 koin-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinKsp" }
+
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
+
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp" }
 okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okHttp" }
-retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-jackson = { group = "com.squareup.retrofit2", name = "converter-jackson", version.ref = "retrofit" }
-retrofit-rxjava2 = { group = "com.squareup.retrofit2", name = "adapter-rxjava2", version.ref = "retrofit" }
+
+ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"}
+ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor"}
+ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor"}
+ktor-jackson = { group = "io.ktor", name = "ktor-serialization-jackson", version.ref = "ktor"}
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor"}
+
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-rx2 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-rx2", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
 dhis2-compression = { group = "com.github.dhis2", name = "sms-compression", version.ref = "smsCompression" }
 dhis2-antlr-parser = { group = "org.hisp.dhis.parser", name = "dhis-antlr-expression-parser", version.ref = "expressionParserSDK" }
+
 sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlCipher" }
 sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlLite" }
+
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j"}
+
 openid-appauth = { group = "net.openid", name = "appauth", version.ref = "appauth" }
 listenablefuture-empty = { group = "com.google.guava", name = "listenablefuture", version.ref = "listenablefuture" }
+
 junit = { group = "junit", name = "junit", version.ref = "jUnit" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoSDK" }
 mockito-kotlin = { group = "com.nhaarman.mockitokotlin2", name = "mockito-kotlin", version.ref = "mockitoKotlinSDK" }
+
 equalsverifier = { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifier" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "testRules" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
 livedata-testing-ktx = { group = "com.jraska.livedata", name = "testing-ktx", version.ref = "liveDataTesting" }
-facebook-flipper-core = { group = "com.facebook.flipper", name = "flipper", version.ref = "flipperSDK" }
-facebook-flipper-noop = { group = "com.facebook.flipper", name = "flipper-noop", version.ref = "flipperSDK" }
-facebook-flipper-network = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "flipperSDK" }
-facebook-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "soloaderSDK" }
 
 #Eyeseetea
 eyeseetea-atv = { group = "com.github.bmelnychuk", name = "atv", version.ref = "atv" }
@@ -346,6 +364,7 @@ eyeseetea-markwon = { group = "io.noties.markwon", name = "core", version.ref = 
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusPublish"}
 
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-appcompat", "androidx-activity-compose", "androidx-material3", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
