@@ -570,10 +570,10 @@ private fun SearchInAreaButton(
         paddingValues = PaddingValues(
             Spacing.Spacing24,
             Spacing.Spacing10,
-            Spacing.Spacing24 - Spacing.Spacing8,
+            if (searching) Spacing.Spacing24 - Spacing.Spacing8 else Spacing.Spacing24,
             Spacing.Spacing10,
         ),
-        onClick = onClick,
+        onClick = { if (searching.not()) onClick() },
     )
 }
 
