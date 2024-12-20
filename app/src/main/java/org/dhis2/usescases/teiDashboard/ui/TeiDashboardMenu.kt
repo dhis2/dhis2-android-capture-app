@@ -3,7 +3,7 @@ package org.dhis2.usescases.teiDashboard.ui
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.automirrored.outlined.NoteAdd
+import androidx.compose.material.icons.automirrored.outlined.Note
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -160,7 +160,7 @@ private fun MutableList<MenuItemData<EnrollmentMenuItem>>.addFeedbackMenuItem(
         MenuItemData(
             id = EnrollmentMenuItem.FEEDBACK,
             label = resourceManager.getString(R.string.dashboard_feedback),
-            leadingElement = MenuLeadingElement.Icon(icon =Icons.AutoMirrored.Outlined.NoteAdd)
+            leadingElement = MenuLeadingElement.Icon(icon =Icons.AutoMirrored.Outlined.Note)
         ),
     )
 }
