@@ -158,6 +158,7 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
+        <activity android:name="org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
