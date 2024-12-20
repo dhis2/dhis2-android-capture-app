@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,10 +78,13 @@ import org.hisp.dhis.mobile.ui.designsystem.component.LocationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItem
 import org.hisp.dhis.mobile.ui.designsystem.component.LocationItemIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.OnSearchAction
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBarMode
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
@@ -148,6 +152,7 @@ fun SinglePaneMapSelector(
                 captureMode = screenState.captureMode,
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                searching = screenState.searching,
                 locationState = screenState.locationState,
                 isManualCaptureEnabled = screenState.isManualCaptureEnabled,
                 isPolygonMode = screenState.displayPolygonInfo,
@@ -239,6 +244,7 @@ private fun TwoPaneMapSelector(
                 captureMode = screenState.captureMode,
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                searching = screenState.searching,
                 locationState = screenState.locationState,
                 isManualCaptureEnabled = screenState.isManualCaptureEnabled,
                 isPolygonMode = screenState.displayPolygonInfo,
@@ -442,6 +448,7 @@ private fun Map(
     captureMode: MapSelectorViewModel.CaptureMode,
     selectedLocation: SelectedLocation,
     searchOnThisAreaVisible: Boolean,
+    searching: Boolean,
     locationState: LocationState,
     isManualCaptureEnabled: Boolean,
     isPolygonMode: Boolean,
@@ -487,7 +494,7 @@ private fun Map(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .offset(y = 60.dp),
-                    visible = searchOnThisAreaVisible,
+                    visible = searchOnThisAreaVisible or searching,
                     enter = scaleIn(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
@@ -502,6 +509,7 @@ private fun Map(
                     ),
                 ) {
                     SearchInAreaButton(
+                        searching = searching,
                         onClick = onSearchOnAreaClick,
                     )
                 }
@@ -548,12 +556,24 @@ private fun SwipeToChangeLocationInfo(
 
 @Composable
 private fun SearchInAreaButton(
+    searching: Boolean,
     onClick: () -> Unit = {},
 ) {
     Button(
         style = ButtonStyle.TONAL,
-        text = stringResource(R.string.search_on_this_area),
-        onClick = onClick,
+        text = if (searching) "" else stringResource(R.string.search_on_this_area),
+        icon = if (searching) {
+            { ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL) }
+        } else {
+            null
+        },
+        paddingValues = PaddingValues(
+            Spacing.Spacing24,
+            Spacing.Spacing10,
+            if (searching) Spacing.Spacing24 - Spacing.Spacing8 else Spacing.Spacing24,
+            Spacing.Spacing10,
+        ),
+        onClick = { if (searching.not()) onClick() },
     )
 }
 
@@ -669,6 +689,7 @@ private class ScreenStateParamProvider : PreviewParameterProvider<MapSelectorScr
         get() = sequenceOf(
             searchScreenState,
             gpsScreenState,
+            gpsScreenState.copy(searching = true),
         )
 }
 
