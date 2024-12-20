@@ -1,6 +1,14 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose") version "1.7.1"
     id("com.android.library")
+    alias(libs.plugins.kotlin.compose.compiler)
+}
+
+repositories{
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    mavenCentral()
+    google()
 }
 
 kotlin {
@@ -12,9 +20,10 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm("desktop").
 
-    listOf(
+
+    /*listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -23,19 +32,33 @@ kotlin {
             baseName = "aggregates"
             isStatic = true
         }
-    }
+    }*/
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.material3)
+            api(compose.materialIconsExtended)
+            implementation(libs.dhis2.mobile.designsystem)
+            implementation(libs.compose.material3.window)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
 
-        androidMain.dependencies {  }
+        androidMain.dependencies {
+            implementation(libs.androidx.compose.preview)
+        }
 
         androidUnitTest.dependencies {  }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.common)
+            }
+        }
     }
 }
 
@@ -49,4 +72,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+}
+dependencies {
+    debugImplementation(libs.androidx.compose.preview)
+    debugImplementation(libs.androidx.ui.tooling)
 }
