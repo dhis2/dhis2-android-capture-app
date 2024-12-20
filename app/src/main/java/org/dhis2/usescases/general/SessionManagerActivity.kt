@@ -131,7 +131,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String?>,
+        permissions: Array<String>,
         grantResults: IntArray,
     ) {
         if (activityResultObserver != null) {

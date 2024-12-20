@@ -5,6 +5,12 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
+repositories{
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    mavenCentral()
+    google()
+}
+
 kotlin {
     androidTarget {
         compilations.all {
@@ -14,7 +20,8 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm("desktop").
+
 
     /*listOf(
         iosX64(),
@@ -34,15 +41,16 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             api(compose.materialIconsExtended)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.components.resources)
             implementation(libs.dhis2.mobile.designsystem)
+            implementation(libs.compose.material3.window)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
 
-        androidMain.dependencies {  }
+        androidMain.dependencies {
+            implementation(libs.androidx.compose.preview)
+        }
 
         androidUnitTest.dependencies {  }
 
@@ -64,4 +72,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+}
+dependencies {
+    debugImplementation(libs.androidx.compose.preview)
+    debugImplementation(libs.androidx.ui.tooling)
 }
