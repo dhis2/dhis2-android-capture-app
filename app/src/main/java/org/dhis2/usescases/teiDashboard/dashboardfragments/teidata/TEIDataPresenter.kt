@@ -367,7 +367,8 @@ class TEIDataPresenter(
         if (stage != null) {
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
-                    checkOrgUnitCount(program, stage.uid())
+                    val orgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
+                    orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) } ?: checkOrgUnitCount(program, stage.uid())
                 }
 
                 EventCreationType.SCHEDULE -> {
@@ -425,14 +426,14 @@ class TEIDataPresenter(
         CoroutineScope(dispatcher.io()).launch {
             val orgUnits = teiDataRepository.programOrgListInCaptureScope(programUid)
             if (orgUnits.count() == 1) {
-                onOrgUnitForNewEventSelected(orgUnits.first().uid(), programStageUid)
+                onNewEventSelected(orgUnits.first().uid(), programStageUid)
             } else {
                 view.displayOrgUnitSelectorForNewEvent(programUid, programStageUid)
             }
         }
     }
 
-    fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
+    fun onNewEventSelected(orgUnitUid: String, programStageUid: String) {
         CoroutineScope(dispatcher.io()).launch {
             programUid?.let {
                 createEventUseCase(
