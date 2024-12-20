@@ -138,6 +138,7 @@ class ProgramRuleTests {
             "",
             RuleEventStatus.ACTIVE,
             Date().toRuleEngineInstant(),
+            Date().toRuleEngineInstant(),
             Date().toRuleEngineLocalDate(),
             null,
             "",
@@ -145,36 +146,26 @@ class ProgramRuleTests {
             listOf(
                 // PRevious Stock Balance
                 RuleDataValue(
-                    Date().toRuleEngineInstant(),
-                    "",
                     "oc8tn8CewiP",
                     "3",
                 ),
                 // PSM Stock received
                 RuleDataValue(
-                    Date().toRuleEngineInstant(),
-                    "",
                     "j3ydinp6Qp8",
                     "4",
                 ),
                 // PSM- Stock consumed distributed
                 RuleDataValue(
-                    Date().toRuleEngineInstant(),
-                    "",
                     "lpGYJoVUudr",
                     "2",
                 ),
                 // PSM- Stock discarded
                 RuleDataValue(
-                    Date().toRuleEngineInstant(),
-                    "",
                     "I7cmT3iXT0y",
                     "1",
                 ),
                 // PSM- Stock corrected
                 RuleDataValue(
-                    Date().toRuleEngineInstant(),
-                    "",
                     "ej1YwWaYGmm",
                     "3",
                 ),
