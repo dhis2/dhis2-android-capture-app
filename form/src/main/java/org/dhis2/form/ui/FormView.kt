@@ -74,6 +74,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueType
@@ -425,8 +426,7 @@ class FormView : Fragment() {
                         },
                         onMainButtonClicked = { bottomSheetDialog ->
                             manageMainButtonAction(
-                                fieldsWithIssues,
-                                result.eventResultDetails.eventStatus == EventStatus.COMPLETED,
+                                model.mainButton,
                                 bottomSheetDialog,
                             )
                         },
@@ -462,17 +462,17 @@ class FormView : Fragment() {
     }
 
     private fun manageMainButtonAction(
-        fieldsWithIssues: List<FieldWithIssue>,
-        isEventCompleted: Boolean,
+        mainButtonModel: DialogButtonStyle?,
         bottomSheetDialog: BottomSheetDialog,
     ) {
-        if (fieldsWithIssues.any { it.issueType.shouldShowError() }) {
-            bottomSheetDialog.dismiss()
-        } else if (isEventCompleted) {
-            onFinishDataEntry?.invoke()
-        } else {
-            viewModel.completeEvent()
-            onFinishDataEntry?.invoke()
+        when (mainButtonModel) {
+            DialogButtonStyle.CompleteButton -> {
+                viewModel.completeEvent()
+                onFinishDataEntry?.invoke()
+            }
+            else -> {
+                bottomSheetDialog.dismiss()
+            }
         }
     }
 
