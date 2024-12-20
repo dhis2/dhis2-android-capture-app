@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
 import io.reactivex.Single
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.usescases.main.program.ProgramViewModelMapper
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCreateProjection

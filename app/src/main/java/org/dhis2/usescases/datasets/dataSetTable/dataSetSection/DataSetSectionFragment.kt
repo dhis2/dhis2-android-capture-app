@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
-import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import org.dhis2.R
@@ -27,6 +26,7 @@ import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants.ACCESS_DATA
 import org.dhis2.commons.Constants.DATA_SET_SECTION
 import org.dhis2.commons.Constants.DATA_SET_UID
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener
@@ -46,7 +46,6 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTablePresenter
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.utils.DateUtils
 import org.dhis2.utils.customviews.OptionSetOnClickListener
 import org.dhis2.utils.customviews.TableFieldDialog
 import org.dhis2.utils.optionset.OptionSetDialog
@@ -55,6 +54,7 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -106,7 +106,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
+                DHIS2Theme {
                     val localDensity = LocalDensity.current
                     val conf = LocalConfiguration.current
                     val tableConfState by presenterFragment.currentTableConfState().collectAsState()
@@ -191,9 +191,9 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
 
                     TableTheme(
                         tableColors = TableColors(
-                            primary = MaterialTheme.colors.primary,
-                            primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
-                            disabledSelectedBackground = MaterialTheme.colors.primary.copy(
+                            primary = MaterialTheme.colorScheme.primary,
+                            primaryLight = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            disabledSelectedBackground = MaterialTheme.colorScheme.primary.copy(
                                 alpha = 0.5f,
                             ),
                         ),

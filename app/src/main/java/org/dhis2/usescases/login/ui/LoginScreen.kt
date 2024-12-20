@@ -14,10 +14,10 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +52,7 @@ fun LoginTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colors.primary),
+            .background(MaterialTheme.colorScheme.primary),
     ) {
         val (logoLayout, versionLabel) = createRefs()
 
@@ -90,7 +90,7 @@ fun LoginTopBar(
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = "More options",
-                            tint = MaterialTheme.colors.onPrimary,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
 
@@ -110,7 +110,7 @@ fun LoginTopBar(
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_import_db),
                                     contentDescription = "Import database",
-                                    tint = MaterialTheme.colors.primary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
 
                                 Text(

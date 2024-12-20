@@ -9,7 +9,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
 
-@Suppress("UNCHECKED_CAST")
 class ProgramViewModelFactory(
     private val view: ProgramView,
     private val programRepository: ProgramRepository,

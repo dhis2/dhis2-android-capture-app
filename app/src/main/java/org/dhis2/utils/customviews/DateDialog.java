@@ -1,6 +1,7 @@
 package org.dhis2.utils.customviews;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,20 +14,23 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
 import org.dhis2.R;
+import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.date.Period;
 import org.dhis2.commons.filters.FilterManager;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.DialogDateBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.DateUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
+import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 05/12/2017.
@@ -45,6 +49,7 @@ public class DateDialog extends DialogFragment {
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
     private static ActivityGlobalAbstract activity;
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Period mPeriod) {
         if (period != mPeriod || instace == null) {
@@ -116,17 +121,33 @@ public class DateDialog extends DialogFragment {
         return binding.getRoot();
     }
 
-    private void manageButtonPeriods(boolean next){
+    private void manageButtonPeriods(boolean next) {
         Period period = adapter.swapPeriod(next);
-        if(period == Period.DAILY) {
-            DateUtils.getInstance().showPeriodDialog(activity, datePeriods ->
-                    FilterManager.getInstance().addPeriod(
-                            null
-                    ), true);
+        if (period == Period.DAILY) {
+            DateUtils.OnFromToSelector fromToSelector = datePeriods ->
+                    FilterManager.getInstance().addPeriod(null);
+            DateUtils.getInstance().showPeriodDialog(
+                    activity,
+                    fromToSelector,
+                    true,
+                    () -> disposable.add(new RxDateDialog((ActivityGlobalAbstract) requireActivity(), Period.WEEKLY)
+                            .createForFilter().show()
+                            .subscribe(
+                                    periods -> fromToSelector.onFromToSelected(new ArrayList<>()),
+                                    Timber::d
+                            )
+                    )
+            );
             dismiss();
         }
 
         binding.setTitleText(getString(period.getNameResouce()));
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        disposable.clear();
     }
 
     private DateDialog withEmitter(final SingleEmitter<Pair<Period, List<Date>>> emitter) {

@@ -11,11 +11,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.form.di.Injector
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetDialogViewModel
 import org.dhis2.form.model.OptionSetDialogViewModelFactory
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 const val TAG = "OptionSetDialog"
 
@@ -50,7 +50,7 @@ class OptionSetDialog(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
-                MdcTheme {
+                DHIS2Theme {
                     OptionSetDialogScreen(
                         viewModel,
                         onCancelClick = { dismiss() },

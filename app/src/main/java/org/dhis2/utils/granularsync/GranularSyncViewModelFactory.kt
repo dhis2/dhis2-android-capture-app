@@ -8,7 +8,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.hisp.dhis.android.core.D2
 
-@Suppress("UNCHECKED_CAST")
 class GranularSyncViewModelFactory(
     private val d2: D2,
     private val view: GranularSyncContracts.View,
