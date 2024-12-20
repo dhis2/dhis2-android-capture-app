@@ -94,8 +94,8 @@ pipeline {
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
-                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 1p')
-                        test_apk = sh(returnStdout: true, script: 'find app/build/outputs -iname "*.apk" | sed -n 2p')
+                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhisUITesting -iname "*.apk"')
+                        test_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/androidTest -iname "*.apk"')
                         app_apk_path = "${env.WORKSPACE}/${app_apk}"
                         test_apk_path = "${env.WORKSPACE}/${test_apk}"
                         buildTag = "${env.GIT_BRANCH}"
