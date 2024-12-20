@@ -6,6 +6,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -20,6 +21,7 @@ class SchedulingViewModelFactory @AssistedInject constructor(
     private val periodUtils: DhisPeriodUtils,
     private val dateUtils: DateUtils,
     private val dispatcherProvider: DispatcherProvider,
+    private val getEventPeriods: GetEventPeriods,
     @Assisted private val launchMode: SchedulingDialog.LaunchMode,
 ) : ViewModelProvider.Factory {
 
@@ -37,6 +39,7 @@ class SchedulingViewModelFactory @AssistedInject constructor(
             dateUtils = dateUtils,
             dispatchersProvider = dispatcherProvider,
             launchMode = launchMode,
+            getEventPeriods = getEventPeriods,
         ) as T
     }
 }

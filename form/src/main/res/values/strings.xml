@@ -118,6 +118,5 @@
     <string name="no_options">No options available</string>
     <string name="cat_combo">Cat combo</string>
     <string name="storage_permission_denied">Storage permission is not granted.\nYou need to enable it to use this feature.</string>
-    <string name="no_periods">No periods available</string>
 
 </resources>
