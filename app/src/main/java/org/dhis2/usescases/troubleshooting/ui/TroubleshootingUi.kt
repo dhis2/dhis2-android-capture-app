@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -58,6 +57,8 @@ import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import java.util.Locale
 
 @ExperimentalFoundationApi
@@ -340,7 +341,7 @@ fun LoadingContent(loadingDescription: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CircularProgressIndicator()
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = loadingDescription,

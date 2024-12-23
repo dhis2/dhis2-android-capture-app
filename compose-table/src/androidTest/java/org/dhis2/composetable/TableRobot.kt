@@ -1,7 +1,7 @@
 package org.dhis2.composetable
 
 import androidx.annotation.DrawableRes
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +73,8 @@ import org.dhis2.composetable.ui.semantics.RowIndexHeader
 import org.dhis2.composetable.ui.semantics.TableId
 import org.dhis2.composetable.ui.semantics.TableIdColumnHeader
 import org.dhis2.composetable.utils.KeyboardHelper
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.junit.Assert
 
 fun tableRobot(
@@ -103,7 +105,7 @@ class TableRobot(
                 mutableStateOf<TableSelection>(TableSelection.Unselected())
             }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = tableColors.copy(primary = SurfaceColor.Primary),
                 tableConfiguration = TableConfiguration(headerActionsEnabled = false),
                 tableResizeActions = object : TableResizeActions {}
             ) {
@@ -140,7 +142,7 @@ class TableRobot(
             keyboardHelper.view = LocalView.current
             var model by remember { mutableStateOf(screenState) }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = TableColors().copy(primary = SurfaceColor.Primary),
                 tableConfiguration = tableConfiguration,
                 tableResizeActions = object : TableResizeActions {}
             ) {
@@ -187,7 +189,7 @@ class TableRobot(
 
             val model by remember { mutableStateOf(screenState) }
             TableTheme(
-                tableColors = TableColors().copy(primary = MaterialTheme.colors.primary),
+                tableColors = TableColors().copy(primary = MaterialTheme.colorScheme.primary),
                 tableConfiguration = TableConfiguration(),
                 tableResizeActions = object : TableResizeActions {}
             ) {
@@ -277,7 +279,7 @@ class TableRobot(
         composeTestRule.onNode(
             SemanticsMatcher.expectValue(TableId, tableId)
                 .and(SemanticsMatcher.expectValue(RowIndex, rowIndex))
-                .and(SemanticsMatcher.expectValue(RowBackground, tableColors.primary))
+                .and(SemanticsMatcher.expectValue(RowBackground, SurfaceColor.Primary))
         ).assertExists()
     }
 

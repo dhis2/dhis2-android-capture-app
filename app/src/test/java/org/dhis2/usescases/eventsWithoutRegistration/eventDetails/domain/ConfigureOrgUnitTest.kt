@@ -3,10 +3,10 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.junit.Before
 import org.junit.Test

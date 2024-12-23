@@ -8,13 +8,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.livedata.observeAsState
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.bindings.app
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.accounts.ui.AccountsScreen
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -63,7 +63,7 @@ class AccountsActivity : ActivityGlobalAbstract() {
         app().serverComponent()?.plus(AccountsModule())?.inject(this)
 
         setContent {
-            MdcTheme {
+            DHIS2Theme {
                 val accounts = viewModel.accounts.observeAsState(listOf())
                 AccountsScreen(
                     accounts = accounts.value,

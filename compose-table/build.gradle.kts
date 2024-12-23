@@ -55,4 +55,5 @@ dependencies {
     testImplementation(libs.bundles.table.test)
     androidTestImplementation(libs.bundles.table.androidTest)
     implementation(libs.dhis2.mobile.designsystem)
+    implementation(libs.androidx.material3)
 }

@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -62,7 +62,7 @@ fun Toolbar(
                     text = capitalizeText(title).ifBlank {
                         stringResource(R.string.title_activity_home)
                     },
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     fontSize = 17.sp,
                     lineHeight = 24.sp,
@@ -73,7 +73,7 @@ fun Toolbar(
                 ) {
                     Text(
                         text = from,
-                        style = MaterialTheme.typography.subtitle2,
+                        style = MaterialTheme.typography.titleSmall,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         fontSize = 12.sp,
@@ -153,7 +153,7 @@ fun ColumnScope.ProvideToolBarIcons(to: String?, hasFacilitySelected: Boolean, h
         )
         Text(
             text = to,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.titleSmall,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             fontSize = 12.sp,
@@ -193,7 +193,7 @@ fun AnalyticsTopBar(
                     text = capitalizeText(title).ifBlank {
                         stringResource(R.string.title_activity_home)
                     },
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     fontSize = 17.sp,
                     lineHeight = 24.sp,

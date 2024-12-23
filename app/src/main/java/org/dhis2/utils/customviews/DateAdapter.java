@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.databinding.ItemDateBinding;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.commons.date.Period;
 
 import java.text.SimpleDateFormat;
@@ -29,15 +29,14 @@ import java.util.Map;
 public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     private Period currentPeriod = null;
-    private List<String> datesNames = new ArrayList<>();
-    private List<String> seletedDatesName = new ArrayList<>();
-    private List<Date> dates = new ArrayList<>();
+    private final List<String> datesNames = new ArrayList<>();
+    private final List<String> seletedDatesName = new ArrayList<>();
+    private final List<Date> dates = new ArrayList<>();
     private Pair<Period, List<Date>> selectedDates;
-    private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-    private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
-    private String weeklyFormatWithDates = "%s, %s / %s";
-    private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    private final SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+    private final SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+    private final SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private Map<String, String> mapPeriod = new HashMap<>();
 
     public DateAdapter(Period period) {
@@ -56,6 +55,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
         do {
             String date = null;
 
+            String weeklyFormatWithDates = "%s, %s / %s";
             switch (period) {
                 case WEEKLY:
                     date = weeklyFormat.format(calendar.getTime()); //Get current week
@@ -113,14 +113,14 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     public void onBindViewHolder(DateViewHolder holder, int position) {
         holder.bind(datesNames.get(position));
 
-        if ((dates.size() > 0 && selectedDates.val1().contains(dates.get(position))) || (datesNames.size() > 0 && seletedDatesName.contains(datesNames.get(position)))) {
+        if ((!dates.isEmpty() && selectedDates.val1().contains(dates.get(position))) || (!datesNames.isEmpty() && seletedDatesName.contains(datesNames.get(position)))) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
         }
 
         holder.itemView.setOnClickListener(view -> {
-            if (mapPeriod == null || mapPeriod.size() == 0) {
+            if (mapPeriod == null || mapPeriod.isEmpty()) {
                 if (!selectedDates.val1().contains(dates.get(position))) {
                     selectedDates.val1().add(dates.get(position));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimaryLight));
@@ -143,9 +143,9 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     @Override
     public int getItemCount() {
-        if (mapPeriod != null && mapPeriod.size() > 0)
+        if (mapPeriod != null && !mapPeriod.isEmpty())
             return mapPeriod.size();
-        return datesNames != null ? datesNames.size() : 0;
+        return datesNames.size();
     }
 
     public Pair<Period, List<Date>> clearFilters() {

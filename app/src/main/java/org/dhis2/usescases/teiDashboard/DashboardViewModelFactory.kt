@@ -7,7 +7,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
-@Suppress("UNCHECKED_CAST")
 class DashboardViewModelFactory(
     val repository: DashboardRepository,
     val analyticsHelper: AnalyticsHelper,

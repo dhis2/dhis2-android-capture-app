@@ -8,7 +8,6 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 
-@Suppress("UNCHECKED_CAST")
 class ProgramEventDetailViewModelFactory(
     private val mapStyleConfiguration: MapStyleConfiguration,
     private val eventRepository: ProgramEventDetailRepository,

@@ -40,12 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash
 import cat.ereza.customactivityoncrash.config.CaocConfig
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -61,7 +61,7 @@ class CrashActivity : AppCompatActivity() {
             return
         }
         setContent {
-            MdcTheme {
+            DHIS2Theme {
                 Scaffold(
                     floatingActionButton = {
                         CrashGoBackButton {

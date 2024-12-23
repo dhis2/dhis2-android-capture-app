@@ -11,11 +11,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.MainNavigator
 import org.dhis2.usescases.troubleshooting.ui.TroubleshootingScreen
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
 
 const val OPEN_LANGUAGE_SECTION = "OPEN_LANGUAGE_SECTION"
@@ -62,7 +62,7 @@ class TroubleshootingFragment : FragmentGlobalAbstract() {
                 setViewCompositionStrategy(
                     ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
                 )
-                MdcTheme {
+                DHIS2Theme {
                     TroubleshootingScreen(troubleshootingViewModel) {
                         refreshScreenLanguageChange()
                     }

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormRepository
 
-@Suppress("UNCHECKED_CAST")
 class FormViewModelFactory(
     private val repository: FormRepository,
     private val dispatcher: DispatcherProvider,

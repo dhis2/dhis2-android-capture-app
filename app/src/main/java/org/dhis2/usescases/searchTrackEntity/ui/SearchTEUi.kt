@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -61,6 +60,8 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -333,7 +334,7 @@ fun LoadingContent(loadingDescription: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CircularProgressIndicator()
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = loadingDescription,
