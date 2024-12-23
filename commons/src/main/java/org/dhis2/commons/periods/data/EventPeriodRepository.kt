@@ -38,10 +38,10 @@ class EventPeriodRepository(private val d2: D2) {
             generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
                 .startDate()
 
-        return if (currentDate.after(previousPeriodLastDay)) {
+        return if (currentDate.after(previousPeriodLastDay) or (currentDate == previousPeriodLastDay)) {
             currentPeriod.startDate()
         } else {
-            generatePeriod(periodType, offset = -1).startDate()
+            generatePeriod(periodType, currentDate, offset = -1).startDate()
         } ?: Date()
     }
 
