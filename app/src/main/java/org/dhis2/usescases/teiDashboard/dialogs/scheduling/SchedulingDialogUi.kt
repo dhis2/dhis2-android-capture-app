@@ -46,6 +46,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import java.util.Locale
 
 @Composable
 fun SchedulingDialogUi(
@@ -64,7 +65,7 @@ fun SchedulingDialogUi(
             it.value,
             selected = false,
             enabled = true,
-            textInput = provideStringResource(it.value),
+            textInput = provideStringResource(it.value.lowercase(Locale.getDefault())),
         )
     }
     var optionSelected by remember { mutableStateOf(yesNoOptions.first()) }
