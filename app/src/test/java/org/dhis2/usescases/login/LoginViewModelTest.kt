@@ -47,6 +47,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -192,7 +193,7 @@ class LoginViewModelTest {
     fun `Should log in successfully and show fabric dialog when  user has not been asked before`() {
         val mockedUser: User = mock()
         whenever(view.initLogin()) doReturn userManager
-        whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
+        whenever(userManager.logIn(any(), any(), any(), eq(null))) doReturn Observable.just(mockedUser)
         instantiateLoginViewModelWithNullUserManager()
         loginViewModel.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
         loginViewModel.onUserChanged(userName = "username", 0, 0, 0)

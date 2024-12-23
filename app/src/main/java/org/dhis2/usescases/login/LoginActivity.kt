@@ -154,7 +154,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true,
                     )
-
+                    OpenIdSession.LogOutReason.UNAUTHORIZED ->  putBoolean(EXTRA_SESSION_EXPIRED, true)
                     null -> {
                         // Nothing to do in this case
                     }
