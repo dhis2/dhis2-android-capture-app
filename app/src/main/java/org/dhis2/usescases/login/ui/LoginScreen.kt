@@ -30,13 +30,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import org.dhis2.R
-import org.hisp.dhis.mobile.ui.designsystem.resource.provideFontResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -118,7 +119,7 @@ fun LoginTopBar(
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         lineHeight = 24.sp,
-                                        fontFamily = provideFontResource("rubik_regular"),
+                                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
                                         fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         letterSpacing = 0.5.sp,
@@ -140,7 +141,7 @@ fun LoginTopBar(
             style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
-                fontFamily = provideFontResource("rubik_regular"),
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 fontWeight = FontWeight.Normal,
                 color = SurfaceColor.ContainerHighest,
                 letterSpacing = 0.4.sp,

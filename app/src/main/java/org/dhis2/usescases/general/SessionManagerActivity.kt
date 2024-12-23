@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -131,7 +130,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String?>,
+        permissions: Array<out String>,
         grantResults: IntArray,
     ) {
         if (activityResultObserver != null) {
@@ -190,9 +189,9 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         if (finishAll) intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         if (bundle != null) intent.putExtras(bundle)
         if (transition != null) {
-            ContextCompat.startActivity(this, intent, transition.toBundle())
+            startActivity(intent, transition.toBundle())
         } else {
-            ContextCompat.startActivity(this, intent, null)
+            startActivity(intent, null)
         }
         if (finishCurrent) finish()
     }
