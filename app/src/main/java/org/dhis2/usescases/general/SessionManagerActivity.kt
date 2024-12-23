@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
