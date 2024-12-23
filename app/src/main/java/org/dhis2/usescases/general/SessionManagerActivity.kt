@@ -190,9 +190,9 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         if (finishAll) intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         if (bundle != null) intent.putExtras(bundle)
         if (transition != null) {
-            ContextCompat.startActivity(this, intent, transition.toBundle())
+            startActivity(intent, transition.toBundle())
         } else {
-            ContextCompat.startActivity(this, intent, null)
+            startActivity(intent, null)
         }
         if (finishCurrent) finish()
     }
