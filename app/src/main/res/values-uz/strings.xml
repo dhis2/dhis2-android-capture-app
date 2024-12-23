@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
     <string name="logo_text">DHIS</string>
@@ -91,7 +91,6 @@
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
     <string name="cancelled">Бекор қилинди</string>
-    <string name="re_open">қайта очиш</string>
     <string name="activate">Фаоллаштириш</string>
     <string name="active">Фаол</string>
 
@@ -441,7 +440,6 @@
     <string name="biometrics_dialog_title">Ишонч ёрлиқлари бўш</string>
     <string name="biometrics_first_use_text">Бармоқ излари сканери ёрдамида  тизимга кириш учун аввал стандарт усулдан фойдаланишингиз керак</string>
     <string name="biometrics_security_title">Биометрик Хавфсизлик</string>
-    <string name="biometrics_security_text">Фойдаланувчи тизимга кириши учун бармоқ изларидан фойдаланилсинми?</string>
     <string name="tab_tables">Жадваллар</string>
     <string name="table">Жадвал</string>
     <string name="login_https">https://</string>
@@ -689,6 +687,13 @@
     <string name="error_init_session">Сизнинг фойдаланувчингиз билан сеанс ташкиллаштира олмадик</string>
     <string name="enrollment_date_edition_warning">Режалаштирила олинмайдиган ҳодиса/тадбир режалари мавжуд</string>
     <string name="section_charts">Диаграммалар</string>
+    <string name="navigation_table_view">Жадвал кўриниши</string>
+    <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_tasks">Вазифалар</string>
+    <string name="navigation_programs">Дастурлар</string>
+    <string name="navigation_notes">Изоҳлар</string>
+    <string name="navigation_data_entry">Маълумот киритиш</string>
+    <string name="navigation_tei_data">Тафсилотлари</string>
     <string name="show_bar_graph">Панел сифатида кўриш</string>
     <string name="show_line_graph">Қатор сифатида кўриш</string>
     <string name="show_table_graph">Жадвал сифатида кўриш</string>

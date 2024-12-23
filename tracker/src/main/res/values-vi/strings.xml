@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Không có mối quan hệ, bấm vào \"+\" để thêm một mối quan hệ.</string>
-</resources>
+    <string name="relation_creation_date">Mối quan hệ đã được tạo trên</string>
+    <string name="remove_relationship_title">Bỏ %s\?</string>
+    <string name="remove_relationship_desc">%ssẽ bị xóa. Hành động này không thể hoàn lại. </string>
+    <string name="remove_some_relationships_title">Bỏ %d mối quan hệ được chọn\?</string>
+    </resources>

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Input hints -->
     <string name="search">طةران</string>
     <string name="update">نويَ كردنةوة</string>

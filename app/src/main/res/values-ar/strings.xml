@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -99,7 +99,6 @@
     <string name="finish_and_complete">انهاء ومكتمل</string>
     <string name="completed">مكتمل</string>
     <string name="cancelled">تم الإلغاء</string>
-    <string name="re_open">إعادة فتح</string>
     <string name="activate">تنشيط</string>
     <string name="active">فعال</string>
 
@@ -458,7 +457,6 @@
     <string name="biometrics_dialog_title">إعتمادات فارغة</string>
     <string name="biometrics_first_use_text">لتتمكن من تسجيل الدخول باستخدام ماسح بصمة الإصبع، تحتاج أولاً إلى تسجيل الدخول بإستخدام الطريقة الافتراضية</string>
     <string name="biometrics_security_title">الأمن البيومتري</string>
-    <string name="biometrics_security_text">استخدام بصمة إصبعك لتسجيل الدخول مع هذا المستخدم؟</string>
     <string name="tab_tables">جداول</string>
     <string name="table">الجدول</string>
     <string name="login_https">https://</string>
@@ -707,6 +705,13 @@
     <string name="error_init_session">لم نتمكن من بدء الجلسة مع المستخدم الخاص بك</string>
     <string name="enrollment_date_edition_warning">هناك أحداث مخطط لها لن تتم إعادة جدولتها</string>
     <string name="section_charts">المخططات البيانية</string>
+    <string name="navigation_table_view">عرض جدول</string>
+    <string name="navigation_analytics">التحليلات</string>
+    <string name="navigation_tasks">المهام</string>
+    <string name="navigation_programs">البرامج</string>
+    <string name="navigation_notes">الملاحظات</string>
+    <string name="navigation_data_entry">إدخال البيانات</string>
+    <string name="navigation_tei_data">التفاصيل</string>
     <string name="show_bar_graph">عرض كشريط</string>
     <string name="show_line_graph">مشاهدة على شكل خطي</string>
     <string name="show_table_graph">عرض كجدول</string>
