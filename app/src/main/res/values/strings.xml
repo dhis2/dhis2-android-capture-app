@@ -55,6 +55,7 @@
     <string name="url_hint">Server url</string>
     <string name="user_hint">Username</string>
     <string name="password_hint">Password</string>
+    <string name="two_factor_code_hint">Two factor code</string>
     <string name="log_in_button">Log In</string>
     <string name="unlock_button">Unlock session</string>
     <string name="syncing_configuration">Syncing your Configuration</string>

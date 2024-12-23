@@ -18,7 +18,7 @@ import kotlin.Pair;
 public interface UserManager {
 
     @NonNull
-    Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl);
+    Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl, String twoFactorCode);
 
     @NonNull
     Observable<IntentWithRequestCode> logIn(@NonNull OpenIDConnectConfig config);
