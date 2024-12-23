@@ -453,8 +453,6 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             value = ""
         }
         RuleDataValue(
-            eventDate = event.eventDate()!!.toRuleEngineInstant(),
-            programStage = event.programStage()!!,
             dataElement = it.dataElement()!!,
             value = value!!,
         )
