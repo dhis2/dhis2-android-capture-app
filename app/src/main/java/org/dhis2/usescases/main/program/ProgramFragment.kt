@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main.program
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
+import io.noties.markwon.Markwon
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
@@ -29,6 +31,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.navigateTo
 import org.dhis2.usescases.main.toHomeItemData
 import org.dhis2.usescases.notifications.domain.Notification
+import org.dhis2.usescases.notifications.presentation.NotificationsPresenter
 import org.dhis2.usescases.notifications.presentation.NotificationsView
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
@@ -37,8 +40,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import timber.log.Timber
 import javax.inject.Inject
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
-    NotificationsView {
+class ProgramFragment : FragmentGlobalAbstract(), ProgramView, NotificationsView {
 
     @Inject
     lateinit var programViewModelFactory: ProgramViewModelFactory
@@ -47,9 +49,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
         programViewModelFactory
     }
 
-    // TODO: review EyeSeeTea
-/*    @Inject
-    lateinit var notificationsPresenter: NotificationsPresenter*/
+   @Inject
+    lateinit var notificationsPresenter: NotificationsPresenter
 
     @Inject
     lateinit var animation: ProgramAnimation
@@ -102,8 +103,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
         super.onResume()
         programViewModel.init()
 
-        // TODO: review EyeSeeTea
-        //notificationsPresenter.refresh()
+        notificationsPresenter.refresh()
     }
 
     //endregion
@@ -189,16 +189,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
     }
 
     override fun renderNotifications(notifications: List<Notification>) {
-        // TODO: review EyeSeeTea
-       // notifications.forEach(::showNotification)
+
+        notifications.forEach(::showNotification)
     }
 
-    // TODO: review EyeSeeTea
- /*   private fun showNotification(notification: Notification) {
+    private fun showNotification(notification: Notification) {
         val markwon = Markwon.create(requireActivity())
         val content = markwon.toMarkdown(notification.content)
 
-        AlertDialog.Builder(context, R.style.CustomDialog)
+        AlertDialog.Builder(context, R.style.MaterialDialog)
             .setTitle("Notification")
             .setMessage(content)
             .setPositiveButton(getString(R.string.wipe_data_ok)) { dialog, _ ->
@@ -206,5 +205,5 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView,
             }
             .setCancelable(true)
             .show()
-    }*/
+    }
 }

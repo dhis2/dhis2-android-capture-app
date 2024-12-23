@@ -6,6 +6,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import io.reactivex.Completable
 import io.reactivex.Observable
+import kotlinx.coroutines.runBlocking
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.program
@@ -50,8 +51,7 @@ class SyncPresenterImpl(
     private val analyticsHelper: AnalyticsHelper,
     private val syncStatusController: SyncStatusController,
     private val syncRepository: SyncRepository,
-    // TODO: review EyeSeeTea
-    //private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository
 ) : SyncPresenter {
 
     override fun initSyncControllerMap() {
@@ -646,7 +646,8 @@ class SyncPresenterImpl(
     }
 
     private fun syncNotifications() {
-        // TODO: review EyeSeeTea
-        //notificationRepository.sync()
+        runBlocking {
+            notificationRepository.sync().collect {}
+        }
     }
 }

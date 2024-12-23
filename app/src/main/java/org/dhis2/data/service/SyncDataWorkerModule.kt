@@ -1,10 +1,15 @@
 package org.dhis2.data.service
 
+import NotificationsApi
+import UserGroupsApi
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerService
+import org.dhis2.commons.prefs.BasicPreferenceProvider
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.data.notifications.NotificationD2Repository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.notifications.domain.NotificationRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 
@@ -16,19 +21,18 @@ class SyncDataWorkerModule {
         return SyncRepositoryImpl(d2)
     }
 
-    // TODO: review EyeSeeTea
-    /*    @Provides
-        @PerService
-        fun notificationsRepository(
-            d2: D2,
-            preference: BasicPreferenceProvider
-        ): NotificationRepository {
-            val notificationsApi = d2.retrofit().create(
-                NotificationsApi::class.java
-            )
-            val userGroupsApi = d2.retrofit().create(UserGroupsApi::class.java)
-            return NotificationD2Repository(d2, preference, notificationsApi, userGroupsApi)
-        }*/
+    @Provides
+    @PerService
+    fun notificationsRepository(
+        d2: D2,
+        preference: BasicPreferenceProvider
+    ): NotificationRepository {
+        val notificationsApi =NotificationsApi(d2.httpServiceClient())
+
+        val userGroupsApi = UserGroupsApi(d2.httpServiceClient())
+
+        return NotificationD2Repository(d2, preference, notificationsApi, userGroupsApi)
+    }
 
     @Provides
     @PerService
@@ -39,8 +43,7 @@ class SyncDataWorkerModule {
         analyticsHelper: AnalyticsHelper,
         syncStatusController: SyncStatusController,
         syncRepository: SyncRepository,
-        // TODO: review EyeSeeTea
-        //notificationsRepository: NotificationRepository
+        notificationsRepository: NotificationRepository
     ): SyncPresenter {
         return SyncPresenterImpl(
             d2,
@@ -49,9 +52,7 @@ class SyncDataWorkerModule {
             analyticsHelper,
             syncStatusController,
             syncRepository,
-            // TODO: review EyeSeeTea
-
-            //notificationsRepository
+            notificationsRepository
         )
     }
 }
