@@ -5,8 +5,9 @@ import android.content.Context;
 import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
-import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerFragment;
+import org.dhis2.commons.network.NetworkUtils;
+import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
@@ -20,9 +21,11 @@ import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.data.EventRelationshipsRepository;
 import org.dhis2.tracker.relationships.data.RelationshipsRepository;
 import org.dhis2.tracker.relationships.data.TrackerRelationshipsRepository;
+import org.dhis2.tracker.relationships.domain.AddRelationship;
 import org.dhis2.tracker.relationships.domain.DeleteRelationships;
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType;
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel;
+import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper;
 import org.dhis2.tracker.ui.AvatarProvider;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider;
@@ -150,12 +153,18 @@ public class RelationshipModule {
     RelationshipsViewModel provideRelationshipsViewModel(
             GetRelationshipsByType getRelationshipsByType,
             DeleteRelationships deleteRelationships,
-            DispatcherProvider dispatcherProvider
+            DispatcherProvider dispatcherProvider,
+            AddRelationship addRelationship,
+            D2ErrorUtils d2ErrorUtils,
+            RelationshipsUiStateMapper relationshipsUiStateMapper
     ) {
         return new RelationshipsViewModel(
+                dispatcherProvider,
                 getRelationshipsByType,
                 deleteRelationships,
-                dispatcherProvider
+                addRelationship,
+                d2ErrorUtils,
+                relationshipsUiStateMapper
         );
     }
 
@@ -170,13 +179,11 @@ public class RelationshipModule {
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
             RelationshipsRepository relationshipsRepository,
-            DateLabelProvider dateLabelProvider,
-            AvatarProvider avatarProvider
+            DispatcherProvider dispatcherProvider
     ) {
         return new GetRelationshipsByType(
                 relationshipsRepository,
-                dateLabelProvider,
-                avatarProvider
+                dispatcherProvider
         );
     }
 
@@ -186,6 +193,15 @@ public class RelationshipModule {
             RelationshipsRepository relationshipsRepository
     ) {
         return new DeleteRelationships(relationshipsRepository);
+    }
+
+    @Provides
+    @PerFragment
+    AddRelationship provideAddRelationship(
+            DispatcherProvider dispatcherProvider,
+            RelationshipsRepository relationshipsRepository
+    ) {
+        return new AddRelationship(dispatcherProvider, relationshipsRepository);
     }
 
     @Provides
@@ -232,5 +248,22 @@ public class RelationshipModule {
             MetadataIconProvider metadataIconProvider
     ) {
         return new AvatarProvider(metadataIconProvider);
+    }
+
+    @Provides
+    @PerFragment
+    D2ErrorUtils provideD2ErrorUtils(
+            NetworkUtils networkUtils
+    ) {
+        return new D2ErrorUtils(moduleContext, networkUtils);
+    }
+
+    @Provides
+    @PerFragment
+    RelationshipsUiStateMapper provideRelationshipsUiStateMapper(
+            AvatarProvider avatarProvider,
+            DateLabelProvider dateLabelProvider
+    ) {
+        return new RelationshipsUiStateMapper(avatarProvider, dateLabelProvider);
     }
 }

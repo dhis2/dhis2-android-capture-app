@@ -3,14 +3,12 @@ package org.dhis2.tracker.relationships.model
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.relationship.Relationship
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import java.util.Date
 
 data class RelationshipModel(
     val relationship: Relationship,
     val fromGeometry: Geometry?,
     val toGeometry: Geometry?,
-    val relationshipType: RelationshipType,
     val direction: RelationshipDirection,
     val ownerUid: String,
     val ownerType: RelationshipOwnerType,

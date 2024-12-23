@@ -1,12 +1,9 @@
 package org.dhis2.tracker.relationships.model
 
-import org.hisp.dhis.android.core.relationship.RelationshipType
-
 data class RelationshipSection(
+    val uid: String,
     val title: String,
-    val relationships: List<RelationshipItem>,
-    val teiTypeUid: String?,
-    val relationshipType: RelationshipType,
-) {
-    fun canAddRelationship(): Boolean = teiTypeUid != null
-}
+    val relationships : List<RelationshipModel>,
+    val side: RelationshipConstraintSide,
+    val entityToAdd: String?,
+)

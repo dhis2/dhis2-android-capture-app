@@ -5,8 +5,10 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.R
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.event.Event
@@ -14,7 +16,9 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.relationship.Relationship
 import org.hisp.dhis.android.core.relationship.RelationshipConstraint
+import org.hisp.dhis.android.core.relationship.RelationshipConstraintType
 import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
@@ -27,9 +31,17 @@ abstract class RelationshipsRepository(
     private val d2: D2,
     private val resources: ResourceManager,
 ) {
-    abstract fun getRelationshipTypes(): Flow<List<Pair<RelationshipType, String?>>>
+    abstract suspend fun getRelationshipTypes(): List<RelationshipSection>
+
+    abstract suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection
+
     abstract fun getRelationships(): Flow<List<RelationshipModel>>
-    abstract fun getRelationshipTitle(relationshipType: RelationshipType): String
+
+    abstract fun createRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        relationshipSide: RelationshipConstraintSide,
+    ): Relationship
 
     protected fun orgUnitInScope(orgUnitUid: String?): Boolean {
         return orgUnitUid?.let {
@@ -234,5 +246,43 @@ abstract class RelationshipsRepository(
             .withItems()
             .uid(relationshipUid)
             .blockingDelete()
+    }
+
+    fun addRelationship(relationship: Relationship): Result<String> {
+        return try {
+            val relationshipUid = d2.relationshipModule().relationships().blockingAdd(relationship)
+            Result.success(relationshipUid)
+        } catch (error: D2Error) {
+            Result.failure(error)
+        }
+    }
+
+    protected fun getRelationshipTypeByUid(relationshipTypeUid: String?) =
+        d2.relationshipModule().relationshipTypes().withConstraints()
+            .uid(relationshipTypeUid)
+            .blockingGet()
+
+    protected fun getRelationshipTitle(
+        relationshipType: RelationshipType,
+        entitySide: RelationshipConstraintType
+    ): String {
+        return when (entitySide) {
+            RelationshipConstraintType.FROM -> {
+                relationshipType.fromToName() ?: relationshipType.displayName()
+                ?: resources.getString(R.string.relationship)
+            }
+
+            RelationshipConstraintType.TO -> {
+                relationshipType.toFromName() ?: relationshipType.displayName()
+                ?: resources.getString(R.string.relationship)
+            }
+        }
+    }
+
+    fun hasWritePermission(relationshipTypeUid: String): Boolean {
+        return getRelationshipTypeByUid(relationshipTypeUid)?.let { relationshipType ->
+            d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
+
+        } ?: false
     }
 }

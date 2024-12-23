@@ -1,8 +1,9 @@
-package org.dhis2.tracker.relationships.model
+package org.dhis2.tracker.relationships.ui.state
 
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
 
-data class RelationshipItem(
+data class RelationshipItemUiState(
     val uid: String,
     val title: String,
     val description: String?,
