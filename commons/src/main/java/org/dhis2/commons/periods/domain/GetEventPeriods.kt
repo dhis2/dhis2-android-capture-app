@@ -26,7 +26,7 @@ class GetEventPeriods(
         isScheduling: Boolean,
         eventEnrollmentUid: String?,
     ): Flow<PagingData<Period>> = Pager(
-        config = PagingConfig(pageSize = 10, maxSize = 100),
+        config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
         pagingSourceFactory = {
             PeriodSource(
                 eventPeriodRepository = eventPeriodRepository,

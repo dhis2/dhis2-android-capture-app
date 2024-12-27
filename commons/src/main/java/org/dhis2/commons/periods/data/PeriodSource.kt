@@ -20,13 +20,13 @@ internal class PeriodSource(
         return try {
             var maxPageReached = false
             val periodsPerPage = params.loadSize
-            val position = params.key ?: 1
+            val page = params.key ?: 1
             val periods: List<Period> = buildList {
                 repeat(periodsPerPage) { indexInPage ->
                     val period = eventPeriodRepository.generatePeriod(
                         periodType,
                         initialDate,
-                        position - 1 + indexInPage,
+                        indexInPage + periodsPerPage * (page - 1),
                     )
                     if (maxDate == null || period.startDate()
                             ?.before(maxDate) == true || period.startDate() == maxDate
@@ -54,8 +54,8 @@ internal class PeriodSource(
 
             LoadResult.Page(
                 data = periods,
-                prevKey = if (position == 1) null else (position - 1),
-                nextKey = if (maxPageReached) null else (position + 1),
+                prevKey = if (page == 1) null else (page - 1),
+                nextKey = if (maxPageReached) null else (page + 1),
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
