@@ -96,7 +96,10 @@ class SchedulingViewModel(
             val enrollment = withContext(dispatchersProvider.io()) {
                 when (launchMode) {
                     is LaunchMode.NewSchedule -> d2.enrollment(launchMode.enrollmentUid)
-                    is LaunchMode.EnterEvent -> null
+                    is LaunchMode.EnterEvent -> {
+                        val enrollmentUid = d2.event(launchMode.eventUid)?.enrollment()
+                        enrollmentUid?.let { d2.enrollment(it) }
+                    }
                 }
             }
             _enrollment.value = enrollment
