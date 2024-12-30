@@ -128,20 +128,20 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat("ddMMYYYY")
+        val sdf = SimpleDateFormat("ddMMyyyy")
         val calendar = Calendar.getInstance()
         return sdf.format(calendar.time)
     }
 
     private fun getPreviousDate(): String {
-        val sdf = SimpleDateFormat("MMddYYYY")
+        val sdf = SimpleDateFormat("MMddyyyy")
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -1)
         return sdf.format(calendar.time)
     }
 
     private fun getCurrentDatePickerDate(): String {
-        val sdf = SimpleDateFormat("MM/dd/YYYY")
+        val sdf = SimpleDateFormat("MM/dd/yyyy")
         val calendar = Calendar.getInstance()
         return sdf.format(calendar.time)
     }
