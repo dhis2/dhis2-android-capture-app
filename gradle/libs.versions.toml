@@ -2,7 +2,7 @@
 sdk = "35"
 minSdk = "21"
 vCode = "139"
-vName = "3.1.1"
+vName = "3.2.0-DEV"
 gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
