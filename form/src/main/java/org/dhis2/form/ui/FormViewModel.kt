@@ -343,11 +343,16 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         if (previousActionItem == null) previousActionItem = rowAction
         if (previousActionItem?.value != it.value && previousActionItem?.id == it.uid) {
-            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
-            if (error != null) {
-                val action = rowActionFromIntent(
-                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
-                )
+            val action = rowActionFromIntent(
+                FormIntent.OnSave(
+                    it.uid,
+                    it.value,
+                    it.valueType,
+                    it.fieldMask,
+                    it.allowFutureDates,
+                ),
+            )
+            if (action.error != null) {
                 repository.updateErrorList(action)
                 StoreResult(
                     rowAction.id,
@@ -355,8 +360,6 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-                val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
                 repository.updateErrorList(action)
@@ -809,13 +812,13 @@ class FormViewModel(
 
     fun discardChanges() {
         repository.backupOfChangedItems().forEach {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
         }
     }
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
         }
         submitIntent(FormIntent.OnFinish())
     }
