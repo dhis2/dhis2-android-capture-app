@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">Evento</string>
     <string name="no_data">Não ha dados</string>
+    <string name="feature_configuration">Configuração de recursos</string>
     <string name="change_calendar_view">Alterar visualização da agenda</string>
     <string name="clear">claro</string>
     <string name="action_accept">Aceitar</string>
@@ -15,6 +17,7 @@
     <string name="navigation_analytics">Google Analytics</string>
     <string name="navigation_tasks">Tarefas</string>
     <string name="navigation_programs">Programas</string>
+    <string name="navigation_events">Eventos</string>
     <string name="navigation_relationships">Relacionamentos</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>
@@ -22,6 +25,8 @@
     <string name="event_overview">Detalhes</string>
     <string name="select_option">Selecionar opção</string>
     <string name="search">Pesquisar</string>
+    <string name="jira_issue_sent">Problema Enviado</string>
+    <string name="jira_issue_sent_error">Erro ao enviar Problema</string>
     <string name="events">eventos</string>
     <string name="data_sets">Agregação de Dados</string>
     <string name="tei">TEI</string>
@@ -42,6 +47,8 @@
     <string name="enrollment_date">Data de inscrição</string>
     <string name="filters_title_event_status">Estado do evento </string>
     <string name="filters_title_enrollment_status">Status da inscrição</string>
+    <string name="filter_follow_up_label">Acompanhado%s</string>
+
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
@@ -49,7 +56,9 @@
     <string name="state_to_delete">Suprimir</string>
     <string name="state_error">Erro</string>
     <string name="state_warning">Advertência</string>
+    <string name="state_uploading">A carregar</string>
     <string name="state_relationship">Relação</string>
+    <string name="sent_by_sms">Enviado por SMS</string>
     <string name="sync_by_sms">Sincronizado por SMS</string>
 
     <!-- Status -->
@@ -66,6 +75,8 @@
     <string name="enrollment_status_cancelled">Cancelado</string>
     <string name="record_marked_for_deletion">Este registro está marcado para exclusão. Você não pode acessá-lo.</string>
 
+    <string name="enrollment_org_unit">Inscrição de Unidade organizacional</string>
+
     <!-- Periods -->
     <string name="filter_period_today">Hoje</string>
     <string name="filter_period_yesterday">Ontém</string>
@@ -79,19 +90,34 @@
     <string name="filter_period_form_to">De - Para</string>
     <string name="filter_period_other">Outro</string>
     <string name="filter_period_any">A qualquer momento</string>
+    <string name="working_list_default_label">Lista de trabalho %s</string>
+    <string name="filter_period_last_n_days">Últimos  %d dias</string>
     <string name="filter_period_this_year">Este ano</string>
     <string name="filter_period_this_bimonth">Este bimensal</string>
     <string name="filter_period_last_bimonth">Ultimo bimensal</string>
     <string name="filter_period_this_quarter">Este Trimestre</string>
     <string name="filter_period_last_quarter">Último trimestre</string>
+    <string name="filter_period_six_months">Estes seis meses</string>
+    <string name="filter_period_last_six_months">Últimos seis meses</string>
+    <string name="filter_period_last_n_years">Últimos  %d anos</string>
+    <string name="filter_period_last_n_months">últimos %d meses</string>
+    <string name="filter_period__last_n_weeks">últimas %d semanas</string>
     <string name="filter_period_weeks_this_year">Semanas deste ano </string>
     <string name="filter_period_months_this_year">Meses deste ano</string>
     <string name="filter_period_bimonths_this_year">Bimensais deste ano</string>
     <string name="filter_period_quarters_this_year">Trimestres deste ano</string>
     <string name="filter_period_months_last_year">Meses do ano passado</string>
+    <string name="filter_period_quarters_last_year">Trimestres dos últimos anos</string>
     <string name="filter_period_last_year">Último ano</string>
+    <string name="filter_period_this_biweek">Estes quinze dias</string>
+    <string name="filter_period_last_biweek">Últimos quinze dias</string>
+    <string name="filter_period_last_n_bimonths">Últimos %d dois meses</string>
+    <string name="filter_period_last_n_quarters">Últimos %d trimestres</string>
+    <string name="last_n_months">últimos %d meses</string>
     <string name="filter_period_this_financial_year">Ano financeiro</string>
     <string name="filter_period_last_financial_year">Último ano fiscal</string>
+    <string name="filter_period_last_n_financial_years"> Últimos %d anos financeiros</string>
+    <string name="filter_period_last_n_biweeks">Últimas %d quinzenas</string>
     <string name="period">Período</string>
     <string name="DAILY">Diário</string>
     <string name="WEEKLY">Semanal</string>
@@ -114,13 +140,104 @@
     <string name="section_feedback">Retroinformacão</string>
     <string name="section_indicators">Indicadores</string>
     <string name="section_charts">Gráficos</string>
+    <string name="section_charts_indicators">Gráficos e indicadores</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Inscrito em:</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">A palavra-passe está em falta. Introduza a palavra-passe.</string>
+    <string name="login_error_null_username">O nome de utilizador está em falta. Por favor, introduza o nome de utilizador.</string>
     <string name="login_error_dhis_version">Este servidor está executando uma versão dhis diferente de 2.29. Atualize a versão do servidor ou use o ambiente de teste para continuar.</string>
+    <string name="login_error_dhis_version_v2">Este servidor está a executar uma versão do DHIS2 diferente de %s. Actualize a versão do seu servidor ou contacte o seu administrador.</string>
+    <string name="login_error_unsuccessful_response">Algo correu mal. Verifique se o URL do servidor, o nome de utilizador e a palavra-passe estão correctos e tente novamente.</string>
+    <string name="login_error_error_response">Desculpe! Algo falhou no lado do servidor.</string>
+    <string name="login_error_no_dhis_instance">O URL fornecido não é um servidor DHIS2.</string>
+    <string name="login_error_bad_credentials">O nome de utilizador ou a palavra-passe estão incorrectos</string>
+    <string name="login_error_unknown_host">Servidor desconhecido</string>
     <string name="online_search_parsing_error">Erro ao analisar resultados</string>
+    <string name="error_unexpected">Algo inesperado correu mal.</string>
+    <string name="error_too_manu_org_units">O seu utilizador tem mais do que uma unidade organizacional de raiz. Reveja a sua configuração ou contacte o seu administrador.</string>
+    <string name="error_max_tei_count_reached">Os resultados online excedem o número máximo de instâncias de rastreador que podem ser mostradas. Por favor, refine a sua pesquisa.</string>
+    <string name="error_many_requests">O servidor está um pouco ocupado neste momento. Por favor, tente mais tarde.</string>
+    <string name="error_already_authenticated">O utilizador já tem sessão iniciada.</string>
+    <string name="error_already_executed">O pedido já foi executado.</string>
+    <string name="error_api_invalid_query">O pedido do servidor é inválido.</string>
+    <string name="error_app_name_not_set">O nome da aplicação não foi definido.</string>
+    <string name="error_app_version_not_set">A versão da aplicação não foi definida.</string>
+    <string name="error_access_keystore">Não é possível aceder ao armazenamento de chaves do dispositivo.</string>
+    <string name="error_create_existing_error">Criação abortada. O objeto já existe.</string>
+    <string name="error_delete_non_existing_object">Eliminação abortada. O objeto não existe.</string>
+    <string name="error_instance_keystore">Não foi possível instanciar o keystore.</string>
+    <string name="error_reserve_value_on_server">Não foi possível reservar valores para este registo. Por favor, contacte o seu administrador.</string>
+    <string name="error_export_login">Inicie sessão para exportar a base de dados.</string>
+    <string name="error_export_encrypted">A exportação de uma base de dados encriptada não é suportada.</string>
+    <string name="error_import_exist">Está a importar uma base de dados já existente.</string>
+    <string name="error_import_logout">Termine a sessão para importar uma nova base de dados.</string>
+    <string name="error_import_version">A versão da base de dados importada é superior à suportada.</string>
+    <string name="error_file_not_found">O ficheiro não foi encontrado.</string>
+    <string name="error_file_resize">Ocorreu um erro ao redimensionar a imagem.</string>
+    <string name="error_generate_coordinate">Não é possível gerar as coordenadas.</string>
+    <string name="error_job">Relatório de trabalho não disponível.</string>
+    <string name="error_low_on_available_values">Poderá estar a ficar com poucos valores disponíveis.</string>
+    <string name="error_user_no_authenticated">Não há nenhum utilizador autenticado.</string>
+    <string name="error_user_no_authenticated_offline">Não existe nenhum utilizador autenticado offline.</string>
+    <string name="error_no_values_left_on_server">Não existem valores suficientes para reservar no servidor. Por favor contacte o seu administrador.</string>
+    <string name="error_different_offline_user">Está a tentar iniciar sessão offline com um utilizador diferente.</string>
+    <string name="error_invalid_geometry">O valor da geometria é inválido.</string>
+    <string name="error_no_reserved_values">Não existem valores reservados disponíveis. Vá às definições e volte a preencher os valores quando tiver ligação à Internet.</string>
+    <string name="error_object_update">Não foi possível atualizar o objeto.</string>
+    <string name="error_object_insert"> O objeto não pôde ser inserido.</string>
+    <string name="error_ownership_access">Não tem acesso.</string>
+    <string name="error_null_url"> O URL do servidor está em falta. Por favor, introduza o URL.</string>
+    <string name="error_server_malformed"> O URL do servidor não está bem formado. Por favor, verifique-o.</string>
+    <string name="error_settings_app_not_supported"> Esta versão da aplicação Web de definições não é suportada.</string>
+    <string name="error_settings_app_not_intalled"> A aplicação Web de definições não está instalada no servidor.</string>
+    <string name="error_socket_timeout"> O servidor demorou demasiado tempo para responder. Cancelamos o pedido.</string>
+    <string name="error_relationship_updated">O relacionamento não pode ser actualizado.</string>
+    <string name="error_too_many_periods">Existem muitos períodos.</string>
+    <string name="error_url_not_found"> Não foi possível encontrar a URL. Por favor, verifique-o.</string>
+    <string name="error_account_disabled"> A sua conta de utilizador foi desactivada. Se isto for um erro, contacte o seu administrador.</string>
+    <string name="error_account_locked"> A sua conta de utilizador está bloqueada. Se isto for um erro, contacte o seu administrador.</string>
+    <string name="error_set_value">O valor não pôde ser definido.</string>
+    <string name="error_value_reservation_time">O pedido de reserva de valores demorou demasiado tempo. Por favor, tente novamente.</string>
+    <string name="error_ssl">Existe um problema com os certificados do servidor. Por favor, contacte o seu administrador.</string>
+    <string name="error_sms_not_supported">SMS não é compatível.</string>
+    <string name="error_min_attributes">Não existem atributos suficientes para realizar a pesquisa. Por favor, refine a sua pesquisa com mais atributos.</string>
+    <string name="error_org_unit_scope">A pesquisa online está apenas disponível para as unidades organizacionais de pesquisa de utilizadores.</string>
+    <string name="error_invalid_characters">Existem caracteres inválidos na consulta. Por favor, peça ao administrador para verificar a configuração do servidor (relaxedQueryChars,...).</string>
+    <string name="error_server_unavailable">O servidor está indisponível do momento. Tente novamente mais tarde.</string>
+    <string name="error_no_internet_connection">Está off-line. Ligue-se à Internet e tente novamente.</string>
+    <string name="unsupported_field_description">Este campo não está disponível para captura móvel</string>
     <string name="add_image">Adicionar imagem</string>
+    <string name="add_signature">Adicionar assinatura</string>
+    <string name="add_file">Adicionar ficheiro</string>
     <string name="action_ok">Esta bem</string>
     <string name="enable_location_message">A localização do seu dispositivo está desconectada. Por favor ative-o para capturar coordenadas</string>
     <string name="keep_editing">Continue editando</string>
+    <string name="not_now">Agora não</string>
+    <string name="review">Revisão</string>
     <string name="complete">Completo</string>
     <string name="default_table_header_label">Valor</string>
     <string name="discard_changes">Descartar mudanças</string>
-    </resources>
+    <string name="default_empty_dataset_section_label">Dados</string>
+    <string name="title_network_connection_unavailable">Ligação a rede indisponível</string>
+    <string name="msg_network_connection_maps">É necessária uma ligação à Internet para utilizar mapas.</string>
+
+    <string name="overdue_today">Hoje</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d dia de atraso</item>
+        <item quantity="many">%d dias de atraso</item>
+        <item quantity="other">%d dias em atraso</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d mês em atraso</item>
+        <item quantity="many">%d meses de atraso</item>
+        <item quantity="other">%d meses em atraso</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d ano de atraso</item>
+        <item quantity="many">%d anos de atraso</item>
+        <item quantity="other">%d anos em atraso</item>
+    </plurals>
+</resources>

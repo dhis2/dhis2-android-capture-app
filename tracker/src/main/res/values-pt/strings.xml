@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Não há relacionamentos, clique em \"+\" para adicionar um novo.</string>
-</resources>
+    <string name="relation_creation_date">Relação criada em</string>
+    <string name="remove_relationship_title">Remover %s\?</string>
+    <string name="remove_relationship_desc">O ficheiro %s será eliminado. Esta ação não pode ser anulada.</string>
+    <string name="remove_some_relationships_title">Remover %d relacionamentos selecionadas\?</string>
+    <string name="remove_some_relationships_desc">Os relacionamentos  %d selecionadas serão eliminados. Esta acção não pode ser anulada.</string>
+    <string name="show_number_more">Mostrar %d mais...</string>
+    </resources>

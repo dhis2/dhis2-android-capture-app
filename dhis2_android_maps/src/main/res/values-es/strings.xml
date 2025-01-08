@@ -13,4 +13,22 @@
     <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
-    </resources>
+    <string name="map_attributionErrorNoBrowser">No se encontró navegador web instalado en el dispositivo, no se puede abrir la página web</string>
+    <string name="accuracy_range" >Rango de precisión</string>
+    <string name="accuracy_good">Buena</string>
+    <string name="accuracy_low">Bajo</string>
+    <string name="accuracy_medium">Medio</string>
+    <string name="accuracy_verygood">Muy buena</string>
+    <string name="accuracy_please_wait">Espere para mejorar la precisión...</string>
+    <string name="location_not_available">Su posición actual no está disponible</string>
+    <string name="accuracy_can_not_improve">Ésta es la mejor precisión que pudimos obtener.</string>
+    <string name="accuracy_minimun_set_not_allow">Se requiere una precisión mínima de %dm para guardar</string>
+    <string name="accuracy_minimun_set_allow">¿Quieres guardarla?</string>
+    <string name="search_on_this_area">Buscar en este área</string>
+    <string name="swipe_to_change_location">Desliza para cambiar de ubicación</string>
+    <string name="select_location_title">Seleccione ubicación</string>
+    <string name="selet_location_subtitle">pulsando sobre ella</string>
+    <string name="selected_location">Ubicación seleccionada</string>
+    <string name="latitude_longitude">Lat: %1$s, Lon: %2$s</string>
+    <string name="drop_to_select">Suelta para seleccionar ubicación</string>
+</resources>
