@@ -18,19 +18,19 @@ fun TrackerLineListItem.withFilters(
         TrackerLineListItem.LastUpdatedBy -> this
         is TrackerLineListItem.EnrollmentDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.EventDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.ScheduledDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
@@ -42,13 +42,13 @@ fun TrackerLineListItem.withFilters(
 
         is TrackerLineListItem.IncidentDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.LastUpdated -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
