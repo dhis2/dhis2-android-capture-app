@@ -22,18 +22,6 @@ kotlin {
 
     jvm("desktop").
 
-
-    /*listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "aggregates"
-            isStatic = true
-        }
-    }*/
-
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
