@@ -20,7 +20,7 @@ kotlin {
         }
     }
 
-    jvm("desktop").
+    jvm("desktop")
 
     sourceSets {
         commonMain.dependencies {
