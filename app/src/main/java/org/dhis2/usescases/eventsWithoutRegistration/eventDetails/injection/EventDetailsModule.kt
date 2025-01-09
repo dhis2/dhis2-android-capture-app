@@ -110,6 +110,7 @@ class EventDetailsModule(
         periodUseCase: GetEventPeriods,
     ): ConfigurePeriodSelector {
         return ConfigurePeriodSelector(
+            enrollmentUid = enrollmentId,
             eventDetailRepository = eventDetailsRepository,
             getEventPeriods = periodUseCase,
         )

@@ -83,9 +83,10 @@ class EventPeriodRepository(private val d2: D2) {
         return d2.eventsBy(enrollmentUid = enrollment?.uid()).mapNotNull {
             if (it.programStage() == programStageUid &&
                 (currentEventUid == null || it.uid() != currentEventUid) &&
-                it.status() != EventStatus.SKIPPED
+                it.status() != EventStatus.SKIPPED &&
+                it.deleted() == false
             ) {
-                it.eventDate()
+                it.eventDate() ?: it.dueDate()
             } else {
                 null
             }
