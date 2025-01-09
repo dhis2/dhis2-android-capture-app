@@ -141,7 +141,11 @@ class EventDetailsIntegrationTest {
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
         resourcesProvider = provideEventResourcesProvider(),
-        configurePeriodSelector = ConfigurePeriodSelector(eventDetailsRepository, periodUseCase),
+        configurePeriodSelector = ConfigurePeriodSelector(
+            ENROLLMENT_UID,
+            eventDetailsRepository,
+            periodUseCase,
+        ),
     )
 
     private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(
