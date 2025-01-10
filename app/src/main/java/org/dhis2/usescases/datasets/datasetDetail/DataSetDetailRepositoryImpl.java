@@ -59,7 +59,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         d2.dataSetModule().dataSets().uid(dataSetUid).blockingGet();
         int dataSetOrgUnitNumber = d2.organisationUnitModule().organisationUnits()
                 .byDataSetUids(Collections.singletonList(dataSetUid))
-                .blockingGet().size();
+                .blockingCount();
 
         DataSetInstanceCollectionRepository finalRepo = repo;
         return Flowable.fromIterable(finalRepo.blockingGet())

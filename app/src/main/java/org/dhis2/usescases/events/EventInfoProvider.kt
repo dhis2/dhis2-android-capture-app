@@ -435,6 +435,6 @@ class EventInfoProvider(
         fromCache(cachedDisplayOrgUnit, programUid) {
             d2.organisationUnitModule().organisationUnits()
                 .byProgramUids(listOf(programUid))
-                .blockingGet().size > 1
+                .blockingCount() > 1
         } == true
 }
