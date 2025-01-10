@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.R
 import org.dhis2.commons.Constants.ENROLLMENT_STATUS
 import org.dhis2.commons.Constants.ENROLLMENT_UID
@@ -26,13 +27,17 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PROGRAM_STAGE_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.dialogs.PeriodDialog
+import org.dhis2.commons.date.toUiStringResource
+import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
@@ -52,7 +57,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
-import java.util.Date
 import javax.inject.Inject
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
@@ -160,17 +164,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             }
         }
 
-        viewModel.showPeriods = {
-            showPeriodDialog()
-        }
+        viewModel.showPeriods = ::showPeriodDialog
 
-        viewModel.showOrgUnits = {
-            showOrgUnitDialog()
-        }
+        viewModel.showOrgUnits = ::showOrgUnitDialog
 
-        viewModel.showNoOrgUnits = {
-            showNoOrgUnitsDialog()
-        }
+        viewModel.showNoOrgUnits = ::showNoOrgUnitsDialog
 
         viewModel.requestLocationPermissions = {
             requestLocationPermissions.launch(
@@ -253,7 +251,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     uiModel = EventInputDateUiModel(
                         eventDate = date,
                         detailsEnabled = details.enabled,
-                        onDateClick = { showPeriodDialog() },
+                        onDateClick = {
+                            viewModel.getPeriodType()?.let {
+                                showPeriodDialog(it)
+                            }
+                        },
                         onDateSelected = {},
                         onClear = { viewModel.onClearEventReportDate() },
                         required = true,
@@ -313,15 +315,28 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         }
     }
 
-    private fun showPeriodDialog() {
-        PeriodDialog()
-            .setPeriod(viewModel.eventDate.value.periodType)
-            .setMinDate(viewModel.eventDate.value.minDate)
-            .setMaxDate(viewModel.eventDate.value.maxDate)
-            .setPossitiveListener { selectedDate: Date ->
-                viewModel.setUpEventReportDate(selectedDate)
-            }
-            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+    private fun showPeriodDialog(periodType: PeriodType) {
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = getString(periodType.toUiStringResource()),
+                iconResource = -1,
+            ),
+            onSecondaryButtonClicked = {
+            },
+            onMainButtonClicked = { _ ->
+            },
+            showDivider = true,
+            content = { bottomSheetDialog, scrollState ->
+                val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
+                PeriodSelectorContent(
+                    periods = periods,
+                    scrollState = scrollState,
+                ) { selectedDate ->
+                    viewModel.setUpEventReportDate(selectedDate)
+                    bottomSheetDialog.dismiss()
+                }
+            },
+        ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun showOrgUnitDialog() {

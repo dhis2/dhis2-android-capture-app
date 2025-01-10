@@ -5,6 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -19,6 +20,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui.EventDetailsViewModel
@@ -55,6 +57,7 @@ class EventDetailsIntegrationTest {
     private val eventResourcesProvider: EventResourcesProvider = mock()
     private val periodUtils: DhisPeriodUtils = mock()
     private val preferencesProvider: PreferenceProvider = mock()
+    private val periodUseCase: GetEventPeriods = mock()
 
     // Preconditions, data source
     private val style: ObjectStyle = mock()
@@ -138,6 +141,11 @@ class EventDetailsIntegrationTest {
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
         resourcesProvider = provideEventResourcesProvider(),
+        configurePeriodSelector = ConfigurePeriodSelector(
+            ENROLLMENT_UID,
+            eventDetailsRepository,
+            periodUseCase,
+        ),
     )
 
     private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(

@@ -2,13 +2,16 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.commons.locationprovider.LocationProvider
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.form.data.GeometryController
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCatCombo
@@ -16,6 +19,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
@@ -49,9 +53,10 @@ class EventDetailsViewModel(
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
     private val resourcesProvider: EventDetailResourcesProvider,
+    private val configurePeriodSelector: ConfigurePeriodSelector,
 ) : ViewModel() {
 
-    var showPeriods: (() -> Unit)? = null
+    var showPeriods: ((periodType: PeriodType) -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
     var requestLocationPermissions: (() -> Unit)? = null
@@ -238,7 +243,7 @@ class EventDetailsViewModel(
 
     fun showPeriodDialog() {
         periodType?.let {
-            showPeriods?.invoke()
+            showPeriods?.invoke(it)
         }
     }
 
@@ -347,6 +352,10 @@ class EventDetailsViewModel(
 
     fun cancelCoordinateRequest() {
         setUpCoordinates(value = eventCoordinates.value.model?.value)
+    }
+
+    fun fetchPeriods(): Flow<PagingData<Period>> {
+        return configurePeriodSelector()
     }
 }
 

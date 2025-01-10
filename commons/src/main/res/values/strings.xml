@@ -309,4 +309,14 @@
     <string name="sync_retry">Retry sync</string>
     <string name="syncing">Synchronizing...</string>
     <string name="remove">Remove</string>
+    <string name="period_daily_title">Daily</string>
+    <string name="period_weekly_title">Week</string>
+    <string name="period_biweekly_title">Biweekly</string>
+    <string name="period_monthly_title">Month</string>
+    <string name="period_bi_monthly_title">Bimonthly</string>
+    <string name="period_quarter_title">Quarter</string>
+    <string name="period_six_monthly_title">Six monthly</string>
+    <string name="period_yearly_title">Year</string>
+    <string name="period_financial_year_title">Financial year</string>
+    <string name="no_periods">No periods available\n</string>
 </resources>
