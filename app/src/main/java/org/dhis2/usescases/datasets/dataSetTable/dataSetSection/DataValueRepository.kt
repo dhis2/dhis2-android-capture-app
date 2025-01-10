@@ -618,63 +618,65 @@ class DataValueRepository(
                     options,
                 )
 
-                val valueStateSyncState = d2.dataValueModule().dataValues()
-                    .byDataSetUid(dataSetUid)
-                    .byPeriod().eq(periodId)
-                    .byOrganisationUnitUid().eq(orgUnitUid)
-                    .byAttributeOptionComboUid().eq(attributeOptionComboUid)
-                    .byDataElementUid().eq(dataElement.uid())
-                    .byCategoryOptionComboUid().eq(categoryOptionCombo.uid())
-                    .blockingGet()
-                    .find { it.dataElement() == dataElement.uid() }
-                    ?.syncState()
+                if (conflicts.isNotEmpty()) {
+                    val valueStateSyncState = d2.dataValueModule().dataValues()
+                        .byDataSetUid(dataSetUid)
+                        .byPeriod().eq(periodId)
+                        .byOrganisationUnitUid().eq(orgUnitUid)
+                        .byAttributeOptionComboUid().eq(attributeOptionComboUid)
+                        .byDataElementUid().eq(dataElement.uid())
+                        .byCategoryOptionComboUid().eq(categoryOptionCombo.uid())
+                        .blockingGet()
+                        .find { it.dataElement() == dataElement.uid() }
+                        ?.syncState()
 
-                val conflictInField =
-                    conflicts.takeIf {
-                        when (valueStateSyncState) {
-                            State.ERROR,
-                            State.WARNING,
-                            -> true
+                    val conflictInField =
+                        conflicts.takeIf {
+                            when (valueStateSyncState) {
+                                State.ERROR,
+                                State.WARNING,
+                                -> true
 
-                            else -> false
-                        }
-                    }?.filter {
-                        "${it.dataElement()}_${it.categoryOptionCombo()}" == fieldViewModel.uid()
-                    }?.takeIf { it.isNotEmpty() }?.map { it.displayDescription() ?: "" }
+                                else -> false
+                            }
+                        }?.filter {
+                            "${it.dataElement()}_${it.categoryOptionCombo()}" == fieldViewModel.uid()
+                        }?.takeIf { it.isNotEmpty() }?.map { it.displayDescription() ?: "" }
 
-                val error = errors[fieldViewModel.uid()]
+                    val error = errors[fieldViewModel.uid()]
 
-                val errorList = when {
-                    valueStateSyncState == State.ERROR &&
-                        conflictInField != null &&
+                    val errorList = when {
+                        valueStateSyncState == State.ERROR &&
+                            conflictInField != null &&
+                            error != null ->
+                            conflictInField + listOf(error)
+
+                        valueStateSyncState == State.ERROR && conflictInField != null ->
+                            conflictInField
+
                         error != null ->
-                        conflictInField + listOf(error)
+                            listOf(error)
 
-                    valueStateSyncState == State.ERROR && conflictInField != null ->
-                        conflictInField
+                        else -> null
+                    }
 
-                    error != null ->
-                        listOf(error)
+                    val warningList = when {
+                        valueStateSyncState == State.WARNING &&
+                            conflictInField != null ->
+                            conflictInField
 
-                    else -> null
+                        else ->
+                            null
+                    }
+
+                    fieldViewModel = errorList?.let {
+                        fieldViewModel.withError(it.joinToString(".\n"))
+                    } ?: fieldViewModel
+
+                    fieldViewModel = warningList?.let {
+                        fieldViewModel.withWarning(warningList.joinToString(".\n"))
+                    } ?: fieldViewModel
                 }
-
-                val warningList = when {
-                    valueStateSyncState == State.WARNING &&
-                        conflictInField != null ->
-                        conflictInField
-
-                    else ->
-                        null
-                }
-
-                fieldViewModel = errorList?.let {
-                    fieldViewModel.withError(it.joinToString(".\n"))
-                } ?: fieldViewModel
-
-                fieldViewModel = warningList?.let {
-                    fieldViewModel.withWarning(warningList.joinToString(".\n"))
-                } ?: fieldViewModel
 
                 fields.add(fieldViewModel)
 
