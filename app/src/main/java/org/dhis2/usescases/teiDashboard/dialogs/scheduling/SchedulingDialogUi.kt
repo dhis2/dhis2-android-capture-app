@@ -142,7 +142,7 @@ private fun ButtonBlock(
 ) {
     Box(
         modifier
-            .padding(top = Spacing24, bottom = Spacing24, start = Spacing24, end = Spacing24),
+            .padding(Spacing.Spacing24),
     ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {

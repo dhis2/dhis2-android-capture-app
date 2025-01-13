@@ -42,8 +42,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.QrCodeBlock
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
@@ -147,15 +146,7 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(
-                        carouselButtonList = buttonList,
-                        modifier = Modifier.padding(
-                            top = Spacing0,
-                            bottom = Spacing24,
-                            start = Spacing24,
-                            end = Spacing24,
-                        ),
-                    )
+                    ButtonCarousel(modifier = Modifier.padding(Spacing.Spacing24), carouselButtonList = buttonList)
                 },
                 onDismiss = {
                     dismiss()

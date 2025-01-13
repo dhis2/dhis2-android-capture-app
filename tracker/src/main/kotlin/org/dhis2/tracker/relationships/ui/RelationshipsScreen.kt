@@ -398,12 +398,7 @@ fun DeleteRelationshipsConfirmation(
         },
         buttonBlock = {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    top = Spacing24,
-                    bottom = Spacing24,
-                    start = Spacing24,
-                    end = Spacing24
-                ),
+                modifier = Modifier.padding(Spacing.Spacing24),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,

@@ -202,10 +202,6 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 title = getString((periodType ?: PeriodType.Daily).toUiStringResource()),
                 iconResource = -1,
             ),
-            onSecondaryButtonClicked = {
-            },
-            onMainButtonClicked = { _ ->
-            },
             showDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = presenter.fetchPeriods(scheduling).collectAsLazyPagingItems()

@@ -92,48 +92,11 @@ class BottomSheetDialog(
                         },
                         showSectionDivider = showDivider,
                         buttonBlock = {
-                            ButtonBlock(
-                                modifier = Modifier.padding(
-                                    top = Spacing24,
-                                    bottom = Spacing24,
-                                    start = Spacing24,
-                                    end = Spacing24,
-                                ),
-                                primaryButton = {
-                                    bottomSheetDialogUiModel.secondaryButton?.let { style ->
-
-                                        Button(
-                                            style = ButtonStyle.TEXT,
-                                            text = bottomSheetDialogUiModel.secondaryButton?.let {
-                                                it.textLabel ?: stringResource(id = it.textResource)
-                                            } ?: "",
-                                            colorStyle = getSecondaryButtonColor(style),
-                                            onClick = {
-                                                onSecondaryButtonClicked()
-                                                dismiss()
-                                            },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .testTag(SECONDARY_BUTTON_TAG),
-                                        )
-                                    }
-                                },
-                                secondaryButton = {
-                                    bottomSheetDialogUiModel.mainButton?.let {
-                                        Button(
-                                            style = ButtonStyle.FILLED,
-                                            text =
-                                            it.textLabel ?: stringResource(id = it.textResource),
-                                            onClick = {
-                                                onMainButtonClicked(this@BottomSheetDialog)
-                                                dismiss()
-                                            },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .testTag(MAIN_BUTTON_TAG),
-                                        )
-                                    }
-                                },
+                            BottomSheetButtons(
+                                bottomSheetDialogUiModel = bottomSheetDialogUiModel,
+                                onMainButtonClicked = onMainButtonClicked,
+                                onSecondaryButtonClicked = onSecondaryButtonClicked,
+                                this,
                             )
                         },
                         onDismiss = {
@@ -152,6 +115,52 @@ class BottomSheetDialog(
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    fun BottomSheetButtons(bottomSheetDialogUiModel: BottomSheetDialogUiModel, onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit, onSecondaryButtonClicked: () -> Unit, composeView: ComposeView) {
+        if (bottomSheetDialogUiModel.secondaryButton != null || bottomSheetDialogUiModel.mainButton != null) {
+            ButtonBlock(
+                modifier = Modifier.padding(Spacing24),
+                primaryButton = {
+                    bottomSheetDialogUiModel.secondaryButton?.let { style ->
+
+                        Button(
+                            style = ButtonStyle.TEXT,
+                            text = bottomSheetDialogUiModel.secondaryButton?.let {
+                                it.textLabel
+                                    ?: stringResource(id = it.textResource)
+                            } ?: "",
+                            colorStyle = getSecondaryButtonColor(style),
+                            onClick = {
+                                onSecondaryButtonClicked()
+                                dismiss()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag(SECONDARY_BUTTON_TAG),
+                        )
+                    }
+                },
+                secondaryButton = {
+                    bottomSheetDialogUiModel.mainButton?.let {
+                        Button(
+                            style = ButtonStyle.FILLED,
+                            text =
+                            it.textLabel
+                                ?: stringResource(id = it.textResource),
+                            onClick = {
+                                onMainButtonClicked(this@BottomSheetDialog)
+                                dismiss()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag(MAIN_BUTTON_TAG),
+                        )
+                    }
+                },
+            )
         }
     }
 
