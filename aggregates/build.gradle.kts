@@ -54,7 +54,7 @@ android {
     namespace = "org.dhis2.mobile.aggregates"
     compileSdk = libs.versions.sdk.get().toInt()
     defaultConfig {
-        minSdk = libs.versions.sdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
