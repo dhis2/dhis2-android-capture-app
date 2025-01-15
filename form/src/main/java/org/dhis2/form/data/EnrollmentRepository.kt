@@ -1,9 +1,13 @@
 package org.dhis2.form.data
 
+import androidx.paging.PagingData
 import io.reactivex.Flowable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.model.EnrollmentMode
@@ -69,6 +73,8 @@ class EnrollmentRepository(
             }
         }
     }
+
+    override fun fetchPeriods(): Flow<PagingData<Period>> = emptyFlow()
 
     override fun sectionUids(): Flowable<List<String>> {
         val sectionUids = mutableListOf(ENROLLMENT_DATA_SECTION_UID)

@@ -6,16 +6,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -343,11 +346,16 @@ class FormViewModel(
     private fun saveLastFocusedItem(rowAction: RowAction) = getLastFocusedTextItem()?.let {
         if (previousActionItem == null) previousActionItem = rowAction
         if (previousActionItem?.value != it.value && previousActionItem?.id == it.uid) {
-            val error = checkFieldError(it.valueType, it.value, it.fieldMask)
-            if (error != null) {
-                val action = rowActionFromIntent(
-                    FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask),
-                )
+            val action = rowActionFromIntent(
+                FormIntent.OnSave(
+                    it.uid,
+                    it.value,
+                    it.valueType,
+                    it.fieldMask,
+                    it.allowFutureDates,
+                ),
+            )
+            if (action.error != null) {
                 repository.updateErrorList(action)
                 StoreResult(
                     rowAction.id,
@@ -355,8 +363,6 @@ class FormViewModel(
                 )
             } else {
                 checkAutoCompleteForLastFocusedItem(it)
-                val intent = FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask)
-                val action = rowActionFromIntent(intent)
                 val result = repository.save(it.uid, it.value, action.extraData)
                 repository.updateValueOnList(it.uid, it.value, it.valueType)
                 repository.updateErrorList(action)
@@ -809,13 +815,13 @@ class FormViewModel(
 
     fun discardChanges() {
         repository.backupOfChangedItems().forEach {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
         }
     }
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask))
+            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
         }
         submitIntent(FormIntent.OnFinish())
     }
@@ -860,6 +866,10 @@ class FormViewModel(
                 type = ActionType.ON_SAVE,
             )
         }
+    }
+
+    fun fetchPeriods(): Flow<PagingData<Period>> {
+        return repository.fetchPeriods().flowOn(dispatcher.io())
     }
 
     companion object {

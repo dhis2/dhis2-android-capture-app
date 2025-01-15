@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
@@ -97,7 +98,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnEventWithTitle(title: String) {
+        composeTestRule.waitUntilExactlyOneExists(hasText(title))
         composeTestRule.onNodeWithText(title).performClick()
     }
 

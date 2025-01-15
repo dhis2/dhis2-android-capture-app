@@ -1,8 +1,11 @@
 package org.dhis2.form.data
 
 import android.text.TextUtils
+import androidx.paging.PagingData
 import io.reactivex.Flowable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.dhis2.bindings.blockingGetValueCheck
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.program
@@ -10,6 +13,9 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.periods.data.EventPeriodRepository
+import org.dhis2.commons.periods.domain.GetEventPeriods
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -38,12 +44,10 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import java.util.Date
 
 class EventRepository(
     private val fieldFactory: FieldViewModelFactory,
@@ -55,6 +59,10 @@ class EventRepository(
     private val dateUtils: DateUtils,
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
+
+    private val getEventPeriods = GetEventPeriods(
+        EventPeriodRepository(d2),
+    )
 
     private var event = d2.eventModule().events().uid(eventUid).blockingGet()
 
@@ -184,7 +192,7 @@ class EventRepository(
         return true
     }
 
-    override fun eventMode(): EventMode? {
+    override fun eventMode(): EventMode {
         return eventMode
     }
 
@@ -427,105 +435,13 @@ class EventRepository(
             if (periodType != PeriodType.Daily) {
                 PeriodSelector(
                     type = periodType,
-                    minDate = getPeriodMinDate(periodType),
-                    maxDate = dateUtils.getStartOfDay(Date()),
+                    minDate = null,
+                    maxDate = null,
                 )
             } else {
                 null
             }
         }
-    }
-
-    private fun getPeriodMinDate(periodType: PeriodType): Date? {
-        d2.programModule().programs()
-            .withTrackedEntityType()
-            .byUid().eq(programUid)
-            .one().blockingGet()?.let { program ->
-                val firstAvailablePeriodDate =
-                    getFirstAvailablePeriod(event?.enrollment(), programStage)
-                var minDate = dateUtils.expDate(
-                    firstAvailablePeriodDate,
-                    program.expiryDays() ?: 0,
-                    periodType,
-                )
-                val lastPeriodDate = dateUtils.getNextPeriod(
-                    periodType,
-                    minDate,
-                    -1,
-                    true,
-                )
-
-                if (lastPeriodDate.after(
-                        dateUtils.getNextPeriod(
-                            program.expiryPeriodType(),
-                            minDate,
-                            0,
-                        ),
-                    )
-                ) {
-                    minDate = dateUtils.getNextPeriod(periodType, lastPeriodDate, 0)
-                }
-                return minDate
-            }
-        return null
-    }
-
-    private fun getFirstAvailablePeriod(enrollmentUid: String?, programStage: ProgramStage?): Date {
-        val stageLastDate = getStageLastDate()
-        val minEventDate = stageLastDate ?: when (programStage?.generatedByEnrollmentDate()) {
-            true -> getEnrollmentDate(enrollmentUid)
-            else -> getEnrollmentIncidentDate(enrollmentUid)
-                ?: getEnrollmentDate(enrollmentUid)
-        }
-        val calendar = DateUtils.getInstance().getCalendarByDate(minEventDate)
-
-        return dateUtils.getNextPeriod(
-            programStage?.periodType(),
-            calendar.time ?: event?.eventDate(),
-            if (stageLastDate == null) 0 else 1,
-        )
-    }
-
-    private fun getStageLastDate(): Date? {
-        val enrollmentUid = event?.enrollment()
-        val programStageUid = programStage?.uid()
-        val activeEvents =
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(enrollmentUid).byProgramStageUid()
-                .eq(programStageUid)
-                .byDeleted().isFalse
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
-                .filter { it.uid() != eventUid }
-        val scheduleEvents =
-            d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
-                .eq(programStageUid)
-                .byDeleted().isFalse
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
-                .filter { it.uid() != eventUid }
-
-        var activeDate: Date? = null
-        var scheduleDate: Date? = null
-        if (activeEvents.isNotEmpty()) {
-            activeDate = activeEvents[0].eventDate()
-        }
-        if (scheduleEvents.isNotEmpty()) scheduleDate = scheduleEvents[0].dueDate()
-
-        return when {
-            scheduleDate == null -> activeDate
-            activeDate == null -> scheduleDate
-            activeDate.before(scheduleDate) -> scheduleDate
-            else -> activeDate
-        }
-    }
-
-    private fun getEnrollmentDate(uid: String?): Date? {
-        val enrollment = d2.enrollmentModule().enrollments().byUid().eq(uid).blockingGet().first()
-        return enrollment.enrollmentDate()
-    }
-
-    private fun getEnrollmentIncidentDate(uid: String?): Date? {
-        val enrollment = d2.enrollmentModule().enrollments().uid(uid).blockingGet()
-        return enrollment?.incidentDate()
     }
 
     private fun createEventDetailsSection(): FieldUiModel {
@@ -556,6 +472,24 @@ class EventRepository(
                 emptyList()
             }
         }
+    }
+
+    override fun fetchPeriods(): Flow<PagingData<Period>> {
+        val periodType = programStage?.periodType() ?: PeriodType.Daily
+        val stage = programStage ?: return flowOf()
+        val eventEnrollmentUid = event?.enrollment() ?: return flowOf()
+        return getEventPeriods(
+            eventUid = eventUid,
+            periodType = periodType,
+            selectedDate = if (eventMode == EventMode.SCHEDULE) {
+                event?.dueDate()
+            } else {
+                event?.eventDate()
+            },
+            programStage = stage,
+            isScheduling = eventMode == EventMode.SCHEDULE,
+            eventEnrollmentUid = eventEnrollmentUid,
+        )
     }
 
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> {

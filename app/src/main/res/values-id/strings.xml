@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
     <string name="logo_text">dhis</string>
@@ -91,7 +91,6 @@
     <string name="finish_and_complete">Selesai dan lengkap</string>
     <string name="completed">Selesai</string>
     <string name="cancelled">Dibatalkan</string>
-    <string name="re_open">Buka kembali</string>
     <string name="activate">Aktivasi</string>
     <string name="active">Aktif</string>
 
@@ -440,7 +439,6 @@
     <string name="biometrics_dialog_title">Kredensial Kosong</string>
     <string name="biometrics_first_use_text">Untuk dapat login menggunakan pemindai sidik jari, Anda terlebih dahulu harus menggunakan cara default</string>
     <string name="biometrics_security_title">Keamanan Biometrik</string>
-    <string name="biometrics_security_text">Gunakan sidik jari Anda untuk masuk dengan pengguna ini?</string>
     <string name="tab_tables">Tabel</string>
     <string name="table">Tabel</string>
     <string name="login_https">https://</string>
@@ -798,6 +796,13 @@
     <string name="error_init_session">Kami tidak dapat memulai sesi dengan pengguna Anda</string>
     <string name="enrollment_date_edition_warning">Ada even yang direncanakan yang tidak akan dijadwalkan ulang</string>
     <string name="section_charts">Grafik</string>
+    <string name="navigation_table_view">Tampilan tabel</string>
+    <string name="navigation_analytics">Analitik</string>
+    <string name="navigation_tasks">Tugas</string>
+    <string name="navigation_programs">Program-program</string>
+    <string name="navigation_notes">Catatan</string>
+    <string name="navigation_data_entry">Data entri</string>
+    <string name="navigation_tei_data">Rincian</string>
     <string name="show_bar_graph">Lihat sebagai Bar</string>
     <string name="show_line_graph">Lihat sebagai Garis</string>
     <string name="show_table_graph">Lihat sebagai Tabel</string>

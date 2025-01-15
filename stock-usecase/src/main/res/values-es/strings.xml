@@ -1,36 +1,252 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Gestión de Inventarios en Farmacias</string>
     <string name="title_activity_home">Inicio</string>
     <string name="title_activity_review">Revisar</string>
     <string name="action_settings">Configuración</string>
 
+    <string name="distribution">Distribución</string>
     <string name="discard">Descartar</string>
+    <string name="correction">Corrección</string>
+    <string name="select_transaction">Seleccione transacción</string>
+    <string name="transaction_date">Fecha de la Transacción</string>
+    <string name="recent_activity">Actividad reciente</string>
+    <string name="last_synced">Última sincronización:</string>
+    <string name="select_facility">Seleccione establecimiento</string>
+    <string name="distributed_to">Distribuido a</string>
+    <string name="select_one">Seleccione un</string>
+
+    <!-- Sign in -->
+    <string name="server">Servidor:</string>
     <string name="sign_in">Iniciar sesión</string>
+    <string name="sign_in_to_your_account">Inicia sesión en tu cuenta</string>
+    <string name="sign_in_to_with_oidc">Iniciar sesión con la cuenta del CICR</string>
+    <string name="non_icrc_staff_members">Solo para miembros del personal que no pertenecen al CICR</string>
+    <string name="icrc_staff_members">Solo para miembros del personal del CICR</string>
     <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
+    <string name="forgot_password">¿Has olvidado tu contraseña\?</string>
+
+    <string name="recent_activities_loading_message">Cargando actividades recientes&#8230;</string>
+    <string name="recent_activities_empty_message">Aún no has realizado ninguna actividad</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Sincronizando metadatos&#8230;</string>
+    <string name="metadata_sync_error">No se pudo completar la sincronización de metadatos</string>
+    <string name="data_sync_in_progress">Sincronizando datos&#8230;</string>
+    <string name="data_sync_error">No se pudo completar la sincronización de datos</string>
+    <string name="metadata_sync_completed">¡Sincronización de metadatos completada!</string>
+    <string name="sync_completed">¡Sincronizacion completa!</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">Proceder</string>
     <string name="review">Revisar</string>
 
+    <string name="scan_barcode">Escanear código de barras</string>
+    <string name="scanning">Escaneando&#8230;</string>
+    <string name="search">Buscar elemento</string>
+    <string name="search_placeholder">Buscar...</string>
     <string name="delete">Eliminar</string>
     <string name="ok">Correcto</string>
     <string name="cancel">Cancelar</string>
+    <string name="confirmation">Confirmación</string>
+
     <string name="from">De</string>
+    <string name="to">Entregar a...</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg">A %s</string>
+
+    <!-- Languages -->
+    <string name="language_english">Inglés</string>
+    <string name="language_french">Francés</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_arabic">Arabe</string>
+    <string name="language_russian">Ruso</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Utilice el micrófono para la entrada de datos</string>
     <string name="language">Idioma</string>
+    <string name="force_data_sync">Forzar la sincronización de datos</string>
     <string name="logout">Cerrar sesión</string>
 
 
+    <!-- Stock table -->
+    <string name="item">Elemento</string>
+    <string name="stock_on_hand">Inventario disponible</string>
+    <string name="quantity">Cantidad</string>
+    <string name="items_available">Elementos disponibles</string>
+    <string name="positive_value">
+        <b>Valor positivo</b>  = \"cantidad faltante\" (<i>existencias físicas menor al valor calculado</i>)
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Valor negativo</span></b> = \"encontrado en existencias\"     (<i>existencias físicas mayores al valor calculado</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+        Se debe seleccionar un tipo de transacción y completar todos los campos antes de poder continuar
+    </string>
+    <string name="mandatory_facility_selection">
+        Debe seleccionar el establecimiento antes de poder continuar
+    </string>
+    <string name="mandatory_distributed_to_selection">
+        Se debe completar el campo \"Distribuido a\" antes de poder continuar
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        Se debe completar el campo \"Distribuido a\" antes de poder continuar
+    </string>
+    <string name="previous_page_lose_data_warning">
+        ¿Estás seguro de que quieres volver a la pantalla anterior\?
+        Perderá los datos que acaba de ingresar si decide continuar.
+    </string>
+    <string name="transaction_completed">
+       ¡La transacción se completó exitosamente!
+    </string>
+    <string name="transaction_cancelled">
+        ¡La cancelación de la transacción se realizó con éxito!
+    </string>
+    <string name="force_sync_confirmation_message">
+        ¿Estás seguro de que quieres forzar la sincronización\?
+    </string>
+    <string name="logout_confirmation_message">¿Estás seguro de que quieres cerrar sesión\?</string>
+
+    <string name="remove_correction_item_confirmation_message">
+       ¿Estás seguro de que quieres eliminar permanentemente la entrada para la corrección de \"%1$s\"\?
+        Esta acción no se puede deshacer.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+       ¿Estás seguro de que quieres eliminar permanentemente la entrada para la distribución de \"%1$s\"\?
+        Esta acción no se puede deshacer.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+       ¿Estás seguro de que quieres eliminar permanentemente la entrada para descarte de \"%1$s\"\?
+        Esta acción no se puede deshacer.
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="one">%d artículo</item>
+        <item quantity="many">%d artículos</item>
+        <item quantity="other">%d artículos</item>
+    </plurals>
+    <string name="no_items_found">No se encontraron elementos</string>
+    <string name="loading_items_message">Cargando artículos en stock &#8230;</string>
     <string name="prompt_email">Correo-e</string>
     <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesión o registrarse</string>
     <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="welcome">¡Bienvenido!</string>
+    <string name="invalid_username">Nombre de usuario no válido</string>
+    <string name="invalid_password">La contraseña debe tener >5 caracteres</string>
+    <string name="login_failed">Fallo al iniciar sesión</string>
+    <string name="resync">Sincronizar de nuevo</string>
+
+    <!-- Errors -->
+    <string name="login_error">No se pudo iniciar sesión</string>
+    <string name="config_file_error">No se puede cargar el archivo de configuración</string>
+    <string name="config_file_program_error">
+        El identificador del programa de inventario no ha sido establecido en el archivo de configuración
+    </string>
+    <string name="recent_activities_load_error">No se pueden cargar tus actividades recientes</string>
+    <string name="facilities_load_error">No se pueden cargar la lista de establecimientos disponibles</string>
+    <string name="destinations_load_error">
+        No se puede cargar la lista de destinos disponibles
+    </string>
+    <string name="distribution_data_element_load_error">
+        No se ha podido cargar el elemento de datos de distribución
+    </string>
+    <string name="correction_data_element_load_error">
+        No se ha podido cargar el elemento de datos de corrección
+    </string>
+    <string name="discard_data_element_load_error">
+        No se puede cargar el elemento de datos de descarte
+    </string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Sincronizar información</string>
     <string name="content_desc_search">Buscar</string>
+    <string name="content_desc_clear_text">Limpiar texto</string>
+    <string name="content_desc_transaction_date">Mostrar selector de fecha</string>
+    <string name="content_desc_distributed_to">Distribuido a</string>
+    <string name="content_desc_last_sync">Última sincronización</string>
+    <string name="content_desc_quantity_info">Más información sobre cantidad</string>
     <string name="content_desc_remove">Quitar elemento</string>
+    <string name="content_desc_recent_activity">Flecha direccional</string>
+    <string name="content_desc_recent_activity_status">Estado de actividades recientes</string>
+    <string name="content_desc_close_info_guide">Cerrar guía de información</string>
+
     <string name="confirm_transaction_label">Confirmar</string>
+    <string name="missing_configuration">
+        Falta completar uno o más campos obligatorios en el archivo de configuración
+    </string>
+    <string name="select_language">Seleccione el idioma deseado</string>
+
+    <string name="restart_later">Reiniciar más tarde</string>
+    <string name="confirm_app_restart_message">
+        La aplicación necesita reiniciar para que se realicen los cambios, sin embargo,
+        los cambios no guardados se perderán.\n\n¿Quieres continuar con el reinicio?\?
+    </string>
+    <string name="language_change_dialog_title">Confirmar reinicio</string>
+    <string name="scan_canceled">¡Escaneo cancelado!</string>
+    <string name="logout_error_message">
+        Se produjo un error durante el cierre de sesión. Por favor, inténtelo de nuevo más tarde.
+    </string>
+    <string name="logout_success_message">Sesión cerrada exitosamente</string>
+
     <string name="invalid_quantity">No válido</string>
+    <string name="stock_on_hand_exceeded_message">
+        No se puede superar el inventario disponible
+    </string>
+    <string name="reviewed_item_cannot_be_empty_message">
+        Un inventario en revisión no puede estar vacío. Puedes eliminar el ítem si no es deseado
+    </string>
+
+    <string name="permission_granted">Permiso concedido</string>
+    <string name="permission_denied">Permiso denegado</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">
+        Permisos insuficientes. Solicitar 
+android.permission.RECORD_AUDIO
+    </string>
+    <string name="speech_audio_error">Error de grabación de audio</string>
+    <string name="speech_client_error">
+        Error del lado del cliente. ¡Por favor, verifica tu conexión a Internet!
+    </string>
     <string name="speech_network_error">Error de red</string>
+    <string name="speech_network_timeout_error">La operación de red ha expirado</string>
+    <string name="no_speech_match_error">No se encontró ningún resultado de reconocimiento.</string>
+    <string name="speech_recognition_service_busy_error">El servicio de reconocimiento está ocupado en este momento</string>
+    <string name="speech_server_error">An error occurred on the speech server</string>
+    <string name="speech_timeout_error">No se detectó entrada de voz</string>
+    <string name="unknown_speech_error">Se ha producido un error desconocido.</string>
+    <string name="non_numeric_speech_input_error">No se permiten entradas no numéricas: \"%s\"</string>
+    <string name="negative_number_speech_input_error">
+        No se permite la entrada de números negativos: \"%s\"
+    </string>
+
+    <string name="openid_config_load_error">No se puede cargar la configuración de OpenID</string>
+    <string name="unexpected_openid_authentication_error">
+        Se produjo un error inesperado al autenticar con OpenID
+    </string>
+    <string name="no_network_available">No se encontró conexión de red disponible.</string>
+    <string name="unable_to_sync_data_no_network_available">
+        No se puede sincronizar los datos porque no hay conexión de red disponible
+    </string>
+    <string name="openid_authentication_not_successful">
+        No se puede autenticar con su cuenta del CICR
+    </string>
+
+    <string name="contact_service_desk_message">
+        En caso de problemas, \ncomuníquese con el servicio de atención al cliente del CICR
+    </string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
+    <string name="login_error_error_response">¡Ups! Algo salió mal en el lado del servidor.</string>
+    <string name="login_error_no_dhis_instance">La URL entregada no es un servidor de DHIS2.</string>
+    <string name="login_error_bad_credentials">El usuario y/o la contraseña son incorrectas</string>
     <string name="login_error_unknown_host">Servidor desconocido</string>
     <string name="online_search_parsing_error">Error al obtener los resultados</string>
+    <string name="error_unexpected">Disculpe, algo inesperado salió mal.</string>
     <string name="error_many_requests">El servidor se encuentra ocupado en estos momentos. Por favor inténtelo más tarde.</string>
     <string name="error_already_authenticated">Este usuario ya ha iniciado sesión.</string>
     <string name="error_already_executed">La petición ya ha sido evaluada.</string>
@@ -46,6 +262,7 @@
     <string name="error_different_offline_user">Estás intentando iniciar sesión offline con un usuario diferente.</string>
     <string name="error_object_update">No se ha podido actualizar.</string>
     <string name="error_object_insert">No se ha podido crear.</string>
+    <string name="error_ownership_access">No tienes acceso.</string>
     <string name="error_null_url">Falta la URL del servidor. Ingrese la URL.</string>
     <string name="error_server_malformed">La URL del servidor está mal. Por favor revísela.</string>
     <string name="error_settings_app_not_supported">Esta versión de Settings Web App no está soportada.</string>
@@ -60,8 +277,14 @@
     <string name="back">Atrás</string>
     <string name="no_conflicts_message">Este programa no tiene conflictos</string>
     <string name="action_sync">Enviar</string>
+    <string name="from_facility">Desde el establecimiento</string>
+    <string name="to_facility">Al establecimiento</string>
+    <string name="stock">Inventario</string>
     <string name="not_saved">No guardado</string>
+    <string name="transaction_not_confirmed">La transacción no ha sido confirmada. Si sale ahora los datos ingresados serán descartados.</string>
+    <string name="transaction_discarted">Esta transacción no ha sido confirmada. Si cambia la configuración, los datos ingresados serán descartados.</string>
     <string name="count">Conteo</string>
+    <string name="under_review">En revisión</string>
     <string name="formatting_error">Error de formato</string>
     <string name="invalid_possitive_zero">Solo se permiten números positivos o cero</string>
     <string name="leading_zero_error">No se permiten números con ceros a la izquierda</string>

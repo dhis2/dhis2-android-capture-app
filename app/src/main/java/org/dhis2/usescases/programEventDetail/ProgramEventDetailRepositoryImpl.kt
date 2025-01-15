@@ -164,6 +164,6 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     override fun displayOrganisationUnit(programUid: String): Boolean {
         return d2.organisationUnitModule().organisationUnits()
             .byProgramUids(listOf(programUid))
-            .blockingGet().size > 1
+            .blockingCount() > 1
     }
 }

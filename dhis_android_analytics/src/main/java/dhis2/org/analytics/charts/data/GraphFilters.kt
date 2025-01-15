@@ -41,9 +41,7 @@ sealed class GraphFilters {
             lineListFilters.isNotEmpty() || orgUnitsSelected.isNotEmpty() || periodToDisplaySelected.isNotEmpty()
 
         override fun count(): Int {
-            var count = 0
-            if (hasFilters()) count++
-            return count
+            return columnsWithFilters().size
         }
 
         override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean {

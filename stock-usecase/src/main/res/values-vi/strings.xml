@@ -75,21 +75,21 @@
     <string name="quantity">Số lượng</string>
     <string name="items_available">Các mặt hàng có sẵn</string>
     <string name="positive_value">
-        <b>Positive value</b>  = \"số lượng đang thiếu\" (<i>số lượng thực tế ít hơn giá trị được tính toán</i>)
+        <b>Giá trị dương</b>= \"số lượng thiếu\" (<i>số lượng thực tế ít hơn giá trị được tính toán</i>)
     </string>
     <string name="negative_value">
-        <b><span style="color: #C81818">Negative value</span></b> = \"đang có trong kho\"     (<i>số lượng thực tế nhiều hơn giá trị được tính toán</i>)
+        <b><span style="color: #C81818">Giá trị âm</span></b>= \"đang có trong kho\"     (<i>số lượng thực tế nhiều hơn giá trị được tính toán</i>)
     </string>
 
     <!-- Messages -->
     <string name="mandatory_transaction_selection">
-        Loại giao dịch phải được chọn và tất cả các trường phải được điền đầy đủ trước khi tiếp tục
+        Chọn Kiểu giao dịch và điền đầy đủ tất cả các trường trước khi bạn có thể tiếp tục
     </string>
     <string name="mandatory_facility_selection">
-        Trường cơ sở phải được điền đầy đủ trước khi tiếp tục
+        Điền đầy đủ các trường dữ liệu cơ sở trước khi bạn có thể tiếp tục
     </string>
     <string name="mandatory_distributed_to_selection">
-        Trường \"Phân bổ đến\" phải được điền đầy đủ trước khi tiếp tục
+        Điền đầy đủ Trường \"Phân bổ đến\" trước khi tiếp tục
     </string>
     <string name="mandatory_transaction_date_selection">
         Trường \"Phân bổ đến\" phải được điền đầy đủ trước khi tiếp tục

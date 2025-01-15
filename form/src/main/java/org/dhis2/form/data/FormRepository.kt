@@ -1,5 +1,8 @@
 package org.dhis2.form.data
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
@@ -32,5 +35,6 @@ interface FormRepository {
     fun getListFromPreferences(uid: String): MutableList<String>
     fun saveListToPreferences(uid: String, list: List<String>)
     fun activateEvent()
+    fun fetchPeriods(): Flow<PagingData<Period>>
     fun fetchOptions(id: String, optionSetUid: String)
 }
