@@ -52,9 +52,9 @@ kotlin {
 
 android {
     namespace = "org.dhis2.mobile.aggregates"
-    compileSdk = 34
+    compileSdk = libs.versions.sdk.get().toInt()
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.sdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
