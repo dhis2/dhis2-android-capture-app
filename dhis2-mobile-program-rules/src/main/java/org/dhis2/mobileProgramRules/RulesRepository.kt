@@ -138,6 +138,7 @@ class RulesRepository(private val d2: D2) {
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .byEventDate().beforeOrEqual(Date())
+                .byDeleted().isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
@@ -148,6 +149,7 @@ class RulesRepository(private val d2: D2) {
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .byEventDate().beforeOrEqual(Date())
+                .byDeleted().isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet().let { list ->
@@ -184,6 +186,7 @@ class RulesRepository(private val d2: D2) {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
             .byEventDate().beforeOrEqual(Date())
+            .byDeleted().isFalse
             .withTrackedEntityDataValues()
             .blockingGet()
             .map { event ->
