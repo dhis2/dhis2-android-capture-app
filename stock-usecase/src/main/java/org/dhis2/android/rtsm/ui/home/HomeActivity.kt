@@ -37,6 +37,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.commons.sync.SyncStatusItem
+import org.dhis2.commons.ui.extensions.handleInsets
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @AndroidEntryPoint
@@ -60,6 +61,7 @@ class HomeActivity : AppCompatActivity() {
         intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
             ?.let { manageStockViewModel.setConfig(it) }
 
+        handleInsets()
         setContent {
             val settingsUiState by viewModel.settingsUiState.collectAsState()
             val helperText by viewModel.helperText.collectAsState()
