@@ -37,6 +37,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Border
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -46,7 +47,8 @@ class BottomSheetDialog(
     var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
-    val showDivider: Boolean = false,
+    val showTopDivider: Boolean = false,
+    val showBottomDivider: Boolean = false,
     val content: @Composable
     ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog, scrollState: LazyListState) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
@@ -74,6 +76,10 @@ class BottomSheetDialog(
                 DHIS2Theme {
                     val scrollState = rememberLazyListState()
                     BottomSheetShell(
+                        windowInsets = BottomSheetInsets(),
+                        bottomPadding = bottomSheetLowerPadding(),
+                        showBottomSectionDivider = showBottomDivider,
+                        showTopSectionDivider = showTopDivider,
                         title = bottomSheetDialogUiModel.title,
                         description = when (bottomSheetDialogUiModel.clickableWord) {
                             null -> bottomSheetDialogUiModel.message
@@ -90,13 +96,12 @@ class BottomSheetDialog(
                                 )
                             }
                         },
-                        showSectionDivider = showDivider,
                         buttonBlock = {
                             BottomSheetButtons(
                                 bottomSheetDialogUiModel = bottomSheetDialogUiModel,
                                 onMainButtonClicked = onMainButtonClicked,
                                 onSecondaryButtonClicked = onSecondaryButtonClicked,
-                                this,
+
                             )
                         },
                         onDismiss = {
@@ -119,10 +124,14 @@ class BottomSheetDialog(
     }
 
     @Composable
-    fun BottomSheetButtons(bottomSheetDialogUiModel: BottomSheetDialogUiModel, onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit, onSecondaryButtonClicked: () -> Unit, composeView: ComposeView) {
+    fun BottomSheetButtons(
+        bottomSheetDialogUiModel: BottomSheetDialogUiModel,
+        onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit,
+        onSecondaryButtonClicked: () -> Unit,
+    ) {
         if (bottomSheetDialogUiModel.secondaryButton != null || bottomSheetDialogUiModel.mainButton != null) {
             ButtonBlock(
-                modifier = Modifier.padding(Spacing24),
+                modifier = Modifier.padding(top = Spacing0, bottom = Spacing24, start = Spacing24, end = Spacing24),
                 primaryButton = {
                     bottomSheetDialogUiModel.secondaryButton?.let { style ->
 

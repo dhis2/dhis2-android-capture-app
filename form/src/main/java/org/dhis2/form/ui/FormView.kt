@@ -321,10 +321,15 @@ class FormView : Fragment() {
                                 bottomSheetDialog,
                             )
                         },
-                        showDivider = fieldsWithIssues.isNotEmpty(),
-                        content = { bottomSheetDialog, _ ->
-                            DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                        showTopDivider = true,
+                        content = if (fieldsWithIssues.isEmpty()) {
+                            null
+                        } else {
+                            { bottomSheetDialog, _ ->
+                                DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                            }
                         },
+                        showBottomDivider = fieldsWithIssues.isNotEmpty(),
                     ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
                 }
             }
@@ -460,7 +465,8 @@ class FormView : Fragment() {
             },
             onMainButtonClicked = { _ ->
             },
-            showDivider = true,
+            showTopDivider = true,
+            showBottomDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
                 PeriodSelectorContent(

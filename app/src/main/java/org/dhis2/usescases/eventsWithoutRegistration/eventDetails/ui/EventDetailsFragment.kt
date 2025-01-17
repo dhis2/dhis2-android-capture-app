@@ -317,6 +317,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showPeriodDialog(periodType: PeriodType) {
         BottomSheetDialog(
+            showTopDivider = true,
+            showBottomDivider = true,
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(periodType.toUiStringResource()),
                 iconResource = -1,
@@ -325,7 +327,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             },
             onMainButtonClicked = { _ ->
             },
-            showDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
                 PeriodSelectorContent(

@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.dhis2.commons.ui.BottomSheetInsets
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
@@ -50,6 +51,7 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -380,7 +382,10 @@ fun DeleteRelationshipsConfirmation(
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
+        windowInsets =  BottomSheetInsets() ,
+        bottomPadding = bottomSheetLowerPadding(),
         headerTextAlignment = TextAlign.Start,
+        showTopSectionDivider = true,
         title = when (relationships.size) {
             1 -> stringResource(R.string.remove_relationship_title, relationships[0])
             else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
@@ -398,7 +403,7 @@ fun DeleteRelationshipsConfirmation(
         },
         buttonBlock = {
             ButtonBlock(
-                modifier = Modifier.padding(Spacing.Spacing24),
+                modifier = Modifier.padding(top = Spacing.Spacing0, bottom = Spacing.Spacing24, start = Spacing.Spacing24, end = Spacing.Spacing24),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,

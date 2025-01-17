@@ -33,8 +33,10 @@ import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.ui.BottomSheetInsets
 import org.dhis2.form.R
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.lib.expression.math.GS1Elements
 import org.hisp.dhis.mobile.ui.designsystem.component.BarcodeBlock
@@ -120,6 +122,10 @@ QRDetailBottomDialog(
         if (showDialog) {
             val buttonList = getComposeButtonList()
             BottomSheetShell(
+                windowInsets = BottomSheetInsets(),
+                showTopSectionDivider = true,
+                showBottomSectionDivider = true,
+                bottomPadding = bottomSheetLowerPadding(),
                 modifier = modifier,
                 title = label,
                 icon = {
@@ -146,7 +152,7 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(modifier = Modifier.padding(Spacing.Spacing24), carouselButtonList = buttonList)
+                    ButtonCarousel(modifier = Modifier.padding(top = Spacing.Spacing0, bottom = Spacing.Spacing24, start = Spacing.Spacing24, end = Spacing.Spacing24), carouselButtonList = buttonList)
                 },
                 onDismiss = {
                     dismiss()

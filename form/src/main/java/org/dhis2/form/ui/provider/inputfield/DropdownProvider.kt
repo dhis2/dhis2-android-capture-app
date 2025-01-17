@@ -12,6 +12,8 @@ import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetInsets
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -44,6 +46,8 @@ fun ProvideDropdownInput(
 
     InputDropDown(
         modifier = modifier,
+        windowInsets = BottomSheetInsets(),
+        bottomSheetLowerPadding = bottomSheetLowerPadding(),
         inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),

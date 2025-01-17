@@ -432,6 +432,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             onMessageClick = {
                 navigateToPrivacyPolicy()
             },
+            showTopDivider = true,
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
@@ -498,6 +499,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
                 secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
             ),
+            showTopDivider = true,
             onMainButtonClicked = {
                 presenter.saveUserCredentials(binding.userPassEdit.text.toString())
                 onLoginDataUpdated(false)

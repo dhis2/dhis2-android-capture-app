@@ -49,7 +49,11 @@ DeleteBottomSheetDialog(
             )
             setContent {
                 BottomSheetShell(
+                    windowInsets = BottomSheetInsets(),
+                    bottomPadding = bottomSheetLowerPadding(),
                     title = title,
+                    showTopSectionDivider = true,
+                    showBottomSectionDivider = false,
                     description = description,
                     icon = {
                         Icon(
@@ -60,7 +64,7 @@ DeleteBottomSheetDialog(
                     },
                     buttonBlock = {
                         ButtonBlock(
-                            modifier = Modifier.padding(Spacing.Spacing24),
+                            modifier = Modifier.padding(top = Spacing.Spacing0, bottom = Spacing.Spacing24, start = Spacing.Spacing24, end = Spacing.Spacing24),
                             primaryButton = {
                                 Button(
                                     style = ButtonStyle.OUTLINED,
@@ -100,7 +104,6 @@ DeleteBottomSheetDialog(
                     content = {
                         // no-op
                     },
-                    showSectionDivider = false,
                 )
             }
         }

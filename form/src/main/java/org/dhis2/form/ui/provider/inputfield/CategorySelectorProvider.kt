@@ -13,6 +13,8 @@ import org.dhis2.form.extensions.legend
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.EventCategoryOption
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetInsets
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -90,6 +92,8 @@ private fun ProvideCategorySelector(
         InputDropDown(
             modifier = modifier,
             title = category.name,
+            windowInsets = BottomSheetInsets(),
+            bottomSheetLowerPadding = bottomSheetLowerPadding(),
             state = getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty()),
             inputStyle = inputStyle,
             selectedItem = selectedItem,

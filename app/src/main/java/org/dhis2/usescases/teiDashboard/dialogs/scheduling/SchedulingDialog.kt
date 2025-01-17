@@ -196,7 +196,8 @@ class SchedulingDialog : BottomSheetDialogFragment() {
             },
             onMainButtonClicked = { _ ->
             },
-            showDivider = true,
+            showTopDivider = true,
+            showBottomDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
                 PeriodSelectorContent(

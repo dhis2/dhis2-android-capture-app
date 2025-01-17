@@ -204,6 +204,7 @@ private fun launchBottomSheet(
             onKeepEdition.invoke()
         },
         onSecondaryButtonClicked = { onDiscard.invoke() },
+        showTopDivider = true,
     ).apply {
         this.show(supportFragmentManager.beginTransaction(), "DIALOG")
         this.isCancelable = false

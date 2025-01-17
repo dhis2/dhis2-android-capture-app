@@ -243,6 +243,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.deleteAllSavedData()
                 finish()
             },
+            showTopDivider = true,
         ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 

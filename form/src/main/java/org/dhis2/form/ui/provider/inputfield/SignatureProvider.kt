@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
+import org.dhis2.commons.ui.bottomSheetLowerPadding
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -16,6 +17,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetInsets
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSignature
@@ -38,6 +40,8 @@ fun ProvideInputSignature(
     InputSignature(
         modifier = modifier,
         title = fieldUiModel.label,
+        bottomSheetLowerPadding = bottomSheetLowerPadding(),
+        windowInsets = BottomSheetInsets(),
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),

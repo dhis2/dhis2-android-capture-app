@@ -20,6 +20,8 @@ import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.ui.dialogs.bottomsheet.BottomSheetInsets
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
@@ -252,6 +254,8 @@ fun ProvideCategorySelector(
     if (selectableOptions.isNotEmpty()) {
         InputDropDown(
             modifier = modifier,
+            windowInsets = BottomSheetInsets(),
+            bottomSheetLowerPadding = bottomSheetLowerPadding(),
             title = eventCatComboUiModel.category.name,
             state = getInputState(eventCatComboUiModel.detailsEnabled),
             selectedItem = DropdownItem(selectedItem ?: ""),
@@ -330,6 +334,7 @@ fun ProvideEmptyCategorySelector(
 
     Spacer(modifier = Modifier.height(16.dp))
     InputDropDown(
+        windowInsets = BottomSheetInsets(),
         modifier = modifier,
         title = name,
         state = InputShellState.UNFOCUSED,

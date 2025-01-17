@@ -22,6 +22,8 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
+import org.dhis2.commons.ui.BottomSheetInsets
+import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -45,6 +47,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Locale
@@ -75,10 +78,14 @@ fun SchedulingDialogUi(
     }
 
     BottomSheetShell(
+        windowInsets = BottomSheetInsets(),
+        bottomPadding = bottomSheetLowerPadding(),
         title = bottomSheetTitle(
             launchMode = launchMode,
             programStages = programStages,
         ),
+        showTopSectionDivider = true,
+        showBottomSectionDivider = true,
         subtitle = viewModel.overdueSubtitle,
         headerTextAlignment = TextAlign.Start,
         buttonBlock = {
@@ -92,7 +99,6 @@ fun SchedulingDialogUi(
                 onDismiss = onDismiss,
             )
         },
-        showSectionDivider = false,
         content = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -142,7 +148,7 @@ private fun ButtonBlock(
 ) {
     Box(
         modifier
-            .padding(Spacing.Spacing24),
+            .padding(top = Spacing0, bottom = Spacing24, start = Spacing24, end = Spacing24),
     ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {
@@ -247,6 +253,8 @@ fun ProvideScheduleNewEventForm(
         InputDropDown(
             title = stringResource(id = R.string.program_stage),
             state = InputShellState.UNFOCUSED,
+            windowInsets = BottomSheetInsets(),
+            bottomSheetLowerPadding = bottomSheetLowerPadding(),
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,
             onSearchOption = { query ->

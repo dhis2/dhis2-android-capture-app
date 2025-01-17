@@ -316,6 +316,7 @@ class EventCaptureActivity :
                     /*Unused*/
                 },
                 { presenter.deleteEvent() },
+                showTopDivider = true,
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else if (isFormScreen()) {
