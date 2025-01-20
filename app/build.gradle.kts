@@ -41,12 +41,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
-            System.getenv("SIGNING_KEYSTORE_PATH")?.let { path ->
-                storeFile = file(path)
-            }
-            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = "android@dhis2.org"
+            keyPassword = "XwbwJOgmh0p]U"
+            storeFile = file("D:\\DHIS2\\dhis2-android-capture-app\\app\\dhis_keystore.jks")
+            storePassword = "XwbwJOgmh0p]U"
         }
     }
 
