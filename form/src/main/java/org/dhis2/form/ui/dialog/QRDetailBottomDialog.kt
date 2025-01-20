@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
@@ -41,6 +42,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.QrCodeBlock
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
@@ -144,7 +147,15 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(buttonList)
+                    ButtonCarousel(
+                        carouselButtonList = buttonList,
+                        modifier = Modifier.padding(
+                            top = Spacing0,
+                            bottom = Spacing24,
+                            start = Spacing24,
+                            end = Spacing24,
+                        ),
+                    )
                 },
                 onDismiss = {
                     dismiss()

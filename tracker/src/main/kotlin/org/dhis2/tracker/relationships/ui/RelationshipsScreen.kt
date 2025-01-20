@@ -70,6 +70,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardStat
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
@@ -397,6 +398,12 @@ fun DeleteRelationshipsConfirmation(
         },
         buttonBlock = {
             ButtonBlock(
+                modifier = Modifier.padding(
+                    top = Spacing24,
+                    bottom = Spacing24,
+                    start = Spacing24,
+                    end = Spacing24
+                ),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,
