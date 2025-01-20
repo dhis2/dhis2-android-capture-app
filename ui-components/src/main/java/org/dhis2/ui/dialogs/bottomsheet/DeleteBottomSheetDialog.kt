@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
@@ -20,6 +21,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class
@@ -58,6 +61,12 @@ DeleteBottomSheetDialog(
                     },
                     buttonBlock = {
                         ButtonBlock(
+                            modifier = Modifier.padding(
+                                top = Spacing0,
+                                bottom = Spacing24,
+                                start = Spacing24,
+                                end = Spacing24,
+                            ),
                             primaryButton = {
                                 Button(
                                     style = ButtonStyle.OUTLINED,

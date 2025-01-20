@@ -93,6 +93,12 @@ class BottomSheetDialog(
                         showSectionDivider = showDivider,
                         buttonBlock = {
                             ButtonBlock(
+                                modifier = Modifier.padding(
+                                    top = Spacing24,
+                                    bottom = Spacing24,
+                                    start = Spacing24,
+                                    end = Spacing24,
+                                ),
                                 primaryButton = {
                                     bottomSheetDialogUiModel.secondaryButton?.let { style ->
 
@@ -177,7 +183,9 @@ class BottomSheetDialog(
                 },
             )
             HorizontalDivider(
-                modifier = Modifier.fillMaxWidth().padding(top = Spacing24),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Spacing24),
                 color = TextColor.OnDisabledSurface,
                 thickness = Border.Thin,
             )
