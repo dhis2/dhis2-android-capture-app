@@ -1,11 +1,11 @@
 package dhis2.org.analytics.charts.mappers
 
-import junit.framework.Assert.assertTrue
 import org.hisp.dhis.android.core.analytics.aggregated.GridHeader
 import org.hisp.dhis.android.core.analytics.aggregated.GridHeaderItem
 import org.hisp.dhis.android.core.analytics.aggregated.MetadataItem
 import org.hisp.dhis.android.core.analytics.aggregated.mock.GridAnalyticsResponseSamples
 import org.hisp.dhis.android.core.category.CategoryOption
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DimensionRowCombinatorTest {

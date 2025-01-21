@@ -18,17 +18,12 @@ on:
         description: 'tag'
         required: true
         type: string
-      is_patch:
-        description: 'Is the new version a patch'
-        required: true
-        type: boolean
-        default: false
-  
+
 jobs:
   Build-Apk:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
     - name: Read version name from file
@@ -36,7 +31,7 @@ jobs:
       id: read-version
       run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
     - name: Set Up JDK
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '17'
@@ -70,20 +65,8 @@ jobs:
         whatsNewDirectory: whatsnew
         userFraction: 0.99
 
-
-    - name: Github Patch Release
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == true) }}
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        draft: true
-        generateReleaseNotes: true
-        name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }}) - Patch version"
-        tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
-
-    - name: Github New Release
-      if: ${{ (inputs.github_release == true) && (inputs.is_patch == false) }}
+    - name: Upload to Github
+      if: ${{ inputs.github_release }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true

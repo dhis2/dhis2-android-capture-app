@@ -5,4 +5,5 @@ include(
     ":stock-usecase"
 )
 include(":dhis2-mobile-program-rules")
+include(":tracker")
 project(":core").projectDir = File("dhis2-android-sdk/core")

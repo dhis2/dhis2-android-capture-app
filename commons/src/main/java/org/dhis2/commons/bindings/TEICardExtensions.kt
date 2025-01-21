@@ -20,18 +20,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.Dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.commons.R
 import org.dhis2.commons.data.EnrollmentIconData
-import org.dhis2.commons.data.SearchTeiModel
 import org.dhis2.commons.databinding.ItemFieldValueBinding
 import org.dhis2.commons.date.toUiText
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.ui.SquareWithNumber
@@ -40,7 +34,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import timber.log.Timber
-import java.io.File
 import java.util.Date
 
 const val ENROLLMENT_ICONS_TO_SHOW = 3
@@ -192,108 +185,6 @@ fun Enrollment.setStatusText(
         ) as GradientDrawable?
     bgDrawable!!.setStroke(2, color)
     statusTextView.background = bgDrawable
-}
-
-fun SearchTeiModel.setTeiImage(
-    context: Context,
-    teiImageView: ImageView,
-    teiTextImageView: TextView,
-    colorUtils: ColorUtils,
-    pictureListener: (String) -> Unit,
-) {
-    val imageBg = AppCompatResources.getDrawable(
-        context,
-        R.drawable.photo_temp_gray,
-    )
-    imageBg!!.colorFilter = PorterDuffColorFilter(
-        colorUtils.getPrimaryColor(
-            context,
-            ColorType.PRIMARY,
-        ),
-        PorterDuff.Mode.SRC_IN,
-    )
-    teiImageView.background = imageBg
-    val file = File(profilePicturePath)
-    val placeHolderId = ResourceManager(context, colorUtils)
-        .getObjectStyleDrawableResource(defaultTypeIcon, -1)
-    teiImageView.setOnClickListener(null)
-    if (file.exists()) {
-        teiTextImageView.visibility = View.GONE
-        Glide.with(context)
-            .load(file)
-            .error(placeHolderId)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .transform(CircleCrop())
-            .into(teiImageView)
-        teiImageView.setOnClickListener { pictureListener(profilePicturePath) }
-    } else if (textAttributeValues != null &&
-        textAttributeValues.values.isNotEmpty() &&
-        ArrayList(textAttributeValues.values)[0].value() != "-"
-    ) {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(textAttributeValues.values)
-        if (valueToShow[0]?.value()?.isEmpty() != false) {
-            teiTextImageView.text = "?"
-        } else {
-            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
-        }
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
-                ),
-            ),
-        )
-    } else if (isOnline && attributeValues.isNotEmpty() &&
-        !ArrayList(attributeValues.values).first().value().isNullOrEmpty()
-    ) {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        val valueToShow = ArrayList(attributeValues.values)
-        if (valueToShow[0] == null) {
-            teiTextImageView.text = "?"
-        } else {
-            teiTextImageView.text = valueToShow[0].value()?.first().toString().toUpperCase()
-        }
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
-                ),
-            ),
-        )
-    } else if (placeHolderId != -1) {
-        teiTextImageView.visibility = View.GONE
-        val icon = AppCompatResources.getDrawable(
-            context,
-            placeHolderId,
-        )
-        icon!!.colorFilter = PorterDuffColorFilter(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
-                ),
-            ),
-            PorterDuff.Mode.SRC_IN,
-        )
-        teiImageView.setImageDrawable(icon)
-    } else {
-        teiImageView.setImageDrawable(null)
-        teiTextImageView.visibility = View.VISIBLE
-        teiTextImageView.text = "?"
-        teiTextImageView.setTextColor(
-            colorUtils.getContrastColor(
-                colorUtils.getPrimaryColor(
-                    context,
-                    ColorType.PRIMARY,
-                ),
-            ),
-        )
-    }
 }
 
 fun LinkedHashMap<String, TrackedEntityAttributeValue>.setAttributeList(

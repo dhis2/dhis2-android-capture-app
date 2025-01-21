@@ -122,7 +122,6 @@ class OptionSetPresenterTest {
     private fun getTestSpinnerModel(): FieldUiModel {
         return FieldUiModelImpl(
             uid = "ID",
-            layoutId = 1,
             label = "Label",
             optionSet = "optionSet",
             programStageSection = null,

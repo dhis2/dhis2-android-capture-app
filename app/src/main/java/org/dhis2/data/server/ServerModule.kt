@@ -16,9 +16,11 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.FileController
@@ -122,8 +124,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesSyncStatusController(): SyncStatusController {
-        return SyncStatusController()
+    fun providesSyncStatusController(dispatcherProvider: DispatcherProvider): SyncStatusController {
+        return SyncStatusController(dispatcherProvider)
     }
 
     @Provides
@@ -199,5 +201,14 @@ class ServerModule {
     @PerServer
     fun provideOptionsRepository(d2: D2): OptionsRepository {
         return OptionsRepository(d2)
+    }
+
+    @Provides
+    @PerServer
+    fun provideEventResourceProvider(
+        d2: D2,
+        resourceManager: ResourceManager,
+    ): EventResourcesProvider {
+        return EventResourcesProvider(d2, resourceManager)
     }
 }

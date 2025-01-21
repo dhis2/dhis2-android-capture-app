@@ -2,4 +2,5 @@
 <resources>
     <color name="bg_gray_faf">#FAFAFA</color>
     <color name="feedback_arrow_color">#919191</color>
+    <color name="blue_008">#0080D4</color>
 </resources>

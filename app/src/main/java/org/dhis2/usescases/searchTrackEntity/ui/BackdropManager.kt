@@ -10,7 +10,12 @@ import org.dhis2.R
 object BackdropManager {
     private const val changeBoundDuration = 200L
 
-    private fun changeBounds(backdropLayout: ConstraintLayout, endID: Int, margin: Int) {
+    private fun changeBounds(
+        isNavigationBarVisible: Boolean,
+        backdropLayout: ConstraintLayout,
+        endID: Int,
+        margin: Int,
+    ) {
         val transition: Transition = ChangeBounds()
         transition.duration = changeBoundDuration
         TransitionManager.beginDelayedTransition(backdropLayout, transition)
@@ -19,15 +24,33 @@ object BackdropManager {
         initSet.clone(backdropLayout)
 
         initSet.connect(R.id.mainComponent, ConstraintSet.TOP, endID, ConstraintSet.BOTTOM, margin)
+        if (isNavigationBarVisible) {
+            initSet.connect(
+                R.id.mainComponent,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                0,
+            )
+        } else {
+            initSet.connect(
+                R.id.mainComponent,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM,
+                0,
+            )
+        }
         initSet.applyTo(backdropLayout)
     }
 
     fun changeBoundsIf(
         condition: Boolean,
+        isNavigationBarVisible: Boolean,
         backdropLayout: ConstraintLayout,
         endID: Int,
         margin: Int,
     ) {
-        if (condition) changeBounds(backdropLayout, endID, margin)
+        if (condition) changeBounds(isNavigationBarVisible, backdropLayout, endID, margin)
     }
 }

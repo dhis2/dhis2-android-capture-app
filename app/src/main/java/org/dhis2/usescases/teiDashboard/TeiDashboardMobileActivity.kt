@@ -8,43 +8,67 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoveDown
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.TEI_UID
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OUTreeModel
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
+import org.dhis2.form.model.EnrollmentMode
+import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.tracker.TEIDashboardItems
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
+import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity.Companion.getIntent
+import org.dhis2.usescases.enrollment.EnrollmentFormBuilderConfig
+import org.dhis2.usescases.enrollment.buildEnrollmentForm
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.qrCodes.QrActivity
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.Companion.NO_POSITION
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter.DashboardPageType
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VISUALIZATION_TYPE
+import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
+import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.RelationshipFragment
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
+import org.dhis2.usescases.teiDashboard.dashboardsfragments.feedback.FeedbackActivity
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
+import org.dhis2.usescases.teiDashboard.ui.getEnrollmentMenuList
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.CLICK
@@ -52,22 +76,35 @@ import org.dhis2.utils.analytics.SHARE_TEI
 import org.dhis2.utils.analytics.SHOW_HELP
 import org.dhis2.utils.analytics.TYPE_QR
 import org.dhis2.utils.analytics.TYPE_SHARE
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
 
 class TeiDashboardMobileActivity :
     ActivityGlobalAbstract(),
     TeiDashboardContracts.View,
-    MapButtonObservable {
+    MapButtonObservable,
+    TEIDataActivityContract {
     private var currentOrientation = -1
 
     @Inject
     lateinit var presenter: TeiDashboardContracts.Presenter
+
+    @Inject
+    lateinit var dateEditionWarningHandler: DateEditionWarningHandler
+
+    @Inject
+    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
+
+    var featureConfig: FeatureConfigRepository? = null
+        @Inject set
 
     @Inject
     lateinit var filterManager: FilterManager
@@ -87,14 +124,15 @@ class TeiDashboardMobileActivity :
     @Inject
     lateinit var resourceManager: ResourceManager
 
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
+
     lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
     var programUid: String? = null
     var enrollmentUid: String? = null
     lateinit var binding: ActivityDashboardMobileBinding
-    var adapter: DashboardPagerAdapter? = null
     private lateinit var dashboardViewModel: DashboardViewModel
-    private var fromRelationship = false
 
     private var relationshipMap: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -165,39 +203,114 @@ class TeiDashboardMobileActivity :
         filterManager.setUnsupportedFilters(Filters.ENROLLMENT_DATE, Filters.ENROLLMENT_STATUS)
         presenter.prefSaveCurrentProgram(programUid)
         elevation = ViewCompat.getElevation(binding.toolbar)
-        binding.relationshipMapIcon.setOnClickListener {
-            networkUtils.performIfOnline(
-                this,
-                {
-                    if (java.lang.Boolean.FALSE == relationshipMap.value) {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_list)
-                    } else {
-                        binding.relationshipMapIcon.setImageResource(R.drawable.ic_map)
-                    }
-                    val showMap = !relationshipMap.value!!
-                    if (showMap) {
-                        binding.toolbarProgress.visibility = View.VISIBLE
-                        binding.toolbarProgress.hide()
-                    }
-                    relationshipMap.value = showMap
-                },
-                {},
-                getString(R.string.msg_network_connection_maps),
-            )
+
+        setRelationshipMapIcon()
+        setSyncButtonListener()
+        setFormViewForLandScape()
+        setEditButton()
+        observeErrorMessages()
+        observeProgressBar()
+        observeDashboardModel()
+        setUpNavigationBar()
+        showLoadingProgress(false)
+        setupMoreOptionsMenu()
+    }
+
+    private fun observeErrorMessages() {
+        dashboardViewModel.showStatusErrorMessages.observe(this) {
+            displayStatusError(it)
         }
+    }
+
+    private fun observeProgressBar() {
+        dashboardViewModel.isLoading.observe(this) {
+            showLoadingProgress(it)
+        }
+    }
+
+    private fun setSyncButtonListener() {
         binding.syncButton.setOnClickListener { openSyncDialog() }
         if (intent.shouldLaunchSyncDialog()) {
             openSyncDialog()
         }
-        setNavigationBar()
-        setEditButton()
-        dashboardViewModel.showStatusErrorMessages.observe(this) {
-            displayStatusError(it)
-        }
+    }
+
+    private fun observeDashboardModel() {
         dashboardViewModel.dashboardModel.observe(this) {
-            when (it) {
-                is DashboardEnrollmentModel -> setData(it)
-                is DashboardTEIModel -> setDataWithOutProgram(it)
+            if (sessionManagerServiceImpl.isUserLoggedIn()) {
+                when (it) {
+                    is DashboardEnrollmentModel -> setData(it)
+                    is DashboardTEIModel -> setDataWithOutProgram(it)
+                    else -> // Do nothing
+                        Unit
+                }
+            }
+        }
+    }
+
+    private fun setRelationshipMapIcon() {
+        binding.relationshipIcon.setContent {
+            val relationshipTopBarIconState by dashboardViewModel.relationshipTopBarIconState.collectAsState()
+            RelationshipTopBarIcon(
+                relationshipTopBarIconState = relationshipTopBarIconState,
+            ) {
+                when (val uiState = relationshipTopBarIconState) {
+                    is RelationshipTopBarIconState.Selecting -> {
+                        uiState.onClickListener()
+                    }
+
+                    is RelationshipTopBarIconState.List -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.Map(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
+
+                        binding.toolbarProgress.visibility = View.VISIBLE
+                        binding.toolbarProgress.hide()
+                        relationshipMap.value = true
+                    }
+
+                    is RelationshipTopBarIconState.Map -> {
+                        networkUtils.performIfOnline(
+                            context = this,
+                            action = {
+                                dashboardViewModel.updateRelationshipsTopBarIconState(
+                                    RelationshipTopBarIconState.List(),
+                                )
+                            },
+                            noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                        )
+                        relationshipMap.value = false
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setFormViewForLandScape() {
+        if (isLandscape() && enrollmentUid != null) {
+            val saveButton = findViewById<View>(R.id.saveLand) as FloatingActionButton
+            buildEnrollmentForm(
+                config = EnrollmentFormBuilderConfig(
+                    enrollmentUid = enrollmentUid!!,
+                    programUid = programUid!!,
+                    enrollmentMode = EnrollmentMode.CHECK,
+                    hasWriteAccess = presenter.hasWriteAccess(),
+                    openErrorLocation = false,
+                    containerId = R.id.tei_form_view,
+                    loadingView = binding.toolbarProgress,
+                    saveButton = saveButton,
+                ),
+                locationProvider = locationProvider,
+                dateEditionWarningHandler = dateEditionWarningHandler,
+                enrollmentResultDialogProvider = enrollmentResultDialogProvider,
+            ) {
+                dashboardViewModel.updateDashboard()
             }
         }
     }
@@ -220,46 +333,102 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setNavigationBar() {
-        if (programUid != null) {
-            binding.navigationBar.visibility = View.VISIBLE
-            binding.navigationBar.pageConfiguration(pageConfigurator)
-            binding.navigationBar.setOnItemSelectedListener { item: MenuItem ->
-                adapter?.let { pagerAdapter ->
-                    when (item.itemId) {
-                        R.id.navigation_analytics -> presenter.trackDashboardAnalytics()
-                        R.id.navigation_relationships -> presenter.trackDashboardRelationships()
-                        R.id.navigation_notes -> presenter.trackDashboardNotes()
-                    }
-                    pagerAdapter.getNavigationPagePosition(item.itemId)
-                        .takeIf { it != NO_POSITION }
-                        ?.let {
-                            when {
-                                this.isLandscape() -> binding.teiTablePager?.currentItem = it
-                                else -> binding.teiPager?.currentItem = it
-                            }
-                        }
+    private fun setUpNavigationBar() {
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by dashboardViewModel.navigationBarUIState.collectAsState()
+                var selectedHomeItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
                 }
-                true
+
+                NavigationBar(
+                    items = uiState.items,
+                    selectedItemIndex = selectedHomeItemIndex,
+                ) { itemId ->
+                    selectedHomeItemIndex = uiState.items.indexOfFirst { it.id == itemId }
+                    dashboardViewModel.onNavigationItemSelected(itemId)
+                }
+
+                uiState.selectedItem?.let {
+                    navigateToFragment(it)
+                }
             }
+        }
+    }
+
+    private fun navigateToFragment(item: TEIDashboardItems) {
+        val fragment = when (item) {
+            TEIDashboardItems.DETAILS -> newInstance(
+                programUid,
+                teiUid,
+                enrollmentUid,
+            )
+
+            TEIDashboardItems.ANALYTICS -> {
+                presenter.trackDashboardAnalytics()
+                IndicatorsFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(VISUALIZATION_TYPE, VisualizationType.TRACKER.name)
+                    }
+                }
+            }
+
+            TEIDashboardItems.RELATIONSHIPS -> {
+                presenter.trackDashboardRelationships()
+                RelationshipFragment().apply {
+                    arguments = RelationshipFragment.withArguments(
+                        programUid,
+                        teiUid,
+                        enrollmentUid,
+                        null,
+                    )
+                }
+            }
+
+            TEIDashboardItems.NOTES -> {
+                presenter.trackDashboardNotes()
+                NotesFragment.newTrackerInstance(programUid!!, teiUid!!)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment, item.name)
+            .commit()
+
+        updateTopBar(item)
+    }
+
+    private fun updateTopBar(item: TEIDashboardItems) {
+        if (item === TEIDashboardItems.RELATIONSHIPS) {
+            binding.relationshipIcon.visibility = View.VISIBLE
         } else {
-            binding.navigationBar.visibility = View.GONE
+            binding.relationshipIcon.visibility = View.GONE
+        }
+
+        if (this.isPortrait()) {
+            if (item == TEIDashboardItems.DETAILS && programUid != null) {
+                binding.toolbarTitle?.visibility = View.GONE
+                binding.editButton?.visibility = View.VISIBLE
+                binding.syncButton.visibility = View.GONE
+            } else {
+                binding.toolbarTitle?.visibility = View.VISIBLE
+                binding.editButton?.visibility = View.GONE
+                binding.syncButton.visibility = View.VISIBLE
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (currentOrientation != -1) {
-            val nextOrientation = if (this.isLandscape()) 1 else 0
-            if (currentOrientation != nextOrientation && adapter != null) {
-                adapter?.notifyDataSetChanged()
-            }
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            currentOrientation = if (this.isLandscape()) 1 else 0
+            presenter.refreshTabCounters()
+            dashboardViewModel.updateDashboard()
         }
-        currentOrientation = if (this.isLandscape()) 1 else 0
-        if (adapter == null) {
-            restoreAdapter(programUid)
-        }
-        presenter.refreshTabCounters()
     }
 
     override fun onPause() {
@@ -272,7 +441,7 @@ class TeiDashboardMobileActivity :
         super.onDestroy()
     }
 
-    fun openSyncDialog() {
+    override fun openSyncDialog() {
         enrollmentUid?.let { enrollmentUid ->
             SyncStatusDialog.Builder()
                 .withContext(this, null)
@@ -307,73 +476,6 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    private fun setViewpagerAdapter() {
-        adapter = teiUid?.let {
-            DashboardPagerAdapter(
-                this,
-                programUid,
-                it,
-                enrollmentUid,
-                pageConfigurator.displayAnalytics(),
-                pageConfigurator.displayRelationships(),
-            )
-        }
-        when {
-            this.isPortrait() -> setPortraitPager()
-            else -> setLandscapePager()
-        }
-    }
-
-    private fun setPortraitPager() {
-        binding.teiPager?.adapter = null
-        binding.teiPager?.isUserInputEnabled = false
-        binding.teiPager?.adapter = adapter
-        binding.teiPager?.registerOnPageChangeCallback(
-            object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    showLoadingProgress(false)
-                    val pageType = adapter?.pageType(position)
-                    if (pageType === DashboardPageType.RELATIONSHIPS) {
-                        binding.relationshipMapIcon.visibility = View.VISIBLE
-                    } else {
-                        binding.relationshipMapIcon.visibility = View.GONE
-                    }
-                    if (pageType == DashboardPageType.TEI_DETAIL && programUid != null) {
-                        binding.toolbarTitle.visibility = View.GONE
-                        binding.editButton.visibility = View.VISIBLE
-                        binding.syncButton.visibility = View.GONE
-                    } else {
-                        binding.toolbarTitle.visibility = View.VISIBLE
-                        binding.editButton.visibility = View.GONE
-                        binding.syncButton.visibility = View.VISIBLE
-                    }
-                    binding.navigationBar.selectItemAt(position)
-                }
-            },
-        )
-        if (fromRelationship) {
-            binding.teiPager?.setCurrentItem(2, false)
-        }
-    }
-
-    private fun setLandscapePager() {
-        binding.teiTablePager?.adapter = adapter
-        binding.teiTablePager?.isUserInputEnabled = false
-        binding.teiTablePager?.registerOnPageChangeCallback(
-            object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    showLoadingProgress(false)
-                    binding.relationshipMapIcon.visibility = when (adapter?.pageType(position)) {
-                        DashboardPageType.RELATIONSHIPS -> View.VISIBLE
-                        else -> View.GONE
-                    }
-                    binding.navigationBar.selectItemAt(position)
-                }
-            },
-        )
-        if (fromRelationship) binding.teiTablePager?.setCurrentItem(1, false)
-    }
-
     private fun showLoadingProgress(showProgress: Boolean) {
         if (showProgress) {
             binding.toolbarProgress.show()
@@ -402,16 +504,9 @@ class TeiDashboardMobileActivity :
         binding.executePendingBindings()
         enrollmentUid = dashboardModel.currentEnrollment.uid()
         if (this.isLandscape()) {
-            if (binding.teiTablePager?.adapter == null) {
-                setViewpagerAdapter()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
-                    .commitAllowingStateLoss()
-            }
-        } else {
-            if (binding.teiPager?.adapter == null) {
-                setViewpagerAdapter()
-            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
+                .commitAllowingStateLoss()
         }
         val enrollmentStatus =
             dashboardModel.currentEnrollment.status() == EnrollmentStatus.ACTIVE
@@ -424,7 +519,6 @@ class TeiDashboardMobileActivity :
     }
 
     override fun restoreAdapter(programUid: String?) {
-        adapter = null
         this.programUid = programUid
     }
 
@@ -432,7 +526,7 @@ class TeiDashboardMobileActivity :
         finish()
     }
 
-    fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
+    private fun handleEnrollmentDeletion(hasMoreEnrollments: Boolean) {
         if (hasMoreEnrollments) {
             startActivity(intent(this, teiUid, null, null))
             finish()
@@ -470,14 +564,13 @@ class TeiDashboardMobileActivity :
         )
         binding.title = title
         binding.executePendingBindings()
-        setViewpagerAdapter()
-        binding.relationshipMapIcon.visibility = View.GONE
         if (this.isLandscape()) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.tei_main_view, newInstance(programUid, teiUid, enrollmentUid))
                 .commitAllowingStateLoss()
+        } else {
+            navigateToFragment(TEIDashboardItems.DETAILS)
         }
-        showLoadingProgress(false)
     }
 
     override fun goToEnrollmentList() {
@@ -502,12 +595,12 @@ class TeiDashboardMobileActivity :
         if (this.isLandscape()) {
             setTutorial()
         } else {
-            if (binding.teiPager?.currentItem == 0) setTutorial() else showToast(getString(R.string.no_intructions))
+            if (binding.editButton?.visibility == View.VISIBLE) {
+                setTutorial()
+            } else {
+                showToast(getString(R.string.no_intructions))
+            }
         }
-    }
-
-    fun toRelationships() {
-        fromRelationship = true
     }
 
     private fun setProgramColor(programUid: String?) {
@@ -515,16 +608,9 @@ class TeiDashboardMobileActivity :
             programUid,
             { programColor: Int ->
                 binding.toolbar.setBackgroundColor(programColor)
-                binding.navigationBar.setIconsColor(programColor)
             },
         ) { themeColorRes: Int ->
             binding.toolbar.setBackgroundColor(
-                ContextCompat.getColor(
-                    this@TeiDashboardMobileActivity,
-                    themeColorRes,
-                ),
-            )
-            binding.navigationBar.setIconsColor(
                 ContextCompat.getColor(
                     this@TeiDashboardMobileActivity,
                     themeColorRes,
@@ -544,104 +630,8 @@ class TeiDashboardMobileActivity :
         }
     }
 
-    override fun showMoreOptions(view: View?) {
-        val menu: Int = if (enrollmentUid == null) {
-            R.menu.dashboard_tei_menu
-        } else if (dashboardViewModel.groupByStage.value != false) {
-            R.menu.dashboard_menu_group
-        } else {
-            R.menu.dashboard_menu
-        }
-        AppMenuHelper.Builder()
-            .anchor(view!!)
-            .menu(this, menu)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                val deleteTeiItem = popupMenu.menu.findItem(R.id.deleteTei)
-                val showDeleteTeiItem = presenter.checkIfTEICanBeDeleted()
-                if (showDeleteTeiItem) {
-                    deleteTeiItem.isVisible = true
-                    deleteTeiItem.title =
-                        String.format(deleteTeiItem.title.toString(), presenter.teType)
-                } else {
-                    deleteTeiItem.isVisible = false
-                }
-
-                if (enrollmentUid != null) {
-                    popupMenu.menu.findItem(R.id.deleteEnrollment).let { deleteEnrollmentItem ->
-                        deleteEnrollmentItem.isVisible =
-                            presenter.checkIfEnrollmentCanBeDeleted(enrollmentUid)
-                        deleteEnrollmentItem.title = resourceManager.formatWithEnrollmentLabel(
-                            programUid!!,
-                            R.string.dashboard_menu_delete_enrollment_V2,
-                            1,
-                        )
-                    }
-
-                    val status = presenter.getEnrollmentStatus(enrollmentUid)
-                    if (status == EnrollmentStatus.COMPLETED) {
-                        popupMenu.menu.findItem(R.id.complete).isVisible = false
-                    } else if (status == EnrollmentStatus.CANCELLED) {
-                        popupMenu.menu.findItem(R.id.deactivate).isVisible = false
-                    } else {
-                        popupMenu.menu.findItem(R.id.activate).isVisible = false
-                    }
-                    if (dashboardViewModel.showFollowUpBar.value) {
-                        popupMenu.menu.findItem(R.id.markForFollowUp).isVisible = false
-                    }
-                }
-                popupMenu.menu.findItem(R.id.programSelector).let { programSelectorItem ->
-                    programSelectorItem.title = resourceManager.formatWithEnrollmentLabel(
-                        programUid ?: "",
-                        R.string.program_selector_V2,
-                        3,
-                    )
-                }
-                Unit
-            }
-            .onMenuItemClicked { itemId: Int? ->
-                when (itemId) {
-                    R.id.showHelp -> {
-                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
-                        showTutorial(true)
-                    }
-
-                    R.id.markForFollowUp -> dashboardViewModel.onFollowUp()
-                    R.id.deleteTei -> showDeleteTEIConfirmationDialog()
-                    R.id.deleteEnrollment -> showRemoveEnrollmentConfirmationDialog()
-                    R.id.programSelector -> presenter.onEnrollmentSelectorClick()
-                    R.id.groupEvents -> dashboardViewModel.setGrouping(true)
-                    R.id.showTimeline -> dashboardViewModel.setGrouping(false)
-                    R.id.complete -> {
-                        dashboardViewModel.updateEnrollmentStatus(
-                            EnrollmentStatus.COMPLETED,
-                        )
-                    }
-
-                    R.id.activate -> dashboardViewModel.updateEnrollmentStatus(
-                        EnrollmentStatus.ACTIVE,
-                    )
-
-                    R.id.deactivate -> dashboardViewModel.updateEnrollmentStatus(
-                        EnrollmentStatus.CANCELLED,
-                    )
-
-                    R.id.share -> startQRActivity()
-                    else -> customClick(
-                        itemId!!, this, programUid!!, enrollmentUid!!,
-                        teiUid!!
-                    )
-                }
-                true
-            }
-            .build().show()
-    }
-
     override fun updateNoteBadge(numberOfNotes: Int) {
-        binding.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
-    }
-
-    fun observeFilters(): LiveData<Boolean>? {
-        return null
+        dashboardViewModel.updateNoteCounter(numberOfNotes)
     }
 
     override fun relationshipMap(): LiveData<Boolean> {
@@ -665,6 +655,50 @@ class TeiDashboardMobileActivity :
                 /*No message needed to be displayed*/
             }
         }
+    }
+
+    override fun showOrgUnitSelector(
+        programUid: String,
+    ) {
+        val ownerOrgUnit = dashboardViewModel.dashboardModel.value?.ownerOrgUnit
+        OUTreeFragment.Builder()
+            .singleSelection()
+            .withModel(
+                OUTreeModel(
+                    title = getString(
+                        R.string.transfer_tei_org_sheet_title,
+                        presenter.teType.lowercase(),
+                    ),
+                    subtitle = getString(
+                        R.string.transfer_tei_org_sheet_description,
+                        ownerOrgUnit?.displayName(),
+                    ),
+                    headerAlignment = TextAlign.Start,
+                    showClearButton = false,
+                    doneButtonText = getString(R.string.transfer),
+                    doneButtonIcon = Icons.Outlined.MoveDown,
+                    hideOrgUnits = ownerOrgUnit?.let { listOf(it) },
+                ),
+            )
+            .orgUnitScope(
+                OrgUnitSelectorScope.ProgramSearchScope(programUid),
+            )
+            .onSelection { selectedOrgUnits ->
+                if (selectedOrgUnits.isNotEmpty()) {
+                    dashboardViewModel.transferTei(
+                        selectedOrgUnits.first().uid(),
+                    ) {
+                        val contextView = findViewById<View>(R.id.navigationBar)
+                        Snackbar.make(
+                            contextView,
+                            R.string.successfully_transferred,
+                            Snackbar.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
+            }
+            .build()
+            .show(supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
     private fun showDeleteTEIConfirmationDialog() {
@@ -723,6 +757,39 @@ class TeiDashboardMobileActivity :
         startActivity(intent)
     }
 
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        dashboardViewModel.updateRelationshipsTopBarIconState(topBarIconState)
+    }
+
+    override fun finishActivity() {
+        finish()
+    }
+
+    override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
+        startActivity(
+            intent(
+                this,
+                teiUid,
+                programUid,
+                enrollmentUid,
+            ),
+        )
+    }
+
+    override fun executeOnUIThread() {
+        activity.runOnUiThread {
+            showDescription(getString(R.string.error_applying_rule_effects))
+        }
+    }
+
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun activityTeiUid(): String? {
+        return teiUid
+    }
+
     companion object {
         private const val TEI_SYNC = "SYNC_TEI"
 
@@ -740,4 +807,77 @@ class TeiDashboardMobileActivity :
             return intent
         }
     }
+
+    private fun setupMoreOptionsMenu() {
+        binding.moreOptions.setContent {
+            val menuItems = getEnrollmentMenuList(
+                enrollmentUid = enrollmentUid,
+                resourceManager = resourceManager,
+                presenter = presenter,
+                dashboardViewModel = dashboardViewModel,
+            )
+
+            var expanded by remember { mutableStateOf(false) }
+
+            MoreOptionsWithDropDownMenuButton(
+                menuItems,
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
+                when (itemId) {
+                    EnrollmentMenuItem.SYNC -> openSyncDialog()
+                    EnrollmentMenuItem.TRANSFER -> presenter.onTransferClick()
+                    EnrollmentMenuItem.FOLLOW_UP -> dashboardViewModel.onFollowUp()
+                    EnrollmentMenuItem.GROUP_BY_STAGE -> dashboardViewModel.setGrouping(true)
+                    EnrollmentMenuItem.VIEW_TIMELINE -> dashboardViewModel.setGrouping(false)
+                    EnrollmentMenuItem.HELP -> {
+                        analyticsHelper.setEvent(SHOW_HELP, CLICK, SHOW_HELP)
+                        showTutorial(true)
+                    }
+                    EnrollmentMenuItem.FEEDBACK -> {
+                        ContextCompat.startActivity(
+                            context,
+                            FeedbackActivity.intent(context, programUid, enrollmentUid, teiUid),
+                            null
+                        )
+                    }
+                    EnrollmentMenuItem.ENROLLMENTS -> presenter.onEnrollmentSelectorClick()
+                    EnrollmentMenuItem.SHARE -> startQRActivity()
+                    EnrollmentMenuItem.ACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                        EnrollmentStatus.ACTIVE,
+                    )
+
+                    EnrollmentMenuItem.DEACTIVATE -> dashboardViewModel.updateEnrollmentStatus(
+                        EnrollmentStatus.CANCELLED,
+                    )
+
+                    EnrollmentMenuItem.COMPLETE -> {
+                        dashboardViewModel.updateEnrollmentStatus(
+                            EnrollmentStatus.COMPLETED,
+                        )
+                    }
+
+                    EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
+                    EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                }
+            }
+        }
+    }
+}
+
+enum class EnrollmentMenuItem {
+    SYNC,
+    TRANSFER,
+    FOLLOW_UP,
+    GROUP_BY_STAGE,
+    VIEW_TIMELINE,
+    HELP,
+    ENROLLMENTS,
+    SHARE,
+    ACTIVATE,
+    DEACTIVATE,
+    COMPLETE,
+    DELETE,
+    REMOVE,
+    FEEDBACK
 }

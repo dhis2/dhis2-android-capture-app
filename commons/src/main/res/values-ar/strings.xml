@@ -22,8 +22,6 @@
     <string name="event_overview">التفاصيل</string>
     <string name="select_option">تحديد الخيار</string>
     <string name="search">بحث</string>
-    <string name="jira_issue_sent">تم إرسال المشكلة</string>
-    <string name="jira_issue_sent_error">خطأ في إرسال المشكلة</string>
     <string name="events">الأحداث</string>
     <string name="data_sets">حزم البيانات</string>
     <string name="tei">TEI</string>

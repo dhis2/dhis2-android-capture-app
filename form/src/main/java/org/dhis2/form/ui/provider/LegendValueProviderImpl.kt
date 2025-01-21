@@ -60,4 +60,13 @@ class LegendValueProviderImpl(
             }
         }
     }
+
+    override fun hasLegendSet(dataElementUid: String): Boolean {
+        return d2.dataElementModule().dataElements()
+            .byUid().eq(dataElementUid)
+            .withLegendSets()
+            .one().blockingGet()
+            ?.legendSets()?.isNotEmpty()
+            ?: false
+    }
 }

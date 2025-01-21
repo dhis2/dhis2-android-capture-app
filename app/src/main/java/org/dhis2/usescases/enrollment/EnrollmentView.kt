@@ -19,8 +19,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setResultAndFinish()
     fun requestFocus()
     fun performSaveClick()
-    fun showProgress()
-    fun hideProgress()
     fun displayTeiPicture(picturePath: String)
-    fun showDateEditionWarning()
+    fun showDateEditionWarning(message: String?)
 }

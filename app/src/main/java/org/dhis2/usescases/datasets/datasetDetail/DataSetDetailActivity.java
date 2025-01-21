@@ -27,15 +27,13 @@ import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.sync.ConflictType;
-import org.dhis2.commons.sync.OnNoConnectionListener;
+import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.category.CategoryDialog;
-import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -136,8 +134,10 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init();
-        binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        if(sessionManagerServiceImpl.isUserLoggedIn()){
+            presenter.init();
+            binding.setTotalFilters(FilterManager.getInstance().getTotalFilters());
+        }
     }
 
     @Override
@@ -180,7 +180,6 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void openOrgUnitTreeSelector() {
         new OUTreeFragment.Builder()
-                .showAsDialog()
                 .withPreselectedOrgUnits(FilterManager.getInstance().getOrgUnitUidsFilters())
                 .onSelection(selectedOrgUnits -> {
                     presenter.setOrgUnitFilters((List<OrganisationUnit>) selectedOrgUnits);
@@ -232,7 +231,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     protected void onDestroy() {
-        presenter.clearFilterIfDatasetConfig();
+        if(sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.clearFilterIfDatasetConfig();
+        }
         super.onDestroy();
     }
 

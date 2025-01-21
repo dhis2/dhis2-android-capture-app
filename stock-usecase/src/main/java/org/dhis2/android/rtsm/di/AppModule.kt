@@ -6,9 +6,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dhis2.org.analytics.charts.Charts
+import dhis2.org.analytics.charts.DhisAnalyticCharts
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
+import org.dhis2.android.rtsm.services.AnalyticsDependencies
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.SpeechRecognitionManagerImpl
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -41,6 +46,34 @@ class AppModule {
         colorUtils: ColorUtils,
     ): ResourceManager {
         return ResourceManager(appContext, colorUtils)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCharts(
+        analyticsDependencies: AnalyticsDependencies,
+    ): Charts {
+        return DhisAnalyticCharts.Provider.get(analyticsDependencies)
+    }
+
+    @Provides
+    @Singleton
+    fun providesAnalyticsDependencies(
+        @ApplicationContext appContext: Context,
+        d2: D2,
+        featureConfigRepository: FeatureConfigRepository,
+        colorUtils: ColorUtils,
+        dispatcherProvider: DispatcherProvider,
+    ): AnalyticsDependencies {
+        return AnalyticsDependencies(appContext, d2, featureConfigRepository, colorUtils, dispatcherProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFeatureConfigRepository(
+        d2: D2,
+    ): FeatureConfigRepository {
+        return FeatureConfigRepositoryImpl(d2)
     }
 
     @Provides

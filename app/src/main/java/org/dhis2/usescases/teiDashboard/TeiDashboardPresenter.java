@@ -192,4 +192,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         }, Timber::e)
         );
     }
+
+  @Override
+  public void onTransferClick() {
+    view.showOrgUnitSelector(programUid);
+  }
+
+    @Override
+    public boolean hasWriteAccess() {
+        return dashboardRepository.enrollmentHasWriteAccess();
+    }
 }

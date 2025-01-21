@@ -4,7 +4,5 @@
     <color name="openid_login_text">@color/white</color>
     <color name="openid_login_bg">?colorPrimary</color>
     <color name="visualization_error_icon">#F2F2F2</color>
-    <color name="even_header_color">#05000000</color>
-    <color name="odd_header_color">#0A000000</color>
     <color name="chart_marker_bg_color">#607D8B</color>
 </resources>

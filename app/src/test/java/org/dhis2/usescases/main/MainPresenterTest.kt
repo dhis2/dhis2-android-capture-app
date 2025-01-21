@@ -2,18 +2,13 @@ package org.dhis2.usescases.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.processors.BehaviorProcessor
-import io.reactivex.processors.FlowableProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
@@ -58,7 +53,6 @@ class MainPresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
-    private val filterRepository: FilterRepository = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
@@ -70,6 +64,8 @@ class MainPresenterTest {
         on { io() } doReturn testingDispatcher
         on { ui() } doReturn testingDispatcher
     }
+
+    private val forceToNotSynced: Boolean = false
 
     @Rule
     @JvmField
@@ -87,7 +83,6 @@ class MainPresenterTest {
                 preferences,
                 workManagerController,
                 filterManager,
-                filterRepository,
                 matomoAnalyticsController,
                 userManager,
                 deleteUserData,
@@ -95,6 +90,7 @@ class MainPresenterTest {
                 syncStatusController,
                 versionRepository,
                 dispatcherProvider,
+                forceToNotSynced,
             )
     }
 
@@ -107,34 +103,7 @@ class MainPresenterTest {
         verify(view).renderUsername(any())
         verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
         verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
-    }
-
-    @Test
-    fun `Should setup filters when activity is resumed`() {
-        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
-            BehaviorProcessor.create()
-        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
-        whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
-
-        presenter.initFilters()
-
-        verify(view).updateFilters(any())
-        verify(view).showPeriodRequest(periodRequest.blockingFirst().first)
-    }
-
-    @Test
-    fun `Should hide filter icon when is list is empty`() {
-        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
-            BehaviorProcessor.create()
-        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
-        whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
-        whenever(filterRepository.homeFilters()) doReturn emptyList()
-
-        presenter.initFilters()
-
-        verify(view).hideFilters()
+        verify(filterManager).clearAllFilters()
     }
 
     @Test
@@ -152,6 +121,7 @@ class MainPresenterTest {
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
         verify(userManager.d2.dataStoreModule().localDataStore().value(PIN)).blockingDeleteIfExist()
+        verify(filterManager).clearAllFilters()
         verify(view).goToLogin(1, false)
     }
 
@@ -161,13 +131,6 @@ class MainPresenterTest {
 
         verify(workManagerController).cancelAllWork()
         verify(view).back()
-    }
-
-    @Test
-    fun `Should show filter screen when filter icon is clicked`() {
-        presenter.showFilter()
-
-        verify(view).showHideFilter()
     }
 
     @Test
@@ -188,16 +151,9 @@ class MainPresenterTest {
 
     @Test
     fun `should return to home section when user taps back in a different section`() {
-        val periodRequest: FlowableProcessor<Pair<FilterManager.PeriodRequest, Filters?>> =
-            BehaviorProcessor.create()
-        whenever(filterManager.asFlowable()) doReturn Flowable.just(filterManager)
-        whenever(filterManager.periodRequest) doReturn periodRequest
-        periodRequest.onNext(Pair(FilterManager.PeriodRequest.FROM_TO, null))
-
         presenter.onNavigateBackToHome()
 
         verify(view).goToHome()
-        verify(filterRepository).homeFilters()
     }
 
     @Test

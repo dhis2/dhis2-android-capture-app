@@ -12,6 +12,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -26,6 +27,9 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
     @Inject
     lateinit var presenter: ProgramStageSelectionPresenter
 
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
+
     private lateinit var adapter: ProgramStageSelectionAdapter
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +42,10 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
             presenter.onProgramStageClick(programStage)
         }
         binding.recyclerView.adapter = adapter
+        binding.title.text = eventResourcesProvider.formatWithProgramEventLabel(
+            stringResource = R.string.new_event_label,
+            programUid = intent.getStringExtra(Constants.PROGRAM_UID),
+        )
     }
 
     override fun onResume() {
@@ -97,7 +105,6 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         enrollmentUid: String?,
     ) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),

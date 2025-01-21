@@ -10,12 +10,12 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.RuleEngineHelper
 import org.dhis2.android.rtsm.utils.printRuleEffects
-import org.dhis2.android.rtsm.utils.toRuleDataValue
-import org.dhis2.android.rtsm.utils.toRuleList
-import org.dhis2.android.rtsm.utils.toRuleVariableList
 import org.dhis2.commons.rules.RuleEngineContextData
-import org.dhis2.commons.rules.toRuleEngineInstant
-import org.dhis2.commons.rules.toRuleEngineLocalDate
+import org.dhis2.mobileProgramRules.toRuleDataValue
+import org.dhis2.mobileProgramRules.toRuleEngineInstant
+import org.dhis2.mobileProgramRules.toRuleEngineLocalDate
+import org.dhis2.mobileProgramRules.toRuleList
+import org.dhis2.mobileProgramRules.toRuleVariableList
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -151,7 +151,6 @@ class RuleValidationHelperImpl @Inject constructor(
                 it.toRuleVariableList(
                     d2.trackedEntityModule().trackedEntityAttributes(),
                     d2.dataElementModule().dataElements(),
-                    d2.optionModule().options(),
                 )
             }
     }

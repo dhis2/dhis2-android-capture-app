@@ -23,6 +23,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.bindings.StringExtensionsKt;
+import org.dhis2.commons.Constants;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
@@ -30,8 +32,6 @@ import org.dhis2.commons.resources.ColorType;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
 import org.dhis2.databinding.AgeCustomViewBinding;
-import org.dhis2.commons.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.customviews.FieldLayout;
 import org.jetbrains.annotations.NotNull;
 

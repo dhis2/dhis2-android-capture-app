@@ -7,13 +7,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
-import org.dhis2.form.data.DataIntegrityCheckResult
-import org.dhis2.form.data.FieldsWithErrorResult
-import org.dhis2.form.data.FieldsWithWarningResult
-import org.dhis2.form.data.MissingMandatoryResult
-import org.dhis2.form.data.NotSavedResult
-import org.dhis2.form.data.SuccessfulResult
-import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
@@ -33,49 +26,6 @@ class EventCaptureFormPresenter(
     private val dispatcherProvider: DispatcherProvider,
 ) {
 
-    fun handleDataIntegrityResult(result: DataIntegrityCheckResult, eventMode: EventMode? = null) {
-        when (result) {
-            is FieldsWithErrorResult -> activityPresenter.attemptFinish(
-                result.canComplete,
-                result.onCompleteMessage,
-                result.fieldUidErrorList,
-                result.mandatoryFields,
-                result.warningFields,
-                eventMode,
-            )
-
-            is FieldsWithWarningResult -> activityPresenter.attemptFinish(
-                result.canComplete,
-                result.onCompleteMessage,
-                emptyList(),
-                emptyMap(),
-                result.fieldUidWarningList,
-                eventMode,
-            )
-
-            is MissingMandatoryResult -> activityPresenter.attemptFinish(
-                result.canComplete,
-                result.onCompleteMessage,
-                result.errorFields,
-                result.mandatoryFields,
-                result.warningFields,
-                eventMode,
-            )
-
-            is SuccessfulResult -> activityPresenter.attemptFinish(
-                result.canComplete,
-                result.onCompleteMessage,
-                emptyList(),
-                emptyMap(),
-                emptyList(),
-            )
-
-            NotSavedResult -> {
-                // Nothing to do in this case
-            }
-        }
-    }
-
     fun showOrHideSaveButton() {
         val isEditable =
             d2.eventModule().eventService().getEditableStatus(eventUid = eventUid).blockingGet()
@@ -91,6 +41,10 @@ class EventCaptureFormPresenter(
                 configureNonEditableMessage(isEditable.reason)
             }
         }
+    }
+
+    fun saveAndExit(eventStatus: EventStatus?) {
+        activityPresenter.saveAndExit(eventStatus)
     }
 
     private fun configureNonEditableMessage(eventNonEditableReason: EventNonEditableReason) {
@@ -133,8 +87,12 @@ class EventCaptureFormPresenter(
         it.status() == EventStatus.COMPLETED && hasReopenAuthority()
     } ?: false
 
-    private fun getEvent(): Event? {
+    fun getEvent(): Event? {
         return d2.eventModule().events().uid(eventUid).blockingGet()
+    }
+
+    fun getEventStatus(eventUid: String): EventStatus? {
+        return d2.eventModule().events().uid(eventUid).blockingGet()?.status()
     }
 
     private fun hasReopenAuthority(): Boolean = d2.userModule().authorities()

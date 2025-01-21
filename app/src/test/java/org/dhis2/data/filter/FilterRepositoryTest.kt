@@ -77,11 +77,11 @@ class FilterRepositoryTest {
         whenever(filterResources.filterEnrollmentStatusLabel(any())) doReturn
             ENROLLMENT_STATUS
         whenever(filterResources.filterDateLabel()) doReturn EVENT_DATE
-        whenever(filterResources.filterEventStatusLabel()) doReturn EVENT_STATUS
+        whenever(filterResources.filterEventStatusLabel("random")) doReturn EVENT_STATUS
         whenever(filterResources.filterEnrollmentDateLabel(any())) doReturn
             ENROLLMENT_DATE
         whenever(filterResources.filterAssignedToMeLabel()) doReturn ASSIGN_TO_ME
-        whenever(filterResources.filterEventDateLabel()) doReturn EVENT_DATE
+        whenever(filterResources.filterEventDateLabel("random")) doReturn EVENT_DATE
         whenever(filterResources.filterFollowUpLabel("Name")) doReturn FOLLOW_UP
     }
 

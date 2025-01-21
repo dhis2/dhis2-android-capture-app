@@ -1,5 +1,6 @@
 package org.dhis2.maps.usecases
 
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayer
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
@@ -13,7 +14,8 @@ import org.mockito.kotlin.whenever
 
 class MapStyleConfigurationTest {
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
-    private val mapStyleConfiguration = MapStyleConfiguration(d2)
+    private val programConfigurationRepository: ProgramConfigurationRepository = mock()
+    private val mapStyleConfiguration = MapStyleConfiguration(d2, null, programConfigurationRepository)
 
     @Test
     fun shouldFetchMapStyles() {

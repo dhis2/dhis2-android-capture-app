@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentFactory
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.provider.EnrollmentResultDialogUiProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 
 class FormViewFragmentFactory(
     val locationProvider: LocationProvider?,
@@ -17,10 +17,10 @@ class FormViewFragmentFactory(
     private val completionListener: ((percentage: Float) -> Unit)?,
     private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val resultDialogUiProvider: EnrollmentResultDialogUiProvider?,
+    private val formResultDialogProvider: FormResultDialogProvider?,
     private val actionIconsActivate: Boolean = true,
     private val openErrorLocation: Boolean = false,
-    private val useComposeForms: Boolean = false,
+    private val programUid: String? = null,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -37,10 +37,10 @@ class FormViewFragmentFactory(
                 setConfiguration(
                     locationProvider = locationProvider,
                     completionListener = completionListener,
-                    resultDialogUiProvider = resultDialogUiProvider,
                     actionIconsActivate = actionIconsActivate,
                     openErrorLocation = openErrorLocation,
-                    useCompose = useComposeForms,
+                    eventResultDialogUiProvider = formResultDialogProvider,
+                    programUid = programUid,
                 )
             }
 

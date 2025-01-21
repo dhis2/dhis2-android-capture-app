@@ -17,15 +17,15 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
-import org.dhis2.ui.MetadataIcon
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -68,10 +68,11 @@ class TEIEventCardMapper(
     @Composable
     private fun ProvideAvatar(eventItem: EventViewModel) {
         Avatar(
-            metadataAvatar = {
-                MetadataIcon(metadataIconData = eventItem.metadataIconData)
-            },
-            style = AvatarStyle.METADATA,
+            style = AvatarStyleData.Metadata(
+                imageCardData = eventItem.metadataIconData.imageCardData,
+                avatarSize = MetadataAvatarSize.M(),
+                tintColor = eventItem.metadataIconData.color,
+            ),
         )
     }
 

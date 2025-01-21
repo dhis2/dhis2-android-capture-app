@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -160,7 +162,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Event currentEvent = getCurrentEvent();
         return Flowable.just(currentEvent).map(event ->
                 (event.status() == EventStatus.COMPLETED ||
-                        event.status() == EventStatus.ACTIVE) &&
+                        event.status() == EventStatus.ACTIVE ||
+                            event.status() == EventStatus.SKIPPED) &&
                         (event.eventDate() == null || !event.eventDate().after(new Date()))
         );
     }
@@ -217,6 +220,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         .validationStrategy();
 
         return validationStrategy != null ? validationStrategy : ValidationStrategy.ON_COMPLETE;
+    }
+
+    @Override
+    @Nullable
+    public String getEnrollmentUid() {
+        return getCurrentEvent().enrollment();
+    }
+
+    @Override
+    @Nullable
+    public String getTeiUid() {
+        Enrollment enrollment = d2.enrollmentModule().enrollments().uid(getEnrollmentUid()).blockingGet();
+        return enrollment != null ? enrollment.trackedEntityInstance() : null;
     }
 }
 

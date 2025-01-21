@@ -23,6 +23,8 @@
     <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="field_is_mandatory">This field is mandatory</string>
+    <string name="missing_warning_fields_completed_events">You have some warning messages.</string>
+    <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
     <string name="required">Required</string>
     <string name="date">Date</string>
     <string name="hint_year">Years</string>
@@ -56,10 +58,13 @@
     <string name="complete">Complete</string>
     <string name="discard_changes">Discard changes</string>
     <string name="saved">Saved!</string>
+    <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
+    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="not_now">Not now</string>
     <string name="save_anyway">Save anyway</string>
     <string name="keep_editing">Keep editing</string>
+    <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
     <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
@@ -112,4 +117,7 @@
     <string name="category_combo">Category Combo</string>
     <string name="no_options">No options available</string>
     <string name="cat_combo">Cat combo</string>
+    <string name="storage_permission_denied">Storage permission is not granted.\nYou need to enable it to use this feature.</string>
+    <string name="no_periods">No periods available</string>
+
 </resources>

@@ -1,8 +1,8 @@
 package org.dhis2.usescases.troubleshooting
 
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.form.bindings.toRuleEngineObject
-import org.dhis2.form.bindings.toRuleVariableList
+import org.dhis2.mobileProgramRules.toRuleEngineObject
+import org.dhis2.mobileProgramRules.toRuleVariableList
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
@@ -108,7 +108,6 @@ class TroubleshootingRepository(
             .blockingGet().toRuleVariableList(
                 d2.trackedEntityModule().trackedEntityAttributes(),
                 d2.dataElementModule().dataElements(),
-                d2.optionModule().options(),
             ).mapNotNull {
                 val ruleValueType = it.fieldType
                 val valueKey = when (it) {

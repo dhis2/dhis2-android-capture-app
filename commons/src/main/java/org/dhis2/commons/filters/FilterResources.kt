@@ -3,12 +3,16 @@ package org.dhis2.commons.filters
 import org.dhis2.commons.R
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.filters.workingLists.RelativePeriodToStringMapper
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.DateFilterPeriod
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 
-class FilterResources(val resourceManager: ResourceManager) {
+class FilterResources(
+    val resourceManager: ResourceManager,
+    val eventResourcesProvider: EventResourcesProvider,
+) {
     fun defaultWorkingListLabel(): String =
         resourceManager.getString(R.string.working_list_default_label)
 
@@ -87,8 +91,11 @@ class FilterResources(val resourceManager: ResourceManager) {
         1,
     )
 
-    fun filterEventDateLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_date)
+    fun filterEventDateLabel(programUid: String): String =
+        eventResourcesProvider.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_date,
+            programUid,
+        )
 
     fun filterOrgUnitLabel(): String = resourceManager.getString(R.string.filters_title_org_unit)
     fun filterSyncLabel(): String = resourceManager.getString(R.string.filters_title_state)
@@ -105,8 +112,11 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun filterFollowUpLabel(teTypeName: String): String =
         resourceManager.getString(R.string.filter_follow_up_label).format(teTypeName)
 
-    fun filterEventStatusLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_status)
+    fun filterEventStatusLabel(programUid: String): String =
+        eventResourcesProvider.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_status,
+            programUid,
+        )
 
     fun enrollmentStatusToText(enrollmentStatusList: List<EnrollmentStatus>): List<String> =
         enrollmentStatusList.map {

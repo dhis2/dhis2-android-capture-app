@@ -2,10 +2,14 @@ package org.dhis2.form.data
 
 import androidx.databinding.ObservableField
 import io.reactivex.Flowable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
@@ -16,7 +20,9 @@ import org.dhis2.form.ui.validation.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
+import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
@@ -27,6 +33,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -40,6 +47,7 @@ class FormRepositoryImplTest {
     private val ruleEngineHelper: RuleEngineHelper = mock()
     private val dataEntryRepository: DataEntryRepository = mock()
     private val formValueStore: FormValueStore = mock()
+    private val preferenceProvider: PreferenceProvider = mock()
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
@@ -86,6 +94,7 @@ class FormRepositoryImplTest {
             rulesUtilsProvider,
             legendValueProvider,
             false,
+            preferenceProvider,
         )
         repository.fetchFormItems()
     }
@@ -195,6 +204,14 @@ class FormRepositoryImplTest {
                     mutableMapOf(Pair("field", "uid001")),
                 ),
             ),
+            RuleEffect(
+                "rule2",
+                RuleAction(
+                    "option1",
+                    ProgramRuleActionType.HIDEOPTION.name,
+                    mutableMapOf(Pair("field", "uid004")),
+                ),
+            ),
         )
 
         whenever(dataEntryRepository.isEvent()) doReturn true
@@ -210,12 +227,21 @@ class FormRepositoryImplTest {
             fieldsToUpdate = listOf(FieldWithNewValue("uid001", "newValue")),
             configurationErrors = emptyList(),
             stagesToHide = emptyList(),
-            optionsToHide = emptyMap(),
+            optionsToHide = mapOf(
+                "uid004" to listOf("option1"),
+            ),
             optionGroupsToHide = emptyMap(),
             optionGroupsToShow = emptyMap(),
         )
 
-        verify(rulesUtilsProvider, times(1)).applyRuleEffects(
+        whenever(dataEntryRepository.options(any(), any(), any(), any()))doReturn Pair(
+            MutableStateFlow(""),
+            emptyFlow(),
+        )
+
+        repository.composeList()
+
+        verify(rulesUtilsProvider, atLeast(1)).applyRuleEffects(
             any(),
             any(),
             any(),
@@ -258,6 +284,104 @@ class FormRepositoryImplTest {
         ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
         repository.fetchFormItems()
         assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+    }
+
+    @Test
+    fun `Should allow to complete only uncompleted events`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertTrue(repository.runDataIntegrityCheck(false).canComplete)
+        whenever(formValueStore.eventState()) doReturn EventStatus.COMPLETED
+        repository.fetchFormItems()
+
+        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertFalse(repository.runDataIntegrityCheck(false).canComplete)
+    }
+
+    @Test
+    fun `Should allow discard Changes in event forms if navigating back`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryListWithCategoryCombo("option1"))
+        repository.fetchFormItems()
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        // When user updates a field with error
+        repository.updateErrorList(
+            RowAction(
+                id = "uid001",
+                value = "testValue",
+                type = ActionType.ON_SAVE,
+                error = Throwable(),
+            ),
+        )
+
+        whenever(
+            fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
+        ) doReturn "errorMessage"
+        assertTrue(
+            repository.runDataIntegrityCheck(true) is MissingMandatoryResult,
+        )
+        assertTrue(repository.runDataIntegrityCheck(true).allowDiscard)
+    }
+
+    @Test
+    fun `Events should follow validation strategy when form has errors`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideItemList())
+        repository.fetchFormItems()
+
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
+        // When user updates a field with error
+        repository.updateErrorList(
+            RowAction(
+                id = "uid001",
+                value = "testValue",
+                type = ActionType.ON_SAVE,
+                error = Throwable(),
+            ),
+        )
+
+        whenever(
+            fieldErrorMessageProvider.getFriendlyErrorMessage(any()),
+        ) doReturn "errorMessage"
+
+        assertTrue(
+            repository.runDataIntegrityCheck(true) is FieldsWithErrorResult &&
+                repository.runDataIntegrityCheck(true).allowDiscard,
+        )
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        repository.fetchFormItems()
+
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+    }
+
+    @Test
+    fun `Should not allow to exit form with errors if event is completed`() {
+        whenever(
+            dataEntryRepository.list(),
+        ) doReturn Flowable.just(provideMandatoryItemList())
+        whenever(dataEntryRepository.isEvent()) doReturn true
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_COMPLETE
+        whenever(formValueStore.eventState()) doReturn EventStatus.COMPLETED
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+
+        whenever(dataEntryRepository.validationStrategy()) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
+        repository.fetchFormItems()
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
+        assertFalse(repository.runDataIntegrityCheck(false).allowDiscard)
+        assertTrue(repository.runDataIntegrityCheck(true).allowDiscard)
     }
 
     @Test
@@ -310,7 +434,6 @@ class FormRepositoryImplTest {
     private fun provideItemList() = listOf<FieldUiModel>(
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = "value",
             label = "field1",
             valueType = ValueType.TEXT,
@@ -321,7 +444,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             label = "field2",
             valueType = ValueType.TEXT,
@@ -332,7 +454,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid003",
-            layoutId = 3,
             value = "value",
             label = "field3",
             valueType = ValueType.TEXT,
@@ -341,18 +462,31 @@ class FormRepositoryImplTest {
             optionSetConfiguration = null,
             autocompleteList = null,
         ),
+        FieldUiModelImpl(
+            uid = "uid004",
+            value = null,
+            label = "field4",
+            valueType = ValueType.TEXT,
+            programStageSection = "section1",
+            uiEventFactory = null,
+            optionSet = "optionSetUid",
+            optionSetConfiguration = OptionSetConfiguration(
+                MutableStateFlow(""),
+                {},
+                emptyFlow(),
+            ),
+            autocompleteList = null,
+        ),
     )
 
     private fun section1() = SectionUiModelImpl(
         uid = "section1",
-        layoutId = 1,
         label = "section1",
         selectedField = ObservableField(""),
     )
 
     private fun section2() = SectionUiModelImpl(
         uid = "section2",
-        layoutId = 1,
         label = "section2",
         selectedField = ObservableField(""),
     )
@@ -361,7 +495,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = "value",
             displayName = "displayValue",
             label = "field1",
@@ -373,7 +506,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             displayName = "displayValue",
             label = "field2",
@@ -385,7 +517,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid003",
-            layoutId = 3,
             value = "value",
             displayName = "displayValue",
             label = "field3",
@@ -402,7 +533,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "EVENT_CATEGORY_COMBO_UID-uid001",
-            layoutId = 1,
             value = value,
             displayName = "displayValue",
             label = "field1",
@@ -423,7 +553,6 @@ class FormRepositoryImplTest {
         section1(),
         FieldUiModelImpl(
             uid = "uid001",
-            layoutId = 1,
             value = null,
             displayName = "displayValue",
             label = "field1",
@@ -436,7 +565,6 @@ class FormRepositoryImplTest {
         ),
         FieldUiModelImpl(
             uid = "uid002",
-            layoutId = 2,
             value = "value",
             displayName = "displayValue",
             label = "field2",

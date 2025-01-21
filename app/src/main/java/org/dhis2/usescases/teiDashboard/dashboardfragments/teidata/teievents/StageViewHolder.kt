@@ -22,15 +22,13 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.schedulers.get
-import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.ui.NewEventOptions
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.Description
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -106,10 +104,11 @@ internal class StageViewHolder(
         metadataIconData: MetadataIconData,
     ) {
         Avatar(
-            metadataAvatar = {
-                MetadataIcon(metadataIconData = metadataIconData, size = AvatarSize.Large)
-            },
-            style = AvatarStyle.METADATA,
+            style = AvatarStyleData.Metadata(
+                imageCardData = metadataIconData.imageCardData,
+                avatarSize = MetadataAvatarSize.M(),
+                tintColor = metadataIconData.color,
+            ),
         )
     }
 }

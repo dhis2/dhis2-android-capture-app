@@ -1,13 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
+import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.usescases.general.AbstractActivityContracts
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -18,13 +18,10 @@ class EventCaptureContract {
         fun renderInitialInfo(stageName: String)
         val presenter: Presenter
         fun updatePercentage(primaryValue: Float)
-        fun showCompleteActions(eventCompletionDialog: EventCompletionDialog)
         fun restartDataEntry()
         fun finishDataEntry()
         fun saveAndFinish()
         fun showSnackBar(messageId: Int, programStage: String)
-        fun attemptToSkip()
-        fun attemptToReschedule()
         fun showEventIntegrityAlert()
         fun updateNoteBadge(numberOfNotes: Int)
         fun goBack()
@@ -41,15 +38,8 @@ class EventCaptureContract {
         fun observeActions(): LiveData<EventCaptureAction>
         fun init()
         fun onBackClick()
-        fun attemptFinish(
-            canComplete: Boolean,
-            onCompleteMessage: String?,
-            errorFields: List<FieldWithIssue>,
-            emptyMandatoryFields: Map<String, String>,
-            warningFields: List<FieldWithIssue>,
-            eventMode: EventMode? = null,
-        )
 
+        fun saveAndExit(eventStatus: EventStatus?)
         fun isEnrollmentOpen(): Boolean
         fun completeEvent(addNew: Boolean)
         fun deleteEvent()
@@ -64,6 +54,13 @@ class EventCaptureContract {
         fun getCompletionPercentageVisibility(): Boolean
         fun emitAction(onBack: EventCaptureAction)
         fun programStage(): String
+        fun getTeiUid(): String?
+        fun getEnrollmentUid(): String?
+        fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>>
+        fun onNavigationPageChanged(page: NavigationPage)
+        fun onSetNavigationPage(index: Int)
+        fun isDataEntrySelected(): Boolean
+        fun updateNotesBadge(numberOfNotes: Int)
 
         //EyeSeeTea customization
         fun refreshProgramStage()
@@ -90,5 +87,7 @@ class EventCaptureContract {
         fun hasAnalytics(): Boolean
         fun hasRelationships(): Boolean
         fun validationStrategy(): ValidationStrategy
+        fun getTeiUid(): String?
+        fun getEnrollmentUid(): String?
     }
 }

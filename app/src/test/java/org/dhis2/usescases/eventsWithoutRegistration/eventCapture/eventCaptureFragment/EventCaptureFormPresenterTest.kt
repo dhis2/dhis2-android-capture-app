@@ -4,13 +4,6 @@ import io.reactivex.Single
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.form.data.FieldsWithErrorResult
-import org.dhis2.form.data.FieldsWithWarningResult
-import org.dhis2.form.data.MissingMandatoryResult
-import org.dhis2.form.data.SuccessfulResult
-import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.hisp.dhis.android.core.D2
@@ -47,92 +40,6 @@ class EventCaptureFormPresenterTest {
             reOpenEventUseCase = reOpenUseCase,
             dispatcherProvider = dispatcherProvider,
         )
-    }
-
-    @Test
-    fun `Should try to finish with fields with errors`() {
-        val errorFields = listOf(
-            FieldWithIssue(
-                "Uid",
-                "field1",
-                IssueType.ERROR,
-                "message",
-            ),
-        )
-        presenter.handleDataIntegrityResult(
-            FieldsWithErrorResult(
-                emptyMap(),
-                errorFields,
-                emptyList(),
-                false,
-                null,
-                false,
-            ),
-        )
-        verify(activityPresenter).attemptFinish(
-            false,
-            null,
-            errorFields,
-            emptyMap(),
-            emptyList(),
-        )
-    }
-
-    @Test
-    fun `Should try to finish with fields with warning`() {
-        val warningFields = listOf(
-            FieldWithIssue(
-                "Uid",
-                "field1",
-                IssueType.WARNING,
-                "message",
-            ),
-        )
-        presenter.handleDataIntegrityResult(
-            FieldsWithWarningResult(
-                warningFields,
-                true,
-                null,
-            ),
-        )
-        verify(activityPresenter).attemptFinish(
-            true,
-            null,
-            emptyList(),
-            emptyMap(),
-            warningFields,
-        )
-    }
-
-    @Test
-    fun `Should try to finish with empty mandatory fields`() {
-        presenter.handleDataIntegrityResult(
-            MissingMandatoryResult(
-                mapOf(Pair("field1", "section")),
-                emptyList(),
-                emptyList(),
-                false,
-                null,
-                false,
-            ),
-            EventMode.NEW,
-        )
-        verify(activityPresenter).attemptFinish(
-            false,
-            null,
-            emptyList(),
-            mapOf(Pair("field1", "section")),
-            emptyList(),
-            EventMode.NEW,
-        )
-    }
-
-    @Test
-    fun `Should try to finish  successfully`() {
-        presenter.handleDataIntegrityResult(
-            SuccessfulResult(null, true, null),
-        )
-        verify(activityPresenter).attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
     }
 
     @Test

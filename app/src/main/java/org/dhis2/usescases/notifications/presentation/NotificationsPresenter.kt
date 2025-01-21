@@ -11,16 +11,18 @@ class NotificationsPresenter(
     private val notificationsView: NotificationsView,
     private val getNotifications: GetNotifications,
     private val markNotificationAsRead: MarkNotificationAsRead
-){
+) {
     fun refresh() {
-        val notifications = getNotifications()
-
-        notificationsView.renderNotifications(notifications)
+        CoroutineScope(Dispatchers.Main).launch {
+            getNotifications().collect {
+                notificationsView.renderNotifications(it)
+            }
+        }
     }
 
     fun markNotificationAsRead(notification: Notification) {
         CoroutineScope(Dispatchers.IO).launch {
-            markNotificationAsRead.invoke(notification.id)
+            markNotificationAsRead.invoke(notification.id).collect {}
         }
     }
 }
@@ -28,3 +30,4 @@ class NotificationsPresenter(
 interface NotificationsView {
     fun renderNotifications(notifications: List<Notification>)
 }
+

@@ -2,12 +2,15 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -26,8 +29,6 @@ import org.dhis2.common.matchers.RecyclerviewMatchers
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasNoMoreResultsInProgram
 import org.dhis2.common.viewactions.openSpinnerPopup
-import org.dhis2.common.viewactions.typeChildViewWithId
-import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEViewHolder
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
@@ -46,7 +47,7 @@ fun searchTeiRobot(
 
 class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnTEI( teiName: String,composeTestRule: ComposeTestRule) {
+    fun clickOnTEI(teiName: String) {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("First name: $teiName", true).performClick()
         composeTestRule.waitForIdle()
@@ -83,25 +84,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.apply {
             onNodeWithTag("INPUT_DATE_TIME_TEXT_FIELD").performTextInput(dateValue)
         }
-    }
-
-    fun typeAttributeAtPosition(searchWord: String, position: Int) {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItemAtPosition<SearchTEViewHolder>(
-                    position,
-                    click()
-                )
-            )
-
-        onView(withId(R.id.recyclerView))
-            .perform(
-                actionOnItemAtPosition<SearchTEViewHolder>(
-                    position,
-                    typeChildViewWithId(searchWord, R.id.input_editText)
-                )
-            )
-        closeKeyboard()
     }
 
     fun clickOnSearch() {
@@ -151,7 +133,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.spinner_text)).check(matches(withText(program)))
     }
 
-
+    @OptIn(ExperimentalTestApi::class)
     fun checkFieldsFromDisplayList(
         displayListFieldsUIModel: DisplayListFieldsUIModel
     ) {
@@ -160,9 +142,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val displayedAttributes = createAttributesList(displayListFieldsUIModel)
         val showMoreText = InstrumentationRegistry.getInstrumentation()
             .targetContext.getString(R.string.show_more)
-        //When we expand all attribute list
-        composeTestRule.onNodeWithText(showMoreText, useUnmergedTree = true).performClick()
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(showMoreText))
+        //When we expand all attribute list
+        composeTestRule.onNodeWithText(showMoreText, true, useUnmergedTree = true).performClick()
         //Then The title and all attributes are displayed
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         displayedAttributes.forEach { item ->
@@ -175,12 +158,17 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnShowMap() {
-        onView(withId(R.id.navigation_map_view)).perform(click())
+        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
     fun checkCarouselTEICardInfo(firstName: String) {
-        onView(withId(R.id.map_carousel))
-            .check(matches(hasItem(hasDescendant(withText(firstName)))))
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
+            .assertIsDisplayed()
+        composeTestRule.onNode(
+            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                    and hasText(firstName, true), useUnmergedTree = true
+        ).assertIsDisplayed()
     }
 
     fun clickOnOpenSearch() {
@@ -193,11 +181,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkListOfSearchTEIWithAdditionalInfo(title: String, additionalText: String) {
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
-        composeTestRule.onNode(
-            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(additionalText, true),
-            useUnmergedTree = true,
-        ).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(additionalText).assertIsDisplayed()
     }
 
     private fun createAttributesList(displayListFieldsUIModel: DisplayListFieldsUIModel) = listOf(

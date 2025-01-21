@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
@@ -38,7 +39,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun clickOnMap() {
-        onView(withId(R.id.navigation_map_view)).perform(click())
+        composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -58,9 +59,11 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
         ).assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkEventIsComplete(eventDate: String) {
-        composeTestRule.onNodeWithText(eventDate).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Event completed").assertIsDisplayed()
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Event completed", true), 2000)
+        composeTestRule.onNodeWithText(eventDate,true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Event completed",true).assertIsDisplayed()
     }
 
     fun checkEventWasDeleted(eventDate: String) {
@@ -68,8 +71,9 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun checkMapIsDisplayed() {
-        onView(withId(R.id.mapView)).check(matches(isDisplayed()))
-        onView(withId(R.id.map_carousel)).check(matches(isDisplayed()))
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("MAP", true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("MAP_CAROUSEL",true).assertIsDisplayed()
     }
 
 }

@@ -23,7 +23,7 @@ interface SyncPresenter {
 
     SyncResult checkSyncStatus();
 
-    Observable<TrackerD2Progress> syncGranularEvent(String eventUid);
+    Observable<D2Progress> syncGranularEvent(String eventUid);
 
     ListenableWorker.Result blockSyncGranularProgram(String programUid);
 
@@ -35,7 +35,7 @@ interface SyncPresenter {
 
     Observable<D2Progress> syncGranularProgram(String uid);
 
-    Observable<TrackerD2Progress> syncGranularTEI(String uid);
+    Observable<D2Progress> syncGranularTEI(String uid);
 
     Observable<D2Progress> syncGranularDataSet(String uid);
 

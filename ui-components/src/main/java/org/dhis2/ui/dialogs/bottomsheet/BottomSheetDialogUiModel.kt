@@ -1,11 +1,14 @@
 package org.dhis2.ui.dialogs.bottomsheet
 
+import androidx.compose.ui.text.style.TextAlign
+
 data class BottomSheetDialogUiModel(
     var title: String,
     var subtitle: String? = null,
     var message: String? = null,
     var clickableWord: String? = null,
     var iconResource: Int,
+    var headerTextAlignment: TextAlign = TextAlign.Center,
     var mainButton: DialogButtonStyle? = null,
     var secondaryButton: DialogButtonStyle? = null,
 ) {

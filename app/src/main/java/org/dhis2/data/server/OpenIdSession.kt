@@ -25,6 +25,7 @@ class OpenIdSession(
     enum class LogOutReason {
         OPEN_ID,
         DISABLED_ACCOUNT,
+        UNAUTHORIZED,
     }
 
     fun setSessionCallback(
@@ -44,6 +45,8 @@ class OpenIdSession(
                 d2.userModule().accountManager().accountDeletionObservable()
                     .filter { it == AccountDeletionReason.ACCOUNT_DISABLED }
                     .map { LogOutReason.DISABLED_ACCOUNT },
+                d2.userModule().accountManager().logOutObservable()
+                    .map { LogOutReason.UNAUTHORIZED },
             ).defaultSubscribe(
                 schedulerProvider,
                 { sessionCallback(it) },
