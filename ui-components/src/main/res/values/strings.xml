@@ -9,9 +9,10 @@
     <string name="save">Save</string>
     <string name="clear">Clear</string>
     <string name="draw_here">Draw here</string>
-    <string name="button_extended">Extended Button</string>
+    <string name="button_extended" translatable="false">Extended Button</string>
     <string name="action_done">Done</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
     <string name="hint_search">Search</string>
     <string name="action_clear_all">Clear all</string>
     <plurals name="error_count">

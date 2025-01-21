@@ -1,45 +1,41 @@
 package org.dhis2.commons.orgunitselector
 
-import android.app.Activity
-import android.app.Dialog
 import android.content.Context
-import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.DialogFragment
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
-import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorActions
-import org.dhis2.ui.dialogs.orgunit.OrgUnitSelectorDialog
+import org.dhis2.commons.R
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
 import javax.inject.Inject
 
-const val ARG_SHOW_AS_DIALOG = "OUTreeFragment.ARG_SHOW_AS_DIALOG"
 const val ARG_SINGLE_SELECTION = "OUTreeFragment.ARG_SINGLE_SELECTION"
 const val ARG_SCOPE = "OUTreeFragment.ARG_SCOPE"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
-class OUTreeFragment() : DialogFragment() {
+class OUTreeFragment : BottomSheetDialogFragment() {
 
     class Builder {
-        private var showAsDialog = false
         private var preselectedOrgUnits = listOf<String>()
         private var singleSelection = false
         private var selectionListener: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
         private var orgUnitScope: OrgUnitSelectorScope = OrgUnitSelectorScope.UserSearchScope()
-        fun showAsDialog() = apply {
-            showAsDialog = true
-        }
+        private var ouTreeModel: OUTreeModel = OUTreeModel()
 
         fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
             require(!(singleSelection && preselectedOrgUnits.size > 1)) {
@@ -68,11 +64,15 @@ class OUTreeFragment() : DialogFragment() {
                 this.selectionListener = selectionListener
             }
 
+        fun withModel(model: OUTreeModel) = apply {
+            ouTreeModel = model
+        }
+
         fun build(): OUTreeFragment {
             return OUTreeFragment().apply {
                 selectionCallback = selectionListener
+                model = ouTreeModel
                 arguments = Bundle().apply {
-                    putBoolean(ARG_SHOW_AS_DIALOG, showAsDialog)
                     putBoolean(ARG_SINGLE_SELECTION, singleSelection)
                     putParcelable(ARG_SCOPE, orgUnitScope)
                     putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
@@ -87,6 +87,8 @@ class OUTreeFragment() : DialogFragment() {
     private val viewmodel: OUTreeViewModel by viewModels { viewModelFactory }
 
     var selectionCallback: ((selectedOrgUnits: List<OrganisationUnit>) -> Unit) = {}
+
+    private lateinit var model: OUTreeModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -110,17 +112,9 @@ class OUTreeFragment() : DialogFragment() {
         )?.inject(this)
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        return dialog
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showAsDialog().let { showAsDialog ->
-            showsDialog = showAsDialog
-        }
+        setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
         lifecycleScope.launch {
             viewmodel.finalSelectedOrgUnits.collect {
                 if (it.isNotEmpty()) {
@@ -139,41 +133,31 @@ class OUTreeFragment() : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Mdc3Theme {
-                    val list by viewmodel.treeNodes.collectAsState()
-                    OrgUnitSelectorDialog(
-                        title = null,
-                        items = list,
-                        actions = object : OrgUnitSelectorActions {
-                            override val onSearch: (String) -> Unit
-                                get() = viewmodel::searchByName
-                            override val onOrgUnitChecked:
-                                (orgUnitUid: String, isChecked: Boolean) -> Unit
-                                get() = viewmodel::onOrgUnitCheckChanged
-                            override val onOpenOrgUnit: (orgUnitUid: String) -> Unit
-                                get() = viewmodel::onOpenChildren
-                            override val onDoneClick: () -> Unit
-                                get() = this@OUTreeFragment::confirmOuSelection
-                            override val onCancelClick: () -> Unit
-                                get() = this@OUTreeFragment::cancelOuSelection
-                            override val onClearClick: () -> Unit
-                                get() = viewmodel::clearAll
-                        },
-                    )
-                }
+                val list by viewmodel.treeNodes.collectAsState()
+                val filteredList = model.hideOrgUnits?.let { filterUnits ->
+                    list.filterNot { orgUnit ->
+                        filterUnits.any { filterUnit -> filterUnit.uid() == orgUnit.uid }
+                    }
+                } ?: list
+
+                OrgBottomSheet(
+                    title = model.title,
+                    subtitle = model.subtitle,
+                    headerTextAlignment = model.headerAlignment,
+                    doneButtonText = model.doneButtonText,
+                    doneButtonIcon = model.doneButtonIcon,
+                    clearAllButtonText = stringResource(id = R.string.action_clear_all),
+                    orgTreeItems = filteredList,
+                    onSearch = viewmodel::searchByName,
+                    onDismiss = { cancelOuSelection() },
+                    onItemClick = viewmodel::onOpenChildren,
+                    onItemSelected = viewmodel::onOrgUnitCheckChanged,
+                    onClearAll = if (model.showClearButton) viewmodel::clearAll else null,
+                    onDone = { confirmOuSelection() },
+                )
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        showAsDialog().takeIf { it }?.let {
-            fixDialogSize(0.9, 0.9)
-        }
-    }
-
-    private fun showAsDialog() = arguments?.getBoolean(ARG_SHOW_AS_DIALOG, false) ?: false
 
     private fun confirmOuSelection() {
         viewmodel.confirmSelection()
@@ -185,25 +169,16 @@ class OUTreeFragment() : DialogFragment() {
     }
 
     private fun exitOuSelection() {
-        if (showAsDialog()) {
-            dismiss()
-        } else {
-            activity?.apply {
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-        }
+        dismiss()
     }
 }
 
-fun DialogFragment.fixDialogSize(widthPercent: Double, heightPercent: Double) {
-    val size = Point()
-    dialog?.window?.apply {
-        windowManager.defaultDisplay.getSize(size)
-
-        setLayout(widthPercent of size.x, heightPercent of size.y)
-        setGravity(Gravity.CENTER)
-    }
-}
-
-private infix fun Double.of(value: Int) = (this * value).toInt()
+data class OUTreeModel(
+    val title: String? = null,
+    val subtitle: String? = null,
+    val headerAlignment: TextAlign = TextAlign.Center,
+    val doneButtonIcon: ImageVector = Icons.Filled.Check,
+    val doneButtonText: String? = null,
+    val showClearButton: Boolean = true,
+    val hideOrgUnits: List<OrganisationUnit>? = null,
+)

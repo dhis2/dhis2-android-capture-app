@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.commons.animations.ViewAnimationsKt;
-import org.dhis2.utils.DateUtils;
+import org.dhis2.commons.date.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;

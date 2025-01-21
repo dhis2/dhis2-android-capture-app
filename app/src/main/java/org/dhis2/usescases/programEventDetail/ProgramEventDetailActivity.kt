@@ -6,9 +6,20 @@ import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.Transition
 import android.transition.TransitionManager
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.viewModelScope
@@ -49,11 +60,13 @@ import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.customviews.RxDateDialog
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
@@ -69,9 +82,6 @@ class ProgramEventDetailActivity :
 
     @Inject
     lateinit var filtersAdapter: FiltersAdapter
-
-    @Inject
-    lateinit var pageConfigurator: NavigationPageConfigurator
 
     @Inject
     lateinit var networkUtils: NetworkUtils
@@ -105,38 +115,8 @@ class ProgramEventDetailActivity :
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail)
         binding.presenter = presenter
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        binding.navigationBar.pageConfiguration(pageConfigurator)
-        binding.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.navigation_list_view -> {
-                    programEventsViewModel.showList()
-                    return@setOnNavigationItemSelectedListener true
-                }
 
-                R.id.navigation_map_view -> {
-                    networkUtils.performIfOnline(
-                        this,
-                        {
-                            presenter.trackEventProgramMap()
-                            programEventsViewModel.showMap()
-                        },
-                        {
-                            binding.navigationBar.selectItemAt(0)
-                        },
-                        getString(R.string.msg_network_connection_maps),
-                    )
-                    return@setOnNavigationItemSelectedListener true
-                }
-
-                R.id.navigation_analytics -> {
-                    presenter.trackEventProgramAnalytics()
-                    programEventsViewModel.showAnalytics()
-                    return@setOnNavigationItemSelectedListener true
-                }
-
-                else -> return@setOnNavigationItemSelectedListener false
-            }
-        }
+        setupBottomNavigation()
         binding.fragmentContainer.clipWithRoundedCorners(16.dp)
         binding.filterLayout.adapter = filtersAdapter
         presenter.init()
@@ -160,6 +140,67 @@ class ProgramEventDetailActivity :
         }
     }
 
+    private fun setupBottomNavigation() {
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by programEventsViewModel.navigationBarUIState
+                val isBackdropActive by programEventsViewModel.backdropActive.observeAsState(false)
+                var selectedItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
+                }
+
+                LaunchedEffect(uiState.selectedItem) {
+                    when (uiState.selectedItem) {
+                        NavigationPage.LIST_VIEW -> {
+                            programEventsViewModel.showList()
+                        }
+
+                        NavigationPage.MAP_VIEW -> {
+                            networkUtils.performIfOnline(
+                                context = this@ProgramEventDetailActivity,
+                                action = {
+                                    presenter.trackEventProgramMap()
+                                    programEventsViewModel.showMap()
+                                },
+                                onDialogDismissed = {
+                                    selectedItemIndex = 0
+                                },
+                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                            )
+                        }
+
+                        NavigationPage.ANALYTICS -> {
+                            presenter.trackEventProgramAnalytics()
+                            programEventsViewModel.showAnalytics()
+                        }
+
+                        else -> {
+                            // no-op
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.items.size > 1 && isBackdropActive.not(),
+                    enter = slideInVertically(animationSpec = tween(200)) { it },
+                    exit = slideOutVertically(animationSpec = tween(200)) { it },
+                ) {
+                    NavigationBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.items,
+                        selectedItemIndex = selectedItemIndex,
+                    ) { page ->
+                        programEventsViewModel.onNavigationPageChanged(page)
+                    }
+                }
+            }
+        }
+    }
+
     private fun initExtras() {
         programUid = intent.getStringExtra(EXTRA_PROGRAM_UID) ?: ""
     }
@@ -169,7 +210,7 @@ class ProgramEventDetailActivity :
             ?.plus(
                 ProgramEventDetailModule(
                     this,
-                    programUid,
+                    this, programUid,
                     OrgUnitSelectorScope.ProgramCaptureScope(programUid),
                 ),
             )
@@ -232,9 +273,8 @@ class ProgramEventDetailActivity :
                 }
             })
             .onNoConnectionListener {
-                val contextView = findViewById<View>(R.id.navigationBar)
                 Snackbar.make(
-                    contextView,
+                    binding.root,
                     R.string.sync_offline_check_connection,
                     Snackbar.LENGTH_SHORT,
                 ).show()
@@ -251,14 +291,16 @@ class ProgramEventDetailActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.setOpeningFilterToNone()
-        presenter.onDettach()
-        FilterManager.getInstance().clearEventStatus()
-        FilterManager.getInstance().clearCatOptCombo()
-        FilterManager.getInstance().clearWorkingList(true)
-        FilterManager.getInstance().clearAssignToMe()
-        FilterManager.getInstance().clearFlow()
-        presenter.clearOtherFiltersIfWebAppIsConfig()
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.setOpeningFilterToNone()
+            presenter.onDettach()
+            FilterManager.getInstance().clearEventStatus()
+            FilterManager.getInstance().clearCatOptCombo()
+            FilterManager.getInstance().clearWorkingList(true)
+            FilterManager.getInstance().clearAssignToMe()
+            FilterManager.getInstance().clearFlow()
+            presenter.clearOtherFiltersIfWebAppIsConfig()
+        }
     }
 
     override fun setProgram(programModel: Program) {
@@ -279,13 +321,13 @@ class ProgramEventDetailActivity :
         val transition: Transition = ChangeBounds()
         transition.addListener(object : Transition.TransitionListener {
             override fun onTransitionStart(transition: Transition) {
+                programEventsViewModel.updateBackdrop(backDropActive)
                 if (!backDropActive) {
                     binding.clearFilters.hide()
                 }
             }
 
             override fun onTransitionEnd(transition: Transition) {
-                programEventsViewModel.updateBackdrop(backDropActive)
                 if (backDropActive) {
                     binding.clearFilters.show()
                 }
@@ -303,9 +345,11 @@ class ProgramEventDetailActivity :
                 /*No action needed*/
             }
         })
+        backDropActive = !backDropActive
+
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)
-        backDropActive = !backDropActive
+
         val initSet = ConstraintSet()
         initSet.clone(binding.backdropLayout)
         if (backDropActive) {
@@ -316,7 +360,20 @@ class ProgramEventDetailActivity :
                 ConstraintSet.BOTTOM,
                 16.dp,
             )
-            binding.navigationBar.hide()
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                16.dp,
+            )
         } else {
             initSet.connect(
                 R.id.fragmentContainer,
@@ -325,7 +382,20 @@ class ProgramEventDetailActivity :
                 ConstraintSet.BOTTOM,
                 0,
             )
-            binding.navigationBar.show()
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                16.dp,
+            )
         }
         initSet.applyTo(binding.backdropLayout)
     }
@@ -342,7 +412,6 @@ class ProgramEventDetailActivity :
             }
         } else {
             OUTreeFragment.Builder()
-                .showAsDialog()
                 .singleSelection()
                 .withPreselectedOrgUnits(
                     listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
@@ -383,12 +452,15 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
-                FilterManager.getInstance().addPeriod(datePeriod)
-            }
+            DateUtils.getInstance()
+                .fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
+                    FilterManager.getInstance().addPeriod(datePeriod)
+                }
         } else {
             val onFromToSelector =
-                OnFromToSelector { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) }
+                OnFromToSelector { datePeriods ->
+                    FilterManager.getInstance().addPeriod(datePeriods)
+                }
 
             DateUtils.getInstance().showPeriodDialog(
                 this,
@@ -414,7 +486,6 @@ class ProgramEventDetailActivity :
 
     override fun openOrgUnitTreeSelector() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
             .onSelection { selectedOrgUnits ->
                 presenter.setOrgUnitFilters(selectedOrgUnits)
@@ -452,9 +523,8 @@ class ProgramEventDetailActivity :
                 }
             })
             .onNoConnectionListener {
-                val contextView = findViewById<View>(R.id.rootView)
                 Snackbar.make(
-                    contextView,
+                    binding.root,
                     R.string.sync_offline_check_connection,
                     Snackbar.LENGTH_SHORT,
                 ).show()

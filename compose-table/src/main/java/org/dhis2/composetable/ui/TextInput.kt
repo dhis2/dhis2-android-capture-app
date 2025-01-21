@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -58,6 +57,7 @@ import org.dhis2.composetable.actions.TextInputInteractions
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.extensions.keyboardCapitalization
 import org.dhis2.composetable.model.extensions.toKeyboardType
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
 fun TextInput(
@@ -301,13 +301,14 @@ private fun TextInputContentActionIcon(
                     drawableId = icon
                 },
             onClick = onActionIconClick,
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                tint = LocalTableColors.current.primary,
-                contentDescription = "",
-            )
-        }
+            icon = {
+                Icon(
+                    painter = painterResource(id = icon),
+                    tint = LocalTableColors.current.primary,
+                    contentDescription = "",
+                )
+            },
+        )
     }
 }
 

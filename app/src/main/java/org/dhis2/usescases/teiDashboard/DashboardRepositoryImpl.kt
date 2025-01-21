@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
@@ -208,7 +209,10 @@ class DashboardRepositoryImpl(
         return attributeValues
     }
 
-    private fun mapRelationShipTypes(list: List<RelationshipType>, teType: String): MutableList<Pair<RelationshipType?, String>> {
+    private fun mapRelationShipTypes(
+        list: List<RelationshipType>,
+        teType: String,
+    ): MutableList<Pair<RelationshipType?, String>> {
         val relTypeList: MutableList<Pair<RelationshipType?, String>> =
             java.util.ArrayList()
         for (relationshipType in list) {
@@ -374,6 +378,17 @@ class DashboardRepositoryImpl(
         }
     }
 
+    private fun getOwnerOrgUnit(teiUid: String): OrganisationUnit? {
+        val orgUnitId = d2.trackedEntityModule()
+            .trackedEntityInstances().withProgramOwners()
+            .uid(teiUid).blockingGet()
+            ?.programOwners()?.first { it.trackedEntityInstance() == teiUid }?.ownerOrgUnit()
+
+        return d2.organisationUnitModule().organisationUnits()
+            .uid(orgUnitId)
+            .blockingGet()
+    }
+
     override fun getDashboardModel(): DashboardModel {
         return if (programUid.isNullOrEmpty()) {
             DashboardTEIModel(
@@ -384,6 +399,7 @@ class DashboardRepositoryImpl(
                 getTeiOrgUnits(teiUid, null).blockingFirst(),
                 getTeiHeader(),
                 getTeiProfilePath(),
+                getOwnerOrgUnit(teiUid),
             )
         } else {
             DashboardEnrollmentModel(
@@ -396,6 +412,7 @@ class DashboardRepositoryImpl(
                 getTeiOrgUnits(teiUid, programUid).blockingFirst(),
                 getTeiHeader(),
                 getTeiProfilePath(),
+                getOwnerOrgUnit(teiUid),
             )
         }
     }
@@ -572,6 +589,39 @@ class DashboardRepositoryImpl(
             Preference.GROUPING,
             groups,
         )
+    }
+
+    override fun transferTei(newOrgUnitId: String) {
+        d2.trackedEntityModule()
+            .ownershipManager()
+            .blockingTransfer(teiUid, programUid!!, newOrgUnitId)
+    }
+
+    override fun teiCanBeTransferred(): Boolean {
+        if (programUid == null) {
+            return false
+        }
+
+        val orgUnits = d2.organisationUnitModule().organisationUnits()
+            .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_TEI_SEARCH)
+            .byProgramUids(listOf(programUid))
+            .blockingGet()
+
+        if (orgUnits.isEmpty()) {
+            return false
+        }
+
+        return orgUnits.size > 1 ||
+            orgUnits.first().uid() != getOwnerOrgUnit(teiUid)?.uid()
+    }
+
+    override fun enrollmentHasWriteAccess(): Boolean {
+        return programUid?.let {
+            d2.enrollmentModule().enrollmentService().blockingGetEnrollmentAccess(
+                teiUid,
+                it,
+            )
+        } == EnrollmentAccess.WRITE_ACCESS
     }
 
     private fun getGroupingOptions(): HashMap<String, Boolean> {

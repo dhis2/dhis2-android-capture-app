@@ -22,8 +22,6 @@
     <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Variant tanlang</string>
     <string name="search">Izlash</string>
-    <string name="jira_issue_sent">Muammo yuborildi</string>
-    <string name="jira_issue_sent_error">Muammoni yuborishda xxatolik yuz berdi</string>
     <string name="data_sets">Maʼlumotlar toʼplami</string>
     <string name="tei">TEI</string>
     <string name="info">Аxborot</string>

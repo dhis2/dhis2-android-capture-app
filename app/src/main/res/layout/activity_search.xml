@@ -14,10 +14,6 @@
         <variable
             name="totalFilters"
             type="Integer" />
-
-        <variable
-            name="navigationInitialPage"
-            type="Integer" />
     </data>
 
     <RelativeLayout
@@ -206,20 +202,17 @@
                 android:id="@+id/mainComponent"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/navigationBar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop" />
 
-            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+            <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/navigationBar"
-                style="@style/DhisBottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:elevation="12dp"
-                app:initialPage="@{navigationInitialPage}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:menu="@menu/navigation_search_menu" />
+                app:layout_constraintTop_toBottomOf="@id/mainComponent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>

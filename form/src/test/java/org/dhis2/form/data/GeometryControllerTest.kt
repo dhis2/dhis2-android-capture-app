@@ -1,7 +1,5 @@
 package org.dhis2.form.data
 
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.FeatureType
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -44,38 +42,5 @@ class GeometryControllerTest {
             result?.type() == FeatureType.POINT &&
                 result.coordinates()?.isNotEmpty() == true,
         )
-    }
-
-    @Test
-    fun `Should return coordinates callback`() {
-        var currentCallback: Int = -1
-        val coordinateCallback = controller.getCoordinatesCallback(
-            {
-                currentCallback = 0
-            },
-            { currentCallback = 1 },
-            { _, _, _ -> currentCallback = 2 },
-        )
-
-        coordinateCallback.intent(
-            FormIntent.SaveCurrentLocation(
-                uid = "fieldUid",
-                value = null,
-                featureType = "none",
-            ),
-        )
-        assertTrue(currentCallback == 0)
-        coordinateCallback.recyclerViewUiEvents(
-            RecyclerViewUiEvents.RequestCurrentLocation("fieldUid"),
-        )
-        assertTrue(currentCallback == 1)
-        coordinateCallback.recyclerViewUiEvents(
-            RecyclerViewUiEvents.RequestLocationByMap(
-                "fieldUid",
-                FeatureType.POINT,
-                null,
-            ),
-        )
-        assertTrue(currentCallback == 2)
     }
 }

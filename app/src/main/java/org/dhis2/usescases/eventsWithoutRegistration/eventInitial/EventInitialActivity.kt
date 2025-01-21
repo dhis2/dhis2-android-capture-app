@@ -6,7 +6,14 @@ import android.os.Handler
 import android.os.Looper
 import android.util.SparseBooleanArray
 import android.view.View
-import android.widget.PopupMenu
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.databinding.DataBindingUtil
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.App
@@ -15,8 +22,7 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
-import org.dhis2.commons.popupmenu.AppMenuHelper
-import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.SingleEventEnforcerImpl
 import org.dhis2.databinding.ActivityEventInitialBinding
@@ -36,11 +42,15 @@ import org.dhis2.utils.analytics.CREATE_EVENT
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
 import java.util.Objects
 import javax.inject.Inject
 
@@ -53,7 +63,7 @@ class EventInitialActivity :
     lateinit var presenter: EventInitialPresenter
 
     @Inject
-    lateinit var resourceManager: ResourceManager
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     private lateinit var binding: ActivityEventInitialBinding
 
@@ -110,7 +120,6 @@ class EventInitialActivity :
                     this,
                     eventUid,
                     programStageUid,
-                    context,
                 ),
             )
         eventInitialComponent!!.inject(this)
@@ -120,6 +129,7 @@ class EventInitialActivity :
         binding.setPresenter(presenter)
 
         initProgressBar()
+        setupMoreOptionsMenu()
 
         val bundle = Bundle()
         bundle.putString(Constants.EVENT_UID, eventUid)
@@ -168,18 +178,7 @@ class EventInitialActivity :
         if (eventUid == null) { // This is a new Event
             presenter.onEventCreated()
             analyticsHelper().setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
-            if (eventCreationType == EventCreationType.REFERAL && eventDetails.temCreate != null && eventDetails.temCreate == Constants.PERMANENT) {
-                presenter.scheduleEventPermanent(
-                    enrollmentUid,
-                    getTrackedEntityInstance,
-                    programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
-                    geometry,
-                )
-            } else if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
+            if (eventCreationType == EventCreationType.SCHEDULE || eventCreationType == EventCreationType.REFERAL) {
                 presenter.scheduleEvent(
                     enrollmentUid,
                     programStageModelUid,
@@ -231,9 +230,10 @@ class EventInitialActivity :
             getString(R.string.referral)
         } else {
             if (eventUid == null) {
-                resourceManager.formatWithEventLabel(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
                     R.string.new_event_label,
                     programStageUid,
+                    programUid,
                     1,
                     false,
                 )
@@ -246,9 +246,10 @@ class EventInitialActivity :
 
     override fun onEventCreated(eventUid: String) {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_created,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -318,46 +319,75 @@ class EventInitialActivity :
         }, 500)
     }
 
-    override fun showMoreOptions(view: View) {
-        AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                popupMenu.menu.findItem(R.id.menu_delete).setVisible(
-                    accessData!! && presenter.isEnrollmentOpen,
-                )
-                popupMenu.menu.findItem(R.id.menu_share).setVisible(eventUid != null)
-                Unit
-            }
-            .onMenuItemClicked { itemId: Int? ->
+    private fun setupMoreOptionsMenu() {
+        binding.moreOptions.setContent {
+            var expanded by remember { mutableStateOf(false) }
+
+            MoreOptionsWithDropDownMenuButton(
+                getMenuItems(),
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
                 when (itemId) {
-                    R.id.showHelp -> {
+                    EventInitialMenuItem.SHOW_HELP -> {
                         analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         setTutorial()
                     }
 
-                    R.id.menu_delete -> confirmDeleteEvent()
-                    R.id.menu_share -> presenter.onShareClick()
-                    else -> {
-                        // do nothing
-                    }
+                    EventInitialMenuItem.SHARE -> presenter.onShareClick()
+                    EventInitialMenuItem.DELETE -> confirmDeleteEvent()
                 }
-                false
             }
-            .build()
-            .show()
+        }
+    }
+
+    private fun getMenuItems(): List<MenuItemData<EventInitialMenuItem>> {
+        return buildList {
+            add(
+                MenuItemData(
+                    id = EventInitialMenuItem.SHOW_HELP,
+                    label = getString(R.string.showHelp),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
+                ),
+            )
+            if (eventUid != null) {
+                add(
+                    MenuItemData(
+                        id = EventInitialMenuItem.SHARE,
+                        label = getString(R.string.share),
+                        showDivider = true,
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
+                    ),
+                )
+            }
+
+            if (accessData!! && presenter.isEnrollmentOpen) {
+                add(
+                    MenuItemData(
+                        id = EventInitialMenuItem.DELETE,
+                        label = getString(R.string.delete),
+                        style = MenuItemStyle.ALERT,
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
+                    ),
+                )
+            }
+        }
     }
 
     fun confirmDeleteEvent() {
         CustomDialog(
             this,
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.delete_event_label,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.confirm_delete_event_label,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -379,9 +409,10 @@ class EventInitialActivity :
 
     override fun showEventWasDeleted() {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.event_label_was_deleted,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -391,9 +422,10 @@ class EventInitialActivity :
 
     override fun showDeleteEventError() {
         showToast(
-            resourceManager.formatWithEventLabel(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
                 R.string.delete_event_label_error,
                 programStageUid,
+                programUid,
                 1,
                 false,
             ),
@@ -431,4 +463,10 @@ class EventInitialActivity :
             return bundle
         }
     }
+}
+
+enum class EventInitialMenuItem {
+    SHOW_HELP,
+    SHARE,
+    DELETE,
 }

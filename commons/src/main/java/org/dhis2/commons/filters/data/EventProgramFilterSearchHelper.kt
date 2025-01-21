@@ -14,19 +14,6 @@ class EventProgramFilterSearchHelper @Inject constructor(
 ) : FilterHelperActions<EventQueryCollectionRepository> {
 
     fun getFilteredEventRepository(
-        program: Program,
-        textFilter: TextFilter?
-    ): EventQueryCollectionRepository {
-        return applyFiltersTo(
-            if (textFilter != null) {
-                filterRepository.eventsByProgramAndTextFilter(program.uid(), textFilter)
-            } else {
-                filterRepository.eventsByProgram(program.uid())
-            }
-        )
-    }
-
-    fun getFilteredEventRepository(
         program: Program
     ): EventQueryCollectionRepository {
         return applyFiltersTo(

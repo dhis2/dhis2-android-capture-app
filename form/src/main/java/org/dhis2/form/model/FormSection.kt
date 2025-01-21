@@ -9,8 +9,8 @@ data class FormSection(
     val state: SectionState,
     val fields: List<FieldUiModel>,
     var warningMessage: Int? = null,
-) {
-    fun completedFields() = fields.count { it.value != null }
-    fun errorCount() = fields.count { it.error != null }
-    fun warningCount() = fields.count { it.warning != null }
-}
+    val completeFields: Int = 0,
+    val totalFields: Int = 0,
+    val warnings: Int = 0,
+    val errors: Int = 0,
+)

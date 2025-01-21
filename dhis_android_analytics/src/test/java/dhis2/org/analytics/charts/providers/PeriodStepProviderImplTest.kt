@@ -183,6 +183,25 @@ class PeriodStepProviderImplTest {
     }
 
     @Test
+    fun `Should return correct difference for a quarterlyNov period`() {
+        val initialPeriod = generatePeriod(
+            PeriodType.QuarterlyNov,
+            GregorianCalendar(2021, 1, 1).time,
+            GregorianCalendar(2021, 3, 31).time,
+        )
+
+        val endPeriod = generatePeriod(
+            PeriodType.QuarterlyNov,
+            GregorianCalendar(2021, 10, 1).time,
+            GregorianCalendar(2021, 12, 31).time,
+        )
+
+        val diff = periodStepProvider.getPeriodDiff(initialPeriod, endPeriod)
+
+        assertTrue(diff == 3)
+    }
+
+    @Test
     fun `Should return correct difference for a sixmonthly period`() {
         val initialPeriod = generatePeriod(
             PeriodType.SixMonthlyApril,

@@ -6,14 +6,17 @@ import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.forms.EnrollmentFormRepository
-import org.dhis2.data.forms.FormRepository
-import org.dhis2.form.data.RulesRepository
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
+import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.usescases.enrollment.DateEditionWarningHandler
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
@@ -54,6 +57,32 @@ class TeiDashboardModule(
 
     @Provides
     @PerActivity
+    fun provideEnrollmentConfiguration(
+        d2: D2,
+    ) = enrollmentUid?.let { EnrollmentConfiguration(d2, it) }
+
+    @Provides
+    @PerActivity
+    fun provideDateEditionWarningHandler(
+        enrollmentConfiguration: EnrollmentConfiguration?,
+        eventResourcesProvider: EventResourcesProvider,
+    ) = DateEditionWarningHandler(
+        enrollmentConfiguration,
+        eventResourcesProvider,
+    )
+
+    @Provides
+    @PerActivity
+    fun provideResultDialogProvider(
+        resourceManager: ResourceManager,
+    ): FormResultDialogProvider {
+        return FormResultDialogProvider(
+            FormResultDialogResourcesProvider(resourceManager),
+        )
+    }
+
+    @Provides
+    @PerActivity
     fun dashboardRepository(
         d2: D2,
         charts: Charts,
@@ -70,26 +99,6 @@ class TeiDashboardModule(
             teiAttributesProvider,
             preferenceProvider,
             metadataIconProvider,
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun rulesRepository(d2: D2): RulesRepository {
-        return RulesRepository(d2)
-    }
-
-    @Provides
-    @PerActivity
-    fun formRepository(
-        rulesRepository: RulesRepository,
-        d2: D2,
-    ): FormRepository {
-        val enrollmentUidToUse = enrollmentUid ?: ""
-        return EnrollmentFormRepository(
-            rulesRepository,
-            enrollmentUidToUse,
-            d2,
         )
     }
 
@@ -125,7 +134,15 @@ class TeiDashboardModule(
         repository: DashboardRepository,
         analyticsHelper: AnalyticsHelper,
         dispatcher: DispatcherProvider,
+        pageConfigurator: NavigationPageConfigurator,
+        resourcesManager: ResourceManager,
     ): DashboardViewModelFactory {
-        return DashboardViewModelFactory(repository, analyticsHelper, dispatcher)
+        return DashboardViewModelFactory(
+            repository,
+            analyticsHelper,
+            dispatcher,
+            pageConfigurator,
+            resourcesManager,
+        )
     }
 }

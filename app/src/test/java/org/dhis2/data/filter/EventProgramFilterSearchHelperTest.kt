@@ -62,8 +62,7 @@ class EventProgramFilterSearchHelperTest {
     @Test
     fun `Should return query by program`() {
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build(), null
-        )
+            Program.builder().uid("programUid").build())
         verify(filterRepository).eventsByProgram("programUid")
     }
 
@@ -71,8 +70,7 @@ class EventProgramFilterSearchHelperTest {
     @Test
     fun `Should not apply any filters if not set`() {
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build(), null
-        )
+            Program.builder().uid("programUid").build())
         verify(filterRepository, times(0)).applyOrgUnitFilter(
             any<EventQueryCollectionRepository>(),
             any(),
@@ -114,8 +112,7 @@ class EventProgramFilterSearchHelperTest {
         ) doReturn mock()
 
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build(), null
-        )
+            Program.builder().uid("programUid").build())
 
         verify(filterRepository, times(1))
             .applyOrgUnitFilter(any<EventQueryCollectionRepository>(), any())
@@ -134,8 +131,7 @@ class EventProgramFilterSearchHelperTest {
     fun `Should apply sorting for supported sorting type`() {
         filterManager.sortingItem = SortingItem(Filters.PERIOD, SortingStatus.ASC)
         eventFilterSearchHelper.getFilteredEventRepository(
-            Program.builder().uid("programUid").build(), null
-        )
+            Program.builder().uid("programUid").build())
         verify(filterRepository, times(1)).sortByEventDate(any(), any())
     }
 }

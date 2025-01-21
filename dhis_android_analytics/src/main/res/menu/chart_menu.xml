@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <group android:id="@+id/visualization">
+    <group>
     <item
         android:id="@+id/showBarGraph"
         android:icon="@drawable/ic_bar_chart"
@@ -35,7 +35,7 @@
         app:iconTint="?attr/colorPrimary"
         android:title="@string/search"/>
     </group>
-    <group android:id="@+id/filters">
+    <group>
         <item
             android:id="@+id/periodFilter"
             android:icon="@drawable/ic_calendar_chart"

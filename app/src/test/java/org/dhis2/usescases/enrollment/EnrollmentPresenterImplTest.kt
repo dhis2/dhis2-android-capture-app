@@ -5,7 +5,6 @@ import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.form.data.EnrollmentRepository
 import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.CHECK
 import org.dhis2.usescases.enrollment.EnrollmentActivity.EnrollmentMode.NEW
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
@@ -39,7 +38,6 @@ class EnrollmentPresenterImplTest {
     private val enrollmentFormRepository: EnrollmentFormRepository = mock()
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
     private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
-    private val dataEntryRepository: EnrollmentRepository = mock()
     lateinit var presenter: EnrollmentPresenterImpl
     private val enrollmentView: EnrollmentView = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -49,6 +47,7 @@ class EnrollmentPresenterImplTest {
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val eventCollectionRepository: EventCollectionRepository = mock()
     private val teiAttributesProvider: TeiAttributesProvider = mock()
+    private val dateEntryWarningHelper: DateEditionWarningHandler = mock()
 
     @Before
     fun setUp() {
@@ -56,7 +55,6 @@ class EnrollmentPresenterImplTest {
             enrollmentView,
             d2,
             enrollmentRepository,
-            dataEntryRepository,
             teiRepository,
             programRepository,
             schedulers,
@@ -65,6 +63,7 @@ class EnrollmentPresenterImplTest {
             matomoAnalyticsController,
             eventCollectionRepository,
             teiAttributesProvider,
+            dateEntryWarningHelper,
         )
     }
 

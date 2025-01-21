@@ -136,8 +136,6 @@
     <string name="delete">Slett</string>
     <string name="total">Totalt</string>
     <string name="most_recent_event_date">Siste hendelsesdato</string>
-    <!--TEI Enrollment list-->
-    <string name="enrollment_list">Registreringsliste</string>
     <string name="active_programs">Aktive programmer</string>
     <string name="to_enroll_programs">Programmer å registrere</string>
     <string name="enroll">Registrere</string>
@@ -295,7 +293,6 @@
     <string name="qr_error_attr">Denne attributten kan ikke legges til</string>
     <string name="qr_error_enrollment">Denne registreringen kan ikke legges til</string>
 
-    <string name="jira_report">Rapporter et Jira problem</string>
     <string name="about">Om</string>
     <string name="programs_to_enroll">Programmer å registrere</string>
     <string name="select_all">velg alle</string>
@@ -359,10 +356,6 @@
     <string name="date_dialog_tigle">Velg datoer for å filtrere</string>
     <string name="select_option">Velg et alternativ</string>
     <string name="issue_reported">Problemer rapportert</string>
-    <string name="jira_credential_error">Sjekk at din jira bruker og passord er korrekt</string>
-    <string name="jira_issue_error">Feil ved rapportering av problemet</string>
-    <string name="jira_fields_error">Alle felt er obligatoriske</string>
-    <string name="dialog_generate_new_event">Generer en ny hendelse</string>
     <string name="message_generate_new_event">Vil du opprette en ny hendelse?</string>
     <string name="event_completed_title">Hendelser er fullført</string>
     <string name="event_completed_message">Alle hendelser i dette programmet er fullført. Vil du lukke programmet også?</string>
@@ -405,7 +398,6 @@
     <string name="tuto_main_10">Logg ut for å endre bruker på server. Du vil kunne logge inn igjen selv om det ikke er noen internettilkobling.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relasjoner</string>
-    <string name="empty_relationships">Det er ingen relasjoner, klikk \"+\" for å legge til en ny.</string>
     <string name="empty_tei_add">Det er ingen hendelser registrert, klikk \"+\" for å legge til en ny.</string>
     <string name="empty_tei_no_add">Det er ingen hendelser registrert.</string>
     <string name="qr_data_values">Dataverdier</string>
@@ -669,12 +661,9 @@
     <string name="download_tei_error">Den valgte %s kunne ikke lastes ned</string>
     <string name="completed_by">Fullført av %s: %s</string>
     <string name="updated_time">Oppdatert: %s</string>
-    <string name="action_done">Fullført!</string>
     <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
-    <string name="group_events_by_stage">Grupper hendelser per fase</string>
-    <string name="show_events_timeline">Vis tidslinjen for hendelser</string>
     <string name="filters_title_date">Dato</string>
     <string name="filters_title_event_date">Hendelsesdato</string>
     <string name="tei_type_has_no_attributes">%shar ingen offentlige attributter. Velg et program</string>
@@ -695,19 +684,7 @@
     <string name="customactivityoncrash_error_activity_error_details_copied">Kopiert til utklippstavle</string>
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasjon om feil</string>
     <string name="enrollment_date_edition_warning">Det er planlagte arrangementer som ikke vil bli planlagt på nytt</string>
-    <string name="jira_issue_sent">Sak sendt</string>
-    <string name="jira_issue_sent_error">Feil ved sending av sak</string>
     <string name="section_charts">Diagrammer</string>
-    <string name="navigation_list_view">Listevisning</string>
-    <string name="navigation_table_view">Tabellvisning</string>
-    <string name="navigation_map_view">Kartvisning</string>
-    <string name="navigation_analytics">Analyser</string>
-    <string name="navigation_tasks">Oppgaver</string>
-    <string name="navigation_programs">Programmer</string>
-    <string name="navigation_relationships">Relasjoner</string>
-    <string name="navigation_notes">Notater</string>
-    <string name="navigation_data_entry">Dataregistrering</string>
-    <string name="navigation_tei_data">Detaljer</string>
     <string name="show_table_graph">Vis som tabell</string>
     <string name="filter_period_this_year">Dette året</string>
     <string name="filter_period_this_bimonth">Denne tomåned</string>

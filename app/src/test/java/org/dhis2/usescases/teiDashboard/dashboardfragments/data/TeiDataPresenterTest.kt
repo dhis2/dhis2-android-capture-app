@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
+import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.resources.D2ErrorUtils
@@ -21,8 +22,8 @@ import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.model.EventMode
 import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.usescases.programEventDetail.usecase.CreateEventUseCase
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.EventCreationOptionsMapper
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataContracts
@@ -202,7 +203,7 @@ class TeiDataPresenterTest {
             dashboardRepository.displayGenerateEvent("eventUid"),
         ) doReturn Observable.just(programStage)
         teiDataPresenter.displayGenerateEvent("eventUid")
-        verify(view).displayScheduleEvent()
+        verify(view).displayScheduleEvent(programStage = null, showYesNoOptions = true, eventCreationType = EventCreationType.SCHEDULE)
     }
 
     @Test
@@ -324,6 +325,22 @@ class TeiDataPresenterTest {
         )
 
         verify(view).displayMessage(errorMessage)
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `should display schedule event without yes and no options, when schedule event option is selected`() {
+        // given
+        val programStage = ProgramStage.builder().uid("stage").build()
+
+        // when
+        teiDataPresenter.onAddNewEventOptionSelected(
+            eventCreationType = EventCreationType.SCHEDULE,
+            stage = programStage,
+        )
+
+        // then
+        verify(view).displayScheduleEvent(programStage = programStage, showYesNoOptions = false, eventCreationType = EventCreationType.SCHEDULE)
         verifyNoMoreInteractions(view)
     }
 

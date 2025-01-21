@@ -28,6 +28,7 @@ data class EventViewModel(
     val editable: Boolean = true,
     val displayOrgUnit: Boolean = true,
 ) {
+    var isClicked: Boolean = false
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen
     }

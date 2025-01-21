@@ -1,10 +1,6 @@
 This is a patch version that fixes:
-- Working lists aren't applied even when active.
-- Cannot navigate to event details or sync event after navigating back from details.
-- Login error in landscape.
-- Data entry not saving more than one value.
-- Incorrect workflow of Org unit when creating event.
-- Crash when rotating device in settings activity.
-- Option set not working well in data set if the code of option contains character "_".
+- ANDROAPP-6653 Large option sets freeze the app
+- ANDROAPP-6665 Filters persists when exiting the program or data set
+- ANDROAPP-6691 NullPointerException: Dataset table
 
-Also stability issues. You can find all the details on Github.
+You can find all the details on Jira and Github.

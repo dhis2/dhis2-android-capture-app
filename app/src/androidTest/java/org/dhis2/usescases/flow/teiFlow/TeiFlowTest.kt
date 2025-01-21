@@ -2,17 +2,18 @@ package org.dhis2.usescases.flow.teiFlow
 
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.LazyActivityScenarioRule
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
@@ -22,12 +23,8 @@ import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class TeiFlowTest : BaseTest() {
-
     @get:Rule
-    val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
-
-    @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val ruleSearch = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -53,7 +50,6 @@ class TeiFlowTest : BaseTest() {
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
-        enableComposeForms()
         setupCredentials()
         setDatePicker()
         prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
@@ -100,11 +96,16 @@ class TeiFlowTest : BaseTest() {
         return dateFormat
     }
 
-    private fun prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-        Intent().apply {
+    private fun prepareWomanProgrammeIntentAndLaunchActivity(
+        ruleSearch: LazyActivityScenarioRule<SearchTEActivity>
+    ) {
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            SearchTEActivity::class.java
+        ).apply {
             putExtra(PROGRAM_UID, WOMAN_PROGRAM_UID_VALUE)
             putExtra(TE_TYPE, WOMAN_TE_TYPE_VALUE)
-        }.also { ruleSearch.launchActivity(it) }
+        }.also { ruleSearch.launch(it) }
     }
 
     companion object {
@@ -117,5 +118,7 @@ class TeiFlowTest : BaseTest() {
         const val ORG_UNIT = "Ngelehun CHC"
         const val NAME = "Marta"
         const val LASTNAME = "Stuart"
+
+        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }

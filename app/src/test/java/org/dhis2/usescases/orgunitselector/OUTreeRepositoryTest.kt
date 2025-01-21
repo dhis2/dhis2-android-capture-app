@@ -58,19 +58,23 @@ class OUTreeRepositoryTest {
 
     @Test
     fun `Should return all orgUnits that contains name`() {
-        val orgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
+        val orgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
         val name = "name"
+        val filteredOrgUnits = mutableListOf(dummyOrgUnit(), dummyOrgUnit(), dummyOrgUnit())
 
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
         whenever(
             ouRepositoryConfiguration.orgUnitRepository(name = name),
+        ) doReturn filteredOrgUnits
+        whenever(
+            ouRepositoryConfiguration.orgUnitRepository(name = null),
         ) doReturn orgUnits
 
         val result = repository.orgUnits(name)
 
         assertTrue(result.isNotEmpty())
-        assertTrue(result == orgUnits)
+        assertTrue(result.size == 3)
     }
 
     @Test
@@ -127,34 +131,6 @@ class OUTreeRepositoryTest {
 
         assertTrue(result.isNotEmpty())
         assertTrue(result == orderedOus)
-    }
-
-    @Test
-    fun `Should return initial orgUnits with parents`() {
-        val ou1 = dummyOrderOrgUnit(uid = "ou1", level = 1)
-        val ou12 = dummyOrderOrgUnit(parents = listOf("ou1"), uid = "ou12", level = 2)
-        val ou121 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou121", level = 3)
-        val ou122 = dummyOrderOrgUnit(parents = listOf("ou1", "ou12"), uid = "ou122", level = 3)
-
-        val orgUnits = listOf(ou121, ou122)
-
-        val ousWithParents = listOf(ou1, ou12, ou121, ou122)
-        val repository = OUTreeRepository(ouRepositoryConfiguration)
-
-        whenever(
-            ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
-        ) doReturn orgUnits
-        whenever(
-            ouRepositoryConfiguration.orgUnit("ou1"),
-        ) doReturn ou1
-        whenever(
-            ouRepositoryConfiguration.orgUnit("ou12"),
-        ) doReturn ou12
-
-        val result = repository.orgUnits()
-
-        assertTrue(result.isNotEmpty())
-        assertTrue(result == ousWithParents)
     }
 
     private fun dummyOrgUnit(

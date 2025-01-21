@@ -1,15 +1,27 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.mapbox.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.data.tuples.Trio
-import org.dhis2.commons.schedulers.SchedulerProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.dhis2.commons.date.DateLabelProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
+import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
-import org.dhis2.maps.mapper.MapRelationshipToRelationshipMapModel
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.model.RelationshipModel
+import org.dhis2.tracker.relationships.model.RelationshipOwnerType
+import org.dhis2.tracker.ui.AvatarProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_RELATIONSHIP
@@ -19,21 +31,25 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.relationship.RelationshipHelper
 import org.hisp.dhis.android.core.relationship.RelationshipType
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import timber.log.Timber
 
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,
     private val d2: D2,
-    private val programUid: String?,
     private val teiUid: String?,
     private val eventUid: String?,
-    private val relationshipRepository: RelationshipRepository,
-    private val schedulerProvider: SchedulerProvider,
+    private val relationshipMapsRepository: RelationshipMapsRepository,
     private val analyticsHelper: AnalyticsHelper,
-    private val mapRelationshipToRelationshipMapModel: MapRelationshipToRelationshipMapModel,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
     private val mapStyleConfig: MapStyleConfiguration,
+    private val relationshipsRepository: RelationshipsRepository,
+    private val avatarProvider: AvatarProvider,
+    private val dateLabelProvider: DateLabelProvider,
+    dispatcherProvider: DispatcherProvider,
 ) {
+
+    private lateinit var layersVisibility: Map<String, MapLayer>
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val teiType: String? =
@@ -41,49 +57,73 @@ class RelationshipPresenter internal constructor(
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
             .blockingGet()?.trackedEntityType()
-    private val programStageUid =
-        d2.eventModule().events().uid(eventUid).blockingGet()?.programStage()
+    private var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
-    var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
+    private val _relationshipsModels = MutableLiveData<List<RelationshipModel>>()
+    private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
+    val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
+    private val _mapItemClicked = MutableLiveData<String>()
+    val mapItemClicked: LiveData<String> = _mapItemClicked
+    private val job = Job()
+    private val scope = CoroutineScope(dispatcherProvider.ui() + job)
 
     fun init() {
-        compositeDisposable.add(
-            updateRelationships.startWith(true)
-                .flatMapSingle { relationshipRepository.relationships() }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.setRelationships(it)
-                        val relationshipModel = mapRelationshipToRelationshipMapModel.mapList(it)
-                        view.setFeatureCollection(
-                            teiUid,
-                            relationshipModel,
-                            mapRelationshipsToFeatureCollection.map(relationshipModel),
-                        )
-                    },
-                    { Timber.d(it) },
-                ),
-        )
+        scope.launch {
+            relationshipsRepository.getRelationships().collect {
+                _relationshipsModels.postValue(it)
 
-        compositeDisposable.add(
-            relationshipRepository.relationshipTypes()
-                .map { list ->
-                    val finalList = ArrayList<Trio<RelationshipType, String, Int>>()
-                    for (rType in list) {
-                        val iconResId =
-                            relationshipRepository.getTeiTypeDefaultRes(rType.second)
-                        finalList.add(Trio.create(rType.first, rType.second, iconResId))
-                    }
-                    finalList
+                val mapItems = it.map { relationship ->
+                    val mapItem = MapItemModel(
+                        uid = relationship.ownerUid,
+                        avatarProviderConfiguration = avatarProvider.getAvatar(
+                            style = relationship.ownerStyle,
+                            profilePath = relationship.getPicturePath(),
+                            firstAttributeValue = relationship.firstMainValue(),
+                        ),
+                        title = relationship.displayRelationshipName(),
+                        description = relationship.displayDescription(),
+                        lastUpdated = dateLabelProvider.span(relationship.displayLastUpdated()),
+                        additionalInfoList = relationship.displayAttributes().map {
+                            AdditionalInfoItem(
+                                key = it.first,
+                                value = it.second,
+                            )
+                        },
+                        isOnline = false,
+                        geometry = relationship.displayGeometry(),
+                        relatedInfo = relationshipMapsRepository.getRelatedInfo(
+                            ownerType = relationship.ownerType,
+                            ownerUid = relationship.ownerUid,
+                        ),
+                        state = relationship.relationship.syncState() ?: State.SYNCED,
+                    )
+                    relationshipMapsRepository.addRelationshipInfo(
+                        mapItem,
+                        relationship.relationship,
+                    )
                 }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.initFab(it.toMutableList()) },
-                    { Timber.e(it) },
-                ),
-        )
+
+                mapItems.let {
+                    val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
+                    val relationshipMapData = if (::layersVisibility.isInitialized) {
+                        RelationshipMapData(
+                            mapItems = mapItems.filterRelationshipsByLayerVisibility(
+                                layersVisibility,
+                            ),
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    } else {
+                        RelationshipMapData(
+                            mapItems = mapItems,
+                            relationshipFeatures = featureCollection.first,
+                            boundingBox = featureCollection.second,
+                        )
+                    }
+                    _relationshipMapData.postValue(relationshipMapData)
+                }
+            }
+        }
     }
 
     fun goToAddRelationship(teiTypeToAdd: String, relationshipType: RelationshipType) {
@@ -197,13 +237,34 @@ class RelationshipPresenter internal constructor(
         when (ownerType) {
             RelationshipOwnerType.EVENT -> openEvent(
                 ownerUid,
-                relationshipRepository.getEventProgram(ownerUid),
+                relationshipMapsRepository.getEventProgram(ownerUid),
             )
+
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
     }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         return mapStyleConfig.fetchMapStyles()
+    }
+
+    fun onFeatureClicked(feature: Feature) {
+        feature.toStringProperty()?.let {
+            _mapItemClicked.postValue(it)
+        }
+    }
+
+    fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
+        this.layersVisibility = layersVisibility
+    }
+
+    fun onMapRelationshipClicked(uid: String) {
+        val relationship = _relationshipsModels.value?.firstOrNull { uid == it.ownerUid }
+        relationship?.let {
+            onRelationshipClicked(
+                ownerType = it.ownerType,
+                ownerUid = it.ownerUid,
+            )
+        }
     }
 }

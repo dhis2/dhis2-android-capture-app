@@ -23,4 +23,5 @@ enum class UiRenderType {
     fun isCheckBox() = this == VERTICAL_CHECKBOXES || this == HORIZONTAL_CHECKBOXES
     fun isVisualOptionSet() = this == MATRIX || this == SEQUENCIAL
     fun isPolygon() = this == POLYGON || this == MULTI_POLYGON
+    fun isQROrBarcode() = this == QR_CODE || this == BAR_CODE
 }

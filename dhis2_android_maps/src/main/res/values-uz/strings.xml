@@ -14,4 +14,4 @@
     <string name="dialog_layer_tei_coordinates">TEI координаталарини кўрсатиш</string>
     <string name="dialog_layer_heatmap">Иссиқлик харитаси қатламини кўрсатиш</string>
     <string name="map_attributionErrorNoBrowser">Қурилмада Веб браузер ўрнатилмаган, веб саҳифани очишнинг иложи йўқ.</string>
-</resources>
+    </resources>

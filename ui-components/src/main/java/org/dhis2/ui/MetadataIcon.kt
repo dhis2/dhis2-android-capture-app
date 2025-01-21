@@ -24,17 +24,18 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.ui.theme.programColorDark
 import org.dhis2.ui.theme.programColorLight
-import org.hisp.dhis.mobile.ui.designsystem.component.AvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 
 @Composable
 fun MetadataIcon(
     modifier: Modifier = Modifier,
     metadataIconData: MetadataIconData,
-    size: AvatarSize = AvatarSize.Normal,
+    size: MetadataAvatarSize = MetadataAvatarSize.M(),
 ) {
     MetadataAvatar(
+        modifier = modifier,
         icon = {
             if (metadataIconData.isFileLoaded()) {
                 org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon(
@@ -98,7 +99,11 @@ fun MetadataIconPreview(
     MetadataIcon(metadataIconData = metadataIconData)
 }
 
-fun String.toColor() = Color(android.graphics.Color.parseColor(this))
+fun String.toColor() = try {
+    Color(android.graphics.Color.parseColor(this))
+} catch (e: Exception) {
+    Color.Unspecified
+}
 
 class MetadataIconDataParamProvider : PreviewParameterProvider<MetadataIconData> {
     override val values: Sequence<MetadataIconData>

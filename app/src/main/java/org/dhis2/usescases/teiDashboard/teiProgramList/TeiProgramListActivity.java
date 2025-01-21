@@ -9,11 +9,10 @@ import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.main.program.ProgramViewModel;
+import org.dhis2.usescases.main.program.ProgramUiModel;
 
 import java.util.List;
 
@@ -31,8 +30,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     TeiProgramListAdapter adapter;
     @Inject
     ThemeManager themeManager;
-    @Inject
-    SyncStatusController syncStatusController;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,8 +38,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-
-        syncStatusController.observeDownloadProcess().observe(this, syncStatusData -> presenter.refreshData());
     }
 
     @Override
@@ -74,7 +69,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void setPrograms(List<ProgramViewModel> programs) {
+    public void setPrograms(List<ProgramUiModel> programs) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }

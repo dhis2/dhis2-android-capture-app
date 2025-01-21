@@ -21,7 +21,7 @@ object TeiMarkers {
             Bitmap.Config.ARGB_8888,
         )
         val markerBitmap =
-            Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, canvasMarker.config)
+            Bitmap.createBitmap(canvasMarker.width, canvasMarker.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(markerBitmap)
 
         drawable.setBounds(0, 0, canvas.width, canvas.height)

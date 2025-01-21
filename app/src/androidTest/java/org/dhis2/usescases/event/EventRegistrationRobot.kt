@@ -3,30 +3,36 @@ package org.dhis2.usescases.event
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
 
-fun eventRegistrationRobot(eventRegistrationRobot: EventRegistrationRobot.() -> Unit) {
-    EventRegistrationRobot().apply {
+fun eventRegistrationRobot(
+    composeTestRule: ComposeTestRule,
+    eventRegistrationRobot: EventRegistrationRobot.() -> Unit
+) {
+    EventRegistrationRobot(composeTestRule).apply {
         eventRegistrationRobot()
     }
 }
 
-class EventRegistrationRobot : BaseRobot() {
+class EventRegistrationRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun openMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())
     }
 
     fun clickOnDelete() {
-        onView(withText(R.string.delete)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.delete)).performClick()
+        }
     }
 
     fun checkEventDataEntryIsOpened(completion: Int, email: String, composeTestRule: ComposeTestRule) {
@@ -36,7 +42,9 @@ class EventRegistrationRobot : BaseRobot() {
     }
 
     fun clickOnShare() {
-        onView(withText(R.string.share)).perform(click())
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.onNodeWithText(getString(R.string.share)).performClick()
+        }
     }
 
     private fun clickOnNextQR() {

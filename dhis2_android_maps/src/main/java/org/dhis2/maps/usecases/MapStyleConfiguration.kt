@@ -1,11 +1,29 @@
 package org.dhis2.maps.usecases
 
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 
-class MapStyleConfiguration(private val d2: D2) {
+const val DEFAULT_FORCED_LOCATION_ACCURACY = -1
+
+class MapStyleConfiguration(
+    private val d2: D2,
+    val programUid: String? = null,
+    programConfigurationRepository: ProgramConfigurationRepository,
+) {
+
+    private val canCaptureManually = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
+        ?.let { programConfiguration ->
+            programConfiguration.disableManualLocation() != true
+        } ?: true
+
+    private val forcedLocationPrecision = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
+        ?.let { programConfiguration ->
+            programConfiguration.minimumLocationAccuracy() ?: DEFAULT_FORCED_LOCATION_ACCURACY
+        } ?: DEFAULT_FORCED_LOCATION_ACCURACY
+
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()
         return d2.mapsModule().mapLayers().withImageryProviders().blockingGet()
@@ -20,6 +38,10 @@ class MapStyleConfiguration(private val d2: D2) {
                 build(id, tileUrls, attribution, defaultMap == mapLayer.uid())
             }
     }
+
+    fun isManualCaptureEnabled(): Boolean = canCaptureManually
+
+    fun getForcedLocationAccuracy(): Int = forcedLocationPrecision
 }
 
 fun String.mapTileUrls(subdomainPlaceholder: String?, subdomains: List<String>?): List<String> {

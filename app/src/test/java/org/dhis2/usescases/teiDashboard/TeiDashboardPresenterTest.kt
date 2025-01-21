@@ -216,4 +216,11 @@ class TeiDashboardPresenterTest {
         verify(view).displayStatusError(StatusChangeResultCode.ACTIVE_EXIST)
         verifyNoMoreInteractions(view)
     }
+
+    @Test
+    fun `Should open org unit selector when transfer option is clicked`() {
+        presenter.onTransferClick()
+
+        verify(view).showOrgUnitSelector(programUid)
+    }
 }

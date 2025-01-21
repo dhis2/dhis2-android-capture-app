@@ -17,6 +17,7 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,8 +51,11 @@ import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
@@ -196,24 +200,50 @@ fun SearchParametersScreen(
                     .weight(1F)
                     .verticalScroll(rememberScrollState()),
             ) {
-                uiState.items.forEachIndexed { index, fieldUiModel ->
-                    fieldUiModel.setCallback(callback)
-                    ParameterSelectorItem(
-                        modifier = Modifier
-                            .testTag("SEARCH_PARAM_ITEM"),
-                        model = provideParameterSelectorItem(
-                            resources = resourceManager,
-                            focusManager = focusManager,
-                            fieldUiModel = fieldUiModel,
-                            callback = callback,
-                            onNextClicked = {
-                                val nextIndex = index + 1
-                                if (nextIndex < uiState.items.size) {
-                                    uiState.items[nextIndex].onItemClick()
-                                }
-                            },
-                        ),
-                    )
+                if (uiState.items.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        InfoBar(
+                            infoBarData = InfoBarData(
+                                text = resourceManager.getString(R.string.empty_search_attributes_message),
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ErrorOutline,
+                                        contentDescription = "warning",
+                                        tint = AdditionalInfoItemColor.WARNING.color,
+                                    )
+                                },
+                                color = AdditionalInfoItemColor.WARNING.color,
+                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                                actionText = null,
+                                onClick = {},
+                            ),
+                            Modifier.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
+                        )
+                    }
+                } else {
+                    uiState.items.forEachIndexed { index, fieldUiModel ->
+                        fieldUiModel.setCallback(callback)
+                        ParameterSelectorItem(
+                            modifier = Modifier
+                                .testTag("SEARCH_PARAM_ITEM"),
+                            model = provideParameterSelectorItem(
+                                resources = resourceManager,
+                                focusManager = focusManager,
+                                fieldUiModel = fieldUiModel,
+                                callback = callback,
+                                onNextClicked = {
+                                    val nextIndex = index + 1
+                                    if (nextIndex < uiState.items.size) {
+                                        uiState.items[nextIndex].onItemClick()
+                                    }
+                                },
+                            ),
+                        )
+                    }
                 }
 
                 if (uiState.clearSearchEnabled) {
@@ -275,7 +305,6 @@ fun SearchFormPreview() {
             items = listOf(
                 FieldUiModelImpl(
                     uid = "uid1",
-                    layoutId = 1,
                     label = "Label 1",
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,
@@ -283,7 +312,6 @@ fun SearchFormPreview() {
                 ),
                 FieldUiModelImpl(
                     uid = "uid2",
-                    layoutId = 2,
                     label = "Label 2",
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,

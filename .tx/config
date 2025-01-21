@@ -57,3 +57,10 @@ source_file  = compose-table/src/main/res/values/strings.xml
 source_lang  = en
 type         = ANDROID
 minimum_perc = 0
+
+[o:hisp-uio:p:dhis2-android-capture-app:r:tracker-strings-xml]
+file_filter  = tracker/src/main/res/values-<lang>/strings.xml
+source_file  = tracker/src/main/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0

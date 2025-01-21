@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,10 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.graphics.toColorInt
-import org.dhis2.ui.IconTextButton
 import org.dhis2.ui.R
 import org.dhis2.ui.model.InputData
 import org.dhis2.ui.theme.defaultFontFamily
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
 fun BoxedInput(
@@ -62,7 +63,7 @@ fun BoxedInput(
         ) {
             val (leadingIconRef, contentRef, trailingIconsRef) = createRefs()
             leadingIcon(
-                modifier = Modifier.constrainAs(leadingIconRef) {
+                Modifier.constrainAs(leadingIconRef) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -70,7 +71,7 @@ fun BoxedInput(
                 },
             )
             content(
-                modifier = Modifier.constrainAs(contentRef) {
+                Modifier.constrainAs(contentRef) {
                     start.linkTo(leadingIconRef.end, 8.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -158,11 +159,17 @@ fun FileInputWithoutValue(
     enabled: Boolean,
     onAddFile: () -> Unit,
 ) {
-    IconTextButton(
+    Button(
         modifier = modifier,
         enabled = enabled,
+        style = ButtonStyle.OUTLINED,
         onClick = onAddFile,
-        painter = painterResource(id = R.drawable.ic_file),
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_file),
+                contentDescription = "",
+            )
+        },
         text = label,
     )
 }
@@ -189,21 +196,29 @@ fun FileInputWithValue(
             }
         },
         trailingIcons = {
-            IconButton(enabled = enabled, onClick = onDownloadClick) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_download),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            IconButton(
+                enabled = enabled,
+                onClick = onDownloadClick,
+                icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_download),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                },
+            )
 
-            IconButton(enabled = enabled, onClick = { onDeleteFile() }) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            IconButton(
+                enabled = enabled,
+                onClick = { onDeleteFile() },
+                icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                },
+            )
         },
     ) { modifier ->
         FileDescription(modifier = modifier, fileInputData = fileInputData)

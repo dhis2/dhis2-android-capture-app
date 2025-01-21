@@ -464,7 +464,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         updateCellValue: (TableCell) -> Unit,
     ) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .withPreselectedOrgUnits(cell.value?.let { listOf(it) } ?: emptyList())
             .onSelection { selectedOrgUnits ->

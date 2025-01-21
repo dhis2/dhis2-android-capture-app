@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -55,6 +54,7 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
 @Composable
 fun DropdownComponentTransactions(
@@ -122,9 +122,10 @@ fun DropdownComponentTransactions(
                     onClick = {
                         isExpanded = !isExpanded
                     },
-                ) {
-                    Icon(icon, contentDescription = null, tint = themeColor)
-                }
+                    icon = {
+                        Icon(icon, contentDescription = null, tint = themeColor)
+                    },
+                )
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
@@ -271,13 +272,14 @@ fun DropdownComponentFacilities(
                             launchDialog,
                         )
                     },
-                ) {
-                    Icon(
-                        painterResource(id = R.drawable.ic_arrow_drop_down),
-                        contentDescription = null,
-                        tint = themeColor,
-                    )
-                }
+                    icon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_arrow_drop_down),
+                            contentDescription = null,
+                            tint = themeColor,
+                        )
+                    },
+                )
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
@@ -373,9 +375,10 @@ fun DropdownComponentDistributedTo(
                     onClick = {
                         isExpanded = !isExpanded
                     },
-                ) {
-                    Icon(icon, contentDescription = null, tint = themeColor)
-                }
+                    icon = {
+                        Icon(icon, contentDescription = null, tint = themeColor)
+                    },
+                )
             },
             shape = RoundedCornerShape(30.dp),
             placeholder = {
@@ -463,7 +466,6 @@ fun openOrgUnitTreeSelector(
     launchDialog: (msg: Int, (result: EditionDialogResult) -> Unit) -> Unit,
 ) {
     OUTreeFragment.Builder()
-        .showAsDialog()
         .singleSelection()
         .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(settingsUiState.programUid))
         .withPreselectedOrgUnits(

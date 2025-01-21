@@ -18,7 +18,6 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
@@ -26,6 +25,7 @@ import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -74,7 +74,6 @@ open class BaseTest {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
             mockWebServerRobot = providesMockWebserverRobot(context)
-            disableComposeForms()
         }
     }
 
@@ -86,6 +85,7 @@ open class BaseTest {
             SearchIdlingResourceSingleton.countingIdlingResource,
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
+            OnMapReadyIdlingResourceSingleton.countingIdlingResource,
         )
     }
 
@@ -165,23 +165,11 @@ open class BaseTest {
         (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
     }
 
-    private fun disableComposeForms() {
-        preferencesRobot.saveValue(SET_FROM_TESTING, true)
-        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
-    }
-
-
-    fun enableComposeForms() {
-        preferencesRobot.saveValue(SET_FROM_TESTING, true)
-        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, true)
-    }
-
     companion object {
         @ClassRule
         @JvmField
         val disableAnimationsTestRule = DisableAnimations()
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
         const val API = "api"
-        const val SET_FROM_TESTING = "SET_FROM_TESTING"
     }
 }
