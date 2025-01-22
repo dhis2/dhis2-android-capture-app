@@ -27,8 +27,23 @@ data class InfoBarUiModel(
     val showInfoBar: Boolean = false,
 )
 
+data class QuickActionUiModel(
+    val label: String,
+    val icon: @Composable () -> Unit,
+    val onActionClick: () -> Unit,
+)
+
 enum class InfoBarType {
     SYNC,
     FOLLOW_UP,
     ENROLLMENT_STATUS,
+}
+
+enum class QuickActionType {
+    MARK_FOLLOW_UP,
+    TRANSFER,
+    COMPLETE_ENROLLMENT,
+    CANCEL_ENROLLMENT,
+    REOPEN_ENROLLMENT,
+    MORE_ENROLLMENTS,
 }

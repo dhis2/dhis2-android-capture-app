@@ -1,18 +1,24 @@
 package org.dhis2.usescases.teiDashboard.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarUiModel
+import org.dhis2.usescases.teiDashboard.ui.model.QuickActionUiModel
 import org.dhis2.usescases.teiDashboard.ui.model.TeiCardUiModel
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AssistChip
 import org.hisp.dhis.mobile.ui.designsystem.component.CardDetail
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
@@ -27,6 +33,7 @@ fun TeiDetailDashboard(
     timelineEventHeaderModel: TimelineEventsHeaderModel,
     isGrouped: Boolean = true,
     timelineOnEventCreationOptionSelected: (EventCreationType) -> Unit,
+    quickActions: List<QuickActionUiModel>,
 ) {
     Column(
         modifier = Modifier
@@ -97,6 +104,21 @@ fun TeiDetailDashboard(
                 shrinkLabelText = card.shrinkLabelText,
                 showLoading = card.showLoading,
             )
+        }
+
+        if (quickActions.isNotEmpty()) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
+                contentPadding = PaddingValues(horizontal = Spacing.Spacing16),
+            ) {
+                items(quickActions) {
+                    AssistChip(
+                        label = it.label,
+                        icon = it.icon,
+                        onClick = it.onActionClick,
+                    )
+                }
+            }
         }
 
         if (!isGrouped) {

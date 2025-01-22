@@ -28,6 +28,7 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.QuickActionsMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -133,13 +134,6 @@ class TEIDataModule(
     }
 
     @Provides
-    fun provideProgramConfigurationRepository(
-        d2: D2,
-    ): ProgramConfigurationRepository {
-        return ProgramConfigurationRepository(d2)
-    }
-
-    @Provides
     fun provideEventCreationsOptionsMapper(
         resourceManager: ResourceManager,
     ): EventCreationOptionsMapper {
@@ -158,6 +152,13 @@ class TEIDataModule(
         resourceManager: ResourceManager,
     ): InfoBarMapper {
         return InfoBarMapper(resourceManager)
+    }
+
+    @Provides
+    fun provideQuickActionMapper(
+        resourceManager: ResourceManager,
+    ): QuickActionsMapper {
+        return QuickActionsMapper(programUid, resourceManager)
     }
 
     @Provides

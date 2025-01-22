@@ -61,6 +61,7 @@ class FeatureConfigRepositoryImpl @Inject constructor(
             Feature.AUTO_LOGOUT -> null
             Feature.RESPONSIVE_HOME -> FeatureOptions.ResponsiveHome(totalItems = getResponsiveHomeTotalItems())
             Feature.COMPOSE_AGGREGATES_SCREEN -> null
+            Feature.QUICK_ACTIONS -> null
         }
     }
 
