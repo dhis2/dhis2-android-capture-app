@@ -37,14 +37,6 @@ sealed class RecyclerViewUiEvents {
         val orgUnitSelectorScope: OrgUnitSelectorScope?,
     ) : RecyclerViewUiEvents()
 
-    data class AddImage(
-        val uid: String,
-    ) : RecyclerViewUiEvents()
-
-    data class OpenFileSelector(
-        val field: FieldUiModel,
-    ) : RecyclerViewUiEvents()
-
     data class OpenFile(
         val field: FieldUiModel,
     ) : RecyclerViewUiEvents()
