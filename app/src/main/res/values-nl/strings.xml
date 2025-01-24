@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -95,7 +95,6 @@
     <string name="finish_and_complete">Afwerken en voltooi</string>
     <string name="completed">Voltooid</string>
     <string name="cancelled">Geannuleerd</string>
-    <string name="re_open">heropenen</string>
     <string name="activate">Activeren</string>
     <string name="active">Actief</string>
 
@@ -453,7 +452,6 @@
     <string name="biometrics_dialog_title">Lege inloggegevens</string>
     <string name="biometrics_first_use_text">Om in te kunnen loggen met de vingerafdrukscanner moet je eerst de standaardmanier gebruiken</string>
     <string name="biometrics_security_title">Biometrische beveiliging</string>
-    <string name="biometrics_security_text">Gebruik je je vingerafdruk om in te loggen met deze gebruiker?</string>
     <string name="tab_tables">Tafels</string>
     <string name="table">Tafel</string>
     <string name="login_https">https://</string>
@@ -465,7 +463,6 @@
     <string name="send_user_name_title">Verstuur data</string>
     <string name="send_user_name_mesage">Help DHIS2 deze app te verbeteren door foutenlogboeken te delen die zijn gekoppeld aan uw gebruikers-ID.</string>
     <string name="improve_app_msg_title">Wil je ons helpen deze app te verbeteren?</string>
-    <string name="improve_app_msg_text">Als u ja zegt, stuurt de app anonieme statistieken en foutlogboeken die ons helpen de gebruikerservaring en prestaties te verbeteren.\n\nRaadpleeg ons privacybeleid voor meer informatie.</string>
     <string name="improve_app_msg_clickable_word">privacybeleid</string>
     <string name="check_mandatory_field">Velden controleren</string>
     <string name="error_no_network_during_sync">Je internetverbinding is verbroken tijdens het uitvoeren van je configuratiesynchronisatie. Probeer het later opnieuw</string>
@@ -705,6 +702,13 @@
     <string name="error_init_session">We kunnen de sessie met uw gebruiker niet starten</string>
     <string name="enrollment_date_edition_warning">Er zijn geplande evenementen die niet opnieuw worden gepland</string>
     <string name="section_charts">Grafieken</string>
+    <string name="navigation_table_view">Tabel weergave</string>
+    <string name="navigation_analytics">Analyse</string>
+    <string name="navigation_tasks">Taken</string>
+    <string name="navigation_programs">Programma\'s</string>
+    <string name="navigation_notes">Notities</string>
+    <string name="navigation_data_entry">Gegevensinvoer</string>
+    <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Bekijk als balk</string>
     <string name="show_line_graph">Bekijk als lijn</string>
     <string name="show_table_graph">Bekijk als tabel</string>
@@ -866,7 +870,6 @@
         <item quantity="one">%s waarschuwing</item>
         <item quantity="other">%s waarschuwingen</item>
     </plurals>
-    <string name="new_version_message">App-versie <b> %s </b> is nu beschikbaar.\nWilt u deze downloaden?</string>
     <string name="software_update">Software-update</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download nu</string>

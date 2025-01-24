@@ -15,6 +15,10 @@ import org.apache.commons.io.FileUtils
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
+fun isFilePathValid(filePath: String): Boolean {
+    return filePath.isNotEmpty() && File(filePath).exists()
+}
+
 fun resizeToMinimum(minimum: Int? = null, width: Int, height: Int): Pair<Int, Int> {
     val ratio = width.toFloat() / height.toFloat()
 

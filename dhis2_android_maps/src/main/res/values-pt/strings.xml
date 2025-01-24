@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="select_location">Selecionar local</string>
+    <string name="select_location">Selecionar localização</string>
     <string name="map_layers">Camadas do mapa</string>
+    <string name="dialog_layer_base_map_osm_light">Abrir mapa de ruas leve</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Detalhado </string>
+    <string name="dialog_layer_base_map_bing_road">Estrada Bing</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing escuro</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing Aerial</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Etiquetas aéreas do Bing</string>
     <string name="action_apply">Aplicar</string>
     <string name="dialog_layer_satellite">Mostrar vista de satélite</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas tei</string>
     <string name="dialog_layer_heatmap">Mostrar camada do mapa de calor</string>
-    </resources>
+    <string name="map_attributionErrorNoBrowser">Sem navegador web instalado no dispositivo, não é possível abrir a página web.</string>
+    <string name="accuracy_range" >Faixa de precisão</string>
+    <string name="accuracy_good">Bom</string>
+    <string name="accuracy_low">Baixa</string>
+    <string name="accuracy_medium">Média</string>
+    <string name="accuracy_verygood">Muito bom</string>
+    <string name="accuracy_please_wait">Aguarde uma melhor precisão…</string>
+    <string name="location_not_available">A sua posição atual não está disponível.</string>
+    <string name="accuracy_can_not_improve">Esta é a melhor precisão que conseguimos obter.</string>
+    <string name="accuracy_minimun_set_not_allow">É necessária uma precisão mínima de %dpara guardar</string>
+    <string name="accuracy_minimun_set_allow">Queres salvá-lo?</string>
+    <string name="search_on_this_area">Pesquisar nesta área</string>
+    <string name="swipe_to_change_location">Deslize para alterar a localização</string>
+    <string name="select_location_title">Selecionar localização</string>
+    <string name="selet_location_subtitle">clicando no mesmo</string>
+    <string name="selected_location">Localização selecionada</string>
+    <string name="latitude_longitude">Lat: %1$s, Lon: %2$s</string>
+    <string name="drop_to_select">Soltar para selecionar a localização</string>
+</resources>

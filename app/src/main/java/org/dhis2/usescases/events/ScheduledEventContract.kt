@@ -1,5 +1,8 @@
 package org.dhis2.usescases.events
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.InputDateValues
 import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -32,5 +35,6 @@ class ScheduledEventContract {
         fun getEventTei(): String
         fun getEnrollment(): Enrollment?
         fun getSelectableDates(program: Program, isDueDate: Boolean): SelectableDates?
+        fun fetchPeriods(scheduling: Boolean): Flow<PagingData<Period>>
     }
 }

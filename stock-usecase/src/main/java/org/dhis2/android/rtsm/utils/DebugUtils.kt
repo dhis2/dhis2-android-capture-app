@@ -97,7 +97,7 @@ fun printRuleEffects(
     dataValues?.forEach {
         printRuleEngineData(
             buffer,
-            "      DE = ${it.dataElement}, value = ${it.value}, eventDate= ${it.eventDate}",
+            "      DE = ${it.dataElement}, value = ${it.value}",
         )
     }
     printSeparator(buffer)

@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.common.FeatureType
 
 object Injector {
-    @Suppress("UNCHECKED_CAST")
     fun provideMapSelectorViewModelFactory(
         context: Context,
         locationType: FeatureType,

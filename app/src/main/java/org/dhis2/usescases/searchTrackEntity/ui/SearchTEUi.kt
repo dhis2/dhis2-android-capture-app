@@ -24,13 +24,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -61,6 +60,8 @@ import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.SearchBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -198,7 +199,7 @@ fun SearchButtonWithQuery(
                 .clickable(
                     onClick = onClick,
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(
+                    indication = ripple(
                         true,
                         color = SurfaceColor.Primary,
                     ),
@@ -333,7 +334,7 @@ fun LoadingContent(loadingDescription: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CircularProgressIndicator()
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = loadingDescription,

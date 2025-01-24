@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.AnalyticGroup
+import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -119,6 +120,7 @@ class GroupAnalyticsViewModel(
     }
 
     fun fetchAnalytics(groupUid: String?) {
+        AnalyticsCountingIdlingResource.increment()
         currentGroup = groupUid
         viewModelScope.launch {
             val result = async(context = Dispatchers.IO) {

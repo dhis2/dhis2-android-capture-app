@@ -1,7 +1,10 @@
 package org.dhis2.form.data
 
+import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.flow.Flow
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.form.data.EnrollmentRepository.Companion.ENROLLMENT_DATE_UID
@@ -92,6 +95,10 @@ class FormRepositoryImpl(
 
     override fun activateEvent() {
         formValueStore.activateEvent()
+    }
+
+    override fun fetchPeriods(): Flow<PagingData<Period>> {
+        return dataEntryRepository.fetchPeriods()
     }
 
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
@@ -234,7 +241,7 @@ class FormRepositoryImpl(
 
         return when {
             (itemsWithErrors.isEmpty() && itemsWithWarning.isEmpty() && mandatoryItemsWithoutValue.isEmpty()) -> {
-                getSuccessfulResult(eventStatus)
+                getSuccessfulResult()
             }
 
             (itemsWithErrors.isNotEmpty()) -> {
@@ -285,7 +292,7 @@ class FormRepositoryImpl(
             EventStatus.COMPLETED -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
-                    canComplete = false,
+                    canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     eventResultDetails = EventResultDetails(
                         formValueStore.eventState(),
@@ -427,44 +434,16 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun getSuccessfulResult(eventStatus: EventStatus?): SuccessfulResult {
-        return when (eventStatus) {
-            EventStatus.ACTIVE -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-
-            EventStatus.COMPLETED -> {
-                SuccessfulResult(
-                    canComplete = false,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-
-            else -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: false,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy = dataEntryRepository.validationStrategy(),
-                    ),
-                )
-            }
-        }
+    private fun getSuccessfulResult(): SuccessfulResult {
+        return SuccessfulResult(
+            canComplete = ruleEffectsResult?.canComplete ?: true,
+            onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+            eventResultDetails = EventResultDetails(
+                formValueStore.eventState(),
+                dataEntryRepository.eventMode(),
+                dataEntryRepository.validationStrategy(),
+            ),
+        )
     }
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float {

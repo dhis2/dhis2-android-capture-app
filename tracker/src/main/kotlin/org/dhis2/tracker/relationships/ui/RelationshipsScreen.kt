@@ -21,8 +21,13 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,13 +42,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.tracker.R
-import org.dhis2.tracker.relationships.model.ListSelectionState
-import org.dhis2.tracker.relationships.model.RelationshipItem
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
-import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.tracker.relationships.ui.state.ListSelectionState
+import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
+import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.hisp.dhis.android.core.relationship.RelationshipType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -64,67 +70,85 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardStat
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 @Composable
 fun RelationShipsScreen(
-    uiState: RelationshipsUiState<List<RelationshipSection>>,
+    uiState: RelationshipsUiState,
     relationshipSelectionState: ListSelectionState,
-    onCreateRelationshipClick: (RelationshipSection) -> Unit,
-    onRelationshipClick: (RelationshipItem) -> Unit,
-    onRelationShipSelected: (String) -> Unit
+    onCreateRelationshipClick: (RelationshipSectionUiState) -> Unit,
+    onRelationshipClick: (RelationshipItemUiState) -> Unit,
+    onRelationShipSelected: (String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White, shape = Shape.LargeTop)
-            .padding(),
-        verticalArrangement = spacedBy(Spacing.Spacing4),
-    ) {
-        when (uiState) {
-            is RelationshipsUiState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.snackbarMessage) {
+        uiState.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { contentPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.White, shape = Shape.LargeTop)
+                .padding(),
+            verticalArrangement = spacedBy(Spacing.Spacing4),
+            contentPadding = contentPadding,
+        ) {
+            when (uiState) {
+                is RelationshipsUiState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        }
                     }
                 }
-            }
 
-            is RelationshipsUiState.Empty,
-            is RelationshipsUiState.Error -> {
-                item { NoRelationships() }
-            }
+                is RelationshipsUiState.Empty,
+                is RelationshipsUiState.Error -> {
+                    item { NoRelationships() }
+                }
 
-            is RelationshipsUiState.Success -> {
-                items(uiState.data) { item ->
-                    RelationShipTypeSection(
-                        title = item.title,
-                        description = if (item.relationships.isEmpty()) {
-                            stringResource(id = R.string.no_data)
-                        } else {
-                            null
-                        },
-                        relationships = item.relationships,
-                        canAddRelationship = item.canAddRelationship(),
-                        relationshipSelectionState = relationshipSelectionState,
-                        onCreateRelationshipClick = {
-                            onCreateRelationshipClick(item)
-                        },
-                        onRelationshipClick = {
-                            onRelationshipClick(it)
-                        },
-                        onRelationshipSelected = onRelationShipSelected,
-                    )
+                is RelationshipsUiState.Success -> {
+                    items(uiState.data) { item ->
+                        RelationShipTypeSection(
+                            title = item.title,
+                            description = if (item.relationships.isEmpty()) {
+                                stringResource(id = R.string.no_data)
+                            } else {
+                                null
+                            },
+                            relationships = item.relationships,
+                            canAddRelationship = item.entityToAdd != null,
+                            relationshipSelectionState = relationshipSelectionState,
+                            onCreateRelationshipClick = {
+                                onCreateRelationshipClick(item)
+                            },
+                            onRelationshipClick = {
+                                onRelationshipClick(it)
+                            },
+                            onRelationshipSelected = onRelationShipSelected,
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -132,11 +156,11 @@ private fun RelationShipTypeSection(
     modifier: Modifier = Modifier,
     title: String,
     description: String?,
-    relationships: List<RelationshipItem>,
+    relationships: List<RelationshipItemUiState>,
     canAddRelationship: Boolean,
     relationshipSelectionState: ListSelectionState,
     onCreateRelationshipClick: () -> Unit,
-    onRelationshipClick: (RelationshipItem) -> Unit,
+    onRelationshipClick: (RelationshipItemUiState) -> Unit,
     onRelationshipSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -286,14 +310,11 @@ fun NoRelationshipsPreview() {
 fun RelationShipScreenPreview() {
     val mockUiState = RelationshipsUiState.Success(
         data = listOf(
-            RelationshipSection(
+            RelationshipSectionUiState(
+                uid = "uid1",
                 title = "Relationship type",
-                relationshipType = RelationshipType.builder()
-                    .uid("")
-                    .displayName("Relationship type")
-                    .build(),
                 relationships = listOf(
-                    RelationshipItem(
+                    RelationshipItemUiState(
                         uid = "uidA",
                         title = "First name: Peter",
                         description = null,
@@ -311,7 +332,7 @@ fun RelationShipScreenPreview() {
                         canOpen = true,
                         lastUpdated = "Yesterday",
                     ),
-                    RelationshipItem(
+                    RelationshipItemUiState(
                         uid = "uidB",
                         title = "First name: Mario",
                         description = null,
@@ -330,16 +351,15 @@ fun RelationShipScreenPreview() {
                         lastUpdated = "Yesterday",
                     )
                 ),
-                teiTypeUid = null,
+                side = RelationshipConstraintSide.FROM,
+                entityToAdd = null,
             ),
-            RelationshipSection(
+            RelationshipSectionUiState(
+                uid = "uid2",
                 title = "Empty relation ship",
-                relationshipType = RelationshipType.builder()
-                    .uid("")
-                    .displayName("Empty relation ship")
-                    .build(),
                 relationships = emptyList(),
-                teiTypeUid = "teiTypeUid",
+                side = RelationshipConstraintSide.FROM,
+                entityToAdd = null,
             )
         )
     )
@@ -378,6 +398,12 @@ fun DeleteRelationshipsConfirmation(
         },
         buttonBlock = {
             ButtonBlock(
+                modifier = Modifier.padding(
+                    top = Spacing24,
+                    bottom = Spacing24,
+                    start = Spacing24,
+                    end = Spacing24
+                ),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,

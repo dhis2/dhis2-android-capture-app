@@ -37,7 +37,6 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -290,16 +289,16 @@ class FormRepositoryImplTest {
     fun `Should allow to complete only uncompleted events`() {
         whenever(
             dataEntryRepository.list(),
-        ) doReturn Flowable.just(provideMandatoryItemList().filter { !it.mandatory })
+        ) doReturn Flowable.just(provideMandatoryItemList())
         whenever(dataEntryRepository.isEvent()) doReturn true
         whenever(formValueStore.eventState()) doReturn EventStatus.ACTIVE
         repository.fetchFormItems()
-        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
         assertTrue(repository.runDataIntegrityCheck(false).canComplete)
         whenever(formValueStore.eventState()) doReturn EventStatus.COMPLETED
         repository.fetchFormItems()
 
-        assertTrue(repository.runDataIntegrityCheck(false) is SuccessfulResult)
+        assertTrue(repository.runDataIntegrityCheck(false) is MissingMandatoryResult)
         assertFalse(repository.runDataIntegrityCheck(false).canComplete)
     }
 

@@ -320,7 +320,7 @@ class DataSetTableRepositoryImpl(
                                 .`in`(UidsHelper.getUidsList(categoryOptionCombos))
                             dataValueRepository.blockingGet().isNotEmpty() &&
                                 dataValueRepository
-                                    .blockingGet().size != categoryOptionCombos.size
+                                    .blockingCount() != categoryOptionCombos.size
                         }?.map { dataSetElement -> dataSetElement.dataElement().uid() }
                         ?: emptyList()
                 } else {

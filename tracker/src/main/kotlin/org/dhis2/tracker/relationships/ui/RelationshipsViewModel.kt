@@ -2,50 +2,49 @@ package org.dhis2.tracker.relationships.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.tracker.relationships.domain.AddRelationship
 import org.dhis2.tracker.relationships.domain.DeleteRelationships
 import org.dhis2.tracker.relationships.domain.GetRelationshipsByType
-import org.dhis2.tracker.relationships.model.ListSelectionState
-import org.dhis2.tracker.relationships.model.RelationshipSection
+import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
+import org.dhis2.tracker.relationships.ui.mapper.RelationshipsUiStateMapper
+import org.dhis2.tracker.relationships.ui.state.ListSelectionState
+import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class RelationshipsViewModel(
+    private val dispatcher: DispatcherProvider,
     private val getRelationshipsByType: GetRelationshipsByType,
     private val deleteRelationships: DeleteRelationships,
-    private val dispatcher: DispatcherProvider,
+    private val addRelationship: AddRelationship,
+    private val d2ErrorUtils: D2ErrorUtils,
+    private val relationshipsUiStateMapper: RelationshipsUiStateMapper,
 ) : ViewModel() {
 
-
-    private val _relationshipsUiState = MutableStateFlow<RelationshipsUiState<List<RelationshipSection>>>(RelationshipsUiState.Loading)
-    val relationshipsUiState: StateFlow<RelationshipsUiState<List<RelationshipSection>>> = _relationshipsUiState.asStateFlow()
+    private val _relationshipsUiState =
+        MutableStateFlow<RelationshipsUiState>(RelationshipsUiState.Loading)
+    val relationshipsUiState: StateFlow<RelationshipsUiState> =
+        _relationshipsUiState.asStateFlow()
 
     private val _relationshipSelectionState = MutableStateFlow(ListSelectionState())
     val relationshipSelectionState = _relationshipSelectionState.asStateFlow()
 
     private val _showDeleteConfirmation = MutableStateFlow(false)
-    var showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
+    val showDeleteConfirmation = _showDeleteConfirmation.asStateFlow()
 
     fun refreshRelationships() {
-        viewModelScope.launch(dispatcher.io()) {
-            getRelationshipsByType()
-                .flatMapLatest {
-                    if (it.isEmpty()) {
-                        flowOf(RelationshipsUiState.Empty)
-                    } else {
-                        flowOf(RelationshipsUiState.Success(it))
-                    }
-                }
-                .collect {
-                    _relationshipsUiState.value = it
-                }
+        viewModelScope.launch {
+            val relationships = getRelationshipsByType()
+            _relationshipsUiState.value = if (relationships.isEmpty()) {
+                RelationshipsUiState.Empty
+            } else {
+                RelationshipsUiState.Success(relationshipsUiStateMapper.map(relationships))
+            }
         }
     }
 
@@ -97,10 +96,10 @@ class RelationshipsViewModel(
     fun stopSelectingMode() {
         viewModelScope.launch(dispatcher.io()) {
             _relationshipSelectionState.update {
-               it.copy(
+                it.copy(
                     selectingMode = false,
                     selectedItems = emptyList()
-               )
+                )
             }
         }
     }
@@ -124,5 +123,34 @@ class RelationshipsViewModel(
 
     fun onDismissDelete() {
         _showDeleteConfirmation.value = false
+    }
+
+    fun onAddRelationship(
+        selectedTeiUid: String,
+        relationshipTypeUid: String,
+        relationshipSide: RelationshipConstraintSide,
+    ) {
+        viewModelScope.launch(dispatcher.io()) {
+            addRelationship(
+                selectedTeiUid = selectedTeiUid,
+                relationshipTypeUid = relationshipTypeUid,
+                relationshipSide = relationshipSide,
+            ).fold(
+                onSuccess = {
+                    refreshRelationships()
+                },
+                onFailure = { d2Error ->
+                    d2ErrorUtils.getErrorMessage(d2Error)?.let {
+                        showSnackbar(it)
+                    }
+                }
+            )
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            _relationshipsUiState.value.sendSnackbarMessage(message)
+        }
     }
 }

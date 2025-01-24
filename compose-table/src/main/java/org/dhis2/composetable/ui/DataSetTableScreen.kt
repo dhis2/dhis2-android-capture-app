@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -53,6 +52,8 @@ import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -153,9 +154,8 @@ fun DataSetTableScreen(
         if (isKeyboardOpen == Keyboard.Closed) {
             if (tableConfiguration.textInputViewMode) {
                 focusManager.clearFocus(true)
-            } else if (bottomSheetState.bottomSheetState.isExpanded) {
+            } else {
                 collapseBottomSheet(true)
-                bottomSheetState.bottomSheetState.collapse()
             }
         }
     }
@@ -279,7 +279,7 @@ fun DataSetTableScreen(
                     .background(Color.White),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator()
+                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
             }
         }
         CompositionLocalProvider(

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Concluir</string>
+    <string name="discard_changes">Descartar alterações</string>
+    <string name="not_now">Agora não</string>
+    <string name="keep_editing">Continue a editar</string>
+    <string name="review">Revisão</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="clear">Limpar</string>
+    <string name="draw_here">Desenhar aqui</string>
+    <string name="action_done">concluído</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Fechar</string>
+    <string name="hint_search">Pesquisar</string>
+    <string name="action_clear_all">Limpar tudo</string>
+    <plurals name="error_count">
+        <item quantity="one">%s erro</item>
+        <item quantity="many">%s erros</item>
+        <item quantity="other">%s Erros</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s aviso</item>
+        <item quantity="many">%s avisos</item>
+        <item quantity="other">%s Alertas</item>
+    </plurals>
+</resources>

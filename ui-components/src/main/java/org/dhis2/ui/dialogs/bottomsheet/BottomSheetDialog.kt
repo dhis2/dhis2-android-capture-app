@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -47,7 +48,7 @@ class BottomSheetDialog(
     var onMessageClick: () -> Unit = {},
     val showDivider: Boolean = false,
     val content: @Composable
-    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null,
+    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog, scrollState: LazyListState) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +72,7 @@ class BottomSheetDialog(
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
+                    val scrollState = rememberLazyListState()
                     BottomSheetShell(
                         title = bottomSheetDialogUiModel.title,
                         description = when (bottomSheetDialogUiModel.clickableWord) {
@@ -79,16 +81,24 @@ class BottomSheetDialog(
                         },
                         headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
                         icon = {
-                            Icon(
-                                modifier = Modifier.size(Spacing24),
-                                painter = painterResource(bottomSheetDialogUiModel.iconResource),
-                                contentDescription = "Icon",
-                                tint = SurfaceColor.Primary,
-                            )
+                            if (bottomSheetDialogUiModel.iconResource != -1) {
+                                Icon(
+                                    modifier = Modifier.size(Spacing24),
+                                    painter = painterResource(bottomSheetDialogUiModel.iconResource),
+                                    contentDescription = "Icon",
+                                    tint = SurfaceColor.Primary,
+                                )
+                            }
                         },
                         showSectionDivider = showDivider,
                         buttonBlock = {
                             ButtonBlock(
+                                modifier = Modifier.padding(
+                                    top = Spacing24,
+                                    bottom = Spacing24,
+                                    start = Spacing24,
+                                    end = Spacing24,
+                                ),
                                 primaryButton = {
                                     bottomSheetDialogUiModel.secondaryButton?.let { style ->
 
@@ -131,14 +141,14 @@ class BottomSheetDialog(
                         },
                         content = {
                             if (content != null) {
-                                content.invoke(this@BottomSheetDialog)
+                                content.invoke(this@BottomSheetDialog, scrollState)
                             } else {
                                 bottomSheetDialogUiModel.clickableWord?.let {
                                     ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
                                 }
                             }
                         },
-                        contentScrollState = rememberScrollState(),
+                        contentScrollState = scrollState,
                     )
                 }
             }
@@ -173,7 +183,9 @@ class BottomSheetDialog(
                 },
             )
             HorizontalDivider(
-                modifier = Modifier.fillMaxWidth().padding(top = Spacing24),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Spacing24),
                 color = TextColor.OnDisabledSurface,
                 thickness = Border.Thin,
             )

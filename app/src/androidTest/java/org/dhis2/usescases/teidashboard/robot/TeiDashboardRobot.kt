@@ -1,8 +1,10 @@
 package org.dhis2.usescases.teidashboard.robot
 
 import android.content.Context
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -10,7 +12,7 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.click
@@ -36,6 +38,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
+import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON_IN_TIMELINE
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.CoreMatchers.allOf
@@ -95,7 +98,9 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnEventWithTitle(title: String) {
+        composeTestRule.waitUntilExactlyOneExists(hasText(title))
         composeTestRule.onNodeWithText(title).performClick()
     }
 
@@ -105,7 +110,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFab() {
-        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON, useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag(TEST_ADD_EVENT_BUTTON_IN_TIMELINE, useUnmergedTree = true)
+            .performClick()
     }
 
     fun clickOnReferral() {
@@ -142,37 +148,6 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                                     allOf(
                                         withId(R.id.programStageName),
                                         withText(eventName),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            )
-    }
-
-    fun checkEventWasCreatedWithDate(eventName: String, eventDate: String) {
-        onView(withId(R.id.tei_recycler))
-            .check(
-                matches(
-                    allOf(
-                        isDisplayed(),
-                        isNotEmpty(),
-                        atPosition(
-                            1,
-                            hasDescendant(
-                                allOf(
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.programStageName),
-                                            withText(eventName),
-                                        ),
-                                    ),
-                                    hasSibling(
-                                        allOf(
-                                            withId(R.id.event_date),
-                                            withText(eventDate),
-                                        ),
                                     ),
                                 ),
                             ),
@@ -222,7 +197,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuDeleteTEI() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person)).performClick()
+            composeTestRule.onNodeWithText(getString(R.string.dashboard_menu_delete_person))
+                .performClick()
         }
     }
 
@@ -255,22 +231,19 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 useUnmergedTree = true,
             ).assertIsDisplayed()
 
-            onNodeWithText(enrollmentUIModel.orgUnit).assertIsDisplayed()
-            onNodeWithText("Latitude: ${enrollmentUIModel.latitude}").assertIsDisplayed()
-            onNodeWithText("Longitude: ${enrollmentUIModel.longitude}").assertIsDisplayed()
-            onNodeWithText("Next").performScrollTo()
-            onNodeWithText("Next").performClick()
-
             onNodeWithText(enrollmentUIModel.name).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.lastName).assertIsDisplayed()
-            onNodeWithText(enrollmentUIModel.sex).assertIsDisplayed()
         }
     }
 
     fun clickOnScheduleNew() {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val scheduleTag = targetContext.resources.getString(R.string.schedule_new)
-        composeTestRule.onNodeWithTag(scheduleTag, useUnmergedTree = true).performClick()
+        val scheduleTag = targetContext.resources.getString(R.string.schedule) + " event"
+        composeTestRule.onNodeWithText(scheduleTag, useUnmergedTree = true).performClick()
+    }
+
+
+    fun clickOnSchedule() {
+        composeTestRule.onNodeWithText("Schedule").performClick()
     }
 
     fun clickOnMenuProgramEnrollments() {
@@ -299,6 +272,19 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             val timelineLabel = getString(R.string.view_timeline)
             try {
                 composeTestRule.onNodeWithText(timelineLabel).performClick()
+            } catch (e: NoMatchingViewException) {
+                checkIfGroupedEventsIsVisible()
+            }
+        }
+    }
+
+    fun clickOnReopen() {
+        with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            val timelineLabel = getString(R.string.enrollment_reopen)
+            val eventLabel = resources.getQuantityString(R.plurals.event_label, 2)
+            val itemLabel = timelineLabel.format(eventLabel)
+            try {
+                onView(withText(itemLabel)).perform(click())
             } catch (e: NoMatchingViewException) {
                 checkIfGroupedEventsIsVisible()
             }
@@ -470,5 +456,18 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             ),
             useUnmergedTree = true
         ).assertIsDisplayed()
+    }
+
+    fun typeOnInputDateField(dateValue: String, title: String) {
+        composeTestRule.apply {
+            onNode(
+                hasTestTag(
+                    "INPUT_DATE_TIME_TEXT_FIELD"
+                ) and hasAnySibling(
+                    hasText(title)
+                ),
+                useUnmergedTree = true,
+            ).performTextReplacement(dateValue)
+        }
     }
 }

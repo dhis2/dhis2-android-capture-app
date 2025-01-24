@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -56,8 +55,6 @@ import androidx.compose.ui.zIndex
 import org.dhis2.R
 import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.commons.resources.ColorType
-import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
 import org.dhis2.ui.MetadataIconData
@@ -272,19 +269,6 @@ fun StateIcon(
 }
 
 @Composable
-fun DownloadingProgress() {
-    CircularProgressIndicator(
-        modifier = Modifier
-            .size(24.dp)
-            .padding(2.dp),
-        color = Color(
-            ColorUtils().getPrimaryColor(LocalContext.current, ColorType.PRIMARY),
-        ),
-        strokeWidth = 2.dp,
-    )
-}
-
-@Composable
 fun DownloadedIcon() {
     Icon(
         painter = painterResource(id = R.drawable.ic_download_done),
@@ -349,7 +333,7 @@ fun DownloadMedia() {
                         fontFamily = FontFamily(Font(R.font.rubik_regular)),
                     ),
                 )
-                DownloadingProgress()
+                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
             }
         }
     }
@@ -682,6 +666,8 @@ private fun testingProgramModel() = ProgramUiModel(
     onlyEnrollOnce = false,
     accessDataWrite = true,
     state = State.SYNCED,
+    hasOverdueEvent = false,
+    filtersAreActive = false,
     downloadState = ProgramDownloadState.NONE,
     stockConfig = null,
     lastUpdated = Date(),

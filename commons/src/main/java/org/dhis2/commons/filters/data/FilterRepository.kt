@@ -540,7 +540,7 @@ constructor(
             ProgramType.TRACKER,
             observableSortingInject,
             observableOpenFilter,
-            program.enrollmentDateLabel() ?: resources
+            program.displayEnrollmentDateLabel() ?: resources
                 .filterEnrollmentDateLabel(program.uid()),
         )
         defaultTrackerFilters[ProgramFilter.ORG_UNIT] = OrgUnitFilter(

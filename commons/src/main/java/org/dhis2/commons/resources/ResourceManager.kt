@@ -67,7 +67,7 @@ class ResourceManager(
     ): String {
         val enrollmentLabel = try {
             D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
-                ?.enrollmentLabel()
+                ?.displayEnrollmentLabel()
         } catch (e: Exception) {
             null
         } ?: getPlural(R.plurals.enrollment, quantity)

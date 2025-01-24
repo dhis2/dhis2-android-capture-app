@@ -336,6 +336,19 @@ public class DateUtils {
     }
 
     /**
+     * Check if an event due date is overdue
+     *
+     * @param dueDate  the date the event is due
+     * @return true or false
+     */
+    public Boolean isEventDueDateOverdue(Date dueDate) {
+        Date currentDate = getStartOfDay(new Date());
+        if(dueDate.equals(currentDate)) return false;
+        return dueDate.before(currentDate);
+    }
+
+
+    /**
      * @param currentDate      Date from which calculation will be carried out. Default value is today.
      * @param expiryDays       Number of extra days to add events on previous period
      * @param expiryPeriodType Expiry Period
@@ -897,5 +910,24 @@ public class DateUtils {
 
         return dataInputPeriodModel.openingDate().getTime() < Calendar.getInstance().getTime().getTime()
                 && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
+    }
+
+    public Boolean isInsideFutureInputPeriod(Date endPeriodDate, Integer futureOpenDays) {
+        if (futureOpenDays != null && futureOpenDays > 0) {
+            boolean isInside = false;
+
+            Date today = DateUtils.getInstance().getToday();
+
+            long diffInMillis = Math.abs(endPeriodDate.getTime() - today.getTime());
+            long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+
+            if (diffInDays < futureOpenDays) {
+                isInside = true;
+            }
+            return isInside;
+        } else {
+            return false;
+        }
     }
 }

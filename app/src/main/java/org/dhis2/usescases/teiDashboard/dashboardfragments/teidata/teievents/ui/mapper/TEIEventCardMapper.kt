@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
 import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
@@ -34,6 +35,7 @@ import java.util.Date
 
 class TEIEventCardMapper(
     val resourceManager: ResourceManager,
+    val dateUtils: DateUtils,
 ) {
 
     fun map(
@@ -193,18 +195,19 @@ class TEIEventCardMapper(
 
             EventStatus.SCHEDULE -> {
                 val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
-
+                val color = if (dateUtils.isEventDueDateOverdue(dueDate)) AdditionalInfoItemColor.ERROR.color else AdditionalInfoItemColor.SUCCESS.color
+                val icon = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
                 AdditionalInfoItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Event,
+                            imageVector = icon,
                             contentDescription = text,
-                            tint = AdditionalInfoItemColor.SUCCESS.color,
+                            tint = color,
                         )
                     },
                     value = text,
                     isConstantItem = true,
-                    color = AdditionalInfoItemColor.SUCCESS.color,
+                    color = color,
                 )
             }
 

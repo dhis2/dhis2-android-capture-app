@@ -45,7 +45,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import java.util.Locale
 
 @Composable
 fun SchedulingDialogUi(
@@ -64,7 +66,7 @@ fun SchedulingDialogUi(
             it.value,
             selected = false,
             enabled = true,
-            textInput = provideStringResource(it.value),
+            textInput = provideStringResource(it.value.lowercase(Locale.getDefault())),
         )
     }
     var optionSelected by remember { mutableStateOf(yesNoOptions.first()) }
@@ -138,14 +140,17 @@ private fun ButtonBlock(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
+    Box(
+        modifier
+            .padding(top = Spacing24, bottom = Spacing24, start = Spacing24, end = Spacing24),
+    ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     style = ButtonStyle.FILLED,
                     enabled = !scheduleNew ||
-                        !date.dateValue.isNullOrEmpty() &&
+                        date.isValid &&
                         catCombo.isCompleted,
                     text = buttonTitle(scheduleNew),
                     onClick = {
@@ -166,7 +171,7 @@ private fun ButtonBlock(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
-                        enabled = !date.dateValue.isNullOrEmpty(),
+                        enabled = date.isValid,
                         text = stringResource(R.string.enter_event, eventLabel),
                         onClick = {
                             viewModel.enterEvent(launchMode)
@@ -272,6 +277,7 @@ fun ProvideScheduleNewEventForm(
                 onDateClick = {},
                 onDateSelected = { viewModel.onDateSet(it.year, it.month, it.day) },
                 onClear = { viewModel.onClearEventReportDate() },
+                onError = { viewModel.onDateError() },
             ),
         )
     } else {

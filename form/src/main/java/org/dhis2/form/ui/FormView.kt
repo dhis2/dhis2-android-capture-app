@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.ActivityResultObservable
@@ -38,12 +39,12 @@ import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.commons.dialogs.PeriodDialog
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.FieldsWithErrorResult
@@ -74,15 +75,14 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
-import java.util.Date
 
 class FormView : Fragment() {
 
@@ -148,7 +148,7 @@ class FormView : Fragment() {
 
                     override fun onRequestPermissionsResult(
                         requestCode: Int,
-                        permissions: Array<String?>,
+                        permissions: Array<out String>,
                         grantResults: IntArray,
                     ) {
                         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -426,13 +426,12 @@ class FormView : Fragment() {
                         },
                         onMainButtonClicked = { bottomSheetDialog ->
                             manageMainButtonAction(
-                                fieldsWithIssues,
-                                result.eventResultDetails.eventStatus == EventStatus.COMPLETED,
+                                model.mainButton,
                                 bottomSheetDialog,
                             )
                         },
                         showDivider = fieldsWithIssues.isNotEmpty(),
-                        content = { bottomSheetDialog ->
+                        content = { bottomSheetDialog, _ ->
                             DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
                         },
                     ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
@@ -463,19 +462,17 @@ class FormView : Fragment() {
     }
 
     private fun manageMainButtonAction(
-        fieldsWithIssues: List<FieldWithIssue>,
-        isEventCompleted: Boolean,
+        mainButtonModel: DialogButtonStyle?,
         bottomSheetDialog: BottomSheetDialog,
     ) {
-        val errorsInField =
-            fieldsWithIssues.isNotEmpty() || fieldsWithIssues.any { it.issueType == IssueType.ERROR }
-        if (errorsInField) {
-            bottomSheetDialog.dismiss()
-        } else if (isEventCompleted) {
-            onFinishDataEntry?.invoke()
-        } else {
-            viewModel.completeEvent()
-            onFinishDataEntry?.invoke()
+        when (mainButtonModel) {
+            DialogButtonStyle.CompleteButton -> {
+                viewModel.completeEvent()
+                onFinishDataEntry?.invoke()
+            }
+            else -> {
+                bottomSheetDialog.dismiss()
+            }
         }
     }
 
@@ -565,22 +562,34 @@ class FormView : Fragment() {
     }
 
     private fun showPeriodDialog(uiEvent: RecyclerViewUiEvents.SelectPeriod) {
-        PeriodDialog()
-            .setTitle(uiEvent.title)
-            .setPeriod(uiEvent.periodType)
-            .setMinDate(uiEvent.minDate)
-            .setMaxDate(uiEvent.maxDate)
-            .setPossitiveListener { selectedDate: Date ->
-                val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
-                intentHandler(
-                    FormIntent.OnSave(
-                        uiEvent.uid,
-                        dateString,
-                        ValueType.DATE,
-                    ),
-                )
-            }
-            .show(requireActivity().supportFragmentManager, PeriodDialog::class.java.simpleName)
+        BottomSheetDialog(
+            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
+                title = uiEvent.title,
+                iconResource = -1,
+            ),
+            onSecondaryButtonClicked = {
+            },
+            onMainButtonClicked = { _ ->
+            },
+            showDivider = true,
+            content = { bottomSheetDialog, scrollState ->
+                val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
+                PeriodSelectorContent(
+                    periods = periods,
+                    scrollState = scrollState,
+                ) { selectedDate ->
+                    val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
+                    intentHandler(
+                        FormIntent.OnSave(
+                            uiEvent.uid,
+                            dateString,
+                            ValueType.DATE,
+                        ),
+                    )
+                    bottomSheetDialog.dismiss()
+                }
+            },
+        ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
     private fun openChooserIntent(uiEvent: RecyclerViewUiEvents.OpenChooserIntent) {

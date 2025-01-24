@@ -14,10 +14,10 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,13 +30,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import org.dhis2.R
-import org.hisp.dhis.mobile.ui.designsystem.resource.provideFontResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -52,7 +53,7 @@ fun LoginTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colors.primary),
+            .background(MaterialTheme.colorScheme.primary),
     ) {
         val (logoLayout, versionLabel) = createRefs()
 
@@ -90,7 +91,7 @@ fun LoginTopBar(
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = "More options",
-                            tint = MaterialTheme.colors.onPrimary,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
 
@@ -110,7 +111,7 @@ fun LoginTopBar(
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_import_db),
                                     contentDescription = "Import database",
-                                    tint = MaterialTheme.colors.primary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
 
                                 Text(
@@ -118,7 +119,7 @@ fun LoginTopBar(
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         lineHeight = 24.sp,
-                                        fontFamily = provideFontResource("rubik_regular"),
+                                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
                                         fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         letterSpacing = 0.5.sp,
@@ -140,7 +141,7 @@ fun LoginTopBar(
             style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
-                fontFamily = provideFontResource("rubik_regular"),
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 fontWeight = FontWeight.Normal,
                 color = SurfaceColor.ContainerHighest,
                 letterSpacing = 0.4.sp,

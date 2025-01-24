@@ -69,6 +69,7 @@ dependencies {
     api(libs.dhis2.android.sdk) {
         exclude("org.hisp.dhis", "core-rules")
         exclude("com.facebook.flipper")
+        exclude("com.facebook.soloader")
         this.isChanging = true
     }
 
@@ -98,7 +99,6 @@ dependencies {
     api(libs.google.gson)
     api(libs.dagger)
     kapt(libs.dagger.compiler)
-    api(libs.google.material.themeadapter)
     api(libs.barcodeScanner.zxing)
     api(libs.rx.java)
     api(libs.rx.android)

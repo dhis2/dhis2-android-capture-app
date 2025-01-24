@@ -22,6 +22,9 @@
     <string name="conf_error_value_to_assign_option_set">La regla de programa %s está intentando asignar el valor %s que no pertenece al conjunto de opciones %s</string>
     <string name="conf_error_value_option_set">El valor del campo %s no pertenece al conjunto de opciones en %s</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
+    <string name="missing_warning_fields_completed_events">Tienes algunos mensajes de aviso.</string>
+    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
+    <string name="required">Necesario</string>
     <string name="date">Fecha</string>
     <string name="hint_year">Años</string>
     <string name="hint_month">Meses</string>
@@ -54,9 +57,13 @@
     <string name="complete">Completar</string>
     <string name="discard_changes">Descartar los cambios</string>
     <string name="saved">¡Guardado!</string>
+    <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
+    <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
     <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="not_now">Ahora no</string>
+    <string name="save_anyway">Guardar de todos modos</string>
     <string name="keep_editing">Seguir editando</string>
+    <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
     <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
     <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
     <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
@@ -93,4 +100,20 @@
     <string name="tei_coordinates">Coordenadas para</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
     <string name="incident_date">Fecha del incidente</string>
+    <string name="location_permission_denied">Se requiere el permiso de localización para obtener coordenadas. Por favor, habilítelo desde los ajustes del dispositivo.</string>
+    <string name="open_with">Abrir con</string>
+    <string name="no_option_found">No se ha encontrado opción</string>
+    <string name="download">Descargar</string>
+    <string name="scan">Escanear</string>
+    <string name="qr_code">Código QR</string>
+    <string name="bar_code">Código de barras</string>
+    <string name="add_location">Añadir ubicación</string>
+    <string name="form_without_fields">Este formulario no tiene campos configurados</string>
+    <string name="event_details_section_title">%s detalles</string>
+    <string name="event_data_section_title">%s datos</string>
+    <string name="org_unit">Unidad Organizativa</string>
+    <string name="coordinates">Coordenadas</string>
+    <string name="category_combo">Combo de categoría</string>
+    <string name="no_options">No hay opciones disponibles</string>
+    <string name="cat_combo">Cat Combo</string>
     </resources>

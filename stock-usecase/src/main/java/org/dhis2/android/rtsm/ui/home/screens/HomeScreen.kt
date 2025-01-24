@@ -32,7 +32,7 @@ import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.Backdrop
 import org.dhis2.android.rtsm.ui.home.screens.components.CompletionDialog
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
-import org.dhis2.ui.buttons.FAButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ExtendedFAB
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -73,10 +73,8 @@ fun HomeScreen(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                FAButton(
-                    text = dataEntryUiState.button.text,
-                    contentColor = dataEntryUiState.button.contentColor,
-                    containerColor = dataEntryUiState.button.containerColor,
+                ExtendedFAB(
+                    text = stringResource(dataEntryUiState.button.text),
                     icon = {
                         Icon(
                             painter = painterResource(id = dataEntryUiState.button.icon),
@@ -84,9 +82,10 @@ fun HomeScreen(
                             tint = dataEntryUiState.button.contentColor,
                         )
                     },
-                ) {
-                    proceedAction(scope, scaffoldState)
-                }
+                    onClick = {
+                        proceedAction(scope, scaffoldState)
+                    },
+                )
             }
         },
         snackbarHost = {
@@ -111,9 +110,8 @@ fun HomeScreen(
             label = "HomeScreenContent",
         ) { targetIndex ->
             when (targetIndex) {
-                BottomNavigation.ANALYTICS.id ->
-                    {
-                        DHIS2Theme() {}
+                BottomNavigation.ANALYTICS.id -> {
+                    DHIS2Theme() {
                         AnalyticsScreen(
                             viewModel = viewModel,
                             backAction = { manageStockViewModel.onHandleBackNavigation() },
@@ -123,6 +121,8 @@ fun HomeScreen(
                             supportFragmentManager = supportFragmentManager,
                         )
                     }
+                }
+
                 BottomNavigation.DATA_ENTRY.id -> {
                     Backdrop(
                         activity = activity,

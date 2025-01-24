@@ -14,6 +14,7 @@ import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.fromCache
 import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.date.DateLabelProvider
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -41,6 +42,7 @@ class EventInfoProvider(
     private val dateLabelProvider: DateLabelProvider,
     private val metadataIconProvider: MetadataIconProvider,
     private val profilePictureProvider: ProfilePictureProvider,
+    private val dateUtils: DateUtils,
 ) {
     private val cachedPrograms = mutableMapOf<String, Program>()
     private val cachedDisplayOrgUnit = mutableMapOf<String, Boolean>()
@@ -276,18 +278,19 @@ class EventInfoProvider(
 
             EventStatus.SCHEDULE -> {
                 val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
-
+                val color = if (dateUtils.isEventDueDateOverdue(dueDate)) AdditionalInfoItemColor.ERROR.color else AdditionalInfoItemColor.SUCCESS.color
+                val iconVector = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
                 AdditionalInfoItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Event,
+                            imageVector = iconVector,
                             contentDescription = text,
-                            tint = AdditionalInfoItemColor.SUCCESS.color,
+                            tint = color,
                         )
                     },
                     value = text,
                     isConstantItem = true,
-                    color = AdditionalInfoItemColor.SUCCESS.color,
+                    color = color,
                 )
             }
 
@@ -432,6 +435,6 @@ class EventInfoProvider(
         fromCache(cachedDisplayOrgUnit, programUid) {
             d2.organisationUnitModule().organisationUnits()
                 .byProgramUids(listOf(programUid))
-                .blockingGet().size > 1
+                .blockingCount() > 1
         } == true
 }

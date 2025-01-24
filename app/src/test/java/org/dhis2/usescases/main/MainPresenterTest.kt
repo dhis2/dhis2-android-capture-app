@@ -2,13 +2,20 @@ package org.dhis2.usescases.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.FilterManager.PeriodRequest
+import org.dhis2.commons.filters.Filters
+import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
@@ -53,6 +60,8 @@ class MainPresenterTest {
     private val preferences: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val filterManager: FilterManager = mock()
+    private val filterRepository: FilterRepository = mock()
+
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
     private val userManager: UserManager = mock()
     private val deleteUserData: DeleteUserData = mock()
@@ -83,6 +92,7 @@ class MainPresenterTest {
                 preferences,
                 workManagerController,
                 filterManager,
+                filterRepository,
                 matomoAnalyticsController,
                 userManager,
                 deleteUserData,
@@ -103,7 +113,6 @@ class MainPresenterTest {
         verify(view).renderUsername(any())
         verify(preferences).setValue(DEFAULT_CAT_COMBO, "uid")
         verify(preferences).setValue(PREF_DEFAULT_CAT_OPTION_COMBO, "uid")
-        verify(filterManager).clearAllFilters()
     }
 
     @Test
@@ -151,6 +160,14 @@ class MainPresenterTest {
 
     @Test
     fun `should return to home section when user taps back in a different section`() {
+        val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
+        val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
+        val periodRequest: FlowableProcessor<kotlin.Pair<PeriodRequest, Filters?>> =
+            BehaviorProcessor.create()
+        whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
+        whenever(filterManager.periodRequest) doReturn periodRequest
+        whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
+
         presenter.onNavigateBackToHome()
 
         verify(view).goToHome()

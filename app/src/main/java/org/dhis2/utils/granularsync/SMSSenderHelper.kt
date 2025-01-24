@@ -82,7 +82,7 @@ class SMSSenderHelper(
             .show(fragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
-    private fun createSMSIntent(message: String, smsToNumber: String): Intent? {
+    private fun createSMSIntent(message: String, smsToNumber: String): Intent {
         val uri = Uri.parse("smsto:$smsToNumber")
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = uri

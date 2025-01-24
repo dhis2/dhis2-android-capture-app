@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
@@ -33,6 +32,7 @@ import org.dhis2.composetable.ui.TableConfiguration
 import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import kotlin.math.roundToInt
 
 @Composable
@@ -47,7 +47,7 @@ fun ManageStockTable(
         ),
     )
 
-    MdcTheme {
+    DHIS2Theme {
         if (viewModel.hasData.collectAsState().value) {
             val localDensity = LocalDensity.current
             val conf = LocalConfiguration.current
@@ -146,6 +146,7 @@ fun ManageStockTable(
                 tableDimensions = dimensions,
                 tableConfiguration = TableConfiguration(
                     headerActionsEnabled = false,
+                    textInputViewMode = false,
                 ),
                 tableValidator = viewModel,
                 tableResizeActions = tableResizeActions,

@@ -12,6 +12,8 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.periods.data.EventPeriodRepository
+import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
@@ -172,14 +174,21 @@ class ServerModule {
         return ResourceManager(contextWrapper, colorUtils)
     }
 
+    @Provides
+    @PerServer
+    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository =
+        EventPeriodRepository(d2)
+
+    @Provides
+    @PerServer
+    fun providePeriodUseCase(eventPeriodRepository: EventPeriodRepository) =
+        GetEventPeriods(eventPeriodRepository)
+
     companion object {
         @JvmStatic
         fun getD2Configuration(context: Context): D2Configuration {
             val interceptors: MutableList<Interceptor> =
                 ArrayList()
-            context.app().appInspector.flipperInterceptor?.let { flipperInterceptor ->
-                interceptors.add(flipperInterceptor)
-            }
             interceptors.add(
                 AnalyticsInterceptor(
                     AnalyticsHelper(context.app().appComponent().matomoController()),

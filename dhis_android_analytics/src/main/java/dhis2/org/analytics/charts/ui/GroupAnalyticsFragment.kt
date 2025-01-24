@@ -13,6 +13,7 @@ import dhis2.org.R
 import dhis2.org.analytics.charts.data.AnalyticGroup
 import dhis2.org.analytics.charts.di.AnalyticsComponentProvider
 import dhis2.org.analytics.charts.extensions.isNotCurrent
+import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule
 import dhis2.org.analytics.charts.ui.dialog.SearchColumnDialog
 import dhis2.org.databinding.AnalyticsGroupBinding
@@ -250,6 +251,7 @@ class GroupAnalyticsFragment : Fragment() {
                     }
                 }
             }
+            AnalyticsCountingIdlingResource.decrement()
         }
     }
 

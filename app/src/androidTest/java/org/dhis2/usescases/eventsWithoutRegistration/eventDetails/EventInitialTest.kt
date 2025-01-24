@@ -50,6 +50,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
 
 class EventInitialTest {
 
@@ -170,6 +171,8 @@ class EventInitialTest {
 
     private fun createGeometryController() = GeometryController(GeometryParserImpl())
 
+    private val configurePeriodSelector: ConfigurePeriodSelector = mock()
+
     companion object {
         const val ENROLLMENT_UID = "enrollmentUid"
         const val PROGRAM_UID = "programUid"
@@ -207,6 +210,7 @@ class EventInitialTest {
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
         resourcesProvider = provideEventResourcesProvider(),
+        configurePeriodSelector = configurePeriodSelector
     )
 
     @Test

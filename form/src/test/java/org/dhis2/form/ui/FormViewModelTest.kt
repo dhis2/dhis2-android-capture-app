@@ -4,7 +4,8 @@ import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -16,6 +17,7 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
+import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
@@ -28,9 +30,13 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @ExperimentalCoroutinesApi
 class FormViewModelTest {
@@ -39,8 +45,9 @@ class FormViewModelTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val repository: FormRepository = mock()
+    private val testingDispatcher = StandardTestDispatcher()
     private val dispatcher: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
+        on { io() } doReturn testingDispatcher
     }
     private val preferenceProvider: PreferenceProvider = mock()
     private val geometryController: GeometryController = mock()
@@ -49,13 +56,14 @@ class FormViewModelTest {
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testingDispatcher)
 
         viewModel = FormViewModel(
             repository,
             dispatcher,
             geometryController,
         )
+        whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
     }
 
     @Ignore("We need to update Kotlin version in order to test coroutines")
@@ -160,5 +168,50 @@ class FormViewModelTest {
         viewModel.queryData.value = currentData
 
         assertTrue(viewModel.getUpdatedData(uiEvent).value == uiEvent.value)
+    }
+
+    @Test
+    fun `Should not save last focused item when is not allowed future dates`() = runTest {
+        val dateField = dateFieldNotAllowedFuture
+        whenever(repository.currentFocusedItem()) doReturn dateField
+        viewModel.previousActionItem = RowAction(
+            id = dateField.uid,
+            value = "2024-12-12",
+            type = ActionType.ON_FOCUS,
+        )
+        viewModel.submitIntent(FormIntent.OnFocus("newField", null))
+        advanceUntilIdle()
+        verify(repository).updateErrorList(any())
+    }
+
+    @Test
+    fun `Should save last focused item with future date when is allowed future dates`() = runTest {
+        val dateField = dateFieldFuture
+        whenever(repository.currentFocusedItem()) doReturn dateField
+        viewModel.previousActionItem = RowAction(
+            id = dateField.uid,
+            value = "2024-12-12",
+            type = ActionType.ON_FOCUS,
+        )
+        viewModel.submitIntent(FormIntent.OnFocus("newField", null))
+        advanceUntilIdle()
+        verify(repository).save(dateField.uid, dateField.value, null)
+        verify(repository).updateValueOnList(dateField.uid, dateField.value, dateField.valueType)
+    }
+
+    private val futureDate: String = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)
+
+    private val dateFieldFuture: FieldUiModel = mock {
+        on { uid } doReturn "fieldUid"
+        on { valueType } doReturn ValueType.DATE
+        on { allowFutureDates } doReturn true
+        on { value } doReturn futureDate
+    }
+
+    private val dateFieldNotAllowedFuture: FieldUiModel = mock {
+        on { uid } doReturn "fieldUid"
+        on { valueType } doReturn ValueType.DATE
+        on { allowFutureDates } doReturn false
+        on { value } doReturn futureDate
     }
 }

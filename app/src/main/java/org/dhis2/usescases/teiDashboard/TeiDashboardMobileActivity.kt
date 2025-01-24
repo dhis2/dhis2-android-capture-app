@@ -26,6 +26,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
@@ -47,7 +48,7 @@ import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.tracker.TEIDashboardItems
-import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
+import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.DeleteBottomSheetDialog
 import org.dhis2.usescases.enrollment.DateEditionWarningHandler
@@ -335,7 +336,7 @@ class TeiDashboardMobileActivity :
     private fun setUpNavigationBar() {
         binding.navigationBar.setContent {
             DHIS2Theme {
-                val uiState by dashboardViewModel.navigationBarUIState.collectAsState()
+                val uiState by dashboardViewModel.navigationBarUIState.collectAsStateWithLifecycle()
                 var selectedHomeItemIndex by remember(uiState) {
                     mutableIntStateOf(
                         uiState.items.indexOfFirst {
@@ -396,7 +397,7 @@ class TeiDashboardMobileActivity :
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment, item.name)
-            .commit()
+            .commitAllowingStateLoss()
 
         updateTopBar(item)
     }

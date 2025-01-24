@@ -9,12 +9,14 @@ import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentModule
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.period.PeriodModule
 import org.hisp.dhis.android.core.program.ProgramModule
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageCollectionRepository
@@ -55,15 +57,22 @@ class SchedulingViewModelTest {
         on { programStages() } doReturn programStageCollectionRepository
     }
 
+    private val periodModule: PeriodModule = mock {
+        on { periodHelper() } doReturn mock()
+    }
+
+    private val d2: D2 = mock {
+        on { enrollmentModule() } doReturn enrollmentModule
+        on { programModule() } doReturn programModule
+        on { periodModule() } doReturn periodModule
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         schedulingViewModel = SchedulingViewModel(
-            d2 = mock {
-                on { enrollmentModule() } doReturn enrollmentModule
-                on { programModule() } doReturn programModule
-            },
+            d2 = d2,
             resourceManager = mock(),
             eventResourcesProvider = mock(),
             periodUtils = mock(),
@@ -87,6 +96,7 @@ class SchedulingViewModelTest {
                 showYesNoOptions = false,
                 eventCreationType = EventCreationType.SCHEDULE,
             ),
+            getEventPeriods = mock(),
         )
     }
 

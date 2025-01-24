@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--GENERAL-->
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
@@ -94,7 +94,6 @@
     <string name="finish_and_complete">Terminer et Compléter</string>
     <string name="completed">Terminé</string>
     <string name="cancelled">Annulé</string>
-    <string name="re_open">rouvrir</string>
     <string name="activate">Activer</string>
     <string name="active">Actif</string>
 
@@ -449,7 +448,6 @@
     <string name="biometrics_dialog_title">Références vides</string>
     <string name="biometrics_first_use_text">Afin d\'utiliser la connexion par le scanner d\'empreinte digitale vous devez d\'abord vous connecter normalement</string>
     <string name="biometrics_security_title">Sécurité biométrique</string>
-    <string name="biometrics_security_text">Utiliser vos empreintes digitales pour se connecter avec cet utilisateur?</string>
     <string name="tab_tables">Tables</string>
     <string name="table">Tableau</string>
     <string name="login_https">https://</string>
@@ -698,6 +696,13 @@
     <string name="error_init_session">Nous n\'avons pas pu connecter la session avec votre nom d\'utilisateur</string>
     <string name="enrollment_date_edition_warning">Il y a des événements planifiés qui ne seront pas reprogrammés</string>
     <string name="section_charts">Graphiques</string>
+    <string name="navigation_table_view">Vue de tableau</string>
+    <string name="navigation_analytics">Analytiques</string>
+    <string name="navigation_tasks">Tâches</string>
+    <string name="navigation_programs">Programmes</string>
+    <string name="navigation_notes">Notes</string>
+    <string name="navigation_data_entry">Saisie de données</string>
+    <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Afficher comme graphique</string>
     <string name="show_line_graph">Afficher comme une ligne</string>
     <string name="show_table_graph">Afficher comme tableau</string>

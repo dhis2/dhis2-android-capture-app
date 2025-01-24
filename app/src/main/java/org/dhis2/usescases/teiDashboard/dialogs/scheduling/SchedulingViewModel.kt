@@ -2,9 +2,13 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.enrollment
@@ -12,6 +16,8 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
+import org.dhis2.commons.periods.domain.GetEventPeriods
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -27,6 +33,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import java.text.SimpleDateFormat
@@ -42,6 +49,7 @@ class SchedulingViewModel(
     private val dispatchersProvider: DispatcherProvider,
     private val launchMode: LaunchMode,
     private val dateUtils: DateUtils,
+    private val getEventPeriods: GetEventPeriods,
 ) : ViewModel() {
 
     lateinit var repository: EventDetailsRepository
@@ -49,7 +57,7 @@ class SchedulingViewModel(
     lateinit var configureEventCatCombo: ConfigureEventCatCombo
 
     var showCalendar: (() -> Unit)? = null
-    var showPeriods: (() -> Unit)? = null
+    var showPeriods: ((periodType: PeriodType) -> Unit)? = null
     var onEventScheduled: ((String) -> Unit)? = null
     var onEventSkipped: ((String?) -> Unit)? = null
     var onDueDateUpdated: (() -> Unit)? = null
@@ -88,7 +96,10 @@ class SchedulingViewModel(
             val enrollment = withContext(dispatchersProvider.io()) {
                 when (launchMode) {
                     is LaunchMode.NewSchedule -> d2.enrollment(launchMode.enrollmentUid)
-                    is LaunchMode.EnterEvent -> null
+                    is LaunchMode.EnterEvent -> {
+                        val enrollmentUid = d2.event(launchMode.eventUid)?.enrollment()
+                        enrollmentUid?.let { d2.enrollment(it) }
+                    }
                 }
             }
             _enrollment.value = enrollment
@@ -98,6 +109,7 @@ class SchedulingViewModel(
                     is LaunchMode.NewSchedule -> {
                         launchMode.programStagesUids.mapNotNull(d2::programStage)
                     }
+
                     is LaunchMode.EnterEvent -> emptyList()
                 }
             }
@@ -162,6 +174,7 @@ class SchedulingViewModel(
         resourceManager = resourceManager,
         eventResourcesProvider = eventResourcesProvider,
     )
+
     private fun loadProgramStage(event: Event? = null) {
         viewModelScope.launch {
             val selectedDate = event?.dueDate() ?: configureEventReportDate.getNextScheduleDate()
@@ -215,10 +228,9 @@ class SchedulingViewModel(
                 d2.eventModule().events().uid(eventUid).run {
                     setDueDate(dueDate.currentDate)
                     setStatus(EventStatus.SCHEDULE)
+                    onDueDateUpdated?.invoke()
                 }
             }
-
-            onDueDateUpdated?.invoke()
         }
     }
 
@@ -227,6 +239,12 @@ class SchedulingViewModel(
             currentDate = null,
             dateValue = null,
         )
+    }
+
+    fun onDateError() {
+        _eventDate.update {
+            it.copy(error = true)
+        }
     }
 
     fun setUpCategoryCombo(categoryOption: Pair<String, String?>? = null) {
@@ -245,7 +263,7 @@ class SchedulingViewModel(
 
     fun showPeriodDialog() {
         programStage.value?.periodType()?.let {
-            showPeriods?.invoke()
+            showPeriods?.invoke(it)
         }
     }
 
@@ -304,13 +322,29 @@ class SchedulingViewModel(
         viewModelScope.launch {
             when (launchMode) {
                 is LaunchMode.EnterEvent -> {
-                    d2.eventModule().events().uid(launchMode.eventUid).setStatus(EventStatus.SKIPPED)
+                    d2.eventModule().events().uid(launchMode.eventUid)
+                        .setStatus(EventStatus.SKIPPED)
                     onEventSkipped?.invoke(programStage.value?.displayEventLabel())
                 }
+
                 is LaunchMode.NewSchedule -> {
                     // no-op
                 }
             }
         }
+    }
+
+    fun fetchPeriods(): Flow<PagingData<Period>> {
+        val programStage = programStage.value ?: return emptyFlow()
+        val periodType = programStage.periodType() ?: PeriodType.Daily
+        val enrollmentUid = enrollment.value?.uid() ?: return emptyFlow()
+        return getEventPeriods(
+            eventUid = null,
+            periodType = periodType,
+            selectedDate = eventDate.value.currentDate,
+            programStage = programStage,
+            isScheduling = true,
+            eventEnrollmentUid = enrollmentUid,
+        )
     }
 }

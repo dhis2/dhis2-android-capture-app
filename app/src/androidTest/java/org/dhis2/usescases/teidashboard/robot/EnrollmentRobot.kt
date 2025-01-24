@@ -11,7 +11,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -113,6 +112,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun openFormSection(personAttribute: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(personAttribute).performClick()
     }
 

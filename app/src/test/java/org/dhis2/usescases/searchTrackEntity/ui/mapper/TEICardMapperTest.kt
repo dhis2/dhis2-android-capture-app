@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity.ui.mapper
 
 import android.content.Context
 import org.dhis2.R
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
@@ -19,13 +20,13 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 import java.util.Date
 
 class TEICardMapperTest {
 
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
-    private val currentDate = Date()
 
     private lateinit var mapper: TEICardMapper
 
@@ -49,7 +50,7 @@ class TEICardMapperTest {
 
     @Test
     fun shouldReturnCardFull() {
-        val model = createFakeModel()
+        val model = createFakeModel(isOverdue = true)
 
         val result = mapper.map(
             searchTEIModel = model,
@@ -81,7 +82,31 @@ class TEICardMapperTest {
         )
     }
 
-    private fun createFakeModel(): SearchTeiModel {
+    @Test
+    fun shouldShowOverDueLabel() {
+        val overdueDate = DateUtils.getInstance().calendar
+        overdueDate.add(Calendar.DATE, -2)
+
+        whenever(resourceManager.getPlural(any(), any(), any())) doReturn "2 days"
+
+        val model = createFakeModel(overdueDate.time, true)
+
+        val result = mapper.map(
+            searchTEIModel = model,
+            onSyncIconClick = {},
+            onCardClick = {},
+            onImageClick = {},
+        )
+        assertEquals(
+            result.additionalInfo[4].value,
+            model.overdueDate.toOverdueOrScheduledUiText(resourceManager),
+        )
+    }
+
+    private fun createFakeModel(
+        currentDate: Date = Date(),
+        isOverdue: Boolean = false,
+    ): SearchTeiModel {
         val attributeValues = LinkedHashMap<String, TrackedEntityAttributeValue>()
         attributeValues["Name"] = TrackedEntityAttributeValue.builder()
             .value("Peter")
@@ -121,7 +146,7 @@ class TEICardMapperTest {
                 null,
             )
             overdueDate = currentDate
-            isHasOverdue = true
+            isHasOverdue = isOverdue
 
             addEnrollment(
                 Enrollment.builder()

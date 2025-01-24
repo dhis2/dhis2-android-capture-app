@@ -1,12 +1,9 @@
 package org.dhis2.composetable
 
-import androidx.compose.material.lightColors
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.dhis2.composetable.model.FakeModelType
-import org.dhis2.composetable.model.FakeTableModels
 import org.dhis2.composetable.ui.TableColors
-import org.junit.Before
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.junit.Rule
 import org.junit.Test
 
@@ -15,8 +12,6 @@ class RowTableTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     private val tableColors = TableColors()
-
-    var primaryColor: Color = lightColors().primary
 
     @Test
     fun shouldClickOnFirstRowElementAndHighlightAllElements() {
@@ -29,7 +24,7 @@ class RowTableTest {
             assertRowHeaderBackgroundChangeToPrimary(
                 firstTableId,
                 0,
-                primaryColor.let { tableColors.copy(primary = it) } ?: tableColors
+                tableColors.copy(primary = SurfaceColor.Primary)
             )
         }
     }

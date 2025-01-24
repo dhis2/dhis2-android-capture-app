@@ -2,6 +2,7 @@ package org.dhis2.mobileProgramRules
 
 import android.os.Build
 import android.text.TextUtils.isEmpty
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -115,6 +116,9 @@ class RulesRepository(private val d2: D2) {
                                 .uid(
                                     event.organisationUnit(),
                                 ).blockingGet()?.code(),
+                            createdDate = event.created()
+                                ?.let { Instant.fromEpochMilliseconds(it.time) }
+                                ?: Clock.System.now(),
                             dataValues = event.trackedEntityDataValues()?.toRuleDataValue(
                                 event,
                                 d2.dataElementModule().dataElements(),
@@ -134,6 +138,7 @@ class RulesRepository(private val d2: D2) {
                 .byUid().notIn(eventToEvaluate.uid())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .byEventDate().beforeOrEqual(Date())
+                .byDeleted().isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
@@ -144,6 +149,7 @@ class RulesRepository(private val d2: D2) {
                 .byOrganisationUnitUid().eq(eventToEvaluate.organisationUnit())
                 .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
                 .byEventDate().beforeOrEqual(Date())
+                .byDeleted().isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet().let { list ->
@@ -180,6 +186,7 @@ class RulesRepository(private val d2: D2) {
         return d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid)
             .byStatus().notIn(EventStatus.SCHEDULE, EventStatus.SKIPPED, EventStatus.OVERDUE)
             .byEventDate().beforeOrEqual(Date())
+            .byDeleted().isFalse
             .withTrackedEntityDataValues()
             .blockingGet()
             .map { event ->
@@ -202,6 +209,9 @@ class RulesRepository(private val d2: D2) {
                     organisationUnitCode = d2.organisationUnitModule()
                         .organisationUnits().uid(event.organisationUnit())
                         .blockingGet()?.code(),
+                    createdDate = event.created()
+                        ?.let { Instant.fromEpochMilliseconds(it.time) }
+                        ?: Clock.System.now(),
                     dataValues =
                     event.trackedEntityDataValues()?.toRuleDataValue(
                         event,
@@ -319,6 +329,9 @@ class RulesRepository(private val d2: D2) {
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
             organisationUnit = event.organisationUnit()!!,
             organisationUnitCode = d2.organisationUnit(event.organisationUnit()!!)?.code(),
+            createdDate = event.created()
+                ?.let { Instant.fromEpochMilliseconds(it.time) }
+                ?: Clock.System.now(),
             dataValues = emptyList(),
         )
     }

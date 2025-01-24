@@ -1,9 +1,8 @@
 package org.dhis2.usescases.teiDashboard.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,19 +24,20 @@ import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 @Composable
 fun NewEventOptions(
     options: List<MenuItemData<EventCreationType>>,
+    addButtonTestTag: String = TEST_ADD_EVENT_BUTTON,
     onOptionSelected: (EventCreationType) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column {
         IconButton(
-            modifier = Modifier.testTag(TEST_ADD_EVENT_BUTTON),
+            modifier = Modifier.testTag(addButtonTestTag),
             style = IconButtonStyle.FILLED,
             icon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_add_accent),
                     contentDescription = "New event",
-                    tint = MaterialTheme.colors.onPrimary,
+                    tint = Color.White,
                 )
             },
             onClick = { expanded = !expanded },
@@ -70,7 +70,5 @@ fun NewEventOptionsPreview() {
         ) {}
     }
 }
-
-data class EventCreationOptions(val type: EventCreationType, val name: String)
 
 const val TEST_ADD_EVENT_BUTTON = "TEST_ADD_EVENT_BUTTON"

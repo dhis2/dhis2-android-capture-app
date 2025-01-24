@@ -22,19 +22,16 @@ jobs:
     steps:
     
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
       # Generate github release notes
       - name: Generate release notes
         working-directory: ./scripts
         run: python3 generateReleaseNotes.py
 
-      - name: setup git config
-        run: |
-          # setup the username and email.
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<android@dhis2.org>"
-
       - name: Commit changes
-        run: |
-          # Commit and push
-          git commit -am "Update release notes"
-          git push
+        uses: flex-development/gh-commit@1.0.0
+        with:
+          message: "Update release notes"
+          token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}

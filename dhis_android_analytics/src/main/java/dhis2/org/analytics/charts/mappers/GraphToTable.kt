@@ -4,8 +4,8 @@ import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -16,9 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import com.google.android.material.composethemeadapter.MdcTheme
+import androidx.compose.ui.unit.sp
 import dhis2.org.R
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.Graph
@@ -41,8 +46,9 @@ import org.dhis2.composetable.ui.TableDimensions
 import org.dhis2.composetable.ui.TableSelection
 import org.dhis2.composetable.ui.TableTheme
 import org.dhis2.composetable.ui.compositions.LocalInteraction
-import org.dhis2.ui.theme.descriptionTextStyle
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import kotlin.math.roundToInt
 
 private const val LINE_LISTING_MAX_ROWS = 500
@@ -70,7 +76,7 @@ class GraphToTable {
             dimensionsForLinelisting(localDensity, conf)
         }
 
-        return MdcTheme {
+        return DHIS2Theme {
             var dimensions by remember {
                 mutableStateOf(
                     tableDimensions,
@@ -117,8 +123,8 @@ class GraphToTable {
 
             TableTheme(
                 tableColors = TableColors(
-                    primary = MaterialTheme.colors.primary,
-                    primaryLight = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                    primary = MaterialTheme.colorScheme.primary,
+                    primaryLight = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                     disabledCellText = TableTheme.colors.cellText,
                     disabledCellBackground = TableTheme.colors.tableBackground,
                 ),
@@ -169,7 +175,15 @@ class GraphToTable {
                                     R.string.line_listing_max_results,
                                     LINE_LISTING_MAX_ROWS,
                                 ),
-                                style = descriptionTextStyle,
+                                style = TextStyle(
+                                    color = TextColor.OnSurfaceLight,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = FontFamily(Font(org.dhis2.ui.R.font.roboto_regular)),
+                                    lineHeight = 16.sp,
+                                    letterSpacing = (0.4).sp,
+                                    textAlign = TextAlign.End,
+                                ),
                             )
                         }
                     }

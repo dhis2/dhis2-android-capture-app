@@ -241,7 +241,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                     ),
                                     actionButton = {
                                         SyncButtonProvider(state = item.state) {
-                                            presenter.onSyncIconClick(item.uid)
+                                            presenter.onSyncIconClick(item.relatedInfo?.enrollment?.uid)
                                         }
                                     },
                                     onCardClick = {

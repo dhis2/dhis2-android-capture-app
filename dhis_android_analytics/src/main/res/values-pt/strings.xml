@@ -63,4 +63,8 @@
     <string name="error_parsing_visualization">A visualização não esta bem configurada, contacte o seu admin</string>
     <string name="error_invalid_custom_boundaries">Limites personalizados não são suportados para o indicador de programa %s</string>
     <string name="error_database">Não consegue aceder a base de dados. Favor contactar o seu administrador.</string>
-    </resources>
+    <string name="error_invalid_program">Não tem acesso ao programa%s</string>
+    <string name="error_invalid_attribute">Não tem acesso ao atributo %s</string>
+    <string name="error_unsupported_aggregation_type">Tipo de agregação não suportado %s</string>
+    <string name="line_listing_max_results">Tabela limitada a %1$s entradas. Filtrar para refinar os resultados.</string>
+</resources>

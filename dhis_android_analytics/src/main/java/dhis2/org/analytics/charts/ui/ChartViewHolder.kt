@@ -7,11 +7,11 @@ import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
-import com.google.android.material.composethemeadapter.MdcTheme
 import dhis2.org.analytics.charts.data.ChartType
 import dhis2.org.analytics.charts.data.toChartBuilder
 import dhis2.org.databinding.ItemChartBinding
 import org.hisp.dhis.android.core.common.RelativePeriod
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 class ChartViewHolder(
     val binding: ItemChartBinding,
@@ -74,7 +74,7 @@ class ChartViewHolder(
 
     private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {
         binding.composeChart.setContent {
-            MdcTheme {
+            DHIS2Theme {
                 if (visible) {
                     binding.chartContainer.removeAllViews()
                     chart.graph.toChartBuilder()

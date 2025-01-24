@@ -66,8 +66,6 @@ class LoginTest : BaseTest() {
 
             // Test case - [ANDROAPP-4126](https://dhis2.atlassian.net/browse/ANDROAPP-4126)
             enableIntents()
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
             clickAccountRecovery()
             checkWebviewWithRecoveryAccountIsOpened()
             pressBack()

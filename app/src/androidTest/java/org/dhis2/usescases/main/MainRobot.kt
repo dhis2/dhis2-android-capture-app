@@ -1,5 +1,6 @@
 package org.dhis2.usescases.main
 
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
@@ -49,6 +50,10 @@ class MainRobot : BaseRobot() {
     }
 
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
+        composeTestRule.waitUntil() {
+            composeTestRule.onNodeWithTag(HOME_ITEMS)
+                .fetchSemanticsNode().config.getOrNull(HasPrograms) == true
+        }
         composeTestRule.onNodeWithTag(HOME_ITEMS).assert(
             SemanticsMatcher.expectValue(HasPrograms, true)
         )

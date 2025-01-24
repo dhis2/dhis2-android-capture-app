@@ -9,11 +9,11 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
+import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
 import org.hisp.dhis.android.core.period.PeriodType
 
-@Suppress("UNCHECKED_CAST")
 class EventDetailsViewModelFactory(
     private val configureEventDetails: ConfigureEventDetails,
     private val configureEventReportDate: ConfigureEventReportDate,
@@ -26,6 +26,7 @@ class EventDetailsViewModelFactory(
     private val locationProvider: LocationProvider,
     private val createOrUpdateEventDetails: CreateOrUpdateEventDetails,
     private val eventDetailResourcesProvider: EventDetailResourcesProvider,
+    private val configurePeriodSelector: ConfigurePeriodSelector,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -41,6 +42,7 @@ class EventDetailsViewModelFactory(
             locationProvider,
             createOrUpdateEventDetails,
             eventDetailResourcesProvider,
+            configurePeriodSelector,
         ) as T
     }
 }

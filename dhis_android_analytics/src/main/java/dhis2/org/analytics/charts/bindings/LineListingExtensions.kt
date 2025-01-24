@@ -9,25 +9,28 @@ import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.hisp.dhis.android.core.common.RelativeOrganisationUnit
 import org.hisp.dhis.android.core.common.RelativePeriod
 
-fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
+fun TrackerLineListItem.withFilters(
+    value: String,
+    categories: List<String> = emptyList(),
+): TrackerLineListItem {
     return when (this) {
         TrackerLineListItem.CreatedBy -> this
         TrackerLineListItem.LastUpdatedBy -> this
         is TrackerLineListItem.EnrollmentDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.EventDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.ScheduledDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
@@ -39,19 +42,19 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
 
         is TrackerLineListItem.IncidentDate -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.LastUpdated -> this.copy(
             filters = this.filters + listOf(
-                DateFilter.Range(value, value),
+                DateFilter.Like(value),
             ),
         )
 
         is TrackerLineListItem.OrganisationUnitItem -> this.copy(
             filters = this.filters + listOf(
-                OrganisationUnitFilter.Absolute(value),
+                OrganisationUnitFilter.Like(value),
             ),
         )
 
@@ -78,10 +81,9 @@ fun TrackerLineListItem.withFilters(value: String): TrackerLineListItem {
                 EnumFilter.Like(value),
             ),
         )
-
         is TrackerLineListItem.Category -> this.copy(
             filters = this.filters + listOf(
-                DataFilter.Like(value),
+                DataFilter.In(categories),
             ),
         )
     }
