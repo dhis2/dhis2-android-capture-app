@@ -19,6 +19,7 @@ import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.service.SessionManagerServiceImpl
+import org.dhis2.commons.ui.extensions.handleInsets
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.OpenIdSession.LogOutReason
 import org.dhis2.data.service.SyncStatusController
@@ -113,6 +114,8 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                 setTheme(R.style.AppTheme)
             }
         }
+
+        handleInsets()
 
         super.onCreate(savedInstanceState)
     }
@@ -211,7 +214,11 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
     }
 
     private fun checkSessionTimeout() {
-        if (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.checkSessionTimeout({ accountsCount -> sessionAction(accountsCount) }, lifecycleScope) && this !is LoginActivity) {
+        if (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.checkSessionTimeout(
+                { accountsCount -> sessionAction(accountsCount) },
+                lifecycleScope,
+            ) && this !is LoginActivity
+        ) {
             workManagerController.cancelAllWork()
             syncStatusController.restore()
         }

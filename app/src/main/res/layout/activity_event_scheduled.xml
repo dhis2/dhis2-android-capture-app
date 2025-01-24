@@ -60,7 +60,6 @@
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@+id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
 
@@ -68,6 +67,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/drawer_layout"
+            android:background="@drawable/ic_front_home_backdrop_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"

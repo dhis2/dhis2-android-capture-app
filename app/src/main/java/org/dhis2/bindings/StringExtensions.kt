@@ -6,6 +6,7 @@ import org.dhis2.commons.date.toDateSpan
 import timber.log.Timber
 import java.util.Date
 
+const val WRONG_FORMAT = "Wrong format"
 val String?.initials: String
     get() {
         val userNames = this
@@ -34,27 +35,27 @@ fun String.toDate(): Date {
     try {
         date = DateUtils.databaseDateFormat().parse(this)
     } catch (e: Exception) {
-        Timber.d("wrong format")
+        Timber.d(WRONG_FORMAT)
     }
     if (date == null) {
         try {
             date = DateUtils.databaseDateFormatNoZulu().parse(this)
         } catch (e: Exception) {
-            Timber.d("wrong format")
+            Timber.d(WRONG_FORMAT)
         }
     }
     if (date == null) {
         try {
             date = DateUtils.dateTimeFormat().parse(this)
         } catch (e: Exception) {
-            Timber.d("wrong format")
+            Timber.d(WRONG_FORMAT)
         }
     }
     if (date == null) {
         try {
             date = DateUtils.uiDateFormat().parse(this)
         } catch (e: Exception) {
-            Timber.d("wrong format")
+            Timber.d(WRONG_FORMAT)
         }
     }
 
@@ -62,12 +63,12 @@ fun String.toDate(): Date {
         try {
             date = DateUtils.oldUiDateFormat().parse(this)
         } catch (e: Exception) {
-            Timber.d("wrong format")
+            Timber.d(WRONG_FORMAT)
         }
     }
 
     if (date == null) {
-        throw NullPointerException("$this can't be parse to Date")
+        throw NullPointerException("$this can't be null or empty")
     }
 
     return date
@@ -83,7 +84,7 @@ fun String.newVersion(oldVersion: String): Boolean {
     val old = oldVersion.split(".")
     try {
         new.forEachIndexed { index, vNumber ->
-            if (vNumber.toInt() < (old.getOrElse(index) { "0" }).toInt()) return false
+            if (vNumber.toInt() < (old.getOrElse(index) { "0" }).toInt()) return false else if (vNumber.toInt() > (old.getOrElse(index) { "0" }).toInt()) return true
         }
     } catch (e: Exception) {
         return false

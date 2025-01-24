@@ -45,6 +45,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Locale
 
@@ -139,7 +140,10 @@ private fun ButtonBlock(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
+    Box(
+        modifier
+            .padding(top = Spacing24, bottom = Spacing24, start = Spacing24, end = Spacing24),
+    ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {
                 Button(

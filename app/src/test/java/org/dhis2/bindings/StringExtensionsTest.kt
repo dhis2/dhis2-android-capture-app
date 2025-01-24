@@ -100,6 +100,13 @@ class StringExtensionsTest {
     }
 
     @Test
+    fun `Should return true for new version with lower patch version`() {
+        val new = "3.1.0"
+        val old = "3.0.1"
+        assert(new.newVersion(old))
+    }
+
+    @Test
     fun `Should return false when old is bigger`() {
         val new = "1.2.3"
         val old = "1.2.4"
