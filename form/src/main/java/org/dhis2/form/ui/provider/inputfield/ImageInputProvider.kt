@@ -108,6 +108,7 @@ internal fun ProvideInputImage(
     )
 
     ImagePickerOptionsDialog(
+        title = fieldUiModel.label,
         showImageOptions = showImageOptions,
         onDismiss = { showImageOptions = false },
         onTakePicture = { context ->
