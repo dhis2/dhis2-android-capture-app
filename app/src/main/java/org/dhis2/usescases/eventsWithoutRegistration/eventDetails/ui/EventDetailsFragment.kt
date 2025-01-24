@@ -181,7 +181,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 MapSelectorActivity.create(
                     activity = requireActivity(),
                     fieldUid = null,
-                    locationType = FeatureType.valueOfFeatureType(featureType),
+                    locationType = FeatureType.valueOfFeatureType(featureType)!!,
                     initialData = initCoordinate,
                     programUid = requireArguments().getString(PROGRAM_UID),
                 ),

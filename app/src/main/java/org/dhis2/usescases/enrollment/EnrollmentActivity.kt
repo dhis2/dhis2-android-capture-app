@@ -156,8 +156,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         data.getStringExtra(MapSelectorActivity.DATA_EXTRA)?.let {
                             handleGeometry(
                                 FeatureType.valueOfFeatureType(
-                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
-                                ),
+                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)!!,
+                                )!!,
                                 it,
                                 requestCode,
                             )
