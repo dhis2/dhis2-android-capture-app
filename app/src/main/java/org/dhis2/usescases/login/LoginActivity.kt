@@ -154,7 +154,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         EXTRA_ACCOUNT_DISABLED,
                         true,
                     )
-
+                    OpenIdSession.LogOutReason.UNAUTHORIZED ->  putBoolean(EXTRA_SESSION_EXPIRED, true)
                     null -> {
                         // Nothing to do in this case
                     }
@@ -224,6 +224,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
         presenter.isDataComplete.observe(this) { this.setLoginVisibility(it) }
 
+        presenter.twoFactorCodeVisible.observe(this) { this.setTwoFactorCodeVisibility(it) }
+
         presenter.isTestingEnvironment.observe(
             this,
         ) { testingEnvironment ->
@@ -262,6 +264,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearPassButton.setOnClickListener { binding.userPassEdit.text = null }
         binding.clearUserNameButton.setOnClickListener { binding.userNameEdit.text = null }
         binding.clearUrl.setOnClickListener { binding.serverUrlEdit.text = null }
+        binding.clearTwoFactoButton.setOnClickListener { binding.userTwoFactorCodeEdit.text = null }
 
         presenter.loginProgressVisible.observe(this) { show ->
             showLoginProgress(show, getString(R.string.authenticating))
@@ -302,6 +305,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     }
                 }
             }
+        }
+    }
+
+    fun setTwoFactorCodeVisibility(isVisible: Boolean) {
+        if (isVisible){
+            binding.twoFactoContainer.visibility = View.VISIBLE
+        } else {
+            binding.twoFactoContainer.visibility = View.GONE
         }
     }
 

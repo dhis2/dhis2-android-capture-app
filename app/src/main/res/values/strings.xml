@@ -993,4 +993,5 @@
     <string name="successfully_transferred">Successfully transferred</string>
     <string name="event_cancelled">%1$s cancelled</string>
     <string name="due_date_updated">Due date updated</string>
+    <string name="two_factor_code_hint">Two factor code</string>
 </resources>

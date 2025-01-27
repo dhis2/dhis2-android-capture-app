@@ -308,4 +308,5 @@
     <string name="sync_retry">Retry sync</string>
     <string name="syncing">Synchronizing...</string>
     <string name="remove">Remove</string>
+    <string name="incorrect_two_factor_code">Incorrect two factor code</string>
 </resources>
