@@ -111,7 +111,7 @@ pipeline {
                     }
                 }
 
-
+                if (JOB_NAME.startsWith('android-multibranch-PUSH')) {
                     stage('Run UI Tests in Landscape') {
                         environment {
                             BROWSERSTACK = credentials('android-browserstack')
@@ -131,7 +131,7 @@ pipeline {
                             }
                         }
                     }
-
+                }
             }
         }
         stage('JaCoCo report') {
