@@ -12,4 +12,3 @@ data class TeiCardUiModel(
     val shrinkLabelText: String,
     val showLoading: Boolean,
 )
-
