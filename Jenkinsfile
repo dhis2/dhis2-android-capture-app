@@ -110,24 +110,26 @@ pipeline {
                         }
                     }
                 }
-
-                if (JOB_NAME.startsWith('android-multibranch-PUSH')) {
-                    stage('Run UI Tests in Landscape') {
-                        environment {
-                            BROWSERSTACK = credentials('android-browserstack')
-                            app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhisUITesting -iname "*.apk"')
-                            test_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/androidTest -iname "*.apk"')
-                            app_apk_path = "${env.WORKSPACE}/${app_apk}"
-                            test_apk_path = "${env.WORKSPACE}/${test_apk}"
-                            buildTag = "${env.GIT_BRANCH}"
+                stage('Run UI Tests in Landscape') {
+                    when {
+                        expression {
+                            return JOB_NAME.startsWith('android-multibranch-PUSH')
                         }
-                        steps {
-                            dir("${env.WORKSPACE}/scripts"){
-                                script {
-                                    echo 'Browserstack deployment and running tests'
-                                    sh 'chmod +x browserstackJenkinsLandscape.sh'
-                                    sh './browserstackJenkinsLandscape.sh'
-                                }
+                    }
+                    environment {
+                        BROWSERSTACK = credentials('android-browserstack')
+                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhisUITesting -iname "*.apk"')
+                        test_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/androidTest -iname "*.apk"')
+                        app_apk_path = "${env.WORKSPACE}/${app_apk}"
+                        test_apk_path = "${env.WORKSPACE}/${test_apk}"
+                        buildTag = "${env.GIT_BRANCH}"
+                    }
+                    steps {
+                        dir("${env.WORKSPACE}/scripts"){
+                            script {
+                                echo 'Browserstack deployment and running tests'
+                                sh 'chmod +x browserstackJenkinsLandscape.sh'
+                                sh './browserstackJenkinsLandscape.sh'
                             }
                         }
                     }
