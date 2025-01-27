@@ -15,6 +15,7 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.teiDashboard.ui.model.QuickActionType
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -426,19 +427,18 @@ class DashboardRepositoryImpl(
     private fun getQuickActions(programUid: String): List<String> {
         return if (featureConfigRepository.isFeatureEnable(Feature.QUICK_ACTIONS)) {
             listOf(
-                "MARK_FOLLOW_UP",
-                "TRANSFER",
-                "COMPLETE_ENROLLMENT",
-                "CANCEL_ENROLLMENT",
-                "MORE_ENROLLMENTS",
+                QuickActionType.MARK_FOLLOW_UP.name,
+                QuickActionType.TRANSFER.name,
+                QuickActionType.COMPLETE_ENROLLMENT.name,
+                QuickActionType.CANCEL_ENROLLMENT.name,
+                QuickActionType.MORE_ENROLLMENTS.name,
             )
         } else {
-            /*programConfigurationRepository
+            programConfigurationRepository
                 .getConfigurationByProgram(programUid)
                 ?.quickActions()
                 ?.map { it.actionId() }
-                ?:*/
-            emptyList()
+                ?: emptyList()
         }
     }
 

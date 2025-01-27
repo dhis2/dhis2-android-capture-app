@@ -294,9 +294,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
 
                 TeiDetailDashboard(
-                    syncData = syncInfoBar,
-                    followUpData = followUpInfoBar,
-                    enrollmentData = enrollmentInfoBar,
+                    infoBarModels = listOfNotNull(syncInfoBar, followUpInfoBar, enrollmentInfoBar),
                     card = card,
                     isGrouped = groupingEvents ?: true,
                     timelineEventHeaderModel = TimelineEventsHeaderModel(
