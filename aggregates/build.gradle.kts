@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.7.1"
+    id("org.jetbrains.compose") version "1.7.3"
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
 }
@@ -31,6 +31,16 @@ kotlin {
             api(compose.materialIconsExtended)
             implementation(libs.dhis2.mobile.designsystem)
             implementation(libs.compose.material3.window)
+
+            // Koin
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.composeVM)
+
+            // ViewModel support in common code
+          /*  implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.lifecycle.viewmodel.compose.kpm)
+            implementation(libs.androidx.navigation.compose)*/
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -38,6 +48,10 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.compose.preview)
+            implementation(libs.dhis2.android.sdk)
+            // Koin support for Android
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
 
         androidUnitTest.dependencies {  }
@@ -61,6 +75,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
+
 dependencies {
     debugImplementation(libs.androidx.compose.preview)
     debugImplementation(libs.androidx.ui.tooling)

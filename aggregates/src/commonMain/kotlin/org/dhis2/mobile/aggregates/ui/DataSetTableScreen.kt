@@ -42,14 +42,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
-import org.dhis2.mobile.aggregates.model.DataSetScreenState
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarDropdownMenuIcon
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 /**
@@ -60,9 +61,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
  * */
 @Composable
 fun DataSetInstanceScreen(
-    dataSetScreenState: DataSetScreenState,
+    dataSetTableViewModel: DataSetTableViewModel = koinViewModel<DataSetTableViewModel>(),
+    useTwoPane: Boolean,
     onBackClicked: () -> Unit,
 ) {
+    val dataSetScreenState = dataSetTableViewModel.fetchState(useTwoPane)
     val onSectionSelected: (uid: String) -> Unit = {}
     Scaffold(
         modifier = Modifier
@@ -109,7 +112,7 @@ fun DataSetInstanceScreen(
                 },
                 title = {
                     Text(
-                        dataSetScreenState.dataSetDetails.titleLabel,
+                        dataSetScreenState.titleLabel(),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
