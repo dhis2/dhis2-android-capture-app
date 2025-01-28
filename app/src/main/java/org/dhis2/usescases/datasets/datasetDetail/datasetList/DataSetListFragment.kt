@@ -13,6 +13,10 @@ import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentDataSetListBinding
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_DATA_SET_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -122,7 +126,13 @@ class DataSetListFragment : FragmentGlobalAbstract() {
         }
 
         if (featureConfig.isFeatureEnable(Feature.COMPOSE_AGGREGATES_SCREEN)) {
-            startActivity(DataSetInstanceActivity::class.java, bundle, false, false, null)
+            val activityBundle = Bundle().apply {
+                putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid())
+                putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId())
+                putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid())
+                putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid())
+            }
+            startActivity(DataSetInstanceActivity::class.java, activityBundle, false, false, null)
         } else {
             startActivity(DataSetTableActivity::class.java, bundle, false, false, null)
         }

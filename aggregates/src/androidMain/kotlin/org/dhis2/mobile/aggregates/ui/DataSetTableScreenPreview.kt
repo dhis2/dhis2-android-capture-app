@@ -2,8 +2,7 @@ package org.dhis2.mobile.aggregates.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import org.dhis2.mobile.aggregates.data.DataFetcher
-import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @Preview(device = "id:pixel_8a")
@@ -11,12 +10,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 fun DataSetTableScreenPreview() {
     DHIS2Theme {
         DataSetInstanceScreen(
-            DataSetTableViewModel(
-                object : DataFetcher {
-                    override fun test(): String {
-                        return "test"
-                    }
-                },
+            parameters = DataSetInstanceParameters(
+                "dataSetUid",
+                "periodId",
+                "orgUnitUid",
+                "attrOptionComboUid",
             ),
             false,
         ) {}
@@ -28,12 +26,11 @@ fun DataSetTableScreenPreview() {
 fun DataSetTableTabletScreenPreview() {
     DHIS2Theme {
         DataSetInstanceScreen(
-            DataSetTableViewModel(
-                object : DataFetcher {
-                    override fun test(): String {
-                        return "test"
-                    }
-                },
+            parameters = DataSetInstanceParameters(
+                "dataSetUid",
+                "periodId",
+                "orgUnitUid",
+                "attrOptionComboUid",
             ),
             true,
         ) {}

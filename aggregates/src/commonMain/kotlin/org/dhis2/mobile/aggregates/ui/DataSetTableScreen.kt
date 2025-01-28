@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,30 +43,45 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.states.ScreenState
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarDropdownMenuIcon
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 /**
  * Data set table screen
  * Shows the data set details and tables
- * @param dataSetScreenState: Data set screen state
+ * @param parameters: Data set instance parameters
+ * @param useTwoPane: Whether to use a two pane layout
  * @param onBackClicked: Callback function to be invoked when the back button is clicked
  * */
 @Composable
 fun DataSetInstanceScreen(
-    dataSetTableViewModel: DataSetTableViewModel = koinViewModel<DataSetTableViewModel>(),
+    parameters: DataSetInstanceParameters,
     useTwoPane: Boolean,
     onBackClicked: () -> Unit,
 ) {
-    val dataSetScreenState = dataSetTableViewModel.fetchState(useTwoPane)
+    val dataSetTableViewModel: DataSetTableViewModel =
+        koinViewModel<DataSetTableViewModel>(parameters = {
+            parametersOf(
+                parameters.dataSetUid,
+                parameters.periodId,
+                parameters.organisationUnitUid,
+                parameters.attributeOptionComboUid,
+            )
+        })
+    val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
     val onSectionSelected: (uid: String) -> Unit = {}
     Scaffold(
         modifier = Modifier
@@ -111,13 +127,15 @@ fun DataSetInstanceScreen(
                     )
                 },
                 title = {
-                    Text(
-                        dataSetScreenState.titleLabel(),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                        Text(
+                            (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails.titleLabel,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -126,37 +144,47 @@ fun DataSetInstanceScreen(
             )
         },
     ) {
-        if (dataSetScreenState.useTwoPane) {
+        if (useTwoPane) {
             TwoPaneScreen(
                 modifier = Modifier.fillMaxSize().padding(it),
                 primaryPaneWeight = 0.7f,
                 primaryPane = {
-                    DataSetTableContent(
-                        dataSetDetails = dataSetScreenState.dataSetDetails,
-                    )
+                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                        DataSetTableContent(
+                            dataSetDetails = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails,
+                        )
+                    }
                 },
                 secondaryPane = {
-                    SectionColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(
-                                top = 0.dp,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 16.dp,
-                            ),
-                        dataSetSections = dataSetScreenState.dataSetSections,
-                        onSectionSelected = onSectionSelected,
-                    )
+                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                        SectionColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(
+                                    top = 0.dp,
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = 16.dp,
+                                ),
+                            dataSetSections = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetSections,
+                            onSectionSelected = onSectionSelected,
+                        )
+                    } else {
+                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                    }
                 },
             )
         } else {
-            DataSetSinglePane(
-                modifier = Modifier.fillMaxSize().padding(it),
-                dataSetSections = dataSetScreenState.dataSetSections,
-                dataSetDetails = dataSetScreenState.dataSetDetails,
-                onSectionSelected = onSectionSelected,
-            )
+            if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                DataSetSinglePane(
+                    modifier = Modifier.fillMaxSize().padding(it),
+                    dataSetSections = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetSections,
+                    dataSetDetails = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails,
+                    onSectionSelected = onSectionSelected,
+                )
+            } else {
+                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import org.dhis2.mobile.aggregates.di.mappers.toDataSetInstanceParameters
 import org.dhis2.mobile.aggregates.ui.DataSetInstanceScreen
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -23,7 +24,10 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     else -> false
                 }
 
-                DataSetInstanceScreen(useTwoPane = useTwoPane) {
+                DataSetInstanceScreen(
+                    parameters = intent.toDataSetInstanceParameters(),
+                    useTwoPane = useTwoPane,
+                ) {
                     onBackPressedDispatcher.onBackPressed()
                 }
             }

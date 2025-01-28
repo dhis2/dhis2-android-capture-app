@@ -1,15 +1,27 @@
 package org.dhis2.mobile.aggregates.ui.viewModel
 
 import androidx.lifecycle.ViewModel
-import org.dhis2.mobile.aggregates.data.DataFetcher
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
+import org.dhis2.mobile.aggregates.ui.states.ScreenState
 import org.dhis2.mobile.aggregates.ui.states.previewDataSetScreenState
 
-class DataSetTableViewModel(
-    private val dataFetcher: DataFetcher,
+internal class DataSetTableViewModel(
+    private val getDataSetInstanceDetails: GetDataSetInstanceDetails,
 ) : ViewModel() {
-    fun fetchState(useTwoPane: Boolean) = previewDataSetScreenState(
-        useTwoPane = useTwoPane,
-        numberOfTabs = 3,
-        test = dataFetcher.test(),
-    )
+    private val _dataSetScreenState = MutableStateFlow<ScreenState>(ScreenState.Loading)
+    val dataSetScreenState = _dataSetScreenState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val dataSetInstanceDetails = getDataSetInstanceDetails()
+            _dataSetScreenState.value = previewDataSetScreenState(
+                dataSetDetails = dataSetInstanceDetails,
+                numberOfTabs = 3,
+            )
+        }
+    }
 }

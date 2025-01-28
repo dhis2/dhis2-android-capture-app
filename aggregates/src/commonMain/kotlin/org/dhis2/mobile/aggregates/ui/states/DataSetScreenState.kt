@@ -3,30 +3,25 @@ package org.dhis2.mobile.aggregates.ui.states
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetSection
 
-data class DataSetScreenState(
-    val dataSetDetails: DataSetDetails,
-    val dataSetSections: List<DataSetSection>,
-    val useTwoPane: Boolean,
-    val test: String,
-) {
-    fun titleLabel(): String {
-        return test.ifEmpty {
-            dataSetDetails.titleLabel
-        }
-    }
+sealed class ScreenState {
+    data class DataSetScreenState(
+        val dataSetDetails: DataSetDetails,
+        val dataSetSections: List<DataSetSection>,
+    ) : ScreenState()
+
+    data object Loading : ScreenState()
 }
 
 inline fun previewDataSetScreenState(
-    useTwoPane: Boolean,
-    numberOfTabs: Int,
-    test: String,
-) = DataSetScreenState(
-    dataSetDetails = DataSetDetails(
+    dataSetDetails: DataSetDetails = DataSetDetails(
         titleLabel = "Data set title",
         dateLabel = "Jan. 2024",
         orgUnitLabel = "Org. Unit",
         catOptionComboLabel = "Cat. Option Combo",
     ),
+    numberOfTabs: Int,
+) = ScreenState.DataSetScreenState(
+    dataSetDetails = dataSetDetails,
     dataSetSections = buildList {
         repeat(numberOfTabs) {
             add(
@@ -34,6 +29,4 @@ inline fun previewDataSetScreenState(
             )
         }
     },
-    useTwoPane = useTwoPane,
-    test = test,
 )
