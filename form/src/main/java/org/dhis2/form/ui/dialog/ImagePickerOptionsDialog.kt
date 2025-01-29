@@ -62,7 +62,7 @@ internal fun ImagePickerOptionsDialog(
                         CarouselButtonData(
                             onClick = {
                                 onDismiss()
-                                onTakePicture(context)
+                                onSelectFromGallery()
                             },
                             enabled = true,
                             text = stringResource(R.string.from_gallery_v2),

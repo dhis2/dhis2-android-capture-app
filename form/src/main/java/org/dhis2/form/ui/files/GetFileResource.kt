@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.data.FormFileProvider
+import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
 private class GetFileResource(
@@ -58,7 +59,10 @@ fun rememberCameraPicker(
 ) = with(
     LocalContext.current,
 ) {
-    val tempFile = File.createTempFile("tempFile", ".png")
+    val tempFile = File(
+        FileResourceDirectoryHelper.getFileResourceDirectory(this),
+        "tempFile.png",
+    )
 
     val photoUri = FileProvider.getUriForFile(
         this,
