@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
-import org.dhis2.mobile.aggregates.ui.states.ScreenState
+import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
@@ -82,7 +83,13 @@ fun DataSetInstanceScreen(
             )
         })
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
-    val onSectionSelected: (uid: String) -> Unit = {}
+
+    val allowTwoPane by remember(useTwoPane, dataSetScreenState) {
+        derivedStateOf {
+            dataSetScreenState.allowTwoPane(useTwoPane)
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -127,9 +134,9 @@ fun DataSetInstanceScreen(
                     )
                 },
                 title = {
-                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                    if (dataSetScreenState is DataSetScreenState.Loaded) {
                         Text(
-                            (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails.titleLabel,
+                            (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails.titleLabel,
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleLarge,
                             maxLines = 1,
@@ -144,19 +151,19 @@ fun DataSetInstanceScreen(
             )
         },
     ) {
-        if (useTwoPane) {
+        if (allowTwoPane) {
             TwoPaneScreen(
                 modifier = Modifier.fillMaxSize().padding(it),
                 primaryPaneWeight = 0.7f,
                 primaryPane = {
-                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                    if (dataSetScreenState is DataSetScreenState.Loaded) {
                         DataSetTableContent(
-                            dataSetDetails = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails,
+                            dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         )
                     }
                 },
                 secondaryPane = {
-                    if (dataSetScreenState is ScreenState.DataSetScreenState) {
+                    if (dataSetScreenState is DataSetScreenState.Loaded) {
                         SectionColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -166,8 +173,8 @@ fun DataSetInstanceScreen(
                                     end = Spacing.Spacing16,
                                     bottom = Spacing.Spacing16,
                                 ),
-                            dataSetSections = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetSections,
-                            onSectionSelected = onSectionSelected,
+                            dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
+                            onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         )
                     } else {
                         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
@@ -175,12 +182,12 @@ fun DataSetInstanceScreen(
                 },
             )
         } else {
-            if (dataSetScreenState is ScreenState.DataSetScreenState) {
+            if (dataSetScreenState is DataSetScreenState.Loaded) {
                 DataSetSinglePane(
                     modifier = Modifier.fillMaxSize().padding(it),
-                    dataSetSections = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetSections,
-                    dataSetDetails = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetDetails,
-                    onSectionSelected = onSectionSelected,
+                    dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
+                    dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                    onSectionSelected = dataSetTableViewModel::onSectionSelected,
                 )
             } else {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
