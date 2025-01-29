@@ -4,6 +4,7 @@ import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.dataset.Section
 
 internal class DataSetInstanceRepositoryImpl(
@@ -21,17 +22,7 @@ internal class DataSetInstanceRepositoryImpl(
         .byOrganisationUnitUid().eq(orgUnitUid)
         .byAttributeOptionComboUid().eq(attrOptionComboUid)
         .blockingGet()
-        .map { dataSetInstance ->
-            val catComboUid = d2.dataSetModule().dataSets()
-                .uid(dataSetUid)
-                .blockingGet()
-                ?.categoryCombo()?.uid()
-            val isDefaultCatCombo = d2.categoryModule().categoryCombos()
-                .uid(catComboUid)
-                .blockingGet()
-                ?.isDefault
-            dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true)
-        }
+        .map(DataSetInstance::toDataSetDetails)
         .first()
 
     override fun getDataSetInstanceSections(
