@@ -52,6 +52,8 @@ kotlin {
             // Koin support for Android
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.desugar)
         }
 
         androidUnitTest.dependencies {  }
@@ -71,6 +73,8 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
