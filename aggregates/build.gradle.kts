@@ -36,11 +36,6 @@ kotlin {
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
-
-            // ViewModel support in common code
-          /*  implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.androidx.lifecycle.viewmodel.compose.kpm)
-            implementation(libs.androidx.navigation.compose)*/
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -52,8 +47,6 @@ kotlin {
             // Koin support for Android
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-
-            implementation(libs.desugar)
         }
 
         androidUnitTest.dependencies {  }
@@ -77,6 +70,10 @@ android {
 
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    dependencies {
+        coreLibraryDesugaring(libs.desugar)
     }
 }
 
