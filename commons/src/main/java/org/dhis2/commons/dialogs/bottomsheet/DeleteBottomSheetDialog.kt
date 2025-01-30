@@ -21,8 +21,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class
@@ -68,7 +68,7 @@ DeleteBottomSheetDialog(
                     },
                     buttonBlock = {
                         ButtonBlock(
-                            modifier = Modifier.padding(top = Spacing.Spacing0, bottom = Spacing.Spacing24, start = Spacing.Spacing24, end = Spacing.Spacing24),
+                            modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
                             primaryButton = {
                                 Button(
                                     style = ButtonStyle.OUTLINED,
