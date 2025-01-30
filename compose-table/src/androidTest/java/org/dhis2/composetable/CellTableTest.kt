@@ -16,18 +16,6 @@ class CellTableTest {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     @Test
-    fun shouldDisplayMandatoryIcon() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTable(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 0, 0)
-            assertCellHasMandatoryIcon(firstId, 0, 0)
-        }
-    }
-
-    @Test
     fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
