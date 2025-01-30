@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.ui.ErrorFieldList
 import org.dhis2.ui.R
 import org.dhis2.ui.icons.SyncingIcon
 import org.dhis2.ui.items.SyncStatusItem

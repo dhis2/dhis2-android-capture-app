@@ -15,13 +15,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 import org.dhis2.R
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetInsets
-import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
@@ -254,7 +254,7 @@ fun ProvideCategorySelector(
     if (selectableOptions.isNotEmpty()) {
         InputDropDown(
             modifier = modifier,
-            windowInsets = { BottomSheetInsets() },
+            windowInsets = { bottomSheetInsets() },
             bottomSheetLowerPadding = bottomSheetLowerPadding(),
             title = eventCatComboUiModel.category.name,
             state = getInputState(eventCatComboUiModel.detailsEnabled),
@@ -334,7 +334,7 @@ fun ProvideEmptyCategorySelector(
 
     Spacer(modifier = Modifier.height(16.dp))
     InputDropDown(
-        windowInsets = { BottomSheetInsets() },
+        windowInsets = { bottomSheetInsets() },
         modifier = modifier,
         title = name,
         state = InputShellState.UNFOCUSED,

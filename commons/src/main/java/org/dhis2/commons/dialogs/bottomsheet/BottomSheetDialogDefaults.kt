@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import android.os.Build
 import androidx.compose.foundation.layout.WindowInsets
@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.Dp
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 
 @Composable
-fun BottomSheetInsets(): WindowInsets {
+fun bottomSheetInsets(): WindowInsets {
     return BottomSheetShellDefaults.windowInsets(Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)
 }
 

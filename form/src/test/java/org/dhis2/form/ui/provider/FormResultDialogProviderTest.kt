@@ -1,13 +1,13 @@
 package org.dhis2.form.ui.provider
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.dialogs.bottomsheet.IssueType
 import org.dhis2.form.R
 import org.dhis2.form.data.EventResultDetails
 import org.dhis2.form.data.MissingMandatoryResult
 import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
-import org.dhis2.ui.dialogs.bottomsheet.IssueType
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.junit.Assert.assertTrue

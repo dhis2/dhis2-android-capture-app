@@ -1,4 +1,4 @@
-package org.dhis2.ui
+package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.dhis2.ui.dialogs.bottomsheet.IssueItem
 
 @Composable
 fun ErrorFieldList(
@@ -19,7 +17,10 @@ fun ErrorFieldList(
         modifier = Modifier.fillMaxWidth(),
     ) {
         for (field in fieldsWithIssues) {
-            IssueItem(field, onClick = { onItemClick(field.fieldUid) })
+            IssueItem(
+                field,
+                onClick = { onItemClick(field.fieldUid) },
+            )
         }
     }
 }

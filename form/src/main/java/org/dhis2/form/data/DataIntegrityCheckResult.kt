@@ -1,7 +1,7 @@
 package org.dhis2.form.data
 
+import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 

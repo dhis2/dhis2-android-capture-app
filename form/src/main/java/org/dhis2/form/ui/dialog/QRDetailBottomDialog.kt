@@ -31,12 +31,12 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.commons.ui.BottomSheetInsets
 import org.dhis2.form.R
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.lib.expression.math.GS1Elements
 import org.hisp.dhis.mobile.ui.designsystem.component.BarcodeBlock
@@ -129,7 +129,7 @@ QRDetailBottomDialog(
                     showBottomSectionDivider = true,
                     bottomPadding = bottomSheetLowerPadding(),
                 ),
-                windowInsets = BottomSheetInsets(),
+                windowInsets = { bottomSheetInsets() },
 
                 modifier = modifier,
                 icon = {

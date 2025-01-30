@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.ui.graphics.Color
 import org.dhis2.ui.R

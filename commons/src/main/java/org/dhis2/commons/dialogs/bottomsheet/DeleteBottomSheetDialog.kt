@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -57,7 +57,7 @@ DeleteBottomSheetDialog(
                         showBottomSectionDivider = false,
                         description = description,
                     ),
-                    windowInsets = { BottomSheetInsets() },
+                    windowInsets = { bottomSheetInsets() },
 
                     icon = {
                         Icon(

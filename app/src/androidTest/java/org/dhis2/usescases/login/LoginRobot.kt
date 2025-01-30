@@ -21,7 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
-import org.dhis2.ui.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
+import org.dhis2.commons.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity

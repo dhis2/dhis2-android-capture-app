@@ -22,8 +22,8 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
-import org.dhis2.commons.ui.BottomSheetInsets
-import org.dhis2.ui.dialogs.bottomsheet.bottomSheetLowerPadding
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -90,7 +90,7 @@ fun SchedulingDialogUi(
             headerTextAlignment = TextAlign.Start,
             animateHeaderOnKeyboardAppearance = false,
         ),
-        windowInsets = BottomSheetInsets(),
+        windowInsets = { bottomSheetInsets() },
         buttonBlock = {
             ButtonBlock(
                 launchMode = launchMode,
@@ -256,7 +256,7 @@ fun ProvideScheduleNewEventForm(
         InputDropDown(
             title = stringResource(id = R.string.program_stage),
             state = InputShellState.UNFOCUSED,
-            windowInsets = BottomSheetInsets(),
+            windowInsets = { bottomSheetInsets() },
             bottomSheetLowerPadding = bottomSheetLowerPadding(),
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,

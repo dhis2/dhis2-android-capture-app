@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -43,15 +43,16 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
+@Deprecated("Use BottomSheetShell directly instead")
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-    var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
+    var onMainButtonClicked: ((org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
     val showTopDivider: Boolean = false,
     val showBottomDivider: Boolean = false,
     val content: @Composable
-    ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog, scrollState: LazyListState) -> Unit)? = null,
+    ((org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog, scrollState: LazyListState) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +89,7 @@ class BottomSheetDialog(
                             },
                             headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
                         ),
-                        windowInsets = { BottomSheetInsets() },
+                        windowInsets = { bottomSheetInsets() },
 
                         icon = {
                             if (bottomSheetDialogUiModel.iconResource != -1) {
@@ -130,7 +131,7 @@ class BottomSheetDialog(
     @Composable
     fun BottomSheetButtons(
         bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-        onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit,
+        onMainButtonClicked: ((org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog)) -> Unit,
         onSecondaryButtonClicked: () -> Unit,
     ) {
         if (bottomSheetDialogUiModel.secondaryButton != null || bottomSheetDialogUiModel.mainButton != null) {
