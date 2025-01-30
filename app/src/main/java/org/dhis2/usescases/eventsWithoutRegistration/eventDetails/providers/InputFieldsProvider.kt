@@ -16,7 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.dhislogic.inDateRange
@@ -29,6 +36,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventIn
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
+import org.dhis2.utils.DateUtils.SIMPLE_DATE_FORMAT
 import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -46,9 +54,11 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeVisualTransformation
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -75,7 +85,7 @@ fun ProvideInputDate(
             actionIconType = DateTimeActionIconType.DATE,
             onActionClicked = uiModel.onDateClick,
             state = state,
-            visualTransformation = DateTransformation(),
+            visualTransformation = CustomDateTransformation(),
             onValueChanged = {
                 value = it
                 state = getInputShellStateBasedOnValue(it)
@@ -97,9 +107,9 @@ fun ProvideInputDate(
 }
 
 fun isValidDateFormat(dateString: String): Boolean {
-    val year = dateString.substring(4, 8)
-    val month = dateString.substring(2, 4)
-    val day = dateString.substring(0, 2)
+    val year = dateString.substring(0, 4)
+    val month = dateString.substring(4, 6)
+    val day = dateString.substring(6, 8)
 
     val formattedDate = "$year-$month-$day"
 
@@ -139,35 +149,85 @@ fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String)
 private fun isValid(valueString: String) = valueString.length == 8
 
 private fun formatStoredDateToUI(dateValue: String): String? {
-    val components = dateValue.split("/")
-    if (components.size != 3) {
-        return null
-    }
+    val date = DateTime.parse(dateValue, DateTimeFormat.forPattern(SIMPLE_DATE_FORMAT))
 
-    val year = components[2]
-    val month = if (components[1].length == 1) {
-        "0${components[1]}"
-    } else {
-        components[1]
-    }
-    val day = if (components[0].length == 1) {
-        "0${components[0]}"
-    } else {
-        components[0]
-    }
-
-    return "$day$month$year"
+    return date.toString(DateTimeFormat.forPattern("yyyyMMdd"))
 }
 
 fun formatUIDateToStored(dateValue: String?): InputDateValues? {
     return if (dateValue?.length != 8) {
         null
     } else {
-        val year = dateValue.substring(4, 8).toInt()
-        val month = dateValue.substring(2, 4).toInt()
-        val day = dateValue.substring(0, 2).toInt()
+        val year = dateValue.substring(0, 4).toInt()
+        val month = dateValue.substring(4, 6).toInt()
+        val day = dateValue.substring(6, 8).toInt()
 
         InputDateValues(day, month, year)
+    }
+}
+
+class CustomDateTransformation : DateTimeVisualTransformation {
+
+    companion object {
+        private const val SEPARATOR = "-"
+        internal const val DATE_MASK = "YYYYMMDD"
+    }
+
+    override val maskLength: Int
+        get() = DATE_MASK.length
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        return dateFilter(text)
+    }
+
+    private val inputFieldHelper = SpanStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Normal,
+        color = TextColor.OnDisabledSurface,
+    )
+
+    private fun dateFilter(text: AnnotatedString): TransformedText {
+        val trimmed =
+            if (text.text.length > DATE_MASK.length) text.text.substring(0 until DATE_MASK.length) else text.text
+        val output = buildAnnotatedString {
+            for (i in DATE_MASK.indices) {
+                val dateChar = trimmed.getOrNull(i)
+                if (dateChar == null) {
+                    append(AnnotatedString(DATE_MASK[i].toString(), inputFieldHelper))
+                } else {
+                    append(trimmed[i])
+                }
+
+                if (i == 3 || i == 5) {
+                    val separator = if (dateChar != null) {
+                        SEPARATOR
+                    } else {
+                        AnnotatedString(SEPARATOR, inputFieldHelper)
+                    }
+                    append(separator)
+                }
+            }
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (trimmed.lastIndex >= 0) {
+                    if (offset <= 3) return offset
+                    if (offset <= 5) return offset + 1
+                    if (offset <= 8) return offset + 2
+                    return trimmed.length + 2
+                } else {
+                    return 0
+                }
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset > text.length) return text.length
+                return offset
+            }
+        }
+
+        return TransformedText(output, offsetMapping)
     }
 }
 
@@ -216,7 +276,8 @@ fun ProvideCategorySelector(
     var selectedItem by remember(eventCatComboUiModel.eventCatCombo.selectedCategoryOptions) {
         mutableStateOf(
             eventCatComboUiModel.eventCatCombo.selectedCategoryOptions[eventCatComboUiModel.category.uid]?.displayName()
-                ?: eventCatComboUiModel.eventCatCombo.categoryOptions?.get(eventCatComboUiModel.category.uid)?.displayName(),
+                ?: eventCatComboUiModel.eventCatCombo.categoryOptions?.get(eventCatComboUiModel.category.uid)
+                    ?.displayName(),
         )
     }
 
@@ -293,7 +354,11 @@ fun ProvideCategorySelector(
             }
         }
     } else {
-        ProvideEmptyCategorySelector(modifier = modifier, name = eventCatComboUiModel.category.name, option = eventCatComboUiModel.noOptionsText)
+        ProvideEmptyCategorySelector(
+            modifier = modifier,
+            name = eventCatComboUiModel.category.name,
+            option = eventCatComboUiModel.noOptionsText
+        )
     }
 }
 
