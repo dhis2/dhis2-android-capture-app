@@ -2,7 +2,7 @@ package org.dhis2.mobile.aggregates.data
 
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 
-interface DataSetInstanceRepository {
+internal interface DataSetInstanceRepository {
     fun getDataSetInstance(
         dataSetUid: String,
         periodId: String,

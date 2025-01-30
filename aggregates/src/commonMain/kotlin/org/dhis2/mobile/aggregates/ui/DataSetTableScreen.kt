@@ -161,10 +161,10 @@ fun DataSetInstanceScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(
-                                    top = 0.dp,
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    bottom = 16.dp,
+                                    top = Spacing.Spacing0,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                    bottom = Spacing.Spacing16,
                                 ),
                             dataSetSections = (dataSetScreenState as ScreenState.DataSetScreenState).dataSetSections,
                             onSectionSelected = onSectionSelected,
@@ -236,7 +236,7 @@ private fun DataSetSinglePane(
                             topStart = Radius.L,
                             topEnd = Radius.L,
                         ),
-                    ).padding(horizontal = 16.dp),
+                    ).padding(horizontal = Spacing.Spacing16),
                 dataSetDetails = dataSetDetails,
             )
         }
@@ -247,7 +247,7 @@ private fun DataSetSinglePane(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 16.dp, vertical = 24.dp),
+                        .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
                     text = "Table $it",
                 )
             }

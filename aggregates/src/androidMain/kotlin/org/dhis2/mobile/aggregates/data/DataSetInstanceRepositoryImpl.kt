@@ -3,7 +3,7 @@ package org.dhis2.mobile.aggregates.data
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.hisp.dhis.android.core.D2
 
-class DataSetInstanceRepositoryImpl(
+internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
 ) : DataSetInstanceRepository {
 
