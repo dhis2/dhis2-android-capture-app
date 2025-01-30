@@ -44,7 +44,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.QrCodeBlock
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
@@ -122,12 +123,15 @@ QRDetailBottomDialog(
         if (showDialog) {
             val buttonList = getComposeButtonList()
             BottomSheetShell(
+                uiState = BottomSheetShellUIState(
+                    title = label,
+                    showTopSectionDivider = true,
+                    showBottomSectionDivider = true,
+                    bottomPadding = bottomSheetLowerPadding(),
+                ),
                 windowInsets = BottomSheetInsets(),
-                showTopSectionDivider = true,
-                showBottomSectionDivider = true,
-                bottomPadding = bottomSheetLowerPadding(),
+
                 modifier = modifier,
-                title = label,
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -152,7 +156,7 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(modifier = Modifier.padding(top = Spacing.Spacing0, bottom = Spacing.Spacing24, start = Spacing.Spacing24, end = Spacing.Spacing24), carouselButtonList = buttonList)
+                    ButtonCarousel(modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()), carouselButtonList = buttonList)
                 },
                 onDismiss = {
                     dismiss()

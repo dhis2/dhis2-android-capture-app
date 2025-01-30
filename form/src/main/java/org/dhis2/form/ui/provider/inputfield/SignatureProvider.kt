@@ -41,7 +41,7 @@ fun ProvideInputSignature(
         modifier = modifier,
         title = fieldUiModel.label,
         bottomSheetLowerPadding = bottomSheetLowerPadding(),
-        windowInsets = BottomSheetInsets(),
+        windowInsets = { BottomSheetInsets() },
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),

@@ -254,7 +254,7 @@ fun ProvideCategorySelector(
     if (selectableOptions.isNotEmpty()) {
         InputDropDown(
             modifier = modifier,
-            windowInsets = BottomSheetInsets(),
+            windowInsets = { BottomSheetInsets() },
             bottomSheetLowerPadding = bottomSheetLowerPadding(),
             title = eventCatComboUiModel.category.name,
             state = getInputState(eventCatComboUiModel.detailsEnabled),
@@ -334,7 +334,7 @@ fun ProvideEmptyCategorySelector(
 
     Spacer(modifier = Modifier.height(16.dp))
     InputDropDown(
-        windowInsets = BottomSheetInsets(),
+        windowInsets = { BottomSheetInsets() },
         modifier = modifier,
         title = name,
         state = InputShellState.UNFOCUSED,

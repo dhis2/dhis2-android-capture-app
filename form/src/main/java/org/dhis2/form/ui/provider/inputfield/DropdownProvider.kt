@@ -46,7 +46,7 @@ fun ProvideDropdownInput(
 
     InputDropDown(
         modifier = modifier,
-        windowInsets = BottomSheetInsets(),
+        windowInsets = { BottomSheetInsets() },
         bottomSheetLowerPadding = bottomSheetLowerPadding(),
         inputStyle = inputStyle,
         title = fieldUiModel.label,

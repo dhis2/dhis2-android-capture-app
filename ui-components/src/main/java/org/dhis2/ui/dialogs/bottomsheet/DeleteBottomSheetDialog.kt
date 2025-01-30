@@ -21,6 +21,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -49,12 +50,15 @@ DeleteBottomSheetDialog(
             )
             setContent {
                 BottomSheetShell(
-                    windowInsets = BottomSheetInsets(),
-                    bottomPadding = bottomSheetLowerPadding(),
-                    title = title,
-                    showTopSectionDivider = true,
-                    showBottomSectionDivider = false,
-                    description = description,
+                    uiState = BottomSheetShellUIState(
+                        bottomPadding = bottomSheetLowerPadding(),
+                        title = title,
+                        showTopSectionDivider = true,
+                        showBottomSectionDivider = false,
+                        description = description,
+                    ),
+                    windowInsets = { BottomSheetInsets() },
+
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Info,

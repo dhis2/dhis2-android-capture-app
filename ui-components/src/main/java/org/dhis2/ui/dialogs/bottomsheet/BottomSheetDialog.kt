@@ -35,9 +35,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Border
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -76,16 +77,19 @@ class BottomSheetDialog(
                 DHIS2Theme {
                     val scrollState = rememberLazyListState()
                     BottomSheetShell(
-                        windowInsets = BottomSheetInsets(),
-                        bottomPadding = bottomSheetLowerPadding(),
-                        showBottomSectionDivider = showBottomDivider,
-                        showTopSectionDivider = showTopDivider,
-                        title = bottomSheetDialogUiModel.title,
-                        description = when (bottomSheetDialogUiModel.clickableWord) {
-                            null -> bottomSheetDialogUiModel.message
-                            else -> null
-                        },
-                        headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                        uiState = BottomSheetShellUIState(
+                            bottomPadding = bottomSheetLowerPadding(),
+                            showBottomSectionDivider = showBottomDivider,
+                            showTopSectionDivider = showTopDivider,
+                            title = bottomSheetDialogUiModel.title,
+                            description = when (bottomSheetDialogUiModel.clickableWord) {
+                                null -> bottomSheetDialogUiModel.message
+                                else -> null
+                            },
+                            headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                        ),
+                        windowInsets = { BottomSheetInsets() },
+
                         icon = {
                             if (bottomSheetDialogUiModel.iconResource != -1) {
                                 Icon(
@@ -131,7 +135,7 @@ class BottomSheetDialog(
     ) {
         if (bottomSheetDialogUiModel.secondaryButton != null || bottomSheetDialogUiModel.mainButton != null) {
             ButtonBlock(
-                modifier = Modifier.padding(top = Spacing0, bottom = Spacing24, start = Spacing24, end = Spacing24),
+                modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
                 primaryButton = {
                     bottomSheetDialogUiModel.secondaryButton?.let { style ->
 

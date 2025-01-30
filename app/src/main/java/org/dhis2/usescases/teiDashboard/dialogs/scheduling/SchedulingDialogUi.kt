@@ -45,10 +45,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoFieldValues
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Locale
 
@@ -78,16 +78,19 @@ fun SchedulingDialogUi(
     }
 
     BottomSheetShell(
-        windowInsets = BottomSheetInsets(),
-        bottomPadding = bottomSheetLowerPadding(),
-        title = bottomSheetTitle(
-            launchMode = launchMode,
-            programStages = programStages,
+        uiState = BottomSheetShellUIState(
+            bottomPadding = bottomSheetLowerPadding(),
+            title = bottomSheetTitle(
+                launchMode = launchMode,
+                programStages = programStages,
+            ),
+            showTopSectionDivider = true,
+            showBottomSectionDivider = true,
+            subtitle = viewModel.overdueSubtitle,
+            headerTextAlignment = TextAlign.Start,
+            animateHeaderOnKeyboardAppearance = false,
         ),
-        showTopSectionDivider = true,
-        showBottomSectionDivider = true,
-        subtitle = viewModel.overdueSubtitle,
-        headerTextAlignment = TextAlign.Start,
+        windowInsets = BottomSheetInsets(),
         buttonBlock = {
             ButtonBlock(
                 launchMode = launchMode,
@@ -131,7 +134,7 @@ fun SchedulingDialogUi(
             }
         },
         onDismiss = onDismiss,
-        animateHeaderOnKeyboardAppearance = false,
+
     )
 }
 
@@ -148,7 +151,7 @@ private fun ButtonBlock(
 ) {
     Box(
         modifier
-            .padding(top = Spacing0, bottom = Spacing24, start = Spacing24, end = Spacing24),
+            .padding(BottomSheetShellDefaults.buttonBlockPaddings()),
     ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {

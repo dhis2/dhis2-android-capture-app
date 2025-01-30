@@ -92,7 +92,7 @@ private fun ProvideCategorySelector(
         InputDropDown(
             modifier = modifier,
             title = category.name,
-            windowInsets = BottomSheetInsets(),
+            windowInsets = { BottomSheetInsets() },
             bottomSheetLowerPadding = bottomSheetLowerPadding(),
             state = getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty()),
             inputStyle = inputStyle,
