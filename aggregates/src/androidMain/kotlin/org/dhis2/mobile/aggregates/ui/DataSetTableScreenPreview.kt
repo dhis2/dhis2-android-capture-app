@@ -38,7 +38,7 @@ fun DataSetTableScreenPreview() {
     }
 }
 
-@Preview(device = "id:pixel_c", showSystemUi = true)
+@Preview(device = "id:pixel_c", showSystemUi = true, showBackground = true)
 @Composable
 fun DataSetTableTabletScreenPreview() {
     KoinApplication(
