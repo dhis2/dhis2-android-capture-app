@@ -172,7 +172,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        val suggestedEventDateIsNotFutureDate = presenter.suggestedReportDateIsNotFutureDate(eventUid)
+        val suggestedEventDateIsNotFutureDate =
+            presenter.suggestedReportDateIsNotFutureDate(eventUid)
         if (presenter.isEventScheduleOrSkipped(eventUid) && suggestedEventDateIsNotFutureDate) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)

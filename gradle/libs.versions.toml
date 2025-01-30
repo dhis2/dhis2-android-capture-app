@@ -26,6 +26,7 @@ dynamicanimation = "1.0.0"
 viewpager2 = "1.0.0"
 recyclerview = "1.3.1"
 compose = "1.5.4"
+composePlugin = "1.7.3"
 composePaging = "3.3.0"
 composeLifecycle = "2.8.1"
 composeConstraintLayout = "1.0.1"
@@ -86,6 +87,10 @@ material3WindowSize = "1.2.0"
 material3WindowSizeCompose = "1.7.1"
 material3AdaptiveAndroid = "1.0.0"
 uiTooling = "1.7.6"
+koin = "4.0.2"
+lifecycleViewmodel = "2.8.7"
+androidx-navigation = "2.7.0"
+
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -206,8 +211,19 @@ dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-viewmodel-compose-kpm = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodel" }
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
