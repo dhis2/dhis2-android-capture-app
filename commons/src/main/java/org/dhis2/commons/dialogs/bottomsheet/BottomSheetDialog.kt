@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -37,8 +36,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
-import org.hisp.dhis.mobile.ui.designsystem.theme.Border
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -112,14 +111,23 @@ class BottomSheetDialog(
                         onDismiss = {
                             dismiss()
                         },
-                        content = {
-                            if (content != null) {
-                                content.invoke(this@BottomSheetDialog, scrollState)
-                            } else {
-                                bottomSheetDialogUiModel.clickableWord?.let {
-                                    ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
+                        content = when {
+                            content != null -> {
+                                {
+                                    content.invoke(this@BottomSheetDialog, scrollState)
                                 }
                             }
+
+                            bottomSheetDialogUiModel.clickableWord != null -> {
+                                {
+                                    ClickableTextContent(
+                                        bottomSheetDialogUiModel.message ?: "",
+                                        bottomSheetDialogUiModel.clickableWord!!,
+                                    )
+                                }
+                            }
+
+                            else -> null
                         },
                         contentScrollState = scrollState,
                     )
@@ -180,7 +188,7 @@ class BottomSheetDialog(
 
     @Composable
     private fun ClickableTextContent(originalText: String, clickableText: String) {
-        Column {
+        Column(Modifier.padding(Spacing.Spacing0)) {
             ClickableText(
                 modifier = Modifier
                     .testTag(CLICKABLE_TEXT_TAG)
@@ -204,13 +212,6 @@ class BottomSheetDialog(
                 onClick = {
                     onMessageClick()
                 },
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Spacing24),
-                color = TextColor.OnDisabledSurface,
-                thickness = Border.Thin,
             )
         }
     }

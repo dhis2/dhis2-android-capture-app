@@ -8,9 +8,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefa
 
 @Composable
 fun bottomSheetInsets(): WindowInsets {
-    return BottomSheetShellDefaults.windowInsets(Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    return BottomSheetShellDefaults.windowInsets(Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)
 }
 
 fun bottomSheetLowerPadding(): Dp {
-    return BottomSheetShellDefaults.lowerPadding(Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    return BottomSheetShellDefaults.lowerPadding(Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)
 }
