@@ -763,7 +763,7 @@ class DataValueRepository(
                 dataSetUid,
                 periodId,
                 orgUnitUid,
-                attributeOptionComboUid
+                attributeOptionComboUid,
             ) is DataSetEditableStatus.Editable
     }
 
