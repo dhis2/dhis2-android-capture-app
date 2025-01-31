@@ -156,8 +156,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         data.getStringExtra(MapSelectorActivity.DATA_EXTRA)?.let {
                             handleGeometry(
                                 FeatureType.valueOfFeatureType(
-                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
-                                ),
+                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)!!,
+                                )!!,
                                 it,
                                 requestCode,
                             )
@@ -172,7 +172,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        val suggestedEventDateIsNotFutureDate = presenter.suggestedReportDateIsNotFutureDate(eventUid)
+        val suggestedEventDateIsNotFutureDate =
+            presenter.suggestedReportDateIsNotFutureDate(eventUid)
         if (presenter.isEventScheduleOrSkipped(eventUid) && suggestedEventDateIsNotFutureDate) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)

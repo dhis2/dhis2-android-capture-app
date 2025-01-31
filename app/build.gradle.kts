@@ -252,6 +252,7 @@ dependencies {
     implementation(project(":stock-usecase"))
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(project(":tracker"))
+    implementation(project(":aggregates"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
@@ -280,6 +281,8 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 
     coreLibraryDesugaring(libs.desugar)
 
