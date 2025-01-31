@@ -30,6 +30,7 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
+import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.DataSetElement
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -731,7 +732,7 @@ class DataValueRepository(
         }
 
         val isEditable = canWriteAny().blockingFirst() &&
-            !isExpired(getDataSet().blockingFirst()) &&
+            dataSetIsEditable() &&
             (
                 getDataInputPeriod() == null || (
                     getDataInputPeriod() != null && DateUtils.getInstance()
@@ -755,16 +756,15 @@ class DataValueRepository(
         )
     }
 
-    private fun isExpired(dataSet: DataSet?): Boolean {
-        return if (0 == dataSet?.expiryDays()) {
-            false
-        } else {
-            DateUtils.getInstance()
-                .isDataSetExpired(
-                    dataSet?.expiryDays()!!,
-                    getPeriod().blockingFirst()!!.endDate()!!,
-                )
-        }
+    private fun dataSetIsEditable(): Boolean {
+        return d2.dataSetModule()
+            .dataSetInstanceService()
+            .blockingGetEditableStatus(
+                dataSetUid,
+                periodId,
+                orgUnitUid,
+                attributeOptionComboUid
+            ) is DataSetEditableStatus.Editable
     }
 
     private fun getCatOptionOrder(options: List<List<String>>): List<List<CategoryOption>> {
