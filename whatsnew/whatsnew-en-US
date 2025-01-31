@@ -1,9 +1,4 @@
-This is a patch version that fixes:
- -ANDROAPP-5888 RTSM - Stock distribution allows entry of zero values
- -ANDROAPP-6108 Bottom sheet Icon button is displaced
- -ANDROAPP-6715 Crash when selecting a checkbox option set
- -ANDROAPP-6220 Login error - Fragmentation has been destroyed
- -ANDROAPP-6281 Formatting of org unit selector buttons over android navigation bar
- -ANDROAPP-6282 Misalignment of TEI list and dashboard cards
- -...
+This is a hotfix version that fixes:
+- ANDROAPP-6797 Update rule engine to 3.3.2
+
 You can find all the details on Jira and Github.
