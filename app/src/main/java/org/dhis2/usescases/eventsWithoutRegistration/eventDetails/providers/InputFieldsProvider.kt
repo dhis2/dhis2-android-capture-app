@@ -149,6 +149,10 @@ fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String)
 private fun isValid(valueString: String) = valueString.length == 8
 
 private fun formatStoredDateToUI(dateValue: String): String? {
+    if (dateValue.isNullOrEmpty()) {
+        return null
+    }
+
     val date = DateTime.parse(dateValue, DateTimeFormat.forPattern(SIMPLE_DATE_FORMAT))
 
     return date.toString(DateTimeFormat.forPattern("yyyyMMdd"))
