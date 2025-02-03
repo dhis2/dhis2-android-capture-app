@@ -116,4 +116,6 @@
     <string name="category_combo">Combinação de categoria</string>
     <string name="no_options">Nenhuma opção disponível</string>
     <string name="cat_combo">Combinação de categoria</string>
-    </resources>
+    <string name="storage_permission_denied">A permissão de armazenamento não é concedida.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
+
+</resources>

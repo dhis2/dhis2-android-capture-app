@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Завершить</string>
+    <string name="discard_changes">Не сохранять изменения</string>
+    <string name="cancel">Отменить</string>
+    <string name="save">Сохранить</string>
+    <string name="clear">Очистить</string>
+    <string name="action_done">Готово</string>
+    <string name="action_cancel">Отменить</string>
+    <string name="action_close">Закрыть</string>
+    <string name="hint_search">Поиск</string>
+    <string name="action_clear_all">Очистить все</string>
+    </resources>

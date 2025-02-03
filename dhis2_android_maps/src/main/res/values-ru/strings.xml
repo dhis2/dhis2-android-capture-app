@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_apply">Применить</string>
+    <string name="accuracy_low">Низкий</string>
+    <string name="accuracy_medium">Средний</string>
     </resources>
