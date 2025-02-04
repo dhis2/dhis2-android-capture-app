@@ -9,6 +9,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
+
+        consumerProguardFiles("consumer-rules.pro")
     }
     namespace = "com.tbuonomo.viewpagerdotsindicator"
     buildTypes {
