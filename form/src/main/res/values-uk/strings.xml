@@ -71,7 +71,6 @@
     <string name="copied_text">Скопійовано</string>
     <string name="empty_description">Немає інформації для цього поля</string>
     <string name="take_photo">Зробити фото</string>
-    <string name="from_gallery">Обрати з галереї</string>
     <string name="warning_error_on_complete_title">Перевірте це!</string>
     <string name="action_do_not_show_again">Не показувати знову</string>
     <string name="validation_error_message">надане значення не допускається для цього поля</string>

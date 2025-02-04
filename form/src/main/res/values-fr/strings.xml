@@ -66,7 +66,6 @@
     <string name="copied_text">Copié</string>
     <string name="empty_description">Pas d\'information pour ce champ</string>
     <string name="take_photo">Prendre une photo</string>
-    <string name="from_gallery">Choisir depuis la galerie</string>
     <string name="warning_error_on_complete_title">Attention. Vérifiez ceci!</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
     <string name="enrollment_single_section_label">Attributs - %s</string>

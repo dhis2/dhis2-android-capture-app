@@ -70,7 +70,6 @@
     <string name="copied_text">Zkopírováno</string>
     <string name="empty_description">Žádné informace pro toto pole</string>
     <string name="take_photo">Vyfotit</string>
-    <string name="from_gallery">Vybrat z galerie</string>
     <string name="warning_error_on_complete_title">Zkontrolovat to!</string>
     <string name="action_do_not_show_again">Znovu nezobrazovat</string>
     <string name="validation_error_message">zadaná hodnota není pro toto pole přípustná</string>
