@@ -1,6 +1,8 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.core.content.ContextCompat
 import org.dhis2.commons.extensions.getBitmap
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -17,8 +20,10 @@ import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.UiEventType
+import org.dhis2.form.ui.dialog.ImagePickerOptionsDialog
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.files.rememberCameraPicker
+import org.dhis2.form.ui.files.rememberFilePicker
 import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
@@ -30,10 +35,39 @@ internal fun ProvideInputImage(
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    onFileSelected: (filePath: String) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
+    var showImageOptions by remember { mutableStateOf(false) }
+
+    var uploadState by remember(fieldUiModel) {
+        mutableStateOf(
+            getUploadState(
+                fieldUiModel.displayName,
+                fieldUiModel.isLoadingData,
+            ),
+        )
+    }
 
     val painter = fieldUiModel.displayName?.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
+
+    val filePicker = rememberFilePicker(onFileSelected)
+
+    val (tempFileUri, imagePicker, cameraPermission) = rememberCameraPicker(
+        onSuccess = { filePath ->
+            onFileSelected(filePath)
+            uploadState = getUploadState(fieldUiModel.displayName, false)
+        },
+        onError = {
+            uploadState = getUploadState(fieldUiModel.displayName, false)
+            intentHandler.invoke(
+                FormIntent.OnAddImageFinished(fieldUiModel.uid),
+            )
+        },
+        onPermissionAccepted = {
+            uploadState = getUploadState(fieldUiModel.displayName, true)
+        },
+    )
+
     InputImage(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -69,8 +103,28 @@ internal fun ProvideInputImage(
             )
         },
         onAddButtonClicked = {
-            uploadState = getUploadState(fieldUiModel.displayName, true)
-            fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
+            showImageOptions = true
+        },
+    )
+
+    ImagePickerOptionsDialog(
+        title = fieldUiModel.label,
+        showImageOptions = showImageOptions,
+        onDismiss = { showImageOptions = false },
+        onTakePicture = { context ->
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA,
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                uploadState = getUploadState(fieldUiModel.displayName, true)
+                imagePicker.launch(tempFileUri)
+            } else {
+                cameraPermission.launch(Manifest.permission.CAMERA)
+            }
+        },
+        onSelectFromGallery = {
+            filePicker.launch("image/*")
         },
     )
 }

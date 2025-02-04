@@ -65,6 +65,7 @@ fun FieldProvider(
     resources: ResourceManager,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
+    onFileSelected: (String) -> Unit,
 ) {
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
@@ -136,6 +137,7 @@ fun FieldProvider(
             focusRequester = focusRequester,
             onNextClicked = onNextClicked,
             focusManager = focusManager,
+            onFileSelected = onFileSelected,
         )
     }
 }
@@ -151,6 +153,7 @@ fun ProvideByValueType(
     focusRequester: FocusRequester,
     onNextClicked: () -> Unit,
     focusManager: FocusManager,
+    onFileSelected: (String) -> Unit,
 ) {
     when (fieldUiModel.valueType) {
         ValueType.TEXT -> {
@@ -298,6 +301,7 @@ fun ProvideByValueType(
                 modifier = modifier,
                 fieldUiModel = fieldUiModel,
                 resources = resources,
+                onFileSelected = onFileSelected,
                 uiEventHandler = uiEventHandler,
             )
         }
@@ -419,6 +423,7 @@ fun ProvideByValueType(
                         intentHandler = intentHandler,
                         uiEventHandler = uiEventHandler,
                         resources = resources,
+                        onFileSelected = onFileSelected,
                     )
                 }
             }
@@ -743,7 +748,12 @@ private fun ProvideIntegerNegative(
         )
     }
     var value by remember(fieldUiModel.value) {
-        mutableStateOf(TextFieldValue(fieldUiModel.value?.replace("-", "") ?: "", savedTextSelection))
+        mutableStateOf(
+            TextFieldValue(
+                fieldUiModel.value?.replace("-", "") ?: "",
+                savedTextSelection,
+            ),
+        )
     }
 
     InputNegativeInteger(
