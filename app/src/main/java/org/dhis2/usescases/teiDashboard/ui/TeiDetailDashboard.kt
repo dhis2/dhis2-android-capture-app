@@ -3,7 +3,9 @@ package org.dhis2.usescases.teiDashboard.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -36,23 +38,24 @@ fun TeiDetailDashboard(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        infoBarModels.forEach { infoBar ->
-            if (infoBar.showInfoBar) {
-                InfoBar(
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .testTag(INFO_BAR_TEST_TAG + infoBar.type.name),
-                    infoBarData = InfoBarData(
-                        text = infoBar.text,
-                        icon = infoBar.icon,
-                        color = infoBar.textColor,
-                        backgroundColor = infoBar.backgroundColor,
-                        actionText = infoBar.actionText,
-                        onClick = infoBar.onActionClick,
-                    ),
-                )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            infoBarModels.forEach { infoBar ->
+                if (infoBar.showInfoBar) {
+                    InfoBar(
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 8.dp)
+                            .testTag(INFO_BAR_TEST_TAG + infoBar.type.name),
+                        infoBarData = InfoBarData(
+                            text = infoBar.text,
+                            icon = infoBar.icon,
+                            color = infoBar.textColor,
+                            backgroundColor = infoBar.backgroundColor,
+                            actionText = infoBar.actionText,
+                            onClick = infoBar.onActionClick,
+                        ),
+                    )
+                }
             }
         }
 
@@ -83,6 +86,7 @@ fun TeiDetailDashboard(
 private fun QuickActionsRow(quickActions: List<QuickActionUiModel>) {
     if (quickActions.isNotEmpty()) {
         LazyRow(
+            modifier = Modifier.padding(bottom = Spacing.Spacing16),
             horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
             contentPadding = PaddingValues(horizontal = Spacing.Spacing16),
         ) {
