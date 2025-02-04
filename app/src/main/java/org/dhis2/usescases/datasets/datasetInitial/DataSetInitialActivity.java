@@ -1,5 +1,10 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import static org.dhis2.mobile.aggregates.ui.constants.DataSetInstanceConstantsKt.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID;
+import static org.dhis2.mobile.aggregates.ui.constants.DataSetInstanceConstantsKt.INTENT_EXTRA_DATA_SET_UID;
+import static org.dhis2.mobile.aggregates.ui.constants.DataSetInstanceConstantsKt.INTENT_EXTRA_ORGANISATION_UNIT_UID;
+import static org.dhis2.mobile.aggregates.ui.constants.DataSetInstanceConstantsKt.INTENT_EXTRA_PERIOD_ID;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,12 +18,15 @@ import org.dhis2.R;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.PeriodDialog;
 import org.dhis2.commons.extensions.CategoryOptionExtensionsKt;
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
+import org.dhis2.commons.featureconfig.model.Feature;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
 import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.data.dhislogic.OrganisationUnitExtensionsKt;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.category.CategoryDialog;
@@ -50,6 +58,8 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     DataSetInitialContract.Presenter presenter;
     @Inject
     DhisPeriodUtils periodUtils;
+    @Inject
+    FeatureConfigRepository featureConfig;
 
     private HashMap<String, CategoryOption> selectedCatOptions;
     private OrganisationUnit selectedOrgUnit;
@@ -69,7 +79,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     protected void onResume() {
         super.onResume();
-        if(sessionManagerServiceImpl.isUserLoggedIn()){
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
             presenter.init();
         }
     }
@@ -250,14 +260,24 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void navigateToDataSetTable(String catOptionCombo, String periodId) {
-        Bundle bundle = DataSetTableActivity.getBundle(
-                dataSetUid,
-                selectedOrgUnit.uid(),
-                periodId,
-                catOptionCombo
-        );
+        if (featureConfig.isFeatureEnable(Feature.COMPOSE_AGGREGATES_SCREEN)) {
+            Bundle bundle = new Bundle();
+            bundle.putString(INTENT_EXTRA_DATA_SET_UID, dataSetUid);
+            bundle.putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, selectedOrgUnit.uid());
+            bundle.putString(INTENT_EXTRA_PERIOD_ID, periodId);
+            bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptionCombo);
+            startActivity(DataSetInstanceActivity.class, bundle, true, false, null);
+        } else {
+            Bundle bundle = DataSetTableActivity.getBundle(
+                    dataSetUid,
+                    selectedOrgUnit.uid(),
+                    periodId,
+                    catOptionCombo
+            );
 
-        startActivity(DataSetTableActivity.class, bundle, true, false, null);
+            startActivity(DataSetTableActivity.class, bundle, true, false, null);
+        }
+
     }
 
     private void checkActionVisivbility() {

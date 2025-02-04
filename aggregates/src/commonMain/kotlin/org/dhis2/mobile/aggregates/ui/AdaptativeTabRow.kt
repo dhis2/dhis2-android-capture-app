@@ -35,6 +35,8 @@ fun AdaptiveTabRow(
     tabLabels: List<String>,
     onTabClicked: (index: Int) -> Unit,
 ) {
+    if (tabLabels.isEmpty()) return
+
     var selectedTab by remember { mutableStateOf(0) }
     val tabWidths = remember { mutableStateListOf<Int>() }
     var scrollable by remember { mutableStateOf(false) }

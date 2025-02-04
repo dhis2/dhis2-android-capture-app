@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -47,6 +46,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.VerticalTabs
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneConfig
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneLayout
 import org.hisp.dhis.mobile.ui.designsystem.component.model.Tab
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
@@ -158,6 +159,7 @@ fun DataSetInstanceScreen(
                                 shape = RoundedCornerShape(topEnd = Radius.L),
                             ),
                             dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                            tableModels = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable.tables(),
                         )
                     }
                 },
@@ -180,12 +182,7 @@ fun DataSetInstanceScreen(
                                     color = MaterialTheme.colorScheme.surfaceBright,
                                     shape = RoundedCornerShape(topStart = Radius.L),
                                 )
-                                .padding(
-                                    top = Spacing.Spacing0,
-                                    start = Spacing.Spacing16,
-                                    end = Spacing.Spacing16,
-                                    bottom = Spacing.Spacing16,
-                                ),
+                                .padding(all = Spacing.Spacing0),
                             tabs = tabs,
                             onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         )
@@ -201,6 +198,7 @@ fun DataSetInstanceScreen(
                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                     onSectionSelected = dataSetTableViewModel::onSectionSelected,
+                    tableModels = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable.tables(),
                 )
             } else {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
@@ -217,15 +215,15 @@ fun DataSetInstanceScreen(
  * @param dataSetDetails: Data set details
  * @param onSectionSelected: Callback function to be invoked when a section is selected
  * */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
+    tableModels: List<TableModel>,
     onSectionSelected: (uid: String) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(
@@ -238,49 +236,26 @@ private fun DataSetSinglePane(
                 ),
             ),
     ) {
-        item(key = "section_tabs") {
-            SectionTabs(
-                dataSetSections = dataSetSections,
-                onSectionSelected = onSectionSelected,
-            )
-        }
+        SectionTabs(
+            dataSetSections = dataSetSections,
+            onSectionSelected = onSectionSelected,
+        )
 
-        item(key = "details") {
-            DataSetDetails(
-                modifier = Modifier
-                    .height(68.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(
-                            topStart = Radius.L,
-                            topEnd = Radius.L,
-                        ),
-                    ).padding(horizontal = Spacing.Spacing16),
-                dataSetDetails = dataSetDetails,
-            )
-        }
+        DataSetDetails(
+            modifier = Modifier
+                .height(68.dp)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(
+                        topStart = Radius.L,
+                        topEnd = Radius.L,
+                    ),
+                ).padding(horizontal = Spacing.Spacing16),
+            dataSetDetails = dataSetDetails,
+        )
 
-        repeat(10) {
-            stickyHeader {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.background)
-                        .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
-                    text = "Table $it",
-                )
-            }
-            item {
-                DataSetTable(
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.background)
-                        .height(200.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp),
-                )
-            }
-        }
+        DataSetTable(tableModels)
     }
 }
 
@@ -308,34 +283,25 @@ private fun SectionTabs(
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
     dataSetDetails: DataSetDetails,
+    tableModels: List<TableModel>,
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
-        item {
-            DataSetDetails(
-                modifier.padding(horizontal = 16.dp),
-                dataSetDetails = dataSetDetails,
-            )
-        }
-
-        items(count = 10) {
-            DataSetTable(
-                modifier = Modifier.height(200.dp).fillMaxWidth(),
-            )
-        }
+        DataSetDetails(
+            modifier.padding(horizontal = 16.dp),
+            dataSetDetails = dataSetDetails,
+        )
+        DataSetTable(tableModels)
     }
 }
 
 @Composable
-private fun DataSetTable(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.small,
-            ),
-    ) { }
+fun DataSetTable(tableModels: List<TableModel>) {
+    DataTable(
+        tableList = tableModels,
+        bottomContent = {},
+    )
 }

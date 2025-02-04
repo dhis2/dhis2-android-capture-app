@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.di
 
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
@@ -34,11 +35,40 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        GetDataSetSectionData(
+            datasetUid = params.get(),
+            orgUnitUid = params.get(),
+            periodId = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
     viewModel { params ->
+        val dataSetUid = params.get<String>()
+        val periodId = params.get<String>()
+        val orgUnitUid = params.get<String>()
+        val attrOptionComboUid = params.get<String>()
+
         DataSetTableViewModel(
-            getDataSetInstanceDetails = get { parametersOf(params.get(), params.get(), params.get(), params.get()) },
-            getDataSetSections = get { parametersOf(params.get()) },
-            getDataSetRenderingConfig = get { parametersOf(params.get()) },
+            getDataSetInstanceDetails = get {
+                parametersOf(
+                    dataSetUid,
+                    periodId,
+                    orgUnitUid,
+                    attrOptionComboUid,
+                )
+            },
+            getDataSetSections = get {
+                parametersOf(dataSetUid)
+            },
+            getDataSetRenderingConfig = get {
+                parametersOf(dataSetUid)
+            },
+            getDataSetSectionData = get {
+                parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
+            },
         )
     }
 }

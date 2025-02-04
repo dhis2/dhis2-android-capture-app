@@ -11,6 +11,12 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.compose.KoinApplication
 import org.koin.core.module.dsl.viewModel
@@ -93,6 +99,55 @@ fun previewModules(useVerticalTabs: Boolean) = module {
 
             override fun getRenderingConfig(dataSetUid: String) =
                 DataSetRenderingConfig(useVerticalTabs)
+
+            override suspend fun getDataSetSectionData(
+                dataSetUid: String,
+                orgUnitUid: String,
+                periodId: String,
+                attrOptionComboUid: String,
+                sectionUid: String,
+            ): List<TableModel> {
+                return listOf(
+                    TableModel(
+                        id = "tableId",
+                        title = "Table Title",
+                        tableHeaderModel = TableHeader(
+                            rows = listOf(
+                                TableHeaderRow(
+                                    cells = listOf(
+                                        TableHeaderCell(value = "Header 1"),
+                                        TableHeaderCell(value = "Header 2"),
+                                    ),
+                                ),
+                                TableHeaderRow(
+                                    cells = listOf(
+                                        TableHeaderCell(value = "Header 3"),
+                                        TableHeaderCell(value = "Header 4"),
+                                        TableHeaderCell(value = "Header 3"),
+                                        TableHeaderCell(value = "Header 4"),
+                                    ),
+                                ),
+                            ),
+                            hasTotals = false,
+                        ),
+                        tableRows = buildList {
+                            repeat(5) {
+                                add(
+                                    TableRowModel(
+                                        rowHeader = RowHeader(
+                                            id = "row_$it",
+                                            title = "Row $it",
+                                            row = 0,
+                                        ),
+                                        values = emptyMap(),
+                                    ),
+                                )
+                            }
+                        },
+                        overwrittenValues = emptyMap(),
+                    ),
+                )
+            }
         }
     }
 
@@ -120,6 +175,6 @@ fun previewModules(useVerticalTabs: Boolean) = module {
     }
 
     viewModel {
-        DataSetTableViewModel(get(), get(), get())
+        DataSetTableViewModel(get(), get(), get(), get())
     }
 }

@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.data
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal interface DataSetInstanceRepository {
     fun getDataSetInstance(
@@ -16,7 +17,15 @@ internal interface DataSetInstanceRepository {
         dataSetUid: String,
     ): List<DataSetSection>
 
-    abstract fun getRenderingConfig(
+    fun getRenderingConfig(
         dataSetUid: String,
     ): DataSetRenderingConfig
+
+    suspend fun getDataSetSectionData(
+        dataSetUid: String,
+        orgUnitUid: String,
+        periodId: String,
+        attrOptionComboUid: String,
+        sectionUid: String,
+    ): List<TableModel>
 }
