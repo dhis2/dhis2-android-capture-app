@@ -715,10 +715,13 @@
     <string name="error_init_session">Нам не вдалося почати сесію із Вашим користувачем</string>
     <string name="enrollment_date_edition_warning">Є заплановані випадки, які не будуть перенесені</string>
     <string name="section_charts">Діаграми</string>
+    <string name="navigation_list_view">Список</string>
     <string name="navigation_table_view">У вигляді таблиці</string>
+    <string name="navigation_map_view">Мапа</string>
     <string name="navigation_analytics">Аналітика</string>
     <string name="navigation_tasks">Завдання</string>
     <string name="navigation_programs">Програми</string>
+    <string name="navigation_charts">Діаграми</string>
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>
     <string name="navigation_tei_data">Деталі</string>
@@ -863,7 +866,14 @@
     <string name="mark_follow_up">Позначити для подальших дій</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
+    <string name="scheduled_enter_event">Заплановано</string>
     <string name="program_stage">Етап програми</string>
     <string name="clear_search">Очистити пошук</string>
     <string name="optional">Необов\'язково</string>
+    <string name="show_more">Показати більше</string>
+    <string name="show_less">Показати менше</string>
+    <string name="sync">Синхронізація</string>
+    <string name="syncing_something">Синхронізація %s…</string>
+    <string name="show_description">Показати опис</string>
+    <string name="hide_description">Приховати опис</string>
     </resources>
