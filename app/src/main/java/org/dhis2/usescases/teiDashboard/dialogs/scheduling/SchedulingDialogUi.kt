@@ -104,7 +104,7 @@ fun SchedulingDialogUi(
         },
         content = {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing0),
             ) {
                 if (launchMode.showYesNoOptions) {
                     RadioButtonBlock(
