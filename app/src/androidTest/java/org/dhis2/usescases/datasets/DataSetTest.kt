@@ -6,6 +6,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -23,10 +24,25 @@ class DataSetTest : BaseTest() {
     val ruleDataSet = ActivityTestRule(DataSetTableActivity::class.java, false, false)
 
     @get:Rule
-    val ruleDataSetDetail = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
+    val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    @Test
+    fun datasetAutomate() {
+        //Open Dataset
+        startDataSetDetailActivity(
+            "BfMAe6Itzgt",
+            "Child Health",
+            ruleDataSetDetail
+        )
+
+        dataSetDetailRobot(composeTestRule) {
+            //Dataset list is in chronological order
+            checkDatasetListIsSortedChronologically()
+        }
+    }
 
     @Ignore("There are no validation rules in the testing database")
     @Test
@@ -56,7 +72,7 @@ class DataSetTest : BaseTest() {
             ruleDataSetDetail
         )
 
-        dataSetDetailRobot {
+        dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
         dataSetInitialRobot {
