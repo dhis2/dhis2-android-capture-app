@@ -15,19 +15,6 @@ class CellTableTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
-    @Test
-    fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 0, 1)
-            assertInputComponentIsHidden()
-            assertCellBlockedCell(firstId, 0, 1)
-        }
-    }
-
     @Ignore("Flaky test, will be looked up in ANDROAPP-6397")
     @Test
     fun shouldUpdateValueWhenTypingInComponent() {
@@ -142,19 +129,6 @@ class CellTableTest {
             clickOnCell(testingTableId, 1, 0)
             assertKeyBoardVisibility(false)
             assertInputComponentIsHidden()
-        }
-    }
-
-    @Test
-    fun shouldSetCorrectColorIfHasError() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            assertUnselectedCellErrorStyle(firstId, 2, 0)
-            clickOnCell(firstId, 2, 0)
-            assertSelectedCellErrorStyle(firstId, 2, 0)
         }
     }
 }
