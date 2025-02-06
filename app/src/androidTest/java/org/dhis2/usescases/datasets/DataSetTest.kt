@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.R
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -12,6 +13,8 @@ import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.dhis2.usescases.searchte.robot.filterRobot
+import org.junit.Assert.assertEquals
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -38,9 +41,49 @@ class DataSetTest : BaseTest() {
             ruleDataSetDetail
         )
 
+        //Step - Dataset list is in chronological order
         dataSetDetailRobot(composeTestRule) {
-            //Dataset list is in chronological order
             checkDatasetListIsSortedChronologically()
+        }
+
+        //Step - Test combination of filters
+        checkFilterCombination()
+    }
+
+    private fun checkFilterCombination() {
+        filterRobot(composeTestRule) {
+            //Open filter
+            clickOnFilter(R.id.filter)
+
+            //Filter by org unit Ngelehun CHC
+            clickOnFilterBy(
+                filterLayoutId = R.id.filterRecyclerLayout,
+                filter = "ORG. UNIT"
+            )
+//            clickOnSortByField(orgUnitFilter) this icons are not visible but can b e pressed do we need them in dataset?
+            typeOrgUnitField("Ngelehun CHC")
+            checkFilterCounter("1")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(11, getListItemCount())
+        }
+
+        filterRobot(composeTestRule) {
+            //Filter by period Last Month
+            clickOnFilterBy(
+                filterLayoutId = R.id.filterRecyclerLayout,
+                filter = "Period"
+            )
+            clickOnLastMonthPeriodFilter()
+            checkFilterCounter("2")
+
+            clickOnAnytimePeriodFilter()
+            checkFilterCounter("1")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(11, getListItemCount())
         }
     }
 
@@ -62,6 +105,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    //TODO This test generates a new dataset instance and breaks dataset automation count
     @Test
     fun shouldCreateNewDataSet() {
         val period = "Jul 2025"

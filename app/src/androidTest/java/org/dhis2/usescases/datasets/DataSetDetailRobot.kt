@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -77,12 +76,11 @@ internal class DataSetDetailRobot(
     }
 
     fun checkDatasetListIsSortedChronologically() {
-        val recyclerView = onView(withId(R.id.recycler))
-        val itemCount = getItemCount(recyclerView)
+        val itemCount = getListItemCount()
         val dateList = mutableListOf<Date>()
 
         for (i in 0 until itemCount) {
-            recyclerView.perform(scrollToPosition<RecyclerView.ViewHolder>(i))
+            onView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
             val itemTitle = getTitleFromRecyclerViewItem(i)
             val date = SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(itemTitle)
             dateList.add(date)
@@ -94,14 +92,14 @@ internal class DataSetDetailRobot(
         )
     }
 
-    private fun getItemCount(recyclerView: ViewInteraction): Int {
+    fun getListItemCount(): Int {
         val itemCount = intArrayOf(0)
-        recyclerView.perform(
+        onView(withId(R.id.recycler)).perform(
             actionOnItemAtPosition<DataSetListViewHolder>(0, object : ViewAction {
                 override fun getConstraints() = null
                 override fun getDescription() = "Get item count"
                 override fun perform(uiController: UiController, view: View) {
-                    itemCount[0] = (view.parent as RecyclerView).adapter!!.itemCount
+                    itemCount[0] = (view.parent as RecyclerView).adapter?.itemCount ?: 0
                 }
             })
         )

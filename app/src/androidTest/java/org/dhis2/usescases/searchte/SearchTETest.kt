@@ -180,13 +180,16 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(enrollmentStatusFilter)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                enrollmentStatusFilter
+            )
             clickOnFilterCompletedOption()
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
             checkTeiAreCompleted()
         }
     }
@@ -221,8 +224,11 @@ class SearchTETest : BaseTest() {
         }
         composeTestRule.waitForIdle()
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(eventStatusFilter)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                eventStatusFilter
+            )
             clickOnFilterOverdueOption()
             closeFilterRowAtField(eventStatusFilter)
             checkFilterCounter(totalCount)
@@ -240,13 +246,16 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(orgUnitFilter)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                orgUnitFilter
+            )
             clickOnSortByField(orgUnitFilter)
             typeOrgUnitField(orgUnitNgelehun)
             checkFilterCounter(totalCount)
             checkCountAtFilter(orgUnitFilter, filterCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
     }
@@ -270,8 +279,11 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(enrollmentDate)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                enrollmentDate
+            )
             clickOnFromToDate()
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
             chooseDate(enrollmentDateTo.year, enrollmentDateTo.month, enrollmentDateTo.day)
@@ -279,7 +291,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
             composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
@@ -302,15 +314,18 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(eventDate)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                eventDate
+            )
             clickOnFromToDate()
             chooseDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
             chooseDate(eventDateTo.year, eventDateTo.month, eventDateTo.day)
             clickOnSortByField(eventDate)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
         }
 
         searchTeiRobot(composeTestRule) {
@@ -353,12 +368,15 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(syncFilter)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                syncFilter
+            )
             clickOnNotSync()
             checkFilterCounter(totalCount)
             checkCountAtFilter(syncFilter, totalCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
             checkTEINotSync()
         }
     }
@@ -394,13 +412,16 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
-            clickOnFilterBy(enrollmentStatus)
+            clickOnFilter(R.id.search_filter_general)
+            clickOnFilterBy(
+                R.id.filterRecyclerLayout,
+                enrollmentStatus
+            )
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatus)
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
-            clickOnFilter()
+            clickOnFilter(R.id.search_filter_general)
         }
 
         searchTeiRobot(composeTestRule) {

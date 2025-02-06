@@ -37,12 +37,15 @@ fun filterRobot(
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnFilter() {
-        onView(withId(R.id.search_filter_general)).perform(click())
+    fun clickOnFilter(filterIconId: Int) {
+        onView(withId(filterIconId)).perform(click())
     }
 
-    fun clickOnFilterBy(filter: String) {
-        onView(withId(R.id.filterRecyclerLayout))
+    fun clickOnFilterBy(
+        filterLayoutId: Int,
+        filter: String
+    ) {
+        onView(withId(filterLayoutId))
             .perform(
                 actionOnItem<FilterHolder>(hasDescendant(withText(filter)), click())
             )
@@ -155,5 +158,13 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         assert(nodes.fetchSemanticsNodes().size >= 3) {
             "Expected at least 3 nodes, but found ${nodes.fetchSemanticsNodes().size}"
         }
+    }
+
+    fun clickOnLastMonthPeriodFilter() {
+        onView(withId(R.id.last_month)).perform(click())
+    }
+
+    fun clickOnAnytimePeriodFilter() {
+        onView(withId(R.id.anytime)).perform(click())
     }
 }
