@@ -149,7 +149,7 @@ fun DataSetInstanceScreen(
                 modifier = Modifier.fillMaxSize()
                     .background(color = MaterialTheme.colorScheme.surfaceBright)
                     .padding(it),
-                paneConfig = TwoPaneConfig.PrimaryPaneFixedSize(283.dp),
+                paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
                 primaryPane = {
                     if (dataSetScreenState is DataSetScreenState.Loaded) {
                         DataSetTableContent(
