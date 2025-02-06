@@ -15,6 +15,7 @@ import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.junit.After
 import org.junit.Before
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.Test
@@ -37,6 +38,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        stopKoin()
     }
 
     @Test
