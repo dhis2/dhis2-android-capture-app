@@ -503,14 +503,14 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun hideSearchAndFilterButtons() {
-        binding.searchFilterGeneral.visibility = View.GONE
+        binding.filter.visibility = View.GONE
         binding.filterCounter.visibility = View.GONE
     }
 
     private fun showSearchAndFilterButtons() {
         if (fromAnalytics) {
             fromAnalytics = false
-            binding.searchFilterGeneral.visibility = View.VISIBLE
+            binding.filter.visibility = View.VISIBLE
             binding.filterCounter.visibility =
                 if ((binding.totalFilters ?: 0) > 0) View.VISIBLE else View.GONE
         }
@@ -675,7 +675,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun hideFilter() {
-        binding.searchFilterGeneral.visibility = View.GONE
+        binding.filter.visibility = View.GONE
     }
 
     @SuppressLint("NotifyDataSetChanged")

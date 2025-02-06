@@ -5,7 +5,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.R
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -32,8 +31,16 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    override fun teardown() {
+        super.teardown()
+        cleanLocalDatabase()
+    }
+
     @Test
     fun datasetAutomate() {
+        val period = "Jul 2025"
+        val orgUnit = "Ngelehun CHC"
+
         //Open Dataset
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
@@ -47,21 +54,26 @@ class DataSetTest : BaseTest() {
         }
 
         //Step - Test combination of filters
-        checkFilterCombination()
+        checkFilterCombination(orgUnit)
+
+        //Step - Create dataset instance
+        createDataSetInstance(
+            orgUnit = orgUnit,
+            period = period,
+        )
     }
 
-    private fun checkFilterCombination() {
+    private fun checkFilterCombination(
+        orgUnit: String,
+    ) {
         filterRobot(composeTestRule) {
             //Open filter
-            clickOnFilter(R.id.filter)
+            openFilters()
 
             //Filter by org unit Ngelehun CHC
-            clickOnFilterBy(
-                filterLayoutId = R.id.filterRecyclerLayout,
-                filter = "ORG. UNIT"
-            )
+            clickOnFilterBy(filter = "ORG. UNIT")
 //            clickOnSortByField(orgUnitFilter) this icons are not visible but can b e pressed do we need them in dataset?
-            typeOrgUnitField("Ngelehun CHC")
+            typeOrgUnitField(orgUnit)
             checkFilterCounter("1")
         }
 
@@ -71,10 +83,7 @@ class DataSetTest : BaseTest() {
 
         filterRobot(composeTestRule) {
             //Filter by period Last Month
-            clickOnFilterBy(
-                filterLayoutId = R.id.filterRecyclerLayout,
-                filter = "Period"
-            )
+            clickOnFilterBy(filter = "Period")
             clickOnLastMonthPeriodFilter()
             checkFilterCounter("2")
 
@@ -84,6 +93,28 @@ class DataSetTest : BaseTest() {
 
         dataSetDetailRobot(composeTestRule) {
             assertEquals(11, getListItemCount())
+        }
+    }
+
+    private fun createDataSetInstance(
+        orgUnit: String,
+        period: String,
+    ) {
+        dataSetDetailRobot(composeTestRule) {
+            clickOnAddDataSet()
+        }
+        dataSetInitialRobot {
+            clickOnInputOrgUnit()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
+        dataSetInitialRobot {
+            clickOnInputPeriod()
+            selectPeriod(period)
+            clickOnActionButton()
         }
     }
 
@@ -116,22 +147,11 @@ class DataSetTest : BaseTest() {
             ruleDataSetDetail
         )
 
-        dataSetDetailRobot(composeTestRule) {
-            clickOnAddDataSet()
-        }
-        dataSetInitialRobot {
-            clickOnInputOrgUnit()
-        }
+        createDataSetInstance(
+            orgUnit = orgUnit,
+            period = period,
+        )
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
-
-        dataSetInitialRobot {
-            clickOnInputPeriod()
-            selectPeriod(period)
-            clickOnActionButton()
-        }
         dataSetTableRobot(composeTestRule) {
             typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()

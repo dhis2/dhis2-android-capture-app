@@ -37,15 +37,12 @@ fun filterRobot(
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnFilter(filterIconId: Int) {
-        onView(withId(filterIconId)).perform(click())
+    fun openFilters() {
+        onView(withId(R.id.filter)).perform(click())
     }
 
-    fun clickOnFilterBy(
-        filterLayoutId: Int,
-        filter: String
-    ) {
-        onView(withId(filterLayoutId))
+    fun clickOnFilterBy(filter: String) {
+        onView(withId(R.id.filterRecyclerLayout))
             .perform(
                 actionOnItem<FilterHolder>(hasDescendant(withText(filter)), click())
             )

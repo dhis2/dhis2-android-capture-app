@@ -18,10 +18,8 @@ class SearchFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun filterByOpenEnrollmentStatus(enrollmentStatus: String) {
         filterRobot(composeTestRule) {
-            clickOnFilter(R.id.search_filter_general)
-            clickOnFilterBy(
-                R.id.filterRecyclerLayout,
-                enrollmentStatus)
+            openFilters()
+            clickOnFilterBy(enrollmentStatus)
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatus)
         }
@@ -35,7 +33,7 @@ class SearchFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         filterRobot(composeTestRule) {
             checkFilterCounter(filterTotalCount)
             checkCountAtFilter(filter, filterAtPositionCount)
-            clickOnFilter(R.id.search_filter_general)
+            openFilters()
         }
     }
 }
