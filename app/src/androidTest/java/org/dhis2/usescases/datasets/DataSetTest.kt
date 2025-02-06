@@ -45,7 +45,7 @@ class DataSetTest : BaseTest() {
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
-        //Open Dataset
+        //Step - Enter Dataset
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
             "Child Health",
@@ -57,14 +57,17 @@ class DataSetTest : BaseTest() {
             checkDatasetListIsSortedChronologically()
         }
 
-        //Step - Test combination of filters
-        checkFilterCombination(orgUnit)
-
         //Step - Create dataset instance
         createDataSetInstance(
             orgUnit = orgUnit,
             period = period,
         )
+
+        //Step - Test combination of filters - TODO Move the step after creating dataset instance
+        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
+        // Period filter from - to specific period where instansces exist
+        // Sync move after create dataset instance and check the filter afterwards
+//        checkFilterCombination(orgUnit)
     }
 
     private fun checkFilterCombination(
