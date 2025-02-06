@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -33,6 +34,7 @@ class DataSetTest : BaseTest() {
 
     override fun teardown() {
         super.teardown()
+        disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         cleanLocalDatabase()
     }
 
@@ -40,6 +42,8 @@ class DataSetTest : BaseTest() {
     fun datasetAutomate() {
         val period = "Jul 2025"
         val orgUnit = "Ngelehun CHC"
+
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         //Open Dataset
         startDataSetDetailActivity(

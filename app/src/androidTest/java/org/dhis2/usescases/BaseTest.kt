@@ -7,7 +7,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
-import java.util.concurrent.TimeUnit
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.BaseRobot
@@ -20,6 +19,7 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
@@ -33,6 +33,7 @@ import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
+import java.util.concurrent.TimeUnit
 
 open class BaseTest {
 
@@ -166,6 +167,14 @@ open class BaseTest {
 
     fun cleanLocalDatabase() {
         (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+    }
+
+    protected fun enableFeatureConfigValue(feature: Feature) {
+        preferencesRobot.saveValue(feature.name, true)
+    }
+
+    protected fun disableFeatureConfigValue(feature: Feature) {
+        preferencesRobot.saveValue(feature.name, false)
     }
 
     companion object {
