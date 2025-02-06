@@ -119,7 +119,7 @@ internal class GetDataSetSectionData(
                         },
                         isLastRow = false, // TODO: This should not be needed
                         maxLines = 3,
-                        dropDownOptions = null, /*TODO: This has to be requested on demand*/
+                        dropDownOptions = null, // TODO: This has to be requested on demand
                     ).also {
                         absoluteRowIndex += 1
                     }
@@ -130,7 +130,7 @@ internal class GetDataSetSectionData(
                 title = tableGroup.label,
                 tableHeaderModel = tableHeader,
                 tableRows = tableRows,
-                overwrittenValues = emptyMap(), /*TODO: This seems to not be used at all*/
+                overwrittenValues = emptyMap(), // TODO: This seems to not be used at all
             )
         }
     }
