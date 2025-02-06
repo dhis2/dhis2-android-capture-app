@@ -14,17 +14,26 @@ sealed class DataSetScreenState {
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
+
+        override fun currentSection(): String? = when (dataSetSectionTable) {
+            is DataSetSectionTable.Loaded -> dataSetSectionTable.id
+            is DataSetSectionTable.Loading -> null
+        }
     }
 
     data object Loading : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) = false
+        override fun currentSection() = null
     }
 
     abstract fun allowTwoPane(canUseTwoPane: Boolean): Boolean
+
+    abstract fun currentSection(): String?
 }
 
 sealed class DataSetSectionTable {
     data class Loaded(
+        val id: String,
         val tableModels: List<TableModel>,
     ) : DataSetSectionTable()
 

@@ -59,6 +59,23 @@ fun TrackedEntityDataValue?.userFriendlyValue(
     }
 }
 
+fun String.userFriendlyValue(
+    d2: D2,
+    valueType: ValueType?,
+    optionSetUid: String?,
+    addPercentageSymbol: Boolean = true,
+): String? {
+    if (valueType == null) {
+        return null
+    } else if (check(d2, valueType, optionSetUid, this)) {
+        optionSetUid?.takeIf { valueType != ValueType.MULTI_TEXT }?.let {
+            return checkOptionSetValue(d2, optionSetUid, this)
+        } ?: return checkValueTypeValue(d2, valueType, this, addPercentageSymbol)
+    } else {
+        return null
+    }
+}
+
 fun checkOptionSetValue(d2: D2, optionSetUid: String, code: String): String? {
     return d2.optionModule().options()
         .byOptionSetUid().eq(optionSetUid)
@@ -216,6 +233,7 @@ private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: S
                 .byDisplayName().eq(value).one().blockingExists()
             optionByCodeExist || optionByNameExist
         }
+
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {

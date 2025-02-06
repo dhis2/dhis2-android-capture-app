@@ -1,70 +1,46 @@
-package org.dhis2.mobile.aggregates.ui
+package org.dhis2.mobile.aggregates.test
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
+import org.dhis2.mobile.aggregates.data.ValueParser
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
-import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import org.koin.compose.KoinApplication
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-@Preview(device = "id:pixel_8_pro", showSystemUi = true, showBackground = true)
-@Composable
-fun DataSetTableScreenPreview() {
-    KoinApplication(
-        application = {
-            modules(previewModules(true))
-        },
-    ) {
-        DHIS2Theme {
-            DataSetInstanceScreen(
-                parameters = DataSetInstanceParameters(
-                    "dataSetUid",
-                    "periodId",
-                    "orgUnitUid",
-                    "attrOptionComboUid",
-                ),
-                false,
-            ) {}
+fun testModule(
+    testingDispatcher: TestDispatcher,
+    useVerticalTabs: Boolean,
+) = module {
+    factory<ValueParser> {
+        object : ValueParser {
+            override fun parseValue(uid: String, value: String): String {
+                return value
+            }
         }
     }
-}
 
-@Preview(device = "id:pixel_c", showSystemUi = true, showBackground = true)
-@Composable
-fun DataSetTableTabletScreenPreview() {
-    KoinApplication(
-        application = {
-            modules(previewModules(true))
-        },
-    ) {
-        DHIS2Theme {
-            DataSetInstanceScreen(
-                parameters = DataSetInstanceParameters(
-                    "dataSetUid",
-                    "periodId",
-                    "orgUnitUid",
-                    "attrOptionComboUid",
-                ),
-                true,
-            ) {}
-        }
+    factory<Dispatcher> {
+        StandardTestDispatcher()
+        Dispatcher(
+            main = { testingDispatcher },
+            io = { testingDispatcher },
+            default = { testingDispatcher },
+        )
     }
-}
 
-fun previewModules(useVerticalTabs: Boolean) = module {
     single<DataSetInstanceRepository> {
         object : DataSetInstanceRepository {
             override fun getDataSetInstance(
@@ -82,15 +58,15 @@ fun previewModules(useVerticalTabs: Boolean) = module {
             override fun getDataSetInstanceSections(dataSetUid: String): List<DataSetSection> =
                 listOf(
                     DataSetSection(
-                        uid = "uid1",
+                        uid = "section_uid1",
                         title = "Section 1",
                     ),
                     DataSetSection(
-                        uid = "uid2",
+                        uid = "section_uid2",
                         title = "Section 2",
                     ),
                     DataSetSection(
-                        uid = "uid3",
+                        uid = "section_uid3",
                         title = "Section 3",
                     ),
                 )
@@ -204,6 +180,17 @@ fun previewModules(useVerticalTabs: Boolean) = module {
     factory {
         GetDataSetRenderingConfig(
             "dataSetUid",
+            get(),
+        )
+    }
+
+    factory {
+        GetDataSetSectionData(
+            "dataSetUid",
+            "orgUnitUid",
+            "periodId",
+            "attrOptionComboUid",
+            get(),
             get(),
         )
     }

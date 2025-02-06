@@ -5,6 +5,7 @@ package org.dhis2.mobile.aggregates.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,14 +28,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
+import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
@@ -148,19 +152,29 @@ fun DataSetInstanceScreen(
         if (allowTwoPane) {
             TwoPaneLayout(
                 modifier = Modifier.fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.surfaceBright)
+                    .background(
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+                    )
                     .padding(it),
-                paneConfig = TwoPaneConfig.PrimaryPaneFixedSize(283.dp),
+                paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
                 primaryPane = {
-                    if (dataSetScreenState is DataSetScreenState.Loaded) {
-                        DataSetTableContent(
-                            modifier = Modifier.background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = RoundedCornerShape(topEnd = Radius.L),
-                            ),
-                            dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
-                            tableModels = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable.tables(),
-                        )
+                    when (dataSetScreenState) {
+                        is DataSetScreenState.Loaded ->
+                            DataSetTableContent(
+                                modifier = Modifier.background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = RoundedCornerShape(topEnd = Radius.L),
+                                ),
+                                dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                                dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                            )
+
+                        DataSetScreenState.Loading ->
+                            ContentLoading(
+                                modifier = Modifier.fillMaxSize(),
+                                MaterialTheme.colorScheme.background,
+                            )
                     }
                 },
                 secondaryPane = {
@@ -179,15 +193,22 @@ fun DataSetInstanceScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    color = MaterialTheme.colorScheme.surfaceBright,
+                                    color = MaterialTheme.colorScheme.background,
                                     shape = RoundedCornerShape(topStart = Radius.L),
+                                )
+                                .padding(all = Spacing.Spacing16)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceBright,
+                                    shape = RoundedCornerShape(Radius.L),
                                 )
                                 .padding(all = Spacing.Spacing0),
                             tabs = tabs,
                             onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         )
                     } else {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        ContentLoading(
+                            modifier = Modifier.fillMaxSize(),
+                        )
                     }
                 },
             )
@@ -198,10 +219,12 @@ fun DataSetInstanceScreen(
                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                     onSectionSelected = dataSetTableViewModel::onSectionSelected,
-                    tableModels = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable.tables(),
+                    dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                 )
             } else {
-                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                ContentLoading(
+                    modifier = Modifier.fillMaxSize().padding(it),
+                )
             }
         }
     }
@@ -220,7 +243,7 @@ private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
-    tableModels: List<TableModel>,
+    dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
 ) {
     Column(
@@ -255,7 +278,13 @@ private fun DataSetSinglePane(
             dataSetDetails = dataSetDetails,
         )
 
-        DataSetTable(tableModels)
+        when (dataSetSectionTable) {
+            is DataSetSectionTable.Loaded ->
+                DataSetTable(dataSetSectionTable.tables())
+
+            DataSetSectionTable.Loading ->
+                ContentLoading(Modifier.weight(1f))
+        }
     }
 }
 
@@ -283,7 +312,7 @@ private fun SectionTabs(
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
     dataSetDetails: DataSetDetails,
-    tableModels: List<TableModel>,
+    dataSetSectionTable: DataSetSectionTable,
 ) {
     Column(
         modifier = modifier
@@ -294,12 +323,31 @@ private fun DataSetTableContent(
             modifier.padding(horizontal = 16.dp),
             dataSetDetails = dataSetDetails,
         )
-        DataSetTable(tableModels)
+        when (dataSetSectionTable) {
+            is DataSetSectionTable.Loaded ->
+                DataSetTable(dataSetSectionTable.tables())
+
+            DataSetSectionTable.Loading ->
+                ContentLoading(Modifier.weight(1f))
+        }
     }
 }
 
 @Composable
-fun DataSetTable(tableModels: List<TableModel>) {
+private fun ContentLoading(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceBright,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth().background(backgroundColor),
+        contentAlignment = Alignment.Center,
+    ) {
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    }
+}
+
+@Composable
+private fun DataSetTable(tableModels: List<TableModel>) {
     DataTable(
         tableList = tableModels,
         bottomContent = {},

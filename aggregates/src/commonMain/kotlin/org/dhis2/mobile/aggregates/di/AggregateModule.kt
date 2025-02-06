@@ -1,9 +1,11 @@
 package org.dhis2.mobile.aggregates.di
 
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
+import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -11,6 +13,14 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 internal val featureModule = module {
+    factory {
+        Dispatcher(
+            io = { Dispatchers.IO },
+            main = { Dispatchers.Main },
+            default = { Dispatchers.Default },
+        )
+    }
+
     factory { params ->
         GetDataSetInstanceDetails(
             dataSetUid = params.get(),
@@ -42,6 +52,7 @@ internal val featureModule = module {
             periodId = params.get(),
             attrOptionComboUid = params.get(),
             dataSetInstanceRepository = get(),
+            valueParser = get(),
         )
     }
 
@@ -69,6 +80,7 @@ internal val featureModule = module {
             getDataSetSectionData = get {
                 parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
             },
+            dispatcher = get(),
         )
     }
 }

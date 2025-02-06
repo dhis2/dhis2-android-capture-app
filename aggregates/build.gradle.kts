@@ -40,6 +40,11 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            // Koin Test features
+            implementation(libs.koin.test)
+            implementation(libs.koin.test.junit5)
+            implementation(libs.test.turbine)
+            implementation(libs.test.kotlinCoroutines)
         }
 
         androidMain.dependencies {
@@ -79,6 +84,7 @@ android {
 }
 
 dependencies {
+    testImplementation(libs.junit.jupiter)
     debugImplementation(libs.androidx.compose.preview)
     debugImplementation(libs.androidx.ui.tooling)
 }
