@@ -71,25 +71,27 @@ internal fun DataSetDetails(
             }
         }
 
-        item {
-            if (editable) {
-                AssistChip(
-                    label = dataSetDetails.catOptionComboLabel,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.Category,
-                            contentDescription = "",
-                        )
-                    },
-                    onClick = {
-                        /*not yet supported*/
-                    },
-                )
-            } else {
-                Tag(
-                    label = dataSetDetails.catOptionComboLabel,
-                    type = TagType.DEFAULT,
-                )
+        dataSetDetails.catOptionComboLabel?.let { catOptionComboLabel ->
+            item {
+                if (editable) {
+                    AssistChip(
+                        label = catOptionComboLabel,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.Category,
+                                contentDescription = "",
+                            )
+                        },
+                        onClick = {
+                            /*not yet supported*/
+                        },
+                    )
+                } else {
+                    Tag(
+                        label = catOptionComboLabel,
+                        type = TagType.DEFAULT,
+                    )
+                }
             }
         }
     }

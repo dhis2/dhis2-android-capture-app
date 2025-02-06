@@ -3,9 +3,13 @@ package org.dhis2.mobile.aggregates.data.mappers
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 
-fun DataSetInstance.toDataSetDetails() = DataSetDetails(
+fun DataSetInstance.toDataSetDetails(isDefaultCatCombo: Boolean) = DataSetDetails(
     titleLabel = this.dataSetDisplayName(),
     dateLabel = this.period(),
     orgUnitLabel = this.organisationUnitDisplayName(),
-    catOptionComboLabel = this.attributeOptionComboDisplayName(),
+    catOptionComboLabel = if (isDefaultCatCombo) {
+        null
+    } else {
+        this.attributeOptionComboDisplayName()
+    },
 )

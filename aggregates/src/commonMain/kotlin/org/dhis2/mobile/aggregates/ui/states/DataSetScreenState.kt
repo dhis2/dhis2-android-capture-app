@@ -1,32 +1,22 @@
 package org.dhis2.mobile.aggregates.ui.states
 
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 
-sealed class ScreenState {
-    data class DataSetScreenState(
+sealed class DataSetScreenState {
+    data class Loaded(
         val dataSetDetails: DataSetDetails,
         val dataSetSections: List<DataSetSection>,
-    ) : ScreenState()
+        val renderingConfig: DataSetRenderingConfig,
+    ) : DataSetScreenState() {
+        override fun allowTwoPane(canUseTwoPane: Boolean) =
+            canUseTwoPane && renderingConfig.useVerticalTabs
+    }
 
-    data object Loading : ScreenState()
+    data object Loading : DataSetScreenState() {
+        override fun allowTwoPane(canUseTwoPane: Boolean) = false
+    }
+
+    abstract fun allowTwoPane(canUseTwoPane: Boolean): Boolean
 }
-
-inline fun previewDataSetScreenState(
-    dataSetDetails: DataSetDetails = DataSetDetails(
-        titleLabel = "Data set title",
-        dateLabel = "Jan. 2024",
-        orgUnitLabel = "Org. Unit",
-        catOptionComboLabel = "Cat. Option Combo",
-    ),
-    numberOfTabs: Int,
-) = ScreenState.DataSetScreenState(
-    dataSetDetails = dataSetDetails,
-    dataSetSections = buildList {
-        repeat(numberOfTabs) {
-            add(
-                DataSetSection("uid$it", "Section $it"),
-            )
-        }
-    },
-)

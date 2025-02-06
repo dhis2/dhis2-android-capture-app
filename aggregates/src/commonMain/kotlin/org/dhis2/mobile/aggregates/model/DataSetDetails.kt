@@ -4,5 +4,5 @@ data class DataSetDetails(
     val titleLabel: String,
     val dateLabel: String,
     val orgUnitLabel: String,
-    val catOptionComboLabel: String,
+    val catOptionComboLabel: String?,
 )
