@@ -37,8 +37,8 @@ fun filterRobot(
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnFilter() {
-        onView(withId(R.id.search_filter_general)).perform(click())
+    fun openFilters() {
+        onView(withId(R.id.filter)).perform(click())
     }
 
     fun clickOnFilterBy(filter: String) {
@@ -155,5 +155,13 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         assert(nodes.fetchSemanticsNodes().size >= 3) {
             "Expected at least 3 nodes, but found ${nodes.fetchSemanticsNodes().size}"
         }
+    }
+
+    fun clickOnLastMonthPeriodFilter() {
+        onView(withId(R.id.last_month)).perform(click())
+    }
+
+    fun clickOnAnytimePeriodFilter() {
+        onView(withId(R.id.anytime)).perform(click())
     }
 }

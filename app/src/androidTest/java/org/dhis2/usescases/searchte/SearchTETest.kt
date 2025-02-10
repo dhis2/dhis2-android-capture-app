@@ -180,13 +180,13 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterCompletedOption()
             clickOnSortByField(enrollmentStatusFilter)
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentStatusFilter, filterCount)
-            clickOnFilter()
+            openFilters()
             checkTeiAreCompleted()
         }
     }
@@ -221,7 +221,7 @@ class SearchTETest : BaseTest() {
         }
         composeTestRule.waitForIdle()
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(eventStatusFilter)
             clickOnFilterOverdueOption()
             closeFilterRowAtField(eventStatusFilter)
@@ -240,13 +240,13 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(orgUnitFilter)
             clickOnSortByField(orgUnitFilter)
             typeOrgUnitField(orgUnitNgelehun)
             checkFilterCounter(totalCount)
             checkCountAtFilter(orgUnitFilter, filterCount)
-            clickOnFilter()
+            openFilters()
             checkTEIWithOrgUnit(orgUnitNgelehun)
         }
     }
@@ -270,7 +270,7 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(enrollmentDate)
             clickOnFromToDate()
             chooseDate(enrollmentDateFrom.year, enrollmentDateFrom.month, enrollmentDateFrom.day)
@@ -279,7 +279,7 @@ class SearchTETest : BaseTest() {
             composeTestRule.waitForIdle()
             checkFilterCounter(totalFilterCount)
             checkCountAtFilter(enrollmentDate, filterCount)
-            clickOnFilter()
+            openFilters()
             composeTestRule.waitForIdle()
         }
         searchTeiRobot(composeTestRule) {
@@ -302,7 +302,7 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(eventDate)
             clickOnFromToDate()
             chooseDate(eventDateFrom.year, eventDateFrom.month, eventDateFrom.day)
@@ -310,7 +310,7 @@ class SearchTETest : BaseTest() {
             clickOnSortByField(eventDate)
             checkFilterCounter(totalCount)
             checkCountAtFilter(eventDate, filterCount)
-            clickOnFilter()
+            openFilters()
         }
 
         searchTeiRobot(composeTestRule) {
@@ -353,12 +353,12 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(syncFilter)
             clickOnNotSync()
             checkFilterCounter(totalCount)
             checkCountAtFilter(syncFilter, totalCount)
-            clickOnFilter()
+            openFilters()
             checkTEINotSync()
         }
     }
@@ -394,13 +394,13 @@ class SearchTETest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(enrollmentStatus)
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatus)
             checkFilterCounter(totalCount)
             checkCountAtFilter(enrollmentStatus, totalFilterCount)
-            clickOnFilter()
+            openFilters()
         }
 
         searchTeiRobot(composeTestRule) {

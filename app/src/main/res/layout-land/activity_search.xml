@@ -86,8 +86,8 @@
                 android:layout_marginTop="24dp"
                 android:padding="2dp"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@id/search_filter_general"
-                app:layout_constraintTop_toTopOf="@id/search_filter_general"
+                app:layout_constraintStart_toStartOf="@id/filter"
+                app:layout_constraintTop_toTopOf="@id/filter"
                 tools:visibility="visible">
 
                 <TextView
@@ -106,7 +106,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
-                android:id="@+id/search_filter_general"
+                android:id="@+id/filter"
                 style="@style/ActionIcon"
                 android:onClick="@{()->presenter.showFilterGeneral()}"
                 android:visibility="gone"
@@ -121,7 +121,7 @@
                 android:id="@+id/syncButton"
                 style="@style/ActionIcon"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_filter_general"
+                app:layout_constraintEnd_toStartOf="@id/filter"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_sync"
                 app:tint="?colorOnPrimary"
