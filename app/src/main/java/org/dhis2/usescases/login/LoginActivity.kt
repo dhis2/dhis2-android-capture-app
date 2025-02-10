@@ -432,7 +432,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             onMessageClick = {
                 navigateToPrivacyPolicy()
             },
-            showTopDivider = true,
+            showTopDivider = false,
             showBottomDivider = true,
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }

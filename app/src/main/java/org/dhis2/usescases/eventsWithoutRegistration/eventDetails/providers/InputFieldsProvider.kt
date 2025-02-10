@@ -1,7 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +10,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 import org.dhis2.R
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
@@ -54,7 +51,6 @@ fun ProvideInputDate(
     modifier: Modifier = Modifier,
 ) {
     if (uiModel.showField) {
-        Spacer(modifier = Modifier.height(16.dp))
         val textSelection =
             TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
         var value by remember(uiModel.eventDate.dateValue) {
@@ -202,7 +198,6 @@ fun ProvideOrgUnit(
     showField: Boolean = true,
 ) {
     if (showField) {
-        Spacer(modifier = Modifier.height(16.dp))
         val state = getInputState(detailsEnabled && orgUnit.enable && orgUnit.orgUnits.size > 1)
 
         var inputFieldValue by remember(orgUnit.selectedOrgUnit) {
@@ -248,8 +243,6 @@ fun ProvideCategorySelector(
             option.inOrgUnit(eventCatComboUiModel.selectedOrgUnit)
         }
     val dropdownItems = selectableOptions.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
-
-    Spacer(modifier = Modifier.height(16.dp))
 
     if (selectableOptions.isNotEmpty()) {
         InputDropDown(
@@ -297,8 +290,6 @@ fun ProvidePeriodSelector(
     }
     val state = getInputState(uiModel.detailsEnabled)
 
-    Spacer(modifier = Modifier.height(16.dp))
-
     DropdownInputField(
         modifier = modifier,
         title = uiModel.eventDate.label ?: "",
@@ -332,7 +323,6 @@ fun ProvideEmptyCategorySelector(
         mutableStateOf("")
     }
 
-    Spacer(modifier = Modifier.height(16.dp))
     InputDropDown(
         windowInsets = { bottomSheetInsets() },
         modifier = modifier,
@@ -367,7 +357,6 @@ fun ProvideCoordinates(
     showField: Boolean = true,
 ) {
     if (showField) {
-        Spacer(modifier = Modifier.height(16.dp))
         when (coordinates.model?.renderingType) {
             UiRenderType.POLYGON, UiRenderType.MULTI_POLYGON -> {
                 InputPolygon(

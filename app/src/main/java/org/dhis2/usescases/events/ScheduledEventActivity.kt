@@ -5,8 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.App
@@ -114,6 +117,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                     )
 
                     if (willShowCalendar(programStage.periodType())) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         ProvideInputDate(
                             EventInputDateUiModel(
                                 eventDate = eventDate,
@@ -130,6 +134,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                                 selectableDates = presenter.getSelectableDates(program, false),
                             ),
                         )
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         if (programStage.hideDueDate() == false) {
                             ProvideInputDate(
@@ -144,8 +149,11 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                                     selectableDates = presenter.getSelectableDates(program, true),
                                 ),
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     } else {
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         ProvidePeriodSelector(
                             uiModel = EventInputDateUiModel(
                                 eventDate = eventDate,
@@ -166,6 +174,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                         )
 
                         if (programStage.hideDueDate() == false) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
                             ProvidePeriodSelector(
                                 uiModel = EventInputDateUiModel(
                                     eventDate = dueDate,
