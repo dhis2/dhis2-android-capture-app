@@ -71,6 +71,19 @@ internal class DataSetInstanceRepositoryImpl(
         .byDataSetUid().eq(dataSetUid)
         .blockingGet().map(Section::toDataSetSection)
 
+    override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean {
+        return d2.dataSetModule()
+            .dataSets().uid(dataSetUid)
+            .blockingGet()?.validCompleteOnly() ?: false
+    }
+
+    override suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean {
+        return !d2.validationModule().validationRules()
+            .byDataSetUids(listOf(dataSetUid))
+            .bySkipFormValidation().isFalse
+            .blockingIsEmpty()
+    }
+
     override suspend fun getRenderingConfig(
         dataSetUid: String,
     ) = d2.dataSetModule().dataSets()

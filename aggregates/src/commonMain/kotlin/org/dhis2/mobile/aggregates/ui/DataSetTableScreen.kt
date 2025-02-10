@@ -5,6 +5,9 @@ package org.dhis2.mobile.aggregates.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -19,6 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +59,8 @@ import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.FAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDialog
@@ -152,6 +161,26 @@ fun DataSetInstanceScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
+        },
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                FAB(
+                    style = FABStyle.SECONDARY,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Done,
+                            contentDescription = "Save Button",
+                        )
+                    },
+                    onClick = {
+                        dataSetTableViewModel.onSaveClicked()
+                    },
+                )
+            }
         },
     ) {
         Box(
