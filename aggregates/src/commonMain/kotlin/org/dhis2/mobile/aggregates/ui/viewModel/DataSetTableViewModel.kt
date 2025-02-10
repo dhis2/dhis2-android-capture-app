@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import org.dhis2.mobile.aggregates.domain.CheckValidationRules
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
@@ -38,6 +40,7 @@ internal class DataSetTableViewModel(
     private val getDataValueInput: GetDataValueInput,
     private val setDataValue: SetDataValue,
     private val resourceManager: ResourceManager,
+    private val checkValidationRules: CheckValidationRules,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
 
@@ -209,6 +212,22 @@ internal class DataSetTableViewModel(
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
+            }
+        }
+    }
+
+    fun onSaveClicked() {
+        viewModelScope.launch {
+            when (checkValidationRules()) {
+                ValidationRulesConfiguration.NONE -> {
+                    // TODO check if dataset instance is complete
+                }
+                ValidationRulesConfiguration.MANDATORY -> {
+                    // TODO run validation rules
+                }
+                ValidationRulesConfiguration.OPTIONAL -> {
+                    // TODO show validation rule dialog to ask if user wants to run validation rules
+                }
             }
         }
     }
