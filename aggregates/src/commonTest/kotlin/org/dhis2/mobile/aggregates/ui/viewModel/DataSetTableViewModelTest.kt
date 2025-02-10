@@ -9,30 +9,82 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.mobile.aggregates.test.testModule
+import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
+import org.dhis2.mobile.aggregates.di.aggregatesModule
+import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
+import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
+import org.dhis2.mobile.aggregates.domain.GetDataSetSections
+import org.dhis2.mobile.aggregates.domain.GetDataValue
+import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
+import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
-import org.koin.test.inject
+import org.koin.test.mock.MockProvider
+import org.koin.test.mock.declareMock
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DataSetTableViewModelTest : KoinTest {
 
     private lateinit var testDispatcher: TestDispatcher
+    private lateinit var getDataSetInstanceDetails: GetDataSetInstanceDetails
+    private lateinit var getDataSetSection: GetDataSetSections
+    private lateinit var getDataSetRenderingConfig: GetDataSetRenderingConfig
+    private lateinit var getDataSetSectionData: GetDataSetSectionData
+    private lateinit var getDataValueConflict: GetDataValueConflict
+    private lateinit var getDataValue: GetDataValue
+    private lateinit var dispatcher: Dispatcher
 
     @Before
     fun setUp() = runTest {
         testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         startKoin {
-            modules(testModule(testDispatcher, true))
+            modules(aggregatesModule)
+            MockProvider.register {
+                mock(it.java)
+            }
         }
+        declareMock<DataSetInstanceRepository>()
+        getDataSetInstanceDetails = declareMock<GetDataSetInstanceDetails>()
+        getDataSetSection = declareMock<GetDataSetSections>()
+        getDataSetRenderingConfig = declareMock<GetDataSetRenderingConfig>()
+        getDataSetSectionData = declareMock<GetDataSetSectionData>()
+        getDataValueConflict = declareMock<GetDataValueConflict>()
+        getDataValue = declareMock<GetDataValue>()
+        dispatcher = declareMock<Dispatcher>()
+
+        whenever(dispatcher.io).thenReturn { testDispatcher }
+        whenever(getDataSetInstanceDetails()).thenReturn(
+            DataSetDetails(
+                titleLabel = "label",
+                dateLabel = "date",
+                orgUnitLabel = "ou",
+                catOptionComboLabel = null,
+            ),
+        )
+        whenever(getDataSetRenderingConfig()).thenReturn(mock())
+        whenever(getDataSetSection()).thenReturn(emptyList())
+        whenever(getDataSetSectionData(any())).thenReturn(
+            DataSetInstanceSectionData(
+                dataSetInstanceConfiguration = mock(),
+                dataSetInstanceSectionConfiguration = mock(),
+                tableGroups = listOf(),
+            ),
+        )
     }
 
     @After
@@ -43,24 +95,40 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     @Test
     fun `should receive initial states`() = runTest {
-        val viewModel: DataSetTableViewModel by inject()
+        val viewModel = DataSetTableViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
 
         viewModel.dataSetScreenState.test {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue(this.dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue(this.dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
             }
         }
     }
 
     @Test
     fun `should not update selected section if it is the same`() = runTest {
-        val viewModel: DataSetTableViewModel by inject()
+        val viewModel = DataSetTableViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()
@@ -71,18 +139,26 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     @Test
     fun `should update selected section`() = runTest {
-        val viewModel: DataSetTableViewModel by inject()
+        val viewModel = DataSetTableViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()
             viewModel.onSectionSelected("section_uid2")
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue(this.dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue(this.dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
             }
         }
     }

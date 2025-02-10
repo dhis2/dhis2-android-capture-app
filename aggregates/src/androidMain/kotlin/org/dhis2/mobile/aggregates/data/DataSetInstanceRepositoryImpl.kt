@@ -3,11 +3,12 @@ package org.dhis2.mobile.aggregates.data
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
 import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
-import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
+import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -25,24 +26,39 @@ internal class DataSetInstanceRepositoryImpl(
         periodId: String,
         orgUnitUid: String,
         attrOptionComboUid: String,
-    ) = d2.dataSetModule().dataSetInstances()
-        .byDataSetUid().eq(dataSetUid)
-        .byPeriod().eq(periodId)
-        .byOrganisationUnitUid().eq(orgUnitUid)
-        .byAttributeOptionComboUid().eq(attrOptionComboUid)
-        .blockingGet()
-        .map { dataSetInstance ->
-            val catComboUid = d2.dataSetModule().dataSets()
-                .uid(dataSetUid)
+    ): DataSetDetails {
+        val dataSet = d2.dataSetModule().dataSets()
+            .uid(dataSetUid)
+            .blockingGet()
+
+        val catComboUid = dataSet?.categoryCombo()?.uid()
+        val isDefaultCatCombo = d2.categoryModule().categoryCombos()
+            .uid(catComboUid)
+            .blockingGet()
+            ?.isDefault
+
+        return d2.dataSetModule().dataSetInstances()
+            .byDataSetUid().eq(dataSetUid)
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionComboUid().eq(attrOptionComboUid)
+            .blockingGet()
+            .map { dataSetInstance ->
+                dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true)
+            }
+            .firstOrNull() ?: DataSetDetails(
+            titleLabel = "",
+            dateLabel = periodId,
+            orgUnitLabel = d2.organisationUnitModule().organisationUnits()
+                .uid(orgUnitUid)
                 .blockingGet()
-                ?.categoryCombo()?.uid()
-            val isDefaultCatCombo = d2.categoryModule().categoryCombos()
-                .uid(catComboUid)
+                ?.displayName() ?: orgUnitUid,
+            catOptionComboLabel = d2.categoryModule().categoryOptionCombos()
+                .uid(attrOptionComboUid)
                 .blockingGet()
-                ?.isDefault
-            dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true)
-        }
-        .first()
+                ?.displayName(),
+        )
+    }
 
     override fun getDataSetInstanceSections(
         dataSetUid: String,
@@ -192,7 +208,7 @@ internal class DataSetInstanceRepositoryImpl(
         dataSetElements: List<CellElement>,
         dataSetUid: String,
         sectionUid: String,
-    ): List<DataSetInstanceSectionData> {
+    ): List<TableGroup> {
         var dataSetElementsInSection = dataSetElements
 
         val catComboUids = when (sectionUid) {
@@ -226,12 +242,17 @@ internal class DataSetInstanceRepositoryImpl(
             }
         }
 
+        val dataSetInstanceSectionConfiguration = dataSetInstanceSectionConfiguration(sectionUid)
+
         return d2.categoryModule().categoryCombos()
             .byUid().`in`(catComboUids)
             .withCategories()
             .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
             .blockingGet().map { catCombo ->
-                DataSetInstanceSectionData(
+
+                val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+
+                TableGroup(
                     uid = catCombo.uid(),
                     label = catCombo.displayName() ?: "",
                     subgroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList(),
@@ -242,6 +263,9 @@ internal class DataSetInstanceRepositoryImpl(
                             )
                         catComboUid == catCombo.uid()
                     },
+                    headerRows = getTableGroupHeaders(subGroups),
+                    headerCombinations = categoryOptionCombinations(subGroups),
+                    sectionConfiguration = dataSetInstanceSectionConfiguration,
                 )
             }
     }

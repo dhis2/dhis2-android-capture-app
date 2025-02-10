@@ -5,6 +5,8 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
+import org.dhis2.mobile.aggregates.domain.GetDataValue
+import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
@@ -52,6 +54,25 @@ internal val featureModule = module {
             periodId = params.get(),
             attrOptionComboUid = params.get(),
             dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
+        GetDataValueConflict(
+            datasetUid = params.get(),
+            orgUnitUid = params.get(),
+            periodId = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
+        GetDataValue(
+            orgUnitUid = params.get(),
+            periodId = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
             valueParser = get(),
         )
     }
@@ -79,6 +100,12 @@ internal val featureModule = module {
             },
             getDataSetSectionData = get {
                 parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
+            },
+            getDataValueConflict = get {
+                parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
+            },
+            getDataValue = get {
+                parametersOf(orgUnitUid, periodId, attrOptionComboUid)
             },
             dispatcher = get(),
         )

@@ -4,9 +4,9 @@ import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
-import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.model.TableGroup
 
 internal interface DataSetInstanceRepository {
     fun getDataSetInstance(
@@ -36,7 +36,7 @@ internal interface DataSetInstanceRepository {
         dataSetElements: List<CellElement>,
         dataSetUid: String,
         sectionUid: String,
-    ): List<DataSetInstanceSectionData>
+    ): List<TableGroup>
 
     fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>>
     fun dataSetInstanceSectionConfiguration(sectionUid: String): DataSetInstanceSectionConfiguration?
