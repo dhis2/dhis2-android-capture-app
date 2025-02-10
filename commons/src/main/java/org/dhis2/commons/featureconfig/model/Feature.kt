@@ -4,5 +4,4 @@ enum class Feature(val description: String) {
     AUTO_LOGOUT("automatic log out"),
     RESPONSIVE_HOME("responsive home"),
     COMPOSE_AGGREGATES_SCREEN("compose aggregates screen"),
-    QUICK_ACTIONS("Quick action on TEI dashboard"),
 }

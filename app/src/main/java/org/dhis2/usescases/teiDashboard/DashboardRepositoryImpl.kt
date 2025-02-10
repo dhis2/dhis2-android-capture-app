@@ -10,12 +10,10 @@ import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.usescases.teiDashboard.ui.model.QuickActionType
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
@@ -425,21 +423,11 @@ class DashboardRepositoryImpl(
     }
 
     private fun getQuickActions(programUid: String): List<String> {
-        return if (featureConfigRepository.isFeatureEnable(Feature.QUICK_ACTIONS)) {
-            listOf(
-                QuickActionType.MARK_FOLLOW_UP.name,
-                QuickActionType.TRANSFER.name,
-                QuickActionType.COMPLETE_ENROLLMENT.name,
-                QuickActionType.CANCEL_ENROLLMENT.name,
-                QuickActionType.MORE_ENROLLMENTS.name,
-            )
-        } else {
-            programConfigurationRepository
-                .getConfigurationByProgram(programUid)
-                ?.quickActions()
-                ?.map { it.actionId() }
-                ?: emptyList()
-        }
+        return programConfigurationRepository
+            .getConfigurationByProgram(programUid)
+            ?.quickActions()
+            ?.map { it.actionId() }
+            ?: emptyList()
     }
 
     override fun getTeiActivePrograms(
