@@ -201,6 +201,7 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()?.let { section ->
                 DataSetInstanceSectionConfiguration(
                     showRowTotals = section.showRowTotals() == true,
+                    showColumnTotals = section.showColumnTotals() == true,
                 )
             }
 
@@ -242,8 +243,6 @@ internal class DataSetInstanceRepositoryImpl(
             }
         }
 
-        val dataSetInstanceSectionConfiguration = dataSetInstanceSectionConfiguration(sectionUid)
-
         return d2.categoryModule().categoryCombos()
             .byUid().`in`(catComboUids)
             .withCategories()
@@ -265,7 +264,6 @@ internal class DataSetInstanceRepositoryImpl(
                     },
                     headerRows = getTableGroupHeaders(subGroups),
                     headerCombinations = categoryOptionCombinations(subGroups),
-                    sectionConfiguration = dataSetInstanceSectionConfiguration,
                 )
             }
     }
@@ -306,4 +304,27 @@ internal class DataSetInstanceRepositoryImpl(
                 .blockingGet()
                 ?.categoryComboUid()
         }
+
+    override fun getDataSetIndicator(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+        sectionUid: String,
+    ) = d2.indicatorModule().indicators()
+        .byDataSetUid(dataSetUid)
+        .bySectionUid(sectionUid)
+        .blockingGet()
+        .associate { indicator ->
+            (indicator.displayName() ?: indicator.uid()) to d2.indicatorModule()
+                .dataSetIndicatorEngine()
+                .blockingEvaluate(
+                    indicator.uid(),
+                    dataSetUid,
+                    periodId,
+                    orgUnitUid,
+                    attributeOptionComboUid,
+                ).toString()
+        }.toSortedMap(compareBy { it })
+        .takeIf { it.isNotEmpty() }
 }

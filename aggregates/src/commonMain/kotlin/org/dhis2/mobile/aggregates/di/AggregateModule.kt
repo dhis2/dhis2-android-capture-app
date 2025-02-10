@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.domain.GetDataValue
 import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
@@ -77,6 +78,16 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        GetDataSetSectionIndicators(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attributeOptionComboUid = params.get(),
+            repository = get(),
+        )
+    }
+
     viewModel { params ->
         val dataSetUid = params.get<String>()
         val periodId = params.get<String>()
@@ -106,6 +117,9 @@ internal val featureModule = module {
             },
             getDataValue = get {
                 parametersOf(orgUnitUid, periodId, attrOptionComboUid)
+            },
+            getDataSetSectionIndicators = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             dispatcher = get(),
         )

@@ -11,6 +11,9 @@ internal data class DataSetInstanceSectionData(
         rowId = rowId,
         columnId = columnId,
     )
+
+    fun showRowTotals() = dataSetInstanceSectionConfiguration?.showRowTotals ?: false
+    fun showColumnTotals() = dataSetInstanceSectionConfiguration?.showColumnTotals ?: false
 }
 
 internal data class TableGroup(
@@ -20,5 +23,4 @@ internal data class TableGroup(
     val cellElements: List<CellElement>,
     val headerRows: List<List<String>>,
     val headerCombinations: List<String>,
-    val sectionConfiguration: DataSetInstanceSectionConfiguration?,
 )

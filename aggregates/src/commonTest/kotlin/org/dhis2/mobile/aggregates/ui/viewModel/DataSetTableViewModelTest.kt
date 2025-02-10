@@ -14,6 +14,7 @@ import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.domain.GetDataValue
 import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
@@ -46,6 +47,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var getDataSetSectionData: GetDataSetSectionData
     private lateinit var getDataValueConflict: GetDataValueConflict
     private lateinit var getDataValue: GetDataValue
+    private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var dispatcher: Dispatcher
 
     @Before
@@ -65,6 +67,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         getDataSetSectionData = declareMock<GetDataSetSectionData>()
         getDataValueConflict = declareMock<GetDataValueConflict>()
         getDataValue = declareMock<GetDataValue>()
+        getIndicators = declareMock<GetDataSetSectionIndicators>()
         dispatcher = declareMock<Dispatcher>()
 
         whenever(dispatcher.io).thenReturn { testDispatcher }
@@ -85,6 +88,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 tableGroups = listOf(),
             ),
         )
+        whenever(getIndicators(any())).thenReturn(null)
     }
 
     @After
@@ -96,6 +100,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should receive initial states`() = runTest {
         val viewModel = DataSetTableViewModel(
+            get(),
             get(),
             get(),
             get(),
@@ -128,6 +133,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             get(),
             get(),
             get(),
+            get(),
         )
 
         viewModel.dataSetScreenState.test {
@@ -140,6 +146,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should update selected section`() = runTest {
         val viewModel = DataSetTableViewModel(
+            get(),
             get(),
             get(),
             get(),

@@ -7,6 +7,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.TableGroup
+import java.util.SortedMap
 
 internal interface DataSetInstanceRepository {
     fun getDataSetInstance(
@@ -58,4 +59,12 @@ internal interface DataSetInstanceRepository {
     ): String?
 
     fun categoryOptionCombinations(categoryUids: List<String>): List<String>
+
+    fun getDataSetIndicator(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+        sectionUid: String,
+    ): SortedMap<String, String>?
 }

@@ -10,9 +10,11 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
 import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
+import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.domain.GetDataValue
 import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
@@ -32,6 +34,7 @@ internal class DataSetTableViewModel(
     private val getDataSetSectionData: GetDataSetSectionData,
     private val getDataValueConflict: GetDataValueConflict,
     private val getDataValue: GetDataValue,
+    private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
 
@@ -110,7 +113,7 @@ internal class DataSetTableViewModel(
     private suspend fun sectionData(sectionUid: String): List<TableModel> {
         var absoluteRowIndex = 0
         val sectionData = getDataSetSectionData(sectionUid)
-        return sectionData.tableGroups.map { tableGroup ->
+        val tables = sectionData.tableGroups.map { tableGroup ->
 
             val headerRows = tableGroup.headerRows.map { headerColumn ->
                 TableHeaderRow(
@@ -122,11 +125,9 @@ internal class DataSetTableViewModel(
                 )
             }
 
-            val sectionConfig = tableGroup.sectionConfiguration
-
             val tableHeader = TableHeader(
                 rows = headerRows,
-                hasTotals = sectionConfig?.showRowTotals == true,
+                hasTotals = sectionData.showRowTotals(),
             )
 
             val tableRows = tableGroup.cellElements
@@ -185,5 +186,45 @@ internal class DataSetTableViewModel(
                 overwrittenValues = emptyMap(), // TODO: This seems to not be used at all
             )
         }
+
+        val indicators = listOf(
+            TableModel(
+                id = INDICATOR_TABLE_UID,
+                title = "",
+                tableHeaderModel = TableHeader(
+                    rows = listOf(
+                        TableHeaderRow(
+                            cells = listOf(TableHeaderCell("Values")), // TODO: Add resources to module
+                        ),
+                    ),
+                    hasTotals = sectionData.showRowTotals(),
+                ),
+                tableRows = getDataSetSectionIndicators(sectionUid)?.entries?.map { (key, value) ->
+                    TableRowModel(
+                        rowHeader = RowHeader(
+                            id = key,
+                            title = key,
+                            row = absoluteRowIndex,
+                        ),
+                        values = mapOf(
+                            0 to TableCell(
+                                id = key,
+                                row = absoluteRowIndex,
+                                column = 0,
+                                value = value,
+                                editable = false,
+                                mandatory = false,
+                                legendColor = null,
+                            ),
+                        ),
+                    ).also {
+                        absoluteRowIndex += 1
+                    }
+                } ?: emptyList(),
+                overwrittenValues = emptyMap(), // TODO: This seems to not be used at all
+            ),
+        )
+
+        return tables + indicators
     }
 }
