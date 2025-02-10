@@ -2,6 +2,8 @@ package org.dhis2.mobile.aggregates.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dhis2_android_capture_app.aggregates.generated.resources.Res
+import dhis2_android_capture_app.aggregates.generated.resources.default_column_label
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +16,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.domain.GetDataValue
 import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
@@ -26,6 +29,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
+import org.jetbrains.compose.resources.getString
 
 internal class DataSetTableViewModel(
     private val getDataSetInstanceDetails: GetDataSetInstanceDetails,
@@ -119,7 +123,8 @@ internal class DataSetTableViewModel(
                 TableHeaderRow(
                     cells = headerColumn.map { label ->
                         TableHeaderCell(
-                            value = label,
+                            value = label.takeIf { it != DEFAULT_LABEL }
+                                ?: getString(Res.string.default_column_label),
                         )
                     },
                 )
@@ -194,7 +199,7 @@ internal class DataSetTableViewModel(
                 tableHeaderModel = TableHeader(
                     rows = listOf(
                         TableHeaderRow(
-                            cells = listOf(TableHeaderCell("Values")), // TODO: Add resources to module
+                            cells = listOf(TableHeaderCell(getString(Res.string.default_column_label))), // TODO: Add resources to module"Values")), // TODO: Add resources to module
                         ),
                     ),
                     hasTotals = sectionData.showRowTotals(),

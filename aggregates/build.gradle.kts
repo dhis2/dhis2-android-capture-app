@@ -31,6 +31,7 @@ kotlin {
             api(compose.materialIconsExtended)
             implementation(libs.dhis2.mobile.designsystem)
             implementation(libs.compose.material3.window)
+            implementation(compose.components.resources)
             implementation(project(":commonskmm"))
 
             // Koin
