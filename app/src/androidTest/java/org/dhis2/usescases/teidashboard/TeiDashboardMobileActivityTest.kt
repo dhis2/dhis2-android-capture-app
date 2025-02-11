@@ -8,6 +8,8 @@ import dhis2.org.analytics.charts.Charts
 import io.reactivex.Observable
 import org.dhis2.R
 import org.dhis2.android.rtsm.utils.NetworkUtils
+import org.dhis2.commons.data.ProgramConfigurationRepository
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -50,6 +52,8 @@ class TeiDashboardMobileActivityTest {
     private val charts: Charts = mock()
     private val teiAttributesProvider: TeiAttributesProvider = mock()
     private val preferences: PreferenceProvider = mock()
+    private val programConfigurationRepository: ProgramConfigurationRepository = mock()
+    private val featureConfigRepository: FeatureConfigRepository = mock()
 
     private val metadataIconProvider: MetadataIconProvider = mock {
         on { invoke(any()) }doReturn MetadataIconData.defaultIcon()
@@ -120,10 +124,10 @@ class TeiDashboardMobileActivityTest {
             ENROLLMENT_UID,
             teiAttributesProvider,
             preferences,
-            metadataIconProvider
+            metadataIconProvider,
+            programConfigurationRepository,
+            featureConfigRepository,
         )
-
-
     }
 
 

@@ -223,7 +223,6 @@ class DashboardViewModel(
                 ).blockingFirst()
 
                 if (result == StatusChangeResultCode.CHANGED) {
-                    _showStatusBar.value = status
                     _syncNeeded.value = true
                     _state.value = State.TO_UPDATE
                     fetchDashboardModel()

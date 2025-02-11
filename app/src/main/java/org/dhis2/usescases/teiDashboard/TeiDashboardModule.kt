@@ -3,7 +3,9 @@ package org.dhis2.usescases.teiDashboard
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -89,6 +91,8 @@ class TeiDashboardModule(
         preferenceProvider: PreferenceProvider,
         teiAttributesProvider: TeiAttributesProvider,
         metadataIconProvider: MetadataIconProvider,
+        programConfigurationRepository: ProgramConfigurationRepository,
+        featureConfigRepository: FeatureConfigRepository,
     ): DashboardRepository {
         return DashboardRepositoryImpl(
             d2,
@@ -99,6 +103,8 @@ class TeiDashboardModule(
             teiAttributesProvider,
             preferenceProvider,
             metadataIconProvider,
+            programConfigurationRepository,
+            featureConfigRepository,
         )
     }
 
@@ -144,5 +150,12 @@ class TeiDashboardModule(
             pageConfigurator,
             resourcesManager,
         )
+    }
+
+    @Provides
+    fun provideProgramConfigurationRepository(
+        d2: D2,
+    ): ProgramConfigurationRepository {
+        return ProgramConfigurationRepository(d2)
     }
 }

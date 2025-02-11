@@ -993,4 +993,7 @@
     <string name="successfully_transferred">Successfully transferred</string>
     <string name="event_cancelled">%1$s cancelled</string>
     <string name="due_date_updated">Due date updated</string>
+    <string name="complete_enrollment_label">Complete %s</string>
+    <string name="deactivate_enrollment_label">Deactivate %s</string>
+    <string name="reopen_enrollment_label">Re-open %s</string>
 </resources>

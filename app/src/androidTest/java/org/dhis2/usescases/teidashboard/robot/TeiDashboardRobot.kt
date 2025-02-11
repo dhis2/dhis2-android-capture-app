@@ -36,9 +36,10 @@ import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
-import org.dhis2.usescases.teiDashboard.ui.STATE_INFO_BAR_TEST_TAG
+import org.dhis2.usescases.teiDashboard.ui.INFO_BAR_TEST_TAG
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON
 import org.dhis2.usescases.teiDashboard.ui.TEST_ADD_EVENT_BUTTON_IN_TIMELINE
+import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
 import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.hamcrest.CoreMatchers.allOf
@@ -94,7 +95,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkCancelledStateInfoBarIsDisplay() {
-        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name).assertIsDisplayed()
         composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
@@ -170,7 +171,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkCompleteStateInfoBarIsDisplay() {
-        composeTestRule.onNodeWithTag(STATE_INFO_BAR_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name).assertIsDisplayed()
         composeTestRule.onNodeWithText("Enrollment completed").assertIsDisplayed()
     }
 
