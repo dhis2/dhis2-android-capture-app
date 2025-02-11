@@ -41,17 +41,18 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog as BottomSheetShellImplementation
 
 @Deprecated("Use BottomSheetShell directly instead")
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-    var onMainButtonClicked: ((org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
+    var onMainButtonClicked: ((BottomSheetShellImplementation)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
     val showTopDivider: Boolean = false,
     val showBottomDivider: Boolean = false,
     val content: @Composable
-    ((org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog, scrollState: LazyListState) -> Unit)? = null,
+    ((BottomSheetShellImplementation, scrollState: LazyListState) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

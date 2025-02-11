@@ -7,14 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -60,6 +58,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
@@ -229,10 +228,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         catCombo: EventCatCombo,
         coordinates: EventCoordinates,
     ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.Spacing16)) {
             if (viewModel.getPeriodType() == null || (viewModel.getPeriodType() != null && viewModel.getPeriodType() == PeriodType.Daily)) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 ProvideInputDate(
                     EventInputDateUiModel(
                         eventDate = date,
@@ -252,8 +249,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     ),
                 )
             } else {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 ProvidePeriodSelector(
                     uiModel = EventInputDateUiModel(
                         eventDate = date,
@@ -272,7 +267,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     modifier = Modifier,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
             ProvideOrgUnit(
                 orgUnit = orgUnit,
@@ -288,7 +282,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
             if (!catCombo.isDefault && catCombo.categories.isNotEmpty()) {
                 catCombo.categories.forEach { category ->
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     ProvideCategorySelector(
                         eventCatComboUiModel = EventCatComboUiModel(
@@ -311,14 +304,11 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     )
                 }
             } else if (!catCombo.isDefault) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 ProvideEmptyCategorySelector(
                     name = catCombo.displayName ?: getString(R.string.cat_combo),
                     option = getString(R.string.no_options),
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
             ProvideCoordinates(
                 coordinates = coordinates,

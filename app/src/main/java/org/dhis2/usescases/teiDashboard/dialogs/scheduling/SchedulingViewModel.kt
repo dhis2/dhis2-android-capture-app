@@ -78,7 +78,7 @@ class SchedulingViewModel(
     private val _enrollment: MutableStateFlow<Enrollment?> = MutableStateFlow(null)
     val enrollment: StateFlow<Enrollment?> = _enrollment
 
-    private val _overdueSubtitle: MutableStateFlow<String?> = MutableStateFlow("")
+    private val _overdueSubtitle: MutableStateFlow<String?> = MutableStateFlow(null)
     val overdueEventSubtitle: StateFlow<String?> = _overdueSubtitle
 
     init {

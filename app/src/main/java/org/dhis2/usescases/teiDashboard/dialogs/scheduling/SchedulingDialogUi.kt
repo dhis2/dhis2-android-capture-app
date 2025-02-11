@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
@@ -108,6 +107,7 @@ fun SchedulingDialogUi(
         content = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing0),
+                verticalArrangement = Arrangement.spacedBy(Spacing.Spacing16),
             ) {
                 if (launchMode.showYesNoOptions) {
                     RadioButtonBlock(
@@ -280,7 +280,6 @@ fun ProvideScheduleNewEventForm(
                 programStages[index].let { viewModel.updateStage(it) }
             },
         )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     if (willShowCalendar(selectedProgramStage?.periodType())) {
@@ -314,7 +313,6 @@ fun ProvideScheduleNewEventForm(
     if (!catCombo.isDefault && launchMode !is LaunchMode.EnterEvent) {
         catCombo.categories.forEach { category ->
 
-            Spacer(modifier = Modifier.height(16.dp))
             ProvideCategorySelector(
                 eventCatComboUiModel = EventCatComboUiModel(
                     category = category,
