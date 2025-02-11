@@ -71,6 +71,10 @@ kotlin {
 android {
     namespace = "org.dhis2.mobile.aggregates"
     compileSdk = libs.versions.sdk.get().toInt()
+
+    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/composeResources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
+
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
     }
