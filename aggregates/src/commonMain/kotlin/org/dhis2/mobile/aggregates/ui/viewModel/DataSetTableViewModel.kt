@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRules
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
@@ -18,7 +19,11 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
-import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
@@ -41,6 +46,7 @@ internal class DataSetTableViewModel(
     private val setDataValue: SetDataValue,
     private val resourceManager: ResourceManager,
     private val checkValidationRules: CheckValidationRules,
+    private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
 
@@ -217,17 +223,46 @@ internal class DataSetTableViewModel(
     }
 
     fun onSaveClicked() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher.io()) {
             when (checkValidationRules()) {
-                ValidationRulesConfiguration.NONE -> {
-                    // TODO check if dataset instance is complete
+                NONE -> {
+                    attemptToFinnish()
                 }
-                ValidationRulesConfiguration.MANDATORY -> {
+
+                MANDATORY -> {
                     // TODO run validation rules
                 }
-                ValidationRulesConfiguration.OPTIONAL -> {
+
+                OPTIONAL -> {
                     // TODO show validation rule dialog to ask if user wants to run validation rules
                 }
+            }
+        }
+    }
+
+    private fun attemptToFinnish() {
+        viewModelScope.launch(dispatcher.io()) {
+            when (checkCompletionStatus()) {
+                COMPLETED -> TODO("Save and finish")
+                NOT_COMPLETED -> {
+                    _dataSetScreenState.update {
+                        if (it is DataSetScreenState.Loaded) {
+                            it.copy(showCompletionDialog = true)
+                        } else {
+                            it
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onCompletionDialogDismissed() {
+        _dataSetScreenState.update {
+            if (it is DataSetScreenState.Loaded) {
+                it.copy(showCompletionDialog = false)
+            } else {
+                it
             }
         }
     }

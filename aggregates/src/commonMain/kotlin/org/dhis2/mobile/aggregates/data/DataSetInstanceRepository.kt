@@ -93,4 +93,15 @@ internal interface DataSetInstanceRepository {
 
     suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String
     suspend fun getCoordinatesFrom(value: String): Pair<Double, Double>
+
+    suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean
+
+    suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean
+
+    suspend fun isComplete(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean
 }

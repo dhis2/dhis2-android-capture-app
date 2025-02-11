@@ -71,6 +71,22 @@ internal class DataSetInstanceRepositoryImpl(
         .byDataSetUid().eq(dataSetUid)
         .blockingGet().map(Section::toDataSetSection)
 
+    override suspend fun isComplete(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean {
+        return d2.dataSetModule().dataSetCompleteRegistrations()
+            .byDataSetUid().eq(dataSetUid)
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionComboUid().eq(attrOptionComboUid)
+            .byDeleted().isFalse
+            .isEmpty()
+            .map { isEmpty -> !isEmpty }.blockingGet()
+    }
+
     override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean {
         return d2.dataSetModule()
             .dataSets().uid(dataSetUid)
