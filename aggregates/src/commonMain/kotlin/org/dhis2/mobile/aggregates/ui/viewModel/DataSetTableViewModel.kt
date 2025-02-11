@@ -2,8 +2,6 @@ package org.dhis2.mobile.aggregates.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dhis2_android_capture_app.aggregates.generated.resources.Res
-import dhis2_android_capture_app.aggregates.generated.resources.default_column_label
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -129,7 +127,7 @@ internal class DataSetTableViewModel(
                     cells = headerColumn.map { label ->
                         TableHeaderCell(
                             value = label.takeIf { it != DEFAULT_LABEL }
-                                ?: resourceManager.get(Res.string.default_column_label),
+                                ?: resourceManager.defaultHeaderLabel(),
                         )
                     },
                 )
@@ -204,7 +202,7 @@ internal class DataSetTableViewModel(
                 tableHeaderModel = TableHeader(
                     rows = listOf(
                         TableHeaderRow(
-                            cells = listOf(TableHeaderCell(resourceManager.get(Res.string.default_column_label))),
+                            cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
                         ),
                     ),
                     hasTotals = sectionData.showRowTotals(),

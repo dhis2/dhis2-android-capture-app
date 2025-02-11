@@ -1,12 +1,9 @@
 package org.dhis2.mobile.aggregates.domain
 
-import org.jetbrains.compose.resources.StringResource
+import dhis2_android_capture_app.aggregates.generated.resources.Res
+import dhis2_android_capture_app.aggregates.generated.resources.default_column_label
 import org.jetbrains.compose.resources.getString
 
 internal class ResourceManager {
-    suspend fun get(stringResources: StringResource) = getString(stringResources)
-    suspend inline fun <reified T> get(resource: T) = when (T::class) {
-        StringResource::class -> getString(resource as StringResource)
-        else -> throw IllegalArgumentException("Unsupported resource type")
-    }
+    suspend fun defaultHeaderLabel() = getString(Res.string.default_column_label)
 }

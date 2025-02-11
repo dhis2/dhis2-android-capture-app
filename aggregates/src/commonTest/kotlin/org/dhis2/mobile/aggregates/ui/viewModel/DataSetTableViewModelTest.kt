@@ -70,7 +70,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         getIndicators = declareMock<GetDataSetSectionIndicators>()
         dispatcher = declareMock<Dispatcher>()
 
-        whenever(resourceManager.get(any())) doReturn "resource"
+        whenever(resourceManager.defaultHeaderLabel()) doReturn "resource"
         whenever(dispatcher.io).thenReturn { testDispatcher }
         whenever(getDataSetInstanceData(any())).thenReturn(
             DataSetInstanceData(
