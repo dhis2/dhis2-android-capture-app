@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.dialogs.scheduling
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -177,6 +176,7 @@ private fun ButtonBlock(
             is LaunchMode.EnterEvent -> {
                 Column(
                     modifier = Modifier.padding(Spacing.Spacing0),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
                 ) {
                     val eventLabel =
                         selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
@@ -189,7 +189,6 @@ private fun ButtonBlock(
                             viewModel.enterEvent(launchMode)
                         },
                     )
-                    Spacer(Modifier.size(Spacing.Spacing8))
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.OUTLINED,
