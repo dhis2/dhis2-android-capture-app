@@ -36,6 +36,7 @@ kotlin {
             implementation(compose.material3)
             // Koin
             api(libs.koin.core)
+            implementation(libs.ktxml)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
 
