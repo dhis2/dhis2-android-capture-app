@@ -39,6 +39,9 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
         }
+        commonTest{
+            resources.srcDirs("src/commonMain/composeResources")
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             // Koin Test features
