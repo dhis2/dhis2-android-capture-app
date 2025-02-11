@@ -66,4 +66,15 @@ internal interface DataSetInstanceRepository {
         dataElementUids: List<String>,
         attrOptionComboUid: String,
     ): List<Pair<Pair<String, String>, String?>>
+
+    suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean
+
+    suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean
+
+    suspend fun isComplete(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean
 }
