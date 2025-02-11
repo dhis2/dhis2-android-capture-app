@@ -5,7 +5,6 @@ package org.dhis2.mobile.aggregates.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,13 +28,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -43,8 +37,6 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
-import org.dhis2.mobile.commons.html.HtmlStyle
-import org.dhis2.mobile.commons.html.htmlToAnnotatedString
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -56,9 +48,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneConfig
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneLayout
 import org.hisp.dhis.mobile.ui.designsystem.component.model.Tab
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
-import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -319,31 +309,6 @@ private fun DataSetTableContent(
     modifier: Modifier = Modifier,
     dataSetDetails: DataSetDetails,
 ) {
-    //TODO remove sample text and implement according to screenState
-    val htmlString = "<!DOCTYPE html>\n" +
-        "<html lang=\"en\">\n" +
-        "<head>\n" +
-        "    <meta charset=\"UTF-8\">\n" +
-        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-        "    <title>Sample HTML</title>\n" +
-        "</head>\n" +
-        "<body>\n" +
-        "    <p>This is a <a href=\"https://www.example.com\">link</a>.</p>\n" +
-        "    <p>This is <u>underlined text</u>.</p>\n" +
-        "    <p>This is <b>bold text</b> or <strong>strong text</strong>.</p>\n" +
-        "    <p>This is <em>italic text</em>.</p>\n" +
-        "</body>\n" +
-        "</html>"
-
-    val convertedText = htmlToAnnotatedString(
-        htmlString,
-        style = HtmlStyle(
-            textLinkStyles = TextLinkStyles(
-                style = SpanStyle(color = Color.Red),
-            ),
-        ),
-    )
-
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 24.dp),
@@ -356,37 +321,11 @@ private fun DataSetTableContent(
             )
         }
 
-        item {
-            //TODO call HTMContentBox with only if needed
-            HtmlContentBox(convertedText)
-            Text(
-                text = htmlString,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
         items(count = 10) {
             DataSetTable(
                 modifier = Modifier.height(200.dp).fillMaxWidth(),
             )
         }
-    }
-}
-
-@Composable
-fun HtmlContentBox(text: AnnotatedString) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(Spacing.Spacing8)
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = Shape.Small,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-        )
     }
 }
 
