@@ -1,7 +1,7 @@
 package org.dhis2.mobile.aggregates.domain
 
-import dhis2_android_capture_app.aggregates.generated.resources.Res
-import dhis2_android_capture_app.aggregates.generated.resources.default_column_label
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.jetbrains.compose.resources.getString
 
 internal class ResourceManager {

@@ -72,6 +72,12 @@ kotlin {
     }
 }
 
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "org.dhis2.mobile.aggregates.resources"
+    generateResClass = always
+}
+
 android {
     namespace = "org.dhis2.mobile.aggregates"
     compileSdk = libs.versions.sdk.get().toInt()
