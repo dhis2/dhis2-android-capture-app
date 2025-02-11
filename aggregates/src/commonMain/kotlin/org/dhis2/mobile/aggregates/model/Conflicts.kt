@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.model
 
-data class Conflicts(
+internal data class Conflicts(
     private val errors: List<String>,
     private val warnings: List<String>,
 ) {
