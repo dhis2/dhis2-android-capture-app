@@ -108,6 +108,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             get(),
             get(),
             get(),
+            get(),
+            get(),
+            get(),
+            get(),
         )
 
         viewModel.dataSetScreenState.test {
@@ -132,6 +136,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             get(),
             get(),
             get(),
+            get(),
+            get(),
+            get(),
+            get(),
         )
 
         viewModel.dataSetScreenState.test {
@@ -144,6 +152,10 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should update selected section`() = runTest {
         val viewModel = DataSetTableViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
             get(),
             get(),
             get(),

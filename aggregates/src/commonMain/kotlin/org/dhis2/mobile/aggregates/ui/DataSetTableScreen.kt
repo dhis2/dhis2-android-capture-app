@@ -25,9 +25,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -44,6 +48,7 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -91,6 +96,17 @@ fun DataSetInstanceScreen(
     val allowTwoPane by remember(useTwoPane, dataSetScreenState) {
         derivedStateOf {
             dataSetScreenState.allowTwoPane(useTwoPane)
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(dataSetScreenState.snackbarMessage) {
+        dataSetScreenState.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long,
+            )
         }
     }
 
@@ -154,6 +170,7 @@ fun DataSetInstanceScreen(
                 ),
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             AnimatedVisibility(
                 visible = true,
@@ -253,6 +270,15 @@ fun DataSetInstanceScreen(
                 )
             }
         }
+    }
+
+    (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog?.let { dataSetUIState ->
+        BottomSheetShell(
+            uiState = dataSetUIState.contentDialogUIState,
+            content = null,
+            buttonBlock = dataSetUIState.buttonsDialog,
+            onDismiss = dataSetUIState.onDismiss,
+        )
     }
 }
 
