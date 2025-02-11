@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.test.turbine)
             implementation(libs.test.kotlinCoroutines)
             implementation(libs.test.mockitoKotlin)
+            implementation(compose.components.resources)
         }
 
         androidMain.dependencies {
