@@ -33,6 +33,7 @@ import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
+import org.dhis2.mobile.aggregates.ui.provider.DatasetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
@@ -48,6 +49,7 @@ internal class DataSetTableViewModel(
     private val checkValidationRules: CheckValidationRules,
     private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
+    private val datasetModalDialogProvider: DatasetModalDialogProvider,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -242,12 +244,20 @@ internal class DataSetTableViewModel(
 
     private fun attemptToFinnish() {
         viewModelScope.launch(dispatcher.io()) {
+            val onSavedMessage = resourceManager.provideSaved()
+
             when (checkCompletionStatus()) {
-                COMPLETED -> TODO("Save and finish")
+                COMPLETED -> onExit(onSavedMessage)
                 NOT_COMPLETED -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
-                            it.copy(showCompletionDialog = true)
+                            it.copy(
+                                modalDialog = datasetModalDialogProvider.provideCompletionDialog(
+                                    onDismiss = { onModalDialogDismissed() },
+                                    onNotNow = { onExit(onSavedMessage) },
+                                    onComplete = { attemptToComplete() },
+                                ),
+                            )
                         } else {
                             it
                         }
@@ -257,13 +267,28 @@ internal class DataSetTableViewModel(
         }
     }
 
-    fun onCompletionDialogDismissed() {
+    private fun attemptToComplete() {
+        TODO("Check Mandatory fields")
+    }
+
+    private fun onExit(exitMessage: String) {
+        showSnackbar(exitMessage)
+        // TODO("Exit")
+    }
+
+    private fun onModalDialogDismissed() {
         _dataSetScreenState.update {
             if (it is DataSetScreenState.Loaded) {
-                it.copy(showCompletionDialog = false)
+                it.copy(modalDialog = null)
             } else {
                 it
             }
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            _dataSetScreenState.value.sendSnackbarMessage(message)
         }
     }
 }
