@@ -16,4 +16,9 @@
     <string name="input_date_out_of_range">Out of range</string>
     <string name="format_error">Incorrect format</string>
     <string name="input_not_supported">Not supported</string>
+    <string name="completion_dialog_title">Everything looks good</string>
+    <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
+    <string name="not_now">Not now</string>
+    <string name="complete">Complete</string>
+    <string name="saved">Saved!</string>
 </resources>
