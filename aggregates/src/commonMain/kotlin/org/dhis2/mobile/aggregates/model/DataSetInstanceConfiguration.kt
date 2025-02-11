@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.model
 
-data class DataSetInstanceConfiguration(
+internal data class DataSetInstanceConfiguration(
     val hasDataElementDecoration: Boolean,
     val compulsoryDataElements: List<MandatoryCellElements>,
     val allDataSetElements: List<CellElement>,
@@ -17,7 +17,7 @@ data class DataSetInstanceConfiguration(
         } != null
 }
 
-data class CellElement(
+internal data class CellElement(
     val uid: String,
     val categoryComboUid: String?,
     val label: String,
@@ -25,7 +25,7 @@ data class CellElement(
     val isMultiText: Boolean,
 )
 
-data class MandatoryCellElements(
+internal data class MandatoryCellElements(
     val uid: String?,
     val categoryOptionComboUid: String?,
 )

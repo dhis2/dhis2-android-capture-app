@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.model
 
-data class DataSetInstanceSectionConfiguration(
+internal data class DataSetInstanceSectionConfiguration(
     val showRowTotals: Boolean,
     val showColumnTotals: Boolean,
 )

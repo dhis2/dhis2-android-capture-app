@@ -13,24 +13,19 @@ fun TrackedEntityAttributeValue.userFriendlyValue(
     d2: D2,
     addPercentageSymbol: Boolean = true,
 ): String? {
-    if (value().isNullOrEmpty()) {
-        return value()
-    }
-
-    val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-        .uid(trackedEntityAttribute())
-        .blockingGet()
-
-    if (attribute == null) {
-        return value()
-    }
-
-    if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
-        attribute.optionSet()?.takeIf { attribute.valueType() != ValueType.MULTI_TEXT }?.let {
-            return checkOptionSetValue(d2, it.uid(), value()!!)
-        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!, addPercentageSymbol)
-    } else {
-        return null
+    return when {
+        value().isNullOrEmpty() -> value()
+        else -> {
+            val attribute = d2.trackedEntityModule().trackedEntityAttributes()
+                .uid(trackedEntityAttribute())
+                .blockingGet()
+            value()!!.userFriendlyValue(
+                d2,
+                attribute?.valueType(),
+                attribute?.optionSet()?.uid(),
+                addPercentageSymbol,
+            )
+        }
     }
 }
 
@@ -38,24 +33,21 @@ fun TrackedEntityDataValue?.userFriendlyValue(
     d2: D2,
     addPercentageSymbol: Boolean = true,
 ): String? {
-    if (this == null) return null
+    return when {
+        this == null -> null
+        value().isNullOrEmpty() -> value()
+        else -> {
+            val dataElement = d2.dataElementModule().dataElements()
+                .uid(dataElement())
+                .blockingGet()
 
-    if (value().isNullOrEmpty()) {
-        return value()
-    }
-
-    val dataElement = d2.dataElementModule().dataElements()
-        .uid(dataElement())
-        .blockingGet()
-
-    if (dataElement == null) {
-        return null
-    } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
-        dataElement.optionSet()?.takeIf { dataElement.valueType() != ValueType.MULTI_TEXT }?.let {
-            return checkOptionSetValue(d2, it.uid(), value()!!)
-        } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!, addPercentageSymbol)
-    } else {
-        return null
+            value()!!.userFriendlyValue(
+                d2,
+                dataElement?.valueType(),
+                dataElement?.optionSetUid(),
+                addPercentageSymbol,
+            )
+        }
     }
 }
 

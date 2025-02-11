@@ -5,7 +5,7 @@ import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
-sealed class DataSetScreenState {
+internal sealed class DataSetScreenState {
     data class Loaded(
         val dataSetDetails: DataSetDetails,
         val dataSetSections: List<DataSetSection>,
@@ -31,7 +31,7 @@ sealed class DataSetScreenState {
     abstract fun currentSection(): String?
 }
 
-sealed class DataSetSectionTable {
+internal sealed class DataSetSectionTable {
     data class Loaded(
         val id: String,
         val tableModels: List<TableModel>,

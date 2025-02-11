@@ -10,22 +10,22 @@ import org.dhis2.mobile.aggregates.model.TableGroup
 import java.util.SortedMap
 
 internal interface DataSetInstanceRepository {
-    fun getDataSetInstance(
+    suspend fun getDataSetInstance(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
         attrOptionComboUid: String,
     ): DataSetDetails
 
-    fun getDataSetInstanceSections(
+    suspend fun getDataSetInstanceSections(
         dataSetUid: String,
     ): List<DataSetSection>
 
-    fun getRenderingConfig(
+    suspend fun getRenderingConfig(
         dataSetUid: String,
     ): DataSetRenderingConfig
 
-    fun dataSetInstanceConfiguration(
+    suspend fun dataSetInstanceConfiguration(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
@@ -33,15 +33,15 @@ internal interface DataSetInstanceRepository {
         sectionUid: String,
     ): DataSetInstanceConfiguration
 
-    fun getDataSetInstanceSectionCells(
+    suspend fun getDataSetInstanceSectionCells(
         dataSetElements: List<CellElement>,
         dataSetUid: String,
         sectionUid: String,
     ): List<TableGroup>
 
-    fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>>
-    fun dataSetInstanceSectionConfiguration(sectionUid: String): DataSetInstanceSectionConfiguration?
-    fun conflicts(
+    suspend fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>>
+    suspend fun dataSetInstanceSectionConfiguration(sectionUid: String): DataSetInstanceSectionConfiguration?
+    suspend fun conflicts(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
@@ -50,7 +50,7 @@ internal interface DataSetInstanceRepository {
         categoryOptionComboUid: String,
     ): Pair<List<String>, List<String>>
 
-    fun cellValue(
+    suspend fun cellValue(
         periodId: String,
         orgUnitUid: String,
         dataElementUid: String,
@@ -58,9 +58,9 @@ internal interface DataSetInstanceRepository {
         attrOptionComboUid: String,
     ): String?
 
-    fun categoryOptionCombinations(categoryUids: List<String>): List<String>
+    suspend fun categoryOptionCombinations(categoryUids: List<String>): List<String>
 
-    fun getDataSetIndicator(
+    suspend fun getDataSetIndicator(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,

@@ -21,7 +21,7 @@ internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
 ) : DataSetInstanceRepository {
 
-    override fun getDataSetInstance(
+    override suspend fun getDataSetInstance(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
@@ -60,13 +60,13 @@ internal class DataSetInstanceRepositoryImpl(
         )
     }
 
-    override fun getDataSetInstanceSections(
+    override suspend fun getDataSetInstanceSections(
         dataSetUid: String,
     ) = d2.dataSetModule().sections()
         .byDataSetUid().eq(dataSetUid)
         .blockingGet().map(Section::toDataSetSection)
 
-    override fun getRenderingConfig(
+    override suspend fun getRenderingConfig(
         dataSetUid: String,
     ) = d2.dataSetModule().dataSets()
         .uid(dataSetUid)
@@ -78,7 +78,7 @@ internal class DataSetInstanceRepositoryImpl(
         useVerticalTabs = true,
     )
 
-    override fun categoryOptionCombinations(categoryUids: List<String>): List<String> {
+    override suspend fun categoryOptionCombinations(categoryUids: List<String>): List<String> {
         return categoryUids.mapNotNull { categoryUid ->
             val catOptions = d2.categoryModule().categories()
                 .withCategoryOptions()
@@ -100,7 +100,7 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override fun conflicts(
+    override suspend fun conflicts(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
@@ -138,7 +138,7 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override fun dataSetInstanceConfiguration(
+    override suspend fun dataSetInstanceConfiguration(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
@@ -195,7 +195,7 @@ internal class DataSetInstanceRepositoryImpl(
         )
     }
 
-    override fun dataSetInstanceSectionConfiguration(sectionUid: String) =
+    override suspend fun dataSetInstanceSectionConfiguration(sectionUid: String) =
         d2.dataSetModule().sections()
             .uid(sectionUid)
             .blockingGet()?.let { section ->
@@ -205,7 +205,7 @@ internal class DataSetInstanceRepositoryImpl(
                 )
             }
 
-    override fun getDataSetInstanceSectionCells(
+    override suspend fun getDataSetInstanceSectionCells(
         dataSetElements: List<CellElement>,
         dataSetUid: String,
         sectionUid: String,
@@ -268,7 +268,7 @@ internal class DataSetInstanceRepositoryImpl(
             }
     }
 
-    override fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>> {
+    override suspend fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>> {
         return categoryUids.mapNotNull { categoryUid ->
             d2.categoryModule().categories()
                 .withCategoryOptions()
@@ -280,7 +280,7 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override fun cellValue(
+    override suspend fun cellValue(
         periodId: String,
         orgUnitUid: String,
         dataElementUid: String,
@@ -305,7 +305,7 @@ internal class DataSetInstanceRepositoryImpl(
                 ?.categoryComboUid()
         }
 
-    override fun getDataSetIndicator(
+    override suspend fun getDataSetIndicator(
         dataSetUid: String,
         periodId: String,
         orgUnitUid: String,
