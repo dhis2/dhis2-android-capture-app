@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="default_column_label">Values</string>
+    <string name="completion_dialog_title">Everything looks good</string>
+    <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
+    <string name="not_now">Not now</string>
+    <string name="complete">Complete</string>
+    <string name="saved">Saved!</string>
 </resources>
