@@ -40,6 +40,10 @@ pipeline {
             }
             steps {
                 script {
+                    echo 'Gradlew version'
+                    sh './gradlew --version'
+                    echo 'Generate resources'
+                    sh './gradlew :aggregates:generateResources'
                     echo 'Running gradle build'
                     sh './gradlew build'
                     echo 'Running unit tests on app module'
