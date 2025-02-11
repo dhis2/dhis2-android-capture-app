@@ -14,6 +14,7 @@
     <string name="due_date">Дата выполнения</string>
     <string name="complete">Завершенный</string>
     <string name="discard_changes">Сбросить изменения</string>
+    <string name="save_anyway">Сохранить в любом случае</string>
     <string name="share">Поделиться</string>
     <string name="action_close">Закрыть</string>
     <string name="incident_date">Дата происшествия</string>
