@@ -40,7 +40,7 @@ kotlin {
             implementation(libs.koin.composeVM)
         }
         commonTest{
-            resources.srcDirs("src/commonMain/composeResources")
+            resources.srcDirs("aggregates/src/commonMain/composeResources")
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
