@@ -6,16 +6,17 @@ import dhis2_android_capture_app.aggregates.generated.resources.Res
 import dhis2_android_capture_app.aggregates.generated.resources.default_column_label
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceDetails
-import org.dhis2.mobile.aggregates.domain.GetDataSetRenderingConfig
+import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
-import org.dhis2.mobile.aggregates.domain.GetDataSetSections
 import org.dhis2.mobile.aggregates.domain.GetDataValue
 import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
@@ -29,37 +30,40 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
-import org.jetbrains.compose.resources.getString
 
 internal class DataSetTableViewModel(
-    private val getDataSetInstanceDetails: GetDataSetInstanceDetails,
-    private val getDataSetSections: GetDataSetSections,
-    private val getDataSetRenderingConfig: GetDataSetRenderingConfig,
+    private val getDataSetInstanceData: GetDataSetInstanceData,
     private val getDataSetSectionData: GetDataSetSectionData,
     private val getDataValueConflict: GetDataValueConflict,
     private val getDataValue: GetDataValue,
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
+    private val resourceManager: ResourceManager,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
         MutableStateFlow<DataSetScreenState>(DataSetScreenState.Loading)
-    val dataSetScreenState = _dataSetScreenState.asStateFlow()
+    val dataSetScreenState = _dataSetScreenState
+        .onStart { loadDataSet() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            DataSetScreenState.Loading,
+        )
 
-    init {
+    private fun loadDataSet() {
         viewModelScope.launch(dispatcher.io()) {
-            val dataSetInstanceDetails = async { getDataSetInstanceDetails() }
-            val sections = getDataSetSections()
-            val renderingConfig = async { getDataSetRenderingConfig() }
+            val dataSetInstanceData = getDataSetInstanceData(this)
 
             _dataSetScreenState.value = DataSetScreenState.Loaded(
-                dataSetDetails = dataSetInstanceDetails.await(),
-                dataSetSections = sections,
-                renderingConfig = renderingConfig.await(),
+                dataSetDetails = dataSetInstanceData.dataSetDetails,
+                dataSetSections = dataSetInstanceData.dataSetSections,
+                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                 dataSetSectionTable = DataSetSectionTable.Loading,
             )
 
-            val sectionToLoad = sections.firstOrNull()?.uid ?: NO_SECTION_UID
+            val sectionToLoad =
+                dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
             val sectionTable = async { sectionData(sectionToLoad) }
 
             _dataSetScreenState.update {
@@ -74,9 +78,9 @@ internal class DataSetTableViewModel(
 
                     DataSetScreenState.Loading ->
                         DataSetScreenState.Loaded(
-                            dataSetDetails = dataSetInstanceDetails.await(),
-                            dataSetSections = sections,
-                            renderingConfig = renderingConfig.await(),
+                            dataSetDetails = dataSetInstanceData.dataSetDetails,
+                            dataSetSections = dataSetInstanceData.dataSetSections,
+                            renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionToLoad,
                                 tableModels = sectionTable.await(),
@@ -98,12 +102,13 @@ internal class DataSetTableViewModel(
                     }
                 }
 
+                val sectionData = async { sectionData(sectionUid) }
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
                         it.copy(
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionUid,
-                                tableModels = sectionData(sectionUid),
+                                tableModels = sectionData.await(),
                             ),
                         )
                     } else {
@@ -124,7 +129,7 @@ internal class DataSetTableViewModel(
                     cells = headerColumn.map { label ->
                         TableHeaderCell(
                             value = label.takeIf { it != DEFAULT_LABEL }
-                                ?: getString(Res.string.default_column_label),
+                                ?: resourceManager.get(Res.string.default_column_label),
                         )
                     },
                 )
@@ -199,7 +204,7 @@ internal class DataSetTableViewModel(
                 tableHeaderModel = TableHeader(
                     rows = listOf(
                         TableHeaderRow(
-                            cells = listOf(TableHeaderCell(getString(Res.string.default_column_label))), // TODO: Add resources to module"Values")), // TODO: Add resources to module
+                            cells = listOf(TableHeaderCell(resourceManager.get(Res.string.default_column_label))),
                         ),
                     ),
                     hasTotals = sectionData.showRowTotals(),
