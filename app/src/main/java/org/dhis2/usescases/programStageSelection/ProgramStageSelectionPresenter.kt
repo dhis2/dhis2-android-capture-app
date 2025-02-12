@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -136,7 +137,9 @@ class ProgramStageSelectionPresenter(
                     )
                 },
                 onFailure = {
-                    view.displayMessage(d2ErrorUtils.getErrorMessage(it))
+                    withContext(dispatcher.ui()) {
+                        view.displayMessage(d2ErrorUtils.getErrorMessage(it))
+                    }
                 },
             )
         }
