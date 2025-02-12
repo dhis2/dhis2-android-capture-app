@@ -70,7 +70,6 @@
     <string name="copied_text">Gekopieerd</string>
     <string name="empty_description">Geen info voor dit veld</string>
     <string name="take_photo">Neem foto</string>
-    <string name="from_gallery">Kies uit gallerij</string>
     <string name="warning_error_on_complete_title">Check dit!</string>
     <string name="action_do_not_show_again">Niet meer laten zien</string>
     <string name="validation_error_message">de opgegeven waarde is niet toegestaan voor dit veld</string>

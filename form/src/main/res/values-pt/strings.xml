@@ -77,7 +77,6 @@
     <string name="copied_text">Copiado</string>
     <string name="empty_description">Nenhuma informação para este campo</string>
     <string name="take_photo"> Tirar fotografia</string>
-    <string name="from_gallery">Selecionar a partir da galeria</string>
     <string name="warning_error_on_complete_title">Verifique isso!</string>
     <string name="action_do_not_show_again">Não mostrar novamente</string>
     <string name="validation_error_message">o valor fornecido não é permitido para este campo</string>
@@ -116,4 +115,6 @@
     <string name="category_combo">Combinação de categoria</string>
     <string name="no_options">Nenhuma opção disponível</string>
     <string name="cat_combo">Combinação de categoria</string>
-    </resources>
+    <string name="storage_permission_denied">A permissão de armazenamento não é concedida.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
+
+</resources>

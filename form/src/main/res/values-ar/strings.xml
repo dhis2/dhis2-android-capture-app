@@ -64,7 +64,6 @@
     <string name="copied_text">تم النسخ</string>
     <string name="empty_description">لا توجد معلومات عن هذا الحقل</string>
     <string name="take_photo">التقط صورة</string>
-    <string name="from_gallery">اختر من استوديو الصور</string>
     <string name="warning_error_on_complete_title">تحقق من هذا!</string>
     <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
     <string name="error_boolean_zero_is_not_false">حرف غير صالح 0</string>

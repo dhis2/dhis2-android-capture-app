@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="event_event">事件</string>
     <string name="no_data">无数据</string>
     <string name="feature_configuration">特征配置</string>
     <string name="change_calendar_view">改变日历视图。</string>
@@ -16,6 +17,7 @@
     <string name="navigation_analytics">分析工具</string>
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
+    <string name="navigation_events">事件</string>
     <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
@@ -23,6 +25,8 @@
     <string name="event_overview">详情</string>
     <string name="select_option">选择选项</string>
     <string name="search">搜索</string>
+    <string name="jira_issue_sent">问题已发送</string>
+    <string name="jira_issue_sent_error">发送问题时出错</string>
     <string name="events">事件</string>
     <string name="data_sets">数据集</string>
     <string name="tei">跟踪实体</string>
@@ -40,9 +44,9 @@
     <string name="filters_title_assigned">指派给我</string>
     <string name="filters_title_date">日期</string>
     <string name="filters_title_event_date">事件日期</string>
-    <string name="enrollment_date">登记日期</string>
+    <string name="enrollment_date">加入日期</string>
     <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">登记状态</string>
+    <string name="filters_title_enrollment_status">加入状态</string>
     <string name="filter_follow_up_label">跟进%s</string>
 
     <!-- State -->
@@ -137,7 +141,7 @@
     <string name="section_charts_indicators">图表和指标</string>
 
     <!-- Enrollment -->
-    <string name="enrolled_in">报名参加：</string>
+    <string name="enrolled_in">加入：</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>

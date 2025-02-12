@@ -70,7 +70,6 @@
     <string name="copied_text">副本</string>
     <string name="empty_description">该字段没有相关信息</string>
     <string name="take_photo">拍照</string>
-    <string name="from_gallery">从图库中选择</string>
     <string name="warning_error_on_complete_title">检查</string>
     <string name="action_do_not_show_again">不再显示</string>
     <string name="validation_error_message">该字段不允许提供的值</string>

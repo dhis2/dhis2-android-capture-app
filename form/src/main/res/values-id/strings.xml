@@ -48,7 +48,6 @@
     <string name="copied_text">Tersalin</string>
     <string name="empty_description">Tidak ada info untuk bidang ini</string>
     <string name="take_photo">Ambil gambar</string>
-    <string name="from_gallery">Pilih dari galeri</string>
     <string name="warning_error_on_complete_title">Periksa ini!</string>
     <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>

@@ -40,7 +40,7 @@
     <string name="yearly">Anualmente</string>
     <string name="all">Tudo</string>
     <string name="selection">Selecção</string>
-    <string name="reset">Repor</string>
+    <string name="reset">Reiniciar</string>
     <string name="include_this_period_title">Quer incluir o período actual?</string>
     <string name="include_this_period_body">Inclui o período actual no gráfico</string>
     <string name="no_data_for_selected_filters">Não tem dados associados aos filtros aplicados</string>
@@ -48,8 +48,8 @@
     <string name="visualization_error">Algo de errado existe com esta visualização</string>
     <string name="visualization_failure">Algo de errado existe com estas visualizações</string>
     <string name="visualization_groups_failure">Algo de errado existe com a visualização dos grupos</string>
-    <string name="pie_chart_no_data">Todos os dados resultam em zero</string>
-    <string name="error_invalid_arguments">A visualização não esta bem configurada, contacte o seu admin.</string>
+    <string name="pie_chart_no_data">Todos os dados são zero</string>
+    <string name="error_invalid_arguments">A visualização não está bem configurada, contacte o seu admin.</string>
     <string name="error_invalid_category">Não tem acesso a esta categoria  %s</string>
     <string name="error_invalid_category_option">Não tem acesso a esta opcção de categorias %s</string>
     <string name="error_invalid_data_element">Não tem acesso a este elemento de dados %s</string>
@@ -59,8 +59,8 @@
     <string name="error_invalid_org_unit_group">Não tem acesso ao grupo de unidades organizacionais %s</string>
     <string name="error_invalid_org_unit_level">Não tem acesso ao nível da unidade organizacional %s</string>
     <string name="error_invalid_program_indicator">Não tem acesso ao indicador de programa %s</string>
-    <string name="error_invalid_visualization">A visualização %s esta em falta</string>
-    <string name="error_parsing_visualization">A visualização não esta bem configurada, contacte o seu admin</string>
+    <string name="error_invalid_visualization">A visualização %s está em falta</string>
+    <string name="error_parsing_visualization">A visualização não está bem configurada, contacte o seu admin</string>
     <string name="error_invalid_custom_boundaries">Limites personalizados não são suportados para o indicador de programa %s</string>
     <string name="error_database">Não consegue aceder a base de dados. Favor contactar o seu administrador.</string>
     <string name="error_invalid_program">Não tem acesso ao programa%s</string>
