@@ -1,9 +1,5 @@
 package org.dhis2.common.filters
 
-import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
@@ -15,9 +11,6 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.DatePickerMatchers.Companion.matchesDate
 import org.dhis2.commons.filters.FilterHolder
-import org.dhis2.ui.dialogs.orgunit.DONE_TEST_TAG
-import org.dhis2.ui.dialogs.orgunit.ITEM_CHECK_TEST_TAG
-import org.dhis2.ui.dialogs.orgunit.ITEM_TEST_TAG
 
 fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
     FiltersRobot().apply {
@@ -27,7 +20,7 @@ fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
 
 class FiltersRobot : BaseRobot() {
     fun openFilterAtPosition(position: Int) {
-        onView(withId(R.id.filterRecycler)).perform(
+        onView(withId(R.id.filterRecyclerLayout)).perform(
             RecyclerViewActions.actionOnItemAtPosition<FilterHolder>(position, click())
         )
     }
@@ -65,6 +58,4 @@ class FiltersRobot : BaseRobot() {
     fun checkDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
         onView(withId(R.id.datePicker)).check(matches(matchesDate(year, monthOfYear, dayOfMonth)))
     }
-
-
 }

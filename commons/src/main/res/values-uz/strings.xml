@@ -24,8 +24,6 @@
     <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Вариант танланг</string>
     <string name="search">Қидириш</string>
-    <string name="jira_issue_sent">Муаммо юборилди</string>
-    <string name="jira_issue_sent_error">Муаммони юборишда ххатолик юз берди</string>
     <string name="events">ҳодиса/тадбирлар</string>
     <string name="data_sets">Маълумотлар тўплами</string>
     <string name="tei">TEI</string>

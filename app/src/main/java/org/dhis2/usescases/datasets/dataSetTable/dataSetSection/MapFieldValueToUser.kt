@@ -2,9 +2,9 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection
 
 import org.dhis2.R
 import org.dhis2.bindings.toDate
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel
-import org.dhis2.utils.DateUtils
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 
@@ -48,6 +48,9 @@ class MapFieldValueToUser(
                     field.value()
                 }
             }
+            ValueType.MULTI_TEXT -> field.value()?.split(", ")?.map { code ->
+                field.options().find { it.contains(code) }?.split("_")?.get(1)
+            }?.joinToString(", ")
             else -> field.value()
         }
     }

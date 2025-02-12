@@ -68,12 +68,9 @@ fun TableItemRow(
                 cellValues = rowModel.values,
                 overridenValues = tableModel.overwrittenValues,
                 maxLines = rowModel.maxLines,
-                headerExtraSize = TableTheme.dimensions.extraSize(
-                    tableModel.id ?: "",
-                    tableModel.tableHeaderModel.tableMaxColumns(),
-                    tableModel.tableHeaderModel.hasTotals,
-                ),
+                tableHeaderModel = tableModel.tableHeaderModel,
                 options = rowModel.dropDownOptions ?: emptyList(),
+                headerLabel = rowModel.rowHeader.title,
             )
         }
         if (!rowModel.isLastRow) {

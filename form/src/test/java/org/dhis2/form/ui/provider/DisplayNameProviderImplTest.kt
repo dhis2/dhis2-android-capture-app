@@ -1,5 +1,6 @@
 package org.dhis2.form.ui.provider
 
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
@@ -18,11 +19,13 @@ class DisplayNameProviderImplTest {
     private val optionSetConfiguration: OptionSetConfiguration = mock()
     private val orgUnitConfiguration: OrgUnitConfiguration = mock()
     private val fileResourceConfiguration: FileResourceConfiguration = mock()
+    private val periodUtils: DhisPeriodUtils = mock()
     private val displayNameProvider =
         DisplayNameProviderImpl(
             optionSetConfiguration,
             orgUnitConfiguration,
             fileResourceConfiguration,
+            periodUtils,
         )
 
     @Test

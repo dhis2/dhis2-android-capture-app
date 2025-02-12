@@ -6,6 +6,5 @@
     <string name="dialog_layer_satellite">Suniy yoʼldosh koʼrinishini koʼrsatish</string>
     <string name="dialog_layer_event">Hodisa/tadbirlarni koʼrsatish</string>
     <string name="dialog_layer_tei_coordinates">TEI koordinatalarini koʼrsatish</string>
-    <string name="dialog_layer_enrollment_coordinates">Qayd etilganlar koordinatalarini koʼrsatish</string>
     <string name="dialog_layer_heatmap">Issiqlik xaritasi qatlamini koʼrsatish</string>
     </resources>

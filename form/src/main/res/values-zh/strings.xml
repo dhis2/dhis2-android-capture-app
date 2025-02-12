@@ -46,7 +46,6 @@
     <string name="enter_long_text">输入长文本</string>
     <string name="enter_text">输入文本</string>
     <string name="due_date">到期日期</string>
-    <string name="event_date">事件日期</string>
     <string name="mandatory_field">强制字段</string>
     <string name="form_latitude_prefix">纬度：</string>
     <string name="form_longitude_prefix">经度：</string>
@@ -90,16 +89,12 @@
     <string name="error_true_only_one_is_not_true">无效字符 1</string>
     <string name="data_values_save_error">无法使用这些参数保存 DataValues。使用另一个。</string>
     <string name="leading_zero_error">不允许前导零数字</string>
-    <string name="enrollment_data_section_label">注册数据</string>
     <string name="enrollment_single_section_label">属性- %s</string>
-    <string name="enrolling_ou">注册机构</string>
     <string name="tei_coordinates">坐标</string>
-    <string name="enrollment_coordinates">注册坐标</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
-    <string name="enrollmment_date">报名日期</string>
     <string name="incident_date">事件日期</string>
     <string name="scan">扫描</string>
     <string name="qr_code">二维码</string>
     <string name="bar_code">条码</string>
     <string name="add_location">添加位置</string>
-</resources>
+    </resources>

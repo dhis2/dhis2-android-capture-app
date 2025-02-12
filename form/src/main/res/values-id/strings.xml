@@ -39,7 +39,6 @@
     <string name="enter_long_text">Masukkan teks panjang</string>
     <string name="enter_text">Masukkan teks</string>
     <string name="due_date">Tanggal jatuh tempo</string>
-    <string name="event_date">Tanggal Even</string>
     <string name="complete">Lengkap</string>
     <string name="discard_changes">Hapus perubahan</string>
     <string name="saved">Tersimpan!</string>
@@ -52,12 +51,8 @@
     <string name="from_gallery">Pilih dari galeri</string>
     <string name="warning_error_on_complete_title">Periksa ini!</string>
     <string name="action_do_not_show_again">Jangan perlihatkan lagi</string>
-    <string name="enrollment_data_section_label">Data pendaftaran</string>
     <string name="enrollment_single_section_label">Atribut - %s</string>
-    <string name="enrolling_ou">Daftarkan OU:</string>
     <string name="tei_coordinates">Koordinat untuk</string>
-    <string name="enrollment_coordinates">Koordinat pendaftaran</string>
     <string name="no_reserved_values">Tidak ada nilai lainnya. Hubungi admin sistem Anda.</string>
-    <string name="enrollmment_date">Tanggal pendaftaran</string>
     <string name="incident_date">Tanggal insiden</string>
     </resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_event">Событие</string>
+    <string name="no_data">Нет данных</string>
+    <string name="action_accept">Принять</string>
+    <string name="next">Следующая</string>
+    <string name="cancel">Отмена</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_programs">Программы</string>
+    <string name="navigation_events">События</string>
+    <string name="navigation_relationships">Зависимости</string>
+    <string name="navigation_notes">Заметки</string>
+    <string name="navigation_data_entry">Ввод данных</string>
+    <string name="navigation_tei_data">Детали</string>
+    <string name="event_overview">Детали</string>
+    <string name="select_option">Выберите опцию</string>
+    <string name="search">Поиск</string>
+    <string name="events">события/й</string>
+    <string name="data_sets">Наборы данных</string>
+    <string name="done">Готово</string>
+
+    <string name="filters_title_period">Период</string>
+    <string name="filters_title_org_unit">Орг. единица</string>
+    <string name="filters_title_sorting">Сортировка</string>
+    <string name="filters_title_status">Статус</string>
+    <string name="filters_title_date">Дата</string>
+    <string name="filters_title_event_date">Дата происшествия</string>
+    <string name="enrollment_date">Дата зачисления</string>
+    <string name="filters_title_event_status">Статус события</string>
+    <string name="filters_title_enrollment_status">Статус регистрации</string>
+    <string name="state_error">Ошибка</string>
+    <string name="state_warning">Предупреждение</string>
+    <string name="state_relationship">Зависимость</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">Открыть</string>
+    <string name="filter_event_status_schedule">Расписание</string>
+    <string name="filter_event_status_overdue">Просроченный</string>
+    <string name="filter_event_status_visited">Посещено</string>
+    <string name="filter_event_status_completed">Завершенный</string>
+    <string name="filter_event_status_skipped">Пропущенный</string>
+    <string name="active">Действующий</string>
+    <string name="cancelled">Отмененный</string>
+    <string name="enrollment_status_active">Открыть</string>
+    <string name="enrollment_status_completed">Завершенный</string>
+    <string name="enrollment_status_cancelled">Отмененный</string>
+    <!-- Periods -->
+    <string name="filter_period_today">Сегодня</string>
+    <string name="filter_period_yesterday">Вчера</string>
+    <string name="filter_period_this_week">Эта неделя</string>
+    <string name="filter_period_last_week">Прошлая неделя</string>
+    <string name="filter_period_this_month">Этот месяц</string>
+    <string name="filter_period_last_month">Последний месяц</string>
+    <string name="filter_period_other">Другое</string>
+    <string name="filter_period_this_year">Этот год</string>
+    <string name="filter_period_this_bimonth">Этот бимесяц</string>
+    <string name="filter_period_last_bimonth">Прошлый бимесяц</string>
+    <string name="filter_period_this_quarter">Этот квартал</string>
+    <string name="filter_period_last_quarter">Последний квартал</string>
+    <string name="filter_period_weeks_this_year">Недели этого года</string>
+    <string name="filter_period_months_this_year">Месяцы этого года</string>
+    <string name="filter_period_bimonths_this_year">Бимесяцы этого года</string>
+    <string name="filter_period_quarters_this_year">Кварталы этого года</string>
+    <string name="filter_period_months_last_year">Месяцы последнего года</string>
+    <string name="filter_period_last_year">Прошлый год</string>
+    <string name="filter_period_this_financial_year">Этот финансовый год</string>
+    <string name="filter_period_last_financial_year">Прошлый финансовый год</string>
+    <string name="period">Период</string>
+    <string name="DAILY">Ежедневно</string>
+    <string name="WEEKLY">Еженедельно</string>
+    <string name="MONTHLY">Ежемесячно</string>
+    <string name="YEARLY">Ежегодно</string>
+
+    <string name="interval_yesterday">Вчера</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Обратная связь</string>
+    <string name="section_indicators">Индикаторы</string>
+    <string name="section_charts">Диаграммы</string>
+    <string name="action_ok">Ok</string>
+    <string name="complete">Завершенный</string>
+    <string name="default_table_header_label">Значение</string>
+    <string name="discard_changes">Сбросить изменения</string>
+    <string name="default_empty_dataset_section_label">Данные</string>
+    <string name="overdue_today">Сегодня</string>
+    </resources>

@@ -1,12 +1,13 @@
 package org.dhis2.data.dhislogic
 
 import org.dhis2.commons.Constants
-import org.dhis2.utils.DateUtils
+import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
 import java.util.Calendar
+import java.util.Date
 
 class EnrollmentEventGenerator(
     private val generatorRepository: EnrollmentEventGeneratorRepository,
@@ -121,10 +122,11 @@ class EnrollmentEventGenerator(
             calendar.set(Calendar.SECOND, 0)
             calendar.set(Calendar.MILLISECOND, 0)
             var eventDate = calendar.time
-
+            val currentDate = DateUtils.getInstance().getStartOfDay(Date())
             periodType?.let { eventDate = generatorRepository.periodStartingDate(it, eventDate) }
-
-            generatorRepository.setEventDate(eventUid, eventDate)
+            if (eventDate.before(currentDate) || eventDate == currentDate) {
+                generatorRepository.setEventDate(eventUid, eventDate)
+            }
         } catch (d2Error: D2Error) {
             Timber.e(d2Error)
         }

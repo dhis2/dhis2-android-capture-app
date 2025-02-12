@@ -5,41 +5,63 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.updateLayoutParams
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import org.dhis2.animations.CarouselViewAnimations
-import org.dhis2.bindings.dp
-import org.dhis2.commons.bindings.clipWithRoundedCorners
-import org.dhis2.commons.data.RelationshipOwnerType
-import org.dhis2.commons.dialogs.imagedetail.ImageDetailBottomDialog
-import org.dhis2.commons.locationprovider.LocationSettingLauncher
+import com.mapbox.mapboxsdk.maps.MapView
+import org.dhis2.R
+import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.databinding.FragmentSearchMapBinding
+import org.dhis2.commons.ui.SyncButtonProvider
 import org.dhis2.maps.ExternalMapNavigation
-import org.dhis2.maps.carousel.CarouselAdapter
+import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.layer.MapLayerDialog
+import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.TeiMapManager
 import org.dhis2.maps.model.MapStyle
+import org.dhis2.maps.views.LocationIcon
+import org.dhis2.maps.views.MapScreen
+import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.ui.avatar.AvatarProvider
+import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.general.FragmentGlobalAbstract
-import org.dhis2.usescases.searchTrackEntity.SearchList
-import org.dhis2.usescases.searchTrackEntity.SearchScreenState
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
-import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.isPortrait
-import java.io.File
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 const val ARG_TE_TYPE = "ARG_TE_TYPE"
 
-class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
+class SearchTEMap : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var mapNavigation: ExternalMapNavigation
@@ -51,16 +73,11 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
     lateinit var viewModelFactory: SearchTeiViewModelFactory
 
     @Inject
-    lateinit var animations: CarouselViewAnimations
-
-    @Inject
     lateinit var colorUtils: ColorUtils
 
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private var teiMapManager: TeiMapManager? = null
-    private var carouselAdapter: CarouselAdapter? = null
-    lateinit var binding: FragmentSearchMapBinding
 
     private val fromRelationship by lazy {
         arguments?.getBoolean(ARG_FROM_RELATIONSHIP) ?: false
@@ -87,9 +104,10 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (context as SearchTEActivity).searchComponent.plus(
+        (context as SearchTEActivity).searchComponent?.plus(
             SearchTEMapModule(),
-        ).inject(this)
+        )?.inject(this)
+        viewModel.setMapScreen()
     }
 
     override fun onCreateView(
@@ -97,82 +115,205 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentSearchMapBinding.inflate(inflater, container, false)
-
-        binding.mapLayerButton.setOnClickListener {
-            MapLayerDialog(teiMapManager!!)
-                .show(childFragmentManager, MapLayerDialog::class.java.name)
-        }
-
-        binding.mapPositionButton.setOnClickListener {
-            if (locationProvider.hasLocationEnabled()) {
-                teiMapManager?.centerCameraOnMyPosition { permissionManager ->
-                    permissionManager?.requestLocationPermissions(requireActivity())
-                }
-            } else {
-                LocationSettingLauncher.requestEnableLocationSetting(requireContext())
-            }
-        }
-
-        binding.openSearchButton.setOnClickListener {
-            viewModel.setSearchScreen()
-        }
-
-        teiMapManager = TeiMapManager(binding.mapView)
-        teiMapManager?.let { lifecycle.addObserver(it) }
-        teiMapManager?.onCreate(savedInstanceState)
-        teiMapManager?.teiFeatureType = presenter.getTrackedEntityType(tEType).featureType()
-        teiMapManager?.enrollmentFeatureType =
-            if (presenter.program != null) presenter.program.featureType() else null
-        teiMapManager?.onMapClickListener = this
-        teiMapManager?.mapStyle =
-            MapStyle(
-                presenter.teiColor,
-                presenter.symbolIcon,
-                presenter.enrollmentColor,
-                presenter.enrollmentSymbolIcon,
-                presenter.programStageStyle,
-                colorUtils.getPrimaryColor(
-                    requireContext(),
-                    ColorType.PRIMARY_DARK,
-                ),
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
-        initializeCarousel()
-        teiMapManager?.init(
-            viewModel.fetchMapStyles(),
-            onInitializationFinished = {
-                presenter.getMapData()
+            setContent {
+                val listState = rememberLazyListState()
 
-                observeMapResults()
+                val trackerMapData by viewModel.mapResults.collectAsState(initial = null)
+                val items by remember {
+                    derivedStateOf { trackerMapData?.mapItems ?: emptyList() }
+                }
 
-                viewModel.fetchMapResults()
-            },
-            onMissingPermission = { permissionsManager ->
-                permissionsManager?.requestLocationPermissions(requireActivity())
-            },
-        )
-        binding.content.clipWithRoundedCorners()
+                val clickedItem by viewModel.mapItemClicked.collectAsState(initial = null)
 
-        viewModel.screenState.observe(viewLifecycleOwner) {
-            if (it.screenState == SearchScreenState.MAP) {
-                val backdropActive = isPortrait() && (it as SearchList).searchFilters.isOpened
-                binding.mapView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                    val bottomMargin = if (backdropActive) {
-                        0
-                    } else {
-                        40.dp
+                val locationState = teiMapManager?.locationState?.collectAsState()
+
+                LaunchedEffect(key1 = clickedItem) {
+                    if (clickedItem != null) {
+                        listState.animateScrollToItem(
+                            items.indexOfFirst { it.uid == clickedItem },
+                        )
                     }
-                    setMargins(0, 0, 0, bottomMargin)
+                }
+
+                LaunchedEffect(key1 = items) {
+                    trackerMapData?.let { data ->
+                        teiMapManager?.takeIf { it.isMapReady() }?.update(
+                            data.teiFeatures,
+                            data.eventFeatures,
+                            data.dataElementFeaturess,
+                            data.teiBoundingBox,
+                        )
+                    }
+                }
+
+                Dhis2Theme {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    ) {
+                        MapScreen(
+                            items = items,
+                            listState = listState,
+                            map = {
+                                AndroidView(factory = { context ->
+                                    val map = MapView(context)
+                                    loadMap(map, savedInstanceState)
+                                    map
+                                }) {
+                                }
+                            },
+                            actionButtons = {
+                                IconButton(
+                                    style = IconButtonStyle.TONAL,
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_search),
+                                            contentDescription = "",
+                                            tint = TextColor.OnPrimaryContainer,
+                                        )
+                                    },
+                                ) {
+                                    viewModel.setSearchScreen()
+                                }
+                                IconButton(
+                                    style = IconButtonStyle.TONAL,
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_layers),
+                                            contentDescription = "",
+                                            tint = TextColor.OnPrimaryContainer,
+                                        )
+                                    },
+                                ) {
+                                    MapLayerDialog(teiMapManager!!, viewModel.initialProgramUid) { layersVisibility ->
+                                        viewModel.filterVisibleMapItems(layersVisibility)
+                                    }
+                                        .show(childFragmentManager, MapLayerDialog::class.java.name)
+                                }
+                                locationState?.let {
+                                    LocationIcon(
+                                        locationState = it.value,
+                                        onLocationButtonClicked = ::onLocationButtonClicked,
+                                    )
+                                }
+                            },
+                            onItemScrolled = { item ->
+                                with(teiMapManager) {
+                                    this?.requestMapLayerManager()?.selectFeature(null)
+                                    this?.findFeatures(item.uid)
+                                        ?.takeIf { it.isNotEmpty() }?.let { features ->
+                                            map?.centerCameraOnFeatures(features)
+                                        }
+                                }
+                            },
+                            onNavigate = { item ->
+                                teiMapManager?.findFeature(item.uid)?.let { feature ->
+                                    startActivity(mapNavigation.navigateToMapIntent(feature))
+                                }
+                            },
+                            onItem = { item ->
+
+                                ListCard(
+                                    modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
+                                    listCardState = rememberListCardState(
+                                        title = ListCardTitleModel(text = item.title),
+                                        description = item.description?.let {
+                                            ListCardDescriptionModel(
+                                                text = it,
+                                            )
+                                        },
+                                        lastUpdated = item.lastUpdated,
+                                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                                            additionalInfoList = item.additionalInfoList,
+                                            syncProgressItem = AdditionalInfoItem(
+                                                key = stringResource(id = R.string.syncing),
+                                                value = "",
+                                            ),
+                                            expandLabelText = stringResource(id = R.string.show_more),
+                                            shrinkLabelText = stringResource(id = R.string.show_less),
+                                            scrollableContent = true,
+                                        ),
+                                    ),
+                                    actionButton = {
+                                        SyncButtonProvider(state = item.state) {
+                                            presenter.onSyncIconClick(item.uid)
+                                        }
+                                    },
+                                    onCardClick = {
+                                        if (fromRelationship) {
+                                            viewModel.onAddRelationship(
+                                                item.uid,
+                                                item.relatedInfo?.relationship?.relationshipTypeUid,
+                                                item.isOnline,
+                                            )
+                                        } else {
+                                            viewModel.onTeiClick(
+                                                item.uid,
+                                                item.relatedInfo?.enrollment?.uid,
+                                                item.isOnline,
+                                            )
+                                        }
+                                    },
+                                    listAvatar = {
+                                        AvatarProvider(
+                                            avatarProviderConfiguration = item.avatarProviderConfiguration,
+                                            onImageClick = ::launchImageDetail,
+                                        )
+                                    },
+                                )
+                            },
+                        )
+                    }
                 }
             }
         }
-
-        return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        teiMapManager?.onDestroy()
+    private fun onLocationButtonClicked() {
+        teiMapManager?.onLocationButtonClicked(
+            locationProvider.hasLocationEnabled(),
+            requireActivity(),
+        )
+    }
+
+    private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
+        teiMapManager = TeiMapManager(mapView, MapLocationEngine(requireContext())).also {
+            lifecycle.addObserver(it)
+            it.onCreate(savedInstanceState)
+            it.teiFeatureType = presenter.getTrackedEntityType(tEType).featureType()
+            it.enrollmentFeatureType =
+                if (presenter.program != null) presenter.program.featureType() else null
+            it.onMapClickListener = OnMapClickListener(it, viewModel::onFeatureClicked)
+            it.mapStyle =
+                MapStyle(
+                    presenter.teiColor,
+                    presenter.symbolIcon,
+                    presenter.enrollmentColor,
+                    presenter.enrollmentSymbolIcon,
+                    presenter.programStageStyle,
+                    colorUtils.getPrimaryColor(
+                        requireContext(),
+                        ColorType.PRIMARY_DARK,
+                    ),
+                )
+            it.init(
+                viewModel.fetchMapStyles(),
+                onInitializationFinished = {
+                    presenter.getMapData()
+                    viewModel.filterVisibleMapItems(
+                        it.mapLayerManager.mapLayers.toMap(),
+                    )
+                },
+                onMissingPermission = { permissionsManager ->
+                    permissionsManager?.requestLocationPermissions(requireActivity())
+                },
+            )
+        }
     }
 
     override fun onLowMemory() {
@@ -197,102 +338,5 @@ class SearchTEMap : FragmentGlobalAbstract(), MapboxMap.OnMapClickListener {
             permissions,
             grantResults,
         )
-    }
-
-    private fun observeMapResults() {
-        animations.initMapLoading(binding.mapCarousel)
-
-        viewModel.mapResults.removeObservers(viewLifecycleOwner)
-        viewModel.mapResults.observe(viewLifecycleOwner) { trackerMapData ->
-            teiMapManager?.update(
-                trackerMapData.teiFeatures,
-                trackerMapData.eventFeatures,
-                trackerMapData.dataElementFeaturess,
-                trackerMapData.teiBoundingBox,
-            )
-            carouselAdapter?.setAllItems(trackerMapData.allItems())
-            carouselAdapter?.updateLayers(teiMapManager?.mapLayerManager?.mapLayers)
-            animations.endMapLoading(binding.mapCarousel)
-            viewModel.mapDataFetched()
-        }
-    }
-
-    private fun initializeCarousel() {
-        carouselAdapter = CarouselAdapter.Builder()
-            .addOnTeiClickListener { teiUid: String, enrollmentUid: String?, isDeleted: Boolean? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    if (fromRelationship) {
-                        presenter.addRelationship(
-                            teiUid,
-                            null,
-                            NetworkUtils.isOnline(requireContext()),
-                        )
-                    } else {
-                        presenter.onTEIClick(teiUid, enrollmentUid, isDeleted!!)
-                    }
-                }
-                true
-            }
-            .addOnSyncClickListener { teiUid: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    presenter.onSyncIconClick(teiUid)
-                }
-                true
-            }
-            .addOnDeleteRelationshipListener { relationshipUid: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    presenter.deleteRelationship(relationshipUid)
-                    viewModel.refreshData()
-                }
-                true
-            }
-            .addOnRelationshipClickListener { teiUid: String?, ownerType: RelationshipOwnerType ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    presenter.onTEIClick(teiUid, null, false)
-                }
-                true
-            }
-            .addOnEventClickListener { teiUid: String?, enrollmentUid: String?, eventUid: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    presenter.onTEIClick(teiUid, enrollmentUid, false)
-                }
-                true
-            }
-            .addOnProfileImageClickListener { path: String? ->
-                if (binding.mapCarousel.carouselEnabled) {
-                    ImageDetailBottomDialog(
-                        null,
-                        File(path),
-                    ).show(
-                        childFragmentManager,
-                        ImageDetailBottomDialog.TAG,
-                    )
-                }
-                Unit
-            }
-            .addOnNavigateClickListener { uuid: String? ->
-                val feature = teiMapManager!!.findFeature(
-                    uuid!!,
-                )
-                if (feature != null) {
-                    startActivity(mapNavigation.navigateToMapIntent(feature))
-                }
-                Unit
-            }
-            .addProgram(presenter.program)
-            .addMapManager(teiMapManager!!)
-            .build()
-        teiMapManager?.carouselAdapter = carouselAdapter
-        binding.mapCarousel.setAdapter(carouselAdapter)
-        teiMapManager?.let { binding.mapCarousel.attachToMapManager(it) }
-    }
-
-    override fun onMapClick(point: LatLng): Boolean {
-        val featureFound = teiMapManager!!.markFeatureAsSelected(point, null)
-        if (featureFound != null) {
-            binding.mapCarousel.scrollToFeature(featureFound)
-            return true
-        }
-        return false
     }
 }

@@ -1,15 +1,15 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
-import android.graphics.Color
-import org.dhis2.commons.R
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.ui.MetadataIconData
+import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
-import org.dhis2.usescases.main.program.ProgramViewModel
+import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentService
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +18,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 class TeiProgramListPresenterTest {
 
@@ -155,13 +156,13 @@ class TeiProgramListPresenterTest {
         verify(view).displayMessage("This is a test message")
     }
 
-    private fun mockedProgramViewModel(): ProgramViewModel {
-        return ProgramViewModel(
+    private fun mockedProgramViewModel(): ProgramUiModel {
+        return ProgramUiModel(
             "uid",
             "programName",
             MetadataIconData(
-                programColor = Color.parseColor("#84FFFF"),
-                iconResource = R.drawable.ic_home_positive,
+                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+                color = "#84FFFF".toColor(),
             ),
             0,
             "type",
@@ -171,10 +172,9 @@ class TeiProgramListPresenterTest {
             true,
             accessDataWrite = true,
             state = State.SYNCED,
-            hasOverdueEvent = false,
-            filtersAreActive = false,
             downloadState = ProgramDownloadState.NONE,
             stockConfig = null,
+            lastUpdated = Date(),
         )
     }
 
@@ -182,7 +182,6 @@ class TeiProgramListPresenterTest {
         return EnrollmentViewModel.create(
             "uid",
             "2020-01-01",
-            null,
             null,
             "programName",
             "orgUnit",

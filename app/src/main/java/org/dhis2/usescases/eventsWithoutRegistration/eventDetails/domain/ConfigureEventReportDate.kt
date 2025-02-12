@@ -7,7 +7,7 @@ import org.dhis2.commons.data.EventCreationType.ADDNEW
 import org.dhis2.commons.data.EventCreationType.DEFAULT
 import org.dhis2.commons.data.EventCreationType.SCHEDULE
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.data.EventDetailsRepository
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -34,7 +34,7 @@ class ConfigureEventReportDate(
                 label = getLabel(),
                 dateValue = getDateValue(selectedDate),
                 currentDate = getDate(selectedDate),
-                minDate = getMinDate(),
+                minDate = getMinDate(selectedDate),
                 maxDate = getMaxDate(),
                 scheduleInterval = getScheduleInterval(),
                 allowFutureDates = getAllowFutureDates(),
@@ -44,19 +44,23 @@ class ConfigureEventReportDate(
     }
 
     private fun isActive(): Boolean {
-        if (creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true) {
-            return false
-        }
-        return true
+        return !(creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true)
     }
 
     private fun getLabel(): String {
         val programStage = getProgramStage()
+        val event = repository.getEvent()
+
         return when (creationType) {
             SCHEDULE ->
-                programStage?.dueDateLabel() ?: resourceProvider.provideDueDate()
+                programStage?.displayDueDateLabel() ?: resourceProvider.provideDueDate()
+
             else -> {
-                programStage?.executionDateLabel() ?: resourceProvider.provideEventDate()
+                if (event == null) {
+                    resourceProvider.provideNextEventDate(programStage?.displayEventLabel())
+                } else {
+                    programStage?.displayExecutionDateLabel() ?: resourceProvider.provideEventDate()
+                }
             }
         }
     }
@@ -64,8 +68,7 @@ class ConfigureEventReportDate(
     private fun getDate(selectedDate: Date?) = when {
         selectedDate != null -> selectedDate
         repository.getEvent() != null -> repository.getEvent()?.eventDate()
-        periodType != null -> getDateBasedOnPeriodType()
-        creationType == SCHEDULE -> getNextScheduleDate()
+        periodType != null || creationType == SCHEDULE -> getNextScheduleDate()
         else -> getCurrentDay()
     }
 
@@ -73,21 +76,23 @@ class ConfigureEventReportDate(
         when {
             periodType != null ->
                 periodUtils.getPeriodUIString(periodType, date, Locale.getDefault())
+
             else -> DateUtils.uiDateFormat().format(date)
         }
     }
 
     private fun getProgramStage(): ProgramStage? = repository.getProgramStage()
 
-    private fun getDateBasedOnPeriodType(): Date {
+    private fun getDateBasedOnPeriodType(startDate: Date?): Date {
+        val initialDate = startDate ?: DateUtils.getInstance().today
+        val calendar = DateUtils.getInstance().calendar
+        calendar.time = initialDate
         getProgramStage()?.hideDueDate()?.let { hideDueDate ->
             if (creationType == SCHEDULE && hideDueDate) {
                 return if (periodType != null) {
-                    DateUtils.getInstance().today
+                    calendar.time
                 } else {
-                    val calendar = DateUtils.getInstance().calendar
-                    calendar.add(DAY_OF_YEAR, getScheduleInterval())
-                    org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                    DateUtils.getInstance().getNextPeriod(
                         null,
                         calendar.time,
                         0,
@@ -95,16 +100,15 @@ class ConfigureEventReportDate(
                 }
             }
         }
-
         return DateUtils.getInstance()
             .getNextPeriod(
                 periodType,
-                DateUtils.getInstance().today,
+                initialDate,
                 if (creationType != SCHEDULE) 0 else 1,
             )
     }
 
-    private fun getNextScheduleDate(): Date {
+    fun getNextScheduleDate(): Date {
         val scheduleDate = repository.getStageLastDate(enrollmentId)?.let {
             val lastStageDate = DateUtils.getInstance().getCalendarByDate(it)
             lastStageDate.add(DAY_OF_YEAR, getScheduleInterval())
@@ -120,31 +124,34 @@ class ConfigureEventReportDate(
             val date = DateUtils.getInstance().getCalendarByDate(enrollmentDate)
             val minDateFromStart = repository.getMinDaysFromStartByProgramStage()
             date.add(DAY_OF_YEAR, minDateFromStart)
-            date
+            periodType?.let {
+                return getDateBasedOnPeriodType(date.time)
+            }
+            return date.time
         }
-        return DateUtils.getInstance().getNextPeriod(null, scheduleDate.time, 0)
+        return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, if (periodType != null) 1 else 0)
     }
 
-    private fun getCurrentDay() = DateUtils.getInstance().today
+    private fun getCurrentDay() = DateUtils.getInstance().getStartOfDay(Date())
 
-    private fun getMinDate(): Date? {
+    private fun getMinDate(initialDate: Date?): Date? {
         repository.getProgram()?.let { program ->
             if (periodType == null) {
                 if (program.expiryPeriodType() != null) {
                     val expiryDays = program.expiryDays() ?: 0
-                    return org.dhis2.utils.DateUtils.getInstance().expDate(
-                        null,
+                    return DateUtils.getInstance().expDate(
+                        initialDate,
                         expiryDays,
                         program.expiryPeriodType(),
                     )
                 }
             } else {
-                var minDate = org.dhis2.utils.DateUtils.getInstance().expDate(
-                    null,
+                var minDate = DateUtils.getInstance().expDate(
+                    initialDate,
                     program.expiryDays() ?: 0,
                     periodType,
                 )
-                val lastPeriodDate = org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                val lastPeriodDate = DateUtils.getInstance().getNextPeriod(
                     periodType,
                     minDate,
                     -1,
@@ -152,14 +159,14 @@ class ConfigureEventReportDate(
                 )
 
                 if (lastPeriodDate.after(
-                        org.dhis2.utils.DateUtils.getInstance().getNextPeriod(
+                        DateUtils.getInstance().getNextPeriod(
                             program.expiryPeriodType(),
                             minDate,
                             0,
                         ),
                     )
                 ) {
-                    minDate = org.dhis2.utils.DateUtils.getInstance()
+                    minDate = DateUtils.getInstance()
                         .getNextPeriod(periodType, lastPeriodDate, 0)
                 }
                 return minDate
@@ -174,13 +181,15 @@ class ConfigureEventReportDate(
                 ADDNEW,
                 DEFAULT,
                 -> Date(System.currentTimeMillis() - 1000)
+
                 else -> null
             }
         } else {
             when (creationType) {
                 ADDNEW,
                 DEFAULT,
-                -> DateUtils.getInstance().today
+                -> DateUtils.getInstance().getStartOfDay(Date())
+
                 else -> null
             }
         }

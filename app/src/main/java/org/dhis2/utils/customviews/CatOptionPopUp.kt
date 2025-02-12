@@ -4,8 +4,8 @@ import android.content.Context
 import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
-import org.dhis2.data.dhislogic.inDateRange
-import org.dhis2.data.dhislogic.inOrgUnit
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.hisp.dhis.android.core.category.CategoryOption
 import java.util.Date
 

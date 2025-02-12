@@ -44,6 +44,7 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .height(40.dp)
+                .wrapContentWidth()
                 .wrapContentWidth(),
         ) {
             Icon(

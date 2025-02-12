@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -73,12 +72,15 @@
         </activity>
         <activity
             android:name=".usescases.login.LoginActivity"
+            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:configChanges="keyboardHidden|screenSize" />
+            android:configChanges="keyboardHidden|screenSize"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.qrScanner.ScanActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
@@ -87,7 +89,7 @@
         <activity android:name=".utils.WebViewActivity" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
 
@@ -113,8 +115,8 @@
         <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:configChanges="keyboardHidden|screenSize"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity android:name=".usescases.sync.SyncActivity" />
 
         <service
@@ -126,7 +128,7 @@
         <activity
             android:name=".usescases.enrollment.EnrollmentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity android:name=".usescases.events.ScheduledEventActivity" />
 
         <activity

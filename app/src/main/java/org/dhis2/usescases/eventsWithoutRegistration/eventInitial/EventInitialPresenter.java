@@ -144,7 +144,7 @@ public class EventInitialPresenter {
             eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
             view.showEventWasDeleted();
         } else
-            view.displayMessage(view.getContext().getString(R.string.delete_event_error));
+            view.showDeleteEventError();
     }
 
     public boolean isEnrollmentOpen() {
@@ -189,31 +189,6 @@ public class EventInitialPresenter {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
             compositeDisposable.add(
                     eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstance, program.uid(), programStageModel, date, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, geometry)
-                            .subscribeOn(schedulerProvider.io())
-                            .observeOn(schedulerProvider.ui())
-                            .subscribe(
-                                    view::onEventCreated,
-                                    t -> view.renderError(t.getMessage())
-                            )
-            );
-        }
-    }
-
-    public void scheduleEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
-                                       Date dueDate, String orgUnitUid, String categoryOptionComboUid, String categoryOptionsUid, Geometry geometry) {
-        if (program != null) {
-            preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid);
-            compositeDisposable.add(
-                    eventInitialRepository.permanentReferral(
-                                    enrollmentUid,
-                                    trackedEntityInstanceUid,
-                                    program.uid(),
-                                    programStageModel,
-                                    dueDate,
-                                    orgUnitUid,
-                                    categoryOptionComboUid,
-                                    categoryOptionsUid,
-                                    geometry)
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(

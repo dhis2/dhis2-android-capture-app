@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -17,7 +20,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.sdk.get().toInt()
+        testOptions.targetSdk = libs.versions.sdk.get().toInt()
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,16 +51,14 @@ android {
         dataBinding = true
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
-
     configurations.all {
-        resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -79,23 +80,25 @@ dependencies {
         exclude("junit", "junit")
     }
 
+    api(libs.dhis2.expressionparser)
+
     api(libs.autoValue)
     kapt(libs.autoValue)
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)
-    api(libs.androidx.liveDataKtx)
     api(libs.androidx.viewModelKtx)
-    api(libs.androidx.lifecycleExtensions)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
     api(libs.androidx.compose)
-    api(libs.androidx.compose.constraintlayout)
-    api(libs.androidx.compose.preview)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
+    api(libs.androidx.compose.paging)
 
     api(libs.google.material)
+    api(libs.androidx.material3)
+    api(libs.androidx.material3.window)
+    api(libs.androidx.material3.adaptative.android)
     api(libs.google.gson)
     api(libs.dagger)
     kapt(libs.dagger.compiler)
@@ -112,7 +115,6 @@ dependencies {
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
-    api(libs.rx.binding)
     api(libs.rx.binding.compat)
     testApi(libs.test.junit)
     androidTestApi(libs.test.mockitoCore)
@@ -124,6 +126,7 @@ dependencies {
     api(libs.test.espresso.idlingresource)
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
+    api(libs.analytics.sentry.compose)
     implementation(libs.github.treeView)
     api(libs.dhis2.mobile.designsystem) {
         isChanging = true

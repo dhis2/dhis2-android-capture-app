@@ -64,6 +64,7 @@ class GraphToBarData {
             ->
                 MONTHLY_BAR_WIDTH
             PeriodType.Quarterly,
+            PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,

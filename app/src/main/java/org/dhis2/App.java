@@ -31,6 +31,7 @@ import org.dhis2.commons.prefs.PreferenceModule;
 import org.dhis2.commons.reporting.CrashReportModule;
 import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
+import org.dhis2.commons.service.SessionManagerModule;
 import org.dhis2.commons.sync.SyncComponentProvider;
 import org.dhis2.data.appinspector.AppInspector;
 import org.dhis2.data.dispatcher.DispatcherModule;
@@ -108,7 +109,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     public void onCreate() {
         super.onCreate();
 
-
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         appInspector = new AppInspector(this).init();
@@ -116,7 +116,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         MapController.Companion.init(this);
 
         setUpAppComponent();
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
 
@@ -131,6 +131,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         if (areTrackingPermissionGranted()) {
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
+                options.setAnrReportInDebug(true);
 
                 // Add a callback that will be used before the event is sent to Sentry.
                 // With this callback, you can modify the event or, when returning null, also discard the event.
@@ -200,6 +201,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .preferenceModule(new PreferenceModule())
                 .networkUtilsModule(new NetworkUtilsModule())
                 .workManagerController(new WorkManagerModule())
+                .sessionManagerService(new SessionManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
                 .crashReportModule(new CrashReportModule())
                 .customDispatcher(new CustomDispatcherModule())
@@ -405,4 +407,5 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .value(DATA_STORE_ANALYTICS_PERMISSION_KEY).blockingGet();
         return granted != null && Boolean.parseBoolean(granted.value());
     }
+
 }

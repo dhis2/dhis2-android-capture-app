@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.core.content.ContextCompat
 import org.dhis2.commons.R
 import org.dhis2.commons.network.NetworkUtils
@@ -14,18 +16,73 @@ class ResourceManager(
     private val colorUtils: ColorUtils,
 ) {
 
-    fun getString(@StringRes stringResource: Int) = getWrapperContext().getString(stringResource)
+    fun getString(
+        @StringRes stringResource: Int,
+    ) = getWrapperContext().getString(stringResource)
 
-    fun getString(@StringRes stringResource: Int, vararg arguments: String) =
+    fun getString(
+        @StringRes stringResource: Int,
+        vararg arguments: String,
+    ) =
         getWrapperContext().getString(stringResource).format(*arguments)
 
-    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int) =
+    fun getString(
+        @StringRes stringResource: Int,
+        quantity: Int,
+    ) =
+        getWrapperContext().getString(stringResource).format(quantity)
+
+    fun getPlural(
+        @PluralsRes pluralResource: Int,
+        quantity: Int,
+    ) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
-    fun getPlural(@PluralsRes pluralResource: Int, quantity: Int, vararg arguments: Any) =
+    fun getPlural(
+        @PluralsRes pluralResource: Int,
+        quantity: Int,
+        vararg arguments: Any,
+    ) =
         getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
 
-    fun getObjectStyleDrawableResource(icon: String?, @DrawableRes defaultResource: Int): Int {
+    fun formatWithEnrollmentLabel(
+        programUid: String?,
+        @StringRes stringResource: Int,
+        quantity: Int,
+        formatWithQuantity: Boolean = false,
+    ): String {
+        val enrollmentLabel = defaultEnrollmentLabel(programUid, getString(stringResource).startsWith("%s"), quantity)
+
+        return if (formatWithQuantity) {
+            getString(stringResource).format(quantity, enrollmentLabel)
+        } else {
+            getString(stringResource).format(enrollmentLabel)
+        }
+    }
+
+    fun defaultEnrollmentLabel(
+        programUid: String?,
+        capitalize: Boolean = false,
+        quantity: Int = 1,
+    ): String {
+        val enrollmentLabel = try {
+            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
+                ?.enrollmentLabel()
+        } catch (e: Exception) {
+            null
+        } ?: getPlural(R.plurals.enrollment, quantity)
+
+        return if (capitalize) {
+            enrollmentLabel.capitalize(Locale.current)
+        } else {
+            enrollmentLabel
+        }
+    }
+
+    fun getObjectStyleDrawableResource(
+        icon: String?,
+        @DrawableRes defaultResource: Int,
+    ): Int {
         return icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
             val iconResource =
@@ -72,10 +129,6 @@ class ResourceManager(
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
     fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
-    fun jiraIssueSentMessage(): String = getWrapperContext().getString(R.string.jira_issue_sent)
-    fun jiraIssueSentErrorMessage(): String =
-        getWrapperContext().getString(R.string.jira_issue_sent_error)
-
     fun sectionFeedback(): String = getWrapperContext().getString(R.string.section_feedback)
     fun sectionIndicators(): String = getWrapperContext().getString(R.string.section_indicators)
     fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)

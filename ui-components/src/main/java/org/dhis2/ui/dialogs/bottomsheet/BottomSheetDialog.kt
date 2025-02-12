@@ -5,20 +5,47 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.composethemeadapter.MdcTheme
 import org.dhis2.ui.R
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.Border
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class BottomSheetDialog(
     var bottomSheetDialogUiModel: BottomSheetDialogUiModel,
-    var onMainButtonClicked: () -> Unit = {},
+    var onMainButtonClicked: ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog)) -> Unit = {},
     var onSecondaryButtonClicked: () -> Unit = {},
     var onMessageClick: () -> Unit = {},
+    val showDivider: Boolean = false,
     val content: @Composable
     ((org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
@@ -26,6 +53,13 @@ class BottomSheetDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+    }
+
+    private fun getSecondaryButtonColor(buttonStyle: DialogButtonStyle): ColorStyle {
+        return when (buttonStyle) {
+            is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+            else -> ColorStyle.DEFAULT
+        }
     }
 
     override fun onCreateView(
@@ -36,26 +70,113 @@ class BottomSheetDialog(
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
-                    BottomSheetDialogUi(
-                        bottomSheetDialogUiModel = bottomSheetDialogUiModel,
-                        onMainButtonClicked = {
-                            onMainButtonClicked.invoke()
+                DHIS2Theme {
+                    BottomSheetShell(
+                        title = bottomSheetDialogUiModel.title,
+                        description = when (bottomSheetDialogUiModel.clickableWord) {
+                            null -> bottomSheetDialogUiModel.message
+                            else -> null
+                        },
+                        headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(Spacing24),
+                                painter = painterResource(bottomSheetDialogUiModel.iconResource),
+                                contentDescription = "Icon",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        showSectionDivider = showDivider,
+                        buttonBlock = {
+                            ButtonBlock(
+                                primaryButton = {
+                                    bottomSheetDialogUiModel.secondaryButton?.let { style ->
+
+                                        Button(
+                                            style = ButtonStyle.TEXT,
+                                            text = bottomSheetDialogUiModel.secondaryButton?.let {
+                                                it.textLabel ?: stringResource(id = it.textResource)
+                                            } ?: "",
+                                            colorStyle = getSecondaryButtonColor(style),
+                                            onClick = {
+                                                onSecondaryButtonClicked()
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(SECONDARY_BUTTON_TAG),
+                                        )
+                                    }
+                                },
+                                secondaryButton = {
+                                    bottomSheetDialogUiModel.mainButton?.let {
+                                        Button(
+                                            style = ButtonStyle.FILLED,
+                                            text =
+                                            it.textLabel ?: stringResource(id = it.textResource),
+                                            onClick = {
+                                                onMainButtonClicked(this@BottomSheetDialog)
+                                                dismiss()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag(MAIN_BUTTON_TAG),
+                                        )
+                                    }
+                                },
+                            )
+                        },
+                        onDismiss = {
                             dismiss()
                         },
-                        onSecondaryButtonClicked = {
-                            onSecondaryButtonClicked.invoke()
-                            dismiss()
-                        },
-                        onMessageClick = onMessageClick,
-                        extraContent = content?.let {
-                            {
-                                it.invoke(this@BottomSheetDialog)
+                        content = {
+                            if (content != null) {
+                                content.invoke(this@BottomSheetDialog)
+                            } else {
+                                bottomSheetDialogUiModel.clickableWord?.let {
+                                    ClickableTextContent(bottomSheetDialogUiModel.message ?: "", it)
+                                }
                             }
                         },
+                        contentScrollState = rememberScrollState(),
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun ClickableTextContent(originalText: String, clickableText: String) {
+        Column {
+            ClickableText(
+                modifier = Modifier
+                    .testTag(CLICKABLE_TEXT_TAG)
+                    .fillMaxWidth(),
+                text = buildAnnotatedString {
+                    val clickableWordIndex = originalText.indexOf(clickableText)
+                    append(originalText)
+                    addStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                        start = clickableWordIndex,
+                        end = clickableWordIndex + clickableText.length,
+                    )
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = TextColor.OnSurfaceLight,
+                    textAlign = TextAlign.Start,
+                ),
+                onClick = {
+                    onMessageClick()
+                },
+            )
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing24),
+                color = TextColor.OnDisabledSurface,
+                thickness = Border.Thin,
+            )
         }
     }
 

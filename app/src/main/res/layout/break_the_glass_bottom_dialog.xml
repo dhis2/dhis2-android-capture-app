@@ -33,7 +33,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="14dp"
-            android:text="@string/break_glass_dialog_description"
             android:textColor="@color/gray_990"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/title" />
@@ -81,7 +80,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="@string/break_glass_reason"
                 app:layout_constraintStart_toStartOf="@id/fieldBackground"
                 app:layout_constraintTop_toTopOf="@id/fieldBackground" />
 

@@ -5,4 +5,5 @@ import org.dhis2.form.model.LegendValue
 interface LegendValueProvider {
 
     fun provideLegendValue(dataElementUid: String, value: String?): LegendValue?
+    fun hasLegendSet(dataElementUid: String): Boolean
 }

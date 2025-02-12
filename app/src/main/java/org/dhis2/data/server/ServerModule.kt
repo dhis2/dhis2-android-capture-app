@@ -1,6 +1,7 @@
 package org.dhis2.data.server
 
 import android.content.Context
+import android.content.ContextWrapper
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
@@ -14,8 +15,12 @@ import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
+import org.dhis2.commons.resources.MetadataIconProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.dhislogic.DhisPeriodUtils
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.form.data.FileController
@@ -33,6 +38,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Configuration
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
+import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 
 @Module
 class ServerModule {
@@ -119,8 +125,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesSyncStatusController(): SyncStatusController {
-        return SyncStatusController()
+    fun providesSyncStatusController(dispatcherProvider: DispatcherProvider): SyncStatusController {
+        return SyncStatusController(dispatcherProvider)
     }
 
     @Provides
@@ -147,6 +153,26 @@ class ServerModule {
         )
     }
 
+    @Provides
+    @PerServer
+    fun metadataIconProvider(
+        d2: D2,
+    ): MetadataIconProvider {
+        return MetadataIconProvider(d2)
+    }
+
+    @Provides
+    @PerServer
+    fun provideResourceManager(
+        context: Context,
+        themeManager: ThemeManager,
+        colorUtils: ColorUtils,
+    ): ResourceManager {
+        val contextWrapper = ContextWrapper(context)
+        contextWrapper.setTheme(themeManager.getAppTheme())
+        return ResourceManager(contextWrapper, colorUtils)
+    }
+
     companion object {
         @JvmStatic
         fun getD2Configuration(context: Context): D2Configuration {
@@ -168,6 +194,7 @@ class ServerModule {
                 .networkInterceptors(interceptors)
                 .writeTimeoutInSeconds(10 * 60)
                 .context(context)
+                .fileResizerDimension(FileResizerHelper.Dimension.ORIGINAL)
                 .build()
         }
     }
@@ -176,5 +203,14 @@ class ServerModule {
     @PerServer
     fun provideOptionsRepository(d2: D2): OptionsRepository {
         return OptionsRepository(d2)
+    }
+
+    @Provides
+    @PerServer
+    fun provideEventResourceProvider(
+        d2: D2,
+        resourceManager: ResourceManager,
+    ): EventResourcesProvider {
+        return EventResourcesProvider(d2, resourceManager)
     }
 }

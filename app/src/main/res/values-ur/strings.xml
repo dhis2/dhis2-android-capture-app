@@ -36,7 +36,6 @@
     <string name="longitude">لمبائی</string>
     <string name="new_event">نئی تقریب</string>
     <!--Event Detail-->
-    <string name="event_date">واقعہ کی تاریخ</string>
     <string name="due_date">اخری تاریخ</string>
     <string name="cancel">منسوخ</string>
     <string name="delete">حذف</string>

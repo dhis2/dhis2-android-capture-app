@@ -33,6 +33,7 @@ import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
+import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
@@ -58,7 +59,6 @@ fun Backdrop(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = manageStockViewModel.bottomSheetState.collectAsState()
-
     if (bottomSheetState.value) {
         launchBottomSheet(
             activity.getString(R.string.not_saved),
@@ -144,33 +144,43 @@ fun Backdrop(
         scaffoldState = backdropState,
         gesturesEnabled = false,
         frontLayerBackgroundColor = Color.White,
-        frontLayerScrimColor = if (
-            settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
-        ) {
-            if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
-                isFrontLayerDisabled = false
-                Color.Unspecified
-            } else {
-                isFrontLayerDisabled = true
-                MaterialTheme.colors.surface.copy(alpha = 0.60f)
-            }
-        } else {
-            if (!settingsUiState.hasFacilitySelected()) {
-                isFrontLayerDisabled = true
-                MaterialTheme.colors.surface.copy(alpha = 0.60f)
-            } else {
-                isFrontLayerDisabled = false
-                Color.Unspecified
-            }
-        },
+        frontLayerScrimColor = getScrimColor(settingsUiState),
     )
-
+    isFrontLayerDisabled = getBackdropState(settingsUiState)
     if (dataEntryUiState.step == DataEntryStep.COMPLETED) {
         scope.launch {
             backdropState.reveal()
         }
         manageStockViewModel.updateStep(DataEntryStep.START)
         viewModel.resetSettings()
+    }
+}
+
+@Composable
+private fun getScrimColor(settingsUiState: SettingsUiState): Color {
+    return if (settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION) {
+        if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
+            Color.Unspecified
+        } else {
+            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+        }
+    } else {
+        if (!settingsUiState.hasFacilitySelected()) {
+            MaterialTheme.colors.surface.copy(alpha = 0.60f)
+        } else {
+            Color.Unspecified
+        }
+    }
+}
+
+@Composable
+private fun getBackdropState(settingsUiState: SettingsUiState): Boolean {
+    return if (
+        settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
+    ) {
+        !(settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected())
+    } else {
+        !settingsUiState.hasFacilitySelected()
     }
 }
 

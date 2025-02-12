@@ -1,5 +1,6 @@
 package dhis2.org.analytics.charts.providers
 
+import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.LegendValue
 import org.dhis2.commons.resources.ResourceManager
@@ -65,7 +66,7 @@ class ChartCoordinatesProviderImpl(
                                 lineListResponse.period,
                             ).toFloat()
                         },
-                        fieldValue = value.toFloatOrNull() ?: 0f,
+                        fieldValue = GraphFieldValue.Numeric(value.toFloatOrNull() ?: 0f),
                         legendValue = createLegendValue(legend),
                     )
                 }
@@ -124,7 +125,7 @@ class ChartCoordinatesProviderImpl(
                                 lineListResponse.period,
                             ).toFloat()
                         },
-                        fieldValue = value.toFloat(),
+                        fieldValue = GraphFieldValue.Numeric(value.toFloat()),
                         legendValue = createLegendValue(legend),
                     )
                 }
@@ -180,7 +181,7 @@ class ChartCoordinatesProviderImpl(
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
                         position = xAxisValue.toFloat(),
-                        fieldValue = zScoreValue.toFloat(),
+                        fieldValue = GraphFieldValue.Numeric(zScoreValue.toFloat()),
                     )
                 }
             }
@@ -213,7 +214,7 @@ class ChartCoordinatesProviderImpl(
         return eventList.groupBy { it.values.first().value }.mapNotNull {
             GraphPoint(
                 eventDate = formattedDate(it.value.first().date),
-                fieldValue = it.value.size.toFloat(),
+                fieldValue = GraphFieldValue.Numeric(it.value.size.toFloat()),
                 legend = it.key,
             )
         }
@@ -256,7 +257,7 @@ class ChartCoordinatesProviderImpl(
                 GraphPoint(
                     eventDate = GregorianCalendar(2021, 0, 1).time,
                     position = position.toFloat(),
-                    fieldValue = gridResponseValue.value!!.toFloat(),
+                    fieldValue = GraphFieldValue.Numeric(gridResponseValue.value!!.toFloat()),
                     legend = columnLegend,
                     legendValue = createLegendValue(legend?.item),
                 )

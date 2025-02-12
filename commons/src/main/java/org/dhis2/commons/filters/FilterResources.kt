@@ -3,12 +3,16 @@ package org.dhis2.commons.filters
 import org.dhis2.commons.R
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.filters.workingLists.RelativePeriodToStringMapper
+import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.DateFilterPeriod
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 
-class FilterResources(val resourceManager: ResourceManager) {
+class FilterResources(
+    val resourceManager: ResourceManager,
+    val eventResourcesProvider: EventResourcesProvider,
+) {
     fun defaultWorkingListLabel(): String =
         resourceManager.getString(R.string.working_list_default_label)
 
@@ -81,31 +85,48 @@ class FilterResources(val resourceManager: ResourceManager) {
     fun span(): String = resourceManager.getString(R.string.filter_period_from_to)
     fun filterPeriodLabel(): String = resourceManager.getString(R.string.filters_title_period)
     fun filterDateLabel(): String = resourceManager.getString(R.string.filters_title_date)
-    fun filterEnrollmentDateLabel(): String = resourceManager.getString(R.string.enrollment_date)
-    fun filterEventDateLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_date)
+    fun filterEnrollmentDateLabel(programUid: String): String = resourceManager.formatWithEnrollmentLabel(
+        programUid,
+        R.string.enrollment_date_V2,
+        1,
+    )
+
+    fun filterEventDateLabel(programUid: String): String =
+        eventResourcesProvider.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_date,
+            programUid,
+        )
 
     fun filterOrgUnitLabel(): String = resourceManager.getString(R.string.filters_title_org_unit)
     fun filterSyncLabel(): String = resourceManager.getString(R.string.filters_title_state)
     fun filterAssignedToMeLabel(): String =
         resourceManager.getString(R.string.filters_title_assigned)
 
-    fun filterEnrollmentStatusLabel(): String =
-        resourceManager.getString(R.string.filters_title_enrollment_status)
+    fun filterEnrollmentStatusLabel(programUid: String): String =
+        resourceManager.formatWithEnrollmentLabel(
+            programUid,
+            R.string.filters_title_enrollment_status,
+            1,
+        )
 
     fun filterFollowUpLabel(teTypeName: String): String =
         resourceManager.getString(R.string.filter_follow_up_label).format(teTypeName)
 
-    fun filterEventStatusLabel(): String =
-        resourceManager.getString(R.string.filters_title_event_status)
+    fun filterEventStatusLabel(programUid: String): String =
+        eventResourcesProvider.formatWithProgramEventLabel(
+            R.string.filters_title_event_label_status,
+            programUid,
+        )
 
     fun enrollmentStatusToText(enrollmentStatusList: List<EnrollmentStatus>): List<String> =
         enrollmentStatusList.map {
             when (it) {
                 EnrollmentStatus.ACTIVE ->
                     resourceManager.getString(R.string.enrollment_status_active)
+
                 EnrollmentStatus.COMPLETED ->
                     resourceManager.getString(R.string.enrollment_status_completed)
+
                 EnrollmentStatus.CANCELLED ->
                     resourceManager.getString(R.string.enrollment_status_cancelled)
             }
@@ -130,6 +151,7 @@ class FilterResources(val resourceManager: ResourceManager) {
         EventStatus.ACTIVE -> resourceManager.getString(R.string.filter_event_status_open)
         EventStatus.COMPLETED ->
             resourceManager.getString(R.string.filter_event_status_completed)
+
         EventStatus.SCHEDULE -> resourceManager.getString(R.string.filter_event_status_schedule)
         EventStatus.SKIPPED -> resourceManager.getString(R.string.filter_event_status_skipped)
         EventStatus.VISITED -> resourceManager.getString(R.string.filter_event_status_visited)

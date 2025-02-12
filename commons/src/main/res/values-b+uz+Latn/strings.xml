@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Hodisa/Tadbir</string>
     <string name="no_data">Maʼlumot yoʼq</string>
     <string name="change_calendar_view">Taqvim koʼrinishini oʼzgartirish</string>
     <string name="clear">aniq</string>
@@ -16,7 +15,6 @@
     <string name="navigation_analytics">Аnalitika</string>
     <string name="navigation_tasks">Vazifalar</string>
     <string name="navigation_programs">Dasturlar</string>
-    <string name="navigation_events">Hodisa/tadbirlar</string>
     <string name="navigation_relationships">Oʼzaro aloqalar</string>
     <string name="navigation_notes">Izohlar</string>
     <string name="navigation_data_entry">Maʼlumot kiritish</string>
@@ -24,8 +22,6 @@
     <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Variant tanlang</string>
     <string name="search">Izlash</string>
-    <string name="jira_issue_sent">Muammo yuborildi</string>
-    <string name="jira_issue_sent_error">Muammoni yuborishda xxatolik yuz berdi</string>
     <string name="data_sets">Maʼlumotlar toʼplami</string>
     <string name="tei">TEI</string>
     <string name="info">Аxborot</string>

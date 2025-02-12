@@ -2,6 +2,7 @@ package dhis2.org.analytics.charts
 
 import dhis2.org.analytics.charts.data.AnalyticResources
 import dhis2.org.analytics.charts.data.Graph
+import dhis2.org.analytics.charts.data.GraphFieldValue
 import dhis2.org.analytics.charts.data.GraphPoint
 import dhis2.org.analytics.charts.data.SerieData
 import dhis2.org.analytics.charts.mappers.AnalyticsTeiSettingsToGraph
@@ -26,6 +27,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualization
+import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationType
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsSetting
 import org.hisp.dhis.android.core.settings.AnalyticsTeiData
@@ -153,7 +155,15 @@ class ChartsRepositoryTest {
         mockNumericDataElements(true)
         mockIndicators(false)
         whenever(
-            programIndicatorToGraph.map(any(), any(), any(), any(), anyOrNull(), anyOrNull(), any()),
+            programIndicatorToGraph.map(
+                any(),
+                any(),
+                any(),
+                any(),
+                anyOrNull(),
+                anyOrNull(),
+                any(),
+            ),
         ) doReturn mockedIndicatorGraph()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -253,8 +263,7 @@ class ChartsRepositoryTest {
         repository.getDataSetVisualization("groupUid", "dataSetUid")
         verify(visualizationToGraph).mapToGraph(
             any(),
-            any(),
-            any(),
+            any<Visualization>(),
             anyOrNull(),
             anyOrNull(),
         )
@@ -272,8 +281,7 @@ class ChartsRepositoryTest {
         repository.getProgramVisualization("groupUid", "programUid")
         verify(visualizationToGraph).mapToGraph(
             any(),
-            any(),
-            any(),
+            any<Visualization>(),
             anyOrNull(),
             anyOrNull(),
         )
@@ -291,8 +299,7 @@ class ChartsRepositoryTest {
         repository.getHomeVisualization("groupUid")
         verify(visualizationToGraph).mapToGraph(
             any(),
-            any(),
-            any(),
+            any<Visualization>(),
             anyOrNull(),
             anyOrNull(),
         )
@@ -311,8 +318,7 @@ class ChartsRepositoryTest {
         verify(analyticsResources).analyticsExceptionMessage(any())
         verify(visualizationToGraph).addErrorGraph(
             any(),
-            any(),
-            anyOrNull(),
+            any<Visualization>(),
             anyOrNull(),
             anyOrNull(),
         )
@@ -323,8 +329,8 @@ class ChartsRepositoryTest {
         val periods: List<RelativePeriod> = mock {
             on { isEmpty() } doReturn false
         }
-        repository.setVisualizationPeriods("uid", periods)
-        verify(analyticsFilterProvider).addPeriodFilter("uid", periods)
+        repository.setVisualizationPeriods("uid", null, periods)
+        verify(analyticsFilterProvider).addPeriodFilter("uid", null, periods)
     }
 
     @Test
@@ -332,25 +338,31 @@ class ChartsRepositoryTest {
         val periods: List<RelativePeriod> = mock {
             on { isEmpty() } doReturn true
         }
-        repository.setVisualizationPeriods("uid", periods)
-        verify(analyticsFilterProvider).removePeriodFilter("uid")
+        repository.setVisualizationPeriods("uid", null, periods)
+        verify(analyticsFilterProvider).removePeriodFilter("uid", null)
     }
 
     @Test
     fun `Should add org unit filter`() {
         val orgUnits: List<OrganisationUnit> = mock()
-        repository.setVisualizationOrgUnits("uid1", emptyList(), OrgUnitFilterType.NONE)
-        verify(analyticsFilterProvider).removeOrgUnitFilter("uid1")
-        repository.setVisualizationOrgUnits("uid", orgUnits, OrgUnitFilterType.ALL)
-        verify(analyticsFilterProvider).addOrgUnitFilter("uid", OrgUnitFilterType.ALL, orgUnits)
-        repository.setVisualizationOrgUnits("uid", orgUnits, OrgUnitFilterType.SELECTION)
+        repository.setVisualizationOrgUnits("uid1", null, emptyList(), OrgUnitFilterType.NONE)
+        verify(analyticsFilterProvider).removeOrgUnitFilter("uid1", null)
+        repository.setVisualizationOrgUnits("uid", null, orgUnits, OrgUnitFilterType.ALL)
         verify(analyticsFilterProvider).addOrgUnitFilter(
             "uid",
+            null,
+            OrgUnitFilterType.ALL,
+            orgUnits,
+        )
+        repository.setVisualizationOrgUnits("uid", null, orgUnits, OrgUnitFilterType.SELECTION)
+        verify(analyticsFilterProvider).addOrgUnitFilter(
+            "uid",
+            null,
             OrgUnitFilterType.SELECTION,
             orgUnits,
         )
-        repository.setVisualizationOrgUnits("uid", emptyList(), OrgUnitFilterType.SELECTION)
-        verify(analyticsFilterProvider).removeOrgUnitFilter("uid")
+        repository.setVisualizationOrgUnits("uid", null, emptyList(), OrgUnitFilterType.SELECTION)
+        verify(analyticsFilterProvider).removeOrgUnitFilter("uid", null)
     }
 
     private fun mockVisualizationSettings(
@@ -362,6 +374,7 @@ class ChartsRepositoryTest {
         val mockedAnalyticsVisualization: AnalyticsDhisVisualization = mock {
             on { name() } doReturn "name"
             on { uid() } doReturn "visualizationUid"
+            on { type() } doReturn AnalyticsDhisVisualizationType.VISUALIZATION
         }
         val mockedVisualizationGroup: AnalyticsDhisVisualizationsGroup = mock {
             on { id() } doReturn "groupUid"
@@ -628,19 +641,29 @@ class ChartsRepositoryTest {
 
     private fun mockedDataElementGraph(): Graph {
         return Graph(
-            "de_graph_1",
-            listOf(SerieData("de_field", listOf(GraphPoint(Date(), null, 30f)))),
-            null,
-            PeriodType.Daily,
-            0L,
-            dhis2.org.analytics.charts.data.ChartType.LINE_CHART,
+            title = "de_graph_1",
+            series = listOf(
+                SerieData(
+                    "de_field",
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                ),
+            ),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Daily,
+            periodStep = 0L,
+            chartType = dhis2.org.analytics.charts.data.ChartType.LINE_CHART,
         )
     }
 
     private fun mockedIndicatorGraph(): Graph {
         return Graph(
             "indicator_graph_1",
-            listOf(SerieData("indicator_field", listOf(GraphPoint(Date(), null, 30f)))),
+            listOf(
+                SerieData(
+                    "indicator_field",
+                    listOf(GraphPoint(Date(), null, GraphFieldValue.Numeric(30f))),
+                ),
+            ),
             null,
             PeriodType.Daily,
             0L,

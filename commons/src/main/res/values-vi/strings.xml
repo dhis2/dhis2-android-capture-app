@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Sự Kiện</string>
     <string name="no_data">Không có dữ liệu</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
     <string name="change_calendar_view">Thay đổi xem lịch</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
@@ -25,8 +23,6 @@
     <string name="event_overview">Chi tiết</string>
     <string name="select_option">Chọn</string>
     <string name="search">Tìm kiếm</string>
-    <string name="jira_issue_sent">Vấn đề đã được gửi</string>
-    <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="events">sự kiện</string>
     <string name="data_sets">Biểu nhập</string>
     <string name="tei">Đối Tượng Theo Dõi</string>

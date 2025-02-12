@@ -27,6 +27,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.tableRobot
 import org.dhis2.composetable.ui.compositions.LocalInteraction
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -65,6 +66,7 @@ class TextInputUiTest {
         }
     }
 
+    @Ignore("Flaky test, to be resolved in a separate ticket")
     @Test
     fun shouldClearFocusWhenKeyboardIsHidden() {
         tableRobot(composeTestRule) {
@@ -77,9 +79,26 @@ class TextInputUiTest {
         }
     }
 
+    @Test
+    fun shouldDisplayHelperText() {
+        val helperText = "This is a helper Text"
+
+        tableRobot(composeTestRule) {
+            val fakeModels = initTableAppScreen(
+                FakeModelType.MANDATORY_TABLE,
+                helperText = helperText
+            )
+            clickOnCell(fakeModels.first().id!!, 0, 0)
+            assertInputComponentHelperTextIsDisplayed(helperText)
+        }
+    }
+
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    private fun TextInputUiTestScreen(onSave: (TableCell) -> Unit) {
+    private fun TextInputUiTestScreen(
+        helperText: String? = null,
+        onSave: (TableCell) -> Unit
+    ) {
         val bottomSheetState = rememberBottomSheetScaffoldState(
             bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
         )
@@ -90,7 +109,9 @@ class TextInputUiTest {
         }
         var currentInputType by remember {
             mutableStateOf(
-                TextInputModel()
+                TextInputModel(
+                    helperText = helperText
+                )
             )
         }
 

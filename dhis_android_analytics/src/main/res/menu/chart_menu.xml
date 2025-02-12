@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:id="@+id/visualization">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group>
     <item
         android:id="@+id/showBarGraph"
         android:icon="@drawable/ic_bar_chart"
@@ -28,8 +29,13 @@
         android:icon="@drawable/ic_pie_chart"
         android:title="@string/show_pie_value"/>
 
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        app:iconTint="?attr/colorPrimary"
+        android:title="@string/search"/>
     </group>
-    <group android:id="@+id/filters">
+    <group>
         <item
             android:id="@+id/periodFilter"
             android:icon="@drawable/ic_calendar_chart"

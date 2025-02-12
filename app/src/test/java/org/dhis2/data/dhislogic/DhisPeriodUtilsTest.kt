@@ -1,5 +1,6 @@
 package org.dhis2.data.dhislogic
 
+import org.dhis2.commons.resources.DhisPeriodUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.Period
 import org.hisp.dhis.android.core.period.PeriodType
@@ -46,7 +47,7 @@ class DhisPeriodUtilsTest {
             .build()
 
         Assert.assertEquals(
-            "11/1/2019",
+            "11/01/2019",
             periodUtils.getPeriodUIString(null, testDate, Locale.ENGLISH),
         )
     }
@@ -65,7 +66,7 @@ class DhisPeriodUtilsTest {
             .build()
 
         Assert.assertEquals(
-            "11/1/2019",
+            "11/01/2019",
             periodUtils.getPeriodUIString(
                 PeriodType.Daily,
                 testDate,
@@ -297,6 +298,29 @@ class DhisPeriodUtilsTest {
             "Jan 2019 - Mar 2019",
             periodUtils.getPeriodUIString(
                 PeriodType.Quarterly,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
+    fun `QuaterlyNov period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.QuarterlyNov,
+                testDate,
+            ),
+        ) doReturn Period.builder()
+            .periodId("periodId")
+            .startDate(GregorianCalendar(2019, 8, 1).time)
+            .endDate(GregorianCalendar(2019, 10, 31).time)
+            .build()
+
+        Assert.assertEquals(
+            "Sep 2019 - Dec 2019",
+            periodUtils.getPeriodUIString(
+                PeriodType.QuarterlyNov,
                 testDate,
                 Locale.ENGLISH,
             ),

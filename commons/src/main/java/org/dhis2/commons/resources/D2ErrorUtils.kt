@@ -144,14 +144,20 @@ class D2ErrorUtils(
                 context.getString(R.string.error_org_unit_scope)
             D2ErrorCode.INVALID_CHARACTERS ->
                 context.getString(R.string.error_invalid_characters)
-            D2ErrorCode.PROGRAM_ACCESS_CLOSED ->
-                TODO("Implement for ANDROAPP-657")
+            D2ErrorCode.PROGRAM_ACCESS_CLOSED -> defaultError()
             D2ErrorCode.SERVER_CONNECTION_ERROR ->
                 if (networkUtils.isOnline()) {
                     context.getString(R.string.error_server_unavailable)
                 } else {
                     context.getString(R.string.error_no_internet_connection)
                 }
+
+            D2ErrorCode.DATABASE_IMPORT_FAILED -> "Database import failed"
+            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> "Invalid file"
+            D2ErrorCode.INCORRECT_TWO_FACTOR_CODE -> context.getString(R.string.incorrect_two_factor_code)
         }
     }
+
+    private fun defaultError() =
+        context.getString(R.string.error_unexpected)
 }

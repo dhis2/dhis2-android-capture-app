@@ -2,6 +2,7 @@ package org.dhis2.commons.bindings
 
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.invoke
+import org.dhis2.commons.extensions.toPercentage
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -9,7 +10,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjec
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
 
-fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
+fun TrackedEntityAttributeValue.userFriendlyValue(
+    d2: D2,
+    addPercentageSymbol: Boolean = true,
+): String? {
     if (value().isNullOrEmpty()) {
         return value()
     }
@@ -23,35 +27,36 @@ fun TrackedEntityAttributeValue.userFriendlyValue(d2: D2): String? {
     }
 
     if (check(d2, attribute.valueType(), attribute.optionSet()?.uid(), value()!!)) {
-        attribute.optionSet()?.let {
+        attribute.optionSet()?.takeIf { attribute.valueType() != ValueType.MULTI_TEXT }?.let {
             return checkOptionSetValue(d2, it.uid(), value()!!)
-        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!)
+        } ?: return checkValueTypeValue(d2, attribute.valueType(), value()!!, addPercentageSymbol)
     } else {
         return null
     }
 }
 
-fun TrackedEntityDataValue?.userFriendlyValue(d2: D2): String? {
-    if (this == null) {
+fun TrackedEntityDataValue?.userFriendlyValue(
+    d2: D2,
+    addPercentageSymbol: Boolean = true,
+): String? {
+    if (this == null) return null
+
+    if (value().isNullOrEmpty()) {
+        return value()
+    }
+
+    val dataElement = d2.dataElementModule().dataElements()
+        .uid(dataElement())
+        .blockingGet()
+
+    if (dataElement == null) {
         return null
+    } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
+        dataElement.optionSet()?.takeIf { dataElement.valueType() != ValueType.MULTI_TEXT }?.let {
+            return checkOptionSetValue(d2, it.uid(), value()!!)
+        } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!, addPercentageSymbol)
     } else {
-        if (value().isNullOrEmpty()) {
-            return value()
-        }
-
-        val dataElement = d2.dataElementModule().dataElements()
-            .uid(dataElement())
-            .blockingGet()
-
-        if (dataElement == null) {
-            return null
-        } else if (check(d2, dataElement.valueType(), dataElement.optionSet()?.uid(), value()!!)) {
-            dataElement.optionSet()?.let {
-                return checkOptionSetValue(d2, it.uid(), value()!!)
-            } ?: return checkValueTypeValue(d2, dataElement.valueType(), value()!!)
-        } else {
-            return null
-        }
+        return null
     }
 }
 
@@ -105,7 +110,12 @@ fun checkOptionSetValueByPropName(
     }
 }
 
-fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
+fun checkValueTypeValue(
+    d2: D2,
+    valueType: ValueType?,
+    value: String,
+    addPercentageSymbol: Boolean = true,
+): String {
     return when (valueType) {
         ValueType.ORGANISATION_UNIT ->
             d2.organisationUnitModule().organisationUnits()
@@ -116,13 +126,13 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
         ValueType.IMAGE, ValueType.FILE_RESOURCE ->
             d2.fileResourceModule().fileResources().uid(value).blockingGet()?.path() ?: ""
 
-        ValueType.DATE ->
+        ValueType.DATE, ValueType.AGE ->
             DateUtils.uiDateFormat().format(
                 DateUtils.oldUiDateFormat().parse(value) ?: "",
             )
 
         ValueType.DATETIME ->
-            DateUtils.dateTimeFormat().format(
+            DateUtils.uiDateTimeFormat().format(
                 DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
             )
 
@@ -130,6 +140,14 @@ fun checkValueTypeValue(d2: D2, valueType: ValueType?, value: String): String {
             DateUtils.timeFormat().format(
                 DateUtils.timeFormat().parse(value) ?: "",
             )
+
+        ValueType.PERCENTAGE -> {
+            if (addPercentageSymbol) {
+                value.toPercentage()
+            } else {
+                value
+            }
+        }
 
         else -> value
     }
@@ -205,8 +223,8 @@ fun String?.withValueTypeCheck(valueType: ValueType?): String? {
             ValueType.INTEGER_NEGATIVE,
             ValueType.INTEGER_ZERO_OR_POSITIVE,
             -> (
-                    it.toIntOrNull() ?: it.toFloat().toInt()
-                    ).toString()
+                it.toIntOrNull() ?: it.toFloat().toInt()
+                ).toString()
 
             ValueType.UNIT_INTERVAL -> (it.toIntOrNull() ?: it.toFloat()).toString()
             else -> this
@@ -236,14 +254,13 @@ fun TrackedEntityDataValueObjectRepository.blockingGetValueCheck(
 
 private fun check(d2: D2, valueType: ValueType?, optionSetUid: String?, value: String): Boolean {
     return when {
-        optionSetUid != null -> {
+        valueType != ValueType.MULTI_TEXT && optionSetUid != null -> {
             val optionByCodeExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
                 .byCode().eq(value).one().blockingExists()
             val optionByNameExist = d2.optionModule().options().byOptionSetUid().eq(optionSetUid)
                 .byDisplayName().eq(value).one().blockingExists()
             optionByCodeExist || optionByNameExist
         }
-
         valueType != null -> {
             if (valueType.isNumeric) {
                 try {

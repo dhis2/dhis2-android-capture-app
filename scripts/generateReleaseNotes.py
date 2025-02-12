@@ -23,9 +23,10 @@ filtered_issues = requests.get(
     headers={'Authorization': JIRA_AUTH}).json()
 
 print("Writing files in RELEASE.md...")
-version_summary = '''This is a patch version of the <strong>DHIS2 Android App</strong> It builds upon the last version including bug fixes that couldn't wait to the next version. 
-It includes no functional improvements neither changes in the User Interface. It means that yours users can update without experiencing any change in the UI. '''
-content_header = '''<table>
+version_summary = '''This is a patch version of the <strong>DHIS2 Android App</strong> It builds upon the last version including bug fixes that couldn't wait for the next version.
+It includes no functional improvements or changes in the User Interface. This means that users can update without experiencing any change in the UI. '''
+content_header = '''
+<table>
 <tr> 
 <td> 
 <img src="https://s3-eu-west-1.amazonaws.com/content.dhis2.org/dhis2-android/android-chrome-384x384.png" width="800"> 

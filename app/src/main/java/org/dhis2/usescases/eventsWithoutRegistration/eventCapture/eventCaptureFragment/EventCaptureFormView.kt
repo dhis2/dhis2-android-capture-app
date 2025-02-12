@@ -5,4 +5,7 @@ interface EventCaptureFormView {
     fun hideSaveButton()
     fun showSaveButton()
     fun onReopen()
+    fun showNonEditableMessage(reason: String, canBeReOpened: Boolean)
+    fun hideNonEditableMessage()
+    fun displayMessage(errorMessage: String)
 }

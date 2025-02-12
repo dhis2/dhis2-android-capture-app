@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Évènement</string>
     <string name="no_data">Aucune donnée</string>
     <string name="change_calendar_view">Changer de vue calendrier</string>
     <string name="clear">Effacer</string>
@@ -16,7 +15,6 @@
     <string name="navigation_analytics">Analytiques</string>
     <string name="navigation_tasks">Tâches</string>
     <string name="navigation_programs">Programmes</string>
-    <string name="navigation_events">Événements</string>
     <string name="navigation_relationships">Relations</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Saisie de données</string>
@@ -24,8 +22,6 @@
     <string name="event_overview">Details</string>
     <string name="select_option">Sélectionnez une option</string>
     <string name="search">Chercher</string>
-    <string name="jira_issue_sent">Problème envoyé</string>
-    <string name="jira_issue_sent_error">Erreur lors de l\'envoi du problème</string>
     <string name="events">événements</string>
     <string name="data_sets">Ensembles de données</string>
     <string name="tei">TEI</string>

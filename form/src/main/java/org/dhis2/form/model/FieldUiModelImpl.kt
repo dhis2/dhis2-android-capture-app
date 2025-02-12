@@ -1,17 +1,13 @@
 package org.dhis2.form.model
 
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
-import java.io.File
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class FieldUiModelImpl(
     override val uid: String,
-    override val layoutId: Int,
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,
@@ -20,7 +16,6 @@ data class FieldUiModelImpl(
     override val mandatory: Boolean = false,
     override val label: String,
     override val programStageSection: String? = null,
-    override val style: FormUiModelStyle? = null,
     override val hint: String? = null,
     override val description: String? = null,
     override val valueType: ValueType,
@@ -36,6 +31,9 @@ data class FieldUiModelImpl(
     override var optionSetConfiguration: OptionSetConfiguration?,
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+    override val selectableDates: SelectableDates? = null,
+    override val eventCategories: List<EventCategory>? = null,
+    override val periodSelector: PeriodSelector? = null,
     override val url: String? = null,
 ) : FieldUiModel {
 
@@ -52,27 +50,6 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnFocus(uid, value))
     }
 
-    override fun onNext() {
-        callback?.intent(FormIntent.OnNext(uid, value))
-    }
-
-    override fun onTextChange(value: CharSequence?) {
-        val text = when {
-            value?.isEmpty() == true -> null
-            else -> value?.toString()
-        }
-        callback?.intent(FormIntent.OnTextChange(uid, text, valueType))
-    }
-
-    override fun onDescriptionClick() {
-        callback?.recyclerViewUiEvents(
-            RecyclerViewUiEvents.ShowDescriptionLabelDialog(
-                label,
-                if (url== null) description else description + "\n" + url,
-            )
-        )
-    }
-
     override fun onClear() {
         onItemClick()
         callback?.intent(FormIntent.ClearValue(uid))
@@ -83,32 +60,9 @@ data class FieldUiModelImpl(
         callback?.intent(FormIntent.OnSave(uid, value, valueType))
     }
 
-    override fun onSaveBoolean(boolean: Boolean) {
-        onItemClick()
-        val result = when {
-            value == null || value != boolean.toString() -> boolean.toString()
-            else -> null
-        }
-        callback?.intent(FormIntent.OnSave(uid, result, valueType))
-    }
-
-    override fun onSaveOption(option: Option) {
-        val nextValue = when (displayName) {
-            option.displayName() -> null
-            else -> option.code()
-        }
-        callback?.intent(FormIntent.OnSave(uid, nextValue, valueType))
-    }
-
     override fun invokeUiEvent(uiEventType: UiEventType) {
         callback?.intent(FormIntent.OnRequestCoordinates(uid))
-        if (uiEventType != UiEventType.QR_CODE &&
-            uiEventType != UiEventType.EMAIL &&
-            uiEventType != UiEventType.PHONE_NUMBER &&
-            !focused
-        ) {
-            onItemClick()
-        }
+
         uiEventFactory?.generateEvent(value, uiEventType, renderingType, this)?.let {
             callback?.recyclerViewUiEvents(it)
         }
@@ -118,15 +72,6 @@ data class FieldUiModelImpl(
         callback?.intent(intent)
     }
 
-    override val textColor: Int?
-        get() = style?.textColor(error, warning)
-
-    override val backGroundColor: Pair<Array<Int>, Int?>?
-        get() = style?.backgroundColor(valueType, error, warning)
-
-    override val hasImage: Boolean
-        get() = value?.let { File(it).exists() } ?: false
-
     override val isAffirmativeChecked: Boolean
         get() = value?.toBoolean() == true
 
@@ -134,6 +79,9 @@ data class FieldUiModelImpl(
         get() = value?.toBoolean() == false
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setSelectableDates(selectableDates: SelectableDates?) =
+        this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
@@ -161,7 +109,6 @@ data class FieldUiModelImpl(
         item as FieldUiModelImpl
 
         if (uid != item.uid) return false
-        if (layoutId != item.layoutId) return false
         if (value != item.value) return false
         if (focused != item.focused) return false
         if (error != item.error) return false
@@ -170,7 +117,6 @@ data class FieldUiModelImpl(
         if (mandatory != item.mandatory) return false
         if (label != item.label) return false
         if (programStageSection != item.programStageSection) return false
-        if (style != item.style) return false
         if (hint != item.hint) return false
         if (description != item.description) return false
         if (valueType != item.valueType) return false
@@ -178,6 +124,8 @@ data class FieldUiModelImpl(
         if (optionSet != item.optionSet) return false
         if (allowFutureDates != item.allowFutureDates) return false
         if (callback != item.callback) return false
+        if (selectableDates != item.selectableDates) return false
+        if (eventCategories != item.eventCategories) return false
 
         return true
     }

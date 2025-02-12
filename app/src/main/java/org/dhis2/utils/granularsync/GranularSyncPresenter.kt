@@ -77,12 +77,20 @@ class GranularSyncPresenter(
     private val smsSyncProvider: SMSSyncProvider,
 ) : ViewModel() {
 
+    private val workerName: String
     private var disposable: CompositeDisposable = CompositeDisposable()
     private lateinit var states: MutableLiveData<List<SmsSendingService.SendingStatus>>
     private lateinit var statesList: ArrayList<SmsSendingService.SendingStatus>
     private var refreshing = false
     private val _currentState = MutableStateFlow<SyncUiState?>(null)
     val currentState: StateFlow<SyncUiState?> = _currentState
+
+    init {
+        workerName = workerName()
+    }
+
+    private val _serverAvailability = MutableLiveData<Boolean>()
+    val serverAvailability: LiveData<Boolean> = _serverAvailability
 
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
@@ -112,6 +120,7 @@ class GranularSyncPresenter(
             PROGRAM,
             DATA_SET,
             -> false
+
             TEI,
             EVENT,
             DATA_VALUES,
@@ -140,26 +149,21 @@ class GranularSyncPresenter(
                         )
                         .build()
                 }
+
             ALL -> { // Do nothing
             }
         }
-        var workName: String
         if (syncContext.conflictType() != ALL) {
-            workName = syncContext.recordUid()
             if (dataToDataValues == null) {
                 dataToDataValues = Data.Builder()
                     .putString(UID, syncContext.recordUid())
                     .putString(CONFLICT_TYPE, conflictTypeData!!.name)
                     .build()
-            } else {
-                workName = with(syncContext as SyncContext.DataSetInstance) {
-                    orgUnitUid + "_" + periodId + "_" + attributeOptionComboUid
-                }
             }
 
             val workerItem =
                 WorkerItem(
-                    workName,
+                    workerName,
                     WorkerType.GRANULAR,
                     data = dataToDataValues,
                     policy = ExistingWorkPolicy.KEEP,
@@ -167,10 +171,23 @@ class GranularSyncPresenter(
 
             workManagerController.beginUniqueWork(workerItem)
         } else {
-            workName = Constants.INITIAL_SYNC
             workManagerController.syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         }
-        return workManagerController.getWorkInfosForUniqueWorkLiveData(workName)
+        return observeWorkInfo()
+    }
+
+    fun observeWorkInfo() =
+        workManagerController.getWorkInfosForUniqueWorkLiveData(workerName)
+
+    private fun workerName(): String {
+        return when (syncContext.conflictType()) {
+            ALL -> Constants.INITIAL_SYNC
+            DATA_VALUES -> with(syncContext as SyncContext.DataSetInstance) {
+                orgUnitUid + "_" + periodId + "_" + attributeOptionComboUid
+            }
+
+            else -> syncContext.recordUid()
+        }
     }
 
     // NO PLAY SERVICES
@@ -358,6 +375,7 @@ class GranularSyncPresenter(
                 true -> {
                     updateStatusToSyncedWithSMS()
                 }
+
                 false -> {
                     updateStatusToSentBySMS()
                 }
@@ -400,11 +418,23 @@ class GranularSyncPresenter(
             -> {
                 loadSyncInfo(State.UPLOADING)
             }
+
             WorkInfo.State.SUCCEEDED,
             WorkInfo.State.FAILED,
             WorkInfo.State.CANCELLED,
             -> {
                 loadSyncInfo()
+            }
+        }
+    }
+
+    fun checkServerAvailability() {
+        viewModelScope.launch {
+            try {
+                repository.checkServerAvailability()
+                _serverAvailability.value = true
+            } catch (error: RuntimeException) {
+                _serverAvailability.value = false
             }
         }
     }

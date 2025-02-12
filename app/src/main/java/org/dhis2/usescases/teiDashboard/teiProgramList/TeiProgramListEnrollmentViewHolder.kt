@@ -5,8 +5,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import org.dhis2.BR
-import org.dhis2.usescases.main.program.ProgramViewModel
-import org.hisp.dhis.android.core.common.ObjectStyle
+import org.dhis2.usescases.main.program.ProgramUiModel
 
 class TeiProgramListEnrollmentViewHolder(
     private val binding: ViewDataBinding,
@@ -23,16 +22,12 @@ class TeiProgramListEnrollmentViewHolder(
     fun bind(
         presenter: TeiProgramListContract.Presenter,
         enrollment: EnrollmentViewModel?,
-        programModel: ProgramViewModel?,
+        programModel: ProgramUiModel?,
     ) {
         binding.setVariable(BR.enrollment, enrollment)
         binding.setVariable(BR.program, programModel)
         binding.setVariable(BR.presenter, presenter)
-        val style = ObjectStyle.builder()
-            .color(enrollment?.color())
-            .icon(enrollment?.icon())
-            .build()
-        binding.setVariable(BR.style, style)
+        binding.setVariable(BR.metadataIconData, enrollment?.metadataIconData())
         binding.executePendingBindings()
     }
 }

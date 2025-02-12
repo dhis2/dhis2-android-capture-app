@@ -43,12 +43,13 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
 import org.dhis2.composetable.TableScreenState
+import org.dhis2.composetable.TableState
 import org.dhis2.composetable.actions.Validator
 import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
-import org.hisp.dhis.rules.models.RuleActionAssign
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
 import java.util.Collections
@@ -115,6 +116,8 @@ class ManageStockViewModel @Inject constructor(
     private val _tableConfigurationState = MutableStateFlow(refreshTableConfiguration())
 
     val tableConfigurationState: StateFlow<TableConfigurationState> = _tableConfigurationState
+
+    private var inputHelperText: String? = null
 
     init {
         configureRelays()
@@ -263,6 +266,7 @@ class ManageStockViewModel @Inject constructor(
         _screenState.postValue(
             TableScreenState(
                 tables = tables,
+                state = TableState.SUCCESS,
             ),
         )
 
@@ -321,6 +325,7 @@ class ManageStockViewModel @Inject constructor(
             id = cell.id ?: "",
             mainLabel = itemName,
             secondaryLabels = mutableListOf(resources.getString(R.string.quantity)),
+            helperText = inputHelperText,
             currentValue = cell.value,
             keyboardInputType = KeyboardInputType.NumberPassword(),
             error = stockEntry?.errorMessage,
@@ -379,13 +384,10 @@ class ManageStockViewModel @Inject constructor(
         stockItem: StockItem,
         value: String?,
     ) {
-        if (ruleEffect.ruleAction() is RuleActionAssign &&
-            (
-                (ruleEffect.ruleAction() as RuleActionAssign).field()
-                    == config.value?.stockOnHand
-                )
+        if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
+            (ruleEffect.ruleAction).field() == config.value?.stockOnHand
         ) {
-            val data = ruleEffect.data()
+            val data = ruleEffect.data
             val isValid: Boolean = isValidStockOnHand(data)
             val errorMessage =
                 if (!isValid) {
@@ -589,6 +591,10 @@ class ManageStockViewModel @Inject constructor(
 
     fun onBottomSheetClosed() {
         _bottomSheetState.value = false
+    }
+
+    fun setHelperText(text: String?) {
+        inputHelperText = text
     }
 
     private fun refreshTableConfiguration() = TableConfigurationState(

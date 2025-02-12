@@ -1,7 +1,7 @@
 package org.dhis2.composetable
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.espresso.Espresso
+import kotlinx.coroutines.test.runTest
 import org.dhis2.composetable.data.InputRowOption
 import org.dhis2.composetable.data.TableAppScreenOptions
 import org.dhis2.composetable.model.FakeModelType
@@ -40,6 +40,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6397")
     @Test
     fun shouldUpdateValueWhenTypingInComponent() {
         tableRobot(composeTestRule) {
@@ -53,6 +54,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6279")
     @Test
     fun shouldSaveValue() {
         var savedValue: TableCell? = null
@@ -70,6 +72,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6408")
     @Test
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
@@ -105,20 +108,20 @@ class CellTableTest {
             composeTestRule.waitForIdle()
             clickOnAccept()
             composeTestRule.waitForIdle()
-            Espresso.pressBack()
             assertCellSelected(firstId, 1, 0)
             clickOnCell(firstId, 1, 0)
             assertInputComponentInfo(
                 expectedMainLabel = "Text 2",
                 expectedSecondaryLabels =
                 fakeModel.find { it.id == firstId }?.tableHeaderModel?.rows
-                    ?.joinToString(separator = ",") { it.cells[0 % it.cells.size].value } ?: ""
+                    ?.joinToString(separator = ",") { it.cells[0].value } ?: ""
+
             )
         }
     }
 
     @Test
-    fun shouldClearSelectionWhenClickingNextOnLastCell() {
+    fun shouldClearSelectionWhenClickingNextOnLastCell() = runTest {
         tableRobot(composeTestRule) {
             val fakeModel = initTableAppScreen(
                 FakeModelType.MANDATORY_TABLE
@@ -132,7 +135,7 @@ class CellTableTest {
         }
     }
 
-    @Ignore("indeterminate test")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6464")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"

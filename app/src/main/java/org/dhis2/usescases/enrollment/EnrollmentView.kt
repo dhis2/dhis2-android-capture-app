@@ -9,7 +9,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setAccess(access: Boolean?)
 
     fun renderStatus(status: EnrollmentStatus)
-    fun showStatusOptions(currentStatus: EnrollmentStatus)
 
     fun setSaveButtonVisible(visible: Boolean)
 
@@ -20,8 +19,6 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setResultAndFinish()
     fun requestFocus()
     fun performSaveClick()
-    fun showProgress()
-    fun hideProgress()
     fun displayTeiPicture(picturePath: String)
-    fun showDateEditionWarning()
+    fun showDateEditionWarning(message: String?)
 }

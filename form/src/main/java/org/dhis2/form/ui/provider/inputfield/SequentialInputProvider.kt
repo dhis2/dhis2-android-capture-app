@@ -1,55 +1,45 @@
 package org.dhis2.form.ui.provider.inputfield
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import org.dhis2.commons.resources.ObjectStyleUtils
-import org.dhis2.form.R
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
+import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSequential
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.IconCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 
 @Composable
 internal fun ProvideSequentialInput(
     modifier: Modifier,
+    inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
-    context: Context,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val inputCardDataList = remember {
-        mutableListOf<IconCardData>()
-    }
-    var matrixSelectedItem by remember(fieldUiModel) { mutableStateOf<IconCardData?>(null) }
+    val inputCardDataList: MutableList<ImageCardData> = mutableListOf()
 
-    fieldUiModel.optionSetConfiguration?.optionsToDisplay()?.forEach() { option ->
-        val color =
-            ObjectStyleUtils.getColorResource(context, option.style().color(), R.color.colorPrimary)
-        var icon = option.style().icon() ?: "dhis2_default_outline"
-        if (!icon.startsWith("dhis2_")) {
-            icon = "dhis2_$icon"
-        }
-        val iconCardItem = IconCardData(
-            uid = option.code() ?: "",
-            label = option.displayName() ?: "",
-            iconRes = icon,
-            iconTint = Color(color),
-        )
-        if (!inputCardDataList.contains(iconCardItem)) {
+    fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+        repeat(paging.itemCount) { index ->
+            val optionData = paging[index]
             inputCardDataList.add(
-                iconCardItem,
+                imageCardDataWithUidAndLabel(
+                    optionData!!.metadataIconData.imageCardData,
+                    optionData.option.code() ?: "",
+                    optionData.option.displayName() ?: "",
+                ),
             )
         }
-        if (fieldUiModel.displayName == option.code() || fieldUiModel.displayName == option.displayName()) matrixSelectedItem = iconCardItem
     }
+    var matrixSelectedItem by rememberSelectedOption(
+        fieldUiModel = fieldUiModel,
+        inputCardDataList = inputCardDataList,
+    )
 
     InputSequential(
         title = fieldUiModel.label,
@@ -57,7 +47,7 @@ internal fun ProvideSequentialInput(
         state = fieldUiModel.inputState(),
         selectedData = matrixSelectedItem,
         onSelectionChanged = { newSelectedItem ->
-            matrixSelectedItem = if (matrixSelectedItem == newSelectedItem) {
+            matrixSelectedItem = if (matrixSelectedItem?.uid == newSelectedItem.uid) {
                 null
             } else {
                 newSelectedItem
@@ -76,5 +66,9 @@ internal fun ProvideSequentialInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         modifier = modifier,
+        inputStyle = inputStyle,
+        painterFor = inputCardDataList.filterIsInstance<ImageCardData.CustomIconData>().associate {
+            it.uid to BitmapPainter(it.image)
+        },
     )
 }

@@ -2,29 +2,29 @@ package org.dhis2.usescases.flow.teiFlow
 
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
+import org.dhis2.LazyActivityScenarioRule
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_OLD_TRACKED_ENTITY_RESPONSE
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
-import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
+import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
+import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.text.SimpleDateFormat
 import java.util.Date
 
 
 @RunWith(AndroidJUnit4::class)
-class TeiFlowTest: BaseTest() {
-
+class TeiFlowTest : BaseTest() {
     @get:Rule
-    val rule = ActivityTestRule(TeiDashboardMobileActivity::class.java, false, false)
-
-    @get:Rule
-    val ruleSearch = ActivityTestRule(SearchTEActivity::class.java, false, false)
+    val ruleSearch = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -33,10 +33,20 @@ class TeiFlowTest: BaseTest() {
     private val dateEnrollment = createEnrollmentDate()
     private val currentDate = getCurrentDate()
 
+    override fun setUp() {
+        super.setUp()
+        setupMockServer()
+    }
+
     @Test
-    fun shouldEnrollToSameProgramAfterClosedIt() {
+    fun shouldEnrollToSameProgramAfterClosingIt() {
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_OLD_TRACKED_ENTITY_PATH,
+            API_OLD_TRACKED_ENTITY_RESPONSE,
+        )
+
         val totalEventsPerEnrollment = 3
-        val pastProgramPosition = 4
         val enrollmentListDetails = createEnrollmentList()
         val registerTeiDetails = createRegisterTEI()
 
@@ -44,12 +54,12 @@ class TeiFlowTest: BaseTest() {
         setDatePicker()
         prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch)
 
-        teiFlowRobot {
+        teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
-            closeEnrollmentAndCheckEvents(totalEventsPerEnrollment)
-            enrollToProgram(composeTestRule, ADULT_WOMAN_PROGRAM)
+            closeEnrollmentAndCheckEvents()
+            enrollToProgram(ADULT_WOMAN_PROGRAM)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
-            checkPastEventsAreClosed(composeTestRule, totalEventsPerEnrollment, pastProgramPosition)
+            checkPastEventsAreClosed(totalEventsPerEnrollment)
         }
     }
 
@@ -57,7 +67,7 @@ class TeiFlowTest: BaseTest() {
         EnrollmentListUIModel(
             ADULT_WOMAN_PROGRAM,
             ORG_UNIT,
-            "30/6/2017",
+            currentDate,
             currentDate
         )
 
@@ -80,17 +90,22 @@ class TeiFlowTest: BaseTest() {
         30
     )
 
-    private fun getCurrentDate() :String {
-        val sdf = SimpleDateFormat(DATE_FORMAT)
+    private fun getCurrentDate(): String {
+        val sdf = DateUtils.uiDateFormat()
         val dateFormat = sdf.format(Date())
-        return dateFormat.removePrefix("0")
+        return dateFormat
     }
 
-    private fun prepareWomanProgrammeIntentAndLaunchActivity(ruleSearch: ActivityTestRule<SearchTEActivity>) {
-        Intent().apply {
+    private fun prepareWomanProgrammeIntentAndLaunchActivity(
+        ruleSearch: LazyActivityScenarioRule<SearchTEActivity>
+    ) {
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            SearchTEActivity::class.java
+        ).apply {
             putExtra(PROGRAM_UID, WOMAN_PROGRAM_UID_VALUE)
             putExtra(TE_TYPE, WOMAN_TE_TYPE_VALUE)
-        }.also { ruleSearch.launchActivity(it) }
+        }.also { ruleSearch.launch(it) }
     }
 
     companion object {

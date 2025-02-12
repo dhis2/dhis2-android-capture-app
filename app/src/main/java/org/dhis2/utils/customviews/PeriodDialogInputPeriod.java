@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
 import org.dhis2.R;
+import org.dhis2.commons.dialogs.PeriodDialog;
 import org.dhis2.databinding.DialogPeriodDatesBinding;
 import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.dhis2.utils.DateUtils;
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import kotlin.Unit;
 
 public class PeriodDialogInputPeriod extends PeriodDialog {
@@ -66,11 +68,11 @@ public class PeriodDialogInputPeriod extends PeriodDialog {
                 if ((inputPeriodModel.openingDate() == null || (inputPeriodModel.openingDate() != null && (DateUtils.getInstance().getToday().after(inputPeriodModel.openingDate()))) || DateUtils.getInstance().getToday().equals(inputPeriodModel.openingDate()))
                         && (inputPeriodModel.closingDate() == null || (inputPeriodModel.closingDate() != null && DateUtils.getInstance().getToday().before(inputPeriodModel.closingDate())))
                         && (organisationUnit == null || (organisationUnit.openingDate() == null || getCurrentDate().after(organisationUnit.openingDate())) && (organisationUnit.closedDate() == null || getCurrentDate().before(organisationUnit.closedDate())))
-                )
+                ) {
                     if (getCurrentDate().before(inputPeriodModel.endPeriodDate())) {
                         isAllowed = true;
                     }
-                else if (getCurrentDate().before(inputPeriod.get(inputPeriod.size() - 1).initialPeriodDate()) ||
+                } else if (getCurrentDate().before(inputPeriod.get(inputPeriod.size() - 1).initialPeriodDate()) ||
                         getCurrentDate().before(inputPeriodModel.initialPeriodDate()))
                     break;
                 else

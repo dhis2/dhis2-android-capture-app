@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ColorUtils;
+import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
@@ -60,7 +61,13 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListRepository eventDetailRepository(D2 d2, ColorUtils colorUtils) {
-        return new TeiProgramListRepositoryImpl(d2, new ProgramViewModelMapper(new ResourceManager(view.getContext(), colorUtils)));
+    TeiProgramListRepository eventDetailRepository(
+            D2 d2,
+            MetadataIconProvider metadataIconProvider) {
+        return new TeiProgramListRepositoryImpl(
+                d2,
+                new ProgramViewModelMapper(),
+                metadataIconProvider
+        );
     }
 }

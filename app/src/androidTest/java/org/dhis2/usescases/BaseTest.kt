@@ -18,12 +18,14 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
+import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
+import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
+import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -51,7 +53,7 @@ open class BaseTest {
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
         )
-    }else {
+    } else {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA,
@@ -72,26 +74,30 @@ open class BaseTest {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
             mockWebServerRobot = providesMockWebserverRobot(context)
-            disableComposeForms()
         }
     }
 
     private fun registerCountingIdlingResource() {
         IdlingRegistry.getInstance().register(
+            EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
             SearchIdlingResourceSingleton.countingIdlingResource,
-            TeiDataIdlingResourceSingleton.countingIdlingResource
+            TeiDataIdlingResourceSingleton.countingIdlingResource,
+            EventIdlingResourceSingleton.countingIdlingResource,
+            OnMapReadyIdlingResourceSingleton.countingIdlingResource,
         )
     }
 
     private fun unregisterCountingIdlingResource() {
         IdlingRegistry.getInstance()
             .unregister(
+                EventListIdlingResourceSingleton.countingIdlingResource,
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
                 SearchIdlingResourceSingleton.countingIdlingResource,
-                TeiDataIdlingResourceSingleton.countingIdlingResource
+                TeiDataIdlingResourceSingleton.countingIdlingResource,
+                EventIdlingResourceSingleton.countingIdlingResource,
             )
     }
 
@@ -129,7 +135,7 @@ open class BaseTest {
         preferencesRobot.saveValue(Preference.DATE_PICKER, true)
     }
 
-    private fun closeKeyboard(){
+    private fun closeKeyboard() {
         BaseRobot().closeKeyboard()
     }
 
@@ -157,10 +163,6 @@ open class BaseTest {
 
     fun cleanLocalDatabase() {
         (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
-    }
-
-    private fun disableComposeForms() {
-        preferencesRobot.saveValue(Feature.COMPOSE_FORMS.name, false)
     }
 
     companion object {

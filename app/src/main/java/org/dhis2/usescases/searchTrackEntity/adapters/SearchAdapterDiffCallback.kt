@@ -1,7 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity.adapters
 
 import androidx.recyclerview.widget.DiffUtil
-import org.dhis2.commons.data.SearchTeiModel
+import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 
 class SearchAdapterDiffCallback() : DiffUtil.ItemCallback<SearchTeiModel>() {
     override fun areItemsTheSame(oldItem: SearchTeiModel, newItem: SearchTeiModel): Boolean {
@@ -18,5 +18,13 @@ class SearchAdapterDiffCallback() : DiffUtil.ItemCallback<SearchTeiModel>() {
             oldItem.sortingKey == newItem.sortingKey &&
             oldItem.sortingValue == newItem.sortingValue &&
             oldItem.enrolledOrgUnit == newItem.enrolledOrgUnit
+    }
+
+    override fun getChangePayload(oldItem: SearchTeiModel, newItem: SearchTeiModel): Any? {
+        return if (oldItem != newItem) {
+            newItem
+        } else {
+            super.getChangePayload(oldItem, newItem)
+        }
     }
 }

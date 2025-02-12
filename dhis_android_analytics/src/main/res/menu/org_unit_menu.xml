@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
     <menu xmlns:android="http://schemas.android.com/apk/res/android">
-        <group android:id="@+id/visualization">
+        <group>
             <item
                 android:id="@+id/back"
                 android:icon="@drawable/ic_arrowback_chart"
                 android:title="@string/orgUnit"/>
         </group>
-        <group android:id="@+id/filters">
+        <group>
             <item
                 android:id="@+id/all"
                 android:icon="@drawable/ic_check_chart_white"
@@ -17,7 +17,7 @@
                 android:title="@string/selection" />
         </group>
 
-        <group android:id="@+id/resetcurrent">
+        <group>
             <item
                 android:visible="false"
                 android:icon="@drawable/ic_reset_chart"

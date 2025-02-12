@@ -32,6 +32,11 @@ import java.util.regex.Pattern;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
+/**
+ * @deprecated This class is deprecated because it has been replaced by {@link org.dhis2.commons.date.DateUtils}.
+ * Please use {@link org.dhis2.commons.date.DateUtils} instead.
+ */
+@Deprecated(since = "2.10", forRemoval = true)
 public class DateUtils {
 
     private static DateUtils instance;

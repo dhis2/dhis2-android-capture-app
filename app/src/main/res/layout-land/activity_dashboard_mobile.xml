@@ -6,20 +6,8 @@
     <data>
 
         <variable
-            name="title"
-            type="String" />
-
-        <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
-
-        <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
-
-        <variable
-            name="dashboardModel"
-            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,150 +15,183 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/toolbar"
+            android:id="@+id/backdropLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?colorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:background="?colorPrimary">
 
-            <ImageView
-                android:id="@+id/backArrow"
-                style="@style/ActionIcon"
-                android:onClick='@{()->presenter.onBackPressed()}'
-                android:padding="@dimen/default_start_margin"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back"
-                tools:ignore="ContentDescription" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text='@{title}'
-                android:textColor="?colorAccent"
-                android:ellipsize="end"
-                android:maxLines="1"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
-                app:layout_constraintStart_toEndOf="@id/backArrow"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="TEI NAME" />
+                <ImageView
+                    android:id="@+id/backArrow"
+                    style="@style/ActionIcon"
+                    android:onClick='@{()->presenter.onBackPressed()}'
+                    android:padding="@dimen/default_start_margin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    tools:ignore="ContentDescription" />
 
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/editButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{presenter.getProgramUid() == null ? View.GONE : View.VISIBLE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/syncButton"
-                app:layout_constraintTop_toTopOf="parent"/>
+                <ImageView
+                    android:id="@+id/syncButton"
+                    style="@style/ActionIcon"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/relationshipIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_sync"
+                    app:tint="?colorOnPrimary"
+                    tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/syncButton"
-                style="@style/ActionIcon"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/relationshipMapIcon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_sync"
-                app:tint="?colorOnPrimary"
-                tools:ignore="ContentDescription" />
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/relationshipIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_map"
+                    app:tint="@color/white"
+                    tools:ignore="ContentDescription"
+                    tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/relationshipMapIcon"
-                style="@style/ActionIcon"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_map"
-                app:tint="@color/white"
-                tools:visibility="visible"
-                tools:ignore="ContentDescription" />
+                <androidx.compose.ui.platform.ComposeView
+                  android:id="@+id/moreOptions"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintTop_toTopOf="parent"
+                  />
 
-            <ImageView
-                android:id="@+id/moreOptions"
-                style="@style/ActionIcon"
-                android:layout_height="match_parent"
-                android:onClick="showMoreOptions"
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/progressGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_end="10dp" />
+
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/toolbarProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:padding="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/progressGuideline"
+                    tools:visibility="visible" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/main_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/ic_front_home_backdrop_bg"
+                android:clipToOutline="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_more"
-                tools:ignore="ContentDescription" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/progressGuideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_end="10dp" />
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".3" />
 
-            <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/toolbarProgress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:padding="0dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/progressGuideline"
-                tools:visibility="visible" />
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".50" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline625"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".70" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline75"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".75" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/tei_primary_color_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guideline25"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <FrameLayout
+                        android:id="@+id/tei_main_view"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <FrameLayout
+                    android:id="@+id/tei_form_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guideline625"
+                    app:layout_constraintStart_toEndOf="@id/guideline25"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/saveLand"
+                        style="@style/Widget.MaterialComponents.FloatingActionButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="16dp"
+                        app:backgroundTint="?colorPrimary"
+                        app:srcCompat="@drawable/ic_save"
+                        app:tint="@color/white" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/fragmentContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/ic_front_home_backdrop_bg"
+                    app:layout_constraintBottom_toTopOf="@id/navigationBar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline625"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/navigationBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guideline625" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline25"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".25" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".50" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline75"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".75" />
-
-        <FrameLayout
-            android:id="@+id/tei_main_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/tei_table_pager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/navigationBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
-            android:id="@+id/navigationBar"
-            style="@style/DhisBottomNavigationView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guideline75"
-            app:layout_constraintStart_toStartOf="@id/guideline25"
-            app:forceShowAnalytics="true"
-            app:menu="@menu/navigation_dashboard_landscape_menu" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

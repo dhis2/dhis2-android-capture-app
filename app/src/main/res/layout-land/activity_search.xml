@@ -38,9 +38,6 @@
         <variable
             name="totalFilters"
             type="Integer" />
-        <variable
-            name="navigationInitialPage"
-            type="Integer" />
     </data>
 
     <RelativeLayout
@@ -104,6 +101,7 @@
                     android:textColor="?colorPrimary"
                     android:textSize="10sp"
                     android:visibility="@{totalFilters>0?View.VISIBLE:View.GONE}"
+                    tools:ignore="SmallSp"
                     tools:text="1" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -193,96 +191,52 @@
                 tools:listitem="@layout/item_header_filter" />
 
             <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/minAttributeMessage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/formViewContainer"
+                android:id="@+id/searchContainer"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:focusableInTouchMode="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/backdropGuideDiv"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/minAttributeMessage" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <FrameLayout
                 android:id="@+id/mainComponent"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:animateLayoutChanges="true"
+                app:layout_constraintBottom_toTopOf="@id/navigationBar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
                 app:layout_constraintTop_toBottomOf="@+id/backdropGuideTop"
                 tools:background="@color/white" />
 
-            <org.dhis2.utils.customviews.navigationbar.NavigationBottomBar
+            <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/navigationBar"
-                style="@style/DhisBottomNavigationView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:elevation="12dp"
-                app:initialPage="@{navigationInitialPage}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"
-                app:menu="@menu/navigation_search_menu" />
+                app:layout_constraintStart_toEndOf="@id/backdropGuideDiv"/>
 
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/landOpenSearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:padding="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv"
-                app:layout_constraintStart_toStartOf="parent"
-                android:padding="16dp"
-                android:clipToPadding="false"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/filterActions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
                 android:clipToPadding="false"
+                android:padding="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/clearFilterSearchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{()->presenter.clearFilterClick()}"
-                    style="?attr/floatingActionButtonSmallStyle"
-                    app:backgroundTint="@color/white"
-                    app:fabSize="mini"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:clipToPadding="false"
-                    app:srcCompat="@drawable/ic_refresh"
-                    app:tint="?colorPrimary" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/searchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:src="@drawable/ic_search"
-                    app:backgroundTint="@color/white"
-                    app:fabSize="normal"
-                    android:clipToPadding="false"
-                    app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                    app:layout_constraintTop_toBottomOf="@id/clearFilterSearchButton"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:tint="?attr/colorPrimary" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintEnd_toEndOf="@id/backdropGuideDiv"></androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </layout>

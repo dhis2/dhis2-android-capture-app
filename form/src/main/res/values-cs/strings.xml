@@ -46,7 +46,6 @@
     <string name="enter_long_text">Zadejte dlouhý text</string>
     <string name="enter_text">Zadejte text</string>
     <string name="due_date">Datum vypršení</string>
-    <string name="event_date">Datum události</string>
     <string name="mandatory_field">Povinné pole</string>
     <string name="form_latitude_prefix">Šířka:</string>
     <string name="form_longitude_prefix">Délka:</string>
@@ -90,12 +89,8 @@
     <string name="error_true_only_one_is_not_true">Neplatný znak 1</string>
     <string name="data_values_save_error">DataValues nelze uložit pomocí těchto argumentů. Použijte ten druhý.</string>
     <string name="leading_zero_error">Čísla s úvodní nulou nejsou povolena</string>
-    <string name="enrollment_data_section_label">Údaje o zápisu</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
-    <string name="enrolling_ou">Zápis Org. J.:</string>
     <string name="tei_coordinates">Souřadnice pro</string>
-    <string name="enrollment_coordinates">Souřadnice registrace</string>
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
-    <string name="enrollmment_date">Datum zápisu</string>
     <string name="incident_date">Datum incidentu</string>
     </resources>

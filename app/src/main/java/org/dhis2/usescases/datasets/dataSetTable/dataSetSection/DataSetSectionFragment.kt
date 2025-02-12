@@ -209,6 +209,7 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
                             onCellClick = presenterFragment::onCellClick,
                             onEdition = presenter::editingCellValue,
                             onSaveValue = presenterFragment::onSaveValueChange,
+                            emptyTablesText = getString(R.string.section_misconfigured),
                         )
                     }
                 }
@@ -463,7 +464,6 @@ class DataSetSectionFragment : FragmentGlobalAbstract(), DataValueContract.View 
         updateCellValue: (TableCell) -> Unit,
     ) {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .singleSelection()
             .withPreselectedOrgUnits(cell.value?.let { listOf(it) } ?: emptyList())
             .onSelection { selectedOrgUnits ->

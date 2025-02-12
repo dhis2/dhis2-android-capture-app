@@ -6,8 +6,10 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.DhisPeriodUtils
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.FieldUiModel
@@ -16,7 +18,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -51,6 +52,7 @@ class EventDetailsIntegrationTest {
     // Needs context
     private val locationProvider: LocationProvider = mock()
     private val resourceManager: ResourceManager = mock()
+    private val eventResourcesProvider: EventResourcesProvider = mock()
     private val periodUtils: DhisPeriodUtils = mock()
     private val preferencesProvider: PreferenceProvider = mock()
 
@@ -64,6 +66,7 @@ class EventDetailsIntegrationTest {
     private val programStage: ProgramStage = mock {
         on { displayName() } doReturn PROGRAM_STAGE_NAME
         on { executionDateLabel() } doReturn EXECUTION_DATE
+        on { uid() } doReturn PROGRAM_STAGE
     }
     private val catCombo: CategoryCombo = mock {
         on { uid() } doReturn CAT_COMBO_UID
@@ -88,6 +91,8 @@ class EventDetailsIntegrationTest {
         on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
         on { getEditableStatus() } doReturn EventEditableStatus.Editable()
     }
+
+    private val metadataIconProvider: MetadataIconProvider = mock()
 
     private lateinit var viewModel: EventDetailsViewModel
 
@@ -127,17 +132,12 @@ class EventDetailsIntegrationTest {
         configureOrgUnit = createConfigureOrgUnit(eventCreationType),
         configureEventCoordinates = createConfigureEventCoordinates(),
         configureEventCatCombo = createConfigureEventCatCombo(),
-        configureEventTemp = createConfigureEventTemp(eventCreationType),
         periodType = periodType,
         eventUid = EVENT_UID,
         geometryController = createGeometryController(),
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
         resourcesProvider = provideEventResourcesProvider(),
-    )
-
-    private fun createConfigureEventTemp(eventCreationType: EventCreationType) = ConfigureEventTemp(
-        creationType = eventCreationType,
     )
 
     private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(
@@ -177,9 +177,15 @@ class EventDetailsIntegrationTest {
         resourcesProvider = provideEventResourcesProvider(),
         creationType = eventCreationType,
         enrollmentStatus = enrollmentStatus,
+        metadataIconProvider = metadataIconProvider,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(resourceManager)
+    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(
+        PROGRAM_UID,
+        programStage.uid(),
+        resourceManager,
+        eventResourcesProvider,
+    )
 
     private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
         repository = eventDetailsRepository,
@@ -199,5 +205,6 @@ class EventDetailsIntegrationTest {
         const val COORDINATES = "coordinates"
         const val CAT_COMBO_UID = "CatComboUid"
         const val CAT_OPTION_COMBO_UID = "CategoryOptionComboUid"
+        const val PROGRAM_STAGE = "programStage"
     }
 }

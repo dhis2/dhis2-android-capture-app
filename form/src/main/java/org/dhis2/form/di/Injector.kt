@@ -1,38 +1,38 @@
 package org.dhis2.form.di
 
 import android.content.Context
+import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.DhisPeriodUtils
+import org.dhis2.commons.resources.EventResourcesProvider
+import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.DataEntryRepository
 import org.dhis2.form.data.EnrollmentRepository
-import org.dhis2.form.data.EnrollmentRuleEngineRepository
 import org.dhis2.form.data.EventRepository
-import org.dhis2.form.data.EventRuleEngineRepository
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.FormRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
-import org.dhis2.form.data.RuleEngineRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
 import org.dhis2.form.data.SearchOptionSetOption
-import org.dhis2.form.data.SearchRepository
+import org.dhis2.form.data.metadata.EnrollmentConfiguration
 import org.dhis2.form.data.metadata.FileResourceConfiguration
 import org.dhis2.form.data.metadata.OptionSetConfiguration
 import org.dhis2.form.data.metadata.OrgUnitConfiguration
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.FormRepositoryRecords
-import org.dhis2.form.model.SearchRecords
 import org.dhis2.form.model.coroutine.FormDispatcher
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.FormViewModelFactory
-import org.dhis2.form.ui.LayoutProviderImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
@@ -40,13 +40,13 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.provider.UiStyleProvider
-import org.dhis2.form.ui.provider.UiStyleProviderImpl
-import org.dhis2.form.ui.style.FormUiModelColorFactoryImpl
-import org.dhis2.form.ui.style.LongTextUiColorFactoryImpl
 import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobileProgramRules.EvaluationType
+import org.dhis2.mobileProgramRules.RuleEngineHelper
+import org.dhis2.mobileProgramRules.RulesRepository
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
+import org.hisp.dhis.android.core.event.EventObjectRepository
 
 object Injector {
     fun provideFormViewModelFactory(
@@ -63,7 +63,6 @@ object Injector {
             ),
             provideDispatchers(),
             openErrorLocation,
-            providePreferenceProvider(context),
         )
     }
 
@@ -74,6 +73,9 @@ object Injector {
             provideD2().optionModule().options(),
         )
     }
+
+    private fun provideMetadataIconProvider() =
+        MetadataIconProvider(provideD2())
 
     fun provideDispatchers(): DispatcherProvider {
         return FormDispatcher()
@@ -91,11 +93,12 @@ object Injector {
                 entryMode = repositoryRecords.entryMode,
             ),
             fieldErrorMessageProvider = provideFieldErrorMessage(context),
-            displayNameProvider = provideDisplayNameProvider(),
+            displayNameProvider = provideDisplayNameProvider(context),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
                 context = context,
                 repositoryRecords = repositoryRecords,
+                metadataIconProvider = provideMetadataIconProvider(),
             ),
             ruleEngineRepository = provideRuleEngineRepository(
                 repositoryRecords.entryMode,
@@ -104,6 +107,7 @@ object Injector {
             rulesUtilsProvider = provideRulesUtilsProvider(),
             legendValueProvider = provideLegendValueProvider(context),
             useCompose = useCompose,
+            preferenceProvider = providePreferencesProvider(context),
         )
     }
 
@@ -111,56 +115,36 @@ object Injector {
         entryMode: EntryMode?,
         context: Context,
         repositoryRecords: FormRepositoryRecords,
+        metadataIconProvider: MetadataIconProvider,
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
                 context,
                 repositoryRecords as EnrollmentRecords,
+                metadataIconProvider,
             )
 
-            EntryMode.DE -> provideEventRepository(
+            else -> provideEventRepository(
                 context,
                 repositoryRecords as EventRecords,
             )
-
-            else -> provideSearchRepository(
-                context,
-                repositoryRecords as SearchRecords,
-            )
         }
-    }
-
-    private fun provideSearchRepository(
-        context: Context,
-        searchRecords: SearchRecords,
-    ): DataEntryRepository {
-        return SearchRepository(
-            d2 = provideD2(),
-            fieldViewModelFactory = provideFieldFactory(
-                context,
-                searchRecords.allowMandatoryFields,
-                searchRecords.isBackgroundTransparent,
-            ),
-            programUid = searchRecords.programUid,
-            teiTypeUid = searchRecords.teiTypeUid,
-            currentSearchValues = searchRecords.currentSearchValues,
-        )
     }
 
     private fun provideEnrollmentRepository(
         context: Context,
         enrollmentRecords: EnrollmentRecords,
+        metadataIconProvider: MetadataIconProvider,
     ): DataEntryRepository {
         return EnrollmentRepository(
-            fieldFactory = provideFieldFactory(
-                context,
-                enrollmentRecords.allowMandatoryFields,
-                enrollmentRecords.isBackgroundTransparent,
+            fieldFactory = provideFieldFactory(context),
+            conf = EnrollmentConfiguration(
+                provideD2(),
+                enrollmentRecords.enrollmentUid,
             ),
-            enrollmentUid = enrollmentRecords.enrollmentUid,
-            d2 = provideD2(),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
+            metadataIconProvider = metadataIconProvider,
         )
     }
 
@@ -169,13 +153,17 @@ object Injector {
         eventRecords: EventRecords,
     ): DataEntryRepository {
         return EventRepository(
-            fieldFactory = provideFieldFactory(
-                context,
-                eventRecords.allowMandatoryFields,
-                eventRecords.isBackgroundTransparent,
-            ),
+            fieldFactory = provideFieldFactory(context),
             eventUid = eventRecords.eventUid,
             d2 = provideD2(),
+            metadataIconProvider = provideMetadataIconProvider(),
+            resources = provideResourcesManager(context),
+            eventResourcesProvider = EventResourcesProvider(
+                provideD2(),
+                provideResourcesManager(context),
+            ),
+            dateUtils = DateUtils.getInstance(),
+            eventMode = eventRecords.eventMode,
         )
     }
 
@@ -184,14 +172,9 @@ object Injector {
 
     private fun provideFieldFactory(
         context: Context,
-        allowMandatoryFields: Boolean,
-        isBackgroundTransparent: Boolean,
     ): FieldViewModelFactory = FieldViewModelFactoryImpl(
-        noMandatoryFields = !allowMandatoryFields,
-        uiStyleProvider = provideUiStyleProvider(context, isBackgroundTransparent),
-        layoutProvider = provideLayoutProvider(),
         hintProvider = provideHintProvider(context),
-        displayNameProvider = provideDisplayNameProvider(),
+        displayNameProvider = provideDisplayNameProvider(context),
         uiEventTypesProvider = provideUiEventTypesProvider(),
         keyboardActionProvider = provideKeyBoardActionProvider(),
         legendValueProvider = provideLegendValueProvider(context),
@@ -204,47 +187,38 @@ object Injector {
 
     private fun provideHintProvider(context: Context) = HintProviderImpl(context)
 
-    private fun provideLayoutProvider() = LayoutProviderImpl()
-
-    private fun provideUiStyleProvider(
-        context: Context,
-        isBackgroundTransparent: Boolean,
-    ): UiStyleProvider = UiStyleProviderImpl(
-        colorFactory = FormUiModelColorFactoryImpl(
-            context,
-            isBackgroundTransparent,
-            provideColorUtils(),
-        ),
-        longTextColorFactory = LongTextUiColorFactoryImpl(
-            context,
-            isBackgroundTransparent,
-            provideColorUtils(),
-        ),
-        actionIconClickable = isBackgroundTransparent,
-    )
-
     private fun provideFormValueStore(
         context: Context,
         recordUid: String?,
-        entryMode: EntryMode?,
-    ): FormValueStore? {
-        return entryMode?.let { it ->
-            val enrollmentObjectRepository = if (it == EntryMode.ATTR) {
-                provideEnrollmentObjectRepository(recordUid!!)
-            } else {
-                null
-            }
-            FormValueStore(
-                d2 = provideD2(),
-                recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
-                    ?: recordUid!!,
-                entryMode = it,
-                enrollmentRepository = enrollmentObjectRepository,
-                crashReportController = provideCrashReportController(),
-                networkUtils = provideNetworkUtils(context),
-                resourceManager = provideResourcesManager(context),
-            )
+        entryMode: EntryMode,
+    ): FormValueStore {
+        val enrollmentObjectRepository = if (entryMode == EntryMode.ATTR) {
+            provideEnrollmentObjectRepository(recordUid!!)
+        } else {
+            null
         }
+
+        val eventObjectRepository = if (entryMode == EntryMode.DE) {
+            provideEventObjectRepository(recordUid!!)
+        } else {
+            null
+        }
+
+        return FormValueStore(
+            d2 = provideD2(),
+            recordUid = enrollmentObjectRepository?.blockingGet()?.trackedEntityInstance()
+                ?: recordUid!!,
+            entryMode = entryMode,
+            enrollmentRepository = enrollmentObjectRepository,
+            eventRepository = eventObjectRepository,
+            crashReportController = provideCrashReportController(),
+            networkUtils = provideNetworkUtils(context),
+            resourceManager = provideResourcesManager(context),
+        )
+    }
+
+    private fun provideEventObjectRepository(recordUid: String): EventObjectRepository {
+        return provideD2().eventModule().events().uid(recordUid)
     }
 
     private fun provideEnrollmentObjectRepository(
@@ -264,30 +238,37 @@ object Injector {
 
     private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
 
-    private fun provideDisplayNameProvider() = DisplayNameProviderImpl(
+    private fun provideDisplayNameProvider(context: Context) = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
         OrgUnitConfiguration(provideD2()),
         FileResourceConfiguration(provideD2()),
+        DhisPeriodUtils(
+            d2 = provideD2(),
+            defaultPeriodLabel = context.getString(R.string.period_span_default_label),
+            defaultWeeklyLabel = context.getString(R.string.week_period_span_default_label),
+            defaultBiWeeklyLabel = context.getString(R.string.biweek_period_span_default_label),
+        ),
+    )
+
+    private fun providePreferencesProvider(context: Context) = PreferenceProviderImpl(
+        context,
     )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
 
     private fun provideRuleEngineRepository(
-        entryMode: EntryMode?,
-        recordUid: String?,
-    ): RuleEngineRepository? {
-        return when (entryMode) {
-            EntryMode.ATTR -> provideEnrollmentRuleEngineRepository(recordUid!!)
-            EntryMode.DE -> provideEventRuleEngineRepository(recordUid!!)
-            else -> null
-        }
+        entryMode: EntryMode,
+        recordUid: String,
+    ): RuleEngineHelper {
+        return RuleEngineHelper(
+            when (entryMode) {
+                EntryMode.DE -> EvaluationType.Event(recordUid)
+                EntryMode.ATTR -> EvaluationType.Enrollment(recordUid)
+                else -> throw IllegalArgumentException()
+            },
+            RulesRepository(provideD2()),
+        )
     }
-
-    private fun provideEnrollmentRuleEngineRepository(enrollmentUid: String) =
-        EnrollmentRuleEngineRepository(provideD2(), enrollmentUid)
-
-    private fun provideEventRuleEngineRepository(eventUid: String) =
-        EventRuleEngineRepository(provideD2(), eventUid)
 
     private fun provideRulesUtilsProvider() = RulesUtilsProviderImpl(
         provideD2(),
@@ -300,8 +281,10 @@ object Injector {
         provideD2(),
         provideResourcesManager(context),
     )
+
     private fun provideAutoCompleteProvider(context: Context) = AutoCompleteProviderImpl(
         providePreferenceProvider(context),
     )
+
     private fun provideColorUtils() = ColorUtils()
 }

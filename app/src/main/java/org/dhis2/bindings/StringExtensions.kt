@@ -1,8 +1,8 @@
 package org.dhis2.bindings
 
 import android.content.Context
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toDateSpan
-import org.dhis2.utils.DateUtils
 import timber.log.Timber
 import java.util.Date
 
@@ -38,7 +38,7 @@ fun String.toDate(): Date {
     }
     if (date == null) {
         try {
-            date = DateUtils.databaseDateFormatMillis().parse(this)
+            date = DateUtils.databaseDateFormatNoZulu().parse(this)
         } catch (e: Exception) {
             Timber.d("wrong format")
         }

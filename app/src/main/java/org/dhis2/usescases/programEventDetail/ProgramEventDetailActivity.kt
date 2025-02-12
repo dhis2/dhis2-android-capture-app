@@ -6,46 +6,69 @@ import android.os.Bundle
 import android.transition.ChangeBounds
 import android.transition.Transition
 import android.transition.TransitionManager
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.commons.Constants
-import org.dhis2.commons.data.EventCreationType
+import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.date.DateUtils.OnFromToSelector
+import org.dhis2.commons.date.Period
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeFragment
+import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
+import org.dhis2.form.model.EventMode
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel.EventProgramScreen
 import org.dhis2.usescases.programEventDetail.eventList.EventListFragment
 import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
-import org.dhis2.utils.DateUtils
-import org.dhis2.utils.EventMode
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
-import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
+import org.dhis2.utils.customviews.RxDateDialog
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
 
 class ProgramEventDetailActivity :
@@ -61,9 +84,6 @@ class ProgramEventDetailActivity :
     lateinit var filtersAdapter: FiltersAdapter
 
     @Inject
-    lateinit var pageConfigurator: NavigationPageConfigurator
-
-    @Inject
     lateinit var networkUtils: NetworkUtils
 
     @JvmField
@@ -72,6 +92,9 @@ class ProgramEventDetailActivity :
 
     @Inject
     lateinit var viewModelFactory: ProgramEventDetailViewModelFactory
+
+    @Inject
+    lateinit var ouRepositoryConfiguration: OURepositoryConfiguration
 
     private var backDropActive = false
     private var programUid: String = ""
@@ -92,35 +115,8 @@ class ProgramEventDetailActivity :
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail)
         binding.presenter = presenter
         binding.totalFilters = FilterManager.getInstance().totalFilters
-        binding.navigationBar.pageConfiguration(pageConfigurator)
-        binding.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.navigation_list_view -> {
-                    programEventsViewModel.showList()
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.navigation_map_view -> {
-                    networkUtils.performIfOnline(
-                        this,
-                        {
-                            presenter.trackEventProgramMap()
-                            programEventsViewModel.showMap()
-                        },
-                        {
-                            binding.navigationBar.selectItemAt(0)
-                        },
-                        getString(R.string.msg_network_connection_maps),
-                    )
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.navigation_analytics -> {
-                    presenter.trackEventProgramAnalytics()
-                    programEventsViewModel.showAnalytics()
-                    return@setOnNavigationItemSelectedListener true
-                }
-                else -> return@setOnNavigationItemSelectedListener false
-            }
-        }
+
+        setupBottomNavigation()
         binding.fragmentContainer.clipWithRoundedCorners(16.dp)
         binding.filterLayout.adapter = filtersAdapter
         presenter.init()
@@ -128,6 +124,80 @@ class ProgramEventDetailActivity :
 
         if (intent.shouldLaunchSyncDialog()) {
             showSyncDialogProgram()
+        }
+
+        programEventsViewModel.viewModelScope.launch {
+            programEventsViewModel.shouldNavigateToEventDetails.collectLatest { eventUid ->
+                analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
+                val intent = EventCaptureActivity.intent(
+                    context = context,
+                    eventUid = eventUid,
+                    programUid = programUid,
+                    eventMode = EventMode.NEW,
+                )
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun setupBottomNavigation() {
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by programEventsViewModel.navigationBarUIState
+                val isBackdropActive by programEventsViewModel.backdropActive.observeAsState(false)
+                var selectedItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
+                }
+
+                LaunchedEffect(uiState.selectedItem) {
+                    when (uiState.selectedItem) {
+                        NavigationPage.LIST_VIEW -> {
+                            programEventsViewModel.showList()
+                        }
+
+                        NavigationPage.MAP_VIEW -> {
+                            networkUtils.performIfOnline(
+                                context = this@ProgramEventDetailActivity,
+                                action = {
+                                    presenter.trackEventProgramMap()
+                                    programEventsViewModel.showMap()
+                                },
+                                onDialogDismissed = {
+                                    selectedItemIndex = 0
+                                },
+                                noNetworkMessage = getString(R.string.msg_network_connection_maps),
+                            )
+                        }
+
+                        NavigationPage.ANALYTICS -> {
+                            presenter.trackEventProgramAnalytics()
+                            programEventsViewModel.showAnalytics()
+                        }
+
+                        else -> {
+                            // no-op
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.items.size > 1 && isBackdropActive.not(),
+                    enter = slideInVertically(animationSpec = tween(200)) { it },
+                    exit = slideOutVertically(animationSpec = tween(200)) { it },
+                ) {
+                    NavigationBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.items,
+                        selectedItemIndex = selectedItemIndex,
+                    ) { page ->
+                        programEventsViewModel.onNavigationPageChanged(page)
+                    }
+                }
+            }
         }
     }
 
@@ -137,7 +207,13 @@ class ProgramEventDetailActivity :
 
     private fun initInjection() {
         component = app().userComponent()
-            ?.plus(ProgramEventDetailModule(this, programUid))
+            ?.plus(
+                ProgramEventDetailModule(
+                    this,
+                    this, programUid,
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                ),
+            )
         component?.inject(this)
     }
 
@@ -195,7 +271,15 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show("EVENT_SYNC")
+            })
+            .onNoConnectionListener {
+                Snackbar.make(
+                    binding.root,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show("EVENT_SYNC")
     }
 
     public override fun onPause() {
@@ -207,21 +291,20 @@ class ProgramEventDetailActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.setOpeningFilterToNone()
-        presenter.onDettach()
-        FilterManager.getInstance().clearEventStatus()
-        FilterManager.getInstance().clearCatOptCombo()
-        FilterManager.getInstance().clearWorkingList(true)
-        FilterManager.getInstance().clearAssignToMe()
-        presenter.clearOtherFiltersIfWebAppIsConfig()
+        if (sessionManagerServiceImpl.isUserLoggedIn()) {
+            presenter.setOpeningFilterToNone()
+            presenter.onDettach()
+            FilterManager.getInstance().clearEventStatus()
+            FilterManager.getInstance().clearCatOptCombo()
+            FilterManager.getInstance().clearWorkingList(true)
+            FilterManager.getInstance().clearAssignToMe()
+            FilterManager.getInstance().clearFlow()
+            presenter.clearOtherFiltersIfWebAppIsConfig()
+        }
     }
 
     override fun setProgram(programModel: Program) {
         binding.name = programModel.displayName()
-    }
-
-    override fun showFilterProgress() {
-        programEventsViewModel.setProgress(true)
     }
 
     override fun renderError(message: String) {
@@ -238,13 +321,13 @@ class ProgramEventDetailActivity :
         val transition: Transition = ChangeBounds()
         transition.addListener(object : Transition.TransitionListener {
             override fun onTransitionStart(transition: Transition) {
+                programEventsViewModel.updateBackdrop(backDropActive)
                 if (!backDropActive) {
                     binding.clearFilters.hide()
                 }
             }
 
             override fun onTransitionEnd(transition: Transition) {
-                programEventsViewModel.updateBackdrop(backDropActive)
                 if (backDropActive) {
                     binding.clearFilters.show()
                 }
@@ -262,9 +345,11 @@ class ProgramEventDetailActivity :
                 /*No action needed*/
             }
         })
+        backDropActive = !backDropActive
+
         transition.duration = 200
         TransitionManager.beginDelayedTransition(binding.backdropLayout, transition)
-        backDropActive = !backDropActive
+
         val initSet = ConstraintSet()
         initSet.clone(binding.backdropLayout)
         if (backDropActive) {
@@ -275,7 +360,20 @@ class ProgramEventDetailActivity :
                 ConstraintSet.BOTTOM,
                 16.dp,
             )
-            binding.navigationBar.hide()
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                16.dp,
+            )
         } else {
             initSet.connect(
                 R.id.fragmentContainer,
@@ -284,33 +382,63 @@ class ProgramEventDetailActivity :
                 ConstraintSet.BOTTOM,
                 0,
             )
-            binding.navigationBar.show()
+            initSet.connect(
+                R.id.fragmentContainer,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                0,
+            )
+            initSet.connect(
+                R.id.addEventButton,
+                ConstraintSet.BOTTOM,
+                R.id.navigationBar,
+                ConstraintSet.TOP,
+                16.dp,
+            )
         }
         initSet.applyTo(binding.backdropLayout)
     }
 
-    override fun startNewEvent() {
-        analyticsHelper.setEvent(CREATE_EVENT, DATA_CREATION, CREATE_EVENT)
-        binding.addEventButton.isEnabled = false
-        val bundle = EventInitialActivity.getBundle(
-            programUid,
-            null,
-            EventCreationType.ADDNEW.name,
-            null,
-            null,
-            null,
-            presenter.stageUid,
-            null,
-            0,
-            null,
-        )
-        startActivity(
-            EventInitialActivity::class.java,
-            bundle,
-            false,
-            false,
-            null,
-        )
+    override fun selectOrgUnitForNewEvent() {
+        val orgUnitList = ouRepositoryConfiguration.orgUnitRepository(null)
+        if (orgUnitList.size == 1) {
+            presenter.stageUid?.let {
+                programEventsViewModel.onOrgUnitForNewEventSelected(
+                    programUid = programUid,
+                    orgUnitUid = orgUnitList.first().uid(),
+                    programStageUid = it,
+                )
+            }
+        } else {
+            OUTreeFragment.Builder()
+                .singleSelection()
+                .withPreselectedOrgUnits(
+                    listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
+                )
+                .orgUnitScope(
+                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
+                )
+                .onSelection { selectedOrgUnits ->
+                    if (selectedOrgUnits.isNotEmpty()) {
+                        presenter.stageUid?.let {
+                            programEventsViewModel.onOrgUnitForNewEventSelected(
+                                programUid = programUid,
+                                orgUnitUid = selectedOrgUnits.first().uid(),
+                                programStageUid = it,
+                            )
+                        }
+                    } else {
+                        enableAddEventButton(true)
+                    }
+                }
+                .build()
+                .show(supportFragmentManager, "ORG_UNIT_DIALOG")
+        }
+    }
+
+    private fun enableAddEventButton(enable: Boolean) {
+        binding.addEventButton.isEnabled = enable
     }
 
     override fun setWritePermission(canWrite: Boolean) {
@@ -324,23 +452,40 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this) { datePeriod: List<DatePeriod?>? ->
-                FilterManager.getInstance().addPeriod(datePeriod)
-            }
+            DateUtils.getInstance()
+                .fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
+                    FilterManager.getInstance().addPeriod(datePeriod)
+                }
         } else {
+            val onFromToSelector =
+                OnFromToSelector { datePeriods ->
+                    FilterManager.getInstance().addPeriod(datePeriods)
+                }
+
             DateUtils.getInstance().showPeriodDialog(
                 this,
-                { datePeriods: List<DatePeriod?>? ->
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                },
+                onFromToSelector,
                 true,
-            )
+            ) {
+                val disposable = RxDateDialog(activity, Period.WEEKLY)
+                    .createForFilter().show()
+                    .subscribe(
+                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
+                            onFromToSelector.onFromToSelected(
+                                DateUtils.getInstance().getDatePeriodListFor(
+                                    selectedDates.val1(),
+                                    selectedDates.val0(),
+                                ),
+                            )
+                        },
+                        { t: Throwable? -> Timber.e(t) },
+                    )
+            }
         }
     }
 
     override fun openOrgUnitTreeSelector() {
         OUTreeFragment.Builder()
-            .showAsDialog()
             .withPreselectedOrgUnits(FilterManager.getInstance().orgUnitUidsFilters)
             .onSelection { selectedOrgUnits ->
                 presenter.setOrgUnitFilters(selectedOrgUnits)
@@ -376,7 +521,15 @@ class ProgramEventDetailActivity :
                 override fun onDismiss(hasChanged: Boolean) {
                     if (hasChanged) FilterManager.getInstance().publishData()
                 }
-            }).show(FRAGMENT_TAG)
+            })
+            .onNoConnectionListener {
+                Snackbar.make(
+                    binding.root,
+                    R.string.sync_offline_check_connection,
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+            }
+            .show(FRAGMENT_TAG)
     }
 
     private fun showList() {

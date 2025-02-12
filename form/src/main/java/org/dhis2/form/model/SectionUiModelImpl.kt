@@ -2,18 +2,14 @@ package org.dhis2.form.model
 
 import androidx.databinding.ObservableField
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.intent.FormIntent.OnFocus
-import org.dhis2.form.ui.intent.FormIntent.OnSection
-import org.dhis2.form.ui.style.FormUiModelStyle
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.option.Option
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 data class SectionUiModelImpl(
     override val uid: String,
-    override val layoutId: Int,
     override val value: String? = null,
     override val focused: Boolean = false,
     override val error: String? = null,
@@ -22,7 +18,6 @@ data class SectionUiModelImpl(
     override val mandatory: Boolean = false,
     override val label: String,
     override val programStageSection: String? = null,
-    override val style: FormUiModelStyle? = null,
     override val hint: String? = null,
     override val description: String? = null,
     override val valueType: ValueType? = null,
@@ -46,6 +41,9 @@ data class SectionUiModelImpl(
     override var optionSetConfiguration: OptionSetConfiguration? = null,
     override val autocompleteList: List<String>? = null,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
+    override val selectableDates: SelectableDates? = null,
+    override val eventCategories: List<EventCategory>? = null,
+    override val periodSelector: PeriodSelector? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0
@@ -55,58 +53,19 @@ data class SectionUiModelImpl(
     private var callback: FieldUiModel.Callback? = null
 
     fun hasToShowDescriptionIcon(isTitleEllipsed: Boolean): Boolean {
-        return description != null && description.isNotEmpty() || isTitleEllipsed
+        return !description.isNullOrEmpty() || isTitleEllipsed
     }
 
-    fun isClosingSection(): Boolean = uid == CLOSING_SECTION_UID
-
-    fun hasErrorAndWarnings(): Boolean = errors > 0 && warnings > 0
-
-    fun hasNotAnyErrorOrWarning(): Boolean = errors == 0 && warnings == 0
-
-    fun hasOnlyErrors(): Boolean = errors > 0 && warnings == 0
-
-    fun getFormattedSectionFieldsInfo(): String = "$completedFields/$totalFields"
-
-    fun areAllFieldsCompleted(): Boolean = completedFields == totalFields
-
-    fun setSelected() {
-        onItemClick()
-        selectedField.get()?.let {
-            val sectionToOpen = if (it == uid) "" else uid
-            selectedField.set(sectionToOpen)
-            callback!!.intent(OnSection(sectionToOpen))
-        }
-    }
+    private fun isClosingSection(): Boolean = uid == CLOSING_SECTION_UID
 
     fun isSelected(): Boolean = selectedField.get() == uid
-
-    fun setSectionNumber(sectionNumber: Int) {
-        this.sectionNumber = sectionNumber
-    }
-
-    fun getSectionNumber(): Int {
-        return sectionNumber
-    }
 
     fun setShowBottomShadow(showBottomShadow: Boolean) {
         this.showBottomShadow = showBottomShadow
     }
 
-    fun showBottomShadow(): Boolean {
-        return showBottomShadow
-    }
-
     fun showNextButton(): Boolean {
         return showBottomShadow && !isClosingSection()
-    }
-
-    fun setLastSectionHeight(lastPositionShouldChangeHeight: Boolean) {
-        this.lastPositionShouldChangeHeight = lastPositionShouldChangeHeight
-    }
-
-    fun lastPositionShouldChangeHeight(): Boolean {
-        return lastPositionShouldChangeHeight
     }
 
     override val formattedLabel: String
@@ -125,15 +84,6 @@ data class SectionUiModelImpl(
         )
     }
 
-    override fun onDescriptionClick() {
-        callback?.recyclerViewUiEvents(
-            RecyclerViewUiEvents.ShowDescriptionLabelDialog(
-                label,
-                description,
-            ),
-        )
-    }
-
     override fun invokeUiEvent(uiEventType: UiEventType) {
         onItemClick()
     }
@@ -142,37 +92,23 @@ data class SectionUiModelImpl(
         callback?.intent(intent)
     }
 
-    override val textColor: Int?
-        get() = style?.textColor(error, warning)
-
-    override val backGroundColor: Pair<Array<Int>, Int?>?
-        get() =
-            valueType?.let {
-                style?.backgroundColor(it, error, warning)
-            }
-
-    override val hasImage: Boolean
-        get() = false
-
     override val isAffirmativeChecked: Boolean
         get() = false
 
     override val isNegativeChecked: Boolean
         get() = false
 
-    override fun onNext() {}
+    override fun onClear() {
+        // Not necessary in this implementation
+    }
 
-    override fun onTextChange(value: CharSequence?) {}
-
-    override fun onClear() {}
-
-    override fun onSave(value: String?) {}
-
-    override fun onSaveBoolean(boolean: Boolean) {}
-
-    override fun onSaveOption(option: Option) {}
+    override fun onSave(value: String?) {
+        // Not necessary in this implementation
+    }
 
     override fun setValue(value: String?) = this.copy(value = value)
+
+    override fun setSelectableDates(selectableDates: SelectableDates?): FieldUiModel = this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 

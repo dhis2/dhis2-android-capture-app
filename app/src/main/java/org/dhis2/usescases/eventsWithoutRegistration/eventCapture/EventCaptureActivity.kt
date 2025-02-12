@@ -1,68 +1,91 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.MenuItem
 import android.view.View
-import android.widget.PopupMenu
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
+import org.dhis2.commons.animations.hide
+import org.dhis2.commons.animations.show
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
-import org.dhis2.commons.popupmenu.AppMenuHelper
+import org.dhis2.commons.resources.EventResourcesProvider
+import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityEventCaptureBinding
-import org.dhis2.ui.ErrorFieldList
+import org.dhis2.form.model.EventMode
+import org.dhis2.tracker.relationships.model.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
 import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.OnEditionListener
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
-import org.dhis2.utils.EventMode
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.newInstance
+import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_EVENT
 import org.dhis2.utils.analytics.SHOW_HELP
-import org.dhis2.utils.customviews.FormBottomDialog
-import org.dhis2.utils.customviews.FormBottomDialog.Companion.instance
+import org.dhis2.utils.customviews.MoreOptionsWithDropDownMenuButton
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.dhis2.utils.customviews.navigationbar.setInitialPage
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
+import org.dhis2.utils.isLandscape
+import org.dhis2.utils.isPortrait
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
-
-const val EXTRA_DETAILS_AS_FIRST_PAGE = "EXTRA_DETAILS_AS_FIRST_PAGE"
 
 class EventCaptureActivity :
     ActivityGlobalAbstract(),
     EventCaptureContract.View,
     MapButtonObservable,
-    EventDetailsComponentProvider {
-    private var binding: ActivityEventCaptureBinding? = null
+    EventDetailsComponentProvider,
+    TEIDataActivityContract {
+    private lateinit var binding: ActivityEventCaptureBinding
 
-    @JvmField
     @Inject
-    var presenter: EventCaptureContract.Presenter? = null
+    override lateinit var presenter: EventCaptureContract.Presenter
 
     @JvmField
     @Inject
@@ -72,67 +95,83 @@ class EventCaptureActivity :
     @Inject
     var themeManager: ThemeManager? = null
     private var isEventCompleted = false
-    private var eventMode: EventMode? = null
+    private lateinit var eventMode: EventMode
+
+    @Inject
+    lateinit var eventResourcesProvider: EventResourcesProvider
 
     @JvmField
     var eventCaptureComponent: EventCaptureComponent? = null
     var programUid: String? = null
     var eventUid: String? = null
+    private var teiUid: String? = null
+    private var enrollmentUid: String? = null
     private val relationshipMapButton: LiveData<Boolean> = MutableLiveData(false)
-    private var onEditionListener: OnEditionListener? = null
     private var adapter: EventCapturePagerAdapter? = null
+    private var eventViewPager: ViewPager2? = null
+    private var dashboardViewModel: DashboardViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         eventUid = intent.getStringExtra(Constants.EVENT_UID)
-        eventCaptureComponent = this.app().userComponent()!!.plus(
-            EventCaptureModule(
-                this,
-                eventUid,
-            ),
-        )
-        eventCaptureComponent!!.inject(this)
+        programUid = intent.getStringExtra(Constants.PROGRAM_UID)
+        setUpEventCaptureComponent(eventUid!!)
+        teiUid = presenter.getTeiUid()
+        enrollmentUid = presenter.getEnrollmentUid()
         themeManager!!.setProgramTheme(intent.getStringExtra(Constants.PROGRAM_UID)!!)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture)
-        binding?.presenter = presenter
-        val navigationInitialPage =
-            if (intent.getBooleanExtra(EXTRA_DETAILS_AS_FIRST_PAGE, false)) {
-                0
-            } else {
-                1
+        binding.presenter = presenter
+        eventViewPager = when {
+            this.isLandscape() -> binding.eventViewLandPager
+            else -> binding.eventViewPager
+        }
+        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode
+        setUpViewPagerAdapter()
+        setUpNavigationBar()
+        setupMoreOptionsMenu()
+
+        setUpEventCaptureFormLandscape(eventUid ?: "")
+        if (this.isLandscape() && areTeiUidAndEnrollmentUidNotNull()) {
+            val viewModelFactory = this.app().dashboardComponent()?.dashboardViewModelFactory()
+
+            viewModelFactory?.let {
+                dashboardViewModel =
+                    ViewModelProvider(this, viewModelFactory)[DashboardViewModel::class.java]
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.tei_column, newInstance(programUid, teiUid, enrollmentUid))
+                    .commit()
+                dashboardViewModel?.updateSelectedEventUid(eventUid)
             }
-        eventMode = intent.getSerializableExtra(Constants.EVENT_MODE) as EventMode?
-        setUpViewPagerAdapter(navigationInitialPage)
-        setUpNavigationBar(navigationInitialPage)
+        }
         showProgress()
-        presenter!!.initNoteCounter()
-        presenter!!.init()
-        binding?.syncButton?.setOnClickListener { showSyncDialog() }
+        presenter.initNoteCounter()
+        presenter.init()
+        binding.syncButton.setOnClickListener { showSyncDialog(EVENT_SYNC) }
 
         if (intent.shouldLaunchSyncDialog()) {
-            showSyncDialog()
+            showSyncDialog(EVENT_SYNC)
         }
     }
 
-    private fun setUpViewPagerAdapter(initialPage: Int) {
-        binding!!.eventViewPager.isUserInputEnabled = false
+    private fun setUpViewPagerAdapter() {
+        eventViewPager?.isUserInputEnabled = false
         adapter = EventCapturePagerAdapter(
             this,
-            intent.getStringExtra(Constants.PROGRAM_UID),
-            intent.getStringExtra(Constants.EVENT_UID),
+            intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
+            intent.getStringExtra(Constants.EVENT_UID) ?: "",
             pageConfigurator!!.displayAnalytics(),
             pageConfigurator!!.displayRelationships(),
             intent.getBooleanExtra(OPEN_ERROR_LOCATION, false),
+            eventMode,
             pageConfigurator!!.displayNotes()
         )
-        binding!!.eventViewPager.adapter = adapter
-        binding!!.eventViewPager.setCurrentItem(initialPage, false)
-        binding!!.eventViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+        eventViewPager?.adapter = adapter
+        eventViewPager?.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (position == 0 && eventMode !== EventMode.NEW) {
-                    binding!!.syncButton.visibility = View.VISIBLE
+                    binding.syncButton.visibility = View.VISIBLE
                 } else {
-                    binding!!.syncButton.visibility = View.GONE
+                    binding.syncButton.visibility = View.GONE
                 }
                 if (position != 1) {
                     hideProgress()
@@ -141,17 +180,85 @@ class EventCaptureActivity :
         })
     }
 
-    private fun setUpNavigationBar(initialPage: Int) {
-        binding!!.navigationBar.setInitialPage(initialPage)
-        binding!!.navigationBar.pageConfiguration(pageConfigurator!!)
-        binding!!.navigationBar.setOnNavigationItemSelectedListener { item: MenuItem ->
-            binding!!.eventViewPager.currentItem = adapter!!.getDynamicTabIndex(item.itemId)
-            true
+    private fun setUpNavigationBar() {
+        eventViewPager?.registerOnPageChangeCallback(
+            object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    presenter.onSetNavigationPage(position)
+                }
+            },
+        )
+        binding.navigationBar.setContent {
+            DHIS2Theme {
+                val uiState by presenter.observeNavigationBarUIState()
+                val selectedItemIndex by remember(uiState) {
+                    mutableIntStateOf(
+                        uiState.items.indexOfFirst {
+                            it.id == uiState.selectedItem
+                        },
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.items.isNotEmpty(),
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it },
+                ) {
+                    NavigationBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.items,
+                        selectedItemIndex = selectedItemIndex,
+                    ) { page ->
+                        presenter.onNavigationPageChanged(page)
+                        eventViewPager?.currentItem = adapter!!.getDynamicTabIndex(page)
+                    }
+                }
+            }
         }
     }
 
+    private fun setUpEventCaptureFormLandscape(eventUid: String) {
+        if (this.isLandscape()) {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.event_form,
+                    EventCaptureFormFragment.newInstance(eventUid, false, eventMode),
+                )
+                .commit()
+        }
+    }
+
+    private fun setUpEventCaptureComponent(eventUid: String) {
+        eventCaptureComponent = app().userComponent()!!.plus(
+            EventCaptureModule(
+                this,
+                eventUid,
+                this.isPortrait(),
+            ),
+        )
+        eventCaptureComponent!!.inject(this)
+    }
+
+    private fun updateLandscapeViewsOnEventChange(newEventUid: String) {
+        if (newEventUid != this.eventUid) {
+            this.eventUid = newEventUid
+            setUpEventCaptureComponent(newEventUid)
+            setUpViewPagerAdapter()
+            setUpNavigationBar()
+            setUpEventCaptureFormLandscape(newEventUid)
+            showProgress()
+            presenter.initNoteCounter()
+            presenter.init()
+        }
+    }
+
+    private fun areTeiUidAndEnrollmentUidNotNull(): Boolean {
+        return teiUid != null && enrollmentUid != null
+    }
+
     fun openDetails() {
-        binding?.navigationBar?.selectItemAt(0)
+        presenter.onNavigationPageChanged(NavigationPage.DETAILS)
     }
 
     fun openForm() {
@@ -160,16 +267,20 @@ class EventCaptureActivity :
                 it.dismiss()
             }
         }
-        binding?.navigationBar?.selectItemAt(1)
+        presenter.onNavigationPageChanged(NavigationPage.DATA_ENTRY)
     }
 
     override fun onResume() {
         super.onResume()
-        presenter!!.refreshTabCounters()
+        presenter.refreshTabCounters()
+        with(dashboardViewModel) {
+            this?.selectedEventUid()
+                ?.observe(this@EventCaptureActivity, ::updateLandscapeViewsOnEventChange)
+        }
     }
 
     override fun onDestroy() {
-        presenter!!.onDettach()
+        presenter.onDettach()
         super.onDestroy()
     }
 
@@ -177,17 +288,14 @@ class EventCaptureActivity :
         onBackPressed()
     }
 
+    @SuppressLint("MissingSuperCall")
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (onEditionListener != null) {
-            onEditionListener!!.onEditionListener()
-        }
         finishEditMode()
     }
 
     private fun finishEditMode() {
-        if (binding!!.navigationBar.isHidden()) {
+        if (binding.navigationBar.visibility == View.GONE) {
             showNavigationBar()
         } else {
             attemptFinish()
@@ -208,109 +316,48 @@ class EventCaptureActivity :
                 {
                     /*Unused*/
                 },
-                { presenter!!.deleteEvent() },
+                { presenter.deleteEvent() },
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else if (isFormScreen()) {
-            presenter?.emitAction(EventCaptureAction.ON_BACK)
+            presenter.emitAction(EventCaptureAction.ON_BACK)
         } else {
             finishDataEntry()
         }
     }
 
     private fun isFormScreen(): Boolean {
-        return adapter?.isFormScreenShown(binding?.eventViewPager?.currentItem) == true
+        return if (this.isPortrait()) {
+            adapter?.isFormScreenShown(binding.eventViewPager?.currentItem) == true
+        } else {
+            true
+        }
     }
 
     override fun updatePercentage(primaryValue: Float) {
-        binding!!.completion.setCompletionPercentage(primaryValue)
-        if (!presenter!!.completionPercentageVisibility) {
-            binding!!.completion.visibility = View.GONE
+        binding.completion.setCompletionPercentage(primaryValue)
+        if (!presenter.getCompletionPercentageVisibility()) {
+            binding.completion.visibility = View.GONE
         }
-    }
-
-    override fun showCompleteActions(
-        canComplete: Boolean,
-        emptyMandatoryFields: Map<String, String>,
-        eventCompletionDialog: EventCompletionDialog,
-    ) {
-        if (binding!!.navigationBar.selectedItemId == R.id.navigation_data_entry) {
-            val dialog = BottomSheetDialog(
-                bottomSheetDialogUiModel = eventCompletionDialog.bottomSheetDialogUiModel,
-                onMainButtonClicked = {
-                    setAction(eventCompletionDialog.mainButtonAction)
-                },
-                onSecondaryButtonClicked = {
-                    eventCompletionDialog.secondaryButtonAction?.let { setAction(it) }
-                },
-                content = if (eventCompletionDialog.fieldsWithIssues.isNotEmpty()) {
-                    { bottomSheetDialog ->
-                        ErrorFieldList(eventCompletionDialog.fieldsWithIssues) {
-                            bottomSheetDialog.dismiss()
-                        }
-                    }
-                } else {
-                    null
-                },
-            )
-            dialog.show(supportFragmentManager, SHOW_OPTIONS)
-        }
-    }
-
-    override fun updateProgramStageName(stageName: String?) {
-        binding?.programStageName?.text = stageName;
     }
 
     fun refreshProgramStageName() {
-        presenter!!.refreshProgramStage()
+        presenter.refreshProgramStage()
     }
 
-    override fun SaveAndFinish() {
+    override fun saveAndFinish() {
         displayMessage(getString(R.string.saved))
-        setAction(FormBottomDialog.ActionType.FINISH)
+        finishDataEntry()
     }
 
-    override fun attemptToSkip() {
-        instance
-            .setAccessDataWrite(presenter!!.canWrite())
-            .setIsExpired(presenter!!.hasExpired())
-            .setSkip(true)
-            .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS)
-    }
-
-    override fun attemptToReschedule() {
-        instance
-            .setAccessDataWrite(presenter!!.canWrite())
-            .setIsExpired(presenter!!.hasExpired())
-            .setReschedule(true)
-            .setListener { actionType: FormBottomDialog.ActionType -> setAction(actionType) }
-            .show(supportFragmentManager, SHOW_OPTIONS)
-    }
-
-    private fun setAction(actionType: FormBottomDialog.ActionType) {
-        when (actionType) {
-            FormBottomDialog.ActionType.COMPLETE -> {
-                isEventCompleted = true
-                presenter!!.completeEvent(false)
-            }
-            FormBottomDialog.ActionType.COMPLETE_ADD_NEW -> presenter!!.completeEvent(true)
-            FormBottomDialog.ActionType.FINISH_ADD_NEW -> restartDataEntry()
-            FormBottomDialog.ActionType.SKIP -> presenter!!.skipEvent()
-            FormBottomDialog.ActionType.RESCHEDULE -> { // Do nothing
-            }
-            FormBottomDialog.ActionType.CHECK_FIELDS -> { // Do nothing
-            }
-            FormBottomDialog.ActionType.FINISH -> finishDataEntry()
-            FormBottomDialog.ActionType.NONE -> { // Do nothing
-            }
-        }
-    }
-
-    override fun showSnackBar(messageId: Int) {
-        val mySnackbar =
-            Snackbar.make(binding!!.root, messageId, BaseTransientBottomBar.LENGTH_SHORT)
-        mySnackbar.show()
+    override fun showSnackBar(messageId: Int, programStage: String) {
+        showToast(
+            eventResourcesProvider.formatWithProgramStageEventLabel(
+                messageId,
+                programStage,
+                programUid,
+            ),
+        )
     }
 
     override fun restartDataEntry() {
@@ -332,46 +379,51 @@ class EventCaptureActivity :
         finish()
     }
 
-    override fun renderInitialInfo(
-        stageName: String,
-        eventDate: String,
-        orgUnit: String,
-        catOption: String,
-    ) {
-        binding!!.programStageName.text = stageName
-        val eventDataString = StringBuilder(String.format("%s | %s", eventDate, orgUnit))
-        if (catOption != null && !catOption.isEmpty()) {
-            eventDataString.append(String.format(" | %s", catOption))
-        }
-        binding!!.eventSecundaryInfo.text = eventDataString
+    override fun renderInitialInfo(stageName: String) {
+        binding.programStageName.text = stageName
     }
 
-    override fun getPresenter(): EventCaptureContract.Presenter {
-        return presenter!!
-    }
+    private fun setupMoreOptionsMenu() {
+        binding.moreOptions.setContent {
+            var expanded by remember { mutableStateOf(false) }
 
-    override fun showMoreOptions(view: View) {
-        AppMenuHelper.Builder().menu(this, R.menu.event_menu).anchor(view)
-            .onMenuInflated { popupMenu: PopupMenu ->
-                popupMenu.menu.findItem(R.id.menu_delete).isVisible =
-                    presenter!!.canWrite() && presenter!!.isEnrollmentOpen
-                popupMenu.menu.findItem(R.id.menu_share).isVisible = false
-                Unit
-            }
-            .onMenuItemClicked { itemId: Int? ->
+            MoreOptionsWithDropDownMenuButton(
+                getMenuItems(),
+                expanded,
+                onMenuToggle = { expanded = it },
+            ) { itemId ->
                 when (itemId) {
-                    R.id.showHelp -> {
+                    EventCaptureMenuItem.SHOW_HELP -> {
                         analyticsHelper().setEvent(SHOW_HELP, CLICK, SHOW_HELP)
                         showTutorial(false)
                     }
-                    R.id.menu_delete -> confirmDeleteEvent()
-                    else -> { // Do nothing
-                    }
+
+                    EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
                 }
-                false
             }
-            .build()
-            .show()
+        }
+    }
+
+    private fun getMenuItems(): List<MenuItemData<EventCaptureMenuItem>> {
+        return buildList {
+            add(
+                MenuItemData(
+                    id = EventCaptureMenuItem.SHOW_HELP,
+                    label = getString(R.string.showHelp),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
+                ),
+            )
+            if (presenter.canWrite() && presenter.isEnrollmentOpen()) {
+                add(
+                    MenuItemData(
+                        id = EventCaptureMenuItem.DELETE,
+                        label = getString(R.string.delete),
+                        style = MenuItemStyle.ALERT,
+                        leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.DeleteForever),
+                    ),
+                )
+            }
+        }
     }
 
     override fun showTutorial(shaked: Boolean) {
@@ -379,59 +431,81 @@ class EventCaptureActivity :
     }
 
     private fun confirmDeleteEvent() {
-        CustomDialog(
-            this,
-            getString(R.string.delete_event),
-            getString(R.string.confirm_delete_event),
-            getString(R.string.delete),
-            getString(R.string.cancel),
-            0,
-            object : DialogClickListener {
-                override fun onPositive() {
-                    analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
-                    presenter!!.deleteEvent()
-                }
+        presenter.programStage().let {
+            CustomDialog(
+                this,
+                eventResourcesProvider.formatWithProgramStageEventLabel(
+                    R.string.delete_event_label,
+                    programStageUid = it,
+                    programUid,
+                ),
+                eventResourcesProvider.formatWithProgramStageEventLabel(
+                    R.string.confirm_delete_event_label,
+                    programStageUid = it,
+                    programUid,
+                ),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                0,
+                object : DialogClickListener {
+                    override fun onPositive() {
+                        analyticsHelper().setEvent(DELETE_EVENT, CLICK, DELETE_EVENT)
+                        presenter.deleteEvent()
+                    }
 
-                override fun onNegative() {
-                    // dismiss
-                }
-            },
-        ).show()
+                    override fun onNegative() {
+                        // dismiss
+                    }
+                },
+            ).show()
+        }
     }
 
     override fun showEventIntegrityAlert() {
         MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
             .setTitle(R.string.conflict)
-            .setMessage(R.string.event_date_in_future_message)
+            .setMessage(
+                eventResourcesProvider.formatWithProgramStageEventLabel(
+                    R.string.event_label_date_in_future_message,
+                    programStageUid = presenter.programStage(),
+                    programUid = programUid,
+                ),
+            )
             .setPositiveButton(
                 R.string.change_event_date,
-            ) { _, _ -> binding!!.navigationBar.selectItemAt(0) }
+            ) { _, _ ->
+                presenter.onSetNavigationPage(0)
+            }
             .setNegativeButton(R.string.go_back) { _, _ -> back() }
             .setCancelable(false)
             .show()
     }
 
     override fun updateNoteBadge(numberOfNotes: Int) {
-        binding!!.navigationBar.updateBadge(R.id.navigation_notes, numberOfNotes)
+        presenter.updateNotesBadge(numberOfNotes)
     }
 
     override fun showProgress() {
-        runOnUiThread { binding!!.toolbarProgress.show() }
+        runOnUiThread { binding.toolbarProgress.show() }
     }
 
     override fun hideProgress() {
         Handler(Looper.getMainLooper()).postDelayed(
-            { runOnUiThread { binding!!.toolbarProgress.hide() } },
+            { runOnUiThread { binding.toolbarProgress.hide() } },
             1000,
         )
     }
 
     override fun showNavigationBar() {
-        binding!!.navigationBar.show()
+        binding.navigationBar.show()
     }
 
     override fun hideNavigationBar() {
-        binding!!.navigationBar.hide()
+        binding.navigationBar.hide()
+    }
+
+    override fun updateProgramStageName(stageName: String) {
+        binding?.programStageName?.text = stageName;
     }
 
     override fun relationshipMap(): LiveData<Boolean> {
@@ -442,23 +516,89 @@ class EventCaptureActivity :
         // there are no relationships on events
     }
 
-    fun setFormEditionListener(onEditionListener: OnEditionListener?) {
-        this.onEditionListener = onEditionListener
+    override fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState) {
+        when (topBarIconState) {
+            is RelationshipTopBarIconState.Selecting -> {
+                binding.relationshipIcon.visibility = View.VISIBLE
+                binding.relationshipIcon.setContent {
+                    RelationshipTopBarIcon(
+                        relationshipTopBarIconState = topBarIconState,
+                    ) {
+                        topBarIconState.onClickListener()
+                    }
+                }
+            }
+
+            else -> {
+                binding.relationshipIcon.visibility = View.GONE
+            }
+        }
     }
 
     override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {
         return eventCaptureComponent!!.plus(module)
     }
 
-    private fun showSyncDialog() {
-        SyncStatusDialog.Builder()
-            .withContext(this)
-            .withSyncContext(SyncContext.Event(eventUid!!))
-            .show("EVENT_SYNC")
+    private fun showSyncDialog(syncType: String) {
+        val syncContext = when (syncType) {
+            TEI_SYNC -> enrollmentUid?.let { SyncContext.Enrollment(it) }
+            EVENT_SYNC -> SyncContext.Event(eventUid!!)
+            else -> null
+        }
+
+        syncContext?.let {
+            SyncStatusDialog.Builder()
+                .withContext(this)
+                .withSyncContext(it)
+                .onDismissListener(object : OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged && syncType == TEI_SYNC) {
+                            dashboardViewModel?.updateDashboard()
+                        }
+                    }
+                })
+                .onNoConnectionListener {
+                    val contextView = findViewById<View>(R.id.navigationBar)
+                    Snackbar.make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
+                }
+                .show(syncType)
+        }
+    }
+
+    override fun openSyncDialog() {
+        showSyncDialog(TEI_SYNC)
+    }
+
+    override fun finishActivity() {
+        finish()
+    }
+
+    override fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String) {
+        // we do not restore adapter in events
+    }
+
+    override fun executeOnUIThread() {
+        activity.runOnUiThread {
+            showDescription(getString(R.string.error_applying_rule_effects))
+        }
+    }
+
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun activityTeiUid(): String? {
+        return teiUid
     }
 
     companion object {
         private const val SHOW_OPTIONS = "SHOW_OPTIONS"
+        private const val TEI_SYNC = "SYNC_TEI"
+        private const val EVENT_SYNC = "EVENT_SYNC"
 
         @JvmStatic
         fun getActivityBundle(eventUid: String, programUid: String, eventMode: EventMode): Bundle {
@@ -473,15 +613,18 @@ class EventCaptureActivity :
             context: Context,
             eventUid: String,
             programUid: String,
-            openDetailsAsFirstPage: Boolean,
             eventMode: EventMode,
         ): Intent {
             return Intent(context, EventCaptureActivity::class.java).apply {
                 putExtra(Constants.EVENT_UID, eventUid)
                 putExtra(Constants.PROGRAM_UID, programUid)
-                putExtra(EXTRA_DETAILS_AS_FIRST_PAGE, openDetailsAsFirstPage)
                 putExtra(Constants.EVENT_MODE, eventMode)
             }
         }
     }
+}
+
+enum class EventCaptureMenuItem {
+    SHOW_HELP,
+    DELETE,
 }

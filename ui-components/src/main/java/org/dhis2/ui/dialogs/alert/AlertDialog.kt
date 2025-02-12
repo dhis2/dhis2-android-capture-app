@@ -19,7 +19,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.ui.theme.Dhis2Theme
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
@@ -123,87 +123,88 @@ fun Dhis2AlertDialogUi(
     )
 
     var confirmButtonClick = remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = dismissButton.onClick,
-        title = { Text(text = labelText, textAlign = TextAlign.Center) },
-        text = {
-            Column {
-                Text(
-                    text = buildAnnotatedString {
-                        append(descriptionText)
-                        spanText?.let {
-                            addStyle(
-                                style = SpanStyle(MaterialTheme.colorScheme.primary),
-                                start = descriptionText.indexOf(spanText),
-                                end = descriptionText.indexOf(spanText) + spanText.length,
-                            )
-                        }
-                    },
-                )
-                animationRes?.let {
-                    Spacer(modifier = Modifier.size(16.dp))
-                    if (!confirmButtonClick.value) {
-                        LottieAnimation(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            composition = composition,
-                            iterations = LottieConstants.IterateForever,
-                        )
-                    } else {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            ProgressIndicator(
+    Dhis2Theme {
+        AlertDialog(
+            onDismissRequest = dismissButton.onClick,
+            title = { Text(text = labelText, textAlign = TextAlign.Center) },
+            text = {
+                Column {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(descriptionText)
+                            spanText?.let {
+                                addStyle(
+                                    style = SpanStyle(MaterialTheme.colorScheme.primary),
+                                    start = descriptionText.indexOf(spanText),
+                                    end = descriptionText.indexOf(spanText) + spanText.length,
+                                )
+                            }
+                        },
+                    )
+                    animationRes?.let {
+                        Spacer(modifier = Modifier.size(16.dp))
+                        if (!confirmButtonClick.value) {
+                            LottieAnimation(
                                 modifier = Modifier
-                                    .width(100.dp)
-                                    .height(100.dp),
-                                type = ProgressIndicatorType.CIRCULAR,
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                composition = composition,
+                                iterations = LottieConstants.IterateForever,
                             )
+                        } else {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                ProgressIndicator(
+                                    modifier = Modifier
+                                        .width(100.dp)
+                                        .height(100.dp),
+                                    type = ProgressIndicatorType.CIRCULAR,
+                                )
+                            }
                         }
                     }
                 }
-            }
-        },
-        icon = {
-            iconResource?.let {
-                Icon(
-                    painter = painterResource(id = iconResource),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "notification alert",
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
-                onClick = {
-                    confirmButtonClick.value = true
-                    animationRes?.let {
-                        val job = Job()
-                        val scope = CoroutineScope(job)
+            },
+            icon = {
+                iconResource?.let {
+                    Icon(
+                        painter = painterResource(id = iconResource),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "notification alert",
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    text = confirmButton.text,
+                    modifier = Modifier.testTag(CONFIRM_BUTTON_TAG),
+                    onClick = {
+                        confirmButtonClick.value = true
+                        animationRes?.let {
+                            val job = Job()
+                            val scope = CoroutineScope(job)
 
-                        scope.launch {
-                            delay(5000)
-                            confirmButton.onClick.invoke()
-                        }
-                    } ?: confirmButton.onClick.invoke()
-                },
-            ) {
-                Text(text = confirmButton.text)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = dismissButton.onClick) {
-                Text(text = dismissButton.text)
-            }
-        },
-    )
+                            scope.launch {
+                                delay(5000)
+                                confirmButton.onClick.invoke()
+                            }
+                        } ?: confirmButton.onClick.invoke()
+                    },
+                )
+            },
+            dismissButton = {
+                Button(
+                    text = dismissButton.text,
+                    onClick = dismissButton.onClick,
+                )
+            },
+        )
+    }
 }
 
 const val CONFIRM_BUTTON_TAG = "CONFIRM_BUTTON_TAG"

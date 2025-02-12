@@ -1,44 +1,37 @@
 package org.dhis2.usescases.programEventDetail
 
-import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import com.mapbox.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.filters.data.FilterPresenter
-import org.dhis2.commons.filters.data.TextFilter
-import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.extensions.filterEventsByLayerVisibility
+import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.EventMapManager
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.usescases.events.EventInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
-import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.dataelement.DataElement
+import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
-import org.hisp.dhis.android.core.program.ProgramStageDataElement
 
 class ProgramEventDetailRepositoryImpl internal constructor(
     private val programUid: String,
     private val d2: D2,
     private val mapper: ProgramEventMapper,
-    private val mapEventToFeatureCollection: MapEventToFeatureCollection,
-    private val mapCoordinateFieldToFeatureCollection: MapCoordinateFieldToFeatureCollection,
     private val mapUtils: DhisMapUtils,
     private val filterPresenter: FilterPresenter,
     private val charts: Charts?,
+    private val eventInfoProvider: EventInfoProvider,
 ) : ProgramEventDetailRepository {
 
     private val programRepository = d2.programModule().programs().uid(programUid)
@@ -47,36 +40,50 @@ class ProgramEventDetailRepositoryImpl internal constructor(
         filterPresenter.filteredEventProgram(it)
     }
 
-    override fun filteredProgramEvents(textFilter: TextFilter?): LiveData<PagedList<EventViewModel>> {
+    override fun filteredProgramEvents(): Flow<PagingData<Event>> {
         val program = program().blockingGet() ?: throw NullPointerException()
-        val dataSource = filterPresenter
-            .filteredEventProgram(program, textFilter)
-            .dataSource
-            .map { event ->
-                mapper.eventToEventViewModel(event)
-            }
-        return LivePagedListBuilder(
-            object : DataSource.Factory<Event, EventViewModel>() {
-                override fun create(): DataSource<Event, EventViewModel> {
-                    return dataSource
-                }
-            },
-            20,
-        ).build()
+        return filterPresenter
+            .filteredEventProgram(program)
+            .getPagingData(10)
     }
 
-    override fun filteredEventsForMap(): Flowable<ProgramEventMapData> {
+    override fun filteredEventsForMap(
+        layersVisibility: Map<String, MapLayer>,
+    ): Flowable<ProgramEventMapData> {
         return filterRepository?.get()
             ?.map { listEvents ->
-                val (first, second) = mapEventToFeatureCollection.map(listEvents)
+                val (first, second) = mapUtils.eventsToFeatureCollection(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
                 programEventFeatures[EventMapManager.EVENTS] = first
-                val deFeatureCollection = mapCoordinateFieldToFeatureCollection.map(
-                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents)),
-                )
+                val coordinateDataElements =
+                    mapUtils.getCoordinateDataElementInfo(getUidsList(listEvents))
+                val deFeatureCollection =
+                    mapUtils.coordinateFieldsToFeatureCollection(coordinateDataElements)
+
                 programEventFeatures.putAll(deFeatureCollection)
+
+                val mapEvents = listEvents.map { event ->
+                    with(eventInfoProvider) {
+                        MapItemModel(
+                            uid = event.uid(),
+                            avatarProviderConfiguration = getAvatar(event),
+                            title = getEventTitle(event),
+                            description = getEventDescription(event),
+                            lastUpdated = getEventLastUpdated(event),
+                            additionalInfoList = getAdditionInfoList(event),
+                            isOnline = false,
+                            geometry = event.geometry(),
+                            relatedInfo = getRelatedInfo(event),
+                            state = event.aggregatedSyncState() ?: State.SYNCED,
+                        )
+                    }
+                }
+
                 ProgramEventMapData(
-                    mapper.eventsToProgramEvents(listEvents),
+                    mapEvents.filterEventsByLayerVisibility(
+                        layersVisibility,
+                        coordinateDataElements,
+                    ),
                     programEventFeatures,
                     second,
                 )
@@ -86,9 +93,7 @@ class ProgramEventDetailRepositoryImpl internal constructor(
 
     override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
-            .map { event ->
-                mapper.eventToProgramEvent(event)
-            }
+            .map(mapper::eventToProgramEvent)
             .toFlowable()
     }
 
@@ -149,46 +154,16 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     }
 
     override fun programHasAnalytics(): Boolean {
-        return charts != null && charts.getProgramVisualizations(null, programUid).isNotEmpty()
+        return charts?.getVisualizationGroups(programUid)?.isNotEmpty() == true
     }
 
     override fun isEventEditable(eventUid: String): Boolean {
         return d2.eventModule().eventService().blockingIsEditable(eventUid)
     }
 
-    override fun textTypeDataElements(): Observable<List<DataElement>> {
-        val programStageUIds = d2.programModule().programs().uid(programUid).get()
-            .flatMap { program: Program ->
-                d2.programModule().programStages().byProgramUid()
-                    .eq(program.uid()).get()
-            }
-            .toObservable().flatMap { programStages: List<ProgramStage>? ->
-                Observable.fromIterable(programStages)
-                    .map { item: ProgramStage -> item.uid() }
-                    .toList().toObservable()
-            }.blockingFirst()
-
-        val programStagesDataElementsUIds =
-            d2.programModule().programStageDataElements().byProgramStage().`in`(programStageUIds)
-                .get()
-                .toObservable()
-                .flatMap { programStageDataElements: List<ProgramStageDataElement>? ->
-                    Observable.fromIterable(
-                        programStageDataElements
-                    )
-                        .map { item: ProgramStageDataElement ->
-                            item.dataElement()!!
-                                .uid()
-                        }
-                        .toList().toObservable()
-                }.blockingFirst()
-
-
-        return d2.dataElementModule().dataElements()
-            .byValueType().eq(ValueType.TEXT)
-            .byUid().`in`(programStagesDataElementsUIds)
-            .byOptionSetUid().isNull
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-            .get().toObservable()
+    override fun displayOrganisationUnit(programUid: String): Boolean {
+        return d2.organisationUnitModule().organisationUnits()
+            .byProgramUids(listOf(programUid))
+            .blockingGet().size > 1
     }
 }

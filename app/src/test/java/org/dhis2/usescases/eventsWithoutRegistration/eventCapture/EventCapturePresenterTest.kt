@@ -4,11 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.bindings.canSkipErrorFix
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ConfigureEventCompletionDialog
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.model.EventCompletionDialog
+import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -37,7 +36,8 @@ class EventCapturePresenterTest {
     private val eventRepository: EventCaptureContract.EventCaptureRepository = mock()
     private val schedulers = TrampolineSchedulerProvider()
     private val preferences: PreferenceProvider = mock()
-    private val configureEventCompletionDialog: ConfigureEventCompletionDialog = mock()
+    private val pageConfigurator: NavigationPageConfigurator = mock()
+    private val resourceManager: ResourceManager = mock()
 
     @Before
     fun setUp() {
@@ -47,7 +47,8 @@ class EventCapturePresenterTest {
             eventRepository,
             schedulers,
             preferences,
-            configureEventCompletionDialog,
+            pageConfigurator,
+            resourceManager,
         )
     }
 
@@ -59,7 +60,7 @@ class EventCapturePresenterTest {
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         presenter.init()
-        verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).renderInitialInfo(any())
 
         verifyNoMoreInteractions(view)
     }
@@ -73,7 +74,7 @@ class EventCapturePresenterTest {
 
         presenter.init()
         verify(view).showEventIntegrityAlert()
-        verify(view).renderInitialInfo(any(), any(), any(), any())
+        verify(view).renderInitialInfo(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -88,7 +89,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is not open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn false
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(!result)
     }
 
@@ -96,7 +97,7 @@ class EventCapturePresenterTest {
     fun `Should return enrollment that is open`() {
         whenever(eventRepository.isEnrollmentOpen) doReturn true
 
-        val result = presenter.isEnrollmentOpen
+        val result = presenter.isEnrollmentOpen()
         assertTrue(result)
     }
 
@@ -127,9 +128,10 @@ class EventCapturePresenterTest {
     @Test
     fun `Should delete an event`() {
         whenever(eventRepository.deleteEvent()) doReturn Observable.just(true)
+        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.deleteEvent()
-        verify(view).showSnackBar(any())
+        verify(view).showSnackBar(any(), any())
         verify(view).finishDataEntry()
         verifyNoMoreInteractions(view)
     }
@@ -137,6 +139,7 @@ class EventCapturePresenterTest {
     @Test
     fun `Should close form if it could not delete an event`() {
         whenever(eventRepository.deleteEvent()) doReturn Observable.just(false)
+        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.deleteEvent()
         verify(view).finishDataEntry()
@@ -147,9 +150,10 @@ class EventCapturePresenterTest {
     fun `Should skip an event`() {
         val status = EventStatus.SKIPPED
         whenever(eventRepository.updateEventStatus(status)) doReturn Observable.just(true)
+        whenever(eventRepository.programStage()) doReturn Observable.just("programStage")
 
         presenter.skipEvent()
-        verify(view).showSnackBar(any())
+        verify(view).showSnackBar(any(), any())
         verify(view).finishDataEntry()
         verifyNoMoreInteractions(view)
     }
@@ -210,7 +214,7 @@ class EventCapturePresenterTest {
     fun `Should show completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn true
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(result)
     }
 
@@ -218,7 +222,7 @@ class EventCapturePresenterTest {
     fun `Should hide completion percentage`() {
         whenever(eventRepository.showCompletionPercentage()) doReturn false
 
-        val result = presenter.completionPercentageVisibility
+        val result = presenter.getCompletionPercentageVisibility()
         assertTrue(!result)
     }
 
@@ -250,13 +254,15 @@ class EventCapturePresenterTest {
         whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
         whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(true)
         whenever(eventRepository.isEventEditable(any())) doReturn true
 
-        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+        presenter.saveAndExit(EventStatus.COMPLETED)
 
-        verify(view).SaveAndFinish()
+        verify(view).saveAndFinish()
     }
 
     @Test
@@ -267,82 +273,34 @@ class EventCapturePresenterTest {
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         presenter.init()
-
+        whenever(
+            eventRepository.validationStrategy(),
+        ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
         whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
         whenever(eventRepository.isEventEditable(any())) doReturn true
         whenever(eventRepository.isEnrollmentCancelled) doReturn true
 
-        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
+        presenter.saveAndExit(EventStatus.COMPLETED)
 
         verify(view).finishDataEntry()
     }
 
     @Test
-    fun `Should set action by status if event is overdue`() {
+    fun `Should save and finish if event is is completed and has no errors`() {
         initializeMocks()
         whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
-        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.OVERDUE)
-        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
-        presenter.init()
-
-        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
-        whenever(eventRepository.isEventEditable(any())) doReturn true
-
-        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
-
-        verify(view).attemptToSkip()
-    }
-
-    @Test
-    fun `Should set action by status if event is skipped`() {
-        initializeMocks()
-        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
-        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.SKIPPED)
-        whenever(eventRepository.isEventEditable("eventUid")) doReturn true
-
-        presenter.init()
-
-        whenever(eventRepository.isCompletedEventExpired(any())) doReturn Observable.just(false)
-        whenever(eventRepository.isEventEditable(any())) doReturn true
-
-        presenter.attemptFinish(true, null, emptyList(), emptyMap(), emptyList())
-
-        verify(view).attemptToReschedule()
-    }
-
-    @Test
-    fun `Should set action by status if event is active`() {
-        initializeMocks()
-        whenever(eventRepository.eventIntegrityCheck()) doReturn Flowable.just(false)
-        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.ACTIVE)
+        whenever(eventRepository.eventStatus()) doReturn Flowable.just(EventStatus.COMPLETED)
         whenever(eventRepository.isEventEditable("eventUid")) doReturn true
 
         whenever(
             eventRepository.validationStrategy(),
         ) doReturn ValidationStrategy.ON_UPDATE_AND_INSERT
-        val eventCompletionDialog: EventCompletionDialog = mock()
-        whenever(
-            configureEventCompletionDialog.invoke(any(), any(), any(), any(), any(), any()),
-        ) doReturn eventCompletionDialog
+
         whenever(
             eventRepository.isEnrollmentOpen,
         ) doReturn true
-
-        presenter.attemptFinish(
-            canComplete = true,
-            onCompleteMessage = "Complete",
-            errorFields = emptyList(),
-            emptyMandatoryFields = emptyMap(),
-            warningFields = emptyList(),
-        )
-
-        verify(view).showCompleteActions(
-            any(),
-            any(),
-            any(),
-        )
-        verify(view).showNavigationBar()
+        presenter.saveAndExit(EventStatus.COMPLETED)
+        verify(view).saveAndFinish()
     }
 
     @Test
@@ -357,70 +315,12 @@ class EventCapturePresenterTest {
         verify(view).updateNoteBadge(1)
     }
 
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has error`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_COMPLETE and has mandatory`() {
-        val canSkipErrorFix = ValidationStrategy.ON_COMPLETE.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should allow skip error if validation strategy is ON_INSERT if no errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if validation strategy is ON_INSERT if has errors`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = true,
-            hasEmptyMandatoryFields = false,
-        )
-        assertTrue(!canSkipErrorFix)
-    }
-
-    @Test
-    fun `Should not allow skip error if ON_INSERT and has mandatory fields`() {
-        val canSkipErrorFix = ValidationStrategy.ON_UPDATE_AND_INSERT.canSkipErrorFix(
-            hasErrorFields = false,
-            hasEmptyMandatoryFields = true,
-        )
-        assertTrue(!canSkipErrorFix)
-    }
-
     private fun initializeMocks() {
         val stage = ProgramStage.builder().uid("stage").displayName("stageName").build()
-        val date = "date"
         val orgUnit = OrganisationUnit.builder().uid("orgUnit").displayName("OrgUnitName").build()
-        val catOption = "catOption"
 
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
-        whenever(eventRepository.eventDate()) doReturn Flowable.just(date)
         whenever(eventRepository.orgUnit()) doReturn Flowable.just(orgUnit)
-        whenever(eventRepository.catOption()) doReturn Flowable.just(catOption)
         doNothing().`when`(preferences).setValue(any(), any())
         whenever(eventRepository.programStage()) doReturn Observable.just(stage.uid())
     }

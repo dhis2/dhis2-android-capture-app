@@ -5,19 +5,9 @@ import org.dhis2.usescases.general.AbstractActivityContracts
 
 interface ProgramView : AbstractActivityContracts.View {
 
-    fun swapProgramModelData(programs: List<ProgramViewModel>)
-
-    fun showFilterProgress()
-
-    fun openOrgUnitTreeSelector()
-
-    fun showHideFilter()
-
-    fun clearFilters()
-
-    fun navigateTo(program: ProgramViewModel)
+    fun navigateTo(program: ProgramUiModel)
 
     fun navigateToStockManagement(config: AppConfig)
 
-    fun showSyncDialog(program: ProgramViewModel)
+    fun showSyncDialog(program: ProgramUiModel)
 }

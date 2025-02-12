@@ -46,7 +46,6 @@
     <string name="enter_long_text">Introducir texto largo</string>
     <string name="enter_text">Introducir texto</string>
     <string name="due_date">Fecha de vencimiento</string>
-    <string name="event_date">Fecha de evento</string>
     <string name="mandatory_field">Campo obligatorio</string>
     <string name="form_latitude_prefix">Lat:</string>
     <string name="form_longitude_prefix">Long:</string>
@@ -90,12 +89,8 @@
     <string name="error_true_only_one_is_not_true">Carácter 1 no es válido</string>
     <string name="data_values_save_error">Los DataValues no pueden guardarse con estos argumentos. Use el otro método.</string>
     <string name="leading_zero_error">No se permiten números con ceros a la izquierda</string>
-    <string name="enrollment_data_section_label">Datos de registro</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
-    <string name="enrolling_ou">OU de admision:</string>
     <string name="tei_coordinates">Coordenadas para</string>
-    <string name="enrollment_coordinates">Coordenadas de admisión </string>
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
-    <string name="enrollmment_date">Fecha de inscripción</string>
     <string name="incident_date">Fecha del incidente</string>
     </resources>

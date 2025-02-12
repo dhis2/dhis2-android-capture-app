@@ -122,10 +122,9 @@ class EventInitialPresenterTest {
     @Test
     fun `Should show message when event is not yet created and the delete option is clicked`() {
         whenever(view.context) doReturn mock()
-        whenever(view.context.getString(any())) doReturn "display message"
 
         presenter.deleteEvent("tei_uid")
-        verify(view).displayMessage(any())
+        verify(view).showDeleteEventError()
     }
 
     @Test
@@ -232,75 +231,6 @@ class EventInitialPresenterTest {
             "catOption",
             geometry,
             "tei",
-        )
-
-        verify(view).renderError("Error")
-    }
-
-    @Test
-    fun `Should create an schedule event permanent`() {
-        val geometry = Geometry.builder().type(FeatureType.POINT).build()
-        val date = Date()
-        initMocks("uid", null, "stage")
-        whenever(
-            eventInitialRepository.permanentReferral(
-                "enrollment",
-                "teiUid",
-                "uid",
-                "stage",
-                date,
-                "orgUnit",
-                "catCombo",
-                "catOption",
-                geometry,
-            ),
-        ) doReturn Observable.just("event")
-
-        presenter.init("uid", null, "orgUnit", "stage")
-        presenter.scheduleEventPermanent(
-            "enrollment",
-            "teiUid",
-            "stage",
-            date,
-            "orgUnit",
-            "catCombo",
-            "catOption",
-            geometry,
-        )
-
-        verify(view).onEventCreated("event")
-    }
-
-    @Test
-    fun `Should show error when there is an problem creating a scheduled event permanent`() {
-        val geometry = Geometry.builder().type(FeatureType.POINT).build()
-        val date = Date()
-        initMocks("uid", null, "stage")
-
-        whenever(
-            eventInitialRepository.permanentReferral(
-                "enrollment",
-                "teiUid",
-                "uid",
-                "stage",
-                date,
-                "orgUnit",
-                "catCombo",
-                "catOption",
-                geometry,
-            ),
-        ) doReturn Observable.error(Throwable("Error"))
-
-        presenter.init("uid", null, "orgUnit", "stage")
-        presenter.scheduleEventPermanent(
-            "enrollment",
-            "teiUid",
-            "stage",
-            date,
-            "orgUnit",
-            "catCombo",
-            "catOption",
-            geometry,
         )
 
         verify(view).renderError("Error")

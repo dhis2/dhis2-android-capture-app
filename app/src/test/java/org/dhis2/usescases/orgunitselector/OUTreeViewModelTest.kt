@@ -105,18 +105,26 @@ class OUTreeViewModelTest {
             dummyOrgUnit(2, "ABC", parentOrgUnit),
             dummyOrgUnit(2, "DEF", parentOrgUnit),
         )
+        val filteredList = listOf(
+            dummyOrgUnit(2, "ABC", parentOrgUnit),
+        )
         val orgUnits = listOf(parentOrgUnit) + childOrgUnits
         val searchInput = "ABC"
 
+        whenever(
+            repository.orgUnits(null),
+        ) doReturn listOf(parentOrgUnit, childOrgUnits[0])
+
+        whenever(
+            repository.orgUnits(searchInput),
+        ) doReturn filteredList
         defaultViewModelInit(orgUnits)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.treeNodes.value.size == 3)
 
         whenever(
             repository.orgUnits(searchInput),
         ) doReturn listOf(parentOrgUnit, childOrgUnits[0])
-
-        whenever(
-            repository.orgUnit(childOrgUnits[0].uid()),
-        ) doReturnConsecutively listOf(parentOrgUnit, childOrgUnits[0])
 
         whenever(
             repository.canBeSelected(any()),
@@ -206,7 +214,8 @@ class OUTreeViewModelTest {
         whenever(
             repository.orgUnit(childOrgUnits[0].uid()),
         ) doReturn childOrgUnits[0]
-        val result = viewModel.getOrgUnits()
+        viewModel.confirmSelection()
+        val result = viewModel.finalSelectedOrgUnits.value
         assertTrue(result.size == 1)
         assertTrue(result.first().uid() == childOrgUnits[0].uid())
     }

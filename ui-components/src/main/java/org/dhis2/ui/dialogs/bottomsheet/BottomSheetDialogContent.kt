@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -23,11 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,8 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +49,8 @@ import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.textPrimary
 import org.dhis2.ui.theme.textSecondary
 import org.dhis2.ui.theme.textSubtitle
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @Composable
 fun BottomSheetDialogUi(
@@ -141,7 +141,7 @@ fun BottomSheetDialogUi(
             }
         }
         extraContent?.let {
-            Divider()
+            HorizontalDivider()
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,43 +152,45 @@ fun BottomSheetDialogUi(
         }
 
         if (bottomSheetDialogUiModel.hasButtons()) {
-            Divider()
+            HorizontalDivider()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Button(
-                    modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
-                    shape = RoundedCornerShape(
-                        bottomSheetDialogUiModel.secondaryRoundedCornersSizeDp().dp,
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        disabledContainerColor = Color.White,
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        bottomSheetDialogUiModel.secondaryElevationDp().dp,
-                    ),
-                    onClick = { onSecondaryButtonClicked() },
-                    content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
-                    enabled = bottomSheetDialogUiModel.secondaryButton != null,
-                )
-                Button(
-                    modifier = Modifier.testTag(MAIN_BUTTON_TAG),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = bottomSheetDialogUiModel.mainButton?.backgroundColor
-                            ?: colorPrimary,
-                        contentColor = Color.White,
-                    ),
-                    onClick = { onMainButtonClicked() },
-                    content = provideButtonContent(bottomSheetDialogUiModel.mainButton),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
-                )
+                (bottomSheetDialogUiModel.secondaryButton?.textLabel ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) })?.let {
+                    Button(
+                        modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
+                        shape = RoundedCornerShape(
+                            bottomSheetDialogUiModel.secondaryRoundedCornersSizeDp().dp,
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            disabledContainerColor = Color.White,
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            bottomSheetDialogUiModel.secondaryElevationDp().dp,
+                        ),
+                        onClick = { onSecondaryButtonClicked() },
+                        content = provideButtonContent(bottomSheetDialogUiModel.secondaryButton),
+                        enabled = bottomSheetDialogUiModel.secondaryButton != null,
+                    )
+                }
+
+                (bottomSheetDialogUiModel.mainButton?.textLabel ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) })?.let {
+                    Button(
+                        modifier = Modifier.testTag(MAIN_BUTTON_TAG),
+                        style = ButtonStyle.FILLED,
+                        onClick = { onMainButtonClicked() },
+                        text = it,
+                    )
+                }
             }
         }
     }
 }
+const val ERROR_MESSAGE = "Enter text"
+const val DATE_BIRTH = "Date of birth"
 
 private fun provideButtonContent(
     buttonStyle: DialogButtonStyle?,
@@ -204,7 +206,8 @@ private fun provideButtonContent(
         }
         Text(
             text = style.textLabel ?: stringResource(id = style.textResource)
-                .capitalize(Locale.current),
+                .lowercase()
+                .replaceFirstChar { it.uppercase() },
             color = style.colorResource ?: Color.Unspecified,
         )
     }
@@ -231,7 +234,8 @@ fun IssueItem(fieldWithIssue: FieldWithIssue, onClick: () -> Unit) {
             tint = Color.Unspecified,
             modifier = Modifier
                 .width(20.dp)
-                .height(20.dp),
+                .height(20.dp)
+                .align(Alignment.CenterVertically),
         )
         Column(Modifier.padding(start = 11.dp)) {
             Text(
@@ -272,7 +276,7 @@ fun DialogPreview2() {
             title = "Saved",
             message = "Do you want to mark this form as complete?",
             iconResource = R.drawable.ic_saved_check,
-            mainButton = DialogButtonStyle.CompleteButton(),
+            mainButton = DialogButtonStyle.CompleteButton,
             secondaryButton = DialogButtonStyle.SecondaryButton(R.string.not_now),
         ),
         onMainButtonClicked = {},
@@ -303,14 +307,14 @@ fun DialogPreview3() {
 @Composable
 fun DialogPreview4() {
     val fieldsWithIssues = listOf(
-        FieldWithIssue("Uid", "Age", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
-        FieldWithIssue("Uid", "Date of birth", IssueType.ERROR, "Enter text"),
+        FieldWithIssue("Uid", "Age", IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
+        FieldWithIssue("Uid", DATE_BIRTH, IssueType.ERROR, ERROR_MESSAGE),
     )
     BottomSheetDialogUi(
         bottomSheetDialogUiModel = BottomSheetDialogUiModel(

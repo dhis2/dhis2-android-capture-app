@@ -21,7 +21,7 @@ import org.dhis2.commons.databinding.ItemFilterWorkingListChipBinding
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.WorkingListFilter
 import org.dhis2.commons.filters.data.EmptyWorkingList
-import org.hisp.dhis.mobile.ui.designsystem.component.Chip
+import org.hisp.dhis.mobile.ui.designsystem.component.FilterChip
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 class WorkingListChipGroup @JvmOverloads constructor(
@@ -95,7 +95,7 @@ fun WorkingListChipGroup(
     workingListFilterState.value?.let { workingListFilter ->
         LazyRow(modifier) {
             itemsIndexed(workingListFilter.workingLists) { index, workingList ->
-                Chip(
+                FilterChip(
                     modifier = Modifier.padding(
                         start = if (index == 0) Spacing.Spacing16 else Spacing.Spacing0,
                         end = if (index == workingListFilter.workingLists.size - 1) {

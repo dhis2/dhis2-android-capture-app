@@ -4,7 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_ASKED_CRASHLYTICS
@@ -15,10 +19,10 @@ import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.data.fingerprint.FingerPrintController
-import org.dhis2.data.fingerprint.FingerPrintResult
-import org.dhis2.data.fingerprint.Type
+import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.dhis2.usescases.main.MainActivity
@@ -29,23 +33,28 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.LOGIN
 import org.dhis2.utils.analytics.SERVER_QR_SCANNER
+import org.hisp.dhis.android.core.arch.db.access.DatabaseExportMetadata
+import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import retrofit2.Response
+import java.io.File
+
 class LoginViewModelTest {
 
     @get:Rule
@@ -58,7 +67,7 @@ class LoginViewModelTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
     private val preferenceProvider: PreferenceProvider = mock()
-    private val goldfinger: FingerPrintController = mock()
+    private val biometricController: BiometricController = mock()
     private val view: LoginContracts.View = mock()
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -67,30 +76,56 @@ class LoginViewModelTest {
     private val network: NetworkUtils = mock()
     private lateinit var loginViewModel: LoginViewModel
     private val openidconfig: OpenIDConnectConfig = mock()
+    private val resourceManager: ResourceManager = mock()
+    private val testingDispatcher = StandardTestDispatcher()
+    private val dispatcherProvider = object : DispatcherProvider {
+        override fun io(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun computation(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+
+        override fun ui(): CoroutineDispatcher {
+            return testingDispatcher
+        }
+    }
 
     private fun instantiateLoginViewModel() {
         loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
+            resourceManager,
             schedulers,
-            goldfinger,
+            dispatcherProvider,
+            biometricController,
             analyticsHelper,
             crashReportController,
             network,
             userManager,
         )
     }
+
     private fun instantiateLoginViewModelWithNullUserManager() {
         loginViewModel = LoginViewModel(
             view,
             preferenceProvider,
+            resourceManager,
             schedulers,
-            goldfinger,
+            dispatcherProvider,
+            biometricController,
             analyticsHelper,
             crashReportController,
             network,
             null,
         )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testingDispatcher)
     }
 
     @Test
@@ -143,7 +178,6 @@ class LoginViewModelTest {
         instantiateLoginViewModel()
         verify(view).setUrl(protocol)
         verify(view, atMost(2)).getDefaultServerProtocol()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -153,14 +187,13 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         verify(view).getDefaultServerProtocol()
         verify(view).setUrl(any())
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `Should log in successfully and show fabric dialog when  user has not been asked before`() {
         val mockedUser: User = mock()
         whenever(view.initLogin()) doReturn userManager
-        whenever(userManager.logIn(any(), any(), any())) doReturn Observable.just(mockedUser)
+        whenever(userManager.logIn(any(), any(), any(), eq(null))) doReturn Observable.just(mockedUser)
         instantiateLoginViewModelWithNullUserManager()
         loginViewModel.onServerChanged(serverUrl = "serverUrl", 0, 0, 0)
         loginViewModel.onUserChanged(userName = "username", 0, 0, 0)
@@ -196,81 +229,46 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should log in with fingerprint successfully`() {
+    fun `Should log in with biometric successfully`() {
         instantiateLoginViewModel()
-        whenever(goldfinger.authenticate()) doReturn Observable.just(
-            FingerPrintResult(
-                Type.SUCCESS,
-                "none",
-            ),
-        )
-        whenever(
-            preferenceProvider.contains(
-                SECURE_SERVER_URL,
-                SECURE_USER_NAME,
-                SECURE_PASS,
-            ),
-        ) doReturn true
-        whenever(
-            preferenceProvider.getString(SECURE_SERVER_URL),
-        ) doReturn "http://dhis2.org"
-        whenever(preferenceProvider.getString(SECURE_USER_NAME)) doReturn "James"
-        whenever(preferenceProvider.getString(SECURE_PASS)) doReturn "1234"
-        loginViewModel.onFingerprintClick()
-        verify(view).showCredentialsData(
-            FingerPrintResult(Type.SUCCESS, "none"),
-            preferenceProvider.getString(SECURE_SERVER_URL)!!,
-            preferenceProvider.getString(SECURE_USER_NAME)!!,
-            preferenceProvider.getString(SECURE_PASS)!!,
-        )
+        loginViewModel.authenticateWithBiometric()
+        verify(biometricController).authenticate(any())
     }
 
     @Test
-    fun `Should show credentials data when logging in with fingerprint`() {
+    fun `Should display biometric button for logged server`() {
         instantiateLoginViewModel()
-        val result = FingerPrintResult(
-            Type.ERROR,
-            "none",
-        )
-        whenever(goldfinger.authenticate()) doReturn Observable.just(result)
-        whenever(
-            preferenceProvider.contains(
-                SECURE_SERVER_URL,
-                SECURE_USER_NAME,
-                SECURE_PASS,
-            ),
-        ) doReturn true
-        loginViewModel.onFingerprintClick()
-        view.showCredentialsData(result, "none")
+        mockAccounts()
+        whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
+        whenever(preferenceProvider.contains(SECURE_PASS)) doReturn true
+        whenever(biometricController.hasBiometric()) doReturn true
+        loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
+        assert(loginViewModel.canLoginWithBiometrics.value == true)
+    }
+
+    @Test
+    fun `Should not display biometric button for not logged server`() {
+        instantiateLoginViewModel()
+        mockAccounts()
+        whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
+        whenever(biometricController.hasBiometric()) doReturn true
+        loginViewModel.onServerChanged("notLoggedServer", 0, 0, 0)
+        assert(loginViewModel.canLoginWithBiometrics.value == false)
+    }
+
+    @Test
+    fun `Should not display biometric button for more than one account`() {
+        instantiateLoginViewModel()
+        mockAccounts(2)
+        whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
+        whenever(biometricController.hasBiometric()) doReturn true
+        loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
+        assert(loginViewModel.canLoginWithBiometrics.value == false)
     }
 
     @Test
     fun `Should show empty credentials message when trying to log in with fingerprint`() {
         instantiateLoginViewModel()
-        val result = FingerPrintResult(
-            Type.ERROR,
-            "none",
-        )
-        whenever(goldfinger.authenticate()) doReturn Observable.just(result)
-        whenever(
-            preferenceProvider.contains(
-                SECURE_SERVER_URL,
-                SECURE_USER_NAME,
-                SECURE_PASS,
-            ),
-        ) doReturn false
-        loginViewModel.onFingerprintClick()
-        verify(view).showEmptyCredentialsMessage()
-    }
-
-    @Test
-    fun `Should display message when authenticate throws an error`() {
-        instantiateLoginViewModel()
-        whenever(
-            goldfinger.authenticate(),
-        ) doReturn Observable.error(Exception(LoginViewModel.AUTH_ERROR))
-        loginViewModel.onFingerprintClick()
-        verify(view).displayMessage(LoginViewModel.AUTH_ERROR)
     }
 
     @Test
@@ -325,7 +323,7 @@ class LoginViewModelTest {
     @Test
     fun `Should handle successfull response`() {
         instantiateLoginViewModel()
-        val response = Response.success(
+        val response = Result.success(
             User.builder()
                 .uid("userUid")
                 .build(),
@@ -346,20 +344,45 @@ class LoginViewModelTest {
             userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
                 .blockingExists(),
         ) doReturn false
+
+        whenever(
+            userManager.d2.userModule(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user().blockingGet(),
+        )doReturn null
+        whenever(
+            userManager.d2.userModule().accountManager(),
+        )doReturn mock()
+
+        whenever(
+            userManager.d2.userModule().accountManager().getAccounts(),
+        )doReturn listOf()
+
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
     }
 
     @Test
-    fun `Should set server and username if user is logged`() {
+    fun `Should set server and username if user is logged and display biometric prompt`() {
         instantiateLoginViewModel()
         mockSystemInfo()
-        whenever(userManager.userName())doReturn Single.just("Username")
-        whenever(goldfinger.hasFingerPrint())doReturn true
-        whenever(preferenceProvider.contains(SECURE_SERVER_URL)) doReturn true
+        mockAccounts()
+        mockAccounts()
+        whenever(userManager.userName()) doReturn Single.just("Username")
+        whenever(biometricController.hasBiometric()) doReturn true
+        whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "contextPath"
+        whenever(preferenceProvider.contains(SECURE_PASS)) doReturn true
+        loginViewModel.serverUrl.value = "contextPath"
         loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
+        assert(loginViewModel.canLoginWithBiometrics.value == true)
+        loginViewModel.authenticateWithBiometric()
+        verify(biometricController).authenticate(any())
     }
 
     @Test(expected = Throwable::class)
@@ -390,12 +413,38 @@ class LoginViewModelTest {
         instantiateLoginViewModelWithNullUserManager()
         val openidconfig: OpenIDConnectConfig = mock()
         val it: IntentWithRequestCode = mock()
-        whenever(view.initLogin())doReturn userManager
+        whenever(view.initLogin()) doReturn userManager
         whenever(userManager.logIn(openidconfig)) doReturn Observable.just(it)
         instantiateLoginViewModelWithNullUserManager()
         loginViewModel.openIdLogin(openidconfig)
         verify(view).openOpenIDActivity(it)
     }
+
+    @Test
+    fun `Should import database`() {
+        val mockedDatabase: File = mock()
+
+        instantiateLoginViewModel()
+        whenever(resourceManager.getString(any())) doReturn "Import successful"
+        whenever(
+            userManager.d2.maintenanceModule().databaseImportExport()
+                .importDatabase(mockedDatabase),
+        ) doReturn DatabaseExportMetadata(
+            0,
+            "2024-01-01",
+            "serverUrl",
+            "userName",
+            false,
+        )
+
+        loginViewModel.onImportDataBase(mockedDatabase)
+        testingDispatcher.scheduler.advanceUntilIdle()
+        verify(view).setUrl("serverUrl")
+        verify(view).setUser("userName")
+        verify(view).displayMessage("Import successful")
+        verify(view).onDbImportFinished(true)
+    }
+
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
         if (isUserLoggedIn) {
@@ -406,4 +455,33 @@ class LoginViewModelTest {
                 .build()
         }
     }
+
+    private fun mockAccounts(accounts: Int = 1) {
+        whenever(
+            userManager.d2.userModule(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user(),
+        )doReturn mock()
+        whenever(
+            userManager.d2.userModule().user().blockingGet(),
+        )doReturn null
+        whenever(
+            userManager.d2.userModule().accountManager(),
+        )doReturn mock()
+
+        whenever(
+            userManager.d2.userModule().accountManager().getAccounts(),
+        )doReturn mutableListOf<DatabaseAccount>().apply {
+            repeat(accounts) { this.add(dummyDatabaseAccount) }
+        }
+    }
+
+    private val dummyDatabaseAccount = DatabaseAccount.builder()
+        .username("userName")
+        .serverUrl("serverUrl")
+        .databaseName("database")
+        .databaseCreationDate("")
+        .encrypted(false)
+        .build()
 }

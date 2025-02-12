@@ -1,13 +1,12 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.usescases.teiDashboard.DashboardProgramModel
+import org.dhis2.ui.MetadataIconData
+import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
-import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -48,29 +47,45 @@ class TEIDetailMapperTest {
         )
 
         assertEquals(result.title, model.teiHeader)
-        assertEquals(result.additionalInfo[0].value, model.attributes[0]?.val1()?.value())
-        assertEquals(result.additionalInfo[1].value, model.attributes[1]?.val1()?.value())
+        assertEquals(result.additionalInfo[0].value, model.trackedEntityAttributes[0].second.value())
+        assertEquals(result.additionalInfo[1].value, model.trackedEntityAttributes[1].second.value())
+        assertEquals(result.additionalInfo[3].value, orgUnit().displayName())
     }
 
-    private fun createFakeModel(): DashboardProgramModel {
-        val attributeValues = listOf(
-            Pair.create(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair.create(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+    @Test
+    fun shouldShowOwnedAndEnrolledOrgUnit() {
+        val model = createFakeModel(otherOrgUnit())
+
+        val result = mapper.map(
+            dashboardModel = model,
+            phoneCallback = {},
+            emailCallback = {},
+            programsCallback = {},
+            onImageClick = {},
         )
 
-        val model = DashboardProgramModel(
-            setTei(),
+        assertEquals(result.additionalInfo[3].value, otherOrgUnit().displayName())
+        assertEquals(result.additionalInfo[4].value, model.orgUnits.first().displayName())
+    }
+
+    private fun createFakeModel(ownerOrgUnit: OrganisationUnit = orgUnit()): DashboardEnrollmentModel {
+        val attributeValues = listOf(
+            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+        )
+
+        val model = DashboardEnrollmentModel(
             setEnrollment(),
             emptyList<ProgramStage>(),
-            emptyList<Event>(),
+            setTei(),
             attributeValues,
             emptyList<TrackedEntityAttributeValue>(),
-            emptyList<OrganisationUnit>(),
             setPrograms(),
+            listOf(orgUnit()),
+            "header",
+            "avatarFilepath",
+            ownerOrgUnit,
         )
-
-        model.teiHeader = "header"
-        model.avatarPath = "avatarFilepath"
 
         return model
     }
@@ -96,16 +111,33 @@ class TEIDetailMapperTest {
         .uid("EnrollmentUid")
         .status(EnrollmentStatus.COMPLETED)
         .program("Program1Uid")
+        .organisationUnit("orgUnitUid")
         .build()
 
-    private fun setPrograms() = listOf<Program>(
-        Program.builder()
-            .uid("Program1Uid")
-            .displayName("Program 1")
-            .build(),
-        Program.builder()
-            .uid("Program2Uid")
-            .displayName("Program 2")
-            .build(),
+    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
+        Pair(
+            Program.builder()
+                .uid("Program1Uid")
+                .displayName("Program 1")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
+        Pair(
+            Program.builder()
+                .uid("Program2Uid")
+                .displayName("Program 2")
+                .build(),
+            MetadataIconData.defaultIcon(),
+        ),
     )
+
+    private fun orgUnit() = OrganisationUnit.builder()
+        .uid("orgUnitUid")
+        .displayName("orgUnitName")
+        .build()
+
+    private fun otherOrgUnit() = OrganisationUnit.builder()
+        .uid("otherOrgUnitUid")
+        .displayName("otherOrgUnitName")
+        .build()
 }

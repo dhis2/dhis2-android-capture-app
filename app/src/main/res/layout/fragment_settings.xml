@@ -106,9 +106,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
+                        app:addTextButton="@{presenter.syncDataButton}"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dataOptions"
-                        app:addTextButton="@{presenter.syncDataButton}"/>
+                        app:layout_constraintTop_toBottomOf="@id/dataOptions" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -211,9 +211,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
+                        app:addTextButton="@{presenter.syncMetaDataButton}"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/metaOptions"
-                        app:addTextButton="@{presenter.syncMetaDataButton}"/>
+                        app:layout_constraintTop_toBottomOf="@id/metaOptions" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -223,7 +223,7 @@
                     android:background="@drawable/inner_shadow_top"
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="@id/syncMetadataActions"
-                    tools:visibility="visible"/>
+                    tools:visibility="visible" />
 
                 <View
                     android:id="@+id/metaDataBottomShadow"
@@ -357,13 +357,13 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="72dp"
                             android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
                             android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="8dp"
                             android:text="@string/sync_parameters_not_editable"
                             android:textColor="@color/textPrimary"
                             android:textSize="12sp"
-                            app:layout_constraintTop_toBottomOf="@id/teiInputLayout"
-                            app:layout_constraintBottom_toTopOf="@id/specificSettingsText"/>
+                            app:layout_constraintBottom_toTopOf="@id/specificSettingsText"
+                            app:layout_constraintTop_toBottomOf="@id/teiInputLayout" />
 
                         <TextView
                             android:id="@+id/specificSettingsText"
@@ -373,10 +373,10 @@
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
                             android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/parametersNoEdition"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             tools:text="There are 3 programs with specific settings" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -394,7 +394,7 @@
                         android:textColor="?colorPrimary"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/parameterOptions"/>
+                        app:layout_constraintTop_toBottomOf="@id/parameterOptions" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -551,6 +551,47 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settingsItemExport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.onItemClick(SettingItem.EXPORT_DB)}">
+
+                <include
+                    android:id="@+id/exportLayout"
+                    layout="@layout/fragment_settings_item"
+                    app:icon="@{R.drawable.ic_settings_export}"
+                    app:message="@{@string/settingsExportDBMessage}"
+                    app:title="@{@string/settingsExportDB}" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/exportOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="@color/form_field_background"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/exportLayout"
+                    tools:visibility="visible">
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/exportShare"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="@id/exportOptions"
+                        app:layout_constraintTop_toTopOf="@id/exportOptions" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/exportDivider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="72dp"
+                    android:background="@color/gray_afa"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/exportOptions" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/settingsItemDeleteData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -607,8 +648,8 @@
                     android:id="@+id/smsContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/padding_16"
                     android:background="@color/form_field_background"
+                    android:paddingBottom="@dimen/padding_16"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/smsLayout"
                     tools:visibility="visible">
@@ -673,33 +714,33 @@
                     android:id="@+id/versionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
                     android:background="@color/form_field_background"
                     android:padding="16dp"
-                    android:layout_marginHorizontal="16dp"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/syncVersionLayout">
 
                     <androidx.compose.ui.platform.ComposeView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:addTextButton="@{presenter.checkVersionsButton}"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:addTextButton="@{presenter.checkVersionsButton}"/>
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/loadingCheckVersion"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:padding="16dp"
                     android:layout_marginHorizontal="16dp"
-                    android:visibility="invisible"
                     android:background="@color/form_field_background"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:padding="16dp"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/syncVersionLayout"
-                    app:progressIndicator="@{@string/checking_for_updates}"/>
+                    app:progressIndicator="@{@string/checking_for_updates}" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

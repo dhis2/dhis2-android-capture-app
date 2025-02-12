@@ -4,4 +4,6 @@ include(
     ":dhis2_android_maps", ":compose-table", ":ui-components",
     ":stock-usecase"
 )
+include(":dhis2-mobile-program-rules")
+include(":tracker")
 project(":core").projectDir = File("dhis2-android-sdk/core")

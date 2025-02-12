@@ -1,61 +1,55 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
+import org.dhis2.commons.date.DateUtils.SIMPLE_DATE_FORMAT
+import org.dhis2.commons.extensions.inDateRange
+import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.dhislogic.inDateRange
-import org.dhis2.data.dhislogic.inOrgUnit
 import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventOrgUnit
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTemp
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventTempStatus
-import org.dhis2.utils.DateUtils.SIMPLE_DATE_FORMAT
-import org.dhis2.utils.category.CategoryDialog.Companion.DEFAULT_COUNT_LIMIT
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionIconType
+import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownInputField
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPolygon
-import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
-import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
-import org.hisp.dhis.mobile.ui.designsystem.component.internal.DateTimeVisualTransformation
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -70,38 +64,60 @@ fun ProvideInputDate(
 ) {
     if (uiModel.showField) {
         Spacer(modifier = Modifier.height(16.dp))
+        val textSelection =
+            TextRange(if (uiModel.eventDate.dateValue != null) uiModel.eventDate.dateValue.length else 0)
         var value by remember(uiModel.eventDate.dateValue) {
-            mutableStateOf(uiModel.eventDate.dateValue?.let { formatStoredDateToUI(it) })
+            if (uiModel.eventDate.dateValue != null) {
+                mutableStateOf(
+                    TextFieldValue(
+                        formatStoredDateToUI(uiModel.eventDate.dateValue) ?: "",
+                        textSelection,
+                    ),
+                )
+            } else {
+                mutableStateOf(TextFieldValue())
+            }
         }
 
         var state by remember {
             mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
-
+        val yearRange = if (uiModel.selectableDates != null) {
+            IntRange(
+                uiModel.selectableDates.initialDate.substring(4, 8).toInt(),
+                uiModel.selectableDates.endDate.substring(4, 8).toInt(),
+            )
+        } else {
+            IntRange(1924, 2124)
+        }
         InputDateTime(
-            title = uiModel.eventDate.label ?: "",
-            allowsManualInput = uiModel.allowsManualInput,
-            value = value,
-            actionIconType = DateTimeActionIconType.DATE,
-            onActionClicked = uiModel.onDateClick,
-            state = state,
-            visualTransformation = CustomDateTransformation(),
-            onValueChanged = {
-                value = it
-                state = getInputShellStateBasedOnValue(it)
-                manageActionBasedOnValue(uiModel, it)
-            },
-            isRequired = uiModel.required,
-            modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
-            onFocusChanged = { focused ->
-                if (!focused) {
-                    value?.let {
-                        if (!isValid(it)) {
-                            state = InputShellState.ERROR
-                        }
+            InputDateTimeModel(
+                title = uiModel.eventDate.label ?: "",
+                allowsManualInput = uiModel.allowsManualInput,
+                inputTextFieldValue = value,
+                actionType = DateTimeActionType.DATE,
+                state = state,
+                visualTransformation = CustomDateTransformation(),
+                onValueChanged = {
+                    value = it ?: TextFieldValue()
+                    state = getInputShellStateBasedOnValue(it?.text)
+                    it?.let { it1 -> manageActionBasedOnValue(uiModel, it1.text) }
+                },
+                isRequired = uiModel.required,
+                onFocusChanged = { focused ->
+                    if (!focused && !isValid(value.text)) {
+                        state = InputShellState.ERROR
                     }
-                }
-            },
+                },
+                is24hourFormat = uiModel.is24HourFormat,
+                selectableDates = SelectableDates(
+                    "19240101",
+                    "21241231",
+                ),
+                format = "yyyyMMdd",
+                yearRange = yearRange,
+            ),
+            modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
         )
     }
 }
@@ -139,13 +155,14 @@ fun getInputShellStateBasedOnValue(dateString: String?): InputShellState {
 
 fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
     if (dateString.isEmpty()) {
-        uiModel.onClear()
+        uiModel.onClear?.invoke()
     } else if (isValid(dateString) && isValidDateFormat(dateString)) {
         formatUIDateToStored(dateString)?.let { dateValues ->
-            uiModel.onDateSet(dateValues)
+            uiModel.onDateSelected(dateValues)
         }
     }
 }
+
 private fun isValid(valueString: String) = valueString.length == 8
 
 private fun formatStoredDateToUI(dateValue: String): String? {
@@ -271,21 +288,20 @@ fun ProvideOrgUnit(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProvideCategorySelector(
     modifier: Modifier = Modifier,
     eventCatComboUiModel: EventCatComboUiModel,
 ) {
-    var selectedItem by remember(eventCatComboUiModel.eventCatCombo.selectedCategoryOptions) {
-        mutableStateOf(
-            eventCatComboUiModel.eventCatCombo.selectedCategoryOptions[eventCatComboUiModel.category.uid]?.displayName()
-                ?: eventCatComboUiModel.eventCatCombo.categoryOptions?.get(eventCatComboUiModel.category.uid)
-                    ?.displayName(),
-        )
+    var selectedItem by with(eventCatComboUiModel) {
+        remember(this) {
+            mutableStateOf(
+                eventCatCombo.selectedCategoryOptions[category.uid]?.displayName()
+                    ?: eventCatCombo.categoryOptions?.get(category.uid)?.displayName(),
+            )
+        }
     }
 
-    var expanded by remember { mutableStateOf(false) }
     val selectableOptions = eventCatComboUiModel.category.options
         .filter { option ->
             option.access().data().write()
@@ -294,79 +310,79 @@ fun ProvideCategorySelector(
         }.filter { option ->
             option.inOrgUnit(eventCatComboUiModel.selectedOrgUnit)
         }
+    val dropdownItems = selectableOptions.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
 
     Spacer(modifier = Modifier.height(16.dp))
-    if (selectableOptions.isNotEmpty()) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {},
-        ) {
-            InputDropDown(
-                modifier = modifier.testTag(CATEGORY_SELECTOR),
-                title = eventCatComboUiModel.category.name,
-                state = getInputState(eventCatComboUiModel.detailsEnabled),
-                selectedItem = selectedItem,
-                onResetButtonClicked = {
-                    selectedItem = null
-                    eventCatComboUiModel.onClearCatCombo(eventCatComboUiModel.category)
-                },
-                onArrowDropDownButtonClicked = {
-                    expanded = !expanded
-                },
-                isRequiredField = eventCatComboUiModel.required,
-            )
 
-            if (expanded) {
-                if (eventCatComboUiModel.category.optionsSize > DEFAULT_COUNT_LIMIT) {
-                    eventCatComboUiModel.onShowCategoryDialog(eventCatComboUiModel.category)
-                    expanded = false
-                } else {
-                    DropdownMenu(
-                        modifier = modifier.exposedDropdownSize(),
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        if (selectableOptions.isNotEmpty()) {
-                            selectableOptions.forEach { option ->
-                                val isSelected = option.displayName() == selectedItem
-                                DropdownMenuItem(
-                                    modifier = Modifier.background(
-                                        when {
-                                            isSelected -> SurfaceColor.PrimaryContainer
-                                            else -> Color.Transparent
-                                        },
-                                    ),
-                                    content = {
-                                        Text(
-                                            text = option.displayName() ?: option.code() ?: "",
-                                            color = when {
-                                                isSelected -> TextColor.OnPrimaryContainer
-                                                else -> TextColor.OnSurface
-                                            },
-                                        )
-                                    },
-                                    onClick = {
-                                        expanded = false
-                                        selectedItem = option.displayName()
-                                        eventCatComboUiModel.onOptionSelected(option)
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    if (selectableOptions.isNotEmpty()) {
+        InputDropDown(
+            modifier = modifier,
+            title = eventCatComboUiModel.category.name,
+            state = getInputState(eventCatComboUiModel.detailsEnabled),
+            selectedItem = DropdownItem(selectedItem ?: ""),
+            onResetButtonClicked = {
+                selectedItem = null
+                eventCatComboUiModel.onClearCatCombo(eventCatComboUiModel.category)
+            },
+            onItemSelected = { _, newSelectedDropdownItem ->
+                selectedItem = newSelectedDropdownItem.label
+                eventCatComboUiModel.onOptionSelected(selectableOptions.firstOrNull { it.displayName() == newSelectedDropdownItem.label })
+            },
+            fetchItem = { index -> dropdownItems[index] },
+            itemCount = dropdownItems.size,
+            onSearchOption = { /*no-op*/ },
+            loadOptions = { /*no-op*/ },
+            useDropDown = dropdownItems.size < 15,
+            isRequiredField = eventCatComboUiModel.required,
+        )
     } else {
         ProvideEmptyCategorySelector(
             modifier = modifier,
             name = eventCatComboUiModel.category.name,
-            option = eventCatComboUiModel.noOptionsText
+            option = eventCatComboUiModel.noOptionsText,
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ProvidePeriodSelector(
+    modifier: Modifier = Modifier,
+    uiModel: EventInputDateUiModel,
+) {
+    var selectedItem by with(uiModel) {
+        remember(this) {
+            mutableStateOf(
+                uiModel.eventDate.dateValue,
+            )
+        }
+    }
+    val state = getInputState(uiModel.detailsEnabled)
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    DropdownInputField(
+        modifier = modifier,
+        title = uiModel.eventDate.label ?: "",
+        state = state,
+        selectedItem = DropdownItem(selectedItem ?: ""),
+        onResetButtonClicked = {
+            selectedItem = null
+            uiModel.onClear?.let { it() }
+        },
+        onDropdownIconClick = {
+            uiModel.onDateClick?.invoke()
+        },
+        isRequiredField = uiModel.required,
+        legendData = null,
+        onFocusChanged = {},
+        supportingTextData = null,
+        focusRequester = remember {
+            FocusRequester()
+        },
+        expanded = false,
+    )
+}
+
 @Composable
 fun ProvideEmptyCategorySelector(
     modifier: Modifier = Modifier,
@@ -377,55 +393,24 @@ fun ProvideEmptyCategorySelector(
         mutableStateOf("")
     }
 
-    var expanded by remember { mutableStateOf(false) }
     Spacer(modifier = Modifier.height(16.dp))
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {},
-    ) {
-        InputDropDown(
-            modifier = modifier.testTag(EMPTY_CATEGORY_SELECTOR),
-            title = name,
-            state = InputShellState.UNFOCUSED,
-            selectedItem = selectedItem,
-            onResetButtonClicked = {
-                selectedItem = ""
-            },
-            onArrowDropDownButtonClicked = {
-                expanded = !expanded
-            },
-            isRequiredField = true,
-        )
-
-        DropdownMenu(
-            modifier = modifier.exposedDropdownSize(),
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            val isSelected = option == selectedItem
-            DropdownMenuItem(
-                modifier = Modifier.background(
-                    when {
-                        isSelected -> SurfaceColor.PrimaryContainer
-                        else -> Color.Transparent
-                    },
-                ),
-                content = {
-                    Text(
-                        text = option,
-                        color = when {
-                            isSelected -> TextColor.OnPrimaryContainer
-                            else -> TextColor.OnSurface
-                        },
-                    )
-                },
-                onClick = {
-                    expanded = false
-                    selectedItem = option
-                },
-            )
-        }
-    }
+    InputDropDown(
+        modifier = modifier,
+        title = name,
+        state = InputShellState.UNFOCUSED,
+        selectedItem = DropdownItem(selectedItem),
+        onResetButtonClicked = {
+            selectedItem = ""
+        },
+        onItemSelected = { _, newSelectedDropdownItem ->
+            selectedItem = newSelectedDropdownItem.label
+        },
+        fetchItem = { DropdownItem(option) },
+        itemCount = 1,
+        onSearchOption = { /*no-op*/ },
+        loadOptions = { /*no-op*/ },
+        isRequiredField = false,
+    )
 }
 
 private fun getInputState(enabled: Boolean) = if (enabled) {
@@ -490,56 +475,12 @@ fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
     }
 }
 
-@Composable
-fun ProvideRadioButtons(
-    eventTemp: EventTemp,
-    detailsEnabled: Boolean,
-    resources: ResourceManager,
-    onEventTempSelected: (status: EventTempStatus?) -> Unit,
-    showField: Boolean = true,
-) {
-    if (showField) {
-        Spacer(modifier = Modifier.height(16.dp))
-        val radioButtonData = listOf(
-            RadioButtonData(
-                uid = EventTempStatus.ONE_TIME.name,
-                selected = eventTemp.status == EventTempStatus.ONE_TIME,
-                enabled = true,
-                textInput = resources.getString(R.string.one_time),
-            ),
-            RadioButtonData(
-                uid = EventTempStatus.PERMANENT.name,
-                selected = eventTemp.status == EventTempStatus.PERMANENT,
-                enabled = true,
-                textInput = resources.getString(R.string.permanent),
-            ),
-        )
-
-        InputRadioButton(
-            title = resources.getString(R.string.referral),
-            radioButtonData = radioButtonData,
-            orientation = Orientation.HORIZONTAL,
-            state = getInputState(detailsEnabled),
-            itemSelected = radioButtonData.find { it.selected },
-            onItemChange = { data ->
-                when (data?.uid) {
-                    EventTempStatus.ONE_TIME.name -> {
-                        onEventTempSelected(EventTempStatus.ONE_TIME)
-                    }
-
-                    EventTempStatus.PERMANENT.name -> {
-                        onEventTempSelected(EventTempStatus.PERMANENT)
-                    }
-
-                    else -> {
-                        onEventTempSelected(null)
-                    }
-                }
-            },
-        )
-    }
+fun willShowCalendar(periodType: PeriodType?): Boolean {
+    return (periodType == null || periodType == PeriodType.Daily)
 }
 
 const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
 const val EMPTY_CATEGORY_SELECTOR = "EMPTY_CATEGORY_SELECTOR"
 const val CATEGORY_SELECTOR = "CATEGORY_SELECTOR"
+const val DEFAULT_MIN_DATE = "12111924"
+const val DEFAULT_MAX_DATE = "12112124"

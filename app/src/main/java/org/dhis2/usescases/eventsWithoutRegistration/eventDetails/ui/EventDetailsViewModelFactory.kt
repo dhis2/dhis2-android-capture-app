@@ -8,7 +8,6 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.Configu
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventCoordinates
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventReportDate
-import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureEventTemp
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigureOrgUnit
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.CreateOrUpdateEventDetails
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.EventDetailResourcesProvider
@@ -21,7 +20,6 @@ class EventDetailsViewModelFactory(
     private val configureOrgUnit: ConfigureOrgUnit,
     private val configureEventCoordinates: ConfigureEventCoordinates,
     private val configureEventCatCombo: ConfigureEventCatCombo,
-    private val configureEventTemp: ConfigureEventTemp,
     private val periodType: PeriodType?,
     private val eventUid: String?,
     private val geometryController: GeometryController,
@@ -37,7 +35,6 @@ class EventDetailsViewModelFactory(
             configureOrgUnit,
             configureEventCoordinates,
             configureEventCatCombo,
-            configureEventTemp,
             periodType,
             eventUid,
             geometryController,

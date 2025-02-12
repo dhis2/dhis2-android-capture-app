@@ -8,6 +8,7 @@ import org.dhis2.composetable.model.TableHeaderCell
 import org.dhis2.composetable.model.TableHeaderRow
 import org.dhis2.composetable.model.TableModel
 import org.dhis2.composetable.model.TableRowModel
+import org.hisp.dhis.android.core.common.ValueType
 import java.util.SortedMap
 
 class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) {
@@ -50,11 +51,12 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
                         mandatory = field.mandatory(),
                         error = field.error(),
                         warning = field.warning(),
+                        isMultiText = dataElement.valueType() == ValueType.MULTI_TEXT,
                     )
                 }.toMap(),
                 isLastRow = rowIndex == (tableData.rows()!!.size - 1),
                 maxLines = 3,
-                dropDownOptions = tableData.fieldViewModels[rowIndex][0].options(),
+                dropDownOptions = tableData.fieldViewModels[rowIndex][0].optionsList(),
             )
         } ?: emptyList()
 
@@ -95,10 +97,14 @@ class TableDataToTableModelMapper(val mapFieldValueToUser: MapFieldValueToUser) 
         }
 
         return TableModel(
-            id = "indicators",
+            id = INDICATORS_TABLE_ID,
             title = mapFieldValueToUser.resources.getString(R.string.dashboard_indicators),
             tableHeaderModel = tableHeader,
             tableRows = tableRows,
         )
+    }
+
+    companion object {
+        const val INDICATORS_TABLE_ID = "indicators"
     }
 }

@@ -23,6 +23,8 @@
     <string name="conf_error_value_to_assign_option_set">Program rule %s is trying to assign value %s which does not belongs to option set %s</string>
     <string name="conf_error_value_option_set">Value for field %s does not belong to the option set in %s</string>
     <string name="field_is_mandatory">This field is mandatory</string>
+    <string name="missing_warning_fields_completed_events">You have some warning messages.</string>
+    <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete?</string>
     <string name="required">Required</string>
     <string name="date">Date</string>
     <string name="hint_year">Years</string>
@@ -48,7 +50,6 @@
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_text">Enter text</string>
     <string name="due_date">Due date</string>
-    <string name="event_date">Event date</string>
     <string name="mandatory_field">Mandatory field</string>
     <string name="form_latitude_prefix">Lat:</string>
     <string name="form_longitude_prefix">Long:</string>
@@ -57,9 +58,13 @@
     <string name="complete">Complete</string>
     <string name="discard_changes">Discard changes</string>
     <string name="saved">Saved!</string>
+    <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
+    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
     <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="not_now">Not now</string>
+    <string name="save_anyway">Save anyway</string>
     <string name="keep_editing">Keep editing</string>
+    <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="field_errors_not_saved_discard">Some fields have errors and they are not saved. \nIf you exit now the changes will be discarded.</string>
     <string name="field_errors_not_saved">Some fields have errors and they are not saved.</string>
@@ -92,13 +97,9 @@
     <string name="error_true_only_one_is_not_true">Invalid character 1</string>
     <string name="data_values_save_error">DataValues can\'t be saved using these arguments. Use the other one.</string>
     <string name="leading_zero_error">Leading zero numbers are not allowed</string>
-    <string name="enrollment_data_section_label">Enrollment data</string>
     <string name="enrollment_single_section_label">Attributes - %s</string>
-    <string name="enrolling_ou">Enrolling OU:</string>
     <string name="tei_coordinates">Coordinates for the</string>
-    <string name="enrollment_coordinates">Enrollment coordinates</string>
     <string name="no_reserved_values">There are no more reserved values. Contact your system administrator</string>
-    <string name="enrollmment_date">Enrollment date</string>
     <string name="incident_date">Incident date</string>
     <string name="location_permission_denied">The location permission is needed for capturing coordinates. Please, enable them in the application settings</string>
     <string name="open_with">Open with</string>
@@ -108,4 +109,15 @@
     <string name="qr_code">QR code</string>
     <string name="bar_code">Bar code</string>
     <string name="add_location">Add location</string>
+    <string name="form_without_fields">This form has no fields configured</string>
+    <string name="event_details_section_title">%s details</string>
+    <string name="event_data_section_title">%s data</string>
+    <string name="org_unit">Org unit</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="category_combo">Category Combo</string>
+    <string name="no_options">No options available</string>
+    <string name="cat_combo">Cat combo</string>
+    <string name="storage_permission_denied">Storage permission is not granted.\nYou need to enable it to use this feature.</string>
+    <string name="no_periods">No periods available</string>
+
 </resources>
