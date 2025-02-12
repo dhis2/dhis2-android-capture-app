@@ -23,17 +23,6 @@ internal class HtmlTextWriter(
     private var pendingNewLineCount = -1
     private var pendingIndentCount = 0
 
-    fun markBlockBoundary(newLineCount: Int, indentCount: Int) {
-        require(newLineCount > 0) { "newLineCount must be positive" }
-        pendingNewLineCount.let {
-            if (it >= 0) {
-                pendingNewLineCount = maxOf(it, newLineCount)
-            }
-        }
-        pendingIndentCount = indentCount
-        currentState = STATE_BEGIN_TEXT
-    }
-
     /**
      * Skip leading whitespaces, and turn series of whitespaces into a single space.
      */
@@ -85,11 +74,6 @@ internal class HtmlTextWriter(
             output.append(text)
             currentState = STATE_BEGIN_TEXT
         }
-    }
-
-    fun writeLineBreak() {
-        writePendingNewLines(1)
-        currentState = STATE_BEGIN_TEXT
     }
 
     private inline fun CharSequence.indexOfFirst(startIndex: Int, predicate: (Char) -> Boolean): Int {
