@@ -34,6 +34,8 @@ class SchedulingDialogUiTest {
 
     private val viewModel: SchedulingViewModel = mock()
     private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
+    private val overdueSubtitle = "Overdue subtitle"
+
 
     @Before
     fun setUp() {
@@ -55,6 +57,7 @@ class SchedulingDialogUiTest {
                 ),
             ),
         )
+        whenever(viewModel.overdueEventSubtitle).thenReturn(MutableStateFlow(overdueSubtitle))
     }
 
     @Test
