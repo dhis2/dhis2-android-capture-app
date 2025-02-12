@@ -1,9 +1,12 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.compose)
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
 }
+
 
 repositories{
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
@@ -12,6 +15,7 @@ repositories{
 }
 
 kotlin {
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -19,7 +23,6 @@ kotlin {
             }
         }
     }
-
     jvm("desktop")
 
     sourceSets {
@@ -28,11 +31,6 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.ui)
             implementation(compose.material3)
-            api(compose.materialIconsExtended)
-            implementation(libs.dhis2.mobile.designsystem)
-            implementation(libs.compose.material3.window)
-            implementation(project(":commonskmm"))
-
             // Koin
             api(libs.koin.core)
             implementation(libs.koin.compose)
@@ -43,14 +41,20 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.androidx.compose.preview)
-            implementation(libs.dhis2.android.sdk)
-            // Koin support for Android
-            implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
+
         }
 
-        androidUnitTest.dependencies {  }
+        androidUnitTest.dependencies {
+
+        }
+
+        androidInstrumentedTest.dependencies {
+            dependencies {
+                implementation(libs.test.junit.ext)
+                implementation(libs.test.espresso)
+                implementation(libs.test.espresso.idlingresource)
+            }
+        }
 
         val desktopMain by getting {
             dependencies {
@@ -58,10 +62,11 @@ kotlin {
             }
         }
     }
+
 }
 
 android {
-    namespace = "org.dhis2.mobile.aggregates"
+    namespace = "org.dhis2.mobile.commonskmm"
     compileSdk = libs.versions.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -82,3 +87,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.preview)
     debugImplementation(libs.androidx.ui.tooling)
 }
+
