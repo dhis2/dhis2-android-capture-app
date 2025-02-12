@@ -36,10 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -66,6 +66,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -347,19 +348,23 @@ private fun DataSetTableContent(
 
 @Composable
 fun HtmlContentBox(text: AnnotatedString) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(Spacing.Spacing8)
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = Shape.Small,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-        )
+    Column(Modifier.fillMaxWidth().background(color = SurfaceColor.ContainerLowest)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Spacing.Spacing16)
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = Shape.Small,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(Modifier.padding(Spacing.Spacing8)) {
+                Text(
+                    text = text,
+                )
+            }
+        }
     }
 }
 

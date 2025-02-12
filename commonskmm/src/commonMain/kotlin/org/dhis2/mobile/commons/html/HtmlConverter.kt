@@ -2,23 +2,30 @@ package org.dhis2.mobile.commons.html
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkInteractionListener
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 import org.dhis2.mobile.commons.html.internal.AnnotatedStringHtmlHandler
-import org.dhis2.mobile.commons.html.internal.StringHtmlHandler
 import org.dhis2.mobile.commons.html.parser.KtXmlParser
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 /**
  * Convert HTML to AnnotatedString using the built-in parser.
  */
+private var mainStyle = SpanStyle(
+    color = TextColor.OnSurfaceLight,
+    fontSize = 16.sp,
+)
 fun htmlToAnnotatedString(
     html: String,
-    compactMode: Boolean = false,
-    style: HtmlStyle = HtmlStyle.DEFAULT,
+    linkStyle: HtmlStyle = HtmlStyle.DEFAULT,
+    genericStyle: TextStyle = TextStyle.Default,
     linkInteractionListener: LinkInteractionListener? = null,
 ): AnnotatedString {
+    mainStyle = genericStyle.toSpanStyle()
     return htmlToAnnotatedString(
         KtXmlParser(html.iterator()),
-        compactMode,
-        style,
+        linkStyle,
         linkInteractionListener,
     )
 }
@@ -28,29 +35,10 @@ fun htmlToAnnotatedString(
  */
 fun htmlToAnnotatedString(
     parser: HtmlParser,
-    compactMode: Boolean = false,
     style: HtmlStyle = HtmlStyle.DEFAULT,
     linkInteractionListener: LinkInteractionListener? = null,
 ): AnnotatedString {
     val builder = AnnotatedString.Builder()
-    parser.parse(AnnotatedStringHtmlHandler(builder, compactMode, style, linkInteractionListener))
+    parser.parse(AnnotatedStringHtmlHandler(builder, style, linkInteractionListener, spanStyle = mainStyle))
     return builder.toAnnotatedString()
-}
-
-/**
- * Convert HTML to regular text using the built-in parser,
- * stripping tags and adding extra whitespaces and line breaks for paragraphs.
- */
-fun htmlToString(html: String, compactMode: Boolean = false): String {
-    return htmlToString(KtXmlParser(html.iterator()), compactMode)
-}
-
-/**
- * Convert HTML to regular text using the provided parser,
- * stripping tags and adding extra whitespaces and line breaks for paragraphs.
- */
-fun htmlToString(parser: HtmlParser, compactMode: Boolean = false): String {
-    val builder = StringBuilder()
-    parser.parse(StringHtmlHandler(builder, compactMode))
-    return builder.toString()
 }
