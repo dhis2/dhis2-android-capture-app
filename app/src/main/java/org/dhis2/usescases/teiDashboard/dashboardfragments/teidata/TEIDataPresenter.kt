@@ -381,7 +381,8 @@ class TEIDataPresenter(
                 else -> view.goToEventInitial(eventCreationType, stage)
             }
         } else {
-            when (eventCreationType) {
+            // EyeSeeTea customization - always create event in enrollment
+            /*when (eventCreationType) {
                 EventCreationType.REFERAL -> {
                     createEventInEnrollment(eventCreationType)
                 }
@@ -392,7 +393,8 @@ class TEIDataPresenter(
                         eventCreationType = eventCreationType,
                     )
                 }
-            }
+            }*/
+            createEventInEnrollment(eventCreationType)
         }
     }
 
