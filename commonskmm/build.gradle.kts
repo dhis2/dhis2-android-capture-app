@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.ktxml)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
+            implementation(libs.dhis2.mobile.designsystem)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
