@@ -150,7 +150,7 @@ class BottomSheetDialog(
                     bottomSheetDialogUiModel.secondaryButton?.let { style ->
 
                         Button(
-                            style = ButtonStyle.TEXT,
+                            style = bottomSheetDialogUiModel.secondaryButton?.buttonStyle ?: ButtonStyle.TEXT,
                             text = bottomSheetDialogUiModel.secondaryButton?.let {
                                 it.textLabel
                                     ?: stringResource(id = it.textResource)
