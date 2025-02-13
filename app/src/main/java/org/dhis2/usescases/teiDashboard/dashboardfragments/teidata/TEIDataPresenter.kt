@@ -435,7 +435,7 @@ class TEIDataPresenter(
     }
 
     fun onOrgUnitForNewEventSelected(orgUnitUid: String, programStageUid: String) {
-        CoroutineScope(dispatcher.io()).launch {
+        CoroutineScope(dispatcher.ui()).launch {
             programUid?.let {
                 createEventUseCase(
                     programUid = it,
