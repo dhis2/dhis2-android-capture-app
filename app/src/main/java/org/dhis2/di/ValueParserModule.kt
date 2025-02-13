@@ -22,7 +22,6 @@ private class ValueParserImpl(private val d2: D2) : ValueParser {
         }
         val valueType = valueTypeAndOptionSet?.first
         val optionSetUid = valueTypeAndOptionSet?.second
-
         return value.userFriendlyValue(d2, valueType, optionSetUid)
     }
 }

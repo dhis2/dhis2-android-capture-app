@@ -50,14 +50,6 @@ internal interface DataSetInstanceRepository {
         categoryOptionComboUid: String,
     ): Pair<List<String>, List<String>>
 
-    suspend fun cellValue(
-        periodId: String,
-        orgUnitUid: String,
-        dataElementUid: String,
-        categoryOptionComboUid: String,
-        attrOptionComboUid: String,
-    ): String?
-
     suspend fun categoryOptionCombinations(categoryUids: List<String>): List<String>
 
     suspend fun getDataSetIndicator(
@@ -67,4 +59,11 @@ internal interface DataSetInstanceRepository {
         attributeOptionComboUid: String,
         sectionUid: String,
     ): SortedMap<String, String>?
+
+    suspend fun values(
+        periodId: String,
+        orgUnitUid: String,
+        dataElementUids: List<String>,
+        attrOptionComboUid: String,
+    ): List<Pair<Pair<String, String>, String?>>
 }

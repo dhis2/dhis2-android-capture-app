@@ -121,15 +121,14 @@ internal class DataSetInstanceRepositoryImpl(
             }
 
         val syncState = d2.dataValueModule().dataValues()
-            .byDataSetUid(dataSetUid)
-            .byPeriod().eq(periodId)
-            .byOrganisationUnitUid().eq(orgUnitUid)
-            .byAttributeOptionComboUid().eq(attrOptionComboUid)
-            .byDataElementUid().eq(dataElementUid)
-            .byCategoryOptionComboUid().eq(categoryOptionComboUid)
-            .blockingGet()
-            .firstOrNull()
-            ?.syncState()
+            .value(
+                periodId,
+                orgUnitUid,
+                dataElementUid,
+                categoryOptionComboUid,
+                attrOptionComboUid,
+            )
+            .blockingGet()?.syncState()
 
         return when (syncState) {
             State.ERROR -> Pair(conflicts, emptyList())
@@ -280,22 +279,19 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override suspend fun cellValue(
+    override suspend fun values(
         periodId: String,
         orgUnitUid: String,
-        dataElementUid: String,
-        categoryOptionComboUid: String,
+        dataElementUids: List<String>,
         attrOptionComboUid: String,
     ) = d2.dataValueModule().dataValues()
-        .value(
-            period = periodId,
-            organisationUnit = orgUnitUid,
-            dataElement = dataElementUid,
-            categoryOptionCombo = categoryOptionComboUid,
-            attributeOptionCombo = attrOptionComboUid,
-        )
-        .blockingGet()
-        ?.value()
+        .byPeriod().eq(periodId)
+        .byOrganisationUnitUid().eq(orgUnitUid)
+        .byAttributeOptionComboUid().eq(attrOptionComboUid)
+        .byDataElementUid().`in`(dataElementUids)
+        .blockingGet().map {
+            Pair(it.dataElement()!!, it.categoryOptionCombo()!!) to it.value()
+        }
 
     private fun dataElementCategoryComboUid(dataElementUid: String?) =
         dataElementUid?.let {

@@ -14,8 +14,7 @@ import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
-import org.dhis2.mobile.aggregates.domain.GetDataValue
-import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
@@ -45,7 +44,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var resourceManager: ResourceManager
     private lateinit var getDataSetInstanceData: GetDataSetInstanceData
     private lateinit var getDataSetSectionData: GetDataSetSectionData
-    private lateinit var getDataValueConflict: GetDataValueConflict
+    private lateinit var getDataValueConflict: GetDataValueData
     private lateinit var getDataValue: GetDataValue
     private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var dispatcher: Dispatcher
@@ -65,7 +64,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         resourceManager = declareMock<ResourceManager>()
         getDataSetInstanceData = declareMock<GetDataSetInstanceData>()
         getDataSetSectionData = declareMock<GetDataSetSectionData>()
-        getDataValueConflict = declareMock<GetDataValueConflict>()
+        getDataValueConflict = declareMock<GetDataValueData>()
         getDataValue = declareMock<GetDataValue>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
         dispatcher = declareMock<Dispatcher>()

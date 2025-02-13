@@ -3,17 +3,18 @@ package org.dhis2.mobile.aggregates.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
-import org.dhis2.mobile.aggregates.domain.GetDataValue
-import org.dhis2.mobile.aggregates.domain.GetDataValueConflict
+import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
@@ -32,8 +33,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 internal class DataSetTableViewModel(
     private val getDataSetInstanceData: GetDataSetInstanceData,
     private val getDataSetSectionData: GetDataSetSectionData,
-    private val getDataValueConflict: GetDataValueConflict,
-    private val getDataValue: GetDataValue,
+    private val getDataValueData: GetDataValueData,
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
     private val resourceManager: ResourceManager,
     private val dispatcher: Dispatcher,
@@ -117,83 +117,150 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private suspend fun sectionData(sectionUid: String): List<TableModel> {
+    private suspend fun sectionData(sectionUid: String): List<TableModel> = supervisorScope {
         var absoluteRowIndex = 0
         val sectionData = getDataSetSectionData(sectionUid)
         val tables = sectionData.tableGroups.map { tableGroup ->
 
-            val headerRows = tableGroup.headerRows.map { headerColumn ->
-                TableHeaderRow(
-                    cells = headerColumn.map { label ->
-                        TableHeaderCell(
-                            value = label.takeIf { it != DEFAULT_LABEL }
-                                ?: resourceManager.defaultHeaderLabel(),
-                        )
-                    },
-                )
-            }
-
-            val tableHeader = TableHeader(
-                rows = headerRows,
-                hasTotals = sectionData.showRowTotals(),
-            )
-
-            val tableRows = tableGroup.cellElements
-                .mapIndexed { rowIndex, cellElement ->
-                    TableRowModel(
-                        rowHeader = RowHeader(
-                            id = cellElement.uid,
-                            title = cellElement.label,
-                            row = absoluteRowIndex,
-                            showDecoration = sectionData.hasDecoration() && cellElement.description != null,
-                            description = cellElement.description,
-                        ),
-                        values = buildMap {
-                            repeat(tableHeader.tableMaxColumns()) { columnIndex ->
-                                val conflicts = getDataValueConflict(
-                                    dataElementUid = cellElement.uid,
-                                    categoryOptionComboUid = tableGroup.headerCombinations[columnIndex],
-                                )
-
-                                put(
-                                    key = columnIndex,
-                                    value = TableCell(
-                                        id = cellElement.uid,
-                                        row = rowIndex,
-                                        column = columnIndex,
-                                        value = getDataValue(
-                                            dataElementUid = cellElement.uid,
-                                            categoryOptionComboUid = tableGroup.headerCombinations[columnIndex],
-                                        ),
-                                        editable = sectionData.isEditable(cellElement.uid),
-                                        mandatory = sectionData.isMandatory(
-                                            rowId = cellElement.uid,
-                                            columnId = tableGroup.headerCombinations[columnIndex],
-                                        ),
-                                        error = conflicts.errors(),
-                                        warning = conflicts.warnings(),
-                                        legendColor = null,
-                                        isMultiText = cellElement.isMultiText,
-                                    ),
-                                )
-                            }
+            async(dispatcher.io()) {
+                val headerRows = tableGroup.headerRows.map { headerColumn ->
+                    TableHeaderRow(
+                        cells = headerColumn.map { label ->
+                            TableHeaderCell(
+                                value = label.takeIf { it != DEFAULT_LABEL }
+                                    ?: resourceManager.defaultHeaderLabel(),
+                            )
                         },
-                        isLastRow = false, // TODO: This should not be needed
-                        maxLines = 3,
-                        dropDownOptions = null, // TODO: This has to be requested on demand
-                    ).also {
-                        absoluteRowIndex += 1
-                    }
+                    )
                 }
 
-            TableModel(
-                id = tableGroup.uid,
-                title = tableGroup.label,
-                tableHeaderModel = tableHeader,
-                tableRows = tableRows,
-                overwrittenValues = emptyMap(), // TODO: This seems to not be used at all
-            )
-        }
+                val tableHeader = TableHeader(
+                    rows = headerRows,
+                    hasTotals = sectionData.showRowTotals(),
+                )
+
+                val dataValueDataMap = buildMap {
+                    putAll(
+                        getDataValueData(
+                            dataElementUids = tableGroup.cellElements.map { it.uid },
+                        ),
+                    )
+                }
+
+                val tableRows = tableGroup.cellElements
+                    .map { cellElement ->
+                        TableRowModel(
+                            rowHeader = RowHeader(
+                                id = cellElement.uid,
+                                title = cellElement.label,
+                                row = absoluteRowIndex,
+                                showDecoration = sectionData.hasDecoration() && cellElement.description != null,
+                                description = cellElement.description,
+                            ),
+                            values = buildMap {
+                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
+                                    val key = Pair(
+                                        cellElement.uid,
+                                        tableGroup.headerCombinations[columnIndex],
+                                    )
+                                    val dataValueData = dataValueDataMap[key]
+
+                                    put(
+                                        key = columnIndex,
+                                        value = TableCell(
+                                            id = cellElement.uid,
+                                            row = absoluteRowIndex,
+                                            column = columnIndex,
+                                            value = dataValueData?.value,
+                                            editable = sectionData.isEditable(cellElement.uid),
+                                            mandatory = sectionData.isMandatory(
+                                                rowId = cellElement.uid,
+                                                columnId = tableGroup.headerCombinations[columnIndex],
+                                            ),
+                                            error = dataValueData?.conflicts?.errors(),
+                                            warning = dataValueData?.conflicts?.warnings(),
+                                            legendColor = null,
+                                            isMultiText = cellElement.isMultiText,
+                                        ),
+                                    )
+                                }
+                                if (sectionData.showRowTotals()) {
+                                    put(
+                                        key = tableHeader.tableMaxColumns(),
+                                        value = TableCell(
+                                            id = cellElement.uid,
+                                            row = absoluteRowIndex,
+                                            column = tableHeader.tableMaxColumns(),
+                                            value = this.values.sumOf {
+                                                it.value?.toDoubleOrNull() ?: 0.0
+                                            }.toString(),
+                                            editable = false,
+                                        ),
+                                    )
+                                }
+                            },
+                            maxLines = 3,
+                        ).also {
+                            absoluteRowIndex += 1
+                        }
+                    }
+
+                val totalRow = if (sectionData.showColumnTotals()) {
+                    listOf(
+                        TableRowModel(
+                            rowHeader = RowHeader(
+                                id = "TotalRow",
+                                title = "Total",
+                                row = absoluteRowIndex,
+                            ),
+                            values = buildMap {
+                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
+                                    put(
+                                        key = columnIndex,
+                                        value = TableCell(
+                                            id = "TotalRow",
+                                            row = absoluteRowIndex,
+                                            column = columnIndex,
+                                            value = tableRows.sumOf {
+                                                it.values[columnIndex]?.value?.toDoubleOrNull()
+                                                    ?: 0.0
+                                            }.toString(),
+                                            editable = false,
+                                        ),
+                                    )
+                                }
+                                if (sectionData.showRowTotals()) {
+                                    put(
+                                        key = tableHeader.tableMaxColumns(),
+                                        value = TableCell(
+                                            id = "TotalRow",
+                                            row = absoluteRowIndex,
+                                            column = tableHeader.tableMaxColumns(),
+                                            value = this.values.sumOf {
+                                                it.value?.toDoubleOrNull() ?: 0.0
+                                            }.toString(),
+                                            editable = false,
+                                        ),
+                                    )
+                                }
+                            },
+                            maxLines = 1,
+                        ).also {
+                            absoluteRowIndex += 1
+                        },
+                    )
+                } else {
+                    emptyList()
+                }
+
+                TableModel(
+                    id = tableGroup.uid,
+                    title = tableGroup.label,
+                    tableHeaderModel = tableHeader,
+                    tableRows = tableRows + totalRow,
+                )
+            }
+        }.awaitAll()
 
         val indicators = listOf(
             TableModel(
@@ -229,10 +296,8 @@ internal class DataSetTableViewModel(
                         absoluteRowIndex += 1
                     }
                 } ?: emptyList(),
-                overwrittenValues = emptyMap(), // TODO: This seems to not be used at all
             ),
         )
-
-        return tables + indicators
+        tables + indicators
     }
 }
