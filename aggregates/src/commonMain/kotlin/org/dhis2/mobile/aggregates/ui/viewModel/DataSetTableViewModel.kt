@@ -41,6 +41,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 
 internal class DataSetTableViewModel(
+    private val onClose: () -> Unit,
     private val getDataSetInstanceData: GetDataSetInstanceData,
     private val getDataSetSectionData: GetDataSetSectionData,
     private val getDataValueData: GetDataValueData,
@@ -402,7 +403,7 @@ internal class DataSetTableViewModel(
 
     private fun onExit(exitMessage: String) {
         showSnackbar(exitMessage) // TODO why message is black?
-        // TODO finish the instance
+        onClose()
     }
 
     private fun onModalDialogDismissed() {

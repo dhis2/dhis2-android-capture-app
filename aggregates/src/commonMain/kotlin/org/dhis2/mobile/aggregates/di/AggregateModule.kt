@@ -104,8 +104,10 @@ internal val featureModule = module {
         val periodId = params.get<String>()
         val orgUnitUid = params.get<String>()
         val attrOptionComboUid = params.get<String>()
+        val onClose = params.get<() -> Unit>()
 
         DataSetTableViewModel(
+            onClose = onClose,
             getDataSetInstanceData = get {
                 parametersOf(
                     dataSetUid,
