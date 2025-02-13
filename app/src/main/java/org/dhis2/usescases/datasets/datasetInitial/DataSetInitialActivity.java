@@ -16,7 +16,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.commons.Constants;
-import org.dhis2.commons.dialogs.PeriodDialog;
 import org.dhis2.commons.extensions.CategoryOptionExtensionsKt;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.featureconfig.model.Feature;
@@ -28,10 +27,10 @@ import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
+import org.dhis2.usescases.datasets.datasetInitial.periods.ui.DataSetPeriodDialog;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.customviews.CategoryOptionPopUp;
-import org.dhis2.utils.customviews.PeriodDialogInputPeriod;
 import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
@@ -49,6 +48,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
@@ -147,28 +147,19 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     }
 
     @Override
-    public void showPeriodSelector(PeriodType periodType, List<DateRangeInputPeriodModel> periods, Integer openFuturePeriods) {
-        PeriodDialogInputPeriod periodDialog = new PeriodDialogInputPeriod();
-        periodDialog.setInputPeriod(periods)
-                .setOpenFuturePeriods(openFuturePeriods)
-                .setOrgUnit(selectedOrgUnit)
-                .setPeriod(periodType)
-                .setTitle(binding.dataSetPeriodInputLayout.getHint().toString())
-                .setPossitiveListener(selectedDate -> {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(selectedDate);
-                    this.selectedPeriod = calendar.getTime();
-                    binding.dataSetPeriodEditText.setText(periodUtils.getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
-                    checkCatOptionsAreValidForOrgUnit(selectedPeriod);
-                    checkActionVisivbility();
-                    periodDialog.dismiss();
-                })
-                .setNegativeListener(v -> {
-                    this.selectedPeriod = null;
-                    binding.dataSetPeriodEditText.setText(null);
-                    checkActionVisivbility();
-                })
-                .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+    public void showPeriodSelector(PeriodType periodType, Integer openFuturePeriods) {
+        DataSetPeriodDialog dialog =
+                new DataSetPeriodDialog(getDataSetUid(), periodType, openFuturePeriods);
+        dialog.setOnDateSelectedListener(date -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            selectedPeriod = calendar.getTime();
+            binding.dataSetPeriodEditText.setText(periodUtils.getPeriodUIString(periodType, date, Locale.getDefault()));
+            checkCatOptionsAreValidForOrgUnit(selectedPeriod);
+            checkActionVisivbility();
+            return Unit.INSTANCE;
+        });
+        dialog.show(getSupportFragmentManager(), DataSetPeriodDialog.class.getSimpleName());
     }
 
     private void checkCatOptionsAreValidForOrgUnit(Date selectedPeriod) {

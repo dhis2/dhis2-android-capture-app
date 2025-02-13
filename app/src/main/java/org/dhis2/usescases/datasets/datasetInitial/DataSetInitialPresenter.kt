@@ -61,21 +61,7 @@ class DataSetInitialPresenter(
     }
 
     override fun onReportPeriodClick(periodType: PeriodType) {
-        compositeDisposable.add(
-            dataSetInitialRepository.dataInputPeriod
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { data: List<DateRangeInputPeriodModel?>? ->
-                        view.showPeriodSelector(
-                            periodType,
-                            data,
-                            openFuturePeriods,
-                        )
-                    },
-                    Timber::d,
-                ),
-        )
+        view.showPeriodSelector(periodType, openFuturePeriods)
     }
 
     override fun onCatOptionClick(catOptionUid: String) {
