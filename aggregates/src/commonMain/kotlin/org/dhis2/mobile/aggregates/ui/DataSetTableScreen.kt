@@ -111,6 +111,7 @@ fun DataSetInstanceScreen(
                 parameters.periodId,
                 parameters.organisationUnitUid,
                 parameters.attributeOptionComboUid,
+                onBackClicked,
             )
         })
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
