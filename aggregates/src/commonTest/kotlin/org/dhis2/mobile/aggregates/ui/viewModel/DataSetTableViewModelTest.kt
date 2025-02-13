@@ -45,7 +45,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var getDataSetInstanceData: GetDataSetInstanceData
     private lateinit var getDataSetSectionData: GetDataSetSectionData
     private lateinit var getDataValueConflict: GetDataValueData
-    private lateinit var getDataValue: GetDataValue
+    private lateinit var getDataValue: GetDataValueData
     private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var dispatcher: Dispatcher
 
@@ -65,7 +65,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         getDataSetInstanceData = declareMock<GetDataSetInstanceData>()
         getDataSetSectionData = declareMock<GetDataSetSectionData>()
         getDataValueConflict = declareMock<GetDataValueData>()
-        getDataValue = declareMock<GetDataValue>()
+        getDataValue = declareMock<GetDataValueData>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
         dispatcher = declareMock<Dispatcher>()
 
@@ -108,7 +108,6 @@ internal class DataSetTableViewModelTest : KoinTest {
             get(),
             get(),
             get(),
-            get(),
         )
 
         viewModel.dataSetScreenState.test {
@@ -133,7 +132,6 @@ internal class DataSetTableViewModelTest : KoinTest {
             get(),
             get(),
             get(),
-            get(),
         )
 
         viewModel.dataSetScreenState.test {
@@ -146,7 +144,6 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should update selected section`() = runTest {
         val viewModel = DataSetTableViewModel(
-            get(),
             get(),
             get(),
             get(),

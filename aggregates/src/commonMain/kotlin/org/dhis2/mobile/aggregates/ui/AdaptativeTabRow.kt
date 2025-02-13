@@ -1,7 +1,9 @@
 package org.dhis2.mobile.aggregates.ui
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -10,15 +12,14 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
@@ -41,92 +42,121 @@ fun AdaptiveTabRow(
     val tabWidths = remember { mutableStateListOf<Int>() }
     var scrollable by remember { mutableStateOf(false) }
 
-    // Calculate total width of tabs
-    val totalTabWidth = tabWidths.sum()
-    val screenWidth = with(LocalDensity.current) {
-        getScreenWidth().roundToPx()
-    }
+    SubcomposeLayout(modifier = modifier) { constraints ->
 
-    LaunchedEffect(key1 = totalTabWidth, key2 = screenWidth) {
-        // Determine if tabs should be scrollable
+        val tabPlaceables = subcompose("tabs") {
+            tabLabels.forEachIndexed { index, tabLabel ->
+                AdaptativeTab(
+                    index = index,
+                    tabLabel = tabLabel,
+                    tabWidths = tabWidths,
+                    isSelected = selectedTab == index,
+                    onClick = {},
+                )
+            }
+        }.map { meassurable ->
+            meassurable.measure(constraints)
+        }
+
+        val totalTabWidth = tabPlaceables.sumOf { it.width }
+        val screenWidth = constraints.maxWidth
         scrollable = totalTabWidth > screenWidth
-    }
 
-    // TabRow with conditional behavior
-    if (false) {
-        ScrollableTabRow(
-            modifier = modifier
-                .height(48.dp)
-                .fillMaxWidth(),
-            selectedTabIndex = selectedTab,
-            containerColor = MaterialTheme.colorScheme.primary,
-            edgePadding = Spacing.Spacing16,
-            indicator = { tabPositions ->
-                TabRowDefaults.PrimaryIndicator(
-                    width = 56.dp,
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            },
-            divider = {},
-        ) {
-            tabLabels.forEachIndexed { index, tabLabel ->
-                Tab(
-                    modifier = Modifier
-                        .height(48.dp)
-                        .onGloballyPositioned { coordinates ->
-                            tabWidths.add(index, coordinates.size.width)
-                        },
-                    selected = selectedTab == index,
-                    onClick = {
-                        selectedTab = index
-                        onTabClicked(index)
+        val finalPlaceable = subcompose("finalLayout") {
+            if (scrollable) {
+                ScrollableTabRow(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    selectedTabIndex = selectedTab,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    edgePadding = Spacing.Spacing16,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.PrimaryIndicator(
+                            width = 56.dp,
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
                     },
+                    divider = {},
                 ) {
-                    Text(
-                        text = tabLabel,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleSmall,
-                    )
+                    tabLabels.forEachIndexed { index, tabLabel ->
+                        AdaptativeTab(
+                            index = index,
+                            tabLabel = tabLabel,
+                            tabWidths = tabWidths,
+                            isSelected = selectedTab == index,
+                            onClick = {
+                                selectedTab = index
+                                onTabClicked(index)
+                            },
+                        )
+                    }
+                }
+            } else {
+                TabRow(
+                    modifier = modifier
+                        .height(48.dp)
+                        .fillMaxWidth(),
+                    selectedTabIndex = selectedTab,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.PrimaryIndicator(
+                            width = 56.dp,
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    },
+                    divider = {},
+                ) {
+                    tabLabels.forEachIndexed { index, tabLabel ->
+                        AdaptativeTab(
+                            index = index,
+                            tabLabel = tabLabel,
+                            tabWidths = tabWidths,
+                            isSelected = selectedTab == index,
+                            onClick = {
+                                selectedTab = index
+                                onTabClicked(index)
+                            },
+                        )
+                    }
                 }
             }
+        }.map { measurable ->
+            measurable.measure(constraints)
         }
-    } else {
-        TabRow(
-            modifier = modifier
-                .height(48.dp)
-                .fillMaxWidth(),
-            selectedTabIndex = selectedTab,
-            containerColor = MaterialTheme.colorScheme.primary,
-            indicator = { tabPositions ->
-                TabRowDefaults.PrimaryIndicator(
-                    width = 56.dp,
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            },
-            divider = {},
-        ) {
-            tabLabels.forEachIndexed { index, tabLabel ->
-                Tab(
-                    modifier = Modifier
-                        .height(48.dp)
-                        .onGloballyPositioned { coordinates ->
-                            tabWidths.add(index, coordinates.size.width)
-                        },
-                    selected = selectedTab == index,
-                    onClick = {
-                        selectedTab = index
-                        onTabClicked(index)
-                    },
-                ) {
-                    Text(
-                        text = tabLabel,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                }
+
+        layout(constraints.maxWidth, 48.dp.roundToPx()) {
+            finalPlaceable.forEach { placeable ->
+                placeable.place(0, 0)
             }
         }
+    }
+}
+
+@Composable
+private fun AdaptativeTab(
+    index: Int,
+    tabLabel: String,
+    tabWidths: MutableList<Int>,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Tab(
+        modifier = Modifier
+            .height(48.dp)
+            .padding(horizontal = Spacing.Spacing4)
+            .onGloballyPositioned { coordinates ->
+                tabWidths.add(index, coordinates.size.width)
+            },
+        selected = isSelected,
+        interactionSource = remember { MutableInteractionSource() },
+        onClick = onClick,
+    ) {
+        Text(
+            text = tabLabel,
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleSmall,
+        )
     }
 }
