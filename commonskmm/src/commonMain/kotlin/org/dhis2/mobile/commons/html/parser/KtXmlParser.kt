@@ -49,9 +49,12 @@ class KtXmlParser(private val html: CharIterator) : HtmlParser {
                     }
                 }
 
-                EventType.TEXT -> handler.onText(parser.text)
+                EventType.TEXT -> {
+                    handler.onText(parser.text)
+                }
                 EventType.END_DOCUMENT -> break
-                else -> {}
+                else -> {
+                }
             }
         }
 

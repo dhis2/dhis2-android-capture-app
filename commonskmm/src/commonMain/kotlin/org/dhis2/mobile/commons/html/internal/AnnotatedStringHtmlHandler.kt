@@ -41,9 +41,8 @@ internal class AnnotatedStringHtmlHandler(
         },
     )
     private val mainStyle = spanStyle
-    private val pendingSpanStyles = mutableListOf<SpanStyle>()
+    private val pendingSpanStyles = mutableListOf(mainStyle)
 
-    // A negative index means the list is unordered
     private var preformattedLevel = 0
     private var boldLevel = 0
     private var skippedTagsLevel = 0
@@ -66,7 +65,7 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption",
             "video", "audio", "blockquote", "p", "hr", "br", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "big", "small", "tt", "code", "del", "s", "strike", "sup", "sub", "h1", "h2", "h3", "h4", "h5", "h6",
-            "script", "head", "table", "form", "fieldset",
+            "script", "head", "table", "form", "fieldset", "title", "\n",
             -> handleSpanStyleStart()
             "strong", "b" -> handleBoldStart()
             "em", "cite", "dfn", "i" -> handleSpanStyleStart(mainStyle.copy(fontStyle = FontStyle.Companion.Italic))
@@ -106,7 +105,7 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "video", "audio", "big", "small", "tt", "code",
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
-            "hr", "script", "head", "table", "form", "fieldset",
+            "hr", "script", "head", "table", "form", "fieldset", "title",
             -> {}
             "strong", "b" -> handleBoldEnd()
             "em", "cite", "dfn", "i",
