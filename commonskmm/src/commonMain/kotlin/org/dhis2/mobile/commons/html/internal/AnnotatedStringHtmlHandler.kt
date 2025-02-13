@@ -46,15 +46,29 @@ internal class AnnotatedStringHtmlHandler(
     // A negative index means the list is unordered
     private var preformattedLevel = 0
     private var boldLevel = 0
-    private var skippedTagsLevel = 0
     private var paragraphStartIndex = -1
     private var paragraphEndIndex = -1
 
     private fun pushPendingSpanStyles() {
         val size = pendingSpanStyles.size
         if (size != 0) {
-            for (i in 0..<size) {
-                builder.pushStyle(pendingSpanStyles[i])
+            var combinedSpanStyle = pendingSpanStyles[0]
+            if (pendingSpanStyles.size > 1) {
+                var italicHasBeenApplied = false
+
+                for (i in 0..<size) {
+                    combinedSpanStyle = combinedSpanStyle.copy(
+                        textDecoration = pendingSpanStyles[i].textDecoration,
+                        fontStyle = if (!italicHasBeenApplied) pendingSpanStyles[i].fontStyle else combinedSpanStyle.fontStyle,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) {
+                        italicHasBeenApplied = true
+                    }
+                }
+                builder.pushStyle(combinedSpanStyle)
+            } else {
+                builder.pushStyle(pendingSpanStyles[0])
             }
             pendingSpanStyles.clear()
         }
@@ -66,11 +80,14 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption",
             "video", "audio", "blockquote", "p", "hr", "br", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "big", "small", "tt", "code", "del", "s", "strike", "sup", "sub", "h1", "h2", "h3", "h4", "h5", "h6",
-            "script", "head", "table", "form", "fieldset",
+            "script", "head", "table", "form", "fieldset", "title", "span",
             -> handleSpanStyleStart()
+
             "strong", "b" -> handleBoldStart()
             "em", "cite", "dfn", "i" -> handleSpanStyleStart(mainStyle.copy(fontStyle = FontStyle.Companion.Italic))
-            "a" -> handleAnchorStart(attributes("href").orEmpty())
+            "a" -> {
+                handleAnchorStart(attributes("href").orEmpty())
+            }
             "u" -> handleSpanStyleStart(mainStyle.copy(textDecoration = TextDecoration.Companion.Underline))
         }
     }
@@ -82,7 +99,12 @@ internal class AnnotatedStringHtmlHandler(
     }
 
     private fun handleBoldStart() {
-        handleSpanStyleStart(mainStyle.copy(fontWeight = incrementBoldLevel(), color = TextColor.OnSurfaceVariant))
+        handleSpanStyleStart(
+            mainStyle.copy(
+                fontWeight = incrementBoldLevel(),
+                color = TextColor.OnSurfaceVariant,
+            ),
+        )
     }
 
     private fun handleSpanStyleStart(style: SpanStyle = mainStyle) {
@@ -106,7 +128,7 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "video", "audio", "big", "small", "tt", "code",
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
-            "hr", "script", "head", "table", "form", "fieldset",
+            "hr", "script", "head", "table", "form", "fieldset", "title", "span", "p",
             -> {}
             "strong", "b" -> handleBoldEnd()
             "em", "cite", "dfn", "i",
@@ -128,26 +150,25 @@ internal class AnnotatedStringHtmlHandler(
     private fun handleSpanStyleEnd() {
         val size = pendingSpanStyles.size
         if (size == 0) {
-            builder.pop()
+            try {
+                builder.pop()
+            } catch (e: Exception) {
+                // Ignore
+            }
         } else {
             pendingSpanStyles.removeAt(size - 1)
         }
     }
 
     private fun handleAnchorEnd() {
-        builder.pop()
+        try {
+            builder.pop()
+        } catch (e: Exception) {
+            // Ignore
+        }
     }
 
     override fun onText(text: String) {
-        // Skip text inside skipped tags
-        if (skippedTagsLevel > 0) {
-            return
-        }
-
-        if (preformattedLevel == 0) {
-            textWriter.write(text)
-        } else {
-            textWriter.writePreformatted(text)
-        }
+        textWriter.write(text, builder)
     }
 }

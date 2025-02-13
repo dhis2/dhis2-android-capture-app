@@ -1,5 +1,7 @@
 package org.dhis2.mobile.commons.html.internal
 
+import androidx.compose.ui.text.AnnotatedString
+
 internal class HtmlTextWriter(
     private val output: Appendable,
     private val callbacks: Callbacks? = null,
@@ -26,7 +28,7 @@ internal class HtmlTextWriter(
     /**
      * Skip leading whitespaces, and turn series of whitespaces into a single space.
      */
-    fun write(text: String) {
+    fun write(text: String, builder: AnnotatedString.Builder) {
         if (text.isEmpty()) {
             return
         }
@@ -43,7 +45,12 @@ internal class HtmlTextWriter(
                 output.append(' ')
             }
             if (contentStartIndex == -1) {
-                // No content left, only spaces
+                try {
+                    builder.pop()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                output.append(' ')
                 currentState = STATE_SPACE_IN_PROGRESS
                 break
             }
@@ -61,6 +68,7 @@ internal class HtmlTextWriter(
                 break
             }
             output.append(text, contentStartIndex, index)
+
             output.append(' ')
             state = STATE_SPACE_IN_PROGRESS
             index++
