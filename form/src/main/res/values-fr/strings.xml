@@ -22,6 +22,7 @@
     <string name="conf_error_value_to_assign_option_set">La règle du programme 1%s tente d\'attribuer une valeur 1%s qui n\'appartient pas au jeu d\'options 1%s</string>
     <string name="conf_error_value_option_set">La valeur du champ 1%s n\'appartient pas à l\'option définie dans 1%s</string>
     <string name="field_is_mandatory">Ce champ est obligatoire</string>
+    <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
     <string name="date">Date</string>
     <string name="hint_year">Années</string>
     <string name="hint_month">Mois</string>
@@ -72,4 +73,6 @@
     <string name="tei_coordinates">Coordonnées pour</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="incident_date">Date de l´incident</string>
+    <string name="open_with">Ouvrir avec</string>
+    <string name="event_details_section_title">%s détails</string>
     </resources>
