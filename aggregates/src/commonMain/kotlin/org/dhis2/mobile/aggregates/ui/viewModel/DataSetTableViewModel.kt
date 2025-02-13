@@ -278,6 +278,7 @@ internal class DataSetTableViewModel(
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
                                 modalDialog = datasetModalDialogProvider.provideMandatoryFieldsDialog(
+                                    mandatoryFieldsMessage = resourceManager.provideMandatoryFieldsMessage(),
                                     onDismiss = { onModalDialogDismissed() },
                                     onAccept = { onModalDialogDismissed() },
                                 ),
@@ -288,8 +289,25 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                DataSetMandatoryFieldsStatus.CHECK_FIELD_COMBINATION -> TODO()
-                DataSetMandatoryFieldsStatus.SUCCESS -> TODO()
+                DataSetMandatoryFieldsStatus.CHECK_FIELD_COMBINATION -> {
+                    _dataSetScreenState.update {
+                        if (it is DataSetScreenState.Loaded) {
+                            it.copy(
+                                modalDialog = datasetModalDialogProvider.provideMandatoryFieldsDialog(
+                                    mandatoryFieldsMessage = resourceManager.provideMandatoryFieldsCombinationMessage(),
+                                    onDismiss = { onModalDialogDismissed() },
+                                    onAccept = { onModalDialogDismissed() },
+                                ),
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                }
+
+                DataSetMandatoryFieldsStatus.SUCCESS -> {
+                    onExit(resourceManager.provideSavedAndCompleted())
+                }
             }
         }
     }

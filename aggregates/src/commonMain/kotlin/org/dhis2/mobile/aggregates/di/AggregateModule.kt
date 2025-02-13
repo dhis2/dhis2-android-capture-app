@@ -2,8 +2,8 @@ package org.dhis2.mobile.aggregates.di
 
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
-import org.dhis2.mobile.aggregates.domain.CheckValidationRules
 import org.dhis2.mobile.aggregates.domain.CheckMandatoryFieldsStatus
+import org.dhis2.mobile.aggregates.domain.CheckValidationRules
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
