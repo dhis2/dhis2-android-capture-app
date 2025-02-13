@@ -298,7 +298,7 @@ private fun DataSetSinglePane(
         dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
             HtmlContentBox(
                 text = it,
-                modifier = Modifier.padding(bottom = Spacing.Spacing16, start = Spacing.Spacing16, end = Spacing.Spacing16),
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
             )
         }
 
@@ -352,16 +352,16 @@ private fun DataSetTableContent(
     Column(
         modifier = modifier
             .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
-        verticalArrangement = spacedBy(Spacing.Spacing24),
+
     ) {
         DataSetDetails(
-            modifier.padding(horizontal = Spacing.Spacing16),
+            modifier.padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
             dataSetDetails = dataSetDetails,
         )
         dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
             HtmlContentBox(
                 text = it,
-                modifier = Modifier.padding(bottom = Spacing.Spacing0, start = Spacing.Spacing16, end = Spacing.Spacing16),
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
             )
         }
 
