@@ -1,4 +1,4 @@
-package org.dhis2.mobile.aggregates.domain
+package org.dhis2.mobile.aggregates.ui.provider
 
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.complete
