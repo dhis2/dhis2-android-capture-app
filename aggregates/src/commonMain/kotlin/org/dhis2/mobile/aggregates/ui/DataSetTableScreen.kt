@@ -8,15 +8,11 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -190,6 +185,8 @@ fun DataSetInstanceScreen(
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                                     onCellClick = dataSetTableViewModel::updateSelectedCell,
+                                    currentSection = dataSetScreenState.currentSection(),
+                                    dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                 )
 
                             DataSetScreenState.Loading ->
@@ -243,7 +240,8 @@ fun DataSetInstanceScreen(
                         onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
-                    )
+                        currentSection = dataSetScreenState.currentSection(),
+                        )
                 } else {
                     ContentLoading(
                         modifier = Modifier.fillMaxSize().padding(it),
@@ -403,6 +401,7 @@ private fun SectionTabs(
 @Composable
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
+    dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
     currentSection: String?,
