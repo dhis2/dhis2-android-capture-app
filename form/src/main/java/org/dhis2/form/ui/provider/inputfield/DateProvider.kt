@@ -10,6 +10,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import org.dhis2.commons.date.CustomDateTransformation
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -22,7 +23,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
-import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -40,7 +40,7 @@ fun ProvideInputDate(
     val (actionType, visualTransformation) = when (fieldUiModel.valueType) {
         ValueType.DATETIME -> DateTimeActionType.DATE_TIME to DateTimeTransformation()
         ValueType.TIME -> DateTimeActionType.TIME to TimeTransformation()
-        else -> DateTimeActionType.DATE to DateTransformation()
+        else -> DateTimeActionType.DATE to CustomDateTransformation()
     }
     val textSelection = TextRange(
         fieldUiModel.value?.length ?: 0,
