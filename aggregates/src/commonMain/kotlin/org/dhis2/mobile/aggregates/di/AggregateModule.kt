@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.di
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRules
+import org.dhis2.mobile.aggregates.domain.CheckMandatoryFieldsStatus
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
@@ -111,6 +112,12 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        CheckMandatoryFieldsStatus(
+            dataSetUid = params.get(),
+        )
+    }
+
     viewModel { params ->
         val dataSetUid = params.get<String>()
         val periodId = params.get<String>()
@@ -148,11 +155,9 @@ internal val featureModule = module {
             checkCompletionStatus = get {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
+            datasetModalDialogProvider = get(),
             checkMandatoryFieldsStatus = get {
                 parametersOf(dataSetUid)
-            },
-            datasetModalDialogProvider = get {
-                parametersOf()
             },
             dispatcher = get(),
         )

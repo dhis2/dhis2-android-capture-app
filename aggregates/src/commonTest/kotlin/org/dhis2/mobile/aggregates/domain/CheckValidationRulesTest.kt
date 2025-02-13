@@ -2,7 +2,7 @@ package org.dhis2.mobile.aggregates.domain
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
-import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration
 import org.junit.Assert.assertEquals
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.doReturn
@@ -24,7 +24,7 @@ class CheckValidationRulesTest {
         val result = checkValidationRules()
 
         // Then
-        assertEquals(ValidationRulesConfiguration.NONE, result)
+        assertEquals(DataSetValidationRulesConfiguration.NONE, result)
     }
 
     @Test
@@ -39,7 +39,7 @@ class CheckValidationRulesTest {
         val result = checkValidationRules()
 
         // Then
-        assertEquals(ValidationRulesConfiguration.MANDATORY, result)
+        assertEquals(DataSetValidationRulesConfiguration.MANDATORY, result)
     }
 
     @Test
@@ -54,6 +54,6 @@ class CheckValidationRulesTest {
         val result = checkValidationRules()
 
         // Then
-        assertEquals(ValidationRulesConfiguration.OPTIONAL, result)
+        assertEquals(DataSetValidationRulesConfiguration.OPTIONAL, result)
     }
 }
