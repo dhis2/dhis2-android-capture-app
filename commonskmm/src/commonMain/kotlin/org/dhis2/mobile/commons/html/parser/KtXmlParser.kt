@@ -20,31 +20,18 @@ class KtXmlParser(private val html: CharIterator) : HtmlParser {
                 EventType.START_TAG -> {
                     val lowerCaseName = parser.name.lowercase()
                     handler.onOpenTag(lowerCaseName, attributes)
-                    if (lowerCaseName == "br" || lowerCaseName == "hr" || lowerCaseName == "img") {
-                        // Special case for unpaired tags: closing event is notified immediately
-                        handler.onCloseTag(lowerCaseName)
-                        if (parser.isEmptyElementTag) {
-                            parser.next()
-                        }
-                    } else {
-                        tagStack.add(lowerCaseName)
-                    }
+                    tagStack.add(lowerCaseName)
                 }
 
                 EventType.END_TAG -> {
                     val name = parser.name
-                    if (name.equals("br", ignoreCase = true)) {
-                        // A closing BR tag is interpreted as a self-closing BR tag
-                        handler.onOpenTag("br", EMPTY_ATTRIBUTES)
-                        handler.onCloseTag("br")
-                    } else {
-                        val stackPosition =
-                            tagStack.indexOfLast { it.equals(name, ignoreCase = true) }
-                        if (stackPosition != -1) {
-                            // Also close all unclosed child tags, if any
-                            for (i in tagStack.lastIndex downTo stackPosition) {
-                                handler.onCloseTag(tagStack.removeAt(i))
-                            }
+
+                    val stackPosition =
+                        tagStack.indexOfLast { it.equals(name, ignoreCase = true) }
+                    if (stackPosition != -1) {
+                        // Also close all unclosed child tags, if any
+                        for (i in tagStack.lastIndex downTo stackPosition) {
+                            handler.onCloseTag(tagStack.removeAt(i))
                         }
                     }
                 }

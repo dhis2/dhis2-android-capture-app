@@ -351,11 +351,27 @@ private fun DataSetSinglePane(
             dataSetDetails = dataSetDetails,
         )
 
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     tableModels = dataSetSectionTable.tables(),
                     onCellClick = onCellClick,
+                    bottomContent = {
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                            HtmlContentBox(
+                                text = it,
+                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
+
+                                )
+                        }
+                    }
                 )
 
             DataSetSectionTable.Loading ->
@@ -375,7 +391,7 @@ private fun SectionTabs(
     }
     AdaptiveTabRow(
         modifier = modifier
-            .height(48.dp)
+            .height(Spacing.Spacing48)
             .fillMaxWidth(),
         tabLabels = tabLabels,
         onTabClicked = { selectedTabIndex ->
@@ -389,22 +405,39 @@ private fun DataSetTableContent(
     modifier: Modifier = Modifier,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
+    currentSection: String?,
     onCellClick: (cellId: String) -> Unit,
-) {
+    ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
         DataSetDetails(
-            modifier.padding(horizontal = 16.dp),
+            modifier.padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
             dataSetDetails = dataSetDetails,
         )
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     tableModels = dataSetSectionTable.tables(),
                     onCellClick = onCellClick,
+                    bottomContent = {
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                            HtmlContentBox(
+                                text = it,
+                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
+
+                                )
+                        }
+                    }
                 )
 
             DataSetSectionTable.Loading ->
@@ -414,10 +447,22 @@ private fun DataSetTableContent(
 }
 
 @Composable
-fun HtmlContentBox(text: AnnotatedString) {
+fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
+    val textStyle = MaterialTheme.typography.bodyMedium.copy(
+        color = TextColor.OnSurfaceLight,
+    )
+    val formatedText = htmlToAnnotatedString(
+        html = text,
+        linkStyle = HtmlStyle(
+            textLinkStyles = TextLinkStyles(
+                style = textStyle.toSpanStyle().copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline),
+            ),
+        ),
+        genericStyle = textStyle,
+    )
     Column(Modifier.fillMaxWidth().background(color = SurfaceColor.ContainerLowest)) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = Spacing.Spacing16)
                 .background(
@@ -452,6 +497,7 @@ private fun ContentLoading(
 private fun DataSetTable(
     tableModels: List<TableModel>,
     currentSelection: TableSelection = TableSelection.Unselected(),
+    bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (cellId: String) -> Unit,
 ) {
     DataTable(
@@ -467,6 +513,6 @@ private fun DataSetTable(
                 super.onSelectionChange(newTableSelection)
             }
         },
-        bottomContent = {},
+        bottomContent = bottomContent,
     )
 }
