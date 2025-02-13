@@ -59,6 +59,7 @@ internal class DatasetModalDialogProvider(
     }
 
     suspend fun provideMandatoryFieldsDialog(
+        mandatoryFieldsMessage: String,
         onDismiss: () -> Unit,
         onAccept: () -> Unit,
     ): DataSetModalDialogUIState {
@@ -67,7 +68,7 @@ internal class DatasetModalDialogProvider(
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
                 title = resourceManager.provideSaved(),
-                subtitle = resourceManager.provideMandatoryFieldsDialogDescription(),
+                subtitle = mandatoryFieldsMessage,
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Start,
             ),
