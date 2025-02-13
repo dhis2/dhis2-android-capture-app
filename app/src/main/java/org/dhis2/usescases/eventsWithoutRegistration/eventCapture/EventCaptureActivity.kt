@@ -36,6 +36,10 @@ import org.dhis2.commons.animations.show
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.DialogClickListener
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle.MainButton
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -43,10 +47,6 @@ import org.dhis2.databinding.ActivityEventCaptureBinding
 import org.dhis2.form.model.EventMode
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.DiscardButton
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle.MainButton
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.eventCaptureFragment.EventCaptureFormFragment
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponent
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
@@ -316,6 +316,7 @@ class EventCaptureActivity :
                     /*Unused*/
                 },
                 { presenter.deleteEvent() },
+                showTopDivider = true,
             )
             dialog.show(supportFragmentManager, AlertBottomDialog::class.java.simpleName)
         } else if (isFormScreen()) {

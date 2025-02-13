@@ -1,4 +1,4 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,8 +21,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class
@@ -50,8 +50,15 @@ DeleteBottomSheetDialog(
             )
             setContent {
                 BottomSheetShell(
-                    title = title,
-                    description = description,
+                    uiState = BottomSheetShellUIState(
+                        bottomPadding = bottomSheetLowerPadding(),
+                        title = title,
+                        showTopSectionDivider = true,
+                        showBottomSectionDivider = false,
+                        description = description,
+                    ),
+                    windowInsets = { bottomSheetInsets() },
+
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Info,
@@ -61,12 +68,7 @@ DeleteBottomSheetDialog(
                     },
                     buttonBlock = {
                         ButtonBlock(
-                            modifier = Modifier.padding(
-                                top = Spacing0,
-                                bottom = Spacing24,
-                                start = Spacing24,
-                                end = Spacing24,
-                            ),
+                            modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
                             primaryButton = {
                                 Button(
                                     style = ButtonStyle.OUTLINED,
@@ -106,7 +108,6 @@ DeleteBottomSheetDialog(
                     content = {
                         // no-op
                     },
-                    showSectionDivider = false,
                 )
             }
         }

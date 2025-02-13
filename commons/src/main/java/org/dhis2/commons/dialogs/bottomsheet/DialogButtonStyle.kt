@@ -1,13 +1,15 @@
-package org.dhis2.ui.dialogs.bottomsheet
+package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.ui.graphics.Color
 import org.dhis2.ui.R
 import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.warningColor
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 sealed class DialogButtonStyle(
     open val textLabel: String? = null,
     open val textResource: Int = -1,
+    open val buttonStyle: ButtonStyle = ButtonStyle.TEXT,
     val colorResource: Color? = null,
     val iconResource: Int? = null,
     val backgroundColor: Color? = null,
@@ -26,9 +28,10 @@ sealed class DialogButtonStyle(
         textLabel = textLabel,
         colorResource = colorPrimary,
     )
-    data class SecondaryButton(override val textResource: Int) : DialogButtonStyle(
+    data class SecondaryButton(override val textResource: Int, override val buttonStyle: ButtonStyle = ButtonStyle.TEXT) : DialogButtonStyle(
         textResource = textResource,
         colorResource = colorPrimary,
+        buttonStyle = ButtonStyle.TEXT,
     )
 
     data object CompleteButton : DialogButtonStyle(
