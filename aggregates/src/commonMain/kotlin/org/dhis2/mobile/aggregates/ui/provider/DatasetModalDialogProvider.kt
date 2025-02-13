@@ -57,4 +57,36 @@ internal class DatasetModalDialogProvider(
             onDismiss = onDismiss,
         )
     }
+
+    suspend fun provideMandatoryFieldsDialog(
+        onDismiss: () -> Unit,
+        onAccept: () -> Unit,
+    ): DataSetModalDialogUIState {
+        val acceptText = resourceManager.provideOK()
+
+        return DataSetModalDialogUIState(
+            contentDialogUIState = BottomSheetShellUIState(
+                title = resourceManager.provideSaved(),
+                subtitle = resourceManager.provideMandatoryFieldsDialogDescription(),
+                showBottomSectionDivider = false,
+                headerTextAlignment = TextAlign.Start,
+            ),
+            buttonsDialog = {
+                ButtonBlock(
+                    modifier = Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
+                    primaryButton = {
+                        Button(
+                            style = ButtonStyle.FILLED,
+                            text = acceptText,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onAccept,
+                        )
+                    },
+                )
+            },
+            onDismiss = onDismiss,
+        )
+    }
 }

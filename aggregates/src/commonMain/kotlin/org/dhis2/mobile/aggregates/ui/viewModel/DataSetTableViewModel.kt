@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
+import org.dhis2.mobile.aggregates.domain.CheckMandatoryFieldsStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRules
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
@@ -21,9 +22,10 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
-import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
-import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
-import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
+import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus
+import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.MANDATORY
+import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.NONE
+import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
@@ -50,6 +52,7 @@ internal class DataSetTableViewModel(
     private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
     private val datasetModalDialogProvider: DatasetModalDialogProvider,
+    private val checkMandatoryFieldsStatus: CheckMandatoryFieldsStatus,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -268,12 +271,32 @@ internal class DataSetTableViewModel(
     }
 
     private fun attemptToComplete() {
-        TODO("Check Mandatory fields")
+        viewModelScope.launch(dispatcher.io()) {
+            when (checkMandatoryFieldsStatus()) {
+                DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS -> {
+                    _dataSetScreenState.update {
+                        if (it is DataSetScreenState.Loaded) {
+                            it.copy(
+                                modalDialog = datasetModalDialogProvider.provideMandatoryFieldsDialog(
+                                    onDismiss = { onModalDialogDismissed() },
+                                    onAccept = { onModalDialogDismissed() },
+                                ),
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                }
+
+                DataSetMandatoryFieldsStatus.CHECK_FIELD_COMBINATION -> TODO()
+                DataSetMandatoryFieldsStatus.SUCCESS -> TODO()
+            }
+        }
     }
 
     private fun onExit(exitMessage: String) {
-        showSnackbar(exitMessage)
-        // TODO("Exit")
+        showSnackbar(exitMessage) // TODO why message is black?
+        // TODO finish the instance
     }
 
     private fun onModalDialogDismissed() {
