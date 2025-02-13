@@ -5,12 +5,12 @@ package org.dhis2.mobile.aggregates.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,14 +28,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
+import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
@@ -47,6 +50,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.VerticalTabs
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneConfig
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneLayout
 import org.hisp.dhis.mobile.ui.designsystem.component.model.Tab
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
@@ -147,18 +152,29 @@ fun DataSetInstanceScreen(
         if (allowTwoPane) {
             TwoPaneLayout(
                 modifier = Modifier.fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.surfaceBright)
+                    .background(
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+                    )
                     .padding(it),
                 paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
                 primaryPane = {
-                    if (dataSetScreenState is DataSetScreenState.Loaded) {
-                        DataSetTableContent(
-                            modifier = Modifier.background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = RoundedCornerShape(topEnd = Radius.L),
-                            ),
-                            dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
-                        )
+                    when (dataSetScreenState) {
+                        is DataSetScreenState.Loaded ->
+                            DataSetTableContent(
+                                modifier = Modifier.background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = RoundedCornerShape(topEnd = Radius.L),
+                                ),
+                                dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                                dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                            )
+
+                        DataSetScreenState.Loading ->
+                            ContentLoading(
+                                modifier = Modifier.fillMaxSize(),
+                                MaterialTheme.colorScheme.background,
+                            )
                     }
                 },
                 secondaryPane = {
@@ -177,20 +193,22 @@ fun DataSetInstanceScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    color = MaterialTheme.colorScheme.surfaceBright,
+                                    color = MaterialTheme.colorScheme.background,
                                     shape = RoundedCornerShape(topStart = Radius.L),
                                 )
-                                .padding(
-                                    top = Spacing.Spacing0,
-                                    start = Spacing.Spacing16,
-                                    end = Spacing.Spacing16,
-                                    bottom = Spacing.Spacing16,
-                                ),
+                                .padding(all = Spacing.Spacing16)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceBright,
+                                    shape = RoundedCornerShape(Radius.L),
+                                )
+                                .padding(all = Spacing.Spacing0),
                             tabs = tabs,
                             onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         )
                     } else {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        ContentLoading(
+                            modifier = Modifier.fillMaxSize(),
+                        )
                     }
                 },
             )
@@ -201,9 +219,12 @@ fun DataSetInstanceScreen(
                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                     onSectionSelected = dataSetTableViewModel::onSectionSelected,
+                    dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                 )
             } else {
-                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                ContentLoading(
+                    modifier = Modifier.fillMaxSize().padding(it),
+                )
             }
         }
     }
@@ -217,15 +238,15 @@ fun DataSetInstanceScreen(
  * @param dataSetDetails: Data set details
  * @param onSectionSelected: Callback function to be invoked when a section is selected
  * */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
+    dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(
@@ -238,48 +259,31 @@ private fun DataSetSinglePane(
                 ),
             ),
     ) {
-        item(key = "section_tabs") {
-            SectionTabs(
-                dataSetSections = dataSetSections,
-                onSectionSelected = onSectionSelected,
-            )
-        }
+        SectionTabs(
+            dataSetSections = dataSetSections,
+            onSectionSelected = onSectionSelected,
+        )
 
-        item(key = "details") {
-            DataSetDetails(
-                modifier = Modifier
-                    .height(68.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(
-                            topStart = Radius.L,
-                            topEnd = Radius.L,
-                        ),
-                    ).padding(horizontal = Spacing.Spacing16),
-                dataSetDetails = dataSetDetails,
-            )
-        }
+        DataSetDetails(
+            modifier = Modifier
+                .height(68.dp)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(
+                        topStart = Radius.L,
+                        topEnd = Radius.L,
+                    ),
+                ).padding(horizontal = Spacing.Spacing16),
+            dataSetDetails = dataSetDetails,
+        )
 
-        repeat(10) {
-            stickyHeader {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.background)
-                        .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
-                    text = "Table $it",
-                )
-            }
-            item {
-                DataSetTable(
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.background)
-                        .height(200.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp),
-                )
-            }
+        when (dataSetSectionTable) {
+            is DataSetSectionTable.Loaded ->
+                DataSetTable(dataSetSectionTable.tables())
+
+            DataSetSectionTable.Loading ->
+                ContentLoading(Modifier.weight(1f))
         }
     }
 }
@@ -308,34 +312,44 @@ private fun SectionTabs(
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
     dataSetDetails: DataSetDetails,
+    dataSetSectionTable: DataSetSectionTable,
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
-        item {
-            DataSetDetails(
-                modifier.padding(horizontal = 16.dp),
-                dataSetDetails = dataSetDetails,
-            )
-        }
+        DataSetDetails(
+            modifier.padding(horizontal = 16.dp),
+            dataSetDetails = dataSetDetails,
+        )
+        when (dataSetSectionTable) {
+            is DataSetSectionTable.Loaded ->
+                DataSetTable(dataSetSectionTable.tables())
 
-        items(count = 10) {
-            DataSetTable(
-                modifier = Modifier.height(200.dp).fillMaxWidth(),
-            )
+            DataSetSectionTable.Loading ->
+                ContentLoading(Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun DataSetTable(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.small,
-            ),
-    ) { }
+private fun ContentLoading(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceBright,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth().background(backgroundColor),
+        contentAlignment = Alignment.Center,
+    ) {
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    }
+}
+
+@Composable
+private fun DataSetTable(tableModels: List<TableModel>) {
+    DataTable(
+        tableList = tableModels,
+        bottomContent = {},
+    )
 }

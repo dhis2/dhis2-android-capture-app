@@ -15,7 +15,7 @@ kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "17"
             }
         }
     }
@@ -31,6 +31,7 @@ kotlin {
             api(compose.materialIconsExtended)
             implementation(libs.dhis2.mobile.designsystem)
             implementation(libs.compose.material3.window)
+            implementation(compose.components.resources)
             implementation(project(":commonskmm"))
 
             // Koin
@@ -38,8 +39,19 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
         }
+        commonTest{
+            resources.srcDirs("aggregates/src/commonMain/composeResources")
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            // Koin Test features
+            implementation(libs.koin.test)
+            implementation(libs.koin.test.junit5)
+            implementation(libs.koin.test.junit4)
+            implementation(libs.test.turbine)
+            implementation(libs.test.kotlinCoroutines)
+            implementation(libs.test.mockitoKotlin)
+            implementation(compose.components.resources)
         }
 
         androidMain.dependencies {
@@ -60,17 +72,27 @@ kotlin {
     }
 }
 
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "org.dhis2.mobile.aggregates.resources"
+    generateResClass = always
+}
+
 android {
     namespace = "org.dhis2.mobile.aggregates"
     compileSdk = libs.versions.sdk.get().toInt()
+
+    sourceSets["main"].res.srcDirs("aggregates/src/androidMain/res", "aggregates/src/commonMain/composeResources")
+    sourceSets["main"].resources.srcDirs("aggregates/src/commonMain/composeResources")
+
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
 
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     dependencies {
@@ -79,6 +101,7 @@ android {
 }
 
 dependencies {
+    testImplementation(libs.junit.jupiter)
     debugImplementation(libs.androidx.compose.preview)
     debugImplementation(libs.androidx.ui.tooling)
 }

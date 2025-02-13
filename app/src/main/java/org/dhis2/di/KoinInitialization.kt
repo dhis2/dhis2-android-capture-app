@@ -14,6 +14,7 @@ object KoinInitialization {
             androidContext(this@invoke)
             modules(
                 serverModule(d2Configuration),
+                valueParserModule,
                 aggregatesModule,
             )
         }
