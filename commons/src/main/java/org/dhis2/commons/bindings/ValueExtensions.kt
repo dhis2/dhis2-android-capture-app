@@ -68,7 +68,6 @@ fun String.userFriendlyValue(
     }
 }
 
-
 fun checkOptionSetValue(d2: D2, optionSetUid: String, code: String): String? {
     return d2.optionModule().options()
         .byOptionSetUid().eq(optionSetUid)

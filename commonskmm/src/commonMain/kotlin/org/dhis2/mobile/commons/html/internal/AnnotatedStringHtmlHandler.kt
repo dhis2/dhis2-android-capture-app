@@ -138,6 +138,7 @@ internal class AnnotatedStringHtmlHandler(
             "em", "cite", "dfn", "i",
             "u",
             -> handleSpanStyleEnd()
+
             "a" -> handleAnchorEnd()
         }
     }
