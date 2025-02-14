@@ -104,4 +104,25 @@ internal interface DataSetInstanceRepository {
         orgUnitUid: String,
         attrOptionComboUid: String,
     ): Boolean
+
+    suspend fun checkIfHasMissingMandatoryFields(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Boolean
+
+    suspend fun checkIfHasMissingMandatoryFieldsCombination(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Boolean
+
+    suspend fun completeDataset(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Result<Unit>
 }

@@ -6,6 +6,7 @@ import org.dhis2.mobile.aggregates.resources.completion_dialog_description
 import org.dhis2.mobile.aggregates.resources.completion_dialog_title
 import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.dhis2.mobile.aggregates.resources.total_header_label
+import org.dhis2.mobile.aggregates.resources.error_on_complete_dataset
 import org.dhis2.mobile.aggregates.resources.mandatory_fields_combination_message
 import org.dhis2.mobile.aggregates.resources.mandatory_fields_dialog_description
 import org.dhis2.mobile.aggregates.resources.not_now
@@ -35,4 +36,6 @@ internal class ResourceManager {
     suspend fun provideOK() = getString(Res.string.ok)
 
     suspend fun provideSavedAndCompleted() = getString(Res.string.saved_and_completed)
+
+    suspend fun provideErrorOnCompleteDataset() = getString(Res.string.error_on_complete_dataset)
 }
