@@ -1,7 +1,5 @@
 package org.dhis2.mobile.commons.html.internal
 
-import androidx.compose.ui.text.AnnotatedString
-
 internal class HtmlTextWriter(
     private val output: Appendable,
     private val callbacks: Callbacks? = null,
@@ -28,7 +26,7 @@ internal class HtmlTextWriter(
     /**
      * Skip leading whitespaces, and turn series of whitespaces into a single space.
      */
-    fun write(text: String, builder: AnnotatedString.Builder) {
+    fun write(text: String) {
         if (text.isEmpty()) {
             return
         }
