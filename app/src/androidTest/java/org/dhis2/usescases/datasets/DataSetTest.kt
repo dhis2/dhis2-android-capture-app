@@ -1,10 +1,13 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
@@ -19,6 +22,9 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
@@ -32,6 +38,9 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    private val featureConfigRepository: FeatureConfigRepository = mock()
+
+
     override fun teardown() {
         super.teardown()
         disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -44,7 +53,6 @@ class DataSetTest : BaseTest() {
         val orgUnit = "Ngelehun CHC"
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-
         //Step - Enter Dataset
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
@@ -67,7 +75,13 @@ class DataSetTest : BaseTest() {
         // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
         // Period filter from - to specific period where instansces exist
         // Sync move after create dataset instance and check the filter afterwards
-//        checkFilterCombination(orgUnit)
+        // checkFilterCombination(orgUnit)
+
+        //Step - Check content boxes above and below the table
+        dataSetDetailRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
+            composeTestRule.onNodeWithText("Bold Text.",true).assertIsDisplayed()
+        }
     }
 
     private fun checkFilterCombination(
@@ -208,5 +222,24 @@ class DataSetTest : BaseTest() {
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             assertCellSelected("dzjKKQq0cSO", 0, 1)
         }
+    }
+
+    @Test
+    fun shouldDisplayContentBoxAboveAndBelowTableAutomate() {
+
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+
+        //Step - Enter Dataset
+        startDataSetDetailActivity(
+            "BfMAe6Itzgt",
+            "Child Health",
+            ruleDataSetDetail
+        )
+
+        //Step - Dataset list is in chronological order
+        dataSetDetailRobot(composeTestRule) {
+            checkDatasetListIsSortedChronologically()
+        }
+
     }
 }
