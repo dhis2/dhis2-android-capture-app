@@ -55,17 +55,21 @@ internal class AnnotatedStringHtmlHandler(
             var combinedSpanStyle = pendingSpanStyles[0]
             if (pendingSpanStyles.size > 1) {
                 var italicHasBeenApplied = false
-
+                var boldHasBeenApplied = false
                 for (i in 0..<size) {
                     combinedSpanStyle = combinedSpanStyle.copy(
                         textDecoration = pendingSpanStyles[i].textDecoration,
                         fontStyle = if (!italicHasBeenApplied) pendingSpanStyles[i].fontStyle else combinedSpanStyle.fontStyle,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = if (!boldHasBeenApplied) pendingSpanStyles[i].fontWeight else combinedSpanStyle.fontWeight,
                     )
                     if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) {
                         italicHasBeenApplied = true
                     }
+                    if (pendingSpanStyles[i].fontWeight == FontWeight.Companion.Bold) {
+                        boldHasBeenApplied = true
+                    }
                 }
+                if (boldHasBeenApplied) combinedSpanStyle = combinedSpanStyle.copy(color = TextColor.OnSurfaceVariant)
                 builder.pushStyle(combinedSpanStyle)
             } else {
                 builder.pushStyle(pendingSpanStyles[0])

@@ -45,11 +45,6 @@ internal class HtmlTextWriter(
                 output.append(' ')
             }
             if (contentStartIndex == -1) {
-                try {
-                    builder.pop()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
                 output.append(' ')
                 currentState = STATE_SPACE_IN_PROGRESS
                 break
