@@ -2,6 +2,7 @@ package org.dhis2.di
 
 import android.app.Application
 import org.dhis2.mobile.aggregates.di.aggregatesModule
+import org.dhis2.mobile.commons.di.commonsModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -14,7 +15,7 @@ object KoinInitialization {
             androidContext(this@invoke)
             modules(
                 serverModule(d2Configuration),
-                valueParserModule,
+                commonsModule,
                 aggregatesModule,
             )
         }
