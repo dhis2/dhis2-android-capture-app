@@ -129,10 +129,9 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "video", "audio", "big", "small", "tt", "code",
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
-            "hr", "script", "head", "table", "form", "fieldset", "title", "span",
+            "hr", "script", "head", "table", "form", "fieldset", "title", "span", "p",
             -> {
             }
-            "p" -> handleSpanStyleEnd()
             "strong", "b" -> handleBoldEnd()
             "em", "cite", "dfn", "i",
             "u",
