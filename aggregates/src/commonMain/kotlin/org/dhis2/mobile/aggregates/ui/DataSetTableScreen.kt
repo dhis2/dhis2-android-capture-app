@@ -33,9 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -432,7 +435,7 @@ private fun DataSetTableContent(
                         dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                             HtmlContentBox(
                                 text = it,
-                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
+                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0).testTag("HTML_BOTTOM_CONTENT"),
 
                                 )
                         }
@@ -468,11 +471,12 @@ fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
                     color = SurfaceColor.ContainerLow,
                     shape = Shape.Small,
                 ),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.CenterStart,
         ) {
             Column(Modifier.padding(Spacing.Spacing8)) {
                 Text(
                     text = text,
+                    textAlign = TextAlign.Start,
                 )
             }
         }
