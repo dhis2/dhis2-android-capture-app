@@ -12,16 +12,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
-import org.dhis2.mobile.aggregates.domain.CheckMandatoryFieldsStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRules
+import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
-import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus
+import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
+import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
+import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
+import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
 import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.OPTIONAL
@@ -30,6 +32,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DatasetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
@@ -51,7 +54,7 @@ internal class DataSetTableViewModel(
     private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
     private val datasetModalDialogProvider: DatasetModalDialogProvider,
-    private val checkMandatoryFieldsStatus: CheckMandatoryFieldsStatus,
+    private val completeDataSet: CompleteDataSet,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -361,8 +364,8 @@ internal class DataSetTableViewModel(
 
     private fun attemptToComplete() {
         viewModelScope.launch(dispatcher.io()) {
-            when (checkMandatoryFieldsStatus()) {
-                DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS -> {
+            when (completeDataSet()) {
+                MISSING_MANDATORY_FIELDS -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -378,7 +381,7 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                DataSetMandatoryFieldsStatus.CHECK_FIELD_COMBINATION -> {
+                MISSING_MANDATORY_FIELDS_COMBINATION -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -394,15 +397,18 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                DataSetMandatoryFieldsStatus.SUCCESS -> {
+                SUCCESS -> {
                     onExit(resourceManager.provideSavedAndCompleted())
+                }
+                ERROR -> {
+                    showSnackbar(resourceManager.provideErrorOnCompleteDataset())
                 }
             }
         }
     }
 
     private fun onExit(exitMessage: String) {
-        showSnackbar(exitMessage) // TODO why message is black?
+        showSnackbar(exitMessage)
         onClose()
     }
 
