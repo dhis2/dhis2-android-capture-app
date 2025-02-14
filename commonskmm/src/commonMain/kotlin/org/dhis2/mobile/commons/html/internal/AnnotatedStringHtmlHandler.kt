@@ -174,6 +174,6 @@ internal class AnnotatedStringHtmlHandler(
     }
 
     override fun onText(text: String) {
-        textWriter.write(text, builder)
+        textWriter.write(text)
     }
 }
