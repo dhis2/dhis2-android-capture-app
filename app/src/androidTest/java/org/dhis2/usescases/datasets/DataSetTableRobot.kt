@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -63,6 +64,10 @@ class DataSetTableRobot(
             .performScrollTo()
         composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
             .performClick()
+    }
+
+    fun scrollToItem(index: Int) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(index)
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int){

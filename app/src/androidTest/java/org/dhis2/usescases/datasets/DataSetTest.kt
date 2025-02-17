@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -22,9 +23,7 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
@@ -80,7 +79,27 @@ class DataSetTest : BaseTest() {
         //Step - Check content boxes above and below the table
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.waitForIdle()
-            composeTestRule.onNodeWithText("Bold Text.",true).assertIsDisplayed()
+            composeTestRule.onNodeWithText("Section: Immunization. Top content", true)
+                .assertIsDisplayed()
+        }
+        dataSetTableRobot(composeTestRule) {
+            scrollToItem(15)
+            composeTestRule.onNodeWithText("Section: Immunization. Bottom content", true)
+                .assertIsDisplayed()
+        }
+
+        // Check top and bottom content is displayed when changing sections
+        dataSetDetailRobot(composeTestRule) {
+            composeTestRule.onNodeWithTag("TAB_Nutrition", useUnmergedTree = true).performClick()
+            composeTestRule.waitForIdle()
+            composeTestRule.onNodeWithText("Section: Nutrition. Top content", true)
+                .assertIsDisplayed()
+        }
+
+        dataSetTableRobot(composeTestRule) {
+            scrollToItem(15)
+            composeTestRule.onNodeWithText("Section: Nutrition. Bottom content", true)
+                .assertIsDisplayed()
         }
     }
 
@@ -129,6 +148,7 @@ class DataSetTest : BaseTest() {
         }
 
         orgUnitSelectorRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             selectTreeOrgUnit(orgUnit)
         }
 
