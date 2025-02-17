@@ -18,13 +18,12 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
-import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
-import org.dhis2.ui.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 
 fun eventRobot(
     composeTestRule: ComposeTestRule,

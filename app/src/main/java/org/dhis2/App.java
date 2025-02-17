@@ -41,6 +41,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.di.KoinInitialization;
 import org.dhis2.maps.MapController;
 import org.dhis2.usescases.crash.CrashActivity;
 import org.dhis2.usescases.login.LoginComponent;
@@ -118,6 +119,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
         setUpSecurityProvider();
         setUpServerComponent();
+
+        KoinInitialization.INSTANCE.invoke(this, ServerModule.getD2Configuration(this));
+
         initCrashController();
         setUpRxPlugin();
         initCustomCrashActivity();

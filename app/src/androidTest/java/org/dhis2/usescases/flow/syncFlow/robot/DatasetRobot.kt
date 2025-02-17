@@ -22,9 +22,4 @@ class DataSetRobot : BaseRobot() {
                 actionOnItemAtPosition<DataSetListViewHolder>(position, click())
             )
     }
-
-    fun clickOnSave() {
-        onView(withId(R.id.saveButton)).perform(click())
-    }
-
 }

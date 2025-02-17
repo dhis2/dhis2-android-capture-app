@@ -115,6 +115,7 @@ class InfoBarMapperTest {
             null,
             null,
             null,
+            emptyList(),
         )
 
         return model

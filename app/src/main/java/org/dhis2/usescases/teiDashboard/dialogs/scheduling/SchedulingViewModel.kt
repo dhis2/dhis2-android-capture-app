@@ -78,18 +78,8 @@ class SchedulingViewModel(
     private val _enrollment: MutableStateFlow<Enrollment?> = MutableStateFlow(null)
     val enrollment: StateFlow<Enrollment?> = _enrollment
 
-    val overdueSubtitle: String?
-        get() {
-            return if (launchMode is LaunchMode.NewSchedule) {
-                null
-            } else {
-                val eventDate = _eventDate.value.currentDate ?: return null
-                eventDate.toOverdueOrScheduledUiText(
-                    resourceManager = resourceManager,
-                    isScheduling = true,
-                )
-            }
-        }
+    private val _overdueSubtitle: MutableStateFlow<String?> = MutableStateFlow(null)
+    val overdueEventSubtitle: StateFlow<String?> = _overdueSubtitle
 
     init {
         viewModelScope.launch {
@@ -181,6 +171,8 @@ class SchedulingViewModel(
             configureEventReportDate(selectedDate = selectedDate).collect {
                 _eventDate.value = it
             }
+
+            _overdueSubtitle.value = getOverdueSubtitle()
 
             configureEventCatCombo().collect {
                 _eventCatCombo.value = it
@@ -346,5 +338,17 @@ class SchedulingViewModel(
             isScheduling = true,
             eventEnrollmentUid = enrollmentUid,
         )
+    }
+
+    private fun getOverdueSubtitle(): String? {
+        return if (launchMode is LaunchMode.NewSchedule) {
+            null
+        } else {
+            val eventDate = _eventDate.value.currentDate ?: return null
+            eventDate.toOverdueOrScheduledUiText(
+                resourceManager = resourceManager,
+                isScheduling = true,
+            )
+        }
     }
 }

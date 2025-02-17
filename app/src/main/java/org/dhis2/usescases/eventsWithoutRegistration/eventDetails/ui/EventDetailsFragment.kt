@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,6 +30,8 @@ import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -36,8 +39,6 @@ import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EventDetailsFragmentBinding
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsComponentProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
@@ -57,6 +58,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.period.PeriodType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 
 class EventDetailsFragment : FragmentGlobalAbstract() {
@@ -181,7 +183,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 MapSelectorActivity.create(
                     activity = requireActivity(),
                     fieldUid = null,
-                    locationType = FeatureType.valueOfFeatureType(featureType),
+                    locationType = FeatureType.valueOfFeatureType(featureType)!!,
                     initialData = initCoordinate,
                     programUid = requireArguments().getString(PROGRAM_UID),
                 ),
@@ -226,7 +228,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
         catCombo: EventCatCombo,
         coordinates: EventCoordinates,
     ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.Spacing16)) {
             if (viewModel.getPeriodType() == null || (viewModel.getPeriodType() != null && viewModel.getPeriodType() == PeriodType.Daily)) {
                 ProvideInputDate(
                     EventInputDateUiModel(
@@ -280,6 +282,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
             if (!catCombo.isDefault && catCombo.categories.isNotEmpty()) {
                 catCombo.categories.forEach { category ->
+
                     ProvideCategorySelector(
                         eventCatComboUiModel = EventCatComboUiModel(
                             category = category,
@@ -306,6 +309,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                     option = getString(R.string.no_options),
                 )
             }
+
             ProvideCoordinates(
                 coordinates = coordinates,
                 detailsEnabled = details.enabled,
@@ -317,6 +321,8 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private fun showPeriodDialog(periodType: PeriodType) {
         BottomSheetDialog(
+            showTopDivider = true,
+            showBottomDivider = true,
             bottomSheetDialogUiModel = BottomSheetDialogUiModel(
                 title = getString(periodType.toUiStringResource()),
                 iconResource = -1,
@@ -325,7 +331,6 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
             },
             onMainButtonClicked = { _ ->
             },
-            showDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
                 PeriodSelectorContent(

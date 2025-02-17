@@ -8,9 +8,16 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.FragmentDataSetListBinding
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_DATA_SET_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
+import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
@@ -36,6 +43,9 @@ class DataSetListFragment : FragmentGlobalAbstract() {
 
     @Inject
     lateinit var datasetCardMapper: DatasetCardMapper
+
+    @Inject
+    lateinit var featureConfig: FeatureConfigRepository
 
     private val viewModel: DataSetListViewModel by viewModels { viewModelFactory }
 
@@ -114,7 +124,18 @@ class DataSetListFragment : FragmentGlobalAbstract() {
             putString(Constants.DATA_SET_UID, dataSetUid)
             putBoolean(Constants.ACCESS_DATA, accessWriteData)
         }
-        startActivity(DataSetTableActivity::class.java, bundle, false, false, null)
+
+        if (featureConfig.isFeatureEnable(Feature.COMPOSE_AGGREGATES_SCREEN)) {
+            val activityBundle = Bundle().apply {
+                putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid())
+                putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId())
+                putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid())
+                putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid())
+            }
+            startActivity(DataSetInstanceActivity::class.java, activityBundle, false, false, null)
+        } else {
+            startActivity(DataSetTableActivity::class.java, bundle, false, false, null)
+        }
     }
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {

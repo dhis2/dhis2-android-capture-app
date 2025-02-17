@@ -5,12 +5,16 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
+import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
+import org.dhis2.usescases.searchte.robot.filterRobot
+import org.junit.Assert.assertEquals
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -23,10 +27,103 @@ class DataSetTest : BaseTest() {
     val ruleDataSet = ActivityTestRule(DataSetTableActivity::class.java, false, false)
 
     @get:Rule
-    val ruleDataSetDetail = ActivityTestRule(DataSetDetailActivity::class.java, false, false)
+    val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    override fun teardown() {
+        super.teardown()
+        disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+        cleanLocalDatabase()
+    }
+
+    @Test
+    fun datasetAutomate() {
+        val period = "Jul 2025"
+        val orgUnit = "Ngelehun CHC"
+
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+
+        //Step - Enter Dataset
+        startDataSetDetailActivity(
+            "BfMAe6Itzgt",
+            "Child Health",
+            ruleDataSetDetail
+        )
+
+        //Step - Dataset list is in chronological order
+        dataSetDetailRobot(composeTestRule) {
+            checkDatasetListIsSortedChronologically()
+        }
+
+        //Step - Create dataset instance
+        createDataSetInstance(
+            orgUnit = orgUnit,
+            period = period,
+        )
+
+        //Step - Test combination of filters - TODO Move the step after creating dataset instance
+        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
+        // Period filter from - to specific period where instansces exist
+        // Sync move after create dataset instance and check the filter afterwards
+//        checkFilterCombination(orgUnit)
+    }
+
+    private fun checkFilterCombination(
+        orgUnit: String,
+    ) {
+        filterRobot(composeTestRule) {
+            //Open filter
+            openFilters()
+
+            //Filter by org unit Ngelehun CHC
+            clickOnFilterBy(filter = "ORG. UNIT")
+//            clickOnSortByField(orgUnitFilter) this icons are not visible but can b e pressed do we need them in dataset?
+            typeOrgUnitField(orgUnit)
+            checkFilterCounter("1")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(11, getListItemCount())
+        }
+
+        filterRobot(composeTestRule) {
+            //Filter by period Last Month
+            clickOnFilterBy(filter = "Period")
+            clickOnLastMonthPeriodFilter()
+            checkFilterCounter("2")
+
+            clickOnAnytimePeriodFilter()
+            checkFilterCounter("1")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(11, getListItemCount())
+        }
+    }
+
+    private fun createDataSetInstance(
+        orgUnit: String,
+        period: String,
+    ) {
+        dataSetDetailRobot(composeTestRule) {
+            clickOnAddDataSet()
+        }
+        dataSetInitialRobot {
+            clickOnInputOrgUnit()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
+        dataSetInitialRobot {
+            clickOnInputPeriod()
+            selectPeriod(period)
+            clickOnActionButton()
+        }
+    }
 
     @Ignore("There are no validation rules in the testing database")
     @Test
@@ -46,6 +143,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    //TODO This test generates a new dataset instance and breaks dataset automation count
     @Test
     fun shouldCreateNewDataSet() {
         val period = "Jul 2025"
@@ -56,22 +154,11 @@ class DataSetTest : BaseTest() {
             ruleDataSetDetail
         )
 
-        dataSetDetailRobot {
-            clickOnAddDataSet()
-        }
-        dataSetInitialRobot {
-            clickOnInputOrgUnit()
-        }
+        createDataSetInstance(
+            orgUnit = orgUnit,
+            period = period,
+        )
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
-
-        dataSetInitialRobot {
-            clickOnInputPeriod()
-            selectPeriod(period)
-            clickOnActionButton()
-        }
         dataSetTableRobot(composeTestRule) {
             typeOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()

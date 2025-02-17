@@ -47,7 +47,6 @@
     <string name="action_close">ປິດ</string>
     <string name="copied_text">ສຳເນົາແລ້ວ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
-    <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>

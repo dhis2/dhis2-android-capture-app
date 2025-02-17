@@ -16,9 +16,6 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <uses-feature
@@ -158,6 +155,7 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
+        <activity android:name="org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"

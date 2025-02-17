@@ -78,7 +78,7 @@
     <string name="copied_text">Copied</string>
     <string name="empty_description">No info for this field</string>
     <string name="take_photo">Take Photo</string>
-    <string name="from_gallery">Choose from gallery</string>
+    <string name="from_gallery_v2">From gallery</string>
     <string name="warning_error_on_complete_title">Check this!</string>
     <string name="action_do_not_show_again">Do not show again</string>
     <string name="validation_error_message">the provided value is not allowed for this field</string>

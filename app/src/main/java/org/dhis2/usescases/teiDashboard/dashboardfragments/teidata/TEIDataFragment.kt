@@ -64,8 +64,10 @@ import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Comp
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingDialog.Companion.SCHEDULING_EVENT_SKIPPED
 import org.dhis2.usescases.teiDashboard.ui.TeiDetailDashboard
 import org.dhis2.usescases.teiDashboard.ui.mapper.InfoBarMapper
+import org.dhis2.usescases.teiDashboard.ui.mapper.QuickActionsMapper
 import org.dhis2.usescases.teiDashboard.ui.mapper.TeiDashboardCardMapper
 import org.dhis2.usescases.teiDashboard.ui.model.InfoBarType
+import org.dhis2.usescases.teiDashboard.ui.model.QuickActionType
 import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.dhis2.utils.extension.setIcon
 import org.dhis2.utils.granularsync.SyncStatusDialog
@@ -90,6 +92,9 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
     @Inject
     lateinit var infoBarMapper: InfoBarMapper
+
+    @Inject
+    lateinit var quickActionsMapper: QuickActionsMapper
 
     @Inject
     lateinit var contractHandler: TeiDataContractHandler
@@ -289,9 +294,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 }
 
                 TeiDetailDashboard(
-                    syncData = syncInfoBar,
-                    followUpData = followUpInfoBar,
-                    enrollmentData = enrollmentInfoBar,
+                    infoBarModels = listOfNotNull(syncInfoBar, followUpInfoBar, enrollmentInfoBar),
                     card = card,
                     isGrouped = groupingEvents ?: true,
                     timelineEventHeaderModel = TimelineEventsHeaderModel(
@@ -303,8 +306,33 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     timelineOnEventCreationOptionSelected = {
                         presenter.onAddNewEventOptionSelected(it, null)
                     },
+                    quickActions = (dashboardModel as? DashboardEnrollmentModel)?.let {
+                        quickActionsMapper.map(it) { quickActionType ->
+                            onQuickAction(quickActionType)
+                        }
+                    } ?: emptyList(),
                 )
             }
+        }
+    }
+    private fun onQuickAction(quickActionType: QuickActionType) {
+        val teiDashboardActivity = activity as TeiDashboardMobileActivity
+        when (quickActionType) {
+            QuickActionType.MARK_FOLLOW_UP -> dashboardViewModel.onFollowUp()
+            QuickActionType.TRANSFER -> programUid?.let {
+                teiDashboardActivity.showOrgUnitSelector(it)
+            }
+            QuickActionType.COMPLETE_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
+                EnrollmentStatus.COMPLETED,
+            )
+            QuickActionType.CANCEL_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
+                EnrollmentStatus.CANCELLED,
+            )
+            QuickActionType.REOPEN_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
+                EnrollmentStatus.ACTIVE,
+            )
+            QuickActionType.MORE_ENROLLMENTS ->
+                teiDashboardActivity.goToEnrollmentList()
         }
     }
 

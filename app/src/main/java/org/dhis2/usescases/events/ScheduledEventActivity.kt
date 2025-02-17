@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -14,11 +15,11 @@ import org.dhis2.R
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.AlertBottomDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.databinding.ActivityEventScheduledBinding
 import org.dhis2.form.model.EventMode
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventInputDateUiModel
@@ -31,6 +32,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 
 const val EXTRA_EVENT_UID = "EVENT_UID"
@@ -102,7 +104,7 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
         binding.scheduledEventFieldContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.Spacing16)) {
                     val eventDate = EventDate(
                         label = programStage.executionDateLabel()
                             ?: getString(R.string.report_date),
@@ -202,11 +204,8 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                 title = getString((periodType ?: PeriodType.Daily).toUiStringResource()),
                 iconResource = -1,
             ),
-            onSecondaryButtonClicked = {
-            },
-            onMainButtonClicked = { _ ->
-            },
-            showDivider = true,
+            showTopDivider = true,
+            showBottomDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = presenter.fetchPeriods(scheduling).collectAsLazyPagingItems()
                 PeriodSelectorContent(

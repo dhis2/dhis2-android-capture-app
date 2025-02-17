@@ -7,7 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
 import org.dhis2.bindings.profilePicturePath
+import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.data.tuples.Pair
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -47,6 +49,8 @@ class DashboardRepositoryImpl(
     private val teiAttributesProvider: TeiAttributesProvider,
     private val preferenceProvider: PreferenceProvider,
     private val metadataIconProvider: MetadataIconProvider,
+    private val programConfigurationRepository: ProgramConfigurationRepository,
+    private val featureConfigRepository: FeatureConfigRepository,
 ) : DashboardRepository {
     override fun getTeiHeader(): String? {
         return d2.trackedEntityModule().trackedEntitySearch()
@@ -413,8 +417,17 @@ class DashboardRepositoryImpl(
                 getTeiHeader(),
                 getTeiProfilePath(),
                 getOwnerOrgUnit(teiUid),
+                getQuickActions(programUid),
             )
         }
+    }
+
+    private fun getQuickActions(programUid: String): List<String> {
+        return programConfigurationRepository
+            .getConfigurationByProgram(programUid)
+            ?.quickActions()
+            ?.map { it.actionId() }
+            ?: emptyList()
     }
 
     override fun getTeiActivePrograms(

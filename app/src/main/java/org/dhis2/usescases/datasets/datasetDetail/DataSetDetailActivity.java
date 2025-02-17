@@ -96,7 +96,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.setPresenter(presenter);
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
-        binding.filterLayout.setAdapter(filtersAdapter);
+        binding.filterRecyclerLayout.setAdapter(filtersAdapter);
         configureBottomNavigation();
 
         if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
@@ -156,7 +156,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
         if (backDropActive) {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterRecyclerLayout, ConstraintSet.BOTTOM, 50);
         } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }

@@ -3,9 +3,7 @@ package org.dhis2.form.ui
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,17 +25,17 @@ import androidx.fragment.app.viewModels
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
-import org.dhis2.commons.ActivityResultObservable
-import org.dhis2.commons.ActivityResultObserver
 import org.dhis2.commons.Constants
-import org.dhis2.commons.bindings.getFileFrom
-import org.dhis2.commons.bindings.getFileFromGallery
-import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.dialogs.bottomsheet.ErrorFieldList
+import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
@@ -72,12 +69,6 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
-import org.dhis2.ui.ErrorFieldList
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
-import org.dhis2.ui.dialogs.bottomsheet.FieldWithIssue
-import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
@@ -131,91 +122,6 @@ class FormView : Fragment() {
             }
         }
 
-    private val requestCameraPermissions =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            if (it.values.all { isGranted -> isGranted }) {
-                showAddImageOptions()
-                (context as ActivityResultObservable?)?.subscribe(object : ActivityResultObserver {
-                    override fun onActivityResult(
-                        requestCode: Int,
-                        resultCode: Int,
-                        data: Intent?,
-                    ) {
-                        if (resultCode != RESULT_OK) {
-                            showAddImageOptions()
-                        }
-                    }
-
-                    override fun onRequestPermissionsResult(
-                        requestCode: Int,
-                        permissions: Array<out String>,
-                        grantResults: IntArray,
-                    ) {
-                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                            showAddImageOptions()
-                        }
-                    }
-                })
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    requireContext().getString(R.string.camera_permission_denied),
-                    Toast.LENGTH_LONG,
-                ).show()
-            }
-        }
-
-    private val takePicture =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            if (success) {
-                val imageFile = File(
-                    FileResourceDirectoryHelper.getFileResourceDirectory(requireContext()),
-                    TEMP_FILE,
-                ).rotateImage(requireContext())
-                onSavePicture?.invoke(imageFile.path)
-
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            }
-        }
-
-    private val pickImage =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-            if (activityResult.resultCode == RESULT_OK) {
-                getFileFromGallery(requireContext(), activityResult.data?.data)?.also { file ->
-                    onSavePicture?.invoke(file.path)
-                }
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            }
-        }
-
-    private val pickFile =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            if (uri != null) {
-                getFileFrom(requireContext(), uri)?.also { file ->
-                    onSavePicture?.invoke(file.path)
-                }
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            } else {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            }
-        }
-
     private val requestStoragePermissions =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
@@ -245,21 +151,6 @@ class FormView : Fragment() {
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
-    private var onSavePicture: ((String) -> Unit)? = null
-
-    private val storagePermissions = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-    )
-
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private val storagePermissions33 = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.READ_MEDIA_IMAGES,
-        Manifest.permission.READ_MEDIA_AUDIO,
-        Manifest.permission.READ_MEDIA_VIDEO,
-    )
 
     private val fileHandler = FileHandler()
 
@@ -430,10 +321,15 @@ class FormView : Fragment() {
                                 bottomSheetDialog,
                             )
                         },
-                        showDivider = fieldsWithIssues.isNotEmpty(),
-                        content = { bottomSheetDialog, _ ->
-                            DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                        showTopDivider = true,
+                        content = if (fieldsWithIssues.isEmpty()) {
+                            null
+                        } else {
+                            { bottomSheetDialog, _ ->
+                                DialogContent(fieldsWithIssues, bottomSheetDialog = bottomSheetDialog)
+                            }
                         },
+                        showBottomDivider = fieldsWithIssues.isNotEmpty(),
                     ).show(childFragmentManager, AlertBottomDialog::class.java.simpleName)
                 }
             }
@@ -553,9 +449,7 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.DisplayQRCode -> displayQRImage(uiEvent)
             is RecyclerViewUiEvents.ScanQRCode -> requestQRScan(uiEvent)
             is RecyclerViewUiEvents.OpenOrgUnitDialog -> showOrgUnitDialog(uiEvent)
-            is RecyclerViewUiEvents.AddImage -> requestAddImage(uiEvent)
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
-            is RecyclerViewUiEvents.OpenFileSelector -> openFileSelector(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
             is RecyclerViewUiEvents.SelectPeriod -> showPeriodDialog(uiEvent)
         }
@@ -571,7 +465,8 @@ class FormView : Fragment() {
             },
             onMainButtonClicked = { _ ->
             },
-            showDivider = true,
+            showTopDivider = true,
+            showBottomDivider = true,
             content = { bottomSheetDialog, scrollState ->
                 val periods = viewModel.fetchPeriods().collectAsLazyPagingItems()
                 PeriodSelectorContent(
@@ -697,84 +592,6 @@ class FormView : Fragment() {
                 addExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
             },
         )
-    }
-
-    private fun requestAddImage(event: RecyclerViewUiEvents.AddImage) {
-        onSavePicture = { picture ->
-            intentHandler(
-                FormIntent.OnStoreFile(
-                    event.uid,
-                    picture,
-                    ValueType.IMAGE,
-                ),
-            )
-        }
-        requestCameraPermissions.launch(permissions())
-    }
-
-    private fun permissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        storagePermissions33
-    } else {
-        storagePermissions
-    }
-
-    private fun showAddImageOptions() {
-        val options = arrayOf<CharSequence>(
-            requireContext().getString(R.string.take_photo),
-            requireContext().getString(R.string.from_gallery),
-            requireContext().getString(R.string.cancel),
-        )
-        MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialDialog)
-            .setTitle(requireContext().getString(R.string.select_option))
-            .setOnCancelListener {
-                viewModel.getFocusedItemUid()?.let {
-                    viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                }
-            }
-            .setItems(options) { dialog: DialogInterface, item: Int ->
-                run {
-                    when (options[item]) {
-                        requireContext().getString(R.string.take_photo) -> {
-                            val photoUri = FileProvider.getUriForFile(
-                                requireContext(),
-                                FormFileProvider.fileProviderAuthority,
-                                File(
-                                    FileResourceDirectoryHelper.getFileResourceDirectory(
-                                        requireContext(),
-                                    ),
-                                    TEMP_FILE,
-                                ),
-                            )
-                            takePicture.launch(photoUri)
-                        }
-
-                        requireContext().getString(R.string.from_gallery) -> {
-                            pickImage.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
-                        }
-
-                        requireContext().getString(R.string.cancel) -> {
-                            viewModel.getFocusedItemUid()?.let {
-                                viewModel.submitIntent(FormIntent.OnAddImageFinished(it))
-                            }
-                        }
-                    }
-                    dialog.dismiss()
-                }
-            }
-            .show()
-    }
-
-    private fun openFileSelector(event: RecyclerViewUiEvents.OpenFileSelector) {
-        onSavePicture = { file ->
-            intentHandler(
-                FormIntent.OnStoreFile(
-                    event.field.uid,
-                    file,
-                    event.field.valueType,
-                ),
-            )
-        }
-        pickFile.launch("*/*")
     }
 
     private fun openFile(event: RecyclerViewUiEvents.OpenFile) {

@@ -20,6 +20,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import org.dhis2.commons.R
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
 import javax.inject.Inject
@@ -142,6 +144,8 @@ class OUTreeFragment : BottomSheetDialogFragment() {
 
                 OrgBottomSheet(
                     title = model.title,
+                    windowInsets = { bottomSheetInsets() },
+                    bottomSheetLowerPadding = bottomSheetLowerPadding(),
                     subtitle = model.subtitle,
                     headerTextAlignment = model.headerAlignment,
                     doneButtonText = model.doneButtonText,

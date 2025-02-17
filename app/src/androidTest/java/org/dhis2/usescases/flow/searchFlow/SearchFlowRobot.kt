@@ -1,6 +1,7 @@
 package org.dhis2.usescases.flow.searchFlow
 
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 
@@ -17,7 +18,7 @@ class SearchFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun filterByOpenEnrollmentStatus(enrollmentStatus: String) {
         filterRobot(composeTestRule) {
-            clickOnFilter()
+            openFilters()
             clickOnFilterBy(enrollmentStatus)
             clickOnFilterActiveOption()
             clickOnSortByField(enrollmentStatus)
@@ -32,7 +33,7 @@ class SearchFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         filterRobot(composeTestRule) {
             checkFilterCounter(filterTotalCount)
             checkCountAtFilter(filter, filterAtPositionCount)
-            clickOnFilter()
+            openFilters()
         }
     }
 }
