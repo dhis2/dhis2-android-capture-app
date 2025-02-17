@@ -91,6 +91,10 @@ class DataSetTableRobot(
             .performClick()
     }
 
+    fun scrollToItem(index: Int) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(index)
+    }
+
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
         composeTestRule.onNode(
             hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
