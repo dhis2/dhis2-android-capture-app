@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Il n\'y a pas de relations, cliquez \"+\" pour en ajouter une nouvelle.</string>
+    <string name="relation_creation_date">Relation créée le</string>
+    <string name="remove_relationship_title">Supprimer %s\?</string>
+    <string name="remove_some_relationships_title">Supprimer %d les relations sélectionnées \?</string>
+    <string name="show_number_more">Afficher %d plus...</string>
+    <string name="relationship">Relation</string>
 </resources>

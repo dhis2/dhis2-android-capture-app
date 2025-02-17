@@ -66,4 +66,5 @@
     <string name="error_invalid_program">您无权访问项目%s</string>
     <string name="error_invalid_attribute">您无权访问属性 %s</string>
     <string name="error_unsupported_aggregation_type">不支持的汇总类型 %s</string>
-    </resources>
+    <string name="line_listing_max_results">表仅限于 %1$s 条目。过滤以细化结果。</string>
+</resources>
