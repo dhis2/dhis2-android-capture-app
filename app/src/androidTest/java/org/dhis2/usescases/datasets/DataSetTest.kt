@@ -78,7 +78,6 @@ class DataSetTest : BaseTest() {
 
         //Step - Check content boxes above and below the table
         dataSetDetailRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithText("Section: Immunization. Top content", true)
                 .assertIsDisplayed()
         }
@@ -91,14 +90,12 @@ class DataSetTest : BaseTest() {
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.onNodeWithTag("TAB_Nutrition", useUnmergedTree = true).performClick()
-            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithText("Section: Nutrition. Top content", true)
                 .assertIsDisplayed()
         }
 
         dataSetTableRobot(composeTestRule) {
             scrollToItem(15)
-            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithText("Section: Nutrition. Bottom content", true)
                 .assertIsDisplayed()
         }
