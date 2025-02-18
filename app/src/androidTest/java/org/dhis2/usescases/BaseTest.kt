@@ -182,7 +182,7 @@ open class BaseTest {
     }
 
     protected fun disableFeatureConfigValue(feature: Feature) {
-        preferencesRobot.saveValue(feature.name, false)
+        featureConfigRobot.disableFeature(feature)
     }
 
     companion object {
