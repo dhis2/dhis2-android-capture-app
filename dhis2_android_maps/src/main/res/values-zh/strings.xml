@@ -2,9 +2,33 @@
 <resources>
     <string name="select_location">选择位置</string>
     <string name="map_layers">地图层</string>
+    <string name="dialog_layer_base_map_osm_light">OSM轻量</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM详细图</string>
+    <string name="dialog_layer_base_map_bing_road">Bing道路</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing夜图</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing空间图</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Bing空间标示图</string>
     <string name="action_apply">应用</string>
     <string name="dialog_layer_satellite">显示卫星视图</string>
     <string name="dialog_layer_event">显示事件</string>
     <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
     <string name="dialog_layer_heatmap">显示热力图</string>
-    </resources>
+    <string name="map_attributionErrorNoBrowser">设备上未安装网页浏览器，无法打开网页。</string>
+    <string name="accuracy_range" >精度范围</string>
+    <string name="accuracy_good">良好</string>
+    <string name="accuracy_low">低</string>
+    <string name="accuracy_medium">中</string>
+    <string name="accuracy_verygood">非常好</string>
+    <string name="accuracy_please_wait">等待更好的准确性...</string>
+    <string name="location_not_available">您当前的位置不可用。</string>
+    <string name="accuracy_can_not_improve">这是我们能得到的最佳精确度。</string>
+    <string name="accuracy_minimun_set_not_allow">最低精度要求为%d米，以节省</string>
+    <string name="accuracy_minimun_set_allow">你想保存吗？</string>
+    <string name="search_on_this_area">搜索该区域</string>
+    <string name="swipe_to_change_location">轻扫更改位置</string>
+    <string name="select_location_title">选择位置</string>
+    <string name="selet_location_subtitle">点击它</string>
+    <string name="selected_location">选定地点</string>
+    <string name="latitude_longitude">纬度%1$s, Lon：%2$s</string>
+    <string name="drop_to_select">下拉选择位置</string>
+</resources>
