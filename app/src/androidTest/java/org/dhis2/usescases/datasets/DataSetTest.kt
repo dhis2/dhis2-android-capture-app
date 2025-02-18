@@ -8,7 +8,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
@@ -43,7 +42,7 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun datasetAutomate() = runTest {
+    fun datasetAutomate() {
         val period = "Jul 2025"
         val orgUnit = "Ngelehun CHC"
 
@@ -91,6 +90,7 @@ class DataSetTest : BaseTest() {
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.onNodeWithTag("TAB_Nutrition", useUnmergedTree = true).performClick()
+            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithText("Section: Nutrition. Top content", true)
                 .assertIsDisplayed()
         }
