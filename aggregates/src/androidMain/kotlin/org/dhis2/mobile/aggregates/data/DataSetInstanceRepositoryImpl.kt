@@ -9,8 +9,12 @@ import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
+import org.dhis2.mobile.aggregates.model.DataToReview
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
 import org.dhis2.mobile.aggregates.model.TableGroup
+import org.dhis2.mobile.aggregates.model.ValidationResultStatus
+import org.dhis2.mobile.aggregates.model.ValidationRulesResult
+import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -19,10 +23,12 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
 
 internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
@@ -534,5 +540,123 @@ internal class DataSetInstanceRepositoryImpl(
         } catch (error: D2Error) {
             Result.failure(error)
         }
+    }
+
+    override suspend fun runValidationRules(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): ValidationRulesResult {
+        val result = d2.validationModule()
+            .validationEngine().validate(
+                dataSetUid,
+                periodId,
+                orgUnitUid,
+                attrOptionComboUid,
+            ).blockingGet()
+
+        return ValidationRulesResult(
+            ValidationResultStatus.valueOf(result.status().name),
+            mapViolations(
+                violations = result.violations(),
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            ),
+        )
+    }
+
+    private fun mapViolations(
+        violations: List<ValidationResultViolation>,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): List<Violation> {
+        return violations.map {
+            Violation(
+                it.validationRule().description(),
+                it.validationRule().instruction(),
+                mapDataElements(
+                    dataElementUids = it.dataElementUids(),
+                    periodId = periodId,
+                    orgUnitUid = orgUnitUid,
+                    attrOptionComboUid = attrOptionComboUid,
+                ),
+            )
+        }
+    }
+
+    private fun mapDataElements(
+        dataElementUids: MutableSet<DataElementOperand>,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): List<DataToReview> {
+        val dataToReview = arrayListOf<DataToReview>()
+        dataElementUids.mapNotNull { deOperand ->
+            d2.dataElementModule().dataElements()
+                .uid(deOperand.dataElement()?.uid())
+                .blockingGet()?.let {
+                    Pair(deOperand, it)
+                }
+        }.forEach { (deOperand, de) ->
+            val catOptCombos =
+                if (deOperand.categoryOptionCombo() != null) {
+                    d2.categoryModule().categoryOptionCombos()
+                        .byUid().like(deOperand.categoryOptionCombo()?.uid())
+                        .blockingGet()
+                } else {
+                    d2.categoryModule().categoryOptionCombos()
+                        .byCategoryComboUid().like(de.categoryComboUid())
+                        .blockingGet()
+                }
+            catOptCombos.forEach { catOptCombo ->
+                val value = if (d2.dataValueModule().dataValues()
+                        .value(
+                            periodId,
+                            orgUnitUid,
+                            de.uid(),
+                            catOptCombo.uid(),
+                            attrOptionComboUid,
+                        )
+                        .blockingExists() &&
+                    d2.dataValueModule().dataValues()
+                        .value(
+                            periodId,
+                            orgUnitUid,
+                            de.uid(),
+                            catOptCombo.uid(),
+                            attrOptionComboUid,
+                        )
+                        .blockingGet()?.deleted() != true
+                ) {
+                    d2.dataValueModule().dataValues()
+                        .value(
+                            periodId,
+                            orgUnitUid,
+                            de.uid(),
+                            catOptCombo.uid(),
+                            attrOptionComboUid,
+                        )
+                        .blockingGet()?.value() ?: "-"
+                } else {
+                    "-"
+                }
+                val isFromDefaultCatCombo = d2.categoryModule().categoryCombos()
+                    .uid(catOptCombo.categoryCombo()?.uid()).blockingGet()?.isDefault == true
+                dataToReview.add(
+                    DataToReview(
+                        de.uid(),
+                        de.displayFormName(),
+                        catOptCombo.uid(),
+                        catOptCombo.displayName(),
+                        value,
+                        isFromDefaultCatCombo,
+                    ),
+                )
+            }
+        }
+        return dataToReview
     }
 }
