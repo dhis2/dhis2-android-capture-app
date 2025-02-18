@@ -33,7 +33,7 @@ import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
-import org.dhis2.mobile.aggregates.ui.provider.DatasetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
@@ -55,7 +55,7 @@ internal class DataSetTableViewModel(
     private val checkValidationRulesConfiguration: CheckValidationRulesConfiguration,
     private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
-    private val datasetModalDialogProvider: DatasetModalDialogProvider,
+    private val datasetModalDialogProvider: DataSetModalDialogProvider,
     private val completeDataSet: CompleteDataSet,
     private val runValidationRules: RunValidationRules,
 ) : ViewModel() {

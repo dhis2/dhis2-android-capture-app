@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Alt ser bra ut</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
+    <string name="complete">Fullfør</string>
+
+</resources>

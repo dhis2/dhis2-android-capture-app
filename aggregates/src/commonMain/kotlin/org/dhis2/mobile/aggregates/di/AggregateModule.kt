@@ -10,7 +10,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
-import org.dhis2.mobile.aggregates.ui.provider.DatasetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
@@ -88,7 +88,7 @@ internal val featureModule = module {
     }
 
     factory {
-        DatasetModalDialogProvider(
+        DataSetModalDialogProvider(
             resourceManager = get(),
         )
     }
