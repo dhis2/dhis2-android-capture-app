@@ -98,6 +98,7 @@ class DataSetTest : BaseTest() {
 
         dataSetTableRobot(composeTestRule) {
             scrollToItem(15)
+            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithText("Section: Nutrition. Bottom content", true)
                 .assertIsDisplayed()
         }
