@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
+    <string name="complete">Бажарилди</string>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Všechno vypadá dobře!</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="complete">Dokončit</string>
+
+</resources>
