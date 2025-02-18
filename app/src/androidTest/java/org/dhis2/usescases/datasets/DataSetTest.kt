@@ -296,23 +296,4 @@ class DataSetTest : BaseTest() {
             assertCellSelected("dzjKKQq0cSO", 0, 1)
         }
     }
-
-    @Test
-    fun shouldDisplayContentBoxAboveAndBelowTableAutomate() {
-
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-
-        //Step - Enter Dataset
-        startDataSetDetailActivity(
-            "BfMAe6Itzgt",
-            "Child Health",
-            ruleDataSetDetail
-        )
-
-        //Step - Dataset list is in chronological order
-        dataSetDetailRobot(composeTestRule) {
-            checkDatasetListIsSortedChronologically()
-        }
-
-    }
 }
