@@ -10,6 +10,7 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
@@ -40,7 +41,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun datasetAutomate() {
-        val period = "Jul 2025"
+        val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -120,7 +121,13 @@ class DataSetTest : BaseTest() {
 
         dataSetInitialRobot {
             clickOnInputPeriod()
-            selectPeriod(period)
+        }
+
+        reportPeriodSelectorRobot(composeTestRule) {
+            selectReportPeriod(period)
+        }
+
+        dataSetInitialRobot {
             clickOnActionButton()
         }
     }
@@ -146,7 +153,7 @@ class DataSetTest : BaseTest() {
     //TODO This test generates a new dataset instance and breaks dataset automation count
     @Test
     fun shouldCreateNewDataSet() {
-        val period = "Jul 2025"
+        val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
