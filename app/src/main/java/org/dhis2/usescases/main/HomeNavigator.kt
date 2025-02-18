@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -12,6 +11,7 @@ import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.hisp.dhis.android.core.program.ProgramType
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 sealed class HomeItemData(
     open val uid: String,
@@ -23,7 +23,7 @@ sealed class HomeItemData(
         override val label: String,
         override val accessDataWrite: Boolean,
         val trackedEntityType: String,
-        val stockConfig: AppConfig?,
+        val stockConfig: StockUseCase?,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
@@ -96,10 +96,7 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
         is HomeItemData.TrackerProgram -> {
             if (homeItemData.stockConfig != null) {
                 Intent(context, HomeActivity::class.java).apply {
-                    putExtra(
-                        org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG,
-                        homeItemData.stockConfig,
-                    )
+                    putExtras(bundle)
                     launch(this)
                 }
             } else {

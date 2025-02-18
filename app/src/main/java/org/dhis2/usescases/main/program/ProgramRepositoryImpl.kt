@@ -119,7 +119,7 @@ internal class ProgramRepositoryImpl(
                     metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 ).copy(
                     stockConfig = if (d2.isStockProgram(program.uid())) {
-                        d2.stockUseCase(program.uid())?.toAppConfig()
+                        d2.stockUseCase(program.uid())
                     } else {
                         null
                     },

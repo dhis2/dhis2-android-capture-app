@@ -6,7 +6,6 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.models.IdentifiableModel
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.SearchResult
@@ -17,6 +16,7 @@ import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
+import org.dhis2.commons.bindings.distributedTo
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 import java.util.Collections
@@ -42,7 +43,7 @@ class StockManagerImpl @Inject constructor(
     override suspend fun search(
         query: SearchParametersModel,
         ou: String?,
-        config: AppConfig,
+        config: StockUseCase,
     ): SearchResult {
         val list = withContext(dispatcher.io()) {
             var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
@@ -56,7 +57,7 @@ class StockManagerImpl @Inject constructor(
             }
 
             teiRepository.byProgram()
-                .eq(config.program)
+                .eq(config.programUid)
                 .also { teiRepository = it }
 
             if (!query.name.isNullOrEmpty()) {
@@ -72,7 +73,7 @@ class StockManagerImpl @Inject constructor(
                     .also { teiRepository = it }
             }
 
-            teiRepository.orderByAttribute(config.itemName)
+            teiRepository.orderByAttribute(config.itemDescription)
                 .eq(RepositoryScope.OrderByDirection.ASC)
                 .also { teiRepository = it }
 
@@ -86,10 +87,10 @@ class StockManagerImpl @Inject constructor(
         return SearchResult(liveData { emit(list) })
     }
 
-    private fun transform(tei: TrackedEntityInstance, config: AppConfig): StockItem {
+    private fun transform(tei: TrackedEntityInstance, config: StockUseCase): StockItem {
         return StockItem(
             tei.uid(),
-            AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemName) ?: "",
+            AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemDescription) ?: "",
             getStockOnHand(tei, config.stockOnHand) ?: "",
         )
     }
@@ -142,20 +143,20 @@ class StockManagerImpl @Inject constructor(
     override fun saveTransaction(
         items: List<StockEntry>,
         transaction: Transaction,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ): Single<Unit> {
         Timber.i("SAVING TRANSACTION")
 
         val programStage = d2.programModule()
             .programStages()
             .byProgramUid()
-            .eq(appConfig.program)
+            .eq(stockUseCase.programUid)
             .one()
             .blockingGet() ?: return Single.just(Unit)
 
         items.forEach { entry ->
             getEnrollment(entry.item.id)?.let { enrollment ->
-                createEvent(entry, programStage, enrollment, transaction, appConfig)
+                createEvent(entry, programStage, enrollment, transaction, stockUseCase)
             }
         }
         return Single.just(Unit)
@@ -166,14 +167,14 @@ class StockManagerImpl @Inject constructor(
         programStage: ProgramStage,
         enrollment: Enrollment,
         transaction: Transaction,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ) {
         val eventUid = try {
             createEventProjection(
                 transaction.facility,
                 programStage,
                 enrollment,
-                appConfig.program,
+                stockUseCase.programUid,
             )
         } catch (e: Exception) {
             if (e is D2Error) {
@@ -199,11 +200,11 @@ class StockManagerImpl @Inject constructor(
 
             try {
                 Timber.i("event:$eventUid")
-                Timber.i("de:${getTransactionDataElement(transaction.transactionType, appConfig)}")
+                Timber.i("de:${getTransactionDataElement(transaction.transactionType, stockUseCase)}")
                 Timber.i("data to save:${item.qty}")
                 d2.trackedEntityModule().trackedEntityDataValues().value(
                     eventUid,
-                    getTransactionDataElement(transaction.transactionType, appConfig),
+                    getTransactionDataElement(transaction.transactionType, stockUseCase),
                 ).blockingSet(item.qty.toString())
             } catch (e: Exception) {
                 if (e is D2Error) {
@@ -223,7 +224,7 @@ class StockManagerImpl @Inject constructor(
 
                     d2.trackedEntityModule().trackedEntityDataValues().value(
                         eventUid,
-                        appConfig.distributedTo,
+                        stockUseCase.distributedTo(),
                     ).blockingSet(destination?.code())
                 }
             } catch (e: Exception) {
@@ -236,7 +237,7 @@ class StockManagerImpl @Inject constructor(
             }
 
             try {
-                updateStockOnHand(item, appConfig.program, transaction, eventUid, appConfig)
+                updateStockOnHand(item, stockUseCase.programUid, transaction, eventUid, stockUseCase)
             } catch (e: Exception) {
                 if (e is D2Error) {
                     e.originalException()?.printStackTrace()
@@ -253,10 +254,10 @@ class StockManagerImpl @Inject constructor(
         program: String,
         transaction: Transaction,
         eventUid: String,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ) {
         disposable.add(
-            ruleValidationHelper.evaluate(entry, program, transaction, eventUid, appConfig)
+            ruleValidationHelper.evaluate(entry, program, transaction, eventUid, stockUseCase)
                 .doOnError { it.printStackTrace() }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())

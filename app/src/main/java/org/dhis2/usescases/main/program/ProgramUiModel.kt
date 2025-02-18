@@ -1,8 +1,8 @@
 package org.dhis2.usescases.main.program
 
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import java.util.Date
 
 data class ProgramUiModel(
@@ -21,7 +21,7 @@ data class ProgramUiModel(
     val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState,
     val downloadActive: Boolean = false,
-    val stockConfig: AppConfig?,
+    val stockConfig: StockUseCase?,
     val lastUpdated: Date,
 ) {
     fun countDescription() = "%s %s".format(count, typeName)

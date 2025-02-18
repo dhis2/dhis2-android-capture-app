@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -32,6 +31,7 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -137,9 +137,9 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         )
     }
 
-    override fun navigateToStockManagement(config: AppConfig) {
+    override fun navigateToStockManagement(stockUseCase: StockUseCase) {
         Intent(activity, HomeActivity::class.java).apply {
-            putExtra(INTENT_EXTRA_APP_CONFIG, config)
+            putExtra(INTENT_EXTRA_APP_CONFIG, stockUseCase.programUid)
             getActivityContent.launch(this)
         }
     }

@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -39,6 +38,7 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
@@ -49,7 +49,9 @@ import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
@@ -59,6 +61,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
+    private val d2: D2,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val stockManagerRepository: StockManager,
@@ -72,8 +75,8 @@ class ManageStockViewModel @Inject constructor(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private val _config = MutableLiveData<AppConfig>()
-    val config: LiveData<AppConfig> = _config
+    private val _config = MutableLiveData<StockUseCase>()
+    val config: LiveData<StockUseCase> = _config
 
     private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
@@ -162,9 +165,15 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    fun setConfig(config: AppConfig) {
-        _config.value = config
-        tableDimensionStore.setUids(config.program)
+    private fun loadStockUseCase(program: String) {
+        viewModelScope.launch {
+            _config.value = d2.stockUseCase(program)
+        }
+    }
+
+    fun setConfig(program: String) {
+        loadStockUseCase(program)
+        tableDimensionStore.setUids(program)
         refreshConfig()
     }
 
@@ -227,7 +236,7 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.value?.program!!,
+                                config.value?.programUid!!,
                                 transaction.value!!,
                                 config.value!!,
                             ),
