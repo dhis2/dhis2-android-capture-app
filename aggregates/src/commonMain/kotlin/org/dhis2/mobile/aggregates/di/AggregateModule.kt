@@ -2,7 +2,7 @@ package org.dhis2.mobile.aggregates.di
 
 import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
-import org.dhis2.mobile.aggregates.domain.CheckValidationRules
+import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
@@ -11,6 +11,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DatasetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -91,7 +92,7 @@ internal val featureModule = module {
     }
 
     factory { params ->
-        CheckValidationRules(
+        CheckValidationRulesConfiguration(
             dataSetUid = params.get(),
             dataSetInstanceRepository = get(),
         )
@@ -115,6 +116,16 @@ internal val featureModule = module {
 
     factory { params ->
         CompleteDataSet(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
+        RunValidationRules(
             dataSetUid = params.get(),
             periodId = params.get(),
             orgUnitUid = params.get(),
@@ -156,7 +167,7 @@ internal val featureModule = module {
                 parametersOf(periodId, orgUnitUid, attrOptionComboUid)
             },
             resourceManager = get(),
-            checkValidationRules = get {
+            checkValidationRulesConfiguration = get {
                 parametersOf(dataSetUid)
             },
             checkCompletionStatus = get {
@@ -167,6 +178,9 @@ internal val featureModule = module {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             dispatcher = get(),
+            runValidationRules = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
         )
     }
 }

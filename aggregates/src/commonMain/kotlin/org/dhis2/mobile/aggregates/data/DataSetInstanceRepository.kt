@@ -8,6 +8,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.TableGroup
+import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import java.util.SortedMap
 
 internal interface DataSetInstanceRepository {
@@ -125,4 +126,11 @@ internal interface DataSetInstanceRepository {
         orgUnitUid: String,
         attributeOptionComboUid: String,
     ): Result<Unit>
+
+    suspend fun runValidationRules(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): ValidationRulesResult
 }
