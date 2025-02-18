@@ -21,7 +21,6 @@ import org.dhis2.common.keystore.KeyStoreRobot.Companion.USERNAME
 import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
@@ -36,7 +35,6 @@ import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
-import org.mockito.kotlin.whenever
 import java.util.concurrent.TimeUnit
 import org.hisp.dhis.android.core.D2Manager
 
