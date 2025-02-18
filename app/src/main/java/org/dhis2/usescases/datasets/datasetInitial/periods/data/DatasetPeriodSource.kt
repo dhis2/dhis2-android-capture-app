@@ -30,18 +30,10 @@ class DatasetPeriodSource(
                 if (datasetPeriodRepository.hasDataInputPeriods(datasetUid)) {
                     repeat(dataInputPeriods.size) { index ->
                         add(
-                            Period(
-                                id = dataInputPeriods[index].period,
-                                name = periodLabelProvider(
-                                    periodType = periodType,
-                                    periodId = dataInputPeriods[index].period,
-                                    periodStartDate = dataInputPeriods[index].initialPeriodDate,
-                                    periodEndDate = dataInputPeriods[index].endPeriodDate,
-                                    locale = Locale.getDefault(),
-                                ),
-                                startDate = dataInputPeriods[index].initialPeriodDate,
-                                enabled = true,
-                                selected = false,
+                            createPeriod(
+                                dataInputPeriods[index].period,
+                                dataInputPeriods[index].initialPeriodDate,
+                                dataInputPeriods[index].endPeriodDate,
                             ),
                         )
                     }
@@ -55,18 +47,10 @@ class DatasetPeriodSource(
                         )
                         if (period.startDate()?.after(minDate) == true) {
                             add(
-                                Period(
-                                    id = period.periodId()!!,
-                                    name = periodLabelProvider(
-                                        periodType = periodType,
-                                        periodId = period.periodId()!!,
-                                        periodStartDate = period.startDate()!!,
-                                        periodEndDate = period.endDate()!!,
-                                        locale = Locale.getDefault(),
-                                    ),
-                                    startDate = period.startDate()!!,
-                                    enabled = true,
-                                    selected = false,
+                                createPeriod(
+                                    period.periodId()!!,
+                                    period.startDate()!!,
+                                    period.endDate()!!,
                                 ),
                             )
                         } else {
@@ -91,6 +75,22 @@ class DatasetPeriodSource(
             state.closestPageToPosition(it)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
         }
+    }
+
+    private fun createPeriod(id: String, startDate: Date, endDate: Date): Period {
+        return Period(
+            id = id,
+            name = periodLabelProvider(
+                periodType = periodType,
+                periodId = id,
+                periodStartDate = startDate,
+                periodEndDate = endDate,
+                locale = Locale.getDefault(),
+            ),
+            startDate = startDate,
+            enabled = true,
+            selected = false,
+        )
     }
 
     private fun LocalDate.toDate(): Date {
