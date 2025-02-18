@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">ທຸກຢ່າງຮຽບຮ້ອຍດີ</string>
+    <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ?</string>
+    <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
+    <string name="complete">ສຳເລັດແລ້ວ</string>
+
+</resources>

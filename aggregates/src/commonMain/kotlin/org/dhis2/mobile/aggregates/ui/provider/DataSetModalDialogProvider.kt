@@ -11,7 +11,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 
-internal class DatasetModalDialogProvider(
+internal class DataSetModalDialogProvider(
     val resourceManager: ResourceManager,
 ) {
 

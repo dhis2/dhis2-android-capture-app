@@ -11,14 +11,19 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.di.aggregatesModule
+import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
+import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
@@ -48,6 +53,11 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var getDataValue: GetDataValueData
     private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var dispatcher: Dispatcher
+    private lateinit var checkValidationRulesConfiguration: CheckValidationRulesConfiguration
+    private lateinit var checkCompletionStatus: CheckCompletionStatus
+    private lateinit var dataSetModalDialogProvider: DataSetModalDialogProvider
+    private lateinit var completeDataSet: CompleteDataSet
+    private lateinit var runValidationRules: RunValidationRules
 
     @Before
     fun setUp() = runTest {
@@ -68,6 +78,11 @@ internal class DataSetTableViewModelTest : KoinTest {
         getDataValue = declareMock<GetDataValueData>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
         dispatcher = declareMock<Dispatcher>()
+        checkValidationRulesConfiguration = declareMock<CheckValidationRulesConfiguration>()
+        checkCompletionStatus = declareMock<CheckCompletionStatus>()
+        dataSetModalDialogProvider = declareMock<DataSetModalDialogProvider>()
+        completeDataSet = declareMock<CompleteDataSet>()
+        runValidationRules = declareMock<RunValidationRules>()
 
         whenever(resourceManager.defaultHeaderLabel()) doReturn "resource"
         whenever(dispatcher.io).thenReturn { testDispatcher }
@@ -102,6 +117,8 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should receive initial states`() = runTest {
         val viewModel = DataSetTableViewModel(
+            { },
+            get(),
             get(),
             get(),
             get(),
@@ -130,6 +147,8 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should not update selected section if it is the same`() = runTest {
         val viewModel = DataSetTableViewModel(
+            {},
+            get(),
             get(),
             get(),
             get(),
@@ -152,6 +171,8 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should update selected section`() = runTest {
         val viewModel = DataSetTableViewModel(
+            { },
+            get(),
             get(),
             get(),
             get(),

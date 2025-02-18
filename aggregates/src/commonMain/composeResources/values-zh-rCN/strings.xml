@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">一切都很好</string>
+    <string name="mark_dataset_complete">你要完成数据集？</string>
+    <string name="complete">完成</string>
+
+</resources>

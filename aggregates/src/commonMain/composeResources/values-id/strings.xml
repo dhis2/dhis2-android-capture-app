@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Semuanya terlihat bagus!</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="complete">Lengkap</string>
+
+</resources>
