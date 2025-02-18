@@ -12,6 +12,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.di.aggregatesModule
+import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
+import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
@@ -21,6 +24,7 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
@@ -31,6 +35,7 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -67,6 +72,11 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var testDispatcher: TestDispatcher
 
     private lateinit var viewModel: DataSetTableViewModel
+    private lateinit var checkValidationRulesConfiguration: CheckValidationRulesConfiguration
+    private lateinit var checkCompletionStatus: CheckCompletionStatus
+    private lateinit var dataSetModalDialogProvider: DataSetModalDialogProvider
+    private lateinit var completeDataSet: CompleteDataSet
+    private lateinit var runValidationRules: RunValidationRules
 
     @Before
     fun setUp() = runTest {
@@ -91,6 +101,11 @@ internal class DataSetTableViewModelTest : KoinTest {
             whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
         }
         dispatcher = declareMock<Dispatcher>()
+        checkValidationRulesConfiguration = declareMock<CheckValidationRulesConfiguration>()
+        checkCompletionStatus = declareMock<CheckCompletionStatus>()
+        dataSetModalDialogProvider = declareMock<DataSetModalDialogProvider>()
+        completeDataSet = declareMock<CompleteDataSet>()
+        runValidationRules = declareMock<RunValidationRules>()
 
         whenever(dispatcher.io).thenReturn { testDispatcher }
         whenever(getDataSetInstanceData(any())).thenReturn(

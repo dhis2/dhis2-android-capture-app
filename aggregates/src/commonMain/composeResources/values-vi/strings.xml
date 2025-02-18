@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Mọi thứ đều ổn!</string>
+    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
+    <string name="not_now">Không phải bây giờ</string>
+    <string name="complete">Hoàn tất</string>
+
+</resources>

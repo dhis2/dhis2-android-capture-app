@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Все виглядає добре!</string>
+    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних?</string>
+    <string name="not_now">Не зараз</string>
+    <string name="complete">Завершити</string>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Tout a l\'air bien!</string>
+    <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données?</string>
+    <string name="complete">Terminer</string>
+
+</resources>

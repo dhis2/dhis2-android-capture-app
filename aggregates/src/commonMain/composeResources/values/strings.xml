@@ -18,12 +18,18 @@
     <string name="input_not_supported">Not supported</string>
     <string name="completion_dialog_title">Everything looks good</string>
     <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
+    <string name="validation_success_title">Everything looks good</string>
+    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
     <string name="not_now">Not now</string>
     <string name="complete">Complete</string>
+
     <string name="saved">Saved!</string>
     <string name="mandatory_fields_dialog_description">There are missing mandatory fields. Please, fill them to complete the data set.</string>
     <string name="mandatory_fields_combination_message">If you set a value, the whole row needs all of values to complete the Data Set.</string>
     <string name="ok">OK</string>
     <string name="saved_and_completed">Saved and completed!</string>
     <string name="error_on_complete_dataset">There has been an error completing the dataset</string>
+
+    <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
+
 </resources>

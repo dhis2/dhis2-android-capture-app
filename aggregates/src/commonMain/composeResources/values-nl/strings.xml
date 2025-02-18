@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Alles ziet er goed uit!</string>
+    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken?</string>
+    <string name="not_now">Niet nu</string>
+    <string name="complete">Compleet</string>
+
+</resources>

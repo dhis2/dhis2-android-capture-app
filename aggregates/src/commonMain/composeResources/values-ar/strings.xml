@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">كل شيء يبدو جيدا!</string>
+    <string name="mark_dataset_complete">هل تريد أيضاً تعيين حزمة البيانات كمكتملة؟</string>
+    <string name="complete">مكتمل</string>
+
+
+</resources>
