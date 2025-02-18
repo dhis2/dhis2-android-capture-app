@@ -12,21 +12,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
-import org.dhis2.mobile.aggregates.domain.CheckValidationRules
+import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.MANDATORY
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.NONE
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.OPTIONAL
+import org.dhis2.mobile.aggregates.model.ValidationResultStatus
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
@@ -50,11 +52,12 @@ internal class DataSetTableViewModel(
     private val getDataValueData: GetDataValueData,
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
     private val resourceManager: ResourceManager,
-    private val checkValidationRules: CheckValidationRules,
+    private val checkValidationRulesConfiguration: CheckValidationRulesConfiguration,
     private val checkCompletionStatus: CheckCompletionStatus,
     private val dispatcher: Dispatcher,
     private val datasetModalDialogProvider: DatasetModalDialogProvider,
     private val completeDataSet: CompleteDataSet,
+    private val runValidationRules: RunValidationRules,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -321,17 +324,32 @@ internal class DataSetTableViewModel(
 
     fun onSaveClicked() {
         viewModelScope.launch(dispatcher.io()) {
-            when (checkValidationRules()) {
+            when (checkValidationRulesConfiguration()) {
                 NONE -> {
                     attemptToFinnish()
                 }
 
                 MANDATORY -> {
-                    // TODO run validation rules
+                    checkValidationRules()
                 }
 
                 OPTIONAL -> {
                     // TODO show validation rule dialog to ask if user wants to run validation rules
+                }
+            }
+        }
+    }
+
+    private fun checkValidationRules() {
+        viewModelScope.launch(dispatcher.io()) {
+            val rules = runValidationRules()
+            when (rules.validationResultStatus) {
+                ValidationResultStatus.OK -> {
+                    attemptToFinnish()
+                }
+
+                ValidationResultStatus.ERROR -> {
+                    // TODO show violations dialog
                 }
             }
         }
@@ -400,6 +418,7 @@ internal class DataSetTableViewModel(
                 SUCCESS -> {
                     onExit(resourceManager.provideSavedAndCompleted())
                 }
+
                 ERROR -> {
                     showSnackbar(resourceManager.provideErrorOnCompleteDataset())
                 }
