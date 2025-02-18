@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
@@ -23,7 +23,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
@@ -37,9 +36,6 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val featureConfigRepository: FeatureConfigRepository = mock()
-
-
     override fun teardown() {
         super.teardown()
         disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -47,7 +43,7 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun datasetAutomate() {
+    fun datasetAutomate() = runTest {
         val period = "Jul 2025"
         val orgUnit = "Ngelehun CHC"
 
@@ -77,6 +73,11 @@ class DataSetTest : BaseTest() {
         // checkFilterCombination(orgUnit)
 
         //Step - Check content boxes above and below the table
+        checkContentBoxesAreDisplayed()
+
+    }
+
+    private fun checkContentBoxesAreDisplayed() {
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.onNodeWithText("Section: Immunization. Top content", true)
                 .assertIsDisplayed()
@@ -146,7 +147,6 @@ class DataSetTest : BaseTest() {
         }
 
         orgUnitSelectorRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             selectTreeOrgUnit(orgUnit)
         }
 
