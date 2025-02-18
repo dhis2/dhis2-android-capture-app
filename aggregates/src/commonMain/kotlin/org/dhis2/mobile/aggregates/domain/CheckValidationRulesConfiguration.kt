@@ -1,16 +1,16 @@
 package org.dhis2.mobile.aggregates.domain
 
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.MANDATORY
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.NONE
-import org.dhis2.mobile.aggregates.model.DataSetValidationRulesConfiguration.OPTIONAL
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
+import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 
-internal class CheckValidationRules(
+internal class CheckValidationRulesConfiguration(
     private val dataSetUid: String,
     private val dataSetInstanceRepository: DataSetInstanceRepository,
 ) {
-    suspend operator fun invoke(): DataSetValidationRulesConfiguration {
+    suspend operator fun invoke(): ValidationRulesConfiguration {
         val hasValidationRules = dataSetInstanceRepository.checkIfHasValidationRules(
             dataSetUid = dataSetUid,
         )

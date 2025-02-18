@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.model
 
-internal enum class DataSetValidationRulesConfiguration {
+internal enum class ValidationRulesConfiguration {
     NONE,
     MANDATORY,
     OPTIONAL,
