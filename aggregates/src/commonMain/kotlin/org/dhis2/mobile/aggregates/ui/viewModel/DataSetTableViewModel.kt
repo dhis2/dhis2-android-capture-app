@@ -136,7 +136,7 @@ internal class DataSetTableViewModel(
 
                 val tableHeader = TableHeader(
                     rows = headerRows,
-                    hasTotals = sectionData.showRowTotals(),
+                    extraColumns = emptyList(),
                 )
 
                 val dataValueDataMap = buildMap {
@@ -272,7 +272,7 @@ internal class DataSetTableViewModel(
                             cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
                         ),
                     ),
-                    hasTotals = sectionData.showRowTotals(),
+                    extraColumns = emptyList(),
                 ),
                 tableRows = getDataSetSectionIndicators(sectionUid)?.entries?.map { (key, value) ->
                     TableRowModel(
