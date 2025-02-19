@@ -11,6 +11,7 @@ internal sealed class DataSetScreenState {
         val dataSetSections: List<DataSetSection>,
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
+        val selectedCellInfo: InputData? = null,
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs

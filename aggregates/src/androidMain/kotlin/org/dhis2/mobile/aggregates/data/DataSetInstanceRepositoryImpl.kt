@@ -2,7 +2,9 @@ package org.dhis2.mobile.aggregates.data
 
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
+import org.dhis2.mobile.aggregates.data.mappers.toInputType
 import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.DataElementInfo
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
@@ -11,7 +13,9 @@ import org.dhis2.mobile.aggregates.model.MandatoryCellElements
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
@@ -292,6 +296,102 @@ internal class DataSetInstanceRepositoryImpl(
         .blockingGet().map {
             Pair(it.dataElement()!!, it.categoryOptionCombo()!!) to it.value()
         }
+
+    override suspend fun value(
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+    ) = d2.dataValueModule().dataValues()
+        .value(
+            periodId,
+            orgUnitUid,
+            dataElementUid,
+            categoryOptionComboUid,
+            attrOptionComboUid,
+        ).blockingGet()
+        ?.value()
+
+    override suspend fun updateValue(
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        value: String?,
+    ): Result<Unit> {
+        val valueRepository = d2.dataValueModule().dataValues()
+            .value(
+                period = periodId,
+                organisationUnit = orgUnitUid,
+                dataElement = dataElementUid,
+                categoryOptionCombo = categoryOptionComboUid,
+                attributeOptionCombo = attrOptionComboUid,
+            )
+
+        val validator = d2.dataElementModule().dataElements()
+            .uid(dataElementUid).blockingGet()
+            ?.valueType()?.validator
+
+        return try {
+            if (value.isNullOrEmpty()) {
+                valueRepository.blockingDeleteIfExist()
+            } else {
+                val validValue = validator?.validate(value)?.getOrThrow()
+                valueRepository.blockingSet(validValue)
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun dataElementInfo(
+        dataSetUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+    ): DataElementInfo {
+        val dataElement = d2.dataElementModule().dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+        val categoryOptionCombo = d2.categoryModule().categoryOptionCombos()
+            .uid(categoryOptionComboUid)
+            .blockingGet()
+        val isMandatory = d2.dataSetModule().dataSets().withCompulsoryDataElementOperands()
+            .uid(dataSetUid)
+            .blockingGet()
+            ?.compulsoryDataElementOperands()
+            ?.find {
+                it.dataElement()?.uid() == dataElementUid &&
+                    it.categoryOptionCombo()?.uid() == categoryOptionComboUid
+            } != null
+
+        val inputType = requireNotNull(dataElement?.valueType()?.toInputType())
+
+        return DataElementInfo(
+            label = "${dataElement?.displayFormName()}/${categoryOptionCombo?.displayName()}",
+            inputType = inputType,
+            description = dataElement?.displayDescription(),
+            isRequired = isMandatory,
+        )
+    }
+
+    override suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double> {
+        val geometry = Geometry.builder().coordinates(coordinatesValue).build()
+        return GeometryHelper.getPoint(geometry).let {
+            Pair(it[1], it[0])
+        }
+    }
+
+    override suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String {
+        val categoryOptionCombos = d2.categoryModule().categoryOptionCombos()
+            .byCategoryOptions(categoryOptions)
+            .blockingGet()
+
+        if (categoryOptionCombos.size != 1) throw IllegalStateException("More than one category option combo found")
+        return categoryOptionCombos.first().uid()
+    }
 
     private fun dataElementCategoryComboUid(dataElementUid: String?) =
         dataElementUid?.let {
