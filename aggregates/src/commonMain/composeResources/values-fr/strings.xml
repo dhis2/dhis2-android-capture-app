@@ -8,5 +8,6 @@
     <string name="field_required">Si vous saisissez une valeur, la ligne entière doit être remplie pour compléter l\'ensemble de données.</string>
     <string name="ok">Ok</string>
     <string name="dataset_saved_completed">Enregistré et terminé!</string>
+    <string name="run_validation_rules">Voulez-vous vérifier la qualité des données?</string>
 
 </resources>
