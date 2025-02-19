@@ -27,9 +27,9 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                 DataSetInstanceScreen(
                     parameters = intent.toDataSetInstanceParameters(),
                     useTwoPane = useTwoPane,
-                ) {
-                    onBackPressedDispatcher.onBackPressed()
-                }
+                    onBackClicked = onBackPressedDispatcher::onBackPressed,
+                    onSyncClicked = {},
+                )
             }
         }
     }

@@ -15,13 +15,23 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
+import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
+import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.TableId
+import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
+import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
+import org.dhis2.mobile.aggregates.ui.states.InputData
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
@@ -35,6 +45,8 @@ internal class DataSetTableViewModel(
     private val getDataSetSectionData: GetDataSetSectionData,
     private val getDataValueData: GetDataValueData,
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
+    private val getDataValueInput: GetDataValueInput,
+    private val setDataValue: SetDataValue,
     private val resourceManager: ResourceManager,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
@@ -136,7 +148,13 @@ internal class DataSetTableViewModel(
 
                 val tableHeader = TableHeader(
                     rows = headerRows,
-                    extraColumns = emptyList(),
+                    extraColumns = if (sectionData.showRowTotals()) {
+                        listOf(
+                            TableHeaderCell(resourceManager.totalsHeader()),
+                        )
+                    } else {
+                        emptyList()
+                    },
                 )
 
                 val dataValueDataMap = buildMap {
@@ -160,7 +178,7 @@ internal class DataSetTableViewModel(
                                 ),
                             ),
                             values = buildMap {
-                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
+                                repeat(tableHeader.tableMaxColumns() - tableHeader.extraColumns.size) { columnIndex ->
                                     val key = Pair(
                                         cellElement.uid,
                                         tableGroup.headerCombinations[columnIndex],
@@ -170,7 +188,20 @@ internal class DataSetTableViewModel(
                                     put(
                                         key = columnIndex,
                                         value = TableCell(
-                                            id = cellElement.uid,
+                                            id = CellIdGenerator.generateId(
+                                                rowIds = listOf(
+                                                    TableId(
+                                                        id = cellElement.uid,
+                                                        type = TableIdType.DataElement,
+                                                    ),
+                                                ),
+                                                columnIds = listOf(
+                                                    TableId(
+                                                        id = tableGroup.headerCombinations[columnIndex],
+                                                        type = TableIdType.CategoryOptionCombo,
+                                                    ),
+                                                ),
+                                            ),
                                             row = absoluteRowIndex,
                                             column = columnIndex,
                                             value = dataValueData?.value,
@@ -188,7 +219,7 @@ internal class DataSetTableViewModel(
                                 }
                                 if (sectionData.showRowTotals()) {
                                     put(
-                                        key = tableHeader.tableMaxColumns(),
+                                        key = tableHeader.tableMaxColumns() - tableHeader.extraColumns.size,
                                         value = TableCell(
                                             id = cellElement.uid,
                                             row = absoluteRowIndex,
@@ -212,8 +243,8 @@ internal class DataSetTableViewModel(
                         TableRowModel(
                             rowHeaders = listOf(
                                 RowHeader(
-                                    id = "TotalRow",
-                                    title = "Total",
+                                    id = "${tableGroup.uid}_totals",
+                                    title = resourceManager.totalsHeader(),
                                     row = absoluteRowIndex,
                                     column = 0,
                                 ),
@@ -223,7 +254,7 @@ internal class DataSetTableViewModel(
                                     put(
                                         key = columnIndex,
                                         value = TableCell(
-                                            id = "TotalRow",
+                                            id = "${tableGroup.uid}_total_$columnIndex",
                                             row = absoluteRowIndex,
                                             column = columnIndex,
                                             value = tableRows.sumOf {
@@ -238,7 +269,7 @@ internal class DataSetTableViewModel(
                                     put(
                                         key = tableHeader.tableMaxColumns(),
                                         value = TableCell(
-                                            id = "TotalRow",
+                                            id = "${tableGroup.uid}_total_total",
                                             row = absoluteRowIndex,
                                             column = tableHeader.tableMaxColumns(),
                                             value = this.values.sumOf {
@@ -307,5 +338,124 @@ internal class DataSetTableViewModel(
             ),
         )
         tables + indicators
+    }
+
+    fun updateSelectedCell(cellId: String?) {
+        viewModelScope.launch(dispatcher.io()) {
+            val (rowIds, columnIds) = cellId?.let { CellIdGenerator.getIdInfo(it) } ?: Pair(
+                emptyList(),
+                emptyList(),
+            )
+
+            val inputData = if (cellId != null) {
+                with(getDataValueInput(rowIds, columnIds)) {
+                    InputData(
+                        id = cellId,
+                        label = label,
+                        value = value,
+                        inputType = inputType,
+                        inputShellState = InputShellState.UNFOCUSED,
+                        inputExtra = inputExtra,
+                        supportingText = supportingText.map { text ->
+                            SupportingTextData(
+                                text = text,
+                                state = SupportingTextState.DEFAULT,
+                            )
+                        } + errors.map { error ->
+                            SupportingTextData(
+                                text = error,
+                                state = SupportingTextState.ERROR,
+                            )
+                        } + warnings.map { warning ->
+                            SupportingTextData(
+                                text = warning,
+                                state = SupportingTextState.WARNING,
+                            )
+                        },
+                        legendData = null, // TODO
+                        isRequired = isRequired,
+                    )
+                }
+            } else {
+                null
+            }
+
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
+                        tableModels = it.dataSetSectionTable.tables().map { table ->
+                            val hasTotal = table.tableHeaderModel.extraColumns.isNotEmpty()
+                            val tableRows = table.tableRows.map { tableRowModel ->
+                                val cell = tableRowModel.values.values.find { tableCell ->
+                                    tableCell.id == cellId
+                                }
+                                val totalsCell =
+                                    tableRowModel.values.values.last().takeIf { hasTotal }
+                                if (cell != null) {
+                                    val updatedValues = tableRowModel.values.toMutableMap()
+                                    updatedValues[cell.column] = cell.copy(
+                                        value = inputData?.value,
+                                    )
+                                    totalsCell?.let { totalCell ->
+                                        val totalValue = updatedValues.values.toList().dropLast(1)
+                                            .sumOf { tableCell ->
+                                                tableCell.value?.toDoubleOrNull() ?: 0.0
+                                            }
+
+                                        updatedValues[tableRowModel.values.size - 1] =
+                                            totalCell.copy(value = totalValue.toString())
+                                    }
+                                    tableRowModel.copy(values = updatedValues)
+                                } else {
+                                    tableRowModel
+                                }
+                            }
+                            table.copy(tableRows = tableRows)
+                        },
+                    ) ?: it.dataSetSectionTable,
+                    selectedCellInfo = inputData,
+                ) ?: it
+            }
+        }
+    }
+
+    fun onUiAction(uiAction: UiAction) {
+        viewModelScope.launch(dispatcher.io()) {
+            when (uiAction) {
+                is UiAction.OnFocusChanged -> {
+                }
+
+                UiAction.OnNextClick -> {
+                    TODO()
+                }
+
+                is UiAction.OnValueChanged -> {
+                    val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                    setDataValue(
+                        rowIds = rowIds,
+                        columnIds = columnIds,
+                        value = uiAction.newValue,
+                    ).fold(
+                        onSuccess = {
+                            updateSelectedCell(uiAction.cellId)
+                        },
+                        onFailure = {
+                            // TODO
+                        },
+                    )
+                }
+
+                is UiAction.OnAddImage -> TODO()
+                is UiAction.OnCall -> TODO()
+                is UiAction.OnCaptureCoordinates -> TODO()
+                is UiAction.OnDateTimeAction -> TODO()
+                is UiAction.OnDownloadImage -> TODO()
+                is UiAction.OnEmailAction -> TODO()
+                is UiAction.OnLinkClicked -> TODO()
+                is UiAction.OnOpenFile -> TODO()
+                is UiAction.OnSelectFile -> TODO()
+                is UiAction.OnShareImage -> TODO()
+            }
+        }
     }
 }
