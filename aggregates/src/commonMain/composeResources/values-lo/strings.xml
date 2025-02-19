@@ -8,5 +8,6 @@
     <string name="field_required">ຖ້າທ່ານຕັ້ງຄ່າ, ແຖວທັ້ງໝົດຕ້ອງໃຊ້ຄ່າທັ້ງໝົດເພື່ອເຮັດໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
     <string name="ok">​ຕົກ​ລົງ</string>
     <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
+    <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ?</string>
 
 </resources>

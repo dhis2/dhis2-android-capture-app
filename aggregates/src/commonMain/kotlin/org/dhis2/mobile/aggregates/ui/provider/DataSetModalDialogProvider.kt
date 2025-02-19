@@ -89,4 +89,46 @@ internal class DataSetModalDialogProvider(
             onDismiss = onDismiss,
         )
     }
+
+    suspend fun provideAskRunValidationsDialog(
+        onDismiss: () -> Unit,
+        onDeny: () -> Unit,
+        onAccept: () -> Unit,
+    ): DataSetModalDialogUIState {
+        val denyText = resourceManager.provideNo()
+        val acceptText = resourceManager.provideYes()
+
+        return DataSetModalDialogUIState(
+            contentDialogUIState = BottomSheetShellUIState(
+                title = resourceManager.provideSaved(),
+                subtitle = resourceManager.provideAskRunValidations(),
+                showBottomSectionDivider = false,
+                headerTextAlignment = TextAlign.Start,
+            ),
+            buttonsDialog = {
+                ButtonBlock(
+                    modifier = Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
+                    primaryButton = {
+                        Button(
+                            style = ButtonStyle.OUTLINED,
+                            text = denyText,
+                            onClick = onDeny,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    secondaryButton = {
+                        Button(
+                            style = ButtonStyle.FILLED,
+                            text = acceptText,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onAccept,
+                        )
+                    },
+                )
+            },
+            onDismiss = onDismiss,
+        )
+    }
 }
