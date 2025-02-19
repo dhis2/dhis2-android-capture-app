@@ -3,5 +3,10 @@
     <string name="validation_success_title">Tout a l\'air bien!</string>
     <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données?</string>
     <string name="complete">Terminer</string>
+    <string name="saved">Enregistré!</string>
+    <string name="field_mandatory">Il manque des champs obligatoires. Veuillez les remplir pour compléter l\'ensemble de données.</string>
+    <string name="field_required">Si vous saisissez une valeur, la ligne entière doit être remplie pour compléter l\'ensemble de données.</string>
+    <string name="ok">Ok</string>
+    <string name="dataset_saved_completed">Enregistré et terminé!</string>
 
 </resources>

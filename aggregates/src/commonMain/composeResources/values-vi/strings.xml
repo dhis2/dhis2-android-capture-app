@@ -4,5 +4,10 @@
     <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="complete">Hoàn tất</string>
+    <string name="saved">Đã lưu!</string>
+    <string name="field_mandatory">Các trường nhập bắt buộc đang bị thiếu. Xin vui lòng điền giá trị bắt buộc để hoàn thành biểu nhập.</string>
+    <string name="field_required">Nếu bạn nhập một giá trị, cần nhập tất cả giá trị để hoàn tất Biểu Nhập</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
 
 </resources>
