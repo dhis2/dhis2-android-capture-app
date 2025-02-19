@@ -8,5 +8,6 @@
     <string name="field_required">Pokud nastavíte hodnotu, celý řádek potřebuje k dokončení datové sady všechny hodnoty.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Uloženo a dokončeno!</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
 
 </resources>

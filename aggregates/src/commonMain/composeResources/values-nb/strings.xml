@@ -8,5 +8,6 @@
     <string name="field_required">Hvis du setter en verdi, så trenger hele raden alle verdier for å fullføre datasettet.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Lagret og fullført!</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
 
 </resources>

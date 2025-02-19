@@ -8,5 +8,6 @@
     <string name="field_required">Jika Anda mengisi, semua baris harus terisi untuk menyelesaikan data set</string>
     <string name="ok">Ok</string>
     <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
 
 </resources>

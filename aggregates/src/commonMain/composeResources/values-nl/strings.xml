@@ -9,5 +9,6 @@
     <string name="field_required">Als u een waarde instelt, heeft de hele rij alle waarden nodig om de gegevensset te voltooien.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Opgeslagen en voltooid!</string>
+    <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
 
 </resources>

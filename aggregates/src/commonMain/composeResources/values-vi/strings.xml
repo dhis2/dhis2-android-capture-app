@@ -9,5 +9,6 @@
     <string name="field_required">Nếu bạn nhập một giá trị, cần nhập tất cả giá trị để hoàn tất Biểu Nhập</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
+    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
 
 </resources>

@@ -9,5 +9,6 @@
     <string name="field_required">Якщо Ви встановлюєте значення, то щодо усього рядка потрібно вказати всі значення, щоб завершити набір даних.</string>
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Збережено та завершено!</string>
+    <string name="run_validation_rules">Хочете перевірити якість даних?</string>
 
 </resources>

@@ -28,4 +28,8 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Saved and completed!</string>
     <string name="error_on_complete_dataset">There has been an error completing the dataset</string>
+    <string name="run_validation_rules">Do you want to check data quality?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+
 </resources>

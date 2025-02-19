@@ -9,5 +9,6 @@
     <string name="field_required">Si introduce un valor, tendrá que completar toda la fila para poder marcar como Completado el Data Set.</string>
     <string name="ok">Correcto</string>
     <string name="dataset_saved_completed">¡Guardado y completado!</string>
+    <string name="run_validation_rules">¿Quiere validar la calidad de los datos?</string>
 
 </resources>

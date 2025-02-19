@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
@@ -247,7 +248,25 @@ internal class DataSetTableViewModel(
                 }
 
                 OPTIONAL -> {
-                    // TODO show validation rule dialog to ask if user wants to run validation rules
+                    askRunValidationRules()
+                }
+            }
+        }
+    }
+
+    private fun askRunValidationRules() {
+        viewModelScope.launch(dispatcher.io()) {
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    it.copy(
+                        modalDialog = datasetModalDialogProvider.provideAskRunValidationsDialog(
+                            onDismiss = { onModalDialogDismissed() },
+                            onDeny = { attemptToComplete() },
+                            onAccept = { checkValidationRules() },
+                        ),
+                    )
+                } else {
+                    it
                 }
             }
         }
@@ -340,8 +359,12 @@ internal class DataSetTableViewModel(
     }
 
     private fun onExit(exitMessage: String) {
-        showSnackbar(exitMessage)
-        onClose()
+        viewModelScope.launch {
+            withContext(dispatcher.main()) {
+                showSnackbar(exitMessage)
+                onClose()
+            }
+        }
     }
 
     private fun onModalDialogDismissed() {
@@ -354,9 +377,7 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun showSnackbar(message: String) {
-        viewModelScope.launch {
-            _dataSetScreenState.value.sendSnackbarMessage(message)
-        }
+    private suspend fun showSnackbar(message: String) {
+        _dataSetScreenState.value.sendSnackbarMessage(message)
     }
 }

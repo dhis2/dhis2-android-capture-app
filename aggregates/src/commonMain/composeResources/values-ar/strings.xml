@@ -8,5 +8,6 @@
     <string name="field_required">إذا قمت بتعيين قيمة ، فإن الصف بأكمله يحتاج إلى كل القيم لإكمال مجموعة البيانات.</string>
     <string name="ok">موافق</string>
     <string name="dataset_saved_completed">محفوظ ومكتمل</string>
+    <string name="run_validation_rules">هل تريد التحقق من جودة البيانات؟</string>
 
 </resources>
