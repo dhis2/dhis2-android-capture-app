@@ -11,11 +11,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.resources.format_error
 import org.dhis2.mobile.aggregates.resources.input_action_accept
 import org.dhis2.mobile.aggregates.resources.input_action_cancel
 import org.dhis2.mobile.aggregates.resources.input_age
 import org.dhis2.mobile.aggregates.resources.input_age_date_of_birth
 import org.dhis2.mobile.aggregates.resources.input_age_or
+import org.dhis2.mobile.aggregates.resources.input_coordinate_add_location
+import org.dhis2.mobile.aggregates.resources.input_coordinate_latitude
+import org.dhis2.mobile.aggregates.resources.input_coordinate_longitude
+import org.dhis2.mobile.aggregates.resources.input_date_out_of_range
+import org.dhis2.mobile.aggregates.resources.input_not_supported
+import org.dhis2.mobile.aggregates.resources.no_results_found
+import org.dhis2.mobile.aggregates.resources.search_to_find_more
 import org.dhis2.mobile.aggregates.ui.states.InputData
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -149,9 +158,9 @@ internal fun InputProvider(
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
                 coordinates = inputData.coordinateExtras().coordinateValue,
-                latitudeText = "latitude",
-                longitudeText = "longitude",
-                addLocationBtnText = "add location",
+                latitudeText = stringResource(Res.string.input_coordinate_latitude),
+                longitudeText = stringResource(Res.string.input_coordinate_longitude),
+                addLocationBtnText = stringResource(Res.string.input_coordinate_add_location),
                 isRequired = inputData.isRequired,
                 modifier = modifier,
                 onResetButtonClicked = {
@@ -180,10 +189,10 @@ internal fun InputProvider(
                         allowsManualInput = inputData.dateExtras().allowManualInput,
                         visualTransformation = inputData.dateExtras().visualTransformation,
                         is24hourFormat = inputData.dateExtras().is24HourFormat,
-                        acceptText = "Accept",
-                        cancelText = "Cancel",
-                        outOfRangeText = "out of range",
-                        incorrectHourFormatText = "incorrect format",
+                        acceptText = stringResource(Res.string.input_action_accept),
+                        cancelText = stringResource(Res.string.input_action_cancel),
+                        outOfRangeText = stringResource(Res.string.input_date_out_of_range),
+                        incorrectHourFormatText = stringResource(Res.string.format_error),
                         selectableDates = inputData.dateExtras().selectableDates,
                         yearRange = inputData.dateExtras().yearRange,
                     ),
@@ -436,8 +445,7 @@ internal fun InputProvider(
                 items = data,
                 title = inputData.label,
                 state = inputData.inputShellState,
-                windowInsets = { TODO() }, // TODO: This could be moved to a LocalComposition and provided by the theme
-                bottomSheetLowerPadding = Spacing0, // TODO: This could be moved to a LocalComposition and provided by the theme
+                bottomSheetLowerPadding = Spacing0,
                 supportingTextData = inputData.supportingText,
                 legendData = inputData.legendData,
                 isRequired = inputData.isRequired,
@@ -447,9 +455,9 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, selectedCodes))
                 },
                 modifier = modifier,
-                noResultsFoundString = "no result found",
-                searchToFindMoreString = "search to find more",
-                doneButtonText = "done",
+                noResultsFoundString = stringResource(Res.string.no_results_found),
+                searchToFindMoreString = stringResource(Res.string.search_to_find_more),
+                doneButtonText = stringResource(Res.string.action_done),
                 inputStyle = inputData.inputStyle,
                 onClearItemSelection = {
                     onAction(UiAction.OnValueChanged(inputData.id, null))
@@ -473,7 +481,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
                 imeAction = imeAction,
-                notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION, // TODO: Harmonize with PhoneNumber. This could be a DHIS2Theme local configuration
+                notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION,
                 modifier = modifier,
             )
         }
@@ -538,7 +546,7 @@ internal fun InputProvider(
                 onFocusChanged = { onAction(UiAction.OnFocusChanged(it)) },
                 imeAction = imeAction,
                 supportingText = inputData.supportingText,
-                allowedCharacters = RegExValidations.PHONE_NUMBER, // TODO: Harmonize with Number notation. Why to expose it?
+                allowedCharacters = RegExValidations.PHONE_NUMBER,
             )
         }
 
@@ -629,7 +637,7 @@ internal fun InputProvider(
         -> {
             InputNotSupported(
                 title = inputData.label,
-                notSupportedString = "Not supported",
+                notSupportedString = stringResource(Res.string.input_not_supported),
                 inputStyle = inputData.inputStyle,
             )
         }
