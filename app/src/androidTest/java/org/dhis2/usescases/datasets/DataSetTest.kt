@@ -1,6 +1,8 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -76,6 +78,7 @@ class DataSetTest : BaseTest() {
 
     }
 
+    @OptIn(ExperimentalTestApi::class)
     private fun checkContentBoxesAreDisplayed() {
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.onNodeWithText("Section: Immunization. Top content", true)
@@ -90,7 +93,7 @@ class DataSetTest : BaseTest() {
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
             composeTestRule.onNodeWithTag("TAB_Nutrition", useUnmergedTree = true).performClick()
-            composeTestRule.waitForIdle()
+            composeTestRule.waitUntilAtLeastOneExists(hasText("Section: Nutrition. Top content", true))
             composeTestRule.onNodeWithText("Section: Nutrition. Top content", true)
                 .assertIsDisplayed()
         }
