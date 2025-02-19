@@ -10,6 +10,12 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.input_action_accept
+import org.dhis2.mobile.aggregates.resources.input_action_cancel
+import org.dhis2.mobile.aggregates.resources.input_age
+import org.dhis2.mobile.aggregates.resources.input_age_date_of_birth
+import org.dhis2.mobile.aggregates.resources.input_age_or
 import org.dhis2.mobile.aggregates.ui.states.InputData
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -33,7 +39,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoField
@@ -47,6 +52,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.InputDateTimeData
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputAgeState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputDateTimeState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InputProvider(
@@ -73,10 +79,6 @@ internal fun InputProvider(
         mutableStateOf(ImeAction.Next) // TODO: Update from inputData
     }
 
-    val inputState by remember {
-        mutableStateOf(InputShellState.UNFOCUSED) // TODO: this should be internal?
-    }
-
     when (inputData.inputType) {
         InputType.Age -> {
             InputAge(
@@ -86,17 +88,17 @@ internal fun InputProvider(
                         inputStyle = inputData.inputStyle,
                         isRequired = inputData.isRequired,
                         imeAction = imeAction,
-                        dateOfBirthLabel = "Date of birth",
-                        orLabel = "or", // TODO: Seriously?? XD
-                        ageLabel = "Age",
-                        acceptText = "Accept",
-                        cancelText = "Cancel",
-                        is24hourFormat = true, // TODO: How is this configured in the app?
+                        dateOfBirthLabel = stringResource(Res.string.input_age_date_of_birth),
+                        orLabel = stringResource(Res.string.input_age_or),
+                        ageLabel = stringResource(Res.string.input_age),
+                        acceptText = stringResource(Res.string.input_action_accept),
+                        cancelText = stringResource(Res.string.input_action_cancel),
+                        is24hourFormat = true,
                         selectableDates = inputData.ageExtras().selectableDates,
                     ),
                     inputType = inputData.value?.let { AgeInputType.None }
                         ?: AgeInputType.DateOfBirth(textValue),
-                    inputState = inputState,
+                    inputState = inputData.inputShellState,
                     legendData = inputData.legendData,
                     supportingText = inputData.supportingText,
                 ),
@@ -183,10 +185,10 @@ internal fun InputProvider(
                         outOfRangeText = "out of range",
                         incorrectHourFormatText = "incorrect format",
                         selectableDates = inputData.dateExtras().selectableDates,
-                        yearRange = inputData.dateExtras().yearRange, // TODO: Is it really needed if we have a selectableDates?
+                        yearRange = inputData.dateExtras().yearRange,
                     ),
                     inputTextFieldValue = textValue,
-                    inputState = inputState,
+                    inputState = inputData.inputShellState,
                     legendData = inputData.legendData,
                     supportingText = inputData.supportingText,
                 ),
@@ -237,7 +239,7 @@ internal fun InputProvider(
         }
 
         InputType.FileResource -> {
-            var uploadingState by remember(inputData.value) { // TODO: This should be internal
+            var uploadingState by remember(inputData.value) {
                 mutableStateOf(
                     when (inputData.value) {
                         null -> UploadFileState.ADD
@@ -252,19 +254,19 @@ internal fun InputProvider(
                 fileName = inputData.value,
                 fileWeight = inputData.fileExtras().fileWeight,
                 onSelectFile = {
-                    uploadingState = UploadFileState.UPLOADING // TODO: This should be internal
+                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnSelectFile(inputData.id))
                 },
                 onUploadFile = {
-                    uploadingState = UploadFileState.UPLOADING // TODO: This should be internal
+                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnOpenFile(inputData.id))
                 },
                 onClear = {
-                    uploadingState = UploadFileState.UPLOADING // TODO: This should be internal
+                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnValueChanged(inputData.id, null))
                 },
                 uploadFileState = uploadingState,
-                inputShellState = inputState,
+                inputShellState = inputData.inputShellState,
                 inputStyle = inputData.inputStyle,
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
@@ -274,7 +276,7 @@ internal fun InputProvider(
         }
 
         InputType.Image -> {
-            var uploadingState by remember(inputData.value) { // TODO: This should be internal and shared with file
+            var uploadingState by remember(inputData.value) {
                 mutableStateOf(
                     when (inputData.value) {
                         null -> UploadState.ADD
@@ -425,20 +427,7 @@ internal fun InputProvider(
 
         InputType.MultiText -> {
             val dataMap = buildMap<String, CheckBoxData> {
-                /*fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
-                    repeat(paging.itemCount) { index ->
-                        val optionData = paging[index]
-                        put(
-                            optionData?.option?.code() ?: "",
-                            CheckBoxData(
-                                uid = optionData?.option?.code() ?: "",
-                                checked = optionData?.option?.code()?.let { inputData.value?.split(",")?.contains(it) } ?: false,
-                                enabled = true,
-                                textInput = optionData?.option?.displayName() ?: "",
-                            ),
-                        )
-                    }
-                }*/
+                // TODO: Fetch options with paging-> paging is not available in multiplatform.
             }
 
             val (codeList, data) = dataMap.toList().unzip()
