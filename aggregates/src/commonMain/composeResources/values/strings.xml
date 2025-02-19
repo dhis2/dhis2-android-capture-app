@@ -2,4 +2,9 @@
 <resources>
     <string name="default_column_label">Values</string>
     <string name="total_header_label">Total</string>
+    <string name= "input_age_date_of_birth">Date of birth</string>
+    <string name= "input_age">Age</string>
+    <string name= "input_age_or">or</string>
+    <string name = "input_action_accept">Accept</string>
+    <string name = "input_action_cancel">Cancel</string>
 </resources>

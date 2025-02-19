@@ -240,47 +240,12 @@ internal class DataSetTableViewModel(
 
                 val totalRow = if (sectionData.showColumnTotals()) {
                     listOf(
-                        TableRowModel(
-                            rowHeaders = listOf(
-                                RowHeader(
-                                    id = "${tableGroup.uid}_totals",
-                                    title = resourceManager.totalsHeader(),
-                                    row = absoluteRowIndex,
-                                    column = 0,
-                                ),
-                            ),
-                            values = buildMap {
-                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
-                                    put(
-                                        key = columnIndex,
-                                        value = TableCell(
-                                            id = "${tableGroup.uid}_total_$columnIndex",
-                                            row = absoluteRowIndex,
-                                            column = columnIndex,
-                                            value = tableRows.sumOf {
-                                                it.values[columnIndex]?.value?.toDoubleOrNull()
-                                                    ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                                if (sectionData.showRowTotals()) {
-                                    put(
-                                        key = tableHeader.tableMaxColumns(),
-                                        value = TableCell(
-                                            id = "${tableGroup.uid}_total_total",
-                                            row = absoluteRowIndex,
-                                            column = tableHeader.tableMaxColumns(),
-                                            value = this.values.sumOf {
-                                                it.value?.toDoubleOrNull() ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                            },
-                            maxLines = 1,
+                        buildTotalsRow(
+                            tableId = tableGroup.uid,
+                            columnCount = tableHeader.tableMaxColumns(),
+                            absoluteRowIndex = absoluteRowIndex,
+                            showRowTotals = sectionData.showRowTotals(),
+                            tableRows = tableRows,
                         ).also {
                             absoluteRowIndex += 1
                         },
@@ -298,45 +263,45 @@ internal class DataSetTableViewModel(
             }
         }.awaitAll()
 
-        val indicators = listOf(
-            TableModel(
-                id = INDICATOR_TABLE_UID,
-                title = "",
-                tableHeaderModel = TableHeader(
-                    rows = listOf(
-                        TableHeaderRow(
-                            cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
+        val indicators = getDataSetSectionIndicators(sectionUid)?.let { indicators ->
+            listOf(
+                TableModel(
+                    id = INDICATOR_TABLE_UID,
+                    title = "",
+                    tableHeaderModel = TableHeader(
+                        rows = listOf(
+                            TableHeaderRow(
+                                cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
+                            ),
                         ),
+                        extraColumns = emptyList(),
                     ),
-                    extraColumns = emptyList(),
-                ),
-                tableRows = getDataSetSectionIndicators(sectionUid)?.entries?.map { (key, value) ->
-                    TableRowModel(
-                        rowHeaders = listOf(
-                            RowHeader(
+                    tableRows = indicators.entries.map { (key, value) ->
+                        TableRowModel(
+                            rowHeaders = listOf( RowHeader(
                                 id = key,
                                 title = key,
-                                row = absoluteRowIndex,
-                                column = 0,
+                                row = absoluteRowIndex,column = 0,
                             ),
-                        ),
-                        values = mapOf(
-                            0 to TableCell(
-                                id = key,
-                                row = absoluteRowIndex,
-                                column = 0,
-                                value = value,
-                                editable = false,
-                                mandatory = false,
-                                legendColor = null,
                             ),
-                        ),
-                    ).also {
-                        absoluteRowIndex += 1
-                    }
-                } ?: emptyList(),
-            ),
-        )
+                            values = mapOf(
+                                0 to TableCell(
+                                    id = key,
+                                    row = absoluteRowIndex,
+                                    column = 0,
+                                    value = value,
+                                    editable = false,
+                                    mandatory = false,
+                                    legendColor = null,
+                                ),
+                            ),
+                        ).also {
+                            absoluteRowIndex += 1
+                        }
+                    } ?: emptyList(),
+                ),
+            )
+        } ?: emptyList()
         tables + indicators
     }
 
@@ -384,19 +349,20 @@ internal class DataSetTableViewModel(
                 (it as? DataSetScreenState.Loaded)?.copy(
                     dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
                         tableModels = it.dataSetSectionTable.tables().map { table ->
-                            val hasTotal = table.tableHeaderModel.extraColumns.isNotEmpty()
+                            val hasTotalColumn = table.tableHeaderModel.extraColumns.isNotEmpty()
+                            val hasTotalRow = table.tableRows.last().rowHeader.id == "${table.id}_totals"
                             val tableRows = table.tableRows.map { tableRowModel ->
                                 val cell = tableRowModel.values.values.find { tableCell ->
                                     tableCell.id == cellId
                                 }
-                                val totalsCell =
-                                    tableRowModel.values.values.last().takeIf { hasTotal }
+                                val totalsColumnCell =
+                                    tableRowModel.values.values.last().takeIf { hasTotalColumn }
                                 if (cell != null) {
                                     val updatedValues = tableRowModel.values.toMutableMap()
                                     updatedValues[cell.column] = cell.copy(
                                         value = inputData?.value,
                                     )
-                                    totalsCell?.let { totalCell ->
+                                    totalsColumnCell?.let { totalCell ->
                                         val totalValue = updatedValues.values.toList().dropLast(1)
                                             .sumOf { tableCell ->
                                                 tableCell.value?.toDoubleOrNull() ?: 0.0
@@ -410,7 +376,20 @@ internal class DataSetTableViewModel(
                                     tableRowModel
                                 }
                             }
-                            table.copy(tableRows = tableRows)
+
+                            val updatedTableRows = if (hasTotalRow) {
+                                tableRows.dropLast(1) + buildTotalsRow(
+                                    tableId = table.id!!,
+                                    columnCount = table.tableHeaderModel.tableMaxColumns(),
+                                    absoluteRowIndex = tableRows.size,
+                                    showRowTotals = true,
+                                    tableRows = tableRows.dropLast(1),
+                                )
+                            } else {
+                                tableRows
+                            }
+
+                            table.copy(tableRows = updatedTableRows)
                         },
                     ) ?: it.dataSetSectionTable,
                     selectedCellInfo = inputData,
@@ -458,4 +437,50 @@ internal class DataSetTableViewModel(
             }
         }
     }
+
+    private suspend fun buildTotalsRow(
+        tableId: String,
+        columnCount: Int,
+        absoluteRowIndex: Int,
+        showRowTotals: Boolean,
+        tableRows: List<TableRowModel>,
+    ) = TableRowModel(
+        rowHeader = RowHeader(
+            id = "${tableId}_totals",
+            title = resourceManager.totalsHeader(),
+            row = absoluteRowIndex,
+        ),
+        values = buildMap {
+            repeat(columnCount) { columnIndex ->
+                put(
+                    key = columnIndex,
+                    value = TableCell(
+                        id = "${tableId}_total_$columnIndex",
+                        row = absoluteRowIndex,
+                        column = columnIndex,
+                        value = tableRows.sumOf {
+                            it.values[columnIndex]?.value?.toDoubleOrNull()
+                                ?: 0.0
+                        }.toString(),
+                        editable = false,
+                    ),
+                )
+            }
+            if (showRowTotals) {
+                put(
+                    key = columnCount,
+                    value = TableCell(
+                        id = "${tableId}_total_total",
+                        row = absoluteRowIndex,
+                        column = columnCount,
+                        value = this.values.sumOf {
+                            it.value?.toDoubleOrNull() ?: 0.0
+                        }.toString(),
+                        editable = false,
+                    ),
+                )
+            }
+        },
+        maxLines = 1,
+    )
 }

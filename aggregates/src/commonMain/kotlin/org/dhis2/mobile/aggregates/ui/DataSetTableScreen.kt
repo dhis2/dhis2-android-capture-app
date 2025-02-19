@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -74,6 +73,7 @@ import org.koin.core.parameter.parametersOf
  * @param parameters: Data set instance parameters
  * @param useTwoPane: Whether to use a two pane layout
  * @param onBackClicked: Callback function to be invoked when the back button is clicked
+ * @param onSyncClicked: Callback function to be invoked when the sync button is clicked
  * */
 @Composable
 fun DataSetInstanceScreen(
@@ -146,8 +146,7 @@ fun DataSetInstanceScreen(
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-                .padding(it)
-                .consumeWindowInsets(it),
+                .padding(it),
             propagateMinConstraints = true,
         ) {
             if (allowTwoPane) {
@@ -235,8 +234,12 @@ fun DataSetInstanceScreen(
 
             AnimatedVisibility(
                 visible = selectedCellInfo != null,
-                enter = slideInVertically(),
-                exit = slideOutVertically(),
+                enter = slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight },
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = { fullHeight -> fullHeight },
+                ),
             ) {
                 InputDialog(
                     modifier = Modifier.align(Alignment.BottomCenter),
@@ -402,10 +405,12 @@ private fun ContentLoading(
 @Composable
 private fun DataSetTable(
     tableModels: List<TableModel>,
+    currentSelection: TableSelection = TableSelection.Unselected(),
     onCellClick: (cellId: String) -> Unit,
 ) {
     DataTable(
         tableList = tableModels,
+        currentSelection = currentSelection,
         tableInteractions = object : TableInteractions {
             override fun onClick(tableCell: TableCell) {
                 super.onClick(tableCell)
