@@ -190,7 +190,7 @@ class HomeViewModelUnitTest {
 
     private fun getStateHandle(): SavedStateHandle {
         val state = hashMapOf<String, Any>(
-            Constants.INTENT_EXTRA_APP_CONFIG to stockUseCase,
+            org.dhis2.commons.Constants.PROGRAM_UID to stockUseCase,
         )
         return SavedStateHandle(state)
     }

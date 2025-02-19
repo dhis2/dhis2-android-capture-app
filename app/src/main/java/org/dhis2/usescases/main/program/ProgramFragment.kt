@@ -20,8 +20,8 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
 import org.dhis2.android.rtsm.ui.home.HomeActivity
+import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -139,7 +139,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
 
     override fun navigateToStockManagement(stockUseCase: StockUseCase) {
         Intent(activity, HomeActivity::class.java).apply {
-            putExtra(INTENT_EXTRA_APP_CONFIG, stockUseCase.programUid)
+            putExtra(Constants.PROGRAM_UID, stockUseCase.programUid)
             getActivityContent.launch(this)
         }
     }

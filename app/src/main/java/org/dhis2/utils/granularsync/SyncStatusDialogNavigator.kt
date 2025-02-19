@@ -97,7 +97,7 @@ class SyncStatusDialogNavigator(
                 HomeActivity::class.java,
             ).apply {
                 putExtra(
-                    Constants.INTENT_EXTRA_APP_CONFIG,
+                    org.dhis2.commons.Constants.PROGRAM_UID,
                     stockProgramSyncItem.programUid,
                 )
             }
