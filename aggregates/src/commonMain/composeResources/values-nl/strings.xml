@@ -4,5 +4,10 @@
     <string name="mark_dataset_complete">Wil je ook de dataset compleet maken?</string>
     <string name="not_now">Niet nu</string>
     <string name="complete">Compleet</string>
+    <string name="saved">Opgeslagen!</string>
+    <string name="field_mandatory">Er ontbreken verplichte velden. Gelieve deze in te vullen om de dataset compleet te maken.</string>
+    <string name="field_required">Als u een waarde instelt, heeft de hele rij alle waarden nodig om de gegevensset te voltooien.</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Opgeslagen en voltooid!</string>
 
 </resources>
