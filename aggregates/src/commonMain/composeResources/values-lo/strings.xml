@@ -4,5 +4,9 @@
     <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ?</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="saved">ບັນທຶກແລ້ວ!</string>
+    <string name="field_required">ຖ້າທ່ານຕັ້ງຄ່າ, ແຖວທັ້ງໝົດຕ້ອງໃຊ້ຄ່າທັ້ງໝົດເພື່ອເຮັດໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
+    <string name="ok">​ຕົກ​ລົງ</string>
+    <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
 
 </resources>

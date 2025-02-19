@@ -3,5 +3,10 @@
     <string name="validation_success_title">Všechno vypadá dobře!</string>
     <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
     <string name="complete">Dokončit</string>
+    <string name="saved">Uloženo!</string>
+    <string name="field_mandatory">Chybí povinná pole. Chcete-li vyplnit soubor dat, vyplňte je prosím.</string>
+    <string name="field_required">Pokud nastavíte hodnotu, celý řádek potřebuje k dokončení datové sady všechny hodnoty.</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Uloženo a dokončeno!</string>
 
 </resources>

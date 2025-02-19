@@ -3,6 +3,10 @@
     <string name="validation_success_title">كل شيء يبدو جيدا!</string>
     <string name="mark_dataset_complete">هل تريد أيضاً تعيين حزمة البيانات كمكتملة؟</string>
     <string name="complete">مكتمل</string>
-
+    <string name="saved">تم الحفظ!</string>
+    <string name="field_mandatory">هناك حقول إلزامية مفقودة. من فضلك قم بملؤها لإكمال حزمة البيانات.</string>
+    <string name="field_required">إذا قمت بتعيين قيمة ، فإن الصف بأكمله يحتاج إلى كل القيم لإكمال مجموعة البيانات.</string>
+    <string name="ok">موافق</string>
+    <string name="dataset_saved_completed">محفوظ ومكتمل</string>
 
 </resources>

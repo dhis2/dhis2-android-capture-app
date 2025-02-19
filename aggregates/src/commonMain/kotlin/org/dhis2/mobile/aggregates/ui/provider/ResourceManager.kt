@@ -2,16 +2,16 @@ package org.dhis2.mobile.aggregates.ui.provider
 
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.complete
+import org.dhis2.mobile.aggregates.resources.dataset_saved_completed
 import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.dhis2.mobile.aggregates.resources.total_header_label
 import org.dhis2.mobile.aggregates.resources.error_on_complete_dataset
-import org.dhis2.mobile.aggregates.resources.mandatory_fields_combination_message
-import org.dhis2.mobile.aggregates.resources.mandatory_fields_dialog_description
+import org.dhis2.mobile.aggregates.resources.field_mandatory
+import org.dhis2.mobile.aggregates.resources.field_required
 import org.dhis2.mobile.aggregates.resources.mark_dataset_complete
 import org.dhis2.mobile.aggregates.resources.not_now
 import org.dhis2.mobile.aggregates.resources.ok
 import org.dhis2.mobile.aggregates.resources.saved
-import org.dhis2.mobile.aggregates.resources.saved_and_completed
 import org.dhis2.mobile.aggregates.resources.validation_success_title
 import org.jetbrains.compose.resources.getString
 
@@ -30,14 +30,14 @@ internal class ResourceManager {
     suspend fun provideSaved() = getString(Res.string.saved)
 
     suspend fun provideMandatoryFieldsMessage() =
-        getString(Res.string.mandatory_fields_dialog_description)
+        getString(Res.string.field_mandatory)
 
     suspend fun provideMandatoryFieldsCombinationMessage() =
-        getString(Res.string.mandatory_fields_combination_message)
+        getString(Res.string.field_required)
 
     suspend fun provideOK() = getString(Res.string.ok)
 
-    suspend fun provideSavedAndCompleted() = getString(Res.string.saved_and_completed)
+    suspend fun provideSavedAndCompleted() = getString(Res.string.dataset_saved_completed)
 
     suspend fun provideErrorOnCompleteDataset() = getString(Res.string.error_on_complete_dataset)
 }

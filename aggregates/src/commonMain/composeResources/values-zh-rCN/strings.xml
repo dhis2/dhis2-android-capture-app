@@ -3,5 +3,10 @@
     <string name="validation_success_title">一切都很好</string>
     <string name="mark_dataset_complete">你要完成数据集？</string>
     <string name="complete">完成</string>
+    <string name="saved">已经保存！</string>
+    <string name="field_mandatory">有强制字段请填充后完成数据集</string>
+    <string name="field_required">如果你设置值，整行的值需要设置才能完成数据集。</string>
+    <string name="ok">好</string>
+    <string name="dataset_saved_completed">保存并完成！</string>
 
 </resources>
