@@ -9,5 +9,6 @@
     <string name="field_required">Se você definir um valor, a linha inteira precisa de todos os valores para concluir o conjunto de dados.</string>
     <string name="ok">Aprovado</string>
     <string name="dataset_saved_completed">Salvo e concluído!</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
 
 </resources>

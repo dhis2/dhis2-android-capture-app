@@ -8,5 +8,6 @@
     <string name="field_required">Агар сиз қийматни ўрнатган бўлсангиз, маълумотлар тўпламини тўлдириш учун қатордаги барча қийматлар бўлиши лозим.</string>
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Якунланди ва сақланди!</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
 
 </resources>
