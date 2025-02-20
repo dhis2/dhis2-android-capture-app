@@ -5,6 +5,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.compose.compiler)
+    id("org.jetbrains.kotlin.plugin.serialization") apply false
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
