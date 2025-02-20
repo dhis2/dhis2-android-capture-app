@@ -17,10 +17,10 @@ class CompleteDataSetTest {
 
     private val dataSetInstanceRepository: DataSetInstanceRepository = mock()
 
-    val dataSetUid = "dataSetUid"
-    val periodId = "periodId"
-    val orgUnitUid = "orgUnitUid"
-    val attrOptionComboUid = "attrOptionComboUid"
+    private val dataSetUid = "dataSetUid"
+    private val periodId = "periodId"
+    private val orgUnitUid = "orgUnitUid"
+    private val attrOptionComboUid = "attrOptionComboUid"
     internal lateinit var completeDataSet: CompleteDataSet
 
     @Before
