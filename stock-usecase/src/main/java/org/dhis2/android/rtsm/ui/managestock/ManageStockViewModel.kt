@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.commons.Constants.QUANTITY_ENTRY_DEBOUNCE
 import org.dhis2.android.rtsm.commons.Constants.SEARCH_QUERY_DEBOUNCE
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
@@ -39,6 +38,7 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
@@ -50,6 +50,7 @@ import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
@@ -72,8 +73,7 @@ class ManageStockViewModel @Inject constructor(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private val _config = MutableLiveData<AppConfig>()
-    val config: LiveData<AppConfig> = _config
+    private lateinit var config: StockUseCase
 
     private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
@@ -152,7 +152,7 @@ class ManageStockViewModel @Inject constructor(
                     transaction.value?.facility?.uid ?: "",
                 ),
                 transaction.value?.facility?.uid,
-                config.value!!,
+                config,
             ).items
 
             result.asFlow().collect { stockItems ->
@@ -162,9 +162,17 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    fun setConfig(config: AppConfig) {
-        _config.value = config
-        tableDimensionStore.setUids(config.program)
+    private fun loadStockUseCase(program: String) {
+        viewModelScope.launch {
+            stockManagerRepository.stockUseCase(program)?.let {
+                config = it
+            }
+        }
+    }
+
+    fun setConfig(program: String) {
+        loadStockUseCase(program)
+        tableDimensionStore.setUids(program)
         refreshConfig()
     }
 
@@ -227,9 +235,9 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.value?.program!!,
+                                config.programUid,
                                 transaction.value!!,
-                                config.value!!,
+                                config,
                             ),
                         )
                     },
@@ -287,7 +295,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config.value!!,
+                config,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -394,7 +402,8 @@ class ManageStockViewModel @Inject constructor(
         value: String?,
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
-            (ruleEffect.ruleAction).field() == config.value?.stockOnHand
+            (ruleEffect.ruleAction).field() == config.stockOnHand
+
         ) {
             val data = ruleEffect.data
             val isValid: Boolean = isValidStockOnHand(data)
