@@ -25,4 +25,6 @@ interface StockManager {
         transaction: Transaction,
         stockUseCase: StockUseCase,
     ): Single<Unit>
+
+    suspend fun stockUseCase(program: String): StockUseCase?
 }

@@ -61,7 +61,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManageStockViewModel @Inject constructor(
-    private val d2: D2,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val stockManagerRepository: StockManager,
@@ -75,8 +74,7 @@ class ManageStockViewModel @Inject constructor(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private val _config = MutableLiveData<StockUseCase>()
-    val config: LiveData<StockUseCase> = _config
+    private lateinit var config: StockUseCase
 
     private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
@@ -155,7 +153,7 @@ class ManageStockViewModel @Inject constructor(
                     transaction.value?.facility?.uid ?: "",
                 ),
                 transaction.value?.facility?.uid,
-                config.value!!,
+                config,
             ).items
 
             result.asFlow().collect { stockItems ->
@@ -167,7 +165,9 @@ class ManageStockViewModel @Inject constructor(
 
     private fun loadStockUseCase(program: String) {
         viewModelScope.launch {
-            _config.value = d2.stockUseCase(program)
+            stockManagerRepository.stockUseCase(program)?.let {
+                config = it
+            }
         }
     }
 
@@ -236,9 +236,9 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.value?.programUid!!,
+                                config.programUid,
                                 transaction.value!!,
-                                config.value!!,
+                                config,
                             ),
                         )
                     },
@@ -296,7 +296,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config.value!!,
+                config,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -403,7 +403,9 @@ class ManageStockViewModel @Inject constructor(
         value: String?,
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
-            (ruleEffect.ruleAction).field() == config.value?.stockOnHand
+            (ruleEffect.ruleAction).field() == config.stockOnHand
+
+
         ) {
             val data = ruleEffect.data
             val isValid: Boolean = isValidStockOnHand(data)

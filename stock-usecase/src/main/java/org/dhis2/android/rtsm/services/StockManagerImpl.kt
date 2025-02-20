@@ -3,6 +3,7 @@ package org.dhis2.android.rtsm.services
 import androidx.lifecycle.liveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
@@ -17,6 +18,7 @@ import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
 import org.dhis2.commons.bindings.distributedTo
+import org.dhis2.commons.bindings.stockUseCase
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -160,6 +162,10 @@ class StockManagerImpl @Inject constructor(
             }
         }
         return Single.just(Unit)
+    }
+
+    override suspend fun stockUseCase(program: String) = withContext(dispatcher.io()) {
+        return@withContext d2.stockUseCase(program)
     }
 
     private fun createEvent(
