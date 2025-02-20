@@ -11,6 +11,7 @@ import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.di.TestingInjector
+import org.dhis2.common.featureConfig.FeatureConfigRobot
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_PASSWORD
 import org.dhis2.common.keystore.KeyStoreRobot.Companion.KEYSTORE_USERNAME
@@ -43,6 +44,8 @@ open class BaseTest {
     private lateinit var keyStoreRobot: KeyStoreRobot
     lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
+    lateinit var featureConfigRobot: FeatureConfigRobot
+
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
@@ -76,6 +79,7 @@ open class BaseTest {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
             mockWebServerRobot = providesMockWebserverRobot(context)
+            featureConfigRobot = providesFeatureConfigRobot()
         }
     }
 
@@ -170,11 +174,11 @@ open class BaseTest {
     }
 
     protected fun enableFeatureConfigValue(feature: Feature) {
-        preferencesRobot.saveValue(feature.name, true)
+        featureConfigRobot.enableFeature(feature)
     }
 
     protected fun disableFeatureConfigValue(feature: Feature) {
-        preferencesRobot.saveValue(feature.name, false)
+        featureConfigRobot.disableFeature(feature)
     }
 
     companion object {

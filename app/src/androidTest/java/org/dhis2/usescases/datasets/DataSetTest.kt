@@ -1,7 +1,12 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -44,7 +49,6 @@ class DataSetTest : BaseTest() {
         val orgUnit = "Ngelehun CHC"
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-
         //Step - Enter Dataset
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
@@ -67,7 +71,38 @@ class DataSetTest : BaseTest() {
         // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
         // Period filter from - to specific period where instansces exist
         // Sync move after create dataset instance and check the filter afterwards
-//        checkFilterCombination(orgUnit)
+        // checkFilterCombination(orgUnit)
+
+        //Step - Check content boxes above and below the table
+        checkContentBoxesAreDisplayed()
+
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    private fun checkContentBoxesAreDisplayed() {
+        dataSetDetailRobot(composeTestRule) {
+            composeTestRule.onNodeWithText("Section: Immunization. Top content", true)
+                .assertIsDisplayed()
+        }
+        dataSetTableRobot(composeTestRule) {
+            scrollToItem(15)
+            composeTestRule.onNodeWithText("Section: Immunization. Bottom content", true)
+                .assertIsDisplayed()
+        }
+
+        // Check top and bottom content is displayed when changing sections
+        dataSetDetailRobot(composeTestRule) {
+            composeTestRule.onNodeWithTag("TAB_Nutrition", useUnmergedTree = true).performClick()
+            composeTestRule.waitUntilAtLeastOneExists(hasText("Section: Nutrition. Top content", true))
+            composeTestRule.onNodeWithText("Section: Nutrition. Top content", true)
+                .assertIsDisplayed()
+        }
+
+        dataSetTableRobot(composeTestRule) {
+            scrollToItem(15)
+            composeTestRule.onNodeWithText("Section: Nutrition. Bottom content", true)
+                .assertIsDisplayed()
+        }
     }
 
     private fun checkFilterCombination(
