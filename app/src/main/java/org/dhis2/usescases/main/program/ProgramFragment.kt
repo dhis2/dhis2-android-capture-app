@@ -19,8 +19,6 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import org.dhis2.App
 import org.dhis2.R
-import org.dhis2.android.rtsm.ui.home.HomeActivity
-import org.dhis2.commons.Constants
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -30,7 +28,6 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import timber.log.Timber
 import javax.inject.Inject
 

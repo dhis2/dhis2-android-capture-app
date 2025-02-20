@@ -2,7 +2,6 @@ package org.dhis2.usescases.main.program
 
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import java.util.Date
 
 data class ProgramUiModel(

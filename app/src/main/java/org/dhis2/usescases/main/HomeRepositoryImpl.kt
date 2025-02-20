@@ -74,7 +74,7 @@ class HomeRepositoryImpl(
                     program.displayName() ?: program.uid(),
                     program.access().data().write() == true,
                     program.trackedEntityType()?.uid() ?: "",
-                    isStockUseCase = d2.isStockProgram(program.uid())
+                    isStockUseCase = d2.isStockProgram(program.uid()),
                 )
 
             program?.programType() == ProgramType.WITHOUT_REGISTRATION ->

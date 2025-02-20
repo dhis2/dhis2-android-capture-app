@@ -3,7 +3,6 @@ package org.dhis2.android.rtsm.services
 import androidx.lifecycle.liveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider

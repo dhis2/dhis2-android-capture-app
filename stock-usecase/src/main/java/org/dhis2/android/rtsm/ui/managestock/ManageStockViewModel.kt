@@ -49,7 +49,6 @@ import org.dhis2.composetable.model.KeyboardInputType
 import org.dhis2.composetable.model.TableCell
 import org.dhis2.composetable.model.TextInputModel
 import org.dhis2.composetable.model.ValidationResult
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
@@ -404,7 +403,6 @@ class ManageStockViewModel @Inject constructor(
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
             (ruleEffect.ruleAction).field() == config.stockOnHand
-
 
         ) {
             val data = ruleEffect.data
