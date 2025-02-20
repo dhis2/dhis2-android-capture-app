@@ -21,7 +21,7 @@ data class ProgramUiModel(
     val filtersAreActive: Boolean,
     val downloadState: ProgramDownloadState,
     val downloadActive: Boolean = false,
-    val stockConfig: StockUseCase?,
+    val isStockUseCase: Boolean = false,
     val lastUpdated: Date,
 ) {
     fun countDescription() = "%s %s".format(count, typeName)

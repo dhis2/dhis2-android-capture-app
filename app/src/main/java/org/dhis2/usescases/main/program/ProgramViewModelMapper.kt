@@ -36,7 +36,7 @@ class ProgramViewModelMapper() {
             hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
-            stockConfig = null,
+            isStockUseCase = false,
             lastUpdated = program.lastUpdated() ?: Date(),
         )
     }
@@ -64,7 +64,7 @@ class ProgramViewModelMapper() {
             hasOverdueEvent = false,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
-            stockConfig = null,
+            isStockUseCase = false,
             lastUpdated = dataSet.lastUpdated() ?: Date(),
         )
     }

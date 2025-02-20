@@ -11,7 +11,6 @@ import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.hisp.dhis.android.core.program.ProgramType
-import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 sealed class HomeItemData(
     open val uid: String,
@@ -23,7 +22,7 @@ sealed class HomeItemData(
         override val label: String,
         override val accessDataWrite: Boolean,
         val trackedEntityType: String,
-        val stockConfig: StockUseCase?,
+        val isStockUseCase: Boolean,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
@@ -54,7 +53,7 @@ fun ProgramUiModel.toHomeItemData(): HomeItemData {
                 title,
                 accessDataWrite,
                 type!!,
-                stockConfig,
+                isStockUseCase,
             )
 
         else -> HomeItemData.DataSet(
@@ -94,7 +93,7 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
             }
 
         is HomeItemData.TrackerProgram -> {
-            if (homeItemData.stockConfig != null) {
+            if (homeItemData.isStockUseCase) {
                 Intent(context, HomeActivity::class.java).apply {
                     putExtras(bundle)
                     launch(this)

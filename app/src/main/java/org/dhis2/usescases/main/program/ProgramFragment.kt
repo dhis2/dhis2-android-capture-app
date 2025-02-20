@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -135,13 +134,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
             requireContext(),
             program.toHomeItemData(),
         )
-    }
-
-    override fun navigateToStockManagement(stockUseCase: StockUseCase) {
-        Intent(activity, HomeActivity::class.java).apply {
-            putExtra(Constants.PROGRAM_UID, stockUseCase.programUid)
-            getActivityContent.launch(this)
-        }
     }
 
     override fun showSyncDialog(program: ProgramUiModel) {
