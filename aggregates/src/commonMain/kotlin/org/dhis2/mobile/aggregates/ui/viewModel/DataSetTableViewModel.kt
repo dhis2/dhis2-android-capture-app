@@ -23,6 +23,10 @@ import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalCellId
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalId
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalRow
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
@@ -219,7 +223,7 @@ internal class DataSetTableViewModel(
                                     put(
                                         key = tableHeader.tableMaxColumns() - tableHeader.extraColumns.size,
                                         value = TableCell(
-                                            id = cellElement.uid,
+                                            id = totalRow(tableGroup.uid, absoluteRowIndex),
                                             row = absoluteRowIndex,
                                             column = tableHeader.tableMaxColumns(),
                                             value = this.values.sumOf {
@@ -295,7 +299,7 @@ internal class DataSetTableViewModel(
                         ).also {
                             absoluteRowIndex += 1
                         }
-                    } ?: emptyList(),
+                    },
                 ),
             )
         } ?: emptyList()
@@ -348,7 +352,7 @@ internal class DataSetTableViewModel(
                     dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
                         tableModels = it.dataSetSectionTable.tables().map { table ->
                             val hasTotalColumn = table.tableHeaderModel.extraColumns.isNotEmpty()
-                            val hasTotalRow = table.tableRows.last().rowHeader.id == "${table.id}_totals"
+                            val hasTotalRow = table.tableRows.last().rowHeader.id == totalHeaderRowId(table.id)
                             val tableRows = table.tableRows.map { tableRowModel ->
                                 val cell = tableRowModel.values.values.find { tableCell ->
                                     tableCell.id == cellId
@@ -444,7 +448,7 @@ internal class DataSetTableViewModel(
         tableRows: List<TableRowModel>,
     ) = TableRowModel(
         rowHeader = RowHeader(
-            id = "${tableId}_totals",
+            id = totalHeaderRowId(tableId),
             title = resourceManager.totalsHeader(),
             row = absoluteRowIndex,
         ),
@@ -453,7 +457,7 @@ internal class DataSetTableViewModel(
                 put(
                     key = columnIndex,
                     value = TableCell(
-                        id = "${tableId}_total_$columnIndex",
+                        id = totalCellId(tableId, columnIndex),
                         row = absoluteRowIndex,
                         column = columnIndex,
                         value = tableRows.sumOf {
@@ -468,7 +472,7 @@ internal class DataSetTableViewModel(
                 put(
                     key = columnCount,
                     value = TableCell(
-                        id = "${tableId}_total_total",
+                        id = totalId(tableId),
                         row = absoluteRowIndex,
                         column = columnCount,
                         value = this.values.sumOf {

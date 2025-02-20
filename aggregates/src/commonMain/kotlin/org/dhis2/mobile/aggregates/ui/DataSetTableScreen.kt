@@ -34,11 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
+import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
@@ -110,11 +113,13 @@ fun DataSetInstanceScreen(
                     TopBarActionIcon(
                         icon = Icons.AutoMirrored.Filled.ArrowBack,
                         tint = MaterialTheme.colorScheme.onPrimary,
+                        contentDescription = "back arrow",
                         onClick = onBackClicked,
                     )
                 },
                 actions = {
                     IconButton(
+                        modifier = Modifier.testTag(SYNC_BUTTON_TAG),
                         style = IconButtonStyle.STANDARD,
                         icon = {
                             Icon(
@@ -242,7 +247,8 @@ fun DataSetInstanceScreen(
                 ),
             ) {
                 InputDialog(
-                    modifier = Modifier.align(Alignment.BottomCenter),
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                        .testTag(INPUT_DIALOG_TAG),
                     input = {
                         selectedCellInfo?.let { inputData ->
                             InputProvider(
@@ -414,7 +420,7 @@ private fun DataSetTable(
         tableInteractions = object : TableInteractions {
             override fun onClick(tableCell: TableCell) {
                 super.onClick(tableCell)
-                tableCell.id?.let { onCellClick(it) }
+                onCellClick(tableCell.id)
             }
 
             override fun onSelectionChange(newTableSelection: TableSelection) {

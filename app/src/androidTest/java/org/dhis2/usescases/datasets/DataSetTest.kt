@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
@@ -39,35 +40,113 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun datasetAutomate() {
-        val period = "Jul 2025"
-        val orgUnit = "Ngelehun CHC"
+    fun datasetAutomate() = runTest {
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
-        //Step - Enter Dataset
+        enterDataSetStep()
+        dataSetInstanceInChronologicalOrderStep()
+        createDataSetInstanceStep()
+
+        tableIsVisible()
+
+        syncButtonIsAvailableStep()
+        checkIndicatorsStep()
+        checkTotals()
+        enterDataStep()
+        reenterDataSetToCheckValueSavedStep()
+
+
+        // Step - Test combination of filters - TODO Move the step after creating dataset instance
+        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
+        // Period filter from - to specific period where instansces exist
+        // Sync move after create dataset instance and check the filter afterwards
+        // checkFilterCombination(orgUnit)
+    }
+
+    private suspend fun enterDataSetStep() {
         startDataSetDetailActivity(
             "BfMAe6Itzgt",
             "Child Health",
             ruleDataSetDetail
         )
+    }
 
-        //Step - Dataset list is in chronological order
+    private suspend fun dataSetInstanceInChronologicalOrderStep() {
         dataSetDetailRobot(composeTestRule) {
             checkDatasetListIsSortedChronologically()
         }
+    }
 
-        //Step - Create dataset instance
+    private suspend fun createDataSetInstanceStep() {
+        val period = "Jul 2025"
+        val orgUnit = "Ngelehun CHC"
+
         createDataSetInstance(
             orgUnit = orgUnit,
             period = period,
         )
+    }
 
-        //Step - Test combination of filters - TODO Move the step after creating dataset instance
-        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
-        // Period filter from - to specific period where instansces exist
-        // Sync move after create dataset instance and check the filter afterwards
-//        checkFilterCombination(orgUnit)
+    private suspend fun tableIsVisible() {
+        composeTestRule.awaitIdle()
+        dataSetTableRobot(composeTestRule) {
+            assertTableIsDisplayed()
+        }
+    }
+
+    private suspend fun syncButtonIsAvailableStep() {
+        composeTestRule.awaitIdle()
+        dataSetTableRobot(composeTestRule) {
+            syncIsAvailable()
+        }
+    }
+
+    private suspend fun checkIndicatorsStep() {
+        composeTestRule.awaitIdle()
+        dataSetTableRobot(composeTestRule) {
+            indicatorTableIsDisplayed()
+        }
+    }
+
+    private suspend fun checkTotals() {
+        composeTestRule.awaitIdle()
+        dataSetTableRobot(composeTestRule) {
+            totalsAreDisplayed(
+                tableId = "dzjKKQq0cSO",
+                totalColumnHeaderRowIndex = 1,
+                totalColumnHeaderColumnIndex = 2,
+            )
+        }
+    }
+
+    private suspend fun enterDataStep() {
+        val cell00Id = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM="
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnCell("dzjKKQq0cSO", cell00Id)
+            assertInputDialogIsDisplayed(composeTestRule)
+            assertInputDescriptionIsDisplayed("BCG doses administered.")
+            typeOnInputDialog("12")
+            assertCellHasValue("dzjKKQq0cSO", cell00Id, "12")
+            assertRowTotalValue("dzjKKQq0cSO",0, "12.0")
+        }
+    }
+
+    private suspend fun reenterDataSetToCheckValueSavedStep() {
+        val cell00Id = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM="
+
+        dataSetTableRobot(composeTestRule) {
+            returnToDataSetInstanceList()
+        }
+        dataSetDetailRobot(composeTestRule) {
+            clickOnDataSetAtPosition(0)
+        }
+        tableIsVisible()
+
+        dataSetTableRobot(composeTestRule) {
+            assertCellHasValue("dzjKKQq0cSO", cell00Id, "12")
+        }
     }
 
     private fun checkFilterCombination(
@@ -160,7 +239,7 @@ class DataSetTest : BaseTest() {
         )
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("dzjKKQq0cSO", 0, 0)
+            clickOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("1")
             pressBack()
@@ -175,7 +254,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("dzjKKQq0cSO", 0, 1)
+            clickOnCell("dzjKKQq0cSO", 0, 1)
             clickOnEditValue()
             typeInput("5")
             pressBack()
@@ -195,7 +274,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("dzjKKQq0cSO", 0, 0)
+            clickOnCell("dzjKKQq0cSO", 0, 0)
             clickOnEditValue()
             typeInput("5")
             composeTestRule.waitForIdle()

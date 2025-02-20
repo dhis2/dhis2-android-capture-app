@@ -15,6 +15,9 @@ import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -24,9 +27,6 @@ import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertTrue
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 internal fun dataSetDetailRobot(
@@ -113,5 +113,12 @@ internal class DataSetDetailRobot(
             SemanticsMatcher.expectValue(AdapterItemPosition, position)
         ).fetchSemanticsNode().config[AdapterItemTitle]
         return title
+    }
+
+    fun clickOnDataSetAtPosition(index: Int) {
+        onView(withId(R.id.recycler))
+            .perform(
+                actionOnItemAtPosition<DataSetListViewHolder>(index, click())
+            )
     }
 }
