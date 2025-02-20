@@ -6,6 +6,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import com.google.gson.Gson
 import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
@@ -34,6 +35,7 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
 import java.util.concurrent.TimeUnit
+import org.hisp.dhis.android.core.D2Manager
 
 open class BaseTest {
 
@@ -170,10 +172,22 @@ open class BaseTest {
     }
 
     protected fun enableFeatureConfigValue(feature: Feature) {
+        updateFeatureConfigValue(feature, true)
         preferencesRobot.saveValue(feature.name, true)
     }
 
+    private fun updateFeatureConfigValue(feature: Feature, enabled:Boolean) {
+        val localDataStore = D2Manager.getD2().dataStoreModule().localDataStore()
+
+        localDataStore.value(
+            feature.name,
+        ).blockingSet(
+            enabled.toString(),
+        )
+    }
+
     protected fun disableFeatureConfigValue(feature: Feature) {
+        updateFeatureConfigValue(feature, false)
         preferencesRobot.saveValue(feature.name, false)
     }
 

@@ -26,6 +26,11 @@ internal object CellIdGenerator {
         return Pair(rowIds, columnIds)
     }
 
+    fun totalHeaderRowId(tableId: String) = "${tableId}_totals"
+    fun totalRow(tableId: String, rowIndex: Int) = "${tableId}_${rowIndex}_totals"
+    fun totalCellId(tableId: String, columnIndex: Int) = "${tableId}_totals_$columnIndex"
+    fun totalId(tableId: String) = "${tableId}_total_total"
+
     private fun String.toTableIdList() = idExtractorValidator.findAll(this)
         .map { match ->
             val type = match.groupValues[1]
