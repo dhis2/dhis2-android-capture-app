@@ -23,8 +23,8 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
+import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.filters.periods.model.PeriodFilterType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
@@ -356,9 +356,9 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(Filters.ENROLLMENT_DATE).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

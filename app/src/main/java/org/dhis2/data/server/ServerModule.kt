@@ -13,6 +13,7 @@ import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
+import org.dhis2.commons.filters.periods.data.PeriodTypeLabelProvider
 import org.dhis2.commons.filters.periods.domain.GetFilterPeriods
 import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.data.PeriodRepository
@@ -199,6 +200,10 @@ class ServerModule {
         periodRepository: PeriodRepository,
     ) =
         GetEventPeriods(eventPeriodRepository, periodRepository)
+
+    @Provides
+    @PerServer
+    fun providePeriodTypeLabelProvider() = PeriodTypeLabelProvider()
 
     @Provides
     @PerServer
