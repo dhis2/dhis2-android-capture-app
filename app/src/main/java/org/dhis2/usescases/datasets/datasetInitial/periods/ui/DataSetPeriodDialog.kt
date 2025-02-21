@@ -1,6 +1,5 @@
 package org.dhis2.usescases.datasets.datasetInitial.periods.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,26 +10,22 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.bindings.app
 import org.dhis2.commons.R
 import org.dhis2.commons.date.toUiStringResource
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
-import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodDialogModule
 import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodViewModel
-import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodViewModelFactory
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.DatePicker
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 import java.util.Date
-import javax.inject.Inject
 
 class DataSetPeriodDialog(
     private val dataset: String,
@@ -40,19 +35,11 @@ class DataSetPeriodDialog(
 
     lateinit var onDateSelectedListener: (Date) -> Unit
 
-    @Inject
-    lateinit var viewModelFactory: DatasetPeriodViewModelFactory
-
-    val viewModel: DatasetPeriodViewModel by viewModels { viewModelFactory }
+    val viewModel by viewModel<DatasetPeriodViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        app().userComponent()?.plus(DatasetPeriodDialogModule())?.inject(this)
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
