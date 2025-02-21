@@ -21,11 +21,9 @@ import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
-import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
-import org.dhis2.commons.filters.periods.model.PeriodFilterType;
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.SyncContext;
@@ -190,9 +188,9 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
         FilterPeriodsDialog filterPeriodsDialog;
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true, true);
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newDatasetsFilter(true);
         } else {
-            filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true, false);
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newDatasetsFilter(false);
         }
         filterPeriodsDialog.show(getSupportFragmentManager(), FILTER_DIALOG);
     }

@@ -20,20 +20,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
-import org.dhis2.commons.filters.periods.model.PeriodFilterType
-import org.dhis2.commons.filters.periods.ui.state.FilterPeriodsScreenState
+import org.dhis2.commons.filters.periods.model.FilterPeriodType
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FilterDialogLaunchMode
 import org.dhis2.commons.filters.periods.ui.viewmodel.FilterPeriodsDialogViewmodel
 import org.dhis2.commons.periods.ui.ListItem
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.DatePicker
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
-import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 import java.util.Date
@@ -42,17 +39,12 @@ import java.util.Date
 @Composable
 fun FilterPeriodsDialogUI(
     viewModel: FilterPeriodsDialogViewmodel,
-    periodFilterType: PeriodFilterType,
-    isDataSetPeriodTypes: Boolean,
-    isFromToFilter: Boolean,
+    launchMode: FilterDialogLaunchMode,
     onDismiss: () -> Unit,
 ) {
-    viewModel.setFilterType(periodFilterType)
-    viewModel.setFilterPeriodTypes(isDataSetPeriodTypes)
-
     val screenState by viewModel.filterPeriodsScreenState.collectAsState()
-    val showDatePicker by viewModel.showDatePicker.collectAsState()
-    val title by viewModel.dialogTitle.collectAsState()
+    var showDatePicker by remember(screenState.showDatePicker) { mutableStateOf(launchMode.isFromToFilter || screenState.showDatePicker) }
+    var showToDatePicker by remember { mutableStateOf(false) }
     val fromDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = Date().time,
     )
@@ -60,10 +52,9 @@ fun FilterPeriodsDialogUI(
     val toDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = Date().time,
     )
-    var showToDatePicker by remember { mutableStateOf(false) }
 
     AnimatedVisibility(
-        visible = (showDatePicker || isFromToFilter),
+        visible = (showDatePicker),
         enter = fadeIn(
             animationSpec = tween(durationMillis = 400),
         ),
@@ -78,7 +69,8 @@ fun FilterPeriodsDialogUI(
             cancelText = "Cancel",
             onCancel = { onDismiss() },
             onConfirm = {
-                if (isFromToFilter) {
+                if (launchMode.isFromToFilter) {
+                    showDatePicker = false
                     showToDatePicker = true
                 } else {
                     viewModel.setDailyPeriodFilter(fromDatePickerState.selectedDateMillis)
@@ -107,7 +99,10 @@ fun FilterPeriodsDialogUI(
             cancelText = "Cancel",
             onCancel = { onDismiss() },
             onConfirm = {
-                viewModel.setFromToFilter(fromDatePickerState.selectedDateMillis, toDatePickerState.selectedDateMillis)
+                viewModel.setFromToFilter(
+                    fromDatePickerState.selectedDateMillis,
+                    toDatePickerState.selectedDateMillis,
+                )
                 onDismiss()
             },
             onDismissRequest = { onDismiss() },
@@ -117,7 +112,7 @@ fun FilterPeriodsDialogUI(
     }
 
     AnimatedVisibility(
-        visible = (!showDatePicker && !isFromToFilter),
+        visible = (!showDatePicker && !launchMode.isFromToFilter),
         enter = slideInVertically(
             initialOffsetY = { it },
             animationSpec = tween(durationMillis = 500),
@@ -134,53 +129,47 @@ fun FilterPeriodsDialogUI(
                 bottomPadding = bottomSheetLowerPadding(),
                 showTopSectionDivider = true,
                 showBottomSectionDivider = true,
-                title = title,
+                title = screenState.title,
                 headerTextAlignment = TextAlign.Center,
                 animateHeaderOnKeyboardAppearance = false,
             ),
             windowInsets = { bottomSheetInsets() },
             contentScrollState = scrollState,
             content = {
-                when (screenState) {
-                    is FilterPeriodsScreenState.Loading -> {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
+                when {
+                    (screenState.selectedPeriodType == null) -> {
+                        val periodTypes = screenState.periodTypes
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = scrollState,
+                        ) {
+                            items(periodTypes.count()) { index ->
+                                ListItem(
+                                    contentPadding = PaddingValues(Spacing8),
+                                    label = viewModel.getPeriodTypeName(periodTypes[index]),
+                                    selected = false,
+                                    enabled = true,
+                                    onItemClick = {
+                                        viewModel.onPeriodTypeSelected(
+                                            periodTypes[index],
+                                        )
+                                    },
+                                )
+                            }
+                        }
                     }
 
-                    is FilterPeriodsScreenState.Loaded -> {
-                        when {
-                            ((screenState as FilterPeriodsScreenState.Loaded).selectedPeriodType == null) -> {
-                                val periodsTypes =
-                                    (screenState as FilterPeriodsScreenState.Loaded).periodTypes
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    state = scrollState,
-                                ) {
-                                    items(periodsTypes.count()) { index ->
-                                        ListItem(
-                                            contentPadding = PaddingValues(Spacing8),
-                                            label = stringResource(periodsTypes[index].nameResource),
-                                            selected = false,
-                                            enabled = true,
-                                            onItemClick = {
-                                                viewModel.onPeriodTypeSelected(
-                                                    periodsTypes[index],
-                                                )
-                                            },
-                                        )
-                                    }
-                                }
-                            }
-                            else -> {
-                                val periods =
-                                    viewModel.fetchPeriods()
-                                        .collectAsLazyPagingItems()
-                                PeriodSelectorContent(
-                                    periods = periods,
-                                    scrollState = scrollState,
-                                ) {
-                                    viewModel.onPeriodSelected(it)
-                                    onDismiss()
-                                }
+                    else -> {
+                        if (screenState.selectedPeriodType != FilterPeriodType.DAILY) {
+                            val periods =
+                                viewModel.fetchPeriods()
+                                    .collectAsLazyPagingItems()
+                            PeriodSelectorContent(
+                                periods = periods,
+                                scrollState = scrollState,
+                            ) {
+                                viewModel.onPeriodSelected(it)
+                                onDismiss()
                             }
                         }
                     }
