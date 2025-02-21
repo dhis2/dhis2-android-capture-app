@@ -40,7 +40,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.filters.periods.model.PeriodFilterType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.network.NetworkUtils
@@ -698,12 +697,10 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun showPeriodRequest(periodRequest: Pair<PeriodRequest, Filters>) {
-        val periodFilterType = if (periodRequest.second == Filters.PERIOD) PeriodFilterType.OTHER else PeriodFilterType.ENROLLMENT_DATE
-
         if (periodRequest.first == PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(periodFilterType, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(periodFilterType).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
