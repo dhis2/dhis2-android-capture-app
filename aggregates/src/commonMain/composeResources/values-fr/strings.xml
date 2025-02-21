@@ -9,5 +9,7 @@
     <string name="ok">Ok</string>
     <string name="dataset_saved_completed">Enregistré et terminé!</string>
     <string name="run_validation_rules">Voulez-vous vérifier la qualité des données?</string>
+    <string name="error">Erreur</string>
+    <string name="complete_anyway">Terminer quand même</string>
 
 </resources>

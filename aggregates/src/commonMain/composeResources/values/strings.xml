@@ -31,5 +31,7 @@
     <string name="run_validation_rules">Do you want to check data quality?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
-
+    <string name="error">Error</string>
+    <string name="errors">Errors</string>
+    <string name="complete_anyway">Complete anyway</string>
 </resources>

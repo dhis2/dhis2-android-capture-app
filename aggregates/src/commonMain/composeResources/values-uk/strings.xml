@@ -10,5 +10,7 @@
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Збережено та завершено!</string>
     <string name="run_validation_rules">Хочете перевірити якість даних?</string>
+    <string name="error">Помилка</string>
+    <string name="complete_anyway">Все одно завершити</string>
 
 </resources>

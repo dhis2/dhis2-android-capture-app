@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import org.dhis2.mobile.aggregates.model.Violation
+import org.dhis2.mobile.aggregates.ui.component.ValidationRulesErrorDialog
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
@@ -124,6 +126,46 @@ internal class DataSetModalDialogProvider(
                             text = acceptText,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = onAccept,
+                        )
+                    },
+                )
+            },
+            onDismiss = onDismiss,
+        )
+    }
+
+    suspend fun provideValidationRulesErrorDialog(
+        onDismiss: () -> Unit,
+        onMarkAsComplete: () -> Unit,
+        violations: List<Violation>,
+    ): DataSetModalDialogUIState {
+        val completeAnywayText = resourceManager.provideCompleteAnyway()
+
+        return DataSetModalDialogUIState(
+            contentDialogUIState = BottomSheetShellUIState(
+                title = "${violations.size} ${
+                    resourceManager.provideValidationErrorDescription(
+                        violations.size,
+                    )
+                }",
+                showTopSectionDivider = false,
+                showBottomSectionDivider = false,
+                headerTextAlignment = TextAlign.Start,
+            ),
+            content = {
+                ValidationRulesErrorDialog()
+            },
+            buttonsDialog = {
+                ButtonBlock(
+                    modifier = Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
+                    primaryButton = {},
+                    secondaryButton = {
+                        Button(
+                            style = ButtonStyle.TEXT,
+                            text = completeAnywayText,
+                            onClick = onMarkAsComplete,
                         )
                     },
                 )

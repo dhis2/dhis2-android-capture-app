@@ -32,6 +32,7 @@ import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
+import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
@@ -45,6 +46,12 @@ import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
+import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal class DataSetTableViewModel(
@@ -277,11 +284,51 @@ internal class DataSetTableViewModel(
             val rules = runValidationRules()
             when (rules.validationResultStatus) {
                 ValidationResultStatus.OK -> {
+                    _dataSetScreenState.update {
+                        if (it is DataSetScreenState.Loaded) {
+                            it.copy(validationBar = null)
+                        } else {
+                            it
+                        }
+                    }
                     attemptToFinnish()
                 }
 
                 ValidationResultStatus.ERROR -> {
-                    TODO("Violations dialog not implemented yet")
+                    onModalDialogDismissed()
+                    _dataSetScreenState.update {
+                        if (it is DataSetScreenState.Loaded) {
+                            it.copy(
+                                validationBar = ValidationBarUiState(
+                                    quantity = rules.violations.size,
+                                    description = resourceManager.provideValidationErrorDescription(
+                                        errors = rules.violations.size,
+                                    ),
+                                    onExpandErrors = { expandValidationErrors(rules.violations) },
+                                ),
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun expandValidationErrors(violations: List<Violation>) {
+        viewModelScope.launch(dispatcher.main()) {
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    it.copy(
+                        modalDialog = datasetModalDialogProvider.provideValidationRulesErrorDialog(
+                            violations = violations,
+                            onDismiss = { onModalDialogDismissed() },
+                            onMarkAsComplete = { attemptToComplete() },
+                        ),
+                    )
+                } else {
+                    it
                 }
             }
         }

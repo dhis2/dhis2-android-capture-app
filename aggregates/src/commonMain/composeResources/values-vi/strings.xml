@@ -10,5 +10,7 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
     <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
+    <string name="error">Lỗi</string>
+    <string name="complete_anyway">Hoàn tất luôn</string>
 
 </resources>

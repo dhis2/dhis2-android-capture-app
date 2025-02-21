@@ -9,5 +9,7 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Lagret og fullført!</string>
     <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
+    <string name="error">Feil</string>
+    <string name="complete_anyway">Fullfør likevel</string>
 
 </resources>

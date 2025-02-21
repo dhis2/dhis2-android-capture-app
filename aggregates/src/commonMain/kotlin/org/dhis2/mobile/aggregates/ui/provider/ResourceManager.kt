@@ -2,10 +2,13 @@ package org.dhis2.mobile.aggregates.ui.provider
 
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.complete
+import org.dhis2.mobile.aggregates.resources.complete_anyway
 import org.dhis2.mobile.aggregates.resources.dataset_saved_completed
 import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.dhis2.mobile.aggregates.resources.total_header_label
+import org.dhis2.mobile.aggregates.resources.error
 import org.dhis2.mobile.aggregates.resources.error_on_complete_dataset
+import org.dhis2.mobile.aggregates.resources.errors
 import org.dhis2.mobile.aggregates.resources.field_mandatory
 import org.dhis2.mobile.aggregates.resources.field_required
 import org.dhis2.mobile.aggregates.resources.mark_dataset_complete
@@ -49,4 +52,14 @@ internal class ResourceManager {
     suspend fun provideNo() = getString(Res.string.no)
 
     suspend fun provideYes() = getString(Res.string.yes)
+
+    suspend fun provideValidationErrorDescription(errors: Int): String {
+        return if (errors == 1) {
+            getString(Res.string.error)
+        } else {
+            getString(Res.string.errors)
+        }
+    }
+
+    suspend fun provideCompleteAnyway() = getString(Res.string.complete_anyway)
 }

@@ -2,5 +2,6 @@
 <resources>
     <string name="complete">Завершенный</string>
     <string name="ok">ОК</string>
+    <string name="error">Ошибка</string>
 
 </resources>
