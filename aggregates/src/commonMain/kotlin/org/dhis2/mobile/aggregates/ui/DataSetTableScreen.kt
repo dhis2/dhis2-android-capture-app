@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package org.dhis2.mobile.aggregates.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
@@ -192,6 +192,11 @@ fun DataSetInstanceScreen(
                 )
             }
         },
+        bottomBar = {
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar?.let { validationBarUiState ->
+                ValidationBar(uiState = validationBarUiState)
+            }
+        },
     ) {
         if (allowTwoPane) {
             TwoPaneLayout(
@@ -276,7 +281,7 @@ fun DataSetInstanceScreen(
     (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog?.let { dataSetUIState ->
         BottomSheetShell(
             uiState = dataSetUIState.contentDialogUIState,
-            content = null,
+            content = dataSetUIState.content,
             buttonBlock = dataSetUIState.buttonsDialog,
             onDismiss = dataSetUIState.onDismiss,
         )

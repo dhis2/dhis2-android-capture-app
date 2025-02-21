@@ -5,6 +5,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUISt
 
 internal data class DataSetModalDialogUIState(
     val contentDialogUIState: BottomSheetShellUIState,
+    val content: @Composable (() -> Unit)? = null,
     val buttonsDialog: @Composable (() -> Unit),
     val onDismiss: () -> Unit,
 )

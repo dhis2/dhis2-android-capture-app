@@ -9,5 +9,7 @@
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Якунланди ва сақланди!</string>
     <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
+    <string name="error">Хатолик</string>
+    <string name="complete_anyway">Барибир тўлдиринг</string>
 
 </resources>

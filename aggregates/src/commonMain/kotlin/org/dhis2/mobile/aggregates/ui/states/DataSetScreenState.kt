@@ -22,6 +22,7 @@ internal sealed class DataSetScreenState {
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
         val modalDialog: DataSetModalDialogUIState? = null,
+        val validationBar: ValidationBarUiState? = null,
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
