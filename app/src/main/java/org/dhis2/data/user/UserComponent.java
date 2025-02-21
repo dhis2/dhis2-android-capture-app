@@ -24,8 +24,6 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
-import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodDialogComponent;
-import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodDialogModule;
 import org.dhis2.usescases.enrollment.EnrollmentComponent;
 import org.dhis2.usescases.enrollment.EnrollmentModule;
 import org.dhis2.usescases.events.ScheduledEventComponent;
@@ -206,7 +204,4 @@ public interface UserComponent {
 
     @NonNull
     SchedulingComponent plus(SchedulingModule schedulingModule);
-
-    @NonNull
-    DatasetPeriodDialogComponent plus(DatasetPeriodDialogModule datasetPeriodDialogModule);
 }
