@@ -4,6 +4,7 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -15,13 +16,27 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
+import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
+import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
+import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
+import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
+import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.TableId
+import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
+import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -40,14 +55,17 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DataSetTableViewModelTest : KoinTest {
 
-    private lateinit var testDispatcher: TestDispatcher
-    private lateinit var resourceManager: ResourceManager
     private lateinit var getDataSetInstanceData: GetDataSetInstanceData
     private lateinit var getDataSetSectionData: GetDataSetSectionData
-    private lateinit var getDataValueConflict: GetDataValueData
     private lateinit var getDataValue: GetDataValueData
     private lateinit var getIndicators: GetDataSetSectionIndicators
+    private lateinit var getDataValueInput: GetDataValueInput
+    private lateinit var setDataValue: SetDataValue
+
     private lateinit var dispatcher: Dispatcher
+    private lateinit var testDispatcher: TestDispatcher
+
+    private lateinit var viewModel: DataSetTableViewModel
 
     @Before
     fun setUp() = runTest {
@@ -61,15 +79,18 @@ internal class DataSetTableViewModelTest : KoinTest {
         }
 
         declareMock<DataSetInstanceRepository>()
-        resourceManager = declareMock<ResourceManager>()
         getDataSetInstanceData = declareMock<GetDataSetInstanceData>()
         getDataSetSectionData = declareMock<GetDataSetSectionData>()
-        getDataValueConflict = declareMock<GetDataValueData>()
         getDataValue = declareMock<GetDataValueData>()
+        getDataValueInput = declareMock<GetDataValueInput>()
+        setDataValue = declareMock<SetDataValue>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
+        declareMock<ResourceManager>() {
+            whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
+            whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
+        }
         dispatcher = declareMock<Dispatcher>()
 
-        whenever(resourceManager.defaultHeaderLabel()) doReturn "resource"
         whenever(dispatcher.io).thenReturn { testDispatcher }
         whenever(getDataSetInstanceData(any())).thenReturn(
             DataSetInstanceData(
@@ -79,18 +100,65 @@ internal class DataSetTableViewModelTest : KoinTest {
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
                 ),
-                dataSetSections = emptyList(),
-                dataSetRenderingConfig = mock(),
+                dataSetSections = listOf(
+                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                ),
+                dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
             ),
         )
+        whenever(getDataValue(any())) doReturn emptyMap()
         whenever(getDataSetSectionData(any())).thenReturn(
             DataSetInstanceSectionData(
-                dataSetInstanceConfiguration = mock(),
-                dataSetInstanceSectionConfiguration = mock(),
-                tableGroups = listOf(),
+                dataSetInstanceConfiguration = DataSetInstanceConfiguration(
+                    hasDataElementDecoration = false,
+                    compulsoryDataElements = emptyList(),
+                    allDataSetElements = listOf(),
+                    greyedOutFields = emptyList(),
+                    editable = true,
+                ),
+                dataSetInstanceSectionConfiguration = DataSetInstanceSectionConfiguration(
+                    showRowTotals = true,
+                    showColumnTotals = true,
+                ),
+                tableGroups = listOf(
+                    TableGroup(
+                        uid = "tableGroupUid",
+                        label = "tableGroupTitle",
+                        subgroups = emptyList(),
+                        cellElements = listOf(
+                            CellElement(
+                                uid = "cellElementUid",
+                                label = "cellElementLabel",
+                                categoryComboUid = "categoryComboUid",
+                                description = null,
+                                isMultiText = false,
+                            ),
+                            CellElement(
+                                uid = "cellElementUid2",
+                                label = "cellElementLabel2",
+                                categoryComboUid = "categoryComboUid",
+                                description = null,
+                                isMultiText = false,
+                            ),
+                        ),
+                        headerRows = listOf(listOf("Row1"), listOf("Row2")),
+                        headerCombinations = listOf("Values"),
+                    ),
+                ),
             ),
         )
         whenever(getIndicators(any())).thenReturn(null)
+
+        viewModel = DataSetTableViewModel(
+            getDataSetInstanceData = get(),
+            getDataSetSectionData = get(),
+            getDataValueData = get(),
+            getDataSetSectionIndicators = get(),
+            getDataValueInput = get(),
+            setDataValue = get(),
+            resourceManager = get(),
+            dispatcher = get(),
+        )
     }
 
     @After
@@ -101,15 +169,6 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     @Test
     fun `should receive initial states`() = runTest {
-        val viewModel = DataSetTableViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-
         viewModel.dataSetScreenState.test {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
@@ -125,15 +184,6 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     @Test
     fun `should not update selected section if it is the same`() = runTest {
-        val viewModel = DataSetTableViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-
         viewModel.dataSetScreenState.test {
             awaitInitialization()
             viewModel.onSectionSelected("section_uid1")
@@ -143,15 +193,6 @@ internal class DataSetTableViewModelTest : KoinTest {
 
     @Test
     fun `should update selected section`() = runTest {
-        val viewModel = DataSetTableViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-
         viewModel.dataSetScreenState.test {
             awaitInitialization()
             viewModel.onSectionSelected("section_uid2")
@@ -162,6 +203,38 @@ internal class DataSetTableViewModelTest : KoinTest {
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
+            }
+        }
+    }
+
+    @Test
+    fun `should update selected cell`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId", TableIdType.CategoryOptionCombo)),
+        )
+        val cellInfo = CellInfo(
+            label = "Input label",
+            value = "This is it",
+            inputType = InputType.Text,
+            inputExtra = InputExtra.None,
+            supportingText = emptyList(),
+            errors = emptyList(),
+            warnings = emptyList(),
+            isRequired = false,
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            whenever(getDataValueInput(any(), any())) doReturn cellInfo
+            viewModel.updateSelectedCell(testingId)
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo != null)
+            }
+            viewModel.updateSelectedCell(null)
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo == null)
             }
         }
     }
