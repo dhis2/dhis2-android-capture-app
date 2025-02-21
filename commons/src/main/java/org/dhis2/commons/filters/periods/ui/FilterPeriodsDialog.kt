@@ -21,14 +21,16 @@ class FilterPeriodsDialog : BottomSheetDialogFragment() {
 
     private var periodFilterTypeToSet: PeriodFilterType = PeriodFilterType.OTHER
     private var isDataSetFilter: Boolean = false
+    private var isFromToFilter: Boolean = false
 
     companion object {
         const val FILTER_DIALOG = "FILTER_DIALOG"
 
-        fun newPeriodsFilter(periodFilterType: PeriodFilterType, isDataSet: Boolean = false): FilterPeriodsDialog {
+        fun newPeriodsFilter(periodFilterType: PeriodFilterType, isDataSet: Boolean = false, isFromToFilter: Boolean = false): FilterPeriodsDialog {
             return FilterPeriodsDialog().apply {
                 periodFilterTypeToSet = periodFilterType
                 isDataSetFilter = isDataSet
+                this.isFromToFilter = isFromToFilter
             }
         }
     }
@@ -65,6 +67,7 @@ class FilterPeriodsDialog : BottomSheetDialogFragment() {
                     viewModel = viewModel,
                     periodFilterType = periodFilterTypeToSet,
                     isDataSetPeriodTypes = isDataSetFilter,
+                    isFromToFilter = isFromToFilter,
                     onDismiss = { dismiss() },
                 )
             }

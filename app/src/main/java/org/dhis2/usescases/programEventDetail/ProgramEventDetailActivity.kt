@@ -20,7 +20,6 @@ import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.bindings.userComponent
 import org.dhis2.commons.Constants
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -49,7 +48,6 @@ import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
-import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
@@ -358,10 +356,7 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
-                    FilterManager.getInstance().addPeriod(datePeriod)
-                }
+            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
             FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER).show(supportFragmentManager, FILTER_DIALOG)
         }

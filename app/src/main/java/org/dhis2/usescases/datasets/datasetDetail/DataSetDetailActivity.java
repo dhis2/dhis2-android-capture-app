@@ -188,12 +188,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        FilterPeriodsDialog filterPeriodsDialog;
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true, true);
         } else {
-            FilterPeriodsDialog filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true);
-            filterPeriodsDialog.show(getSupportFragmentManager(), FILTER_DIALOG);
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true, false);
         }
+        filterPeriodsDialog.show(getSupportFragmentManager(), FILTER_DIALOG);
     }
 
     @Override
