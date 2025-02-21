@@ -61,5 +61,5 @@ class DatasetPeriodRepository(
     fun getPeriodMaxDate(
         periodType: PeriodType,
         openFuturePeriods: Int,
-    ) = DateUtils.getInstance().getNextPeriod(periodType, dateUtils.today, openFuturePeriods - 1)
+    ) = dateUtils.getNextPeriod(periodType, dateUtils.today, openFuturePeriods - 1)
 }

@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -22,8 +25,10 @@ import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodViewMode
 import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodViewModelFactory
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.DatePicker
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
@@ -50,6 +55,7 @@ class DataSetPeriodDialog(
         app().userComponent()?.plus(DatasetPeriodDialogModule())?.inject(this)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,31 +67,68 @@ class DataSetPeriodDialog(
             )
             setContent {
                 DHIS2Theme {
-                    val scrollState = rememberLazyListState()
-                    BottomSheetShell(
-                        uiState = BottomSheetShellUIState(
+                    if (periodType == PeriodType.Daily &&
+                        !viewModel.verifyIfHasDataInputPeriods(dataset)
+                    ) {
+                        val calendar = Calendar.getInstance()
+                        calendar.time =
+                            viewModel.getPeriodMaxDate(periodType, openFuturePeriods + 1)
+
+                        val state = rememberDatePickerState(
+                            initialSelectedDateMillis = Date().time,
+                            yearRange = 1970..calendar.get(Calendar.YEAR),
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    return utcTimeMillis <= calendar.timeInMillis
+                                }
+
+                                override fun isSelectableYear(year: Int): Boolean {
+                                    return year <= calendar.get(Calendar.YEAR)
+                                }
+                            },
+                        )
+
+                        DatePicker(
                             title = getString(periodType.toUiStringResource()),
-                            showTopSectionDivider = true,
-                            bottomPadding = bottomSheetLowerPadding(),
-                        ),
-                        onDismiss = { dismiss() },
-                        windowInsets = { bottomSheetInsets() },
-                        contentScrollState = scrollState,
-                        content = {
-                            val periods = viewModel.fetchPeriods(
-                                dataset,
-                                periodType,
-                                openFuturePeriods,
-                            ).collectAsLazyPagingItems()
-                            PeriodSelectorContent(
-                                periods = periods,
-                                scrollState = scrollState,
-                            ) { selectedDate ->
-                                onDateSelectedListener(selectedDate)
+                            state = state,
+                            acceptText = getString(R.string.accept),
+                            cancelText = getString(R.string.cancel),
+                            onCancel = { dismiss() },
+                            onConfirm = { date ->
+                                date.selectedDateMillis?.let {
+                                    onDateSelectedListener(Date(it))
+                                }
                                 dismiss()
-                            }
-                        },
-                    )
+                            },
+                            onDismissRequest = { dismiss() },
+                        )
+                    } else {
+                        val scrollState = rememberLazyListState()
+                        BottomSheetShell(
+                            uiState = BottomSheetShellUIState(
+                                title = getString(periodType.toUiStringResource()),
+                                showTopSectionDivider = true,
+                                bottomPadding = bottomSheetLowerPadding(),
+                            ),
+                            onDismiss = { dismiss() },
+                            windowInsets = { bottomSheetInsets() },
+                            contentScrollState = scrollState,
+                            content = {
+                                val periods = viewModel.fetchPeriods(
+                                    dataset,
+                                    periodType,
+                                    openFuturePeriods,
+                                ).collectAsLazyPagingItems()
+                                PeriodSelectorContent(
+                                    periods = periods,
+                                    scrollState = scrollState,
+                                ) { selectedDate ->
+                                    onDateSelectedListener(selectedDate)
+                                    dismiss()
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }

@@ -5,7 +5,9 @@ import dagger.Provides
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.usescases.datasets.datasetInitial.periods.data.DatasetPeriodRepository
-import org.dhis2.usescases.datasets.datasetInitial.periods.domain.GetDateRangeInputPeriods
+import org.dhis2.usescases.datasets.datasetInitial.periods.domain.GetDatasetPeriodMaxDate
+import org.dhis2.usescases.datasets.datasetInitial.periods.domain.GetDatasetPeriods
+import org.dhis2.usescases.datasets.datasetInitial.periods.domain.HasDataInputPeriods
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -24,12 +26,26 @@ class DatasetPeriodDialogModule {
     @Provides
     @PerActivity
     fun datasetPeriodViewModelFactory(
-        getDateRangeInputPeriods: GetDateRangeInputPeriods,
-    ) = DatasetPeriodViewModelFactory(getDateRangeInputPeriods)
+        getDatasetPeriods: GetDatasetPeriods,
+        hasDatasetPeriods: HasDataInputPeriods,
+        getDatasetPeriodMaxDate: GetDatasetPeriodMaxDate,
+    ) = DatasetPeriodViewModelFactory(getDatasetPeriods, hasDatasetPeriods, getDatasetPeriodMaxDate)
 
     @Provides
     @PerActivity
-    fun provideGetDateRangeInputPeriods(
+    fun provideGetDatasetPeriods(
         dataInputPeriodRepository: DatasetPeriodRepository,
-    ) = GetDateRangeInputPeriods(dataInputPeriodRepository)
+    ) = GetDatasetPeriods(dataInputPeriodRepository)
+
+    @Provides
+    @PerActivity
+    fun provideHasDataInputPeriods(
+        dataInputPeriodRepository: DatasetPeriodRepository,
+    ) = HasDataInputPeriods(dataInputPeriodRepository)
+
+    @Provides
+    @PerActivity
+    fun provideGetDatasetPeriodMaxDate(
+        dataInputPeriodRepository: DatasetPeriodRepository,
+    ) = GetDatasetPeriodMaxDate(dataInputPeriodRepository)
 }
