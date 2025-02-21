@@ -38,7 +38,6 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.hasPermissions
 import org.dhis2.commons.animations.hide
 import org.dhis2.commons.animations.show
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
@@ -416,8 +415,7 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
+            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
             FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER).show(supportFragmentManager, FILTER_DIALOG)
         }

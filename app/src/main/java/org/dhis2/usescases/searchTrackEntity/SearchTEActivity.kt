@@ -33,7 +33,6 @@ import org.dhis2.bindings.dp
 import org.dhis2.bindings.isKeyboardOpened
 import org.dhis2.bindings.overrideHeight
 import org.dhis2.commons.Constants
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterItem
@@ -75,7 +74,6 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
@@ -700,16 +698,11 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun showPeriodRequest(periodRequest: Pair<PeriodRequest, Filters>) {
+        val periodFilterType = if (periodRequest.second == Filters.PERIOD) PeriodFilterType.OTHER else PeriodFilterType.ENROLLMENT_DATE
+
         if (periodRequest.first == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this) { datePeriod: List<DatePeriod?>? ->
-                if (periodRequest.second == Filters.PERIOD) {
-                    FilterManager.getInstance().addPeriod(datePeriod)
-                } else {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriod)
-                }
-            }
+            FilterPeriodsDialog.newPeriodsFilter(periodFilterType, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            val periodFilterType = if (periodRequest.second == Filters.PERIOD) PeriodFilterType.OTHER else PeriodFilterType.ENROLLMENT_DATE
             FilterPeriodsDialog.newPeriodsFilter(periodFilterType).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
