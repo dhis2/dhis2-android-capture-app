@@ -34,8 +34,6 @@ import org.dhis2.bindings.isKeyboardOpened
 import org.dhis2.bindings.overrideHeight
 import org.dhis2.commons.Constants
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.date.DateUtils.OnNextSelected
-import org.dhis2.commons.date.Period
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterItem
@@ -43,6 +41,9 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.model.PeriodFilterType
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -66,7 +67,6 @@ import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap.Companion.get
 import org.dhis2.usescases.searchTrackEntity.searchparameters.initSearchScreen
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog
-import org.dhis2.utils.customviews.RxDateDialog
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -80,7 +80,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBa
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.Serializable
-import java.util.Date
 import javax.inject.Inject
 
 class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View {
@@ -710,36 +709,8 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 }
             }
         } else {
-            val onFromToSelector = DateUtils.OnFromToSelector { datePeriods: List<DatePeriod?>? ->
-                if (periodRequest.second == Filters.PERIOD) {
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                } else {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
-                }
-            }
-
-            val onNextSelected = OnNextSelected {
-                RxDateDialog(this, Period.WEEKLY)
-                    .createForFilter().show()
-                    .subscribe(
-                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
-                            onFromToSelector.onFromToSelected(
-                                DateUtils.getInstance().getDatePeriodListFor(
-                                    selectedDates.val1(),
-                                    selectedDates.val0(),
-                                ),
-                            )
-                        },
-                        { t: Throwable? -> Timber.e(t) },
-                    )
-            }
-
-            DateUtils.getInstance().showPeriodDialog(
-                this,
-                onFromToSelector,
-                true,
-                onNextSelected,
-            )
+            val periodFilterType = if (periodRequest.second == Filters.PERIOD) PeriodFilterType.OTHER else PeriodFilterType.ENROLLMENT_DATE
+            FilterPeriodsDialog.newPeriodsFilter(periodFilterType).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

@@ -14,6 +14,7 @@ import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.periods.data.EventPeriodRepository
+import org.dhis2.commons.periods.data.PeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -56,12 +57,13 @@ class EventRepository(
     metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
-    private val dateUtils: DateUtils,
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
 
+    private val periodRepository = PeriodRepository(d2)
     private val getEventPeriods = GetEventPeriods(
-        EventPeriodRepository(d2),
+        EventPeriodRepository(d2, periodRepository),
+        periodRepository,
     )
 
     private var event = d2.eventModule().events().uid(eventUid).blockingGet()
