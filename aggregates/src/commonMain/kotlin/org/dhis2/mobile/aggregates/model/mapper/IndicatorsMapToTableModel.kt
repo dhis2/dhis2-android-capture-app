@@ -1,0 +1,48 @@
+package org.dhis2.mobile.aggregates.model.mapper
+
+import org.dhis2.mobile.aggregates.domain.IndicatorMap
+import org.dhis2.mobile.aggregates.domain.ResourceManager
+import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
+
+internal suspend fun IndicatorMap.toTableModel(
+    resourceManager: ResourceManager,
+    absoluteRowIndex: Int,
+) = TableModel(
+    id = INDICATOR_TABLE_UID,
+    title = "",
+    tableHeaderModel = TableHeader(
+        rows = listOf(
+            TableHeaderRow(
+                cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
+            ),
+        ),
+        extraColumns = emptyList(),
+    ),
+    tableRows = entries.map { (key, value) ->
+        TableRowModel(
+            rowHeader = RowHeader(
+                id = key,
+                title = key,
+                row = absoluteRowIndex,
+            ),
+            values = mapOf(
+                0 to TableCell(
+                    id = key,
+                    row = absoluteRowIndex,
+                    column = 0,
+                    value = value,
+                    editable = false,
+                    mandatory = false,
+                    legendColor = null,
+                ),
+            ),
+        )
+    },
+)

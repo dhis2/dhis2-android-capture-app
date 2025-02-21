@@ -164,7 +164,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnCell("bjDvmb4bfuf", 0, 0)
             clickOnEditValue()
             typeInput("1")
             clickOnAccept()
@@ -199,7 +199,7 @@ class SyncFlowTest : BaseTest() {
         }
 
         dataSetTableRobot(composeTestRule) {
-            typeOnCell("bjDvmb4bfuf", 0, 0)
+            clickOnCell("bjDvmb4bfuf", 0, 0)
             clickOnEditValue()
             typeInput("1")
             clickOnAccept()

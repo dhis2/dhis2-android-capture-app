@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -13,8 +14,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class DataSetInstanceActivity : ActivityGlobalAbstract() {
 
+    override var handleEdgeToEdge = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             DHIS2Theme {
                 val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
@@ -27,9 +31,9 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                 DataSetInstanceScreen(
                     parameters = intent.toDataSetInstanceParameters(),
                     useTwoPane = useTwoPane,
-                ) {
-                    onBackPressedDispatcher.onBackPressed()
-                }
+                    onBackClicked = onBackPressedDispatcher::onBackPressed,
+                    onSyncClicked = {},
+                )
             }
         }
     }
