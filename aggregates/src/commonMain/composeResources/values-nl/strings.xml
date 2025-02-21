@@ -10,5 +10,7 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Opgeslagen en voltooid!</string>
     <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
+    <string name="error">Fout</string>
+    <string name="complete_anyway">In ieder geval compleet</string>
 
 </resources>

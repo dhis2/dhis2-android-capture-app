@@ -9,5 +9,7 @@
     <string name="ok">Ok</string>
     <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
     <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="error">Kesalahan</string>
+    <string name="complete_anyway">Lengkap</string>
 
 </resources>

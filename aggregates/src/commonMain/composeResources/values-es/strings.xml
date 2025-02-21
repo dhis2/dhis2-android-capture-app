@@ -10,5 +10,7 @@
     <string name="ok">Correcto</string>
     <string name="dataset_saved_completed">¡Guardado y completado!</string>
     <string name="run_validation_rules">¿Quiere validar la calidad de los datos?</string>
+    <string name="error">Error</string>
+    <string name="complete_anyway">Completar de todas formas</string>
 
 </resources>
