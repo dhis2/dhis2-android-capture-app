@@ -311,30 +311,26 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun setTestingCredentials() {
-        val testingCredentialsIdentifier =
-            resources.getIdentifier("testing_credentials", "raw", packageName)
-        if (testingCredentialsIdentifier != -1) {
-            val writer = StringWriter()
-            val buffer = CharArray(1024)
-            try {
-                resources.openRawResource(testingCredentialsIdentifier).use { resource ->
-                    val reader = BufferedReader(InputStreamReader(resource, "UTF-8"))
-                    var n: Int = reader.read(buffer)
-                    while (n != -1) {
-                        writer.write(buffer, 0, n)
-                        n = reader.read(buffer)
-                    }
+        val writer = StringWriter()
+        val buffer = CharArray(1024)
+        try {
+            resources.openRawResource(R.raw.testing_credentials).use { resource ->
+                val reader = BufferedReader(InputStreamReader(resource, "UTF-8"))
+                var n: Int = reader.read(buffer)
+                while (n != -1) {
+                    writer.write(buffer, 0, n)
+                    n = reader.read(buffer)
                 }
-            } catch (e: Exception) {
-                Timber.e(e)
             }
-
-            testingCredentials = Gson().fromJson(
-                writer.toString(),
-                object : TypeToken<List<TestingCredential>>() {}.type,
-            )
-            presenter.setTestingCredentials(testingCredentials)
+        } catch (e: Exception) {
+            Timber.e(e)
         }
+
+        testingCredentials = Gson().fromJson(
+            writer.toString(),
+            object : TypeToken<List<TestingCredential>>() {}.type,
+        )
+        presenter.setTestingCredentials(testingCredentials)
     }
 
     override fun onPause() {
