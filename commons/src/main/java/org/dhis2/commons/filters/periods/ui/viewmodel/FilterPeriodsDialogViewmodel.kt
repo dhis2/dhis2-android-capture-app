@@ -141,4 +141,24 @@ class FilterPeriodsDialogViewmodel(
     fun setFilterPeriodTypes(isDataSetFilters: Boolean) {
         this.isDataSetFilter = isDataSetFilters
     }
+
+    fun setFromToFilter(fromSelectedDateMillis: Long?, toSelectedDateMillis: Long?) {
+        val fromSelectedDate = Calendar.getInstance()
+        fromSelectedDateMillis?.let {
+            fromSelectedDate.timeInMillis = it
+        }
+        val toSelectedDate = Calendar.getInstance()
+        toSelectedDateMillis?.let {
+            toSelectedDate.timeInMillis = it
+        }
+        val datePeriods = mutableListOf(DatePeriod.create(fromSelectedDate.time, toSelectedDate.time))
+        when (periodFilterType) {
+            PeriodFilterType.ENROLLMENT_DATE -> {
+                FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
+            }
+            PeriodFilterType.EVENT_DATE, PeriodFilterType.OTHER -> {
+                FilterManager.getInstance().addPeriod(datePeriods)
+            }
+        }
+    }
 }
