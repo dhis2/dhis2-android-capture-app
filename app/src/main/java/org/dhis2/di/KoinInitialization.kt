@@ -2,6 +2,7 @@ package org.dhis2.di
 
 import android.app.Application
 import org.dhis2.mobile.aggregates.di.aggregatesModule
+import org.dhis2.usescases.datasets.datasetInitial.periods.datasetPeriodPickerModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -16,6 +17,7 @@ object KoinInitialization {
                 serverModule(d2Configuration),
                 valueParserModule,
                 aggregatesModule,
+                datasetPeriodPickerModule,
             )
         }
     }
