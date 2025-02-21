@@ -1,4 +1,4 @@
-package org.dhis2.usecases.datasets.dataSetInitial
+package org.dhis2.usescases.datasets.dataSetInitial
 
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -7,7 +7,6 @@ import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialPresenter
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepository
-import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
@@ -109,22 +108,10 @@ class DataSetInitialPresenterTest {
     @Test
     fun `Should show periodSelector when field is clicked`() {
         val periodType = PeriodType.Monthly
-        val periods = listOf(
-            DateRangeInputPeriodModel.create(
-                "dataSet",
-                "period",
-                Date(),
-                Date(),
-                Date(),
-                Date(),
-            ),
-        )
 
-        whenever(repository.dataInputPeriod) doReturn Flowable.just(periods)
+        presenter.onReportPeriodClick(periodType)
 
-        presenter.onReportPeriodClick(PeriodType.Monthly)
-
-        verify(view).showPeriodSelector(periodType, periods, 0)
+        verify(view).showPeriodSelector(periodType, 0)
     }
 
     @Test
