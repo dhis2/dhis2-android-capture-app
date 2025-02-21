@@ -29,7 +29,7 @@ internal data class InputData(
     fun ageExtras() = inputExtra as InputExtra.Age
 }
 
-internal sealed class InputExtra() {
+internal sealed class InputExtra {
     data class Date(
         val allowManualInput: Boolean,
         val is24HourFormat: Boolean,

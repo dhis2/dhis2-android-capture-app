@@ -4,7 +4,6 @@ import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
-import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
@@ -17,7 +16,7 @@ internal class GetDataValueInput(
     private val orgUnitUid: String,
     private val attrOptionComboUid: String,
     private val repository: DataSetInstanceRepository,
-) {
+) : ValueValidator(repository) {
     suspend operator fun invoke(
         rowIds: List<TableId>,
         columnIds: List<TableId>,
@@ -45,7 +44,6 @@ internal class GetDataValueInput(
             attrOptionComboUid = attrOptionComboUid,
             dataElementUid = dataElementUid,
             categoryOptionComboUid = categoryOptionComboUid,
-
         )
 
         return CellInfo(
@@ -87,41 +85,5 @@ internal class GetDataValueInput(
             warnings = conflicts.second,
             isRequired = dataElementInfo.isRequired,
         )
-    }
-
-    private fun checkOnlyOneDataElementIsProvided(
-        rowIds: List<TableId>,
-        columnIds: List<TableId>,
-    ): String {
-        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
-            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
-
-        if (dataElementUids.size != 1) throw IllegalStateException("Only one data element can be provided")
-
-        return dataElementUids.first()
-    }
-
-    private suspend fun checkedCategoryOptionCombos(
-        rowIds: List<TableId>,
-        columnIds: List<TableId>,
-    ): String {
-        val categoryOptions =
-            rowIds.filter { it.type is TableIdType.CategoryOption }.map { it.id } +
-                columnIds.filter { it.type is TableIdType.CategoryOption }.map { it.id }
-        val categoryOptionCombos =
-            rowIds.filter { it.type is TableIdType.CategoryOptionCombo }.map { it.id } +
-                columnIds.filter { it.type is TableIdType.CategoryOptionCombo }.map { it.id }
-
-        if (categoryOptions.isNotEmpty() && categoryOptionCombos.isNotEmpty()) {
-            throw IllegalStateException(
-                "Category options and category option combos cannot be provided at the same time",
-            )
-        }
-        if (categoryOptionCombos.size > 1) throw IllegalStateException("Only one category option combo can be provided")
-
-        return when {
-            categoryOptionCombos.isNotEmpty() -> categoryOptionCombos.first()
-            else -> repository.categoryOptionComboFromCategoryOptions(categoryOptions)
-        }
     }
 }
