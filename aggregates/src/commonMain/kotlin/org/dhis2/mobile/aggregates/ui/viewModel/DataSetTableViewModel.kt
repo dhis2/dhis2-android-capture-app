@@ -18,31 +18,17 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.domain.SetDataValue
-import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
-import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
+import org.dhis2.mobile.aggregates.model.mapper.toInputData
+import org.dhis2.mobile.aggregates.model.mapper.toTableModel
+import org.dhis2.mobile.aggregates.model.mapper.updateValue
+import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
-import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalCellId
-import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
-import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalId
-import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalRow
-import org.dhis2.mobile.aggregates.ui.inputs.TableId
-import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
-import org.dhis2.mobile.aggregates.ui.states.InputData
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
-import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 
 internal class DataSetTableViewModel(
     private val getDataSetInstanceData: GetDataSetInstanceData,
@@ -137,214 +123,38 @@ internal class DataSetTableViewModel(
         var absoluteRowIndex = 0
         val sectionData = getDataSetSectionData(sectionUid)
         val tables = sectionData.tableGroups.map { tableGroup ->
-
             async(dispatcher.io()) {
-                val headerRows = tableGroup.headerRows.map { headerColumn ->
-                    TableHeaderRow(
-                        cells = headerColumn.map { label ->
-                            TableHeaderCell(
-                                value = label.takeIf { it != DEFAULT_LABEL }
-                                    ?: resourceManager.defaultHeaderLabel(),
-                            )
-                        },
-                    )
-                }
+                val dataValueDataMap = getDataValueData(tableGroup.cellElements.map { it.uid })
 
-                val tableHeader = TableHeader(
-                    rows = headerRows,
-                    extraColumns = if (sectionData.showRowTotals()) {
-                        listOf(
-                            TableHeaderCell(resourceManager.totalsHeader()),
-                        )
-                    } else {
-                        emptyList()
-                    },
-                )
+                val tableModel = tableGroup.toTableModel(
+                    resourceManager = resourceManager,
+                    sectionData = sectionData,
+                    dataValueDataMap = dataValueDataMap,
+                    absoluteRowIndex = absoluteRowIndex,
+                ).also { absoluteRowIndex += 1 }
 
-                val dataValueDataMap = buildMap {
-                    putAll(
-                        getDataValueData(
-                            dataElementUids = tableGroup.cellElements.map { it.uid },
-                        ),
-                    )
-                }
-
-                val tableRows = tableGroup.cellElements
-                    .map { cellElement ->
-                        TableRowModel(
-                            rowHeaders = listOf(
-                                RowHeader(
-                                    id = cellElement.uid,
-                                    title = cellElement.label,
-                                    row = absoluteRowIndex,
-                                    column = 0,
-                                    description = cellElement.description,
-                                ),
-                            ),
-                            values = buildMap {
-                                repeat(tableHeader.tableMaxColumns() - tableHeader.extraColumns.size) { columnIndex ->
-                                    val key = Pair(
-                                        cellElement.uid,
-                                        tableGroup.headerCombinations[columnIndex],
-                                    )
-                                    val dataValueData = dataValueDataMap[key]
-
-                                    put(
-                                        key = columnIndex,
-                                        value = TableCell(
-                                            id = CellIdGenerator.generateId(
-                                                rowIds = listOf(
-                                                    TableId(
-                                                        id = cellElement.uid,
-                                                        type = TableIdType.DataElement,
-                                                    ),
-                                                ),
-                                                columnIds = listOf(
-                                                    TableId(
-                                                        id = tableGroup.headerCombinations[columnIndex],
-                                                        type = TableIdType.CategoryOptionCombo,
-                                                    ),
-                                                ),
-                                            ),
-                                            row = absoluteRowIndex,
-                                            column = columnIndex,
-                                            value = dataValueData?.value,
-                                            editable = sectionData.isEditable(cellElement.uid),
-                                            mandatory = sectionData.isMandatory(
-                                                rowId = cellElement.uid,
-                                                columnId = tableGroup.headerCombinations[columnIndex],
-                                            ),
-                                            error = dataValueData?.conflicts?.errors(),
-                                            warning = dataValueData?.conflicts?.warnings(),
-                                            legendColor = null,
-                                            isMultiText = cellElement.isMultiText,
-                                        ),
-                                    )
-                                }
-                                if (sectionData.showRowTotals()) {
-                                    put(
-                                        key = tableHeader.tableMaxColumns() - tableHeader.extraColumns.size,
-                                        value = TableCell(
-                                            id = totalRow(tableGroup.uid, absoluteRowIndex),
-                                            row = absoluteRowIndex,
-                                            column = tableHeader.tableMaxColumns(),
-                                            value = this.values.sumOf {
-                                                it.value?.toDoubleOrNull() ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                            },
-                            maxLines = 3,
-                        ).also {
-                            absoluteRowIndex += 1
-                        }
-                    }
-
-                val totalRow = if (sectionData.showColumnTotals()) {
-                    listOf(
-                        buildTotalsRow(
-                            tableId = tableGroup.uid,
-                            columnCount = tableHeader.tableMaxColumns(),
-                            absoluteRowIndex = absoluteRowIndex,
-                            showRowTotals = sectionData.showRowTotals(),
-                            tableRows = tableRows,
-                        ).also {
-                            absoluteRowIndex += 1
-                        },
-                    )
+                if (sectionData.showColumnTotals()) {
+                    tableModel.withTotalsRow(resourceManager)
+                        .also { absoluteRowIndex += 1 }
                 } else {
-                    emptyList()
+                    tableModel
                 }
-
-                TableModel(
-                    id = tableGroup.uid,
-                    title = tableGroup.label,
-                    tableHeaderModel = tableHeader,
-                    tableRows = tableRows + totalRow,
-                )
             }
         }.awaitAll()
 
-        val indicators = getDataSetSectionIndicators(sectionUid)?.let { indicators ->
-            listOf(
-                TableModel(
-                    id = INDICATOR_TABLE_UID,
-                    title = "",
-                    tableHeaderModel = TableHeader(
-                        rows = listOf(
-                            TableHeaderRow(
-                                cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
-                            ),
-                        ),
-                        extraColumns = emptyList(),
-                    ),
-                    tableRows = indicators.entries.map { (key, value) ->
-                        TableRowModel(
-                            rowHeaders = listOf( RowHeader(
-                                id = key,
-                                title = key,
-                                row = absoluteRowIndex,column = 0,
-                            ),
-                            ),
-                            values = mapOf(
-                                0 to TableCell(
-                                    id = key,
-                                    row = absoluteRowIndex,
-                                    column = 0,
-                                    value = value,
-                                    editable = false,
-                                    mandatory = false,
-                                    legendColor = null,
-                                ),
-                            ),
-                        ).also {
-                            absoluteRowIndex += 1
-                        }
-                    },
-                ),
-            )
-        } ?: emptyList()
+        val indicators = getDataSetSectionIndicators(sectionUid)
+            ?.toTableModel(resourceManager, absoluteRowIndex)
+            ?.let { listOf(it).also { absoluteRowIndex += 1 } }
+            ?: emptyList()
+
         tables + indicators
     }
 
     fun updateSelectedCell(cellId: String?) {
         viewModelScope.launch(dispatcher.io()) {
-            val (rowIds, columnIds) = cellId?.let { CellIdGenerator.getIdInfo(it) } ?: Pair(
-                emptyList(),
-                emptyList(),
-            )
-
             val inputData = if (cellId != null) {
-                with(getDataValueInput(rowIds, columnIds)) {
-                    InputData(
-                        id = cellId,
-                        label = label,
-                        value = value,
-                        inputType = inputType,
-                        inputShellState = InputShellState.UNFOCUSED,
-                        inputExtra = inputExtra,
-                        supportingText = supportingText.map { text ->
-                            SupportingTextData(
-                                text = text,
-                                state = SupportingTextState.DEFAULT,
-                            )
-                        } + errors.map { error ->
-                            SupportingTextData(
-                                text = error,
-                                state = SupportingTextState.ERROR,
-                            )
-                        } + warnings.map { warning ->
-                            SupportingTextData(
-                                text = warning,
-                                state = SupportingTextState.WARNING,
-                            )
-                        },
-                        legendData = null, // TODO
-                        isRequired = isRequired,
-                    )
-                }
+                val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
+                getDataValueInput(rowIds, columnIds).toInputData(cellId)
             } else {
                 null
             }
@@ -353,47 +163,7 @@ internal class DataSetTableViewModel(
                 (it as? DataSetScreenState.Loaded)?.copy(
                     dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
                         tableModels = it.dataSetSectionTable.tables().map { table ->
-                            val hasTotalColumn = table.tableHeaderModel.extraColumns.isNotEmpty()
-                            val hasTotalRow = table.tableRows.last().rowHeader.id == totalHeaderRowId(table.id)
-                            val tableRows = table.tableRows.map { tableRowModel ->
-                                val cell = tableRowModel.values.values.find { tableCell ->
-                                    tableCell.id == cellId
-                                }
-                                val totalsColumnCell =
-                                    tableRowModel.values.values.last().takeIf { hasTotalColumn }
-                                if (cell != null) {
-                                    val updatedValues = tableRowModel.values.toMutableMap()
-                                    updatedValues[cell.column] = cell.copy(
-                                        value = inputData?.value,
-                                    )
-                                    totalsColumnCell?.let { totalCell ->
-                                        val totalValue = updatedValues.values.toList().dropLast(1)
-                                            .sumOf { tableCell ->
-                                                tableCell.value?.toDoubleOrNull() ?: 0.0
-                                            }
-
-                                        updatedValues[tableRowModel.values.size - 1] =
-                                            totalCell.copy(value = totalValue.toString())
-                                    }
-                                    tableRowModel.copy(values = updatedValues)
-                                } else {
-                                    tableRowModel
-                                }
-                            }
-
-                            val updatedTableRows = if (hasTotalRow) {
-                                tableRows.dropLast(1) + buildTotalsRow(
-                                    tableId = table.id!!,
-                                    columnCount = table.tableHeaderModel.tableMaxColumns(),
-                                    absoluteRowIndex = tableRows.size,
-                                    showRowTotals = true,
-                                    tableRows = tableRows.dropLast(1),
-                                )
-                            } else {
-                                tableRows
-                            }
-
-                            table.copy(tableRows = updatedTableRows)
+                            table.updateValue(cellId, inputData?.value, resourceManager)
                         },
                     ) ?: it.dataSetSectionTable,
                     selectedCellInfo = inputData,
@@ -441,50 +211,4 @@ internal class DataSetTableViewModel(
             }
         }
     }
-
-    private suspend fun buildTotalsRow(
-        tableId: String,
-        columnCount: Int,
-        absoluteRowIndex: Int,
-        showRowTotals: Boolean,
-        tableRows: List<TableRowModel>,
-    ) = TableRowModel(
-        rowHeader = RowHeader(
-            id = totalHeaderRowId(tableId),
-            title = resourceManager.totalsHeader(),
-            row = absoluteRowIndex,
-        ),
-        values = buildMap {
-            repeat(columnCount) { columnIndex ->
-                put(
-                    key = columnIndex,
-                    value = TableCell(
-                        id = totalCellId(tableId, columnIndex),
-                        row = absoluteRowIndex,
-                        column = columnIndex,
-                        value = tableRows.sumOf {
-                            it.values[columnIndex]?.value?.toDoubleOrNull()
-                                ?: 0.0
-                        }.toString(),
-                        editable = false,
-                    ),
-                )
-            }
-            if (showRowTotals) {
-                put(
-                    key = columnCount,
-                    value = TableCell(
-                        id = totalId(tableId),
-                        row = absoluteRowIndex,
-                        column = columnCount,
-                        value = this.values.sumOf {
-                            it.value?.toDoubleOrNull() ?: 0.0
-                        }.toString(),
-                        editable = false,
-                    ),
-                )
-            }
-        },
-        maxLines = 1,
-    )
 }
