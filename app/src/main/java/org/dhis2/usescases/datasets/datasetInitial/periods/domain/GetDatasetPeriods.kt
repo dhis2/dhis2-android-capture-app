@@ -9,8 +9,9 @@ import org.dhis2.commons.periods.model.Period
 import org.dhis2.usescases.datasets.datasetInitial.periods.data.DatasetPeriodRepository
 import org.dhis2.usescases.datasets.datasetInitial.periods.data.DatasetPeriodSource
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
 
-class GetDateRangeInputPeriods(
+class GetDatasetPeriods(
     private val repository: DatasetPeriodRepository,
     private val periodLabelProvider: PeriodLabelProvider = PeriodLabelProvider(),
 ) {
