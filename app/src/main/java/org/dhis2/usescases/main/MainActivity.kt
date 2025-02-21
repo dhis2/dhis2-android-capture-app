@@ -42,6 +42,9 @@ import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.model.PeriodFilterType
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -416,13 +419,7 @@ class MainActivity :
             DateUtils.getInstance()
                 .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
         } else {
-            DateUtils.getInstance()
-                .showPeriodDialog(
-                    this,
-                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
-                    true,
-                    { FilterManager.getInstance().addPeriod(null) },
-                )
+            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
