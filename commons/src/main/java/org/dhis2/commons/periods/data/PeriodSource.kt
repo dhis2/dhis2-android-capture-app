@@ -3,17 +3,20 @@ package org.dhis2.commons.periods.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import org.dhis2.commons.periods.model.Period
+import org.dhis2.commons.periods.model.PeriodOrder
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 import java.util.Locale
 
 internal class PeriodSource(
-    private val eventPeriodRepository: EventPeriodRepository,
+    private val periodRepository: PeriodRepository,
     private val periodLabelProvider: PeriodLabelProvider,
     private val selectedDate: Date?,
     private val periodType: PeriodType,
     private val initialDate: Date,
     private val maxDate: Date?,
+    private val periodOrder: PeriodOrder = PeriodOrder.ASC,
+
 ) : PagingSource<Int, Period>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> {
@@ -23,31 +26,60 @@ internal class PeriodSource(
             val page = params.key ?: 1
             val periods: List<Period> = buildList {
                 repeat(periodsPerPage) { indexInPage ->
-                    val period = eventPeriodRepository.generatePeriod(
-                        periodType,
-                        initialDate,
-                        indexInPage + periodsPerPage * (page - 1),
-                    )
-                    if (maxDate == null || period.startDate()
-                            ?.before(maxDate) == true || period.startDate() == maxDate
-                    ) {
-                        add(
-                            Period(
-                                id = period.periodId()!!,
-                                name = periodLabelProvider(
-                                    periodType = periodType,
-                                    periodId = period.periodId()!!,
-                                    periodStartDate = period.startDate()!!,
-                                    periodEndDate = period.endDate()!!,
-                                    locale = Locale.getDefault(),
-                                ),
-                                startDate = period.startDate()!!,
-                                enabled = true,
-                                selected = period.startDate() == selectedDate,
-                            ),
-                        )
+                    val offset = if (periodOrder == PeriodOrder.ASC) {
+                        indexInPage + periodsPerPage * (page - 1)
                     } else {
-                        maxPageReached = true
+                        -indexInPage - periodsPerPage * (page - 1)
+                    }
+                    val period = periodRepository.generatePeriod(
+                        periodType,
+                        if (periodOrder == PeriodOrder.ASC) initialDate else maxDate ?: initialDate,
+                        offset,
+                    )
+                    if (periodOrder == PeriodOrder.ASC) {
+                        if (maxDate == null || period.startDate()
+                                ?.before(maxDate) == true || period.startDate() == maxDate
+                        ) {
+                            add(
+                                Period(
+                                    id = period.periodId()!!,
+                                    name = periodLabelProvider(
+                                        periodType = periodType,
+                                        periodId = period.periodId()!!,
+                                        periodStartDate = period.startDate()!!,
+                                        periodEndDate = period.endDate()!!,
+                                        locale = Locale.getDefault(),
+                                    ),
+                                    startDate = period.startDate()!!,
+                                    enabled = true,
+                                    selected = period.startDate() == selectedDate,
+                                    endDate = period.endDate()!!,
+                                ),
+                            )
+                        } else {
+                            maxPageReached = true
+                        }
+                    } else {
+                        if (period.startDate()?.after(initialDate) == true) {
+                            add(
+                                Period(
+                                    id = period.periodId()!!,
+                                    name = periodLabelProvider(
+                                        periodType = periodType,
+                                        periodId = period.periodId()!!,
+                                        periodStartDate = period.startDate()!!,
+                                        periodEndDate = period.endDate()!!,
+                                        locale = Locale.getDefault(),
+                                    ),
+                                    startDate = period.startDate()!!,
+                                    endDate = period.endDate()!!,
+                                    enabled = true,
+                                    selected = false,
+                                ),
+                            )
+                        } else {
+                            maxPageReached = true
+                        }
                     }
                 }
             }
