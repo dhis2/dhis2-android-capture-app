@@ -7,6 +7,7 @@ import org.dhis2.commons.components.ComponentProvider;
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider;
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider;
 import org.dhis2.commons.filters.di.FilterPresenterProvider;
+import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogComponentProvider;
 import org.dhis2.commons.orgunitselector.OUTreeComponentProvider;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.user.UserComponent;
@@ -20,6 +21,7 @@ public interface Components extends FeatureConfigComponentProvider,
         CalendarPickerComponentProvider,
         FilterPresenterProvider,
         OUTreeComponentProvider,
+        FilterPeriodsDialogComponentProvider,
         ComponentProvider {
 
     @NonNull

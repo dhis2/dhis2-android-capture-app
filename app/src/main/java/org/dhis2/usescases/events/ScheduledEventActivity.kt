@@ -212,7 +212,9 @@ class ScheduledEventActivity : ActivityGlobalAbstract(), ScheduledEventContract.
                     periods = periods,
                     scrollState = scrollState,
                 ) { selectedPeriod, _ ->
-                    presenter.setDueDate(selectedPeriod)
+                    selectedPeriod.startDate.let {
+                        presenter.setDueDate(it)
+                    }
                     bottomSheetDialog.dismiss()
                 }
             },

@@ -27,13 +27,12 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
-import java.util.Date
 
 @Composable
 fun PeriodSelectorContent(
     periods: LazyPagingItems<Period>,
     scrollState: LazyListState,
-    onPeriodSelected: (Date, String) -> Unit,
+    onPeriodSelected: (Period, String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -64,7 +63,7 @@ fun PeriodSelectorContent(
                             selected = period?.selected == true,
                             enabled = period?.enabled == true,
                         ) {
-                            period?.startDate?.let {
+                            period?.let {
                                 onPeriodSelected(it, period.name)
                             }
                         }

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import static org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FILTER_DIALOG;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,6 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
@@ -15,9 +15,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
@@ -27,6 +25,8 @@ import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.filters.periods.model.PeriodFilterType;
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
@@ -37,11 +37,8 @@ import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import kotlin.Unit;
 
@@ -194,12 +191,8 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             DateUtils.getInstance().fromCalendarSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
         } else {
-            DateUtils.getInstance().showPeriodDialog(
-                    this,
-                    datePeriods -> filterManager.addPeriod(datePeriods),
-                    true,
-                    () -> filterManager.addPeriod(null)
-            );
+            FilterPeriodsDialog filterPeriodsDialog = FilterPeriodsDialog.Companion.newPeriodsFilter(PeriodFilterType.OTHER, true);
+            filterPeriodsDialog.show(getSupportFragmentManager(), FILTER_DIALOG);
         }
     }
 

@@ -12,7 +12,10 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
+import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
+import org.dhis2.commons.filters.periods.domain.GetFilterPeriods
 import org.dhis2.commons.periods.data.EventPeriodRepository
+import org.dhis2.commons.periods.data.PeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
@@ -176,13 +179,34 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository =
-        EventPeriodRepository(d2)
+    fun provideEventPeriodRepository(d2: D2, periodRepository: PeriodRepository): EventPeriodRepository =
+        EventPeriodRepository(d2, periodRepository)
 
     @Provides
     @PerServer
-    fun providePeriodUseCase(eventPeriodRepository: EventPeriodRepository) =
-        GetEventPeriods(eventPeriodRepository)
+    fun providePeriodRepository(d2: D2): PeriodRepository =
+        PeriodRepository(d2)
+
+    @Provides
+    @PerServer
+    fun provideFilterPeriodsRepository(d2: D2, periodRepository: PeriodRepository): FilterPeriodsRepository =
+        FilterPeriodsRepository()
+
+    @Provides
+    @PerServer
+    fun providePeriodUseCase(
+        eventPeriodRepository: EventPeriodRepository,
+        periodRepository: PeriodRepository,
+    ) =
+        GetEventPeriods(eventPeriodRepository, periodRepository)
+
+    @Provides
+    @PerServer
+    fun provideFilterPeriodUseCase(
+        periodRepository: PeriodRepository,
+        filterPeriodsRepository: FilterPeriodsRepository,
+    ) =
+        GetFilterPeriods(filterPeriodsRepository, periodRepository)
 
     companion object {
         @JvmStatic
