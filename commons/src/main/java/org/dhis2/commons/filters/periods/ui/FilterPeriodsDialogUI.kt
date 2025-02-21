@@ -16,6 +16,9 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +44,7 @@ fun FilterPeriodsDialogUI(
     viewModel: FilterPeriodsDialogViewmodel,
     periodFilterType: PeriodFilterType,
     isDataSetPeriodTypes: Boolean,
+    isFromToFilter: Boolean,
     onDismiss: () -> Unit,
 ) {
     viewModel.setFilterType(periodFilterType)
@@ -49,107 +53,140 @@ fun FilterPeriodsDialogUI(
     val screenState by viewModel.filterPeriodsScreenState.collectAsState()
     val showDatePicker by viewModel.showDatePicker.collectAsState()
     val title by viewModel.dialogTitle.collectAsState()
-    if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = Date().time,
-        )
-        AnimatedVisibility(
-            visible = showDatePicker,
-            enter = fadeIn(
-                animationSpec = tween(durationMillis = 400),
-            ),
-            exit = fadeOut(
-                animationSpec = tween(durationMillis = 400),
-            ),
-        ) {
-            DatePicker(
-                title = "Select Date",
-                state = datePickerState,
-                acceptText = "OK",
-                cancelText = "Cancel",
-                onCancel = { onDismiss() },
-                onConfirm = {
-                    viewModel.setDailyPeriodFilter(datePickerState.selectedDateMillis)
+    val fromDatePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Date().time,
+    )
+
+    val toDatePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Date().time,
+    )
+    var showToDatePicker by remember { mutableStateOf(false) }
+
+    AnimatedVisibility(
+        visible = (showDatePicker || isFromToFilter),
+        enter = fadeIn(
+            animationSpec = tween(durationMillis = 400),
+        ),
+        exit = fadeOut(
+            animationSpec = tween(durationMillis = 400),
+        ),
+    ) {
+        DatePicker(
+            title = "Select Date",
+            state = fromDatePickerState,
+            acceptText = "OK",
+            cancelText = "Cancel",
+            onCancel = { onDismiss() },
+            onConfirm = {
+                if (isFromToFilter) {
+                    showToDatePicker = true
+                } else {
+                    viewModel.setDailyPeriodFilter(fromDatePickerState.selectedDateMillis)
                     onDismiss()
-                },
-                onDismissRequest = { onDismiss() },
-                modifier = Modifier.wrapContentSize(),
+                }
+            },
+            onDismissRequest = { onDismiss() },
+            modifier = Modifier.wrapContentSize(),
 
-            )
-        }
-    } else {
-        AnimatedVisibility(
-            visible = (!showDatePicker),
-            enter = slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = tween(durationMillis = 500),
+        )
+    }
+
+    AnimatedVisibility(
+        visible = showToDatePicker,
+        enter = fadeIn(
+            animationSpec = tween(durationMillis = 400),
+        ),
+        exit = fadeOut(
+            animationSpec = tween(durationMillis = 400),
+        ),
+    ) {
+        DatePicker(
+            title = "Select Date",
+            state = toDatePickerState,
+            acceptText = "OK",
+            cancelText = "Cancel",
+            onCancel = { onDismiss() },
+            onConfirm = {
+                viewModel.setFromToFilter(fromDatePickerState.selectedDateMillis, toDatePickerState.selectedDateMillis)
+                onDismiss()
+            },
+            onDismissRequest = { onDismiss() },
+            modifier = Modifier.wrapContentSize(),
+
+        )
+    }
+
+    AnimatedVisibility(
+        visible = (!showDatePicker && !isFromToFilter),
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(durationMillis = 500),
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(durationMillis = 500),
+        ),
+    ) {
+        val scrollState = rememberLazyListState()
+
+        BottomSheetShell(
+            uiState = BottomSheetShellUIState(
+                bottomPadding = bottomSheetLowerPadding(),
+                showTopSectionDivider = true,
+                showBottomSectionDivider = true,
+                title = title,
+                headerTextAlignment = TextAlign.Center,
+                animateHeaderOnKeyboardAppearance = false,
             ),
-            exit = slideOutVertically(
-                targetOffsetY = { it },
-                animationSpec = tween(durationMillis = 500),
-            ),
-        ) {
-            val scrollState = rememberLazyListState()
+            windowInsets = { bottomSheetInsets() },
+            contentScrollState = scrollState,
+            content = {
+                when (screenState) {
+                    is FilterPeriodsScreenState.Loading -> {
+                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
+                    }
 
-            BottomSheetShell(
-                uiState = BottomSheetShellUIState(
-                    bottomPadding = bottomSheetLowerPadding(),
-                    showTopSectionDivider = true,
-                    showBottomSectionDivider = true,
-                    title = title,
-                    headerTextAlignment = TextAlign.Center,
-                    animateHeaderOnKeyboardAppearance = false,
-                ),
-                windowInsets = { bottomSheetInsets() },
-                contentScrollState = scrollState,
-                content = {
-                    when (screenState) {
-                        is FilterPeriodsScreenState.Loading -> {
-                            ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
-                        }
-
-                        is FilterPeriodsScreenState.Loaded -> {
-                            when {
-                                ((screenState as FilterPeriodsScreenState.Loaded).selectedPeriodType == null) -> {
-                                    val periodsTypes =
-                                        (screenState as FilterPeriodsScreenState.Loaded).periodTypes
-                                    LazyColumn(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        state = scrollState,
-                                    ) {
-                                        items(periodsTypes.count()) { index ->
-                                            ListItem(
-                                                contentPadding = PaddingValues(Spacing8),
-                                                label = stringResource(periodsTypes[index].nameResource),
-                                                selected = false,
-                                                enabled = true,
-                                                onItemClick = {
-                                                    viewModel.onPeriodTypeSelected(
-                                                        periodsTypes[index],
-                                                    )
-                                                },
-                                            )
-                                        }
+                    is FilterPeriodsScreenState.Loaded -> {
+                        when {
+                            ((screenState as FilterPeriodsScreenState.Loaded).selectedPeriodType == null) -> {
+                                val periodsTypes =
+                                    (screenState as FilterPeriodsScreenState.Loaded).periodTypes
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    state = scrollState,
+                                ) {
+                                    items(periodsTypes.count()) { index ->
+                                        ListItem(
+                                            contentPadding = PaddingValues(Spacing8),
+                                            label = stringResource(periodsTypes[index].nameResource),
+                                            selected = false,
+                                            enabled = true,
+                                            onItemClick = {
+                                                viewModel.onPeriodTypeSelected(
+                                                    periodsTypes[index],
+                                                )
+                                            },
+                                        )
                                     }
                                 }
-                                else -> {
-                                    val periods =
-                                        viewModel.fetchPeriods()
-                                            .collectAsLazyPagingItems()
-                                    PeriodSelectorContent(
-                                        periods = periods,
-                                        scrollState = scrollState,
-                                    ) {
-                                        viewModel.onPeriodSelected(it)
-                                        onDismiss()
-                                    }
+                            }
+                            else -> {
+                                val periods =
+                                    viewModel.fetchPeriods()
+                                        .collectAsLazyPagingItems()
+                                PeriodSelectorContent(
+                                    periods = periods,
+                                    scrollState = scrollState,
+                                ) {
+                                    viewModel.onPeriodSelected(it)
+                                    onDismiss()
                                 }
                             }
                         }
                     }
-                },
-                onDismiss = onDismiss,
-            )
-        }
+                }
+            },
+            onDismiss = onDismiss,
+        )
     }
 }
