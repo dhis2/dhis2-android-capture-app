@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
-class EventPeriodRepository(private val d2: D2) {
+class EventPeriodRepository(private val d2: D2, private val periodRepository: PeriodRepository) {
 
     fun getEventPeriodMinDate(
         programStage: ProgramStage,
@@ -30,18 +30,18 @@ class EventPeriodRepository(private val d2: D2) {
                 enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
             }
         } else {
-            generatePeriod(periodType, offset = 1).startDate()
+            periodRepository.generatePeriod(periodType, offset = 1).startDate()
         } ?: Date()
 
-        val currentPeriod = generatePeriod(periodType, currentDate)
+        val currentPeriod = periodRepository.generatePeriod(periodType, currentDate)
         val previousPeriodLastDay =
-            generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
+            periodRepository.generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
                 .startDate()
 
         return if (currentDate.after(previousPeriodLastDay) or (currentDate == previousPeriodLastDay)) {
             currentPeriod.startDate()
         } else {
-            generatePeriod(periodType, currentDate, offset = -1).startDate()
+            periodRepository.generatePeriod(periodType, currentDate, offset = -1).startDate()
         } ?: Date()
     }
 
@@ -69,7 +69,7 @@ class EventPeriodRepository(private val d2: D2) {
             Date()
         } ?: Date()
 
-        val currentPeriod = generatePeriod(periodType, currentDate)
+        val currentPeriod = periodRepository.generatePeriod(periodType, currentDate)
 
         return currentPeriod.startDate()
     }
@@ -92,11 +92,4 @@ class EventPeriodRepository(private val d2: D2) {
             }
         }
     }
-
-    fun generatePeriod(
-        periodType: PeriodType,
-        date: Date = Date(),
-        offset: Int = 0,
-    ) = d2.periodModule().periodHelper()
-        .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
 }

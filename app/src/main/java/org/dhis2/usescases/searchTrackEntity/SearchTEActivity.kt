@@ -33,9 +33,6 @@ import org.dhis2.bindings.dp
 import org.dhis2.bindings.isKeyboardOpened
 import org.dhis2.bindings.overrideHeight
 import org.dhis2.commons.Constants
-import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.date.DateUtils.OnNextSelected
-import org.dhis2.commons.date.Period
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterItem
@@ -43,6 +40,8 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
 import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -66,7 +65,6 @@ import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap.Companion.get
 import org.dhis2.usescases.searchTrackEntity.searchparameters.initSearchScreen
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog
-import org.dhis2.utils.customviews.RxDateDialog
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
@@ -75,12 +73,10 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
-import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.Serializable
-import java.util.Date
 import javax.inject.Inject
 
 class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View {
@@ -702,44 +698,9 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun showPeriodRequest(periodRequest: Pair<PeriodRequest, Filters>) {
         if (periodRequest.first == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this) { datePeriod: List<DatePeriod?>? ->
-                if (periodRequest.second == Filters.PERIOD) {
-                    FilterManager.getInstance().addPeriod(datePeriod)
-                } else {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriod)
-                }
-            }
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            val onFromToSelector = DateUtils.OnFromToSelector { datePeriods: List<DatePeriod?>? ->
-                if (periodRequest.second == Filters.PERIOD) {
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                } else {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
-                }
-            }
-
-            val onNextSelected = OnNextSelected {
-                RxDateDialog(this, Period.WEEKLY)
-                    .createForFilter().show()
-                    .subscribe(
-                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
-                            onFromToSelector.onFromToSelected(
-                                DateUtils.getInstance().getDatePeriodListFor(
-                                    selectedDates.val1(),
-                                    selectedDates.val0(),
-                                ),
-                            )
-                        },
-                        { t: Throwable? -> Timber.e(t) },
-                    )
-            }
-
-            DateUtils.getInstance().showPeriodDialog(
-                this,
-                onFromToSelector,
-                true,
-                onNextSelected,
-            )
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

@@ -146,7 +146,6 @@ class EventRepositoryTest {
         metadataIconProvider = metadataIconProvider,
         resources = resources,
         eventResourcesProvider = eventResourcesProvider,
-        dateUtils = dateUtil,
         eventMode = eventMode,
     )
 
