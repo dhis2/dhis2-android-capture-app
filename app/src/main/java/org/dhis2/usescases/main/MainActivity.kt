@@ -40,8 +40,8 @@ import org.dhis2.commons.animations.hide
 import org.dhis2.commons.animations.show
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
-import org.dhis2.commons.filters.periods.model.PeriodFilterType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -415,9 +415,9 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(PeriodFilterType.OTHER).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.ENROLLMENT_DATE).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
