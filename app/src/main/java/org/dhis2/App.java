@@ -23,8 +23,6 @@ import org.dhis2.commons.featureconfig.di.FeatureConfigActivityComponent;
 import org.dhis2.commons.featureconfig.di.FeatureConfigActivityModule;
 import org.dhis2.commons.featureconfig.di.FeatureConfigModule;
 import org.dhis2.commons.filters.data.FilterPresenter;
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogComponent;
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogModule;
 import org.dhis2.commons.network.NetworkUtilsModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
@@ -385,12 +383,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @org.jetbrains.annotations.Nullable
     @Override
     public OUTreeComponent provideOUTreeComponent(@NotNull OUTreeModule module) {
-        return serverComponent.plus(module);
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public FilterPeriodsDialogComponent provideFilterPeriodsDialogComponent(@NotNull FilterPeriodsDialogModule module) {
         return serverComponent.plus(module);
     }
 
