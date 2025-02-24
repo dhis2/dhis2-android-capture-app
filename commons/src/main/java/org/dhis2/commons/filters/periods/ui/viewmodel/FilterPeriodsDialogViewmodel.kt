@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.R
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
 import org.dhis2.commons.filters.periods.data.PeriodTypeLabelProvider
+import org.dhis2.commons.filters.periods.domain.GetFilterPeriodTypes
 import org.dhis2.commons.filters.periods.domain.GetFilterPeriods
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FilterDialogLaunchMode
@@ -24,7 +24,7 @@ import java.util.Calendar
 
 class FilterPeriodsDialogViewmodel(
     private val getFilterPeriods: GetFilterPeriods,
-    private val filterPeriodsRepository: FilterPeriodsRepository,
+    private val getFilterPeriodTypes: GetFilterPeriodTypes,
     private val resourceManager: ResourceManager,
     private val periodTypeLabelProvider: PeriodTypeLabelProvider,
     private val launchMode: FilterDialogLaunchMode,
@@ -50,8 +50,7 @@ class FilterPeriodsDialogViewmodel(
     }
 
     private fun loadPeriodTypes() {
-        val periodTypes =
-            if (launchMode is FilterDialogLaunchMode.NewPeriodDialog) filterPeriodsRepository.getDefaultPeriodTypes() else filterPeriodsRepository.getDataSetFilterPeriodTypes()
+        val periodTypes = getFilterPeriodTypes(launchMode is FilterDialogLaunchMode.NewDataSetPeriodDialog)
 
         _filterPeriodsScreenState.update {
             filterPeriodsScreenState.value.copy(

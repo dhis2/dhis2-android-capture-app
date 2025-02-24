@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerServer;
 import org.dhis2.commons.filters.di.FilterModule;
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogComponent;
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogModule;
 import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
 import org.dhis2.commons.resources.DhisPeriodUtils;
@@ -52,9 +50,6 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     OUTreeComponent plus(@NonNull OUTreeModule ouTreeModule);
-
-    @NonNull
-    FilterPeriodsDialogComponent plus(@NonNull FilterPeriodsDialogModule filterPeriodsDialogModule);
 
     @NonNull
     DhisPeriodUtils dhisPeriodUtils();
