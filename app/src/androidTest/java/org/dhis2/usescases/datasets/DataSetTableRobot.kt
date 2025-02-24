@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -33,6 +34,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CellSelected
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
@@ -142,12 +144,19 @@ class DataSetTableRobot(
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))
+            .assertIsDisplayed()
             .performTouchInput {
+                swipeRight()
                 swipeRight()
             }
 
-        composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"))
-            .performScrollTo()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .assertIsDisplayed()
+            .performScrollToIndex(10)
+
+        composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"),true)
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
@@ -164,12 +173,13 @@ class DataSetTableRobot(
 
     fun assertInputDescriptionIsDisplayed(description: String) {
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG).printToLog("INPUT_DIALOG_TAG")
         composeTestRule.onNodeWithText(description, useUnmergedTree = true).assertIsDisplayed()
     }
 
     fun typeOnInputDialog(value: String) {
         composeTestRule.onNodeWithTag("INPUT_INTEGER_FIELD").performTextInput(value)
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun assertCellHasValue(
@@ -192,10 +202,14 @@ class DataSetTableRobot(
             .performScrollTo()
             .assertIsDisplayed()
 
-        composeTestRule.onRoot().printToLog("WHERE IS THE TOTALS")
-
-        composeTestRule.onNodeWithTag("CELL_TEST_TAG_${tableId}${tableId}_${rowIndex}_totals", true)
-            .onChild().assertTextEquals(expectedValue)
+        composeTestRule
+            .onNode(
+                hasParent(hasTestTag("CELL_TEST_TAG_${tableId}${tableId}_${rowIndex}_totals")) and
+                hasTestTag("CELL_VALUE_TEST_TAG") and
+                hasText(expectedValue),
+                true
+            )
+            .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))
             .performTouchInput {
