@@ -12,9 +12,6 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
-import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
-import org.dhis2.commons.filters.periods.data.PeriodTypeLabelProvider
-import org.dhis2.commons.filters.periods.domain.GetFilterPeriods
 import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -184,26 +181,10 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideFilterPeriodsRepository(d2: D2): FilterPeriodsRepository =
-        FilterPeriodsRepository(d2)
-
-    @Provides
-    @PerServer
     fun providePeriodUseCase(
         eventPeriodRepository: EventPeriodRepository,
     ) =
         GetEventPeriods(eventPeriodRepository)
-
-    @Provides
-    @PerServer
-    fun providePeriodTypeLabelProvider() = PeriodTypeLabelProvider()
-
-    @Provides
-    @PerServer
-    fun provideFilterPeriodUseCase(
-        filterPeriodsRepository: FilterPeriodsRepository,
-    ) =
-        GetFilterPeriods(filterPeriodsRepository)
 
     companion object {
         @JvmStatic
