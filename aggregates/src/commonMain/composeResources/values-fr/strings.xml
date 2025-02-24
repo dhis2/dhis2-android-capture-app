@@ -11,5 +11,6 @@
     <string name="run_validation_rules">Voulez-vous vérifier la qualité des données?</string>
     <string name="error">Erreur</string>
     <string name="complete_anyway">Terminer quand même</string>
+    <string name="review">Vérifier</string>
 
 </resources>

@@ -12,5 +12,5 @@
     <string name="run_validation_rules">Хочете перевірити якість даних?</string>
     <string name="error">Помилка</string>
     <string name="complete_anyway">Все одно завершити</string>
-
+    <string name="review">Перегляд</string>
 </resources>

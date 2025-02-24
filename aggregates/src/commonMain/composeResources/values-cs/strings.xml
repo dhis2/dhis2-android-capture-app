@@ -11,5 +11,6 @@
     <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
     <string name="error">Chyba</string>
     <string name="complete_anyway">Přesto dokončit</string>
+    <string name="review">Posouzení</string>
 
 </resources>

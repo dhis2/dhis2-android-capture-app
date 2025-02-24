@@ -15,6 +15,7 @@ import org.dhis2.mobile.aggregates.resources.mark_dataset_complete
 import org.dhis2.mobile.aggregates.resources.no
 import org.dhis2.mobile.aggregates.resources.not_now
 import org.dhis2.mobile.aggregates.resources.ok
+import org.dhis2.mobile.aggregates.resources.review
 import org.dhis2.mobile.aggregates.resources.run_validation_rules
 import org.dhis2.mobile.aggregates.resources.saved
 import org.dhis2.mobile.aggregates.resources.validation_success_title
@@ -62,4 +63,6 @@ internal class ResourceManager {
     }
 
     suspend fun provideCompleteAnyway() = getString(Res.string.complete_anyway)
+
+    suspend fun provideReview() = getString(Res.string.review)
 }

@@ -24,7 +24,7 @@ internal data class DataToReview(
             dataElementDisplayName ?: dataElementUid
         } else {
             String.format(
-                "%s | %s",
+                "%s / %s",
                 dataElementDisplayName,
                 categoryOptionComboDisplayName,
             )

@@ -2,6 +2,10 @@ package org.dhis2.mobile.aggregates.ui.provider
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material3.Icon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import org.dhis2.mobile.aggregates.model.Violation
@@ -12,6 +16,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 internal class DataSetModalDialogProvider(
     val resourceManager: ResourceManager,
@@ -140,6 +145,7 @@ internal class DataSetModalDialogProvider(
         violations: List<Violation>,
     ): DataSetModalDialogUIState {
         val completeAnywayText = resourceManager.provideCompleteAnyway()
+        val reviewText = resourceManager.provideReview()
 
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
@@ -150,22 +156,35 @@ internal class DataSetModalDialogProvider(
                 }",
                 showTopSectionDivider = false,
                 showBottomSectionDivider = false,
-                headerTextAlignment = TextAlign.Start,
             ),
             content = {
-                ValidationRulesErrorDialog()
+                ValidationRulesErrorDialog(violations)
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = null,
+                    tint = SurfaceColor.Error,
+                )
             },
             buttonsDialog = {
                 ButtonBlock(
                     modifier = Modifier.padding(
                         BottomSheetShellDefaults.buttonBlockPaddings(),
                     ),
-                    primaryButton = {},
-                    secondaryButton = {
+                    primaryButton = {
                         Button(
                             style = ButtonStyle.TEXT,
                             text = completeAnywayText,
                             onClick = onMarkAsComplete,
+                        )
+                    },
+                    secondaryButton = {
+                        Button(
+                            style = ButtonStyle.FILLED,
+                            text = reviewText,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onDismiss,
                         )
                     },
                 )
