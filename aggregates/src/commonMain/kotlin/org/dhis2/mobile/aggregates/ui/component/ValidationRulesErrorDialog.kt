@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,17 +63,15 @@ internal fun ValidationRulesErrorDialog(violations: List<Violation>) {
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-                .clip(Shape.Large),
-            pageSpacing = Spacing.Spacing4,
+            pageSpacing = Spacing.Spacing8,
+            contentPadding = PaddingValues(horizontal = Spacing.Spacing24),
         ) { page ->
             val violation = violations[page]
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(Shape.Large)
                     .background(SurfaceColor.PrimaryContainer)
                     .padding(Spacing.Spacing16),
             ) {

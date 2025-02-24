@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.ui.provider
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 internal class DataSetModalDialogProvider(
@@ -156,6 +158,7 @@ internal class DataSetModalDialogProvider(
                 }",
                 showTopSectionDivider = false,
                 showBottomSectionDivider = false,
+                contentPadding = PaddingValues(Spacing.Spacing0),
             ),
             content = {
                 ValidationRulesErrorDialog(violations)
