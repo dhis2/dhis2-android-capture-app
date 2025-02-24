@@ -1,6 +1,5 @@
 package org.dhis2.commons.filters.periods.ui
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -10,16 +9,13 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
-import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 import org.dhis2.commons.R
 import org.dhis2.commons.filters.Filters
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogComponentProvider
-import org.dhis2.commons.filters.periods.di.FilterPeriodsDialogModule
 import org.dhis2.commons.filters.periods.ui.viewmodel.FilterPeriodsDialogViewmodel
-import org.dhis2.commons.filters.periods.ui.viewmodel.FilterPeriodsDialogViewmodelFactory
-import javax.inject.Inject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 class FilterPeriodsDialog : BottomSheetDialogFragment() {
 
@@ -54,19 +50,6 @@ class FilterPeriodsDialog : BottomSheetDialogFragment() {
 
     private lateinit var launchMode: FilterDialogLaunchMode
 
-    @Inject
-    lateinit var factory: FilterPeriodsDialogViewmodelFactory.Factory
-
-    val viewModel: FilterPeriodsDialogViewmodel by viewModels {
-        factory.build(launchMode)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context.applicationContext as FilterPeriodsDialogComponentProvider).provideFilterPeriodsDialogComponent(
-            FilterPeriodsDialogModule(),
-        )?.inject(this)
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
@@ -86,6 +69,13 @@ class FilterPeriodsDialog : BottomSheetDialogFragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
+                val viewModel: FilterPeriodsDialogViewmodel =
+                    koinViewModel<FilterPeriodsDialogViewmodel>(parameters = {
+                        parametersOf(
+                            context,
+                            launchMode,
+                        )
+                    })
                 FilterPeriodsDialogUI(
                     viewModel = viewModel,
                     launchMode = launchMode,
