@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
-class EventPeriodRepository(private val d2: D2, private val periodRepository: PeriodRepository) {
+class EventPeriodRepository(private val d2: D2) : PeriodBaseRepository(d2) {
 
     fun getEventPeriodMinDate(
         programStage: ProgramStage,
@@ -30,18 +30,18 @@ class EventPeriodRepository(private val d2: D2, private val periodRepository: Pe
                 enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
             }
         } else {
-            periodRepository.generatePeriod(periodType, offset = 1).startDate()
+            generatePeriod(periodType, offset = 1).startDate()
         } ?: Date()
 
-        val currentPeriod = periodRepository.generatePeriod(periodType, currentDate)
+        val currentPeriod = generatePeriod(periodType, currentDate)
         val previousPeriodLastDay =
-            periodRepository.generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
+            generatePeriod(PeriodType.Daily, currentPeriod.startDate()!!, expiryDays ?: 0)
                 .startDate()
 
         return if (currentDate.after(previousPeriodLastDay) or (currentDate == previousPeriodLastDay)) {
             currentPeriod.startDate()
         } else {
-            periodRepository.generatePeriod(periodType, currentDate, offset = -1).startDate()
+            generatePeriod(periodType, currentDate, offset = -1).startDate()
         } ?: Date()
     }
 
@@ -69,7 +69,7 @@ class EventPeriodRepository(private val d2: D2, private val periodRepository: Pe
             Date()
         } ?: Date()
 
-        val currentPeriod = periodRepository.generatePeriod(periodType, currentDate)
+        val currentPeriod = generatePeriod(periodType, currentDate)
 
         return currentPeriod.startDate()
     }

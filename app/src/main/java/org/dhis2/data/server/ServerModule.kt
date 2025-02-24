@@ -16,7 +16,6 @@ import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
 import org.dhis2.commons.filters.periods.data.PeriodTypeLabelProvider
 import org.dhis2.commons.filters.periods.domain.GetFilterPeriods
 import org.dhis2.commons.periods.data.EventPeriodRepository
-import org.dhis2.commons.periods.data.PeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.reporting.CrashReportController
@@ -180,26 +179,20 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideEventPeriodRepository(d2: D2, periodRepository: PeriodRepository): EventPeriodRepository =
-        EventPeriodRepository(d2, periodRepository)
+    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository =
+        EventPeriodRepository(d2)
 
     @Provides
     @PerServer
-    fun providePeriodRepository(d2: D2): PeriodRepository =
-        PeriodRepository(d2)
-
-    @Provides
-    @PerServer
-    fun provideFilterPeriodsRepository(d2: D2, periodRepository: PeriodRepository): FilterPeriodsRepository =
-        FilterPeriodsRepository()
+    fun provideFilterPeriodsRepository(d2: D2): FilterPeriodsRepository =
+        FilterPeriodsRepository(d2)
 
     @Provides
     @PerServer
     fun providePeriodUseCase(
         eventPeriodRepository: EventPeriodRepository,
-        periodRepository: PeriodRepository,
     ) =
-        GetEventPeriods(eventPeriodRepository, periodRepository)
+        GetEventPeriods(eventPeriodRepository)
 
     @Provides
     @PerServer
@@ -208,10 +201,9 @@ class ServerModule {
     @Provides
     @PerServer
     fun provideFilterPeriodUseCase(
-        periodRepository: PeriodRepository,
         filterPeriodsRepository: FilterPeriodsRepository,
     ) =
-        GetFilterPeriods(filterPeriodsRepository, periodRepository)
+        GetFilterPeriods(filterPeriodsRepository)
 
     companion object {
         @JvmStatic

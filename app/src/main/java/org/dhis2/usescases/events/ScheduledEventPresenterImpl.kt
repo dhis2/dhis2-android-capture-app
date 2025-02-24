@@ -10,7 +10,6 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.periods.data.EventPeriodRepository
-import org.dhis2.commons.periods.data.PeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.providers.DEFAULT_MAX_DATE
@@ -37,8 +36,7 @@ class ScheduledEventPresenterImpl(
 ) : ScheduledEventContract.Presenter {
 
     private lateinit var disposable: CompositeDisposable
-    private val periodRepository = PeriodRepository(d2)
-    private val getEventPeriods = GetEventPeriods(EventPeriodRepository(d2, periodRepository), periodRepository)
+    private val getEventPeriods = GetEventPeriods(EventPeriodRepository(d2))
 
     override fun init() {
         disposable = CompositeDisposable()

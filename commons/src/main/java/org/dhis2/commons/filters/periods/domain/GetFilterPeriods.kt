@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 import org.dhis2.commons.periods.data.PeriodLabelProvider
-import org.dhis2.commons.periods.data.PeriodRepository
 import org.dhis2.commons.periods.data.PeriodSource
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.periods.model.PeriodOrder
@@ -17,7 +16,6 @@ import java.util.Calendar
 
 class GetFilterPeriods(
     private val filterPeriodRepository: FilterPeriodsRepository,
-    private val periodRepository: PeriodRepository,
     private val periodLabelProvider: PeriodLabelProvider = PeriodLabelProvider(),
 ) {
     operator fun invoke(
@@ -29,7 +27,7 @@ class GetFilterPeriods(
             val maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
             val minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -9) }.time
             PeriodSource(
-                periodRepository = periodRepository,
+                periodRepository = filterPeriodRepository,
                 periodLabelProvider = periodLabelProvider,
                 periodType = filterPeriodRepository.getDTOPeriod(filterPeriodType),
                 initialDate = minDate,

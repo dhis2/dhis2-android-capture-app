@@ -1,9 +1,11 @@
 package org.dhis2.commons.filters.periods.data
 
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
+import org.dhis2.commons.periods.data.PeriodBaseRepository
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 
-class FilterPeriodsRepository() {
+class FilterPeriodsRepository(d2: D2) : PeriodBaseRepository(d2) {
 
     fun getDefaultPeriodTypes(): List<FilterPeriodType> {
         return listOf(

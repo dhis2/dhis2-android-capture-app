@@ -31,17 +31,16 @@ class FilterPeriodsDialogViewmodel(
 
 ) : ViewModel() {
 
-    private val _filterPeriodsScreenState =
-        MutableStateFlow(
-            FilterPeriodsScreenState(
-                periodTypes = emptyList(),
-                periods = emptyList(),
-                selectedPeriodType = null,
-                title = resourceManager.getString(
-                    R.string.select_period,
-                ),
+    private val _filterPeriodsScreenState = MutableStateFlow(
+        FilterPeriodsScreenState(
+            periodTypes = emptyList(),
+            periods = emptyList(),
+            selectedPeriodType = null,
+            title = resourceManager.getString(
+                R.string.select_period,
             ),
-        )
+        ),
+    )
     val filterPeriodsScreenState = _filterPeriodsScreenState.asStateFlow()
 
     init {
@@ -55,13 +54,8 @@ class FilterPeriodsDialogViewmodel(
             if (launchMode is FilterDialogLaunchMode.NewPeriodDialog) filterPeriodsRepository.getDefaultPeriodTypes() else filterPeriodsRepository.getDataSetFilterPeriodTypes()
 
         _filterPeriodsScreenState.update {
-            FilterPeriodsScreenState(
+            filterPeriodsScreenState.value.copy(
                 periodTypes = periodTypes,
-                periods = emptyList(),
-                selectedPeriodType = null,
-                title = resourceManager.getString(
-                    R.string.select_period,
-                ),
             )
         }
     }
@@ -70,21 +64,13 @@ class FilterPeriodsDialogViewmodel(
         viewModelScope.launch {
             if (periodType == FilterPeriodType.DAILY) {
                 _filterPeriodsScreenState.update {
-                    FilterPeriodsScreenState(
-                        periodTypes = emptyList(),
-                        periods = emptyList(),
-                        selectedPeriodType = periodType,
-                        title = resourceManager.getString(
-                            periodTypeLabelProvider.invoke(periodType),
-                        ),
+                    filterPeriodsScreenState.value.copy(
                         showDatePicker = true,
                     )
                 }
             } else {
                 _filterPeriodsScreenState.update {
-                    FilterPeriodsScreenState(
-                        periodTypes = emptyList(),
-                        periods = emptyList(),
+                    filterPeriodsScreenState.value.copy(
                         selectedPeriodType = periodType,
                         title = resourceManager.getString(
                             periodTypeLabelProvider.invoke(periodType),
@@ -145,7 +131,9 @@ class FilterPeriodsDialogViewmodel(
                 } else {
                     FilterManager.getInstance().addPeriod(datePeriods)
                 }
-            } else -> {
+            }
+
+            else -> {
                 FilterManager.getInstance().addPeriod(datePeriods)
             }
         }
@@ -169,7 +157,9 @@ class FilterPeriodsDialogViewmodel(
                 } else {
                     FilterManager.getInstance().addPeriod(datePeriods)
                 }
-            } else -> {
+            }
+
+            else -> {
                 FilterManager.getInstance().addPeriod(datePeriods)
             }
         }
