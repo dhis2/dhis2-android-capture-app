@@ -10,5 +10,6 @@
     <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
     <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ?</string>
     <string name="error">ເກີດການຜິດພາດ</string>
+    <string name="review">ທົບທວນຄືນ</string>
 
 </resources>

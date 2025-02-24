@@ -12,5 +12,6 @@
     <string name="run_validation_rules">您要检查数据质量吗？</string>
     <string name="error">错误</string>
     <string name="complete_anyway">任何都要完成</string>
+    <string name="review">审查</string>
 
 </resources>

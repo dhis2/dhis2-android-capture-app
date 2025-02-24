@@ -12,5 +12,6 @@
     <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
     <string name="error">Fout</string>
     <string name="complete_anyway">In ieder geval compleet</string>
+    <string name="review">Beoordeling</string>
 
 </resources>
