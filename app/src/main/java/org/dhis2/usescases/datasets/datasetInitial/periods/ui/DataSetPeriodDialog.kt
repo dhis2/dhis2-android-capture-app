@@ -63,14 +63,14 @@ class DataSetPeriodDialog(
 
                         val state = rememberDatePickerState(
                             initialSelectedDateMillis = Date().time,
-                            yearRange = 1970..calendar.get(Calendar.YEAR),
+                            yearRange = 1970..calendar[Calendar.YEAR],
                             selectableDates = object : SelectableDates {
                                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                                     return utcTimeMillis <= calendar.timeInMillis
                                 }
 
                                 override fun isSelectableYear(year: Int): Boolean {
-                                    return year <= calendar.get(Calendar.YEAR)
+                                    return year <= calendar[Calendar.YEAR]
                                 }
                             },
                         )
