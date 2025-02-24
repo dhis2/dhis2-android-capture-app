@@ -12,5 +12,6 @@
     <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
     <string name="error">Lỗi</string>
     <string name="complete_anyway">Hoàn tất luôn</string>
+    <string name="review">Xem xét</string>
 
 </resources>

@@ -182,7 +182,7 @@ fun DataSetInstanceScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             AnimatedVisibility(
-                visible = true,
+                visible = (dataSetScreenState is DataSetScreenState.Loaded),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -350,6 +350,7 @@ fun DataSetInstanceScreen(
             content = dataSetUIState.content,
             buttonBlock = dataSetUIState.buttonsDialog,
             onDismiss = dataSetUIState.onDismiss,
+            icon = dataSetUIState.icon,
         )
     }
 }
