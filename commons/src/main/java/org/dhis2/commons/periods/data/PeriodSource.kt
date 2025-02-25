@@ -5,9 +5,9 @@ import androidx.paging.PagingState
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.periods.model.PeriodOrder
 import org.hisp.dhis.android.core.period.PeriodType
-import org.hisp.dhis.android.core.period.Period as DTOPeriod
 import java.util.Date
 import java.util.Locale
+import org.hisp.dhis.android.core.period.Period as DTOPeriod
 
 internal class PeriodSource(
     private val periodRepository: PeriodRepository,
@@ -18,7 +18,7 @@ internal class PeriodSource(
     private val maxDate: Date?,
     private val periodOrder: PeriodOrder = PeriodOrder.ASC,
 
-    ) : PagingSource<Int, Period>() {
+) : PagingSource<Int, Period>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> {
         return try {
@@ -54,7 +54,6 @@ internal class PeriodSource(
                         }, {
                             maxPageReached = true
                         })
-
                     } else {
                         if (period.startDate()?.after(initialDate) == true) {
                             add(
@@ -94,7 +93,7 @@ internal class PeriodSource(
         period: DTOPeriod,
         maxDate: Date?,
         addPeriodToListCallback: (() -> Unit),
-        breakLoopCallBack: (() -> Unit)
+        breakLoopCallBack: (() -> Unit),
     ) {
         if (maxDate == null || period.startDate()
                 ?.before(maxDate) == true || period.startDate() == maxDate
@@ -103,7 +102,6 @@ internal class PeriodSource(
         } else {
             breakLoopCallBack()
         }
-
     }
 
     override fun getRefreshKey(state: PagingState<Int, Period>): Int? {
@@ -118,7 +116,7 @@ private fun getOffset(
     periodOrder: PeriodOrder,
     indexInPage: Int,
     page: Int,
-    periodsPerPage: Int
+    periodsPerPage: Int,
 ): Int {
     return if (periodOrder == PeriodOrder.ASC) {
         indexInPage + periodsPerPage * (page - 1)
