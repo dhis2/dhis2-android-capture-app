@@ -894,10 +894,6 @@ public class DateUtils {
         return datePeriods;
     }
 
-    public Boolean isDataSetExpired(int expiredDays, Date periodInitialDate) {
-        return Calendar.getInstance().getTime().getTime() > periodInitialDate.getTime() + TimeUnit.DAYS.toMillis(expiredDays);
-    }
-
     public Boolean isInsideInputPeriod(DataInputPeriod dataInputPeriodModel) {
         if (dataInputPeriodModel.openingDate() == null && dataInputPeriodModel.closingDate() != null)
             return Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
@@ -912,22 +908,4 @@ public class DateUtils {
                 && Calendar.getInstance().getTime().getTime() < dataInputPeriodModel.closingDate().getTime();
     }
 
-    public Boolean isInsideFutureInputPeriod(Date endPeriodDate, Integer futureOpenDays) {
-        if (futureOpenDays != null && futureOpenDays > 0) {
-            boolean isInside = false;
-
-            Date today = DateUtils.getInstance().getToday();
-
-            long diffInMillis = Math.abs(endPeriodDate.getTime() - today.getTime());
-            long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-
-
-            if (diffInDays < futureOpenDays) {
-                isInside = true;
-            }
-            return isInside;
-        } else {
-            return false;
-        }
-    }
 }
