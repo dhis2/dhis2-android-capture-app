@@ -7,7 +7,7 @@ internal sealed class InputType {
     data object PhoneNumber : InputType()
     data object Email : InputType()
     data object Boolean : InputType()
-    data object TruOnly : InputType()
+    data object TrueOnly : InputType()
     data object DateTime : InputType()
     data object Date : InputType()
     data object Time : InputType()

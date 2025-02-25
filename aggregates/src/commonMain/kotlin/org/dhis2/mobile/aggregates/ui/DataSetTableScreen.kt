@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -67,6 +69,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -263,7 +266,7 @@ fun DataSetInstanceScreen(
                     actionButton = {
                         Button(
                             style = ButtonStyle.FILLED,
-                            text = "Done",
+                            text = stringResource(Res.string.action_done),
                             onClick = {
                                 dataSetTableViewModel.updateSelectedCell(null)
                             },

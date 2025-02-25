@@ -570,7 +570,7 @@ internal fun InputProvider(
             )
         }
 
-        InputType.TruOnly -> {
+        InputType.TrueOnly -> {
             InputYesOnlyCheckBox(
                 checkBoxData = CheckBoxData(
                     uid = inputData.id,

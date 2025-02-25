@@ -10,7 +10,7 @@ internal fun ValueType.toInputType() = when (this) {
     ValueType.PHONE_NUMBER -> InputType.PhoneNumber
     ValueType.EMAIL -> InputType.Email
     ValueType.BOOLEAN -> InputType.Boolean
-    ValueType.TRUE_ONLY -> InputType.TruOnly
+    ValueType.TRUE_ONLY -> InputType.TrueOnly
     ValueType.DATE -> InputType.Date
     ValueType.DATETIME -> InputType.DateTime
     ValueType.TIME -> InputType.Time

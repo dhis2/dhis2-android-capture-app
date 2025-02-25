@@ -120,7 +120,7 @@ internal class GetDataValueInputTest {
         InputType.PhoneNumber,
         InputType.Email,
         InputType.Boolean,
-        InputType.TruOnly,
+        InputType.TrueOnly,
         InputType.DateTime,
         InputType.Date,
         InputType.Time,
