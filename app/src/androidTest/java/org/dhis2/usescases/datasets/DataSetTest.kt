@@ -110,11 +110,32 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun checkIndicatorsStep() {
+    }
+
+    @Test
+    fun formConfigurationTestAutomate() {
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+
+        //Step - Start Activity
+        startDataSetDetailActivity(
+            "DMicXfEri6s",
+            "Form configuration options",
+            ruleDataSetDetail
+        )
+
+        //Step - ANDROAPP-6795 Check content boxes above and below the table
+        checkContentBoxesAreDisplayed()
+        //Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
+        //Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
+        //Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
+        }
+
+        private suspend fun checkIndicatorsStep() {
         composeTestRule.awaitIdle()
         dataSetTableRobot(composeTestRule) {
             indicatorTableIsDisplayed()
         }
+
     }
 
     private suspend fun checkTotals() {
@@ -156,6 +177,38 @@ class DataSetTest : BaseTest() {
             assertCellHasValue("dzjKKQq0cSO", cell00Id, "12")
         }
     }
+
+@OptIn(ExperimentalTestApi::class)
+private fun checkContentBoxesAreDisplayed() {
+    dataSetRobot {
+        clickOnDataSetAtPosition(0)
+    }
+    dataSetDetailRobot(composeTestRule) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText("CONTENT BEFORE 1:", true))
+        composeTestRule.onNodeWithText("CONTENT BEFORE 1:", true)
+            .assertIsDisplayed()
+    }
+    dataSetTableRobot(composeTestRule) {
+        scrollToItem(2)
+        composeTestRule.onNodeWithText("CONTENT AFTER 1:", true)
+            .assertIsDisplayed()
+    }
+
+    // Check top and bottom content is displayed when changing sections
+    dataSetDetailRobot(composeTestRule) {
+        composeTestRule.onNodeWithTag("TAB_2", useUnmergedTree = true).performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasText("CONTENT BEFORE 2:", true))
+        composeTestRule.onNodeWithText("CONTENT BEFORE 2:", true)
+            .assertIsDisplayed()
+    }
+
+    dataSetTableRobot(composeTestRule) {
+        scrollToItem(2)
+        composeTestRule.onNodeWithText("CONTENT AFTER 2:", true)
+            .assertIsDisplayed()
+    }
+}
+
 
     private fun checkFilterCombination(
         orgUnit: String,
