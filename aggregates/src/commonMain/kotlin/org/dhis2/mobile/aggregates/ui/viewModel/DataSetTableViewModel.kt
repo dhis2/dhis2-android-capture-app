@@ -395,10 +395,12 @@ internal class DataSetTableViewModel(
                 }
 
                 SUCCESS -> {
+                    onModalDialogDismissed()
                     onExit(resourceManager.provideSavedAndCompleted())
                 }
 
                 ERROR -> {
+                    onModalDialogDismissed()
                     showSnackbar(resourceManager.provideErrorOnCompleteDataset())
                 }
             }
@@ -406,9 +408,9 @@ internal class DataSetTableViewModel(
     }
 
     private fun onExit(exitMessage: String) {
+        showSnackbar(exitMessage)
         viewModelScope.launch {
             withContext(dispatcher.main()) {
-                showSnackbar(exitMessage)
                 onClose()
             }
         }
@@ -424,7 +426,9 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private suspend fun showSnackbar(message: String) {
-        _dataSetScreenState.value.sendSnackbarMessage(message)
+    private fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            _dataSetScreenState.value.sendSnackbarMessage(message)
+        }
     }
 }
