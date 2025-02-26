@@ -52,6 +52,8 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         return lifeCycleObservable
     }
 
+    open var handleEdgeToEdge = true
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -106,7 +108,8 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         if (this !is SplashActivity &&
             this !is LoginActivity &&
             this !is AccountsActivity &&
-            this !is ScanActivity
+            this !is ScanActivity &&
+            handleEdgeToEdge
         ) {
             if (serverComponent != null) {
                 setTheme(serverComponent.themeManager().getProgramTheme())
@@ -115,7 +118,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
             }
         }
 
-        handleInsets()
+        if (handleEdgeToEdge) handleInsets()
 
         super.onCreate(savedInstanceState)
     }

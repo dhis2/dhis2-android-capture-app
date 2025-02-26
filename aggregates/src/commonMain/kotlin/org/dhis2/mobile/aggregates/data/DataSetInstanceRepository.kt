@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.data
 
 import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.DataElementInfo
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
@@ -66,4 +67,30 @@ internal interface DataSetInstanceRepository {
         dataElementUids: List<String>,
         attrOptionComboUid: String,
     ): List<Pair<Pair<String, String>, String?>>
+
+    suspend fun dataElementInfo(
+        dataSetUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+    ): DataElementInfo
+
+    suspend fun value(
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+    ): String?
+
+    suspend fun updateValue(
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+        dataElementUid: String,
+        categoryOptionComboUid: String,
+        value: String?,
+    ): Result<Unit>
+
+    suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String
+    suspend fun getCoordinatesFrom(value: String): Pair<Double, Double>
 }

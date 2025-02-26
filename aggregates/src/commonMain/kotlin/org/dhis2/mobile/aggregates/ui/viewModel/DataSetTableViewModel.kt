@@ -15,26 +15,28 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
+import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.ResourceManager
-import org.dhis2.mobile.aggregates.ui.constants.DEFAULT_LABEL
-import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
+import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.model.mapper.toInputData
+import org.dhis2.mobile.aggregates.model.mapper.toTableModel
+import org.dhis2.mobile.aggregates.model.mapper.updateValue
+import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 
 internal class DataSetTableViewModel(
     private val getDataSetInstanceData: GetDataSetInstanceData,
     private val getDataSetSectionData: GetDataSetSectionData,
     private val getDataValueData: GetDataValueData,
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
+    private val getDataValueInput: GetDataValueInput,
+    private val setDataValue: SetDataValue,
     private val resourceManager: ResourceManager,
     private val dispatcher: Dispatcher,
 ) : ViewModel() {
@@ -121,191 +123,93 @@ internal class DataSetTableViewModel(
         var absoluteRowIndex = 0
         val sectionData = getDataSetSectionData(sectionUid)
         val tables = sectionData.tableGroups.map { tableGroup ->
-
             async(dispatcher.io()) {
-                val headerRows = tableGroup.headerRows.map { headerColumn ->
-                    TableHeaderRow(
-                        cells = headerColumn.map { label ->
-                            TableHeaderCell(
-                                value = label.takeIf { it != DEFAULT_LABEL }
-                                    ?: resourceManager.defaultHeaderLabel(),
-                            )
-                        },
-                    )
-                }
+                val dataValueDataMap = getDataValueData(tableGroup.cellElements.map { it.uid })
 
-                val tableHeader = TableHeader(
-                    rows = headerRows,
-                    extraColumns = emptyList(),
-                )
+                val tableModel = tableGroup.toTableModel(
+                    resourceManager = resourceManager,
+                    sectionData = sectionData,
+                    dataValueDataMap = dataValueDataMap,
+                    absoluteRowIndex = absoluteRowIndex,
+                ).also { absoluteRowIndex += it.tableRows.size }
 
-                val dataValueDataMap = buildMap {
-                    putAll(
-                        getDataValueData(
-                            dataElementUids = tableGroup.cellElements.map { it.uid },
-                        ),
-                    )
-                }
-
-                val tableRows = tableGroup.cellElements
-                    .map { cellElement ->
-                        TableRowModel(
-                            rowHeaders = listOf(
-                                RowHeader(
-                                    id = cellElement.uid,
-                                    title = cellElement.label,
-                                    row = absoluteRowIndex,
-                                    column = 0,
-                                    description = cellElement.description,
-                                ),
-                            ),
-                            values = buildMap {
-                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
-                                    val key = Pair(
-                                        cellElement.uid,
-                                        tableGroup.headerCombinations[columnIndex],
-                                    )
-                                    val dataValueData = dataValueDataMap[key]
-
-                                    put(
-                                        key = columnIndex,
-                                        value = TableCell(
-                                            id = cellElement.uid,
-                                            row = absoluteRowIndex,
-                                            column = columnIndex,
-                                            value = dataValueData?.value,
-                                            editable = sectionData.isEditable(cellElement.uid),
-                                            mandatory = sectionData.isMandatory(
-                                                rowId = cellElement.uid,
-                                                columnId = tableGroup.headerCombinations[columnIndex],
-                                            ),
-                                            error = dataValueData?.conflicts?.errors(),
-                                            warning = dataValueData?.conflicts?.warnings(),
-                                            legendColor = null,
-                                            isMultiText = cellElement.isMultiText,
-                                        ),
-                                    )
-                                }
-                                if (sectionData.showRowTotals()) {
-                                    put(
-                                        key = tableHeader.tableMaxColumns(),
-                                        value = TableCell(
-                                            id = cellElement.uid,
-                                            row = absoluteRowIndex,
-                                            column = tableHeader.tableMaxColumns(),
-                                            value = this.values.sumOf {
-                                                it.value?.toDoubleOrNull() ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                            },
-                            maxLines = 3,
-                        ).also {
-                            absoluteRowIndex += 1
-                        }
-                    }
-
-                val totalRow = if (sectionData.showColumnTotals()) {
-                    listOf(
-                        TableRowModel(
-                            rowHeaders = listOf(
-                                RowHeader(
-                                    id = "TotalRow",
-                                    title = "Total",
-                                    row = absoluteRowIndex,
-                                    column = 0,
-                                ),
-                            ),
-                            values = buildMap {
-                                repeat(tableHeader.tableMaxColumns()) { columnIndex ->
-                                    put(
-                                        key = columnIndex,
-                                        value = TableCell(
-                                            id = "TotalRow",
-                                            row = absoluteRowIndex,
-                                            column = columnIndex,
-                                            value = tableRows.sumOf {
-                                                it.values[columnIndex]?.value?.toDoubleOrNull()
-                                                    ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                                if (sectionData.showRowTotals()) {
-                                    put(
-                                        key = tableHeader.tableMaxColumns(),
-                                        value = TableCell(
-                                            id = "TotalRow",
-                                            row = absoluteRowIndex,
-                                            column = tableHeader.tableMaxColumns(),
-                                            value = this.values.sumOf {
-                                                it.value?.toDoubleOrNull() ?: 0.0
-                                            }.toString(),
-                                            editable = false,
-                                        ),
-                                    )
-                                }
-                            },
-                            maxLines = 1,
-                        ).also {
-                            absoluteRowIndex += 1
-                        },
-                    )
+                if (sectionData.showColumnTotals()) {
+                    tableModel.withTotalsRow(resourceManager)
+                        .also { absoluteRowIndex += 1 }
                 } else {
-                    emptyList()
+                    tableModel
                 }
-
-                TableModel(
-                    id = tableGroup.uid,
-                    title = tableGroup.label,
-                    tableHeaderModel = tableHeader,
-                    tableRows = tableRows + totalRow,
-                )
             }
         }.awaitAll()
 
-        val indicators = listOf(
-            TableModel(
-                id = INDICATOR_TABLE_UID,
-                title = "",
-                tableHeaderModel = TableHeader(
-                    rows = listOf(
-                        TableHeaderRow(
-                            cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
-                        ),
-                    ),
-                    extraColumns = emptyList(),
-                ),
-                tableRows = getDataSetSectionIndicators(sectionUid)?.entries?.map { (key, value) ->
-                    TableRowModel(
-                        rowHeaders = listOf(
-                            RowHeader(
-                                id = key,
-                                title = key,
-                                row = absoluteRowIndex,
-                                column = 0,
-                            ),
-                        ),
-                        values = mapOf(
-                            0 to TableCell(
-                                id = key,
-                                row = absoluteRowIndex,
-                                column = 0,
-                                value = value,
-                                editable = false,
-                                mandatory = false,
-                                legendColor = null,
-                            ),
-                        ),
-                    ).also {
-                        absoluteRowIndex += 1
-                    }
-                } ?: emptyList(),
-            ),
-        )
+        val indicators = getDataSetSectionIndicators(sectionUid)
+            ?.toTableModel(resourceManager, absoluteRowIndex)
+            ?.also { absoluteRowIndex + it.tableRows.size }
+            ?.let { listOf(it) }
+            ?: emptyList()
+
         tables + indicators
+    }
+
+    fun updateSelectedCell(cellId: String?) {
+        viewModelScope.launch(dispatcher.io()) {
+            val inputData = if (cellId != null) {
+                val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
+                getDataValueInput(rowIds, columnIds).toInputData(cellId)
+            } else {
+                null
+            }
+
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
+                        tableModels = it.dataSetSectionTable.tables().map { table ->
+                            table.updateValue(cellId, inputData?.value, resourceManager)
+                        },
+                    ) ?: it.dataSetSectionTable,
+                    selectedCellInfo = inputData,
+                ) ?: it
+            }
+        }
+    }
+
+    fun onUiAction(uiAction: UiAction) {
+        viewModelScope.launch(dispatcher.io()) {
+            when (uiAction) {
+                is UiAction.OnFocusChanged -> {
+                }
+
+                UiAction.OnNextClick -> {
+                    TODO()
+                }
+
+                is UiAction.OnValueChanged -> {
+                    val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                    setDataValue(
+                        rowIds = rowIds,
+                        columnIds = columnIds,
+                        value = uiAction.newValue,
+                    ).fold(
+                        onSuccess = {
+                            updateSelectedCell(uiAction.cellId)
+                        },
+                        onFailure = {
+                            // TODO
+                        },
+                    )
+                }
+
+                is UiAction.OnAddImage -> TODO()
+                is UiAction.OnCall -> TODO()
+                is UiAction.OnCaptureCoordinates -> TODO()
+                is UiAction.OnDateTimeAction -> TODO()
+                is UiAction.OnDownloadImage -> TODO()
+                is UiAction.OnEmailAction -> TODO()
+                is UiAction.OnLinkClicked -> TODO()
+                is UiAction.OnOpenFile -> TODO()
+                is UiAction.OnSelectFile -> TODO()
+                is UiAction.OnShareImage -> TODO()
+            }
+        }
     }
 }
