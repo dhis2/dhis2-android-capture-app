@@ -5,13 +5,13 @@ import io.reactivex.Single
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.apache.commons.lang3.math.NumberUtils
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.utils.ConfigUtils
 import org.dhis2.android.rtsm.utils.RuleEngineHelper
 import org.dhis2.android.rtsm.utils.printRuleEffects
+import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.rules.RuleEngineContextData
 import org.dhis2.mobileProgramRules.toRuleDataValue
 import org.dhis2.mobileProgramRules.toRuleEngineInstant
@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.api.RuleEngine
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEffect
@@ -48,9 +49,9 @@ class RuleValidationHelperImpl @Inject constructor(
         program: String,
         transaction: Transaction,
         eventUid: String?,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ): Flowable<List<RuleEffect>> {
-        return ruleEngineData(entry.item.id, appConfig.program).flatMap { ruleEngineData ->
+        return ruleEngineData(entry.item.id, stockUseCase.programUid).flatMap { ruleEngineData ->
             val programStage = programStage(program) ?: return@flatMap Flowable.empty()
 
             Flowable.just(
@@ -61,7 +62,7 @@ class RuleValidationHelperImpl @Inject constructor(
                         entryDataValues(
                             entry.qty,
                             transaction,
-                            appConfig,
+                            stockUseCase,
                         ),
                     )
                 }
@@ -276,14 +277,14 @@ class RuleValidationHelperImpl @Inject constructor(
     private fun entryDataValues(
         qty: String?,
         transaction: Transaction,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ): List<RuleDataValue> {
         val values = mutableListOf<RuleDataValue>()
 
         // Add the quantity if defined, and valid (signs (+/-) could come as streams if incomplete)
         if (qty != null && NumberUtils.isCreatable(qty)) {
             val deUid =
-                ConfigUtils.getTransactionDataElement(transaction.transactionType, appConfig)
+                ConfigUtils.getTransactionDataElement(transaction.transactionType, stockUseCase)
             values.add(
                 RuleDataValue(
                     dataElement = deUid,
@@ -301,7 +302,7 @@ class RuleValidationHelperImpl @Inject constructor(
                         ?.code()?.let { code ->
                             values.add(
                                 RuleDataValue(
-                                    dataElement = appConfig.distributedTo,
+                                    dataElement = stockUseCase.distributedTo(),
                                     value = code,
                                 ),
                             )
