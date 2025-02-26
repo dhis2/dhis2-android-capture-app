@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.ui.home
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +27,7 @@ import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.ParcelUtils
+import org.dhis2.android.rtsm.utils.Utils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.distributedTo
@@ -40,6 +42,7 @@ import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import javax.inject.Inject
 
+@SuppressLint("MutableCollectionMutableState")
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val disposable: CompositeDisposable,
@@ -50,7 +53,7 @@ class HomeViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : BaseViewModel(schedulerProvider) {
 
-    private val _config = MutableStateFlow<StockUseCase?>(null)
+    private val _config = MutableStateFlow(Utils.emptyStockUseCase())
     private val config: StateFlow<StockUseCase?> = _config
 
     private val program = savedState.get<String>(Constants.PROGRAM_UID)
@@ -89,7 +92,9 @@ class HomeViewModel @Inject constructor(
 
     private fun loadStockUseCases(programUid: String) {
         viewModelScope.launch {
-            _config.value = d2.stockUseCase(programUid)
+            d2.stockUseCase(programUid)?.let {
+                _config.value = it
+            }
         }
     }
 

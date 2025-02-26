@@ -10,6 +10,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,10 +40,9 @@ import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
+import org.dhis2.android.rtsm.utils.Utils
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.Constants
-import org.dhis2.commons.bindings.stockUseCase
-import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.composetable.TableConfigurationState
@@ -78,8 +78,8 @@ class ManageStockViewModel @Inject constructor(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private val _config = MutableStateFlow<StockUseCase?>(null)
-    private val config: StateFlow<StockUseCase?> = _config
+    private val _config = MutableStateFlow(Utils.emptyStockUseCase())
+    private val config: StateFlow<StockUseCase> = _config
 
     private val program = savedState.get<String>(Constants.PROGRAM_UID)
         ?: throw InitializationException("Some configuration parameters are missing")
@@ -162,7 +162,7 @@ class ManageStockViewModel @Inject constructor(
                     transaction.value?.facility?.uid ?: "",
                 ),
                 transaction.value?.facility?.uid,
-                config.value!!,
+                config.value,
             ).items
 
             result.asFlow().collect { stockItems ->
@@ -244,9 +244,9 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.value!!.programUid,
+                                config.value.programUid,
                                 transaction.value!!,
-                                config.value!!,
+                                config.value,
                             ),
                         )
                     },
@@ -304,7 +304,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config.value!!,
+                config.value,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -358,6 +358,7 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun onSaveValueChange(cell: TableCell) {
         viewModelScope.launch(
             dispatcherProvider.io(),
@@ -372,7 +373,7 @@ class ManageStockViewModel @Inject constructor(
     private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
         _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
 
-            cell.value?.let { value ->
+            cell.value?.let { _ ->
                 when (val result = validate(cell)) {
                     is ValidationResult.Error -> {
                         addItem(
@@ -411,7 +412,7 @@ class ManageStockViewModel @Inject constructor(
         value: String?,
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
-            (ruleEffect.ruleAction).field() == config.value!!.stockOnHand
+            (ruleEffect.ruleAction).field() == config.value.stockOnHand
 
         ) {
             val data = ruleEffect.data
