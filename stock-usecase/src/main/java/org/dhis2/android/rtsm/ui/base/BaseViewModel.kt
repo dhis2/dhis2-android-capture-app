@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,13 +31,13 @@ open class BaseViewModel @Inject constructor(
         action: RowAction,
         program: String,
         transaction: Transaction,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ): Disposable {
         return ruleValidationHelper.evaluate(
             entry = action.entry,
             program = program,
             transaction = transaction,
-            appConfig = appConfig,
+            stockUseCase = stockUseCase,
         )
             .doOnError { it.printStackTrace() }
             .observeOn(schedulerProvider.io())

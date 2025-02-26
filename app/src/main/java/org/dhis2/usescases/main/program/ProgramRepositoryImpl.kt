@@ -3,7 +3,6 @@ package org.dhis2.usescases.main.program
 import io.reactivex.Flowable
 import io.reactivex.parallel.ParallelFlowable
 import org.dhis2.commons.bindings.isStockProgram
-import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -118,11 +117,7 @@ internal class ProgramRepositoryImpl(
                     filtersAreActive = false,
                     metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
                 ).copy(
-                    stockConfig = if (d2.isStockProgram(program.uid())) {
-                        d2.stockUseCase(program.uid())?.toAppConfig()
-                    } else {
-                        null
-                    },
+                    isStockUseCase = d2.isStockProgram(program.uid()),
                 )
             }.toList().toFlowable().blockingFirst()
     }

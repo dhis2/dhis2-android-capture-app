@@ -1,11 +1,11 @@
 package org.dhis2.android.rtsm.services
 
 import io.reactivex.Single
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.SearchResult
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 interface StockManager {
     /**
@@ -18,11 +18,13 @@ interface StockManager {
      * and total count of matched items
      */
 
-    suspend fun search(query: SearchParametersModel, ou: String?, config: AppConfig): SearchResult
+    suspend fun search(query: SearchParametersModel, ou: String?, config: StockUseCase): SearchResult
 
     fun saveTransaction(
         items: List<StockEntry>,
         transaction: Transaction,
-        appConfig: AppConfig,
+        stockUseCase: StockUseCase,
     ): Single<Unit>
+
+    suspend fun stockUseCase(program: String): StockUseCase?
 }
