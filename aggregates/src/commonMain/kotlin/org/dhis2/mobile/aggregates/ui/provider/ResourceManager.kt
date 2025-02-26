@@ -5,7 +5,6 @@ import org.dhis2.mobile.aggregates.resources.complete
 import org.dhis2.mobile.aggregates.resources.complete_anyway
 import org.dhis2.mobile.aggregates.resources.dataset_saved_completed
 import org.dhis2.mobile.aggregates.resources.default_column_label
-import org.dhis2.mobile.aggregates.resources.total_header_label
 import org.dhis2.mobile.aggregates.resources.error
 import org.dhis2.mobile.aggregates.resources.error_on_complete_dataset
 import org.dhis2.mobile.aggregates.resources.errors
@@ -18,6 +17,7 @@ import org.dhis2.mobile.aggregates.resources.ok
 import org.dhis2.mobile.aggregates.resources.review
 import org.dhis2.mobile.aggregates.resources.run_validation_rules
 import org.dhis2.mobile.aggregates.resources.saved
+import org.dhis2.mobile.aggregates.resources.total_header_label
 import org.dhis2.mobile.aggregates.resources.validation_success_title
 import org.dhis2.mobile.aggregates.resources.yes
 import org.jetbrains.compose.resources.getString

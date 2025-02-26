@@ -3,11 +3,10 @@
 package org.dhis2.mobile.aggregates.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -21,10 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,19 +52,19 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
+import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
-import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -89,10 +85,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.jetbrains.compose.resources.stringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
