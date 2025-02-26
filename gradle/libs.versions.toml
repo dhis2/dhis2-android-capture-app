@@ -92,6 +92,7 @@ koin = "4.0.2"
 lifecycleViewmodel = "2.8.7"
 androidx-navigation = "2.7.0"
 junitJupiter = "5.8.1"
+ktxml = "0.3.2"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -228,6 +229,7 @@ androidx-lifecycle-viewmodel-compose-kpm = { module = "org.jetbrains.androidx.li
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 
+ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "kotlinx-serialization" }

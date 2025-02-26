@@ -4,7 +4,6 @@ package org.dhis2.mobile.aggregates.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -40,6 +43,8 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.commons.html.HtmlStyle
+import org.dhis2.mobile.commons.html.htmlToAnnotatedString
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -53,7 +58,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.model.Tab
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
+import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -161,13 +169,16 @@ fun DataSetInstanceScreen(
                 primaryPane = {
                     when (dataSetScreenState) {
                         is DataSetScreenState.Loaded ->
+
                             DataSetTableContent(
                                 modifier = Modifier.background(
                                     color = MaterialTheme.colorScheme.background,
                                     shape = RoundedCornerShape(topEnd = Radius.L),
                                 ),
+                                dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                 dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                 dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                                currentSection = dataSetScreenState.currentSection(),
                             )
 
                         DataSetScreenState.Loading ->
@@ -220,6 +231,7 @@ fun DataSetInstanceScreen(
                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                     onSectionSelected = dataSetTableViewModel::onSectionSelected,
                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                    currentSection = dataSetScreenState.currentSection(),
                 )
             } else {
                 ContentLoading(
@@ -245,6 +257,7 @@ private fun DataSetSinglePane(
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
+    currentSection: String?,
 ) {
     Column(
         modifier = modifier
@@ -278,9 +291,24 @@ private fun DataSetSinglePane(
             dataSetDetails = dataSetDetails,
         )
 
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
-                DataSetTable(dataSetSectionTable.tables())
+                DataSetTable(dataSetSectionTable.tables(), bottomContent = {
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                        HtmlContentBox(
+                            text = it,
+                            modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
+
+                        )
+                    }
+                })
 
             DataSetSectionTable.Loading ->
                 ContentLoading(Modifier.weight(1f))
@@ -299,7 +327,7 @@ private fun SectionTabs(
     }
     AdaptiveTabRow(
         modifier = modifier
-            .height(48.dp)
+            .height(Spacing.Spacing48)
             .fillMaxWidth(),
         tabLabels = tabLabels,
         onTabClicked = { selectedTabIndex ->
@@ -311,24 +339,76 @@ private fun SectionTabs(
 @Composable
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
+    dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
+    currentSection: String?,
+
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-        verticalArrangement = spacedBy(Spacing.Spacing24),
+            .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
+
     ) {
         DataSetDetails(
-            modifier.padding(horizontal = 16.dp),
+            modifier.padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
             dataSetDetails = dataSetDetails,
         )
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
-                DataSetTable(dataSetSectionTable.tables())
+                DataSetTable(dataSetSectionTable.tables(), bottomContent = {
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                        HtmlContentBox(
+                            text = it,
+                            modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0).testTag("HTML_BOTTOM_CONTENT"),
+
+                        )
+                    }
+                })
 
             DataSetSectionTable.Loading ->
                 ContentLoading(Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
+    val textStyle = MaterialTheme.typography.bodyMedium.copy(
+        color = TextColor.OnSurfaceLight,
+    )
+    val formatedText = htmlToAnnotatedString(
+        html = text,
+        linkStyle = HtmlStyle(
+            textLinkStyles = TextLinkStyles(
+                style = textStyle.toSpanStyle().copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline),
+            ),
+        ),
+        genericStyle = textStyle,
+    )
+    Column(Modifier.fillMaxWidth().background(color = SurfaceColor.ContainerLowest)) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = Shape.Small,
+                ),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Column(Modifier.padding(Spacing.Spacing8)) {
+                Text(
+                    text = formatedText,
+                    textAlign = TextAlign.Start,
+                )
+            }
         }
     }
 }
@@ -347,9 +427,9 @@ private fun ContentLoading(
 }
 
 @Composable
-private fun DataSetTable(tableModels: List<TableModel>) {
+private fun DataSetTable(tableModels: List<TableModel>, bottomContent: @Composable (() -> Unit)? = null) {
     DataTable(
         tableList = tableModels,
-        bottomContent = {},
+        bottomContent = bottomContent,
     )
 }
