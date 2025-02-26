@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.Section
+import org.hisp.dhis.android.core.dataset.TabsDirection
 
 internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
@@ -76,7 +77,7 @@ internal class DataSetInstanceRepositoryImpl(
         .uid(dataSetUid)
         .blockingGet()?.let {
             DataSetRenderingConfig(
-                useVerticalTabs = it.renderHorizontally() != true,
+                useVerticalTabs = it.displayOptions()?.tabsDirection() == TabsDirection.VERTICAL,
             )
         } ?: DataSetRenderingConfig(
         useVerticalTabs = true,
