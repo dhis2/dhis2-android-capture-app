@@ -13,6 +13,7 @@ import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
@@ -83,7 +84,6 @@ class HomeViewModelUnitTest {
     private lateinit var testSchedulerProvider: TestCoroutineScheduler
     private lateinit var facilities: List<OrganisationUnit>
     private lateinit var destinations: List<Option>
-    private lateinit var stockUseCase: StockUseCase
 
     private lateinit var analytics: List<AnalyticsDhisVisualizationsGroup>
 
@@ -117,6 +117,9 @@ class HomeViewModelUnitTest {
     private val disposable = CompositeDisposable()
 
     @Mock
+    private lateinit var stockUseCase: StockUseCase
+
+    @Mock
     private lateinit var facilitiesObserver: Observer<OperationState<List<OrganisationUnit>>>
 
     @Mock
@@ -145,7 +148,7 @@ class HomeViewModelUnitTest {
                     sortOrder = 1,
                     transactionType = StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED,
                     distributedTo = "UIbjnkdsn8",
-                    stockDistributed = "HJbhj984jh",
+                    stockDistributed = "OP47bhj98jh",
                 ),
                 StockUseCaseTransaction.Discarded(
                     sortOrder = 2,
@@ -155,7 +158,7 @@ class HomeViewModelUnitTest {
                 StockUseCaseTransaction.Correction(
                     sortOrder = 3,
                     transactionType = StockUseCaseTransaction.Companion.TransactionType.CORRECTED,
-                    stockCount = "HJbhj984jh",
+                    stockCount = "JKnaosi9pio",
                 ),
             ),
         )
@@ -173,6 +176,11 @@ class HomeViewModelUnitTest {
 
         schedulerProvider = TrampolineSchedulerProvider()
         testSchedulerProvider = TestCoroutineScheduler()
+
+        runBlocking {
+            whenever(metadataManager.loadStockUseCase(stockUseCase.programUid))
+                .thenReturn(stockUseCase)
+        }
 
         doReturn(
             Single.just(facilities),

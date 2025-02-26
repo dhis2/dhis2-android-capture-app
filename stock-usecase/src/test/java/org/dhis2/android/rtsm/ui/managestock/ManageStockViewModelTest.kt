@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.liveData
 import com.github.javafaker.Faker
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.dhis2.android.rtsm.MainDispatcherRule
 import org.dhis2.android.rtsm.data.DestinationFactory
@@ -57,6 +58,8 @@ class ManageStockViewModelTest {
     private val faker = Faker()
 
     private lateinit var schedulerProvider: BaseSchedulerProvider
+
+    @Mock
     private lateinit var stockUseCase: StockUseCase
 
     @Mock
@@ -130,6 +133,11 @@ class ManageStockViewModelTest {
         transactionDate = "2021-08-05"
 
         schedulerProvider = TrampolineSchedulerProvider()
+
+        runBlocking {
+            whenever(stockManager.stockUseCase(stockUseCase.programUid))
+                .thenReturn(stockUseCase)
+        }
     }
 
     @Test
