@@ -282,6 +282,8 @@ internal class DataSetTableViewModelTest : KoinTest {
         whenever(checkValidationRulesConfiguration()) doReturn NONE
         // And data set instance is completed
         whenever(checkCompletionStatus()) doReturn COMPLETED
+        // And data set is saved
+        whenever(resourceManager.provideSaved()) doReturn "saved"
 
         // When attempt to save
         viewModel.onSaveClicked()
