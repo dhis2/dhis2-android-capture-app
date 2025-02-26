@@ -48,6 +48,8 @@ import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
+import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
+import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
@@ -106,13 +108,19 @@ fun DataSetInstanceScreen(
         }
     }
 
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    scope.launch {
-        dataSetScreenState.snackbarMessage.collect { message ->
+    ObserveAsEvents(
+        flow = SnackbarController.events,
+        snackbarHostState,
+    ) {
+            event ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+
             snackbarHostState.showSnackbar(
-                message = message,
+                message = event.message,
                 duration = SnackbarDuration.Short,
             )
         }
