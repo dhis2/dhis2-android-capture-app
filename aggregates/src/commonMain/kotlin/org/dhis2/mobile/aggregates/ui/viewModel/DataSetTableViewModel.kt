@@ -37,6 +37,8 @@ import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
+import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
@@ -518,7 +520,11 @@ internal class DataSetTableViewModel(
 
     private fun showSnackbar(message: String) {
         viewModelScope.launch {
-            _dataSetScreenState.value.sendSnackbarMessage(message)
+            SnackbarController.sendEvent(
+                event = SnackbarEvent(
+                    message = message,
+                ),
+            )
         }
     }
 }
