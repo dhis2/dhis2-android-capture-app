@@ -29,7 +29,7 @@ class GetEventPeriods(
         config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
         pagingSourceFactory = {
             PeriodSource(
-                eventPeriodRepository = eventPeriodRepository,
+                periodRepository = eventPeriodRepository,
                 periodLabelProvider = periodLabelProvider,
                 periodType = periodType,
                 initialDate = eventPeriodRepository.getEventPeriodMinDate(

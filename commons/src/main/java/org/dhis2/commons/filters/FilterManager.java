@@ -519,7 +519,11 @@ public class FilterManager implements Serializable {
 
     public void clearEnrollmentDate() {
         if (enrollmentPeriodFilters != null) {
-            enrollmentPeriodFilters.clear();
+            try {
+                enrollmentPeriodFilters.clear();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         enrollmentPeriodIdSelected.set(R.id.anytime);
         enrollmentPeriodFiltersApplied.set(enrollmentPeriodFilters == null ? 0 : enrollmentPeriodFilters.size());
