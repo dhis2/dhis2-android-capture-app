@@ -145,17 +145,17 @@ class HomeViewModelUnitTest {
                     sortOrder = 1,
                     transactionType = StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED,
                     distributedTo = "UIbjnkdsn8",
-                    stockDistributed = "HJbhj984jh"
+                    stockDistributed = "HJbhj984jh",
                 ),
                 StockUseCaseTransaction.Discarded(
                     sortOrder = 2,
                     transactionType = StockUseCaseTransaction.Companion.TransactionType.DISCARDED,
-                    stockDiscarded = "HJbhj984jh"
+                    stockDiscarded = "HJbhj984jh",
                 ),
                 StockUseCaseTransaction.Correction(
                     sortOrder = 3,
                     transactionType = StockUseCaseTransaction.Companion.TransactionType.CORRECTED,
-                    stockCount = "HJbhj984jh"
+                    stockCount = "HJbhj984jh",
                 ),
             ),
         )

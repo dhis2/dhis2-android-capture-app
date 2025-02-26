@@ -26,7 +26,6 @@ import org.dhis2.android.rtsm.utils.ParcelUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
-import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -84,7 +83,7 @@ class ManageStockViewModelTest {
         tableModelMapper,
         dispatcherProvider,
         stockTableDimensionStore,
-        getStateHandle()
+        getStateHandle(),
     )
 
     private fun getStateHandle(): SavedStateHandle {

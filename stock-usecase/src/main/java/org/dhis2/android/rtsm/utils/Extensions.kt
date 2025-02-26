@@ -11,4 +11,3 @@ fun String.toDate(): Date? {
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     return formatter.parse(this)
 }
-
