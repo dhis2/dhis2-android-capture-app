@@ -21,11 +21,10 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
-import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
-import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -43,11 +42,11 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
-import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
-import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
@@ -82,7 +81,6 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var dispatcher: Dispatcher
     private lateinit var testDispatcher: TestDispatcher
 
-    private lateinit var viewModel: DataSetTableViewModel
     private lateinit var checkValidationRulesConfiguration: CheckValidationRulesConfiguration
     private lateinit var checkCompletionStatus: CheckCompletionStatus
     private lateinit var dataSetModalDialogProvider: DataSetModalDialogProvider
@@ -115,6 +113,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         declareMock<ResourceManager>() {
             whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
             whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
+            whenever(runBlocking { provideSaved() }) doReturn "saved"
         }
         dispatcher = declareMock<Dispatcher>()
         checkValidationRulesConfiguration = declareMock<CheckValidationRulesConfiguration>()
@@ -183,7 +182,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         whenever(getIndicators(any())).thenReturn(null)
 
         viewModel = DataSetTableViewModel(
-            onCloseCallback = onCloseCallback,
+            onClose = onCloseCallback,
             getDataSetInstanceData = get(),
             getDataSetSectionData = get(),
             getDataValueData = get(),
@@ -191,10 +190,12 @@ internal class DataSetTableViewModelTest : KoinTest {
             getDataValueInput = get(),
             setDataValue = get(),
             resourceManager = get(),
+            checkValidationRulesConfiguration = get(),
+            checkCompletionStatus = get(),
             dispatcher = get(),
-            get(),
-            get(),
-            get(),
+            datasetModalDialogProvider = get(),
+            completeDataSet = get(),
+            runValidationRules = get(),
         )
     }
 
@@ -282,8 +283,6 @@ internal class DataSetTableViewModelTest : KoinTest {
         whenever(checkValidationRulesConfiguration()) doReturn NONE
         // And data set instance is completed
         whenever(checkCompletionStatus()) doReturn COMPLETED
-        // And data set is saved
-        whenever(resourceManager.provideSaved()) doReturn "saved"
 
         // When attempt to save
         viewModel.onSaveClicked()

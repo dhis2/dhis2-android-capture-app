@@ -20,8 +20,8 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
-import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
+import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
@@ -33,7 +33,6 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.Violation
-import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
@@ -49,11 +48,6 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal class DataSetTableViewModel(

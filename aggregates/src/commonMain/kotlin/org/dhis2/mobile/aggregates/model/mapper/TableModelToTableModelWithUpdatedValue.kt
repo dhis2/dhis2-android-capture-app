@@ -1,7 +1,7 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
-import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
+import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal suspend fun TableModel.updateValue(
