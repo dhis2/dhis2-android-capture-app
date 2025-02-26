@@ -230,6 +230,7 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.r
 
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]

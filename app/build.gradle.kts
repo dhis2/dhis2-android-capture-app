@@ -10,7 +10,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
-    id("kotlinx-serialization")
+    alias(libs.plugins.kotlin.serialization)
     id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
