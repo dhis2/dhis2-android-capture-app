@@ -10,7 +10,7 @@ internal suspend fun TableModel.updateValue(
     resourceManager: ResourceManager,
 ): TableModel {
     val hasTotalColumn = tableHeaderModel.extraColumns.isNotEmpty()
-    val hasTotalRow = tableRows.last().rowHeader.id == totalHeaderRowId(id)
+    val hasTotalRow = tableRows.last().id() == totalHeaderRowId(id)
     val tableRows = tableRows.map { tableRowModel ->
         val cell = tableRowModel.values.values.find { tableCell ->
             tableCell.id == cellId

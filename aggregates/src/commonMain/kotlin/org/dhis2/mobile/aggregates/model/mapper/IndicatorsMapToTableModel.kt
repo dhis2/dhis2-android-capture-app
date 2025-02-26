@@ -27,10 +27,13 @@ internal suspend fun IndicatorMap.toTableModel(
     ),
     tableRows = entries.map { (key, value) ->
         TableRowModel(
-            rowHeader = RowHeader(
-                id = key,
-                title = key,
-                row = absoluteRowIndex,
+            rowHeaders = listOf(
+                RowHeader(
+                    id = key,
+                    title = key,
+                    row = absoluteRowIndex,
+                    column = 0,
+                ),
             ),
             values = mapOf(
                 0 to TableCell(

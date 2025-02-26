@@ -30,10 +30,13 @@ private suspend fun buildTotalsRow(
     tableRows: List<TableRowModel>,
     resourceManager: ResourceManager,
 ) = TableRowModel(
-    rowHeader = RowHeader(
-        id = totalHeaderRowId(tableId),
-        title = resourceManager.totalsHeader(),
-        row = absoluteRowIndex,
+    rowHeaders = listOf(
+        RowHeader(
+            id = totalHeaderRowId(tableId),
+            title = resourceManager.totalsHeader(),
+            row = absoluteRowIndex,
+            column = 0,
+        ),
     ),
     values = buildMap {
         repeat(columnCount) { columnIndex ->

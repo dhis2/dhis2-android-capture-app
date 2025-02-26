@@ -48,11 +48,14 @@ internal suspend fun TableGroup.toTableModel(
     val tableRows = cellElements
         .map { cellElement ->
             TableRowModel(
-                rowHeader = RowHeader(
-                    id = cellElement.uid,
-                    title = cellElement.label,
-                    row = absoluteRowIndex,
-                    description = cellElement.description,
+                rowHeaders = listOf(
+                    RowHeader(
+                        id = cellElement.uid,
+                        title = cellElement.label,
+                        row = absoluteRowIndex,
+                        column = 0,
+                        description = cellElement.description,
+                    ),
                 ),
                 values = buildMap {
                     repeat(tableHeader.tableMaxColumns() - tableHeader.extraColumns.size) { columnIndex ->
