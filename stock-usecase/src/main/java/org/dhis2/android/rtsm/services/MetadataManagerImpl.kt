@@ -1,7 +1,10 @@
 package org.dhis2.android.rtsm.services
 
 import io.reactivex.Single
+import kotlinx.coroutines.withContext
+import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.exceptions.InitializationException
+import org.dhis2.commons.bindings.stockUseCase
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -12,6 +15,7 @@ import javax.inject.Inject
 
 class MetadataManagerImpl @Inject constructor(
     private val d2: D2,
+    private val dispatcher: StockDispatcherProvider,
 ) : MetadataManager {
 
     override fun stockManagementProgram(programUid: String): Single<Program?> {
@@ -33,6 +37,10 @@ class MetadataManagerImpl @Inject constructor(
         return Single.defer {
             d2.dataElementModule().dataElements().uid(dataSetUid).get()
         }
+    }
+
+    override suspend fun loadStockUseCase(programUid: String) = withContext(dispatcher.io()) {
+        return@withContext d2.stockUseCase(programUid)
     }
 
     /**

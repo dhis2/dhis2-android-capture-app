@@ -34,7 +34,6 @@ import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.bindings.stockCount
 import org.dhis2.commons.bindings.stockDiscarded
 import org.dhis2.commons.bindings.stockDistribution
-import org.dhis2.commons.bindings.stockUseCase
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -54,7 +53,7 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel(schedulerProvider) {
 
     private val _config = MutableStateFlow(Utils.emptyStockUseCase())
-    private val config: StateFlow<StockUseCase?> = _config
+    private val config: StateFlow<StockUseCase> = _config
 
     private val program = savedState.get<String>(Constants.PROGRAM_UID)
         ?: throw InitializationException("Some configuration parameters are missing")
@@ -92,7 +91,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadStockUseCases(programUid: String) {
         viewModelScope.launch {
-            d2.stockUseCase(programUid)?.let {
+            metadataManager.loadStockUseCase(programUid)?.let {
                 _config.value = it
             }
         }
@@ -118,7 +117,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadDestinations() {
         disposable.add(
-            metadataManager.destinations(config.value!!.distributedTo())
+            metadataManager.destinations(config.value.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -135,7 +134,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadTransactionTypeLabels() {
         disposable.add(
-            metadataManager.transactionType(config.value!!.stockDistribution())
+            metadataManager.transactionType(config.value.stockDistribution())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -151,7 +150,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value!!.stockCount())
+            metadataManager.transactionType(config.value.stockCount())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -168,7 +167,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value!!.stockDiscarded())
+            metadataManager.transactionType(config.value.stockDiscarded())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -184,7 +183,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value!!.distributedTo())
+            metadataManager.transactionType(config.value.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -202,7 +201,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadFacilities() {
         disposable.add(
-            metadataManager.facilities(config.value!!.programUid)
+            metadataManager.facilities(config.value.programUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -287,7 +286,7 @@ class HomeViewModel @Inject constructor(
     fun resetSettings() {
         _settingsUiSate.update {
             SettingsUiState(
-                programUid = config.value!!.programUid,
+                programUid = config.value.programUid,
                 transactionItems = transactionItems,
             )
         }
