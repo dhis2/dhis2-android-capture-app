@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.commons.Constants
 import org.dhis2.android.rtsm.data.DataElementFactory
 import org.dhis2.android.rtsm.data.DestinationFactory
 import org.dhis2.android.rtsm.data.FacilityFactory
@@ -40,6 +39,7 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
+import org.hisp.dhis.android.core.usecase.stock.StockUseCaseTransaction
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -140,7 +140,24 @@ class HomeViewModelUnitTest {
             itemCode = "wBr4wccNBj1",
             programType = "LMIS",
             stockOnHand = "RghnAkDBDI4",
-            transactions = emptyList(),
+            transactions = listOf(
+                StockUseCaseTransaction.Distributed(
+                    sortOrder = 1,
+                    transactionType = StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED,
+                    distributedTo = "UIbjnkdsn8",
+                    stockDistributed = "HJbhj984jh"
+                ),
+                StockUseCaseTransaction.Discarded(
+                    sortOrder = 2,
+                    transactionType = StockUseCaseTransaction.Companion.TransactionType.DISCARDED,
+                    stockDiscarded = "HJbhj984jh"
+                ),
+                StockUseCaseTransaction.Correction(
+                    sortOrder = 3,
+                    transactionType = StockUseCaseTransaction.Companion.TransactionType.CORRECTED,
+                    stockCount = "HJbhj984jh"
+                ),
+            ),
         )
 
         facilities = FacilityFactory.getListOf(3)
@@ -190,7 +207,7 @@ class HomeViewModelUnitTest {
 
     private fun getStateHandle(): SavedStateHandle {
         val state = hashMapOf<String, Any>(
-            org.dhis2.commons.Constants.PROGRAM_UID to stockUseCase,
+            org.dhis2.commons.Constants.PROGRAM_UID to "F5ijs28K4s8",
         )
         return SavedStateHandle(state)
     }

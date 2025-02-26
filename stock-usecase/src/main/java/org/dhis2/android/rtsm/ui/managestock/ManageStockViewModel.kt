@@ -3,6 +3,7 @@ package org.dhis2.android.rtsm.ui.managestock
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
@@ -26,6 +27,7 @@ import org.dhis2.android.rtsm.data.models.SearchParametersModel
 import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.StockItem
 import org.dhis2.android.rtsm.data.models.Transaction
+import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.StockManager
 import org.dhis2.android.rtsm.services.StockTableDimensionStore
@@ -38,6 +40,8 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
+import org.dhis2.commons.Constants
+import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -69,11 +73,16 @@ class ManageStockViewModel @Inject constructor(
     private val tableModelMapper: TableModelMapper,
     private val dispatcherProvider: DispatcherProvider,
     val tableDimensionStore: StockTableDimensionStore,
+    savedState: SavedStateHandle,
 ) : Validator, SpeechRecognitionAwareViewModel(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private lateinit var config: StockUseCase
+    private val _config = MutableStateFlow<StockUseCase?>(null)
+    private val config: StateFlow<StockUseCase?> = _config
+
+    private val program = savedState.get<String>(Constants.PROGRAM_UID)
+        ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
@@ -121,6 +130,7 @@ class ManageStockViewModel @Inject constructor(
     private var inputHelperText: String? = null
 
     init {
+        loadStockUseCase(program)
         configureRelays()
     }
 
@@ -152,7 +162,7 @@ class ManageStockViewModel @Inject constructor(
                     transaction.value?.facility?.uid ?: "",
                 ),
                 transaction.value?.facility?.uid,
-                config,
+                config.value!!,
             ).items
 
             result.asFlow().collect { stockItems ->
@@ -165,13 +175,12 @@ class ManageStockViewModel @Inject constructor(
     private fun loadStockUseCase(program: String) {
         viewModelScope.launch {
             stockManagerRepository.stockUseCase(program)?.let {
-                config = it
+                _config.value = it
             }
         }
     }
 
     fun setConfig(program: String) {
-        loadStockUseCase(program)
         tableDimensionStore.setUids(program)
         refreshConfig()
     }
@@ -235,9 +244,9 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.programUid,
+                                config.value!!.programUid,
                                 transaction.value!!,
-                                config,
+                                config.value!!,
                             ),
                         )
                     },
@@ -295,7 +304,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config,
+                config.value!!,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -402,7 +411,7 @@ class ManageStockViewModel @Inject constructor(
         value: String?,
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
-            (ruleEffect.ruleAction).field() == config.stockOnHand
+            (ruleEffect.ruleAction).field() == config.value!!.stockOnHand
 
         ) {
             val data = ruleEffect.data
