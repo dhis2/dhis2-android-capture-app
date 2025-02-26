@@ -1,12 +1,17 @@
 package org.dhis2.mobile.aggregates.di
 
 import kotlinx.coroutines.Dispatchers
+import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
+import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
+import org.dhis2.mobile.aggregates.domain.CompleteDataSet
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
-import org.dhis2.mobile.aggregates.domain.ResourceManager
+import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
+import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -65,13 +70,58 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        CheckValidationRulesConfiguration(
+            dataSetUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
+        CheckCompletionStatus(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory {
+        DataSetModalDialogProvider(
+            resourceManager = get(),
+        )
+    }
+
+    factory { params ->
+        CompleteDataSet(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
+        RunValidationRules(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
     viewModel { params ->
         val dataSetUid = params.get<String>()
         val periodId = params.get<String>()
         val orgUnitUid = params.get<String>()
         val attrOptionComboUid = params.get<String>()
+        val onClose = params.get<() -> Unit>()
 
         DataSetTableViewModel(
+            onClose = onClose,
             getDataSetInstanceData = get {
                 parametersOf(
                     dataSetUid,
@@ -90,7 +140,20 @@ internal val featureModule = module {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             resourceManager = get(),
+            checkValidationRulesConfiguration = get {
+                parametersOf(dataSetUid)
+            },
+            checkCompletionStatus = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
+            datasetModalDialogProvider = get(),
+            completeDataSet = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
             dispatcher = get(),
+            runValidationRules = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
         )
     }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="complete">Завершенный</string>
+    <string name="ok">ОК</string>
+    <string name="error">Ошибка</string>
+
+</resources>
