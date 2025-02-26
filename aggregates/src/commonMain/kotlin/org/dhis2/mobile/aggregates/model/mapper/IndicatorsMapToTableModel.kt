@@ -25,20 +25,21 @@ internal suspend fun IndicatorMap.toTableModel(
         ),
         extraColumns = emptyList(),
     ),
-    tableRows = entries.map { (key, value) ->
+    tableRows = entries.mapIndexed { index, (key, value) ->
+        val rowIndex = index + absoluteRowIndex
         TableRowModel(
             rowHeaders = listOf(
                 RowHeader(
                     id = key,
                     title = key,
-                    row = absoluteRowIndex,
+                    row = rowIndex,
                     column = 0,
                 ),
             ),
             values = mapOf(
                 0 to TableCell(
                     id = key,
-                    row = absoluteRowIndex,
+                    row = rowIndex,
                     column = 0,
                     value = value,
                     editable = false,

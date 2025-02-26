@@ -131,7 +131,7 @@ internal class DataSetTableViewModel(
                     sectionData = sectionData,
                     dataValueDataMap = dataValueDataMap,
                     absoluteRowIndex = absoluteRowIndex,
-                ).also { absoluteRowIndex += 1 }
+                ).also { absoluteRowIndex += it.tableRows.size }
 
                 if (sectionData.showColumnTotals()) {
                     tableModel.withTotalsRow(resourceManager)
@@ -144,7 +144,8 @@ internal class DataSetTableViewModel(
 
         val indicators = getDataSetSectionIndicators(sectionUid)
             ?.toTableModel(resourceManager, absoluteRowIndex)
-            ?.let { listOf(it).also { absoluteRowIndex += 1 } }
+            ?.also { absoluteRowIndex + it.tableRows.size }
+            ?.let { listOf(it) }
             ?: emptyList()
 
         tables + indicators

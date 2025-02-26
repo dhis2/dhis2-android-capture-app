@@ -46,13 +46,14 @@ internal suspend fun TableGroup.toTableModel(
     )
 
     val tableRows = cellElements
-        .map { cellElement ->
+        .mapIndexed { rowIndex, cellElement ->
+            val rowIndex = rowIndex + absoluteRowIndex
             TableRowModel(
                 rowHeaders = listOf(
                     RowHeader(
                         id = cellElement.uid,
                         title = cellElement.label,
-                        row = absoluteRowIndex,
+                        row = rowIndex,
                         column = 0,
                         description = cellElement.description,
                     ),
@@ -82,7 +83,7 @@ internal suspend fun TableGroup.toTableModel(
                                         ),
                                     ),
                                 ),
-                                row = absoluteRowIndex,
+                                row = rowIndex,
                                 column = columnIndex,
                                 value = dataValueData?.value,
                                 editable = sectionData.isEditable(cellElement.uid),
@@ -101,8 +102,8 @@ internal suspend fun TableGroup.toTableModel(
                         put(
                             key = tableHeader.tableMaxColumns() - tableHeader.extraColumns.size,
                             value = TableCell(
-                                id = totalRow(uid, absoluteRowIndex),
-                                row = absoluteRowIndex,
+                                id = totalRow(uid, rowIndex),
+                                row = rowIndex,
                                 column = tableHeader.tableMaxColumns(),
                                 value = this.values.sumOf {
                                     it.value?.toDoubleOrNull() ?: 0.0
