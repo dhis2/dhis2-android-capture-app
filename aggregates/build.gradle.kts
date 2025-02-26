@@ -22,6 +22,10 @@ kotlin {
 
     jvm("desktop")
 
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -29,7 +33,10 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             api(compose.materialIconsExtended)
-            implementation(libs.dhis2.mobile.designsystem)
+            val desyngsystem = libs.dhis2.mobile.designsystem
+            implementation("${desyngsystem.get().group}:${desyngsystem.get().name}:${desyngsystem.get().version}"){
+                isChanging= true
+            }
             implementation(libs.compose.material3.window)
             implementation(compose.components.resources)
             implementation(project(":commonskmm"))

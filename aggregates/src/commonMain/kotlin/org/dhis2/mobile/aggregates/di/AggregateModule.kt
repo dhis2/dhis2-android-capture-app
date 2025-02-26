@@ -52,7 +52,6 @@ internal val featureModule = module {
             periodId = params.get(),
             attrOptionComboUid = params.get(),
             dataSetInstanceRepository = get(),
-            valueParser = get(),
         )
     }
 

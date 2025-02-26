@@ -150,12 +150,14 @@ internal class DataSetTableViewModel(
                 val tableRows = tableGroup.cellElements
                     .map { cellElement ->
                         TableRowModel(
-                            rowHeader = RowHeader(
-                                id = cellElement.uid,
-                                title = cellElement.label,
-                                row = absoluteRowIndex,
-                                showDecoration = sectionData.hasDecoration() && cellElement.description != null,
-                                description = cellElement.description,
+                            rowHeaders = listOf(
+                                RowHeader(
+                                    id = cellElement.uid,
+                                    title = cellElement.label,
+                                    row = absoluteRowIndex,
+                                    column = 0,
+                                    description = cellElement.description,
+                                ),
                             ),
                             values = buildMap {
                                 repeat(tableHeader.tableMaxColumns()) { columnIndex ->
@@ -208,10 +210,13 @@ internal class DataSetTableViewModel(
                 val totalRow = if (sectionData.showColumnTotals()) {
                     listOf(
                         TableRowModel(
-                            rowHeader = RowHeader(
-                                id = "TotalRow",
-                                title = "Total",
-                                row = absoluteRowIndex,
+                            rowHeaders = listOf(
+                                RowHeader(
+                                    id = "TotalRow",
+                                    title = "Total",
+                                    row = absoluteRowIndex,
+                                    column = 0,
+                                ),
                             ),
                             values = buildMap {
                                 repeat(tableHeader.tableMaxColumns()) { columnIndex ->
@@ -276,10 +281,13 @@ internal class DataSetTableViewModel(
                 ),
                 tableRows = getDataSetSectionIndicators(sectionUid)?.entries?.map { (key, value) ->
                     TableRowModel(
-                        rowHeader = RowHeader(
-                            id = key,
-                            title = key,
-                            row = absoluteRowIndex,
+                        rowHeaders = listOf(
+                            RowHeader(
+                                id = key,
+                                title = key,
+                                row = absoluteRowIndex,
+                                column = 0,
+                            ),
                         ),
                         values = mapOf(
                             0 to TableCell(
