@@ -52,7 +52,6 @@ internal suspend fun TableGroup.toTableModel(
                     id = cellElement.uid,
                     title = cellElement.label,
                     row = absoluteRowIndex,
-                    showDecoration = sectionData.hasDecoration() && cellElement.description != null,
                     description = cellElement.description,
                 ),
                 values = buildMap {
