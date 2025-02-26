@@ -1,20 +1,11 @@
 package org.dhis2.mobile.aggregates.ui.states
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal sealed class DataSetScreenState {
-
-    private val _snackbarMessage = MutableSharedFlow<String>()
-    val snackbarMessage: SharedFlow<String> get() = _snackbarMessage
-
-    suspend fun sendSnackbarMessage(message: String) {
-        _snackbarMessage.emit(message)
-    }
 
     data class Loaded(
         val dataSetDetails: DataSetDetails,
