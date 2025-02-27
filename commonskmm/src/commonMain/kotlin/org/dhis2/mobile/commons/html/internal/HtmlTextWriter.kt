@@ -68,15 +68,6 @@ internal class HtmlTextWriter(
         }
     }
 
-    fun writePreformatted(text: String) {
-        if (text.isNotEmpty()) {
-            writePendingNewLines(0)
-            callbacks?.onWriteContentStart()
-            output.append(text)
-            currentState = STATE_BEGIN_TEXT
-        }
-    }
-
     private inline fun CharSequence.indexOfFirst(startIndex: Int, predicate: (Char) -> Boolean): Int {
         for (index in startIndex..<length) {
             if (predicate(this[index])) {

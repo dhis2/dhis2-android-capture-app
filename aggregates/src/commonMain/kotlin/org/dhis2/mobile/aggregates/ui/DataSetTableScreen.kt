@@ -35,9 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -45,6 +42,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -52,8 +50,6 @@ import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
-import org.dhis2.mobile.commons.html.HtmlStyle
-import org.dhis2.mobile.commons.html.htmlToAnnotatedString
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
@@ -73,10 +69,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
-import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -441,40 +434,6 @@ private fun DataSetTableContent(
 
             DataSetSectionTable.Loading ->
                 ContentLoading(Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
-    val textStyle = MaterialTheme.typography.bodyMedium.copy(
-        color = TextColor.OnSurfaceLight,
-    )
-    val formatedText = htmlToAnnotatedString(
-        html = text,
-        linkStyle = HtmlStyle(
-            textLinkStyles = TextLinkStyles(
-                style = textStyle.toSpanStyle().copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline),
-            ),
-        ),
-        genericStyle = textStyle,
-    )
-    Column(Modifier.fillMaxWidth().background(color = SurfaceColor.ContainerLowest)) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(
-                    color = SurfaceColor.ContainerLow,
-                    shape = Shape.Small,
-                ),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            Column(Modifier.padding(Spacing.Spacing8)) {
-                Text(
-                    text = formatedText,
-                    textAlign = TextAlign.Start,
-                )
-            }
         }
     }
 }

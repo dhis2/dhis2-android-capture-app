@@ -44,7 +44,6 @@ internal class AnnotatedStringHtmlHandler(
     private val pendingSpanStyles = mutableListOf(spanStyle)
 
     // A negative index means the list is unordered
-    private var preformattedLevel = 0
     private var boldLevel = 0
     private var paragraphStartIndex = -1
     private var paragraphEndIndex = -1
@@ -132,7 +131,7 @@ internal class AnnotatedStringHtmlHandler(
             "address", "figure", "figcaption", "ul", "dl", "ol", "li", "dt", "dd", "pre",
             "video", "audio", "big", "small", "tt", "code",
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
-            "hr", "script", "head", "table", "form", "fieldset", "title", "span", "p",
+            "hr", "script", "head", "table", "form", "fieldset", "title", "span",
             -> {}
             "strong", "b" -> handleBoldEnd()
             "em", "cite", "dfn", "i",

@@ -6,7 +6,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import org.dhis2.mobile.commons.html.internal.AnnotatedStringHtmlHandler
-import org.dhis2.mobile.commons.html.parser.KtXmlParser
+import org.dhis2.mobile.commons.html.parser.HtmlParser
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 /**
@@ -24,7 +24,7 @@ fun htmlToAnnotatedString(
 ): AnnotatedString {
     mainStyle = genericStyle.toSpanStyle()
     return htmlToAnnotatedString(
-        KtXmlParser(html.iterator()),
+        HtmlParser(html.iterator()),
         linkStyle,
         linkInteractionListener,
     )
