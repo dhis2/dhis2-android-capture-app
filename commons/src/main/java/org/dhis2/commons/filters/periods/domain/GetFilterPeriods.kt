@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.map
 import org.dhis2.commons.filters.periods.data.FilterPeriodsRepository
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 import org.dhis2.commons.periods.data.PeriodLabelProvider
-import org.dhis2.commons.periods.data.PeriodSource
 import org.dhis2.commons.periods.model.Period
-import org.dhis2.commons.periods.model.PeriodOrder
 import java.util.Calendar
 
 class GetFilterPeriods(
@@ -26,14 +24,12 @@ class GetFilterPeriods(
         pagingSourceFactory = {
             val maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
             val minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -9) }.time
-            PeriodSource(
-                periodRepository = filterPeriodRepository,
-                periodLabelProvider = periodLabelProvider,
-                periodType = filterPeriodRepository.getDTOPeriod(filterPeriodType),
-                initialDate = minDate,
+            // TODO extract to repository
+            filterPeriodRepository.getPeriodSource(
+                labelProvider = periodLabelProvider,
+                filterPeriodType = filterPeriodType,
+                minDate = minDate,
                 maxDate = maxDate,
-                selectedDate = null,
-                periodOrder = PeriodOrder.DESC,
             )
         },
     ).flow

@@ -1,11 +1,14 @@
 package org.dhis2.commons.filters.periods.data
 
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
-import org.dhis2.commons.periods.data.PeriodBaseRepository
+import org.dhis2.commons.periods.data.PeriodLabelProvider
+import org.dhis2.commons.periods.data.PeriodSource
+import org.dhis2.commons.periods.model.PeriodOrder
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
 
-class FilterPeriodsRepository(d2: D2) : PeriodBaseRepository(d2) {
+class FilterPeriodsRepository(private val d2: D2) {
 
     fun getDefaultPeriodTypes(): List<FilterPeriodType> {
         return listOf(
@@ -63,5 +66,22 @@ class FilterPeriodsRepository(d2: D2) : PeriodBaseRepository(d2) {
             FilterPeriodType.FINANCIAL_NOV -> PeriodType.FinancialNov
             FilterPeriodType.NONE -> PeriodType.Daily
         }
+    }
+
+    fun getPeriodSource(
+        labelProvider: PeriodLabelProvider,
+        filterPeriodType: FilterPeriodType,
+        minDate: Date,
+        maxDate: Date?,
+    ): PeriodSource {
+        return PeriodSource(
+            d2 = d2,
+            periodLabelProvider = labelProvider,
+            periodType = getDTOPeriod(filterPeriodType),
+            initialDate = minDate,
+            maxDate = maxDate,
+            selectedDate = null,
+            periodOrder = PeriodOrder.DESC,
+        )
     }
 }
