@@ -40,7 +40,6 @@ import org.dhis2.android.rtsm.ui.home.model.ButtonUiState
 import org.dhis2.android.rtsm.ui.home.model.DataEntryStep
 import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 import org.dhis2.android.rtsm.ui.home.model.SnackBarUiState
-import org.dhis2.android.rtsm.utils.Utils
 import org.dhis2.android.rtsm.utils.Utils.Companion.isValidStockOnHand
 import org.dhis2.commons.Constants
 import org.dhis2.commons.resources.ResourceManager
@@ -78,10 +77,9 @@ class ManageStockViewModel @Inject constructor(
     schedulerProvider,
     speechRecognitionManager,
 ) {
-    private val _config = MutableStateFlow(Utils.emptyStockUseCase())
-    private val config: StateFlow<StockUseCase> = _config
+    private lateinit var config: StockUseCase
 
-    private val program = savedState.get<String>(Constants.PROGRAM_UID)
+    private val program: String = savedState[Constants.PROGRAM_UID]
         ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _transaction = MutableLiveData<Transaction?>()
@@ -162,7 +160,7 @@ class ManageStockViewModel @Inject constructor(
                     transaction.value?.facility?.uid ?: "",
                 ),
                 transaction.value?.facility?.uid,
-                config.value,
+                config,
             ).items
 
             result.asFlow().collect { stockItems ->
@@ -175,7 +173,7 @@ class ManageStockViewModel @Inject constructor(
     private fun loadStockUseCase(program: String) {
         viewModelScope.launch {
             stockManagerRepository.stockUseCase(program)?.let {
-                _config.value = it
+                config = it
             }
         }
     }
@@ -244,9 +242,9 @@ class ManageStockViewModel @Inject constructor(
                             evaluate(
                                 ruleValidationHelper,
                                 it,
-                                config.value.programUid,
+                                config.programUid,
                                 transaction.value!!,
-                                config.value,
+                                config,
                             ),
                         )
                     },
@@ -304,7 +302,7 @@ class ManageStockViewModel @Inject constructor(
             stockManagerRepository.saveTransaction(
                 getPopulatedEntries(),
                 transaction.value!!,
-                config.value,
+                config,
             )
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -412,7 +410,7 @@ class ManageStockViewModel @Inject constructor(
         value: String?,
     ) {
         if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name &&
-            (ruleEffect.ruleAction).field() == config.value.stockOnHand
+            (ruleEffect.ruleAction).field() == config.stockOnHand
 
         ) {
             val data = ruleEffect.data

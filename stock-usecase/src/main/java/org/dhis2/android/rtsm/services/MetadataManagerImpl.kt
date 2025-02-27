@@ -1,7 +1,6 @@
 package org.dhis2.android.rtsm.services
 
 import io.reactivex.Single
-import kotlinx.coroutines.withContext
 import org.dhis2.android.rtsm.coroutines.StockDispatcherProvider
 import org.dhis2.android.rtsm.exceptions.InitializationException
 import org.dhis2.commons.bindings.stockUseCase
@@ -39,9 +38,7 @@ class MetadataManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadStockUseCase(programUid: String) = withContext(dispatcher.io()) {
-        return@withContext d2.stockUseCase(programUid)
-    }
+    override suspend fun loadStockUseCase(programUid: String) = d2.stockUseCase(programUid)
 
     /**
      * Get the program OUs which the user has access to and also

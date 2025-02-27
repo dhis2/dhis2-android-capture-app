@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +28,6 @@ import org.dhis2.android.rtsm.ui.base.BaseViewModel
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.ui.home.screens.BottomNavigation
 import org.dhis2.android.rtsm.utils.ParcelUtils
-import org.dhis2.android.rtsm.utils.Utils
 import org.dhis2.android.rtsm.utils.humanReadableDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.distributedTo
@@ -52,10 +52,9 @@ class HomeViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : BaseViewModel(schedulerProvider) {
 
-    private val _config = MutableStateFlow(Utils.emptyStockUseCase())
-    private val config: StateFlow<StockUseCase> = _config
+    private lateinit var config: StockUseCase
 
-    private val program = savedState.get<String>(Constants.PROGRAM_UID)
+    private val program: String = savedState[Constants.PROGRAM_UID]
         ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _facilities =
@@ -91,8 +90,10 @@ class HomeViewModel @Inject constructor(
 
     private fun loadStockUseCases(programUid: String) {
         viewModelScope.launch {
-            metadataManager.loadStockUseCase(programUid)?.let {
-                _config.value = it
+            async {
+                metadataManager.loadStockUseCase(programUid)
+            }.await()?.let {
+                config = it
             }
         }
     }
@@ -117,7 +118,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadDestinations() {
         disposable.add(
-            metadataManager.destinations(config.value.distributedTo())
+            metadataManager.destinations(config.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -134,7 +135,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadTransactionTypeLabels() {
         disposable.add(
-            metadataManager.transactionType(config.value.stockDistribution())
+            metadataManager.transactionType(config.stockDistribution())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -150,7 +151,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value.stockCount())
+            metadataManager.transactionType(config.stockCount())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -167,7 +168,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value.stockDiscarded())
+            metadataManager.transactionType(config.stockDiscarded())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -183,7 +184,7 @@ class HomeViewModel @Inject constructor(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.value.distributedTo())
+            metadataManager.transactionType(config.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -201,7 +202,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadFacilities() {
         disposable.add(
-            metadataManager.facilities(config.value.programUid)
+            metadataManager.facilities(config.programUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -286,7 +287,7 @@ class HomeViewModel @Inject constructor(
     fun resetSettings() {
         _settingsUiSate.update {
             SettingsUiState(
-                programUid = config.value.programUid,
+                programUid = config.programUid,
                 transactionItems = transactionItems,
             )
         }
