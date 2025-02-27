@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
@@ -17,6 +19,8 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headerTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -48,8 +52,8 @@ class DataSetTest : BaseTest() {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
-            uid = "BfMAe6Itzgt",
-            name = "Child Health",
+            uid ="BfMAe6Itzgt",
+           name = "Child Health",
         )
         dataSetInstanceInChronologicalOrderStep()
         createDataSetInstanceStep(
@@ -89,15 +93,23 @@ class DataSetTest : BaseTest() {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
-
+        waitForTableToBeVisible()
 
         // Step - ANDROAPP-6795 Check content boxes above and below the table
         checkContentBoxesAreDisplayed()
         // Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
+        checkCategoryIsMovedToRow()
         // Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
     }
 
+    private suspend fun waitForTableToBeVisible() {
+        composeTestRule.awaitIdle()
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+        tableIsVisible()
+    }
 
     private suspend fun checkContentBoxesAreDisplayed() {
         composeTestRule.awaitIdle()
@@ -202,6 +214,20 @@ class DataSetTest : BaseTest() {
             uid = dataSetUid,
             name = dataSetName,
         )
+    private suspend fun checkCategoryIsMovedToRow() {
+        dataSetTableRobot(composeTestRule) {
+            categoryToRowList.forEach { data ->
+                composeTestRule.onRoot().printToLog("TAAAAABLE ${data.sectionIndex}")
+                clickOnSection(data.sectionIndex, data.sectionName)
+                assertTableIsDisplayed()
+                waitToDebounce(5000)
+                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
+                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
+                assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
+            }
+        }
+    }
+
 
         createDataSetInstanceStep(
             period = periodSelectorLabel,

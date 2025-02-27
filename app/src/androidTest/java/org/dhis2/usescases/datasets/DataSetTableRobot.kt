@@ -2,6 +2,9 @@ package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertAll
+import androidx.compose.ui.test.assertAny
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -10,6 +13,7 @@ import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -21,6 +25,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -221,6 +226,26 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
+    fun assertColumnTotalValue(
+        tableId: String,
+        columnIndex: Int,
+        expectedValue: String,
+    ) {
+        composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"))
+            .performScrollTo()
+
+        composeTestRule.onNodeWithTag(
+            "CELL_TEST_TAG_${tableId}${tableId}_totals_$columnIndex",
+            true
+        )
+            .onChild().assertTextEquals(expectedValue)
+
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .performScrollToIndex(0)
+
+        composeTestRule.waitForIdle()
+    }
+
     fun returnToDataSetInstanceList() {
         composeTestRule.onNodeWithContentDescription("back arrow")
             .performClick()
@@ -274,5 +299,28 @@ internal class DataSetTableRobot(
 
     fun tapOnCompleteAnyway() {
         composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG).performClick()
+    }
+
+    fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<String>,expectedCount:Int) {
+        rowTestTags.forEach { testTag ->
+            composeTestRule.onAllNodesWithTag(testTag)
+                .assertCountEquals(expectedCount)
+        }
+    }
+
+    fun assertCategoryHeaderIsNotDisplayed(headerTestTags: List<String>) {
+        headerTestTags.forEach { testTag ->
+            composeTestRule.onNodeWithTag(testTag)
+                .assertDoesNotExist()
+        }
+    }
+
+    fun clickOnSection(sectionIndex: Int, sectionName: String) {
+        composeTestRule.onNode(
+            hasTestTag("SCROLLABLE_TAB_$sectionIndex") and
+                    hasText(sectionName)
+        )
+            .performScrollTo()
+            .performClick()
     }
 }
