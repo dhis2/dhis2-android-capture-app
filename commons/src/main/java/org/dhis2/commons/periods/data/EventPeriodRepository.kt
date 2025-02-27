@@ -9,8 +9,9 @@ import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
-class EventPeriodRepository(private val d2: D2) {
-
+class EventPeriodRepository(
+    private val d2: D2,
+) {
     fun getEventPeriodMinDate(
         programStage: ProgramStage,
         isScheduling: Boolean,
@@ -93,10 +94,27 @@ class EventPeriodRepository(private val d2: D2) {
         }
     }
 
-    fun generatePeriod(
+    private fun generatePeriod(
         periodType: PeriodType,
         date: Date = Date(),
         offset: Int = 0,
     ) = d2.periodModule().periodHelper()
         .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
+
+    fun getPeriodSource(
+        periodLabelProvider: PeriodLabelProvider,
+        selectedDate: Date?,
+        periodType: PeriodType,
+        initialDate: Date,
+        maxDate: Date?,
+    ): PeriodSource {
+        return PeriodSource(
+            d2 = d2,
+            periodLabelProvider = periodLabelProvider,
+            periodType = periodType,
+            initialDate = initialDate,
+            maxDate = maxDate,
+            selectedDate = selectedDate,
+        )
+    }
 }

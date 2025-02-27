@@ -181,7 +181,9 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providePeriodUseCase(eventPeriodRepository: EventPeriodRepository) =
+    fun providePeriodUseCase(
+        eventPeriodRepository: EventPeriodRepository,
+    ) =
         GetEventPeriods(eventPeriodRepository)
 
     companion object {

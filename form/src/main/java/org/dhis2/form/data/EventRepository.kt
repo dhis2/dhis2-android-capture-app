@@ -56,7 +56,6 @@ class EventRepository(
     metadataIconProvider: MetadataIconProvider,
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
-    private val dateUtils: DateUtils,
     private val eventMode: EventMode,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
 
