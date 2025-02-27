@@ -49,6 +49,7 @@ import javax.inject.Inject;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 
@@ -150,11 +151,17 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     public void showPeriodSelector(PeriodType periodType, Integer openFuturePeriods) {
         DataSetPeriodDialog dialog =
                 new DataSetPeriodDialog(getDataSetUid(), periodType, selectedPeriod, openFuturePeriods);
-        dialog.setOnDateSelectedListener(date -> {
+        dialog.setOnDateSelectedListener((date, periodName) -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             selectedPeriod = calendar.getTime();
-            binding.dataSetPeriodEditText.setText(periodUtils.getPeriodUIString(periodType, date, Locale.getDefault()));
+            String periodLabel = "";
+            if (periodType == PeriodType.Daily) {
+                periodLabel = periodUtils.getPeriodUIString(periodType, date, Locale.getDefault());
+            } else {
+                periodLabel = periodName;
+            }
+            binding.dataSetPeriodEditText.setText(periodLabel);
             checkCatOptionsAreValidForOrgUnit(selectedPeriod);
             checkActionVisivbility();
             return Unit.INSTANCE;
