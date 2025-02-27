@@ -8,6 +8,7 @@ import org.dhis2.usescases.datasets.datasetInitial.periods.domain.GetDatasetPeri
 import org.dhis2.usescases.datasets.datasetInitial.periods.domain.GetDatasetPeriods
 import org.dhis2.usescases.datasets.datasetInitial.periods.domain.HasDataInputPeriods
 import org.hisp.dhis.android.core.period.PeriodType
+import java.util.Date
 
 class DatasetPeriodViewModel(
     private val getDatasetPeriods: GetDatasetPeriods,
@@ -18,11 +19,13 @@ class DatasetPeriodViewModel(
     fun fetchPeriods(
         datasetUid: String,
         periodType: PeriodType?,
+        selectedDate: Date?,
         openFuturePeriods: Int,
     ): Flow<PagingData<Period>> {
         return getDatasetPeriods(
             datasetUid = datasetUid,
             periodType = periodType ?: PeriodType.Daily,
+            selectedDate = selectedDate,
             openFuturePeriods = openFuturePeriods,
         )
     }

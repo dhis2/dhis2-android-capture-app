@@ -30,6 +30,7 @@ import java.util.Date
 class DataSetPeriodDialog(
     private val dataset: String,
     private val periodType: PeriodType,
+    private val selectedDate: Date?,
     private val openFuturePeriods: Int,
 ) : BottomSheetDialogFragment() {
 
@@ -62,7 +63,7 @@ class DataSetPeriodDialog(
                             viewModel.getPeriodMaxDate(periodType, openFuturePeriods + 1)
 
                         val state = rememberDatePickerState(
-                            initialSelectedDateMillis = Date().time,
+                            initialSelectedDateMillis = selectedDate?.time ?: Date().time,
                             yearRange = 1970..calendar[Calendar.YEAR],
                             selectableDates = object : SelectableDates {
                                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -104,6 +105,7 @@ class DataSetPeriodDialog(
                                 val periods = viewModel.fetchPeriods(
                                     dataset,
                                     periodType,
+                                    selectedDate,
                                     openFuturePeriods,
                                 ).collectAsLazyPagingItems()
                                 PeriodSelectorContent(
