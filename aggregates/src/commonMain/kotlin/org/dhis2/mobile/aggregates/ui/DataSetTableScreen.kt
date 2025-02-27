@@ -7,7 +7,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +42,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -177,6 +178,8 @@ fun DataSetInstanceScreen(
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                                     onCellClick = dataSetTableViewModel::updateSelectedCell,
+                                    currentSection = dataSetScreenState.currentSection(),
+                                    dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                 )
 
                             DataSetScreenState.Loading ->
@@ -230,6 +233,7 @@ fun DataSetInstanceScreen(
                         onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
+                        currentSection = dataSetScreenState.currentSection(),
                     )
                 } else {
                     ContentLoading(
@@ -305,6 +309,7 @@ private fun DataSetSinglePane(
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
     onCellClick: (cellId: String) -> Unit,
+    currentSection: String?,
 ) {
     Column(
         modifier = modifier
@@ -338,11 +343,27 @@ private fun DataSetSinglePane(
             dataSetDetails = dataSetDetails,
         )
 
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     tableModels = dataSetSectionTable.tables(),
                     onCellClick = onCellClick,
+                    bottomContent = {
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                            HtmlContentBox(
+                                text = it,
+                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
+
+                            )
+                        }
+                    },
                 )
 
             DataSetSectionTable.Loading ->
@@ -362,7 +383,7 @@ private fun SectionTabs(
     }
     AdaptiveTabRow(
         modifier = modifier
-            .height(48.dp)
+            .height(Spacing.Spacing48)
             .fillMaxWidth(),
         tabLabels = tabLabels,
         onTabClicked = { selectedTabIndex ->
@@ -374,24 +395,41 @@ private fun SectionTabs(
 @Composable
 private fun DataSetTableContent(
     modifier: Modifier = Modifier,
+    dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
+    currentSection: String?,
     onCellClick: (cellId: String) -> Unit,
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
         DataSetDetails(
-            modifier.padding(horizontal = 16.dp),
+            modifier.padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
             dataSetDetails = dataSetDetails,
         )
+        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+            HtmlContentBox(
+                text = it,
+                modifier = Modifier.padding(bottom = Spacing.Spacing8, start = Spacing.Spacing16, end = Spacing.Spacing16),
+            )
+        }
+
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     tableModels = dataSetSectionTable.tables(),
                     onCellClick = onCellClick,
+                    bottomContent = {
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                            HtmlContentBox(
+                                text = it,
+                                modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0).testTag("HTML_BOTTOM_CONTENT"),
+                            )
+                        }
+                    },
                 )
 
             DataSetSectionTable.Loading ->
@@ -417,6 +455,7 @@ private fun ContentLoading(
 private fun DataSetTable(
     tableModels: List<TableModel>,
     currentSelection: TableSelection = TableSelection.Unselected(),
+    bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (cellId: String) -> Unit,
 ) {
     DataTable(
@@ -432,6 +471,6 @@ private fun DataSetTable(
                 super.onSelectionChange(newTableSelection)
             }
         },
-        bottomContent = {},
+        bottomContent = bottomContent,
     )
 }
