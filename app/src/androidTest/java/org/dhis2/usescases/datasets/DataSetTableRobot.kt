@@ -131,7 +131,7 @@ class DataSetTableRobot(
         assertTableIsDisplayed()
 
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(22)
+            .performScrollToIndex(15)
         composeTestRule.onNodeWithText("Moderate malnutrition rate", useUnmergedTree = true)
             .assertIsDisplayed()
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
