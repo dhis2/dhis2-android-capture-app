@@ -6,6 +6,9 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.view.View
 import android.widget.EditText
 import androidx.annotation.IdRes
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.UiController
@@ -43,6 +46,10 @@ open class BaseRobot {
         onView(isRoot()).perform(closeSoftKeyboard())
     }
 
+    fun itemWithTextIsDisplayed(text: String, substring: Boolean, composeTestRule: ComposeContentTestRule) {
+        composeTestRule.onNodeWithText(text, substring)
+            .assertIsDisplayed()
+    }
     fun pressImeActionButton(@IdRes editTextId: Int? = null) {
         if (editTextId != null) {
             onView(withId(editTextId)).perform(ViewActions.pressImeActionButton())

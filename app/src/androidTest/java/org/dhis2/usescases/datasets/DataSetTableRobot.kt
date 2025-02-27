@@ -68,6 +68,11 @@ class DataSetTableRobot(
         onView(withId(R.id.negative)).perform(click())
     }
 
+    fun assertItemWithTextIsDisplayed(text: String, substring: Boolean) {
+        itemWithTextIsDisplayed(text, substring, composeTestRule)
+    }
+
+
     fun openMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())
     }

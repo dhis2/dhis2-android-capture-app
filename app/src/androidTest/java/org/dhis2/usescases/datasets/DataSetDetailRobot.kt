@@ -1,8 +1,14 @@
 package org.dhis2.usescases.datasets
 
 import android.view.View
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -26,6 +32,7 @@ import org.dhis2.utils.AdapterItemPosition
 import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
+import org.hisp.dhis.lib.expression.ast.Tag
 import org.junit.Assert.assertTrue
 
 
@@ -45,6 +52,20 @@ internal class DataSetDetailRobot(
     fun clickOnAddDataSet() {
         waitForView(withId(R.id.addDatasetButton)).perform(click())
     }
+
+    fun clickOnSection(tag: String) {
+        composeTestRule.onNodeWithTag(tag, useUnmergedTree = true).performClick()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun assertItemWithTextIsDisplayed(text: String, substring: Boolean) {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasText("CONTENT BEFORE 2:", true),
+            timeoutMillis = 3000
+        )
+        itemWithTextIsDisplayed(text, substring, composeTestRule)
+    }
+
 
     fun checkDataSetInList(period: String, orgUnit: String) {
         onView(withId(R.id.recycler))
