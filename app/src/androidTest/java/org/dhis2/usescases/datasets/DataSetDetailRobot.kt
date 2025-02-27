@@ -60,7 +60,7 @@ internal class DataSetDetailRobot(
     @OptIn(ExperimentalTestApi::class)
     fun assertItemWithTextIsDisplayed(text: String, substring: Boolean) {
         composeTestRule.waitUntilExactlyOneExists(
-            hasText("CONTENT BEFORE 2:", true),
+            hasText(text, true),
             timeoutMillis = 3000
         )
         itemWithTextIsDisplayed(text, substring, composeTestRule)
