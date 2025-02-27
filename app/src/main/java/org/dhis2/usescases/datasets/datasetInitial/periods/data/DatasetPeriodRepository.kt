@@ -1,6 +1,11 @@
 package org.dhis2.usescases.datasets.datasetInitial.periods.data
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.periods.model.Period
 import org.dhis2.usescases.datasets.datasetInitial.periods.model.DateRangeInputPeriod
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
@@ -10,6 +15,26 @@ class DatasetPeriodRepository(
     private val d2: D2,
     private val dateUtils: DateUtils,
 ) {
+
+    fun getPeriods(
+        dataSetUid: String,
+        periodType: PeriodType,
+        selectedDate: Date?,
+        openFuturePeriods: Int,
+    ): Flow<PagingData<Period>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
+            pagingSourceFactory = {
+                DatasetPeriodSource(
+                    d2 = d2,
+                    dataInputPeriods = getDataInputPeriods(dataSetUid),
+                    periodType = periodType,
+                    selectedDate = selectedDate,
+                    maxDate = getPeriodMaxDate(periodType, openFuturePeriods),
+                )
+            },
+        ).flow
+    }
 
     fun hasDataInputPeriods(dataSetUid: String): Boolean {
         val dataset = d2.dataSetModule()
@@ -50,13 +75,6 @@ class DatasetPeriodRepository(
             }?.toList()
             ?.sortedByDescending { it.initialPeriodDate } ?: emptyList()
     }
-
-    fun generatePeriod(
-        periodType: PeriodType,
-        date: Date = Date(),
-        offset: Int = 0,
-    ) = d2.periodModule().periodHelper()
-        .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
 
     fun getPeriodMaxDate(
         periodType: PeriodType,

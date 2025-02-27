@@ -4,6 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import org.dhis2.commons.periods.data.PeriodLabelProvider
 import org.dhis2.commons.periods.model.Period
+import org.dhis2.usescases.datasets.datasetInitial.periods.model.DateRangeInputPeriod
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 import java.time.LocalDate
 import java.time.ZoneId
@@ -11,9 +13,9 @@ import java.util.Date
 import java.util.Locale
 
 class DatasetPeriodSource(
-    private val datasetUid: String,
-    private val datasetPeriodRepository: DatasetPeriodRepository,
-    private val periodLabelProvider: PeriodLabelProvider,
+    private val d2: D2,
+    private val dataInputPeriods: List<DateRangeInputPeriod>,
+    private val periodLabelProvider: PeriodLabelProvider = PeriodLabelProvider(),
     private val periodType: PeriodType,
     private val selectedDate: Date?,
     private val maxDate: Date,
@@ -23,12 +25,11 @@ class DatasetPeriodSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> {
         return try {
-            val dataInputPeriods = datasetPeriodRepository.getDataInputPeriods(datasetUid)
             var maxPageReached = false
             val periodsPerPage = params.loadSize
             val page = params.key ?: 1
             val periods: List<Period> = buildList {
-                if (datasetPeriodRepository.hasDataInputPeriods(datasetUid)) {
+                if (dataInputPeriods.isNotEmpty()) {
                     repeat(dataInputPeriods.size) { index ->
                         add(
                             createPeriod(
@@ -42,11 +43,13 @@ class DatasetPeriodSource(
                     maxPageReached = true
                 } else {
                     repeat(periodsPerPage) { indexInPage ->
-                        val period = datasetPeriodRepository.generatePeriod(
-                            periodType,
-                            maxDate,
-                            -(indexInPage + periodsPerPage * (page - 1)),
-                        )
+                        val period = d2.periodModule().periodHelper()
+                            .blockingGetPeriodForPeriodTypeAndDate(
+                                periodType,
+                                maxDate,
+                                -(indexInPage + periodsPerPage * (page - 1)),
+                            )
+
                         if (period.startDate()?.after(minDate) == true) {
                             add(
                                 createPeriod(
