@@ -90,7 +90,6 @@ class DataSetTest : BaseTest() {
     }
 
 
-    @OptIn(ExperimentalTestApi::class)
     private suspend fun checkContentBoxesAreDisplayed() {
         composeTestRule.awaitIdle()
         dataSetRobot {
@@ -99,34 +98,27 @@ class DataSetTest : BaseTest() {
         tableIsVisible()
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
-            composeTestRule.onNodeWithText("CONTENT BEFORE 1:", true)
-                .assertIsDisplayed()
+            assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
         }
         dataSetTableRobot(composeTestRule) {
             scrollToItem(2)
-            composeTestRule.onNodeWithText("CONTENT AFTER 1:", true)
-                .assertIsDisplayed()
+            assertItemWithTextIsDisplayed("CONTENT AFTER 1:", true)
         }
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
-            composeTestRule.onNodeWithTag("TAB_2", useUnmergedTree = true).performClick()
+            clickOnSection("TAB_2")
         }
         composeTestRule.awaitIdle()
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
-            composeTestRule.waitUntilExactlyOneExists(
-                hasText("CONTENT BEFORE 2:", true),
-                timeoutMillis = 3000
-            )
-            composeTestRule.onNodeWithText("CONTENT BEFORE 2:", true)
-                .assertIsDisplayed()
+            assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
         }
         dataSetTableRobot(composeTestRule) {
             scrollToItem(2)
-            composeTestRule.onNodeWithText("CONTENT AFTER 2:", true)
-                .assertIsDisplayed()
+            assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
         }
     }
+
 
     private suspend fun enterDataSetStep(dataSetUid: String, datasetName: String) {
         startDataSetDetailActivity(
