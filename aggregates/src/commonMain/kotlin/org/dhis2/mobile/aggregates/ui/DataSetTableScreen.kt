@@ -52,6 +52,7 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
+import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -61,7 +62,6 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
-import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
@@ -131,8 +131,7 @@ fun DataSetInstanceScreen(
     ObserveAsEvents(
         flow = SnackbarController.events,
         snackbarHostState,
-    ) {
-            event ->
+    ) { event ->
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
 
@@ -352,13 +351,7 @@ fun DataSetInstanceScreen(
     }
 
     (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog?.let { dataSetUIState ->
-        BottomSheetShell(
-            uiState = dataSetUIState.contentDialogUIState,
-            content = dataSetUIState.content,
-            buttonBlock = dataSetUIState.buttonsDialog,
-            onDismiss = dataSetUIState.onDismiss,
-            icon = dataSetUIState.icon,
-        )
+        ValidationBottomSheet(dataSetUIState = dataSetUIState)
     }
 }
 

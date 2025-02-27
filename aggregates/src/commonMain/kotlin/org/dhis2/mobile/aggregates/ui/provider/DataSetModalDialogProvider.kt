@@ -1,24 +1,12 @@
 package org.dhis2.mobile.aggregates.ui.provider
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material3.Icon
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import org.dhis2.mobile.aggregates.model.Violation
-import org.dhis2.mobile.aggregates.ui.component.ValidationRulesErrorDialog
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
-import org.hisp.dhis.mobile.ui.designsystem.component.Button
-import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
-import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.dhis2.mobile.aggregates.ui.states.DataSetModalType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 internal class DataSetModalDialogProvider(
     val resourceManager: ResourceManager,
@@ -29,9 +17,6 @@ internal class DataSetModalDialogProvider(
         onNotNow: () -> Unit,
         onComplete: () -> Unit,
     ): DataSetModalDialogUIState {
-        val notNowText = resourceManager.provideNotNow()
-        val completeText = resourceManager.provideComplete()
-
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
                 title = resourceManager.provideCompletionDialogTitle(),
@@ -39,30 +24,10 @@ internal class DataSetModalDialogProvider(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Start,
             ),
-            buttonsDialog = {
-                ButtonBlock(
-                    modifier = Modifier.padding(
-                        BottomSheetShellDefaults.buttonBlockPaddings(),
-                    ),
-                    primaryButton = {
-                        Button(
-                            style = ButtonStyle.OUTLINED,
-                            text = notNowText,
-                            onClick = onNotNow,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    },
-                    secondaryButton = {
-                        Button(
-                            style = ButtonStyle.FILLED,
-                            text = completeText,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onComplete,
-                        )
-                    },
-                )
-            },
             onDismiss = onDismiss,
+            onPrimaryButtonClick = onNotNow,
+            onSecondaryButtonClick = onComplete,
+            type = DataSetModalType.COMPLETION,
         )
     }
 
@@ -71,8 +36,6 @@ internal class DataSetModalDialogProvider(
         onDismiss: () -> Unit,
         onAccept: () -> Unit,
     ): DataSetModalDialogUIState {
-        val acceptText = resourceManager.provideOK()
-
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
                 title = resourceManager.provideSaved(),
@@ -80,22 +43,9 @@ internal class DataSetModalDialogProvider(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Start,
             ),
-            buttonsDialog = {
-                ButtonBlock(
-                    modifier = Modifier.padding(
-                        BottomSheetShellDefaults.buttonBlockPaddings(),
-                    ),
-                    primaryButton = {
-                        Button(
-                            style = ButtonStyle.FILLED,
-                            text = acceptText,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onAccept,
-                        )
-                    },
-                )
-            },
             onDismiss = onDismiss,
+            onPrimaryButtonClick = onAccept,
+            type = DataSetModalType.MANDATORY_FIELDS,
         )
     }
 
@@ -104,9 +54,6 @@ internal class DataSetModalDialogProvider(
         onDeny: () -> Unit,
         onAccept: () -> Unit,
     ): DataSetModalDialogUIState {
-        val denyText = resourceManager.provideNo()
-        val acceptText = resourceManager.provideYes()
-
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
                 title = resourceManager.provideSaved(),
@@ -114,30 +61,10 @@ internal class DataSetModalDialogProvider(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Start,
             ),
-            buttonsDialog = {
-                ButtonBlock(
-                    modifier = Modifier.padding(
-                        BottomSheetShellDefaults.buttonBlockPaddings(),
-                    ),
-                    primaryButton = {
-                        Button(
-                            style = ButtonStyle.OUTLINED,
-                            text = denyText,
-                            onClick = onDeny,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    },
-                    secondaryButton = {
-                        Button(
-                            style = ButtonStyle.FILLED,
-                            text = acceptText,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onAccept,
-                        )
-                    },
-                )
-            },
             onDismiss = onDismiss,
+            onPrimaryButtonClick = onDeny,
+            onSecondaryButtonClick = onAccept,
+            type = DataSetModalType.VALIDATION_RULES,
         )
     }
 
@@ -146,9 +73,6 @@ internal class DataSetModalDialogProvider(
         onMarkAsComplete: () -> Unit,
         violations: List<Violation>,
     ): DataSetModalDialogUIState {
-        val completeAnywayText = resourceManager.provideCompleteAnyway()
-        val reviewText = resourceManager.provideReview()
-
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
                 title = "${violations.size} ${
@@ -160,39 +84,11 @@ internal class DataSetModalDialogProvider(
                 showBottomSectionDivider = false,
                 contentPadding = PaddingValues(Spacing.Spacing0),
             ),
-            content = {
-                ValidationRulesErrorDialog(violations)
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
-                    contentDescription = null,
-                    tint = SurfaceColor.Error,
-                )
-            },
-            buttonsDialog = {
-                ButtonBlock(
-                    modifier = Modifier.padding(
-                        BottomSheetShellDefaults.buttonBlockPaddings(),
-                    ),
-                    primaryButton = {
-                        Button(
-                            style = ButtonStyle.TEXT,
-                            text = completeAnywayText,
-                            onClick = onMarkAsComplete,
-                        )
-                    },
-                    secondaryButton = {
-                        Button(
-                            style = ButtonStyle.FILLED,
-                            text = reviewText,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onDismiss,
-                        )
-                    },
-                )
-            },
             onDismiss = onDismiss,
+            onPrimaryButtonClick = onMarkAsComplete,
+            onSecondaryButtonClick = onDismiss,
+            type = DataSetModalType.VALIDATION_RULES_ERROR,
+            violations = violations,
         )
     }
 }
