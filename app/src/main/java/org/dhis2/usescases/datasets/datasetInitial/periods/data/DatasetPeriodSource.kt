@@ -15,6 +15,7 @@ class DatasetPeriodSource(
     private val datasetPeriodRepository: DatasetPeriodRepository,
     private val periodLabelProvider: PeriodLabelProvider,
     private val periodType: PeriodType,
+    private val selectedDate: Date?,
     private val maxDate: Date,
 ) : PagingSource<Int, Period>() {
 
@@ -34,6 +35,7 @@ class DatasetPeriodSource(
                                 dataInputPeriods[index].period,
                                 dataInputPeriods[index].initialPeriodDate,
                                 dataInputPeriods[index].endPeriodDate,
+                                selectedDate,
                             ),
                         )
                     }
@@ -51,6 +53,7 @@ class DatasetPeriodSource(
                                     period.periodId()!!,
                                     period.startDate()!!,
                                     period.endDate()!!,
+                                    selectedDate,
                                 ),
                             )
                         } else {
@@ -77,7 +80,12 @@ class DatasetPeriodSource(
         }
     }
 
-    private fun createPeriod(id: String, startDate: Date, endDate: Date): Period {
+    private fun createPeriod(
+        id: String,
+        startDate: Date,
+        endDate: Date,
+        selectedDate: Date?,
+    ): Period {
         return Period(
             id = id,
             name = periodLabelProvider(
@@ -89,7 +97,7 @@ class DatasetPeriodSource(
             ),
             startDate = startDate,
             enabled = true,
-            selected = false,
+            selected = startDate == selectedDate,
         )
     }
 

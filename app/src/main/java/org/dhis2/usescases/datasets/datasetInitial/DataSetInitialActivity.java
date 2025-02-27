@@ -149,7 +149,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     @Override
     public void showPeriodSelector(PeriodType periodType, Integer openFuturePeriods) {
         DataSetPeriodDialog dialog =
-                new DataSetPeriodDialog(getDataSetUid(), periodType, openFuturePeriods);
+                new DataSetPeriodDialog(getDataSetUid(), periodType, selectedPeriod, openFuturePeriods);
         dialog.setOnDateSelectedListener(date -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
