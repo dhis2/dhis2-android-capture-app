@@ -15,12 +15,14 @@ internal class GetDataValueData(
 
     suspend operator fun invoke(
         dataElementUids: List<String>,
+        pivotedCategoryUid: String?,
     ): Map<Pair<String, String>, DataValueData> {
         return dataSetInstanceRepository.values(
             periodId = periodId,
             orgUnitUid = orgUnitUid,
             attrOptionComboUid = attrOptionComboUid,
             dataElementUids = dataElementUids,
+            pivotedCategoryUid = pivotedCategoryUid,
         ).associate { (key, value) ->
             key to DataValueData(
                 value = value?.userFriendlyValue(key.first),

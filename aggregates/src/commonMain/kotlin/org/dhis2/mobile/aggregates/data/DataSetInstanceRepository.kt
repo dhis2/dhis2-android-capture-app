@@ -40,7 +40,6 @@ internal interface DataSetInstanceRepository {
         sectionUid: String,
     ): List<TableGroup>
 
-    suspend fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>>
     suspend fun dataSetInstanceSectionConfiguration(sectionUid: String): DataSetInstanceSectionConfiguration?
     suspend fun conflicts(
         dataSetUid: String,
@@ -50,8 +49,6 @@ internal interface DataSetInstanceRepository {
         dataElementUid: String,
         categoryOptionComboUid: String,
     ): Pair<List<String>, List<String>>
-
-    suspend fun categoryOptionCombinations(categoryUids: List<String>): List<String>
 
     suspend fun getDataSetIndicator(
         dataSetUid: String,
@@ -66,6 +63,7 @@ internal interface DataSetInstanceRepository {
         orgUnitUid: String,
         dataElementUids: List<String>,
         attrOptionComboUid: String,
+        pivotedCategoryUid: String?,
     ): List<Pair<Pair<String, String>, String?>>
 
     suspend fun dataElementInfo(
