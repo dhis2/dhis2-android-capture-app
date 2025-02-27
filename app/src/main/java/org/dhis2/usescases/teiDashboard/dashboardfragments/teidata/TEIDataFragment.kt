@@ -307,7 +307,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                         presenter.onAddNewEventOptionSelected(it, null)
                     },
                     quickActions = (dashboardModel as? DashboardEnrollmentModel)?.let {
-                        quickActionsMapper.map(it) { quickActionType ->
+                        quickActionsMapper.map(
+                            it,
+                            dashboardViewModel.checkIfTeiCanBeTransferred(),
+                        ) { quickActionType ->
                             onQuickAction(quickActionType)
                         }
                     } ?: emptyList(),

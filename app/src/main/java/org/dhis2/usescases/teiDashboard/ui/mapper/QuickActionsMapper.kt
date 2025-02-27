@@ -24,11 +24,14 @@ class QuickActionsMapper(
 ) {
     fun map(
         dashboardEnrollmentModel: DashboardEnrollmentModel,
+        teiCanBeTransferred: Boolean,
         onActionClick: (QuickActionType) -> Unit,
     ): List<QuickActionUiModel> {
         return dashboardEnrollmentModel.quickActions
-            .mapNotNull { QuickActionType.valueOf(it).withEnrollmentStatus(dashboardEnrollmentModel) }
-            .map { quickActionType ->
+            .mapNotNull {
+                QuickActionType.valueOf(it)
+                    .filter(dashboardEnrollmentModel, teiCanBeTransferred)
+            }.map { quickActionType ->
                 QuickActionUiModel(
                     label = getText(quickActionType, programUid),
                     icon = getIcon(quickActionType),
@@ -37,8 +40,9 @@ class QuickActionsMapper(
             }
     }
 
-    private fun QuickActionType.withEnrollmentStatus(
+    private fun QuickActionType.filter(
         dashboardEnrollmentModel: DashboardEnrollmentModel,
+        teiCanBeTransferred: Boolean,
     ): QuickActionType? {
         return when (this) {
             QuickActionType.MARK_FOLLOW_UP ->
@@ -47,18 +51,28 @@ class QuickActionsMapper(
                 } else {
                     this
                 }
+
             QuickActionType.COMPLETE_ENROLLMENT ->
                 if (dashboardEnrollmentModel.currentEnrollment.status() == EnrollmentStatus.COMPLETED) {
                     QuickActionType.REOPEN_ENROLLMENT
                 } else {
                     this
                 }
+
             QuickActionType.CANCEL_ENROLLMENT ->
                 if (dashboardEnrollmentModel.currentEnrollment.status() == EnrollmentStatus.CANCELLED) {
                     QuickActionType.REOPEN_ENROLLMENT
                 } else {
                     this
                 }
+
+            QuickActionType.TRANSFER ->
+                if (teiCanBeTransferred) {
+                    this
+                } else {
+                    null
+                }
+
             else -> this
         }
     }
@@ -75,17 +89,20 @@ class QuickActionsMapper(
                 R.string.complete_enrollment_label,
                 1,
             )
+
             QuickActionType.CANCEL_ENROLLMENT ->
                 resourceManager.formatWithEnrollmentLabel(
                     programUid,
                     R.string.deactivate_enrollment_label,
                     1,
                 )
+
             QuickActionType.REOPEN_ENROLLMENT -> resourceManager.formatWithEnrollmentLabel(
                 programUid,
                 R.string.reopen_enrollment_label,
                 1,
             )
+
             QuickActionType.MORE_ENROLLMENTS -> resourceManager.getString(R.string.more_enrollments)
         }
     }

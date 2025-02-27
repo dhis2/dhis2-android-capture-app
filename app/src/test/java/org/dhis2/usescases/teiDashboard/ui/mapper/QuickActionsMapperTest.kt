@@ -47,7 +47,7 @@ class QuickActionsMapperTest {
                 QuickActionType.MORE_ENROLLMENTS.name,
             ),
         )
-        val quickActions = mapper.map(dashboardEnrollmentModel) {}
+        val quickActions = mapper.map(dashboardEnrollmentModel, true) {}
         assert(quickActions.size == 5)
     }
 
@@ -57,7 +57,7 @@ class QuickActionsMapperTest {
             status = EnrollmentStatus.ACTIVE,
             quickActions = listOf(QuickActionType.MORE_ENROLLMENTS.name),
         )
-        val quickActions = mapper.map(dashboardEnrollmentModel) {}
+        val quickActions = mapper.map(dashboardEnrollmentModel, true) {}
         assert(quickActions.first().label == "More enrollments")
     }
 
@@ -68,7 +68,7 @@ class QuickActionsMapperTest {
             followup = true,
             quickActions = listOf(QuickActionType.MARK_FOLLOW_UP.name),
         )
-        val quickActions = mapper.map(dashboardEnrollmentModel) {}
+        val quickActions = mapper.map(dashboardEnrollmentModel, true) {}
         assert(quickActions.isEmpty())
     }
 
@@ -81,8 +81,21 @@ class QuickActionsMapperTest {
                 QuickActionType.CANCEL_ENROLLMENT.name,
             ),
         )
-        val quickActions = mapper.map(dashboardEnrollmentModel) {}
+        val quickActions = mapper.map(dashboardEnrollmentModel, true) {}
         assert(quickActions.map { it.label } == listOf("Re-open enrollment", "Deactivate enrollment"))
+    }
+
+    @Test
+    fun shouldNotMapTransferActionIfNotAvailable() {
+        val dashboardEnrollmentModel = fakeEnrollmentModel(
+            status = EnrollmentStatus.COMPLETED,
+            quickActions = listOf(
+                QuickActionType.TRANSFER.name,
+                QuickActionType.CANCEL_ENROLLMENT.name,
+            ),
+        )
+        val quickActions = mapper.map(dashboardEnrollmentModel, false) {}
+        assert(quickActions.map { it.label } == listOf("Deactivate enrollment"))
     }
 
     private fun fakeEnrollmentModel(
