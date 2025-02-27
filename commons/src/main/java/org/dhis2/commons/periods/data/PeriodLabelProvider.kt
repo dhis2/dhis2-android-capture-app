@@ -9,6 +9,7 @@ import org.dhis2.commons.periods.model.MONTH_YEAR_FULL_FORMAT
 import org.dhis2.commons.periods.model.YEARLY_FORMAT
 import org.hisp.dhis.android.core.period.PeriodType
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
@@ -16,7 +17,8 @@ import java.util.regex.Pattern
 class PeriodLabelProvider(
     private val defaultQuarterlyLabel: String = "Q%d %s (%s - %s)",
     private val defaultWeeklyLabel: String = "Week %d: %s - %s, %s",
-    private val defaultBiWeeklyLabel: String = "%s - %s %s",
+    private val defaultBiWeeklyLabel: String = "%s - %s, %s",
+    private val biWeeklyLabelBetweenYears: String = "%s, %s - %s, %s",
 ) {
     operator fun invoke(
         periodType: PeriodType?,
@@ -42,11 +44,20 @@ class PeriodLabelProvider(
             }
 
             PeriodType.BiWeekly -> {
-                formattedDate = defaultBiWeeklyLabel.format(
-                    SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodStartDate),
-                    SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodEndDate),
-                    SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
-                )
+                formattedDate = if (periodIsBetweenYears(periodStartDate, periodEndDate)) {
+                    biWeeklyLabelBetweenYears.format(
+                        SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodStartDate),
+                        SimpleDateFormat(YEARLY_FORMAT, locale).format(periodStartDate),
+                        SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodEndDate),
+                        SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
+                    )
+                } else {
+                    defaultBiWeeklyLabel.format(
+                        SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodStartDate),
+                        SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodEndDate),
+                        SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
+                    )
+                }
             }
 
             PeriodType.Monthly ->
@@ -129,5 +140,11 @@ class PeriodLabelProvider(
             quarterNumber = matcher.group(2)?.toInt() ?: 0
         }
         return quarterNumber
+    }
+
+    private fun periodIsBetweenYears(startDate: Date, endDate: Date): Boolean {
+        val startCalendar = Calendar.getInstance().apply { time = startDate }
+        val endCalendar = Calendar.getInstance().apply { time = endDate }
+        return startCalendar.get(Calendar.YEAR) != endCalendar.get(Calendar.YEAR)
     }
 }
