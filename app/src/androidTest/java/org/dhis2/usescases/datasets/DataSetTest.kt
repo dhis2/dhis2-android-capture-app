@@ -19,6 +19,8 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headerTestTag
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
