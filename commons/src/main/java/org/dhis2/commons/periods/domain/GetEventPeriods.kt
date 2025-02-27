@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.data.PeriodLabelProvider
-import org.dhis2.commons.periods.data.PeriodSource
 import org.dhis2.commons.periods.model.Period
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -28,8 +27,7 @@ class GetEventPeriods(
     ): Flow<PagingData<Period>> = Pager(
         config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
         pagingSourceFactory = {
-            PeriodSource(
-                periodRepository = eventPeriodRepository,
+            eventPeriodRepository.getPeriodSource(
                 periodLabelProvider = periodLabelProvider,
                 periodType = periodType,
                 initialDate = eventPeriodRepository.getEventPeriodMinDate(

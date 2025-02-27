@@ -145,6 +145,6 @@ class PeriodLabelProvider(
     private fun periodIsBetweenYears(startDate: Date, endDate: Date): Boolean {
         val startCalendar = Calendar.getInstance().apply { time = startDate }
         val endCalendar = Calendar.getInstance().apply { time = endDate }
-        return startCalendar.get(Calendar.YEAR) != endCalendar.get(Calendar.YEAR)
+        return startCalendar[Calendar.YEAR] != endCalendar[Calendar.YEAR]
     }
 }

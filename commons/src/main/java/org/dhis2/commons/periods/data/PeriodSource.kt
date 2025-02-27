@@ -4,13 +4,15 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.periods.model.PeriodOrder
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 import java.util.Locale
 import org.hisp.dhis.android.core.period.Period as DTOPeriod
 
-internal class PeriodSource(
-    private val periodRepository: PeriodRepository,
+// todo remove period repository and pass d2 instead to generate period
+class PeriodSource(
+    private val d2: D2,
     private val periodLabelProvider: PeriodLabelProvider,
     private val selectedDate: Date?,
     private val periodType: PeriodType,
@@ -28,7 +30,7 @@ internal class PeriodSource(
             val periods: List<Period> = buildList {
                 repeat(periodsPerPage) { indexInPage ->
                     val offSet = getOffset(periodOrder, indexInPage, page, periodsPerPage)
-                    val period = periodRepository.generatePeriod(
+                    val period = generatePeriod(
                         periodType,
                         if (periodOrder == PeriodOrder.ASC) initialDate else maxDate ?: initialDate,
                         offSet,
@@ -103,6 +105,13 @@ internal class PeriodSource(
             breakLoopCallBack()
         }
     }
+
+    private fun generatePeriod(
+        periodType: PeriodType,
+        date: Date,
+        offset: Int,
+    ) = d2.periodModule().periodHelper()
+        .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
 
     override fun getRefreshKey(state: PagingState<Int, Period>): Int? {
         return state.anchorPosition?.let {
