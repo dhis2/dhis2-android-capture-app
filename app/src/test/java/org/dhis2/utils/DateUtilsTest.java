@@ -10,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.bindings.StringExtensionsKt;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.date.Period;
-import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Assert;
