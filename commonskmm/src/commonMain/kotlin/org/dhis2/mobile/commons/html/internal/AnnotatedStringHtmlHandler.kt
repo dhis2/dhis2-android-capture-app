@@ -41,7 +41,7 @@ internal class AnnotatedStringHtmlHandler(
         },
     )
     private val mainStyle = spanStyle
-    private val pendingSpanStyles = mutableListOf<SpanStyle>()
+    private val pendingSpanStyles = mutableListOf(spanStyle)
 
     // A negative index means the list is unordered
     private var preformattedLevel = 0

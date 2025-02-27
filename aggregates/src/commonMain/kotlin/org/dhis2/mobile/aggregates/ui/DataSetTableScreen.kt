@@ -5,9 +5,9 @@ package org.dhis2.mobile.aggregates.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,11 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -79,8 +76,8 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.jetbrains.compose.resources.stringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -244,7 +241,7 @@ fun DataSetInstanceScreen(
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
                         currentSection = dataSetScreenState.currentSection(),
-                        )
+                    )
                 } else {
                     ContentLoading(
                         modifier = Modifier.fillMaxSize().padding(it),
@@ -319,6 +316,7 @@ private fun DataSetSinglePane(
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
     onCellClick: (cellId: String) -> Unit,
+    currentSection: String?,
 ) {
     Column(
         modifier = modifier
@@ -370,9 +368,9 @@ private fun DataSetSinglePane(
                                 text = it,
                                 modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0),
 
-                                )
+                            )
                         }
-                    }
+                    },
                 )
 
             DataSetSectionTable.Loading ->
@@ -409,7 +407,7 @@ private fun DataSetTableContent(
     dataSetSectionTable: DataSetSectionTable,
     currentSection: String?,
     onCellClick: (cellId: String) -> Unit,
-    ) {
+) {
     Column(
         modifier = modifier
             .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
@@ -436,10 +434,9 @@ private fun DataSetTableContent(
                             HtmlContentBox(
                                 text = it,
                                 modifier = Modifier.padding(top = Spacing.Spacing24, start = Spacing.Spacing0, end = Spacing.Spacing0).testTag("HTML_BOTTOM_CONTENT"),
-
-                                )
+                            )
                         }
-                    }
+                    },
                 )
 
             DataSetSectionTable.Loading ->
@@ -466,7 +463,6 @@ fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.Spacing16)
                 .background(
                     color = SurfaceColor.ContainerLow,
                     shape = Shape.Small,
@@ -475,7 +471,7 @@ fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
         ) {
             Column(Modifier.padding(Spacing.Spacing8)) {
                 Text(
-                    text = text,
+                    text = formatedText,
                     textAlign = TextAlign.Start,
                 )
             }
