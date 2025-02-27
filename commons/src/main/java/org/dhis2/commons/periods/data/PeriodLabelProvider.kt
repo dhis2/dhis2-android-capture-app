@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 class PeriodLabelProvider(
     private val defaultQuarterlyLabel: String = "Q%d %s (%s - %s)",
     private val defaultWeeklyLabel: String = "Week %d: %s - %s, %s",
-    private val defaultBiWeeklyLabel: String = "Period %d: %s - %s",
+    private val defaultBiWeeklyLabel: String = "%s - %s %s",
 ) {
     operator fun invoke(
         periodType: PeriodType?,
@@ -43,9 +43,9 @@ class PeriodLabelProvider(
 
             PeriodType.BiWeekly -> {
                 formattedDate = defaultBiWeeklyLabel.format(
-                    weekOfTheYear(periodType, periodId),
-                    SimpleDateFormat(DAILY_FORMAT, locale).format(periodStartDate),
-                    SimpleDateFormat(DAILY_FORMAT, locale).format(periodEndDate),
+                    SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodStartDate),
+                    SimpleDateFormat(MONTH_DAY_SHORT_FORMAT, locale).format(periodEndDate),
+                    SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
                 )
             }
 
@@ -53,7 +53,7 @@ class PeriodLabelProvider(
                 formattedDate =
                     SimpleDateFormat(MONTH_YEAR_FULL_FORMAT, locale).format(periodStartDate)
 
-            PeriodType.BiMonthly ->
+            PeriodType.BiMonthly, PeriodType.SixMonthly, PeriodType.SixMonthlyApril ->
                 formattedDate = FROM_TO_LABEL.format(
                     SimpleDateFormat(MONTH_FULL_FORMAT, locale).format(periodStartDate),
                     SimpleDateFormat(MONTH_YEAR_FULL_FORMAT, locale).format(periodEndDate),
@@ -86,8 +86,6 @@ class PeriodLabelProvider(
                 )
             }
 
-            PeriodType.SixMonthly,
-            PeriodType.SixMonthlyApril,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
