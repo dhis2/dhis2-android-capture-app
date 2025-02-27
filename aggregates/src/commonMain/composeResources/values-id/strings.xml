@@ -11,5 +11,6 @@
     <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
     <string name="error">Kesalahan</string>
     <string name="complete_anyway">Lengkap</string>
+    <string name="validation_rules_data_to_review">Data untuk ditinjau</string>
 
 </resources>

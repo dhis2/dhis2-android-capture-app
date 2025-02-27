@@ -11,5 +11,6 @@
     <string name="run_validation_rules">هل تريد التحقق من جودة البيانات؟</string>
     <string name="error">خطأ</string>
     <string name="complete_anyway">إكمال على أية حال</string>
+    <string name="validation_rules_data_to_review">بيانات للمراجعة</string>
 
 </resources>

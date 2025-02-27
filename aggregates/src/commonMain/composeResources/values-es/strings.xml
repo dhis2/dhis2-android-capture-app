@@ -13,5 +13,6 @@
     <string name="error">Error</string>
     <string name="complete_anyway">Completar de todas formas</string>
     <string name="review">Revisar</string>
+    <string name="validation_rules_data_to_review">Datos a revisar</string>
 
 </resources>

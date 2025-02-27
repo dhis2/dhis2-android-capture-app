@@ -36,11 +36,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.aggregates.model.Violation
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.validation_rules_data_to_review
 import org.hisp.dhis.mobile.ui.designsystem.component.Tag
 import org.hisp.dhis.mobile.ui.designsystem.component.TagType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.max
 
 @Composable
@@ -96,7 +99,7 @@ internal fun ValidationRulesErrorDialog(violations: List<Violation>) {
                 }
                 item {
                     Text(
-                        text = "Data to review",
+                        text = stringResource(Res.string.validation_rules_data_to_review),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -165,7 +168,7 @@ internal fun PagerIndicator(
                 )
                 Box(
                     modifier = Modifier
-                        .padding(all = 8.dp)
+                        .padding(all = Spacing.Spacing8)
                         .background(color = color, CircleShape)
                         .size(
                             size,

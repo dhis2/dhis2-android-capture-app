@@ -11,5 +11,6 @@
     <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
     <string name="error">Feil</string>
     <string name="complete_anyway">Fullfør likevel</string>
+    <string name="validation_rules_data_to_review">Data til gjennomgang</string>
 
 </resources>
