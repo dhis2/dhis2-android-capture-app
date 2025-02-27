@@ -20,6 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
@@ -66,7 +69,10 @@ fun AdaptiveTabRow(
             if (scrollable) {
                 ScrollableTabRow(
                     modifier = modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .semantics {
+                            testTag = "SCROLLABLE_TAB_ROW"
+                        },
                     selectedTabIndex = selectedTab,
                     containerColor = MaterialTheme.colorScheme.primary,
                     edgePadding = Spacing.Spacing16,
@@ -81,6 +87,7 @@ fun AdaptiveTabRow(
                 ) {
                     tabLabels.forEachIndexed { index, tabLabel ->
                         AdaptativeTab(
+                            modifier = Modifier.testTag("SCROLLABLE_TAB_$index"),
                             index = index,
                             tabLabel = tabLabel,
                             tabWidths = tabWidths,
@@ -96,7 +103,10 @@ fun AdaptiveTabRow(
                 TabRow(
                     modifier = modifier
                         .height(48.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .semantics {
+                            testTag = "TAB_ROW"
+                        },
                     selectedTabIndex = selectedTab,
                     containerColor = MaterialTheme.colorScheme.primary,
                     indicator = { tabPositions ->
@@ -110,6 +120,7 @@ fun AdaptiveTabRow(
                 ) {
                     tabLabels.forEachIndexed { index, tabLabel ->
                         AdaptativeTab(
+                            modifier = Modifier.testTag("TAB_$index"),
                             index = index,
                             tabLabel = tabLabel,
                             tabWidths = tabWidths,
@@ -136,6 +147,7 @@ fun AdaptiveTabRow(
 
 @Composable
 private fun AdaptativeTab(
+    modifier: Modifier = Modifier,
     index: Int,
     tabLabel: String,
     tabWidths: MutableList<Int>,
@@ -143,7 +155,7 @@ private fun AdaptativeTab(
     onClick: () -> Unit,
 ) {
     Tab(
-        modifier = Modifier
+        modifier = modifier
             .height(48.dp)
             .padding(horizontal = Spacing.Spacing4)
             .onGloballyPositioned { coordinates ->
