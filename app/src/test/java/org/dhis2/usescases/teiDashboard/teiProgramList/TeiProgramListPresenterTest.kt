@@ -173,7 +173,7 @@ class TeiProgramListPresenterTest {
             accessDataWrite = true,
             state = State.SYNCED,
             downloadState = ProgramDownloadState.NONE,
-            stockConfig = null,
+            isStockUseCase = false,
             lastUpdated = Date(),
             filtersAreActive = false,
             hasOverdueEvent = false,

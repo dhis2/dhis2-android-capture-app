@@ -669,7 +669,7 @@ private fun testingProgramModel() = ProgramUiModel(
     hasOverdueEvent = false,
     filtersAreActive = false,
     downloadState = ProgramDownloadState.NONE,
-    stockConfig = null,
+    isStockUseCase = false,
     lastUpdated = Date(),
 )
 
