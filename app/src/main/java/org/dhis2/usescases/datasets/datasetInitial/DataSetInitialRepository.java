@@ -24,9 +24,6 @@ public interface DataSetInitialRepository {
     Observable<List<CategoryOption>> catCombo(String categoryUid);
 
     @NonNull
-    Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod();
-
-    @NonNull
     Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo);
 
     @NonNull
