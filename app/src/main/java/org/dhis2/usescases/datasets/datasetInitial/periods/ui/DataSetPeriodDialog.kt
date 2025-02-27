@@ -34,7 +34,7 @@ class DataSetPeriodDialog(
     private val openFuturePeriods: Int,
 ) : BottomSheetDialogFragment() {
 
-    lateinit var onDateSelectedListener: (Date) -> Unit
+    lateinit var onDateSelectedListener: (Date, String) -> Unit
 
     val viewModel by viewModel<DatasetPeriodViewModel>()
 
@@ -84,7 +84,7 @@ class DataSetPeriodDialog(
                             onCancel = { dismiss() },
                             onConfirm = { date ->
                                 date.selectedDateMillis?.let {
-                                    onDateSelectedListener(Date(it))
+                                    onDateSelectedListener(Date(it), "")
                                 }
                                 dismiss()
                             },
@@ -111,8 +111,8 @@ class DataSetPeriodDialog(
                                 PeriodSelectorContent(
                                     periods = periods,
                                     scrollState = scrollState,
-                                ) { selectedDate ->
-                                    onDateSelectedListener(selectedDate)
+                                ) { selectedDate, periodName ->
+                                    onDateSelectedListener(selectedDate, periodName)
                                     dismiss()
                                 }
                             },
