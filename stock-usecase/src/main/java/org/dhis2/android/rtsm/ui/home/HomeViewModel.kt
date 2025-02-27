@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,9 +89,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadStockUseCases(programUid: String) {
         viewModelScope.launch {
-            async {
-                metadataManager.loadStockUseCase(programUid)
-            }.await()?.let {
+            metadataManager.loadStockUseCase(programUid)?.let {
                 config = it
             }
         }
