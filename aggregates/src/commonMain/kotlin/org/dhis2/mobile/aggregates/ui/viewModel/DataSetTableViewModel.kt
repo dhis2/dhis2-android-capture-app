@@ -151,7 +151,10 @@ internal class DataSetTableViewModel(
         val sectionData = getDataSetSectionData(sectionUid)
         val tables = sectionData.tableGroups.map { tableGroup ->
             async(dispatcher.io()) {
-                val dataValueDataMap = getDataValueData(tableGroup.cellElements.map { it.uid })
+                val dataValueDataMap = getDataValueData(
+                    dataElementUids = tableGroup.cellElements.map { it.uid },
+                    pivotedCategoryUid = sectionData.pivotedHeaderId(),
+                )
 
                 val tableModel = tableGroup.toTableModel(
                     resourceManager = resourceManager,

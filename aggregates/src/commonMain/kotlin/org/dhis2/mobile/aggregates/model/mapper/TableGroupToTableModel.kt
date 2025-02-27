@@ -45,38 +45,89 @@ internal suspend fun TableGroup.toTableModel(
         },
     )
 
-    val tableRows = cellElements
-        .mapIndexed { rowIndex, cellElement ->
+    val headersCombinations = if (pivotedHeaders.isEmpty()) {
+        cellElements.map {
+            it to null
+        }
+    } else {
+        cellElements.flatMap { cellElement ->
+            pivotedHeaders.map { pivotedHeader ->
+                cellElement to pivotedHeader
+            }
+        }
+    }
+
+    val tableRows = headersCombinations
+        .mapIndexed { rowIndex, (cellElement, pivotedHeader) ->
             val rowIndex = rowIndex + absoluteRowIndex
             TableRowModel(
-                rowHeaders = listOf(
-                    RowHeader(
-                        id = cellElement.uid,
-                        title = cellElement.label,
-                        row = rowIndex,
-                        column = 0,
-                        description = cellElement.description,
-                    ),
-                ),
+                rowHeaders = buildList {
+                    add(
+                        RowHeader(
+                            id = cellElement.uid,
+                            title = cellElement.label,
+                            row = rowIndex,
+                            column = 0,
+                            description = cellElement.description,
+                        ),
+                    )
+                    pivotedHeader?.let {
+                        add(
+                            RowHeader(
+                                id = pivotedHeader.uid,
+                                title = pivotedHeader.label,
+                                row = rowIndex,
+                                column = 1,
+                                description = pivotedHeader.description,
+                            ),
+                        )
+                    }
+                },
                 values = buildMap {
                     repeat(tableHeader.tableMaxColumns() - tableHeader.extraColumns.size) { columnIndex ->
                         val key = Pair(
-                            cellElement.uid,
+                            if (pivotedHeader == null) {
+                                cellElement.uid
+                            } else {
+                                "${cellElement.uid}_${pivotedHeader.uid}"
+                            },
                             headerCombinations[columnIndex],
                         )
+
                         val dataValueData = dataValueDataMap[key]
 
                         put(
                             key = columnIndex,
                             value = TableCell(
                                 id = CellIdGenerator.generateId(
-                                    rowIds = listOf(
-                                        TableId(
-                                            id = cellElement.uid,
-                                            type = TableIdType.DataElement,
-                                        ),
-                                    ),
-                                    columnIds = listOf(
+                                    rowIds = buildList {
+                                        add(
+                                            TableId(
+                                                id = cellElement.uid,
+                                                type = TableIdType.DataElement,
+                                            ),
+                                        )
+                                        pivotedHeader?.let {
+                                            add(
+                                                TableId(
+                                                    id = pivotedHeader.uid,
+                                                    type = TableIdType.CategoryOption,
+                                                ),
+                                            )
+                                        }
+                                    },
+                                    columnIds = pivotedHeader?.let {
+                                        buildList {
+                                            headerCombinations[columnIndex].split("_").forEach {
+                                                add(
+                                                    TableId(
+                                                        id = it,
+                                                        type = TableIdType.CategoryOption,
+                                                    ),
+                                                )
+                                            }
+                                        }
+                                    } ?: listOf(
                                         TableId(
                                             id = headerCombinations[columnIndex],
                                             type = TableIdType.CategoryOptionCombo,
