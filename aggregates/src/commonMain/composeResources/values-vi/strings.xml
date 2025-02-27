@@ -13,5 +13,6 @@
     <string name="error">Lỗi</string>
     <string name="complete_anyway">Hoàn tất luôn</string>
     <string name="review">Xem xét</string>
+    <string name="validation_rules_data_to_review">Dữ liệu để xem xét</string>
 
 </resources>

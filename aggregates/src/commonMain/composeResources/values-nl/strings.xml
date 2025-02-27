@@ -13,5 +13,6 @@
     <string name="error">Fout</string>
     <string name="complete_anyway">In ieder geval compleet</string>
     <string name="review">Beoordeling</string>
+    <string name="validation_rules_data_to_review">Gegevens om te bekijken</string>
 
 </resources>

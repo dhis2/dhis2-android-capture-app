@@ -11,5 +11,6 @@
     <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ?</string>
     <string name="error">ເກີດການຜິດພາດ</string>
     <string name="review">ທົບທວນຄືນ</string>
+    <string name="validation_rules_data_to_review">ຂໍ້ມູນທີ່ຕ້ອງທົບທວນ</string>
 
 </resources>

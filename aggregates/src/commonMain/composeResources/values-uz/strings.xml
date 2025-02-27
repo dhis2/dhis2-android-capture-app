@@ -11,5 +11,6 @@
     <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="error">Хатолик</string>
     <string name="complete_anyway">Барибир тўлдиринг</string>
+    <string name="validation_rules_data_to_review">Кўриб чиқиладиган маълумотлар</string>
 
 </resources>

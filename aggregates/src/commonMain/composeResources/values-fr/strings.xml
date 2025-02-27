@@ -12,5 +12,6 @@
     <string name="error">Erreur</string>
     <string name="complete_anyway">Terminer quand même</string>
     <string name="review">Vérifier</string>
+    <string name="validation_rules_data_to_review">Données à examiner</string>
 
 </resources>
