@@ -144,8 +144,7 @@ internal fun PagerIndicator(
     LazyRow(
         state = indicatorScrollState,
         modifier = Modifier
-//            .height(50.dp)
-            .width(((6 + 16) * 2 + 3 * (10 + 16)).dp), // I'm hard computing it to simplify
+            .width(120.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
