@@ -27,10 +27,11 @@ import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FilterDialogLaunchMode
 import org.dhis2.commons.filters.periods.ui.viewmodel.FilterPeriodsDialogViewmodel
-import org.dhis2.commons.periods.ui.ListItem
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.DatePicker
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownListItem
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 import java.util.Date
@@ -144,9 +145,11 @@ fun FilterPeriodsDialogUI(
                             state = scrollState,
                         ) {
                             items(periodTypes.count()) { index ->
-                                ListItem(
+                                DropdownListItem(
+                                    item = DropdownItem(
+                                        label = viewModel.getPeriodTypeName(periodTypes[index]),
+                                    ),
                                     contentPadding = PaddingValues(Spacing8),
-                                    label = viewModel.getPeriodTypeName(periodTypes[index]),
                                     selected = false,
                                     enabled = true,
                                     onItemClick = {
