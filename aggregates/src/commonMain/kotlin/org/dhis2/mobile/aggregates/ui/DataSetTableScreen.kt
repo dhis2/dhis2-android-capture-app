@@ -1,11 +1,12 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package org.dhis2.mobile.aggregates.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -19,10 +20,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -30,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,20 +45,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.ui.component.ValidationBar
+import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
+import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
+import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.FAB
+import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDialog
@@ -69,6 +84,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -96,6 +114,7 @@ fun DataSetInstanceScreen(
                 parameters.periodId,
                 parameters.organisationUnitUid,
                 parameters.attributeOptionComboUid,
+                onBackClicked,
             )
         })
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
@@ -103,6 +122,23 @@ fun DataSetInstanceScreen(
     val allowTwoPane by remember(useTwoPane, dataSetScreenState) {
         derivedStateOf {
             dataSetScreenState.allowTwoPane(useTwoPane)
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    ObserveAsEvents(
+        flow = SnackbarController.events,
+        snackbarHostState,
+    ) { event ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+
+            snackbarHostState.showSnackbar(
+                message = event.message,
+                duration = SnackbarDuration.Short,
+            )
         }
     }
 
@@ -151,6 +187,32 @@ fun DataSetInstanceScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
+        },
+        snackbarHost = { CustomSnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = ((dataSetScreenState as? DataSetScreenState.Loaded)?.dataSetSectionTable is DataSetSectionTable.Loaded),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                FAB(
+                    style = FABStyle.SECONDARY,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Done,
+                            contentDescription = "Save Button",
+                        )
+                    },
+                    onClick = {
+                        dataSetTableViewModel.onSaveClicked()
+                    },
+                )
+            }
+        },
+        bottomBar = {
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar?.let { validationBarUiState ->
+                ValidationBar(uiState = validationBarUiState)
+            }
         },
     ) {
         Box(
@@ -286,6 +348,10 @@ fun DataSetInstanceScreen(
                 )
             }
         }
+    }
+
+    (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog?.let { dataSetUIState ->
+        ValidationBottomSheet(dataSetUIState = dataSetUIState)
     }
 }
 
@@ -434,4 +500,16 @@ private fun DataSetTable(
         },
         bottomContent = {},
     )
+}
+
+@Composable
+private fun CustomSnackbarHost(hostState: SnackbarHostState) {
+    SnackbarHost(hostState = hostState) { data ->
+        Snackbar(
+            modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
+            snackbarData = data,
+            containerColor = SurfaceColor.SurfaceBright,
+            contentColor = TextColor.OnSurface,
+        )
+    }
 }

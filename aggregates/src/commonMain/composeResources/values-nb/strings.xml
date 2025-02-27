@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Alt ser bra ut</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
+    <string name="complete">Fullfør</string>
+    <string name="saved">Lagret!</string>
+    <string name="field_mandatory">Det mangler obligatoriske felt. Vennligst fyll dem for å fullføre datasettet.</string>
+    <string name="field_required">Hvis du setter en verdi, så trenger hele raden alle verdier for å fullføre datasettet.</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Lagret og fullført!</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
+    <string name="error">Feil</string>
+    <string name="complete_anyway">Fullfør likevel</string>
+    <string name="validation_rules_data_to_review">Data til gjennomgang</string>
+
+</resources>

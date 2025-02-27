@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Tudo parece bem!</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
+    <string name="not_now">Não agora</string>
+    <string name="complete">Completo</string>
+    <string name="saved">Gravado!</string>
+    <string name="field_mandatory">Estão faltando campos obrigatórios. Por favor, preencha-os para completar o conjunto de dados.</string>
+    <string name="field_required">Se você definir um valor, a linha inteira precisa de todos os valores para concluir o conjunto de dados.</string>
+    <string name="ok">Aprovado</string>
+    <string name="dataset_saved_completed">Salvo e concluído!</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
+    <string name="error">Erro</string>
+    <string name="complete_anyway">Completar mesmo assim</string>
+    <string name="review">Revisão</string>
+    <string name="validation_rules_data_to_review">Dados para revisar</string>
+
+</resources>

@@ -6,12 +6,15 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal sealed class DataSetScreenState {
+
     data class Loaded(
         val dataSetDetails: DataSetDetails,
         val dataSetSections: List<DataSetSection>,
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
         val selectedCellInfo: InputData? = null,
+        val modalDialog: DataSetModalDialogUIState? = null,
+        val validationBar: ValidationBarUiState? = null,
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs

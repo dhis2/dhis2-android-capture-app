@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Semuanya terlihat bagus!</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="complete">Lengkap</string>
+    <string name="saved">Tersimpan!</string>
+    <string name="field_mandatory">Terdapat hal penting yang hilang. Harap mengisinya untuk melengkapi data.set</string>
+    <string name="field_required">Jika Anda mengisi, semua baris harus terisi untuk menyelesaikan data set</string>
+    <string name="ok">Ok</string>
+    <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="error">Kesalahan</string>
+    <string name="complete_anyway">Lengkap</string>
+    <string name="validation_rules_data_to_review">Data untuk ditinjau</string>
+
+</resources>

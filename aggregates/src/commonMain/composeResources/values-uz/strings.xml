@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
+    <string name="complete">Бажарилди</string>
+    <string name="saved">Сақланди!</string>
+    <string name="field_mandatory">Шарт бўлган маълумотлар етишмаяпти. Маълумотлар тўпламини шакллантириш учун уларни тўлдиринг.</string>
+    <string name="field_required">Агар сиз қийматни ўрнатган бўлсангиз, маълумотлар тўпламини тўлдириш учун қатордаги барча қийматлар бўлиши лозим.</string>
+    <string name="ok">ОК</string>
+    <string name="dataset_saved_completed">Якунланди ва сақланди!</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
+    <string name="error">Хатолик</string>
+    <string name="complete_anyway">Барибир тўлдиринг</string>
+    <string name="validation_rules_data_to_review">Кўриб чиқиладиган маълумотлар</string>
+
+</resources>
