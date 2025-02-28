@@ -300,13 +300,22 @@ internal class DataSetInstanceRepositoryImpl(
         val disableGrouping = sectionData?.disableDataElementAutoGrouping() == true
 
         return if (disableGrouping) {
-            DisableDataElementGrouping(dataSetElementsInSection).mapIndexed { index, noGroupingDataSetElements ->
+            DisableDataElementGrouping(
+                dataSetElementsInSection.map {
+                    it.copy(
+                        categoryComboUid = it.categoryComboUid ?: dataElementCategoryComboUid(it.uid),
+                    )
+                },
+            ).mapIndexed { index, noGroupingDataSetElements ->
                 val mainCellElement = noGroupingDataSetElements.first()
+                val catComboUid = mainCellElement.categoryComboUid ?: dataElementCategoryComboUid(
+                    mainCellElement.uid,
+                )
                 val catCombo = d2.categoryModule().categoryCombos()
                     .withCategories()
-                    .uid(mainCellElement.categoryComboUid)
-                    .blockingGet()
-                    .let { requireNotNull(it) }
+                    .uid(catComboUid)
+                    .blockingGet()!!
+
                 val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
 
                 TableGroup(
