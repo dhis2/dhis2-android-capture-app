@@ -15,7 +15,6 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.Date
 import java.util.UUID
 
 class DataSetPeriodRepositoryTest {
@@ -33,11 +32,15 @@ class DataSetPeriodRepositoryTest {
 
     @Test
     fun `Should return dataInputPeriods for dataset`() {
-        val dataInputPeriod = dummyDataInputPeriod()
+        val openingDate = "01/01/2024"
+        val closingDate = "31/12/2100"
+
+        val dataInputPeriod = dummyDataInputPeriod(openingDate, closingDate)
         val dataSet = dummyDataSet().toBuilder()
             .dataInputPeriods(listOf(dataInputPeriod))
             .build()
-        val period = dummyPeriod()
+        val period = dummyPeriod(openingDate, closingDate)
+
         whenever(
             d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).blockingGet(),
         ) doReturn dataSet
@@ -59,13 +62,16 @@ class DataSetPeriodRepositoryTest {
 
         val result = periodRepository.getDataInputPeriods(dataSetUid)
 
+        println(result)
+        println(dateRangeInputPeriodModel)
+
         assert(result.size == 1)
         assert(result[0] == dateRangeInputPeriodModel)
     }
 
-    private fun dummyDataInputPeriod(): DataInputPeriod {
-        val openingDate = DateUtils.uiDateFormat().parse("01/01/2024")
-        val closingDate = DateUtils.uiDateFormat().parse("31/12/2100")
+    private fun dummyDataInputPeriod(initialDate: String, endDate: String): DataInputPeriod {
+        val openingDate = DateUtils.uiDateFormat().parse(initialDate)
+        val closingDate = DateUtils.uiDateFormat().parse(endDate)
 
         return DataInputPeriod.builder()
             .period(ObjectWithUid.create(UUID.randomUUID().toString()))
@@ -80,10 +86,15 @@ class DataSetPeriodRepositoryTest {
         .periodType(PeriodType.Monthly)
         .build()
 
-    private fun dummyPeriod(): Period = Period.builder()
-        .periodId(UUID.randomUUID().toString())
-        .periodType(PeriodType.Monthly)
-        .startDate(Date())
-        .endDate(Date())
-        .build()
+    private fun dummyPeriod(initialDate: String, endDate: String): Period {
+        val openingDate = DateUtils.uiDateFormat().parse(initialDate)
+        val closingDate = DateUtils.uiDateFormat().parse(endDate)
+
+        return Period.builder()
+            .periodId(UUID.randomUUID().toString())
+            .periodType(PeriodType.Monthly)
+            .startDate(openingDate)
+            .endDate(closingDate)
+            .build()
+    }
 }
