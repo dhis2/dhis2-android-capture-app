@@ -100,7 +100,7 @@ class DataSetTest : BaseTest() {
         // Step - ANDROAPP-6795 Check content boxes above and below the table
         checkContentBoxesAreDisplayed()
         // Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
-//        checkCategoryIsMovedToRow()
+        checkCategoryIsMovedToRow()
         // Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
         checkAutomaticGroupingDisabled()
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
