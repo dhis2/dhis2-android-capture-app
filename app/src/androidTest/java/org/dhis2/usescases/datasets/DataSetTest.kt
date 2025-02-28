@@ -217,13 +217,13 @@ class DataSetTest : BaseTest() {
     private suspend fun checkCategoryIsMovedToRow() {
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
-                composeTestRule.onRoot().printToLog("TAAAAABLE ${data.sectionIndex}")
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
-                waitToDebounce(5000)
+                composeTestRule.onRoot().printToLog("TAAAAABLE_${data.sectionIndex}")
                 assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
                 assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
                 assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
+                assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
         }
     }
