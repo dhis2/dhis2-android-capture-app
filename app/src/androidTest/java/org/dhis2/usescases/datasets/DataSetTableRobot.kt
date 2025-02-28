@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
@@ -50,6 +51,8 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
@@ -301,6 +304,17 @@ internal class DataSetTableRobot(
     fun tapOnCompleteAnyway() {
         composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG)
             .performClick()
+    }
+
+    fun assertTablesAreDisplayedInOrder(tableIds:List<String>){
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .onChildren()
+            .fetchSemanticsNodes()
+            .filter {
+                it.config.getOrElse(TestTag) { "" }.startsWith(TEST_TAG_COLUMN_HEADERS)
+            }.forEachIndexed { index, semanticsNode ->
+                semanticsNode.config.getOrElse(TestTag) { "" }.endsWith(tableIds[index])
+            }
     }
 
     fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<CellData>, expectedCount: Int) {
