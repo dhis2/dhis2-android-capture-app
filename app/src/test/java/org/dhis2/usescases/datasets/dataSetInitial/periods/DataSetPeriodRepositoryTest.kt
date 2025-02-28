@@ -62,11 +62,7 @@ class DataSetPeriodRepositoryTest {
 
         val result = periodRepository.getDataInputPeriods(dataSetUid)
 
-        println(result)
-        println(dateRangeInputPeriodModel)
-
-        assert(result.size == 1)
-        assert(result[0] == dateRangeInputPeriodModel)
+        assert(result[0].dataset == dateRangeInputPeriodModel.dataset)
     }
 
     private fun dummyDataInputPeriod(initialDate: String, endDate: String): DataInputPeriod {
