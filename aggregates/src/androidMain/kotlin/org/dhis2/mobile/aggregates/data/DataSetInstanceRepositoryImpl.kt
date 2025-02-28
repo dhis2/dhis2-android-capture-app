@@ -297,7 +297,7 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()
 
         val pivotedCategoryUid = sectionData?.displayOptions()?.pivotedCategory()
-        val disableGrouping = sectionData?.disableDataElementAutoGrouping() == true
+        val disableGrouping = sectionData?.disableDataElementAutoGroup() == true
 
         return if (disableGrouping) {
             DisableDataElementGrouping(
