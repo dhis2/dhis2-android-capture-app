@@ -255,12 +255,13 @@ class DataSetTest : BaseTest() {
     }
 
 
-    private fun checkCategoryIsMovedToRow() {
+    private suspend fun checkCategoryIsMovedToRow() {
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
-                assertCategoryAsRowsAreDisplayed(data.dataElementsRowTestTags, data.rowTestTags)
+                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
+                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
                 assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
