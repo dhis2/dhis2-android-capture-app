@@ -15,7 +15,6 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 
@@ -65,16 +64,13 @@ class DataSetPeriodRepositoryTest {
     }
 
     private fun dummyDataInputPeriod(): DataInputPeriod {
-        val openCalendar = Calendar.getInstance()
-        openCalendar.add(Calendar.YEAR, -1)
-
-        val closeCalendar = Calendar.getInstance()
-        closeCalendar.add(Calendar.YEAR, 1)
+        val openingDate = DateUtils.uiDateFormat().parse("01/01/2024")
+        val closingDate = DateUtils.uiDateFormat().parse("31/12/2100")
 
         return DataInputPeriod.builder()
             .period(ObjectWithUid.create(UUID.randomUUID().toString()))
-            .openingDate(openCalendar.time)
-            .closingDate(closeCalendar.time)
+            .openingDate(openingDate)
+            .closingDate(closingDate)
             .build()
     }
 

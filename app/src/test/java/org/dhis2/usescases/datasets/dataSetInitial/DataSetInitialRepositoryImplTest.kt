@@ -7,11 +7,9 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
@@ -20,7 +18,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
 import java.util.UUID
@@ -150,20 +147,8 @@ class DataSetInitialRepositoryImplTest {
         .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
         .build()
 
-    private fun dummyDataInputPeriod(): DataInputPeriod = DataInputPeriod.builder()
-        .period(ObjectWithUid.create(UUID.randomUUID().toString()))
-        .openingDate(Date())
-        .closingDate(Date())
-        .build()
-
     private fun dummyPeriod(): Period = Period.builder()
         .periodId(UUID.randomUUID().toString())
-        .build()
-
-    private fun dummyCategoryOptionCombo(): CategoryOptionCombo = CategoryOptionCombo.builder()
-        .uid(UUID.randomUUID().toString())
-        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
         .build()
 
     private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()
