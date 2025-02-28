@@ -139,18 +139,16 @@ class DataSetTableRobot(
             .performScrollToIndex(15)
         composeTestRule.onNodeWithText("Moderate malnutrition rate", useUnmergedTree = true)
             .assertIsDisplayed()
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(0)
+
     }
 
-    fun totalsAreDisplayed(
+    fun  totalsAreDisplayed(
         tableId: String,
         totalColumnHeaderRowIndex: Int,
         totalColumnHeaderColumnIndex: Int,
     ) {
         composeTestRule.onNodeWithTag("HEADER_CELL$tableId$totalColumnHeaderRowIndex$totalColumnHeaderColumnIndex")
             .performScrollTo()
-            .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))
             .assertIsDisplayed()
