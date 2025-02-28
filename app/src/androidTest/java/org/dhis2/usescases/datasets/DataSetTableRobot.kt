@@ -22,7 +22,6 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -34,7 +33,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -365,19 +363,5 @@ internal class DataSetTableRobot(
         )
             .performScrollTo()
             .performClick()
-    }
-
-    fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<String>,expectedCount:Int) {
-        rowTestTags.forEach { testTag ->
-            composeTestRule.onAllNodesWithTag(testTag)
-                .assertCountEquals(expectedCount)
-        }
-    }
-
-    fun assertCategoryHeaderIsNotDisplayed(headerTestTags: List<String>) {
-        headerTestTags.forEach { testTag ->
-            composeTestRule.onNodeWithTag(testTag)
-                .assertDoesNotExist()
-        }
     }
 }
