@@ -10,7 +10,6 @@ import java.util.Date
 import java.util.Locale
 import org.hisp.dhis.android.core.period.Period as DTOPeriod
 
-// todo remove period repository and pass d2 instead to generate period
 class PeriodSource(
     private val d2: D2,
     private val periodLabelProvider: PeriodLabelProvider,

@@ -24,7 +24,6 @@ class GetFilterPeriods(
         pagingSourceFactory = {
             val maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
             val minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -9) }.time
-            // TODO extract to repository
             filterPeriodRepository.getPeriodSource(
                 labelProvider = periodLabelProvider,
                 filterPeriodType = filterPeriodType,
