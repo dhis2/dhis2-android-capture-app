@@ -4,7 +4,8 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
-import android.util.Log
+import android.app.Instrumentation
+import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -13,6 +14,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
@@ -31,8 +33,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 
+
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
+
+    private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
+
     @get:Rule
     val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
 
@@ -456,6 +462,8 @@ class DataSetTest : BaseTest() {
     }
 
     private fun logStep(message: String) {
-        Log.d("DataSetTest", message)
+        val bundle = Bundle()
+        bundle.putString("Step", message)
+        instrumentation.sendStatus(0, bundle)
     }
 }
