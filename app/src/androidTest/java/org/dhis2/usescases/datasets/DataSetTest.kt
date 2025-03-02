@@ -4,6 +4,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -24,7 +26,6 @@ import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,10 +33,6 @@ import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
-
-    @get:Rule
-    val ruleDataSet = ActivityTestRule(DataSetTableActivity::class.java, false, false)
-
     @get:Rule
     val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
 
@@ -53,18 +50,38 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun datasetAutomate() = runTest {
+        val period = "Jul 2025"
+        val orgUnit = "Ngelehun CHC"
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-        enterDataSetStep("BfMAe6Itzgt", "Child Health")
+
+        enterDataSetStep(
+            uid = "BfMAe6Itzgt",
+            name = "Child Health",
+        )
         dataSetInstanceInChronologicalOrderStep()
-        createDataSetInstanceStep()
+        createDataSetInstanceStep(
+            period = period,
+            orgUnit = orgUnit,
+        )
 
         tableIsVisible()
 
         syncButtonIsAvailableStep()
         checkIndicatorsStep()
         checkTotals()
-        enterDataStep()
+        enterDataStep(
+            tableId = "dzjKKQq0cSO",
+            cellId = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM=",
+            dataElementDescription = "BCG doses administered.",
+            value = "12",
+            inputTestTag = "INPUT_INTEGER_FIELD"
+        )
+        checkTotalsUpdated(
+            tableId = "dzjKKQq0cSO",
+            rowIndex = 0,
+            value = "12.0",
+        )
         reenterDataSetToCheckValueSavedStep()
 
 
@@ -119,16 +136,125 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    @Test
+    fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runBlocking {
+        val dataSetUid = "Lpw6GcnTrmS"
+        val dataSetName = "Emergency Response"
+        val period = "Jan 2025"
+        val orgUnit = "Ngelehun CHC"
+        val catCombo = "Result"
+        val tableId = "bjDvmb4bfuf"
+        val cellValidationRuleId = "PGRlPktGbkZwYnFEcWppOjxjb2M+SGxsdlg1MGNYQzA="
+        val cellMandatoryId = "PGRlPnpGRmIzYmFyNEN0Ojxjb2M+SGxsdlg1MGNYQzA="
 
-    private suspend fun enterDataSetStep(dataSetUid: String, datasetName: String) {
-        startDataSetDetailActivity(
-            dataSetUid,
-            datasetName,
-            ruleDataSetDetail
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+
+        enterDataSetStep(
+            uid = dataSetUid,
+            name = dataSetName,
         )
+
+        createDataSetInstanceStep(
+            period = period,
+            orgUnit = orgUnit,
+            catCombo = catCombo,
+        )
+
+        tapOnDoneButtonStep()
+
+        checkValidationBarIsDisplayed()
+
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellValidationRuleId,
+            value = "1",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        tapOnDoneButtonStep()
+
+        checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
+
+        checkMandatoryDialogIsDisplayedAndAcceptStep()
+
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellMandatoryId,
+            value = "2",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        tapOnDoneButtonStep()
+
+        checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
+
+        checkDataSetInstanceHasBeenCreated(period, orgUnit)
     }
 
-    private suspend fun dataSetInstanceInChronologicalOrderStep() {
+    private fun checkValidationBarIsDisplayed() {
+        logStep("Starting Check Validation Rule errors")
+
+        dataSetTableRobot(composeTestRule) {
+            assertValidationBarIsDisplayed()
+            expandValidationRulesErrorDialog()
+            tapOnReview()
+        }
+        logStep("Finished Check Validation Rule errors")
+    }
+
+    private fun checkDataSetInstanceHasBeenCreated(
+        period: String,
+        orgUnit: String,
+    ) {
+        logStep("Starting Check dataset instance has been created")
+        dataSetDetailRobot(composeTestRule) {
+            checkDataSetInList(period, orgUnit)
+        }
+        logStep("Finished Check dataset instance has been created")
+    }
+
+    private fun checkMandatoryDialogIsDisplayedAndAcceptStep() {
+        logStep("Starting Checking Mandatory Dialog")
+        dataSetTableRobot(composeTestRule) {
+            checkMandatoryDialogIsDisplayed()
+            acceptMandatoryDialog()
+        }
+        logStep("Finished Checking Mandatory Dialog")
+    }
+
+    private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {
+        logStep("Starting Trying to complete dataset")
+
+        dataSetTableRobot(composeTestRule) {
+            checkCompleteDialogIsDisplayed()
+            tapOnCompleteButton()
+        }
+        logStep("Finished Trying to complete dataset")
+    }
+
+    private fun tapOnDoneButtonStep() {
+        logStep("Starting Tap on Done button")
+
+        dataSetTableRobot(composeTestRule) {
+            tapOnSaveButton()
+        }
+        logStep("Finished Tap on Done button")
+    }
+
+    private fun enterDataSetStep(
+        uid: String,
+        name: String,
+    ) {
+        logStep("Starting Entering dataset $name")
+        startDataSetDetailActivity(
+            dataSetUid = uid,
+            dataSetName = name,
+            rule = ruleDataSetDetail
+        )
+        logStep("Finished Entering dataset $name")
+    }
+
+    private fun dataSetInstanceInChronologicalOrderStep() {
         dataSetDetailRobot(composeTestRule) {
             checkDatasetListIsSortedChronologically()
         }
@@ -169,16 +295,43 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun enterDataStep() {
-        val cell00Id = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM="
+    /**
+     * Enters data in a cell and checks if the value is saved
+     * @param tableId The table id
+     * @param cellId The cell id
+     * @param dataElementDescription The data element description (optional)
+     * @param value The value to enter
+     * @param inputTestTag The input test tag to identify the input field base on the ValueType
+     */
+    private fun enterDataStep(
+        tableId: String,
+        cellId: String,
+        dataElementDescription: String? = null,
+        value: String,
+        inputTestTag: String,
+    ) {
+        logStep("Starting Enter value: $value into cell ${dataElementDescription ?: cellId}")
 
         dataSetTableRobot(composeTestRule) {
-            clickOnCell("dzjKKQq0cSO", cell00Id)
-            assertInputDialogIsDisplayed(composeTestRule)
-            assertInputDescriptionIsDisplayed("BCG doses administered.")
-            typeOnInputDialog("12")
-            assertCellHasValue("dzjKKQq0cSO", cell00Id, "12")
-            assertRowTotalValue("dzjKKQq0cSO",0, "12.0")
+            clickOnCell(tableId, cellId)
+            assertInputDialogIsDisplayed()
+            dataElementDescription?.let {
+                assertInputDescriptionIsDisplayed(dataElementDescription)
+            }
+            typeOnInputDialog(value, inputTestTag)
+            assertCellHasValue(tableId, cellId, value)
+        }
+
+        logStep("Finished Enter value: $value into cell ${dataElementDescription ?: cellId}")
+    }
+
+    private fun checkTotalsUpdated(
+        tableId: String,
+        rowIndex: Int,
+        value: String
+    ) {
+        dataSetTableRobot(composeTestRule) {
+            assertRowTotalValue(tableId, rowIndex, value)
         }
     }
 
@@ -238,10 +391,13 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun createDataSetInstance(
+    private fun createDataSetInstanceStep(
         orgUnit: String,
         period: String,
+        catCombo: String? = null,
     ) {
+        logStep("Starting Creating dataset instance $period")
+
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
@@ -263,69 +419,16 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetInitialRobot {
+            catCombo?.let {
+                clickOnInputCatCombo()
+                selectCatCombo(catCombo)
+            }
+        }
+
+        dataSetInitialRobot {
             clickOnActionButton()
         }
-    }
-
-    @Ignore("There are no validation rules in the testing database")
-    @Test
-    fun shouldNotCloseActivityAfterQualityCheckIfDataSetIsComplete() {
-        setupCredentials()
-        startDataSetActivity(
-            "BfMAe6Itzgt",
-            "DiszpKrYNg8",
-            "202001",
-            "HllvX50cXC0",
-            ruleDataSet
-        )
-
-        dataSetTableRobot(composeTestRule) {
-            clickOnSaveButton()
-            checkActivityHasNotFinished(ruleDataSet.activity)
-        }
-    }
-
-    //TODO This test generates a new dataset instance and breaks dataset automation count
-    @Test
-    fun shouldCreateNewDataSet() {
-        val period = "July 2025"
-        val orgUnit = "Ngelehun CHC"
-        startDataSetDetailActivity(
-            "BfMAe6Itzgt",
-            "Child Health",
-            ruleDataSetDetail
-        )
-
-        createDataSetInstance(
-            orgUnit = orgUnit,
-            period = period,
-        )
-
-        dataSetTableRobot(composeTestRule) {
-            clickOnCell("dzjKKQq0cSO", 0, 0)
-            clickOnEditValue()
-            typeInput("1")
-            pressBack()
-            pressBack()
-            clickOnSaveButton()
-            clickOnNegativeButton()
-            clickOnNegativeButton()
-        }
-
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
-
-        dataSetTableRobot(composeTestRule) {
-            clickOnCell("dzjKKQq0cSO", 0, 1)
-            clickOnEditValue()
-            typeInput("5")
-            pressBack()
-            pressBack()
-            clickOnSaveButton()
-            clickOnNegativeButton()
-            clickOnPositiveButton()
-        }
+        logStep("Finished Creating dataset instance $period")
     }
 
     @Test
@@ -350,5 +453,9 @@ class DataSetTest : BaseTest() {
             composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
             assertCellSelected("dzjKKQq0cSO", 0, 1)
         }
+    }
+
+    private fun logStep(message: String) {
+        Log.d("DataSetTest", message)
     }
 }

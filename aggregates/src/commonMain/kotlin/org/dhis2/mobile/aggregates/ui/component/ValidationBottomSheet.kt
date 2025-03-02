@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.complete
@@ -16,6 +17,9 @@ import org.dhis2.mobile.aggregates.resources.not_now
 import org.dhis2.mobile.aggregates.resources.ok
 import org.dhis2.mobile.aggregates.resources.review
 import org.dhis2.mobile.aggregates.resources.yes
+import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalType
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalType.COMPLETION
@@ -33,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ValidationBottomSheet(dataSetUIState: DataSetModalDialogUIState) {
     BottomSheetShell(
+        modifier = Modifier.testTag(dataSetUIState.type.name),
         uiState = dataSetUIState.contentDialogUIState,
         content = {
             provideContent(
@@ -115,7 +120,9 @@ private fun provideButtonBlock(
                     Button(
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.complete),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .testTag(COMPLETION_DIALOG_BUTTON_TEST_TAG)
+                            .fillMaxWidth(),
                         onClick = onSecondaryButtonClick,
                     )
                 },
@@ -131,7 +138,8 @@ private fun provideButtonBlock(
                     Button(
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.ok),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .testTag(MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG),
                         onClick = onPrimaryButtonClick,
                     )
                 },
@@ -176,9 +184,10 @@ private fun provideButtonBlock(
                 },
                 secondaryButton = {
                     Button(
+                        modifier = Modifier.fillMaxWidth()
+                            .testTag(VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG),
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.review),
-                        modifier = Modifier.fillMaxWidth(),
                         onClick = onSecondaryButtonClick,
                     )
                 },

@@ -56,6 +56,7 @@ import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
+import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
@@ -197,6 +198,7 @@ fun DataSetInstanceScreen(
                 exit = fadeOut(),
             ) {
                 FAB(
+                    modifier = Modifier.testTag(SAVE_BUTTON_TAG),
                     style = FABStyle.SECONDARY,
                     icon = {
                         Icon(

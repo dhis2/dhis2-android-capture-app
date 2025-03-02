@@ -48,6 +48,7 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal class DataSetTableViewModel(
@@ -240,8 +241,13 @@ internal class DataSetTableViewModel(
     }
 
     fun onSaveClicked() {
-        viewModelScope.launch(dispatcher.io()) {
-            when (checkValidationRulesConfiguration()) {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+
+            val result = withContext(dispatcher.io()) {
+                checkValidationRulesConfiguration()
+            }
+            when (result) {
                 NONE -> {
                     attemptToFinnish()
                 }
@@ -254,11 +260,12 @@ internal class DataSetTableViewModel(
                     askRunValidationRules()
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 
     private fun askRunValidationRules() {
-        viewModelScope.launch(dispatcher.io()) {
+        viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
                     it.copy(
@@ -276,8 +283,12 @@ internal class DataSetTableViewModel(
     }
 
     private fun checkValidationRules() {
-        viewModelScope.launch(dispatcher.io()) {
-            val rules = runValidationRules()
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+
+            val rules = withContext(dispatcher.io()) {
+                runValidationRules()
+            }
             when (rules.validationResultStatus) {
                 ValidationResultStatus.OK -> {
                     _dataSetScreenState.update {
@@ -309,11 +320,12 @@ internal class DataSetTableViewModel(
                     }
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 
     private fun expandValidationErrors(violations: List<Violation>) {
-        viewModelScope.launch(dispatcher.main()) {
+        viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
                     it.copy(
@@ -331,10 +343,15 @@ internal class DataSetTableViewModel(
     }
 
     private fun attemptToFinnish() {
-        viewModelScope.launch(dispatcher.io()) {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
             val onSavedMessage = resourceManager.provideSaved()
 
-            when (checkCompletionStatus()) {
+            val result = withContext(dispatcher.io()) {
+                checkCompletionStatus()
+            }
+
+            when (result) {
                 COMPLETED -> onExit(onSavedMessage)
                 NOT_COMPLETED -> {
                     _dataSetScreenState.update {
@@ -352,12 +369,17 @@ internal class DataSetTableViewModel(
                     }
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 
     private fun attemptToComplete() {
-        viewModelScope.launch(dispatcher.io()) {
-            when (completeDataSet()) {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+            val result = withContext(dispatcher.io()) {
+                completeDataSet()
+            }
+            when (result) {
                 MISSING_MANDATORY_FIELDS -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
@@ -400,6 +422,7 @@ internal class DataSetTableViewModel(
                     showSnackbar(resourceManager.provideErrorOnCompleteDataset())
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 
