@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.compose)
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
+    id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
 }
 
 
@@ -42,6 +43,9 @@ kotlin {
             implementation(libs.dhis2.mobile.designsystem)
             //dates
             implementation(libs.kotlinx.datetime)
+
+            // Atomicfu
+            implementation(libs.atomicfu)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
