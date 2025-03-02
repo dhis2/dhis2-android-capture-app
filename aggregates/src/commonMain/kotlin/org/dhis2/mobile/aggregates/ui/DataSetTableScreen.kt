@@ -192,8 +192,10 @@ fun DataSetInstanceScreen(
         },
         snackbarHost = { CustomSnackbarHost(snackbarHostState) },
         floatingActionButton = {
+            val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
-                visible = ((dataSetScreenState as? DataSetScreenState.Loaded)?.dataSetSectionTable is DataSetSectionTable.Loaded),
+                visible = loadedState?.dataSetSectionTable is DataSetSectionTable.Loaded &&
+                    loadedState.selectedCellInfo == null,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
