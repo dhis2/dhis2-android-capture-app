@@ -2,6 +2,7 @@ package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -55,6 +56,7 @@ class FieldViewModelFactoryImpl(
         selectableDates: SelectableDates?,
         eventCategories: List<EventCategory>?,
         periodSelector: PeriodSelector?,
+        customIntentAction: CustomIntentAction?
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -100,6 +102,7 @@ class FieldViewModelFactoryImpl(
             selectableDates = selectableDates,
             eventCategories = eventCategories,
             periodSelector = periodSelector,
+            customIntentAction = customIntentAction
         )
     }
 

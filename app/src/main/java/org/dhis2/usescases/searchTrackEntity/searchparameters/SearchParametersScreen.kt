@@ -1,8 +1,12 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +25,13 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -39,6 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -202,7 +211,8 @@ fun SearchParametersScreen(
             ) {
                 if (uiState.items.isEmpty()) {
                     Column(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {

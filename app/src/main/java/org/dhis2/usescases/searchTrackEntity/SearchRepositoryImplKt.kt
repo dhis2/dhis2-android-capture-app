@@ -4,6 +4,8 @@ package org.dhis2.usescases.searchTrackEntity
 
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +14,10 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.dhis2.commons.data.CustomIntents
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.intents.ActionType
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
@@ -301,6 +306,9 @@ class SearchRepositoryImplKt(
     }
 
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
+        d2.dataStoreModule().dataStoreDownloader().byNamespace().eq("CUSTOM_INTENT_POC")
+            .blockingDownload()
+
         val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
             .withRenderType()
             .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
@@ -353,6 +361,52 @@ class SearchRepositoryImplKt(
                 parameter.valueType !== ValueType.COORDINATE &&
                 parameter.valueType !== ValueType.FILE_RESOURCE
         }
+    }
+
+    private fun getCustomIntents(): CustomIntents {
+        val json = "{\n" +
+            "  \"customIntents\": [\n" +
+            "    {\n" +
+            "      \"arguments\": {\n" +
+            "        \"projectID\": \"project one\",\n" +
+            "        \"severUrl\": \"http://server.com\"\n" +
+            "      },\n" +
+            "      \"intentId\": \"CI01\",\n" +
+            "      \"name\": \"fingerprint\",\n" +
+            "      \"packageName\": \"org.hisp.android.intentHandler\",\n" +
+            "      \"targets\": {\n" +
+            "        \"attributes\": [\n" +
+            "          \"w75KJ2mc4zz\",\n" +
+            "          \"zDhUuAYrxNC\"\n" +
+            "        ],\n" +
+            "        \"dataElements\": [\n" +
+            "          \"de078\",\n" +
+            "          \"de198\"\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"arguments\": {\n" +
+            "        \"country\": \"xxx\",\n" +
+            "        \"method\": \"runFingerPrint()\"\n" +
+            "      },\n" +
+            "      \"intentId\": \"CI02\",\n" +
+            "      \"name\": \"Open rfid\",\n" +
+            "      \"packageName\": \"org.hisp.android.intentHandler\",\n" +
+            "      \"targets\": {\n" +
+            "        \"attributes\": [\n" +
+            "          \"att56\"\n" +
+            "        ],\n" +
+            "        \"dataElements\": [\n" +
+            "          \"de3176\",\n" +
+            "          \"de023\"\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}"
+        val type = object : TypeToken<CustomIntents>() {}.type
+        return Gson().fromJson(json, type)
     }
 
     private fun trackedEntitySearchFields(teiTypeUid: String): List<FieldUiModel> {
@@ -422,6 +476,16 @@ class SearchRepositoryImplKt(
             fieldMask = trackedEntityAttribute.fieldMask(),
             optionSetConfiguration = optionSetConfiguration,
             featureType = null,
+            customIntentAction = getCustomIntents().customIntents.firstOrNull {
+                it.targets.attributes.contains(trackedEntityAttribute.uid())
+            }?.let {
+                CustomIntentAction(
+                    it.packageName,
+                    it.arguments,
+                    ActionType.FILL_ATTR,
+                    trackedEntityAttribute.uid(),
+                )
+            },
         )
     }
 }

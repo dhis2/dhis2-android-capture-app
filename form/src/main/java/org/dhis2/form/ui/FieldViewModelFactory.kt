@@ -1,5 +1,6 @@
 package org.dhis2.form.ui
 
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
@@ -35,6 +36,7 @@ interface FieldViewModelFactory {
         selectableDates: SelectableDates? = null,
         eventCategories: List<EventCategory>? = null,
         periodSelector: PeriodSelector? = null,
+        customIntentAction: CustomIntentAction? = null
     ): FieldUiModel
 
     fun createSingleSection(singleSectionName: String): FieldUiModel

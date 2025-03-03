@@ -1,7 +1,12 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters.provider
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.runtime.Composable
@@ -16,6 +21,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -41,6 +47,20 @@ fun provideParameterSelectorItem(
         ParameterSelectorItemModel.Status.UNFOCUSED
     }
 
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val content = result.data?.data.toString()
+                callback.intent(
+                    FormIntent.OnSave(
+                        fieldUiModel.uid,
+                        content,
+                        fieldUiModel.valueType,
+                    ),
+                )
+            }
+        }
+
     LaunchedEffect(key1 = status) {
         if (status == ParameterSelectorItemModel.Status.FOCUSED) {
             focusRequester.requestFocus()
@@ -48,7 +68,7 @@ fun provideParameterSelectorItem(
     }
 
     return ParameterSelectorItemModel(
-        icon = { ProvideIcon(fieldUiModel.valueType, fieldUiModel.renderingType) },
+        icon = { ProvideIcon(fieldUiModel.valueType, fieldUiModel.renderingType, fieldUiModel.customIntentAction != null) },
         label = fieldUiModel.label,
         helper = resources.getString(R.string.optional),
         inputField = {
@@ -69,7 +89,15 @@ fun provideParameterSelectorItem(
         },
         status = status,
         onExpand = {
-            performOnExpandActions(fieldUiModel, callback)
+            if (fieldUiModel.customIntentAction != null) {
+                val intent = Intent.createChooser(
+                    fieldUiModel.customIntentAction?.toIntent(),
+                    "Custom intent!",
+                )
+                launcher.launch(intent)
+            } else {
+                performOnExpandActions(fieldUiModel, callback)
+            }
         },
     )
 }
@@ -91,39 +119,47 @@ private fun performOnExpandActions(fieldUiModel: FieldUiModel, callback: FieldUi
 }
 
 @Composable
-private fun ProvideIcon(valueType: ValueType?, renderingType: UiRenderType?) =
-    when (valueType) {
-        ValueType.TEXT -> {
-            when (renderingType) {
-                UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
-                    Icon(
-                        imageVector = Icons.Outlined.QrCode2,
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
-
-                UiRenderType.BAR_CODE -> {
-                    Icon(
-                        painter = provideDHIS2Icon("material_barcode_scanner"),
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
-
-                else -> {
-                    Icon(
-                        imageVector = Icons.Outlined.AddCircleOutline,
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
-            }
-        }
-
-        else -> Icon(
-            imageVector = Icons.Outlined.AddCircleOutline,
+private fun ProvideIcon(valueType: ValueType?, renderingType: UiRenderType?, hasCustomIntent: Boolean) =
+    if (hasCustomIntent) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.Launch,
             contentDescription = "Icon Button",
             tint = SurfaceColor.Primary,
         )
+    } else {
+        when (valueType) {
+            ValueType.TEXT -> {
+                when (renderingType) {
+                    UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
+                        Icon(
+                            imageVector = Icons.Outlined.QrCode2,
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
+                    }
+
+                    UiRenderType.BAR_CODE -> {
+                        Icon(
+                            painter = provideDHIS2Icon("material_barcode_scanner"),
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
+                    }
+
+                    else -> {
+                        Icon(
+                            imageVector = Icons.Outlined.AddCircleOutline,
+                            contentDescription = "Icon Button",
+                            tint = SurfaceColor.Primary,
+                        )
+                    }
+                }
+            }
+
+            else -> Icon(
+                imageVector = Icons.Outlined.AddCircleOutline,
+                contentDescription = "Icon Button",
+                tint = SurfaceColor.Primary,
+            )
+        }
     }

@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
@@ -34,6 +35,7 @@ data class FieldUiModelImpl(
     override val selectableDates: SelectableDates? = null,
     override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
+    override val customIntentAction: CustomIntentAction? = null
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null

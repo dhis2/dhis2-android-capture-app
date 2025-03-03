@@ -1,5 +1,6 @@
 package org.dhis2.form.model
 
+import org.dhis2.commons.intents.CustomIntentAction
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
@@ -68,6 +69,8 @@ interface FieldUiModel {
     val eventCategories: List<EventCategory>?
 
     val periodSelector: PeriodSelector?
+
+    val customIntentAction: CustomIntentAction?
 
     fun setCallback(callback: Callback)
 

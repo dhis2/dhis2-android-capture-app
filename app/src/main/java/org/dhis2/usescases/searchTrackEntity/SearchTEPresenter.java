@@ -12,6 +12,8 @@ import static org.dhis2.utils.analytics.AnalyticsConstants.ADD_RELATIONSHIP;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CREATE_ENROLL;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_RELATIONSHIP;
 
+import static java.util.Collections.emptyMap;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
@@ -25,6 +27,8 @@ import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterRepository;
+import org.dhis2.commons.intents.ActionType;
+import org.dhis2.commons.intents.CustomIntentAction;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
@@ -38,6 +42,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider;
 import org.dhis2.commons.schedulers.SingleEventEnforcer;
 import org.dhis2.commons.schedulers.SingleEventEnforcerImpl;
 import org.dhis2.data.service.SyncStatusController;
+import org.dhis2.form.model.FieldUiModel;
 import org.dhis2.maps.model.StageStyle;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
