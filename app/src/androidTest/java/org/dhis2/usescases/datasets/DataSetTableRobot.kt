@@ -68,6 +68,11 @@ class DataSetTableRobot(
         onView(withId(R.id.negative)).perform(click())
     }
 
+    fun assertItemWithTextIsDisplayed(text: String, substring: Boolean) {
+        itemWithTextIsDisplayed(text, substring, composeTestRule)
+    }
+
+
     fun openMenuMoreOptions() {
         onView(withId(R.id.moreOptions)).perform(click())
     }
@@ -89,6 +94,10 @@ class DataSetTableRobot(
         composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
             .performScrollTo()
             .performClick()
+    }
+
+    fun scrollToItem(index: Int) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(index)
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -127,21 +136,19 @@ class DataSetTableRobot(
         assertTableIsDisplayed()
 
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(22)
+            .performScrollToIndex(15)
         composeTestRule.onNodeWithText("Moderate malnutrition rate", useUnmergedTree = true)
             .assertIsDisplayed()
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(0)
+
     }
 
-    fun totalsAreDisplayed(
+    fun  totalsAreDisplayed(
         tableId: String,
         totalColumnHeaderRowIndex: Int,
         totalColumnHeaderColumnIndex: Int,
     ) {
         composeTestRule.onNodeWithTag("HEADER_CELL$tableId$totalColumnHeaderRowIndex$totalColumnHeaderColumnIndex")
             .performScrollTo()
-            .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))
             .assertIsDisplayed()

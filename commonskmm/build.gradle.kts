@@ -36,9 +36,10 @@ kotlin {
             implementation(compose.material3)
             // Koin
             api(libs.koin.core)
+            implementation(libs.ktxml)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
-
+            implementation(libs.dhis2.mobile.designsystem)
             //dates
             implementation(libs.kotlinx.datetime)
         }

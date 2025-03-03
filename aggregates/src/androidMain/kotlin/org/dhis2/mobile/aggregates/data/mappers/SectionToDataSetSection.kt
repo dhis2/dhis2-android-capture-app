@@ -6,4 +6,6 @@ import org.hisp.dhis.android.core.dataset.Section
 internal fun Section.toDataSetSection() = DataSetSection(
     uid = uid(),
     title = displayName()!!,
+    topContent = displayOptions()?.beforeSectionText(),
+    bottomContent = displayOptions()?.afterSectionText(),
 )
