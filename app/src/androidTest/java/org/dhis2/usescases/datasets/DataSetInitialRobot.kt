@@ -3,6 +3,7 @@ package org.dhis2.usescases.datasets
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
@@ -25,11 +26,6 @@ internal class DataSetInitialRobot : BaseRobot() {
 
     fun clickOnActionButton() {
         onView(withId(R.id.actionButton)).perform(click())
-    }
-
-    fun selectPeriod(period: String) {
-        onView(withId(R.id.recycler_date))
-            .perform(RecyclerViewActions.actionOnItem<DateViewHolder>(hasDescendant(withText(period)), click()))
     }
 
     fun clickOnInputCatCombo() {

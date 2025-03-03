@@ -346,16 +346,6 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private suspend fun createDataSetInstanceStep() {
-        val period = "July 2025"
-        val orgUnit = "Ngelehun CHC"
-
-        createDataSetInstance(
-            orgUnit = orgUnit,
-            period = period,
-        )
-    }
-
     private suspend fun tableIsVisible() {
         composeTestRule.awaitIdle()
         dataSetTableRobot(composeTestRule) {
