@@ -168,7 +168,7 @@ class DataSetTest : BaseTest() {
 
         tapOnDoneButtonStep()
 
-        checkValidationBarIsDisplayed()
+        checkValidationBarIsDisplayedAndReview()
 
         enterDataStep(
             tableId = tableId,
@@ -197,15 +197,95 @@ class DataSetTest : BaseTest() {
         checkDataSetInstanceHasBeenCreated(period, orgUnit)
     }
 
-    private fun checkValidationBarIsDisplayed() {
-        logStep("Starting Check Validation Rule errors")
+    @Test
+    fun saveAndCompleteOptionalValidationRule() = runBlocking {
+        val dataSetUid = "Nyh6laLdBEJ"
+        val dataSetName = "IDSR weekly"
+        val period = "Week 9 2025-02-24 To 2025-03-02"
+        val orgUnit = "Ngelehun CHC"
+        val tableId = "gbvX3pogf7p"
+        val cellMandatoryFieldCombination01Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
+        val cellMandatoryFieldCombination02Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
+        val cellMandatoryFieldCombination03Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
+
+        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
+
+        enterDataSetStep(
+            uid = dataSetUid,
+            name = dataSetName,
+        )
+
+        createDataSetInstanceStep(
+            period = period,
+            orgUnit = orgUnit,
+        )
+
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellMandatoryFieldCombination01Id,
+            value = "1",
+            inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
+        )
+
+        tapOnDoneButtonStep()
+
+        runOptionalValidationRules()
+
+        checkValidationBarIsDisplayedAndCompleteAnyway()
+
+        checkMandatoryDialogIsDisplayedAndAcceptStep()
+
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellMandatoryFieldCombination02Id,
+            value = "2",
+            inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
+        )
+
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellMandatoryFieldCombination03Id,
+            value = "3",
+            inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
+        )
+
+        tapOnDoneButtonStep()
+
+        runOptionalValidationRules()
+
+        checkValidationBarIsDisplayedAndCompleteAnyway()
+
+        checkDataSetInstanceHasBeenCreated(period, orgUnit)
+    }
+
+    private fun runOptionalValidationRules() {
+        logStep("Starting Run Optional Validation Rules")
+        dataSetTableRobot(composeTestRule) {
+            acceptOptionalValidationRule()
+        }
+        logStep("Finished Run Optional Validation Rules")
+    }
+
+    private fun checkValidationBarIsDisplayedAndReview() {
+        logStep("Starting Check Validation Rule errors and review")
 
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
             tapOnReview()
         }
-        logStep("Finished Check Validation Rule errors")
+        logStep("Finished Check Validation Rule errors and review")
+    }
+
+    private fun checkValidationBarIsDisplayedAndCompleteAnyway() {
+        logStep("Starting Check Validation Rule errors and complete anyway")
+
+        dataSetTableRobot(composeTestRule) {
+            assertValidationBarIsDisplayed()
+            expandValidationRulesErrorDialog()
+            tapOnCompleteAnyway()
+        }
+        logStep("Finished Check Validation Rule errors and complete anyway")
     }
 
     private fun checkDataSetInstanceHasBeenCreated(

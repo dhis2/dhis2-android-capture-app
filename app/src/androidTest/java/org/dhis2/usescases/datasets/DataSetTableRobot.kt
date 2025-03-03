@@ -36,10 +36,12 @@ import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TA
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
@@ -264,5 +266,13 @@ internal class DataSetTableRobot(
 
     fun tapOnReview() {
         composeTestRule.onNodeWithTag(VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG).performClick()
+    }
+
+    fun acceptOptionalValidationRule() {
+        composeTestRule.onNodeWithTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG).performClick()
+    }
+
+    fun tapOnCompleteAnyway() {
+        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG).performClick()
     }
 }

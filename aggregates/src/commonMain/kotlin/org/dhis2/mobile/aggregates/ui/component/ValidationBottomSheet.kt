@@ -19,6 +19,8 @@ import org.dhis2.mobile.aggregates.resources.review
 import org.dhis2.mobile.aggregates.resources.yes
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalType
@@ -161,9 +163,10 @@ private fun provideButtonBlock(
                 },
                 secondaryButton = {
                     Button(
+                        modifier = Modifier.fillMaxWidth()
+                            .testTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG),
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.yes),
-                        modifier = Modifier.fillMaxWidth(),
                         onClick = onSecondaryButtonClick,
                     )
                 },
@@ -177,6 +180,9 @@ private fun provideButtonBlock(
                 ),
                 primaryButton = {
                     Button(
+                        modifier = Modifier.testTag(
+                            VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG,
+                        ),
                         style = ButtonStyle.TEXT,
                         text = stringResource(Res.string.complete_anyway),
                         onClick = onPrimaryButtonClick,
