@@ -3,16 +3,13 @@ package org.dhis2.usescases.datasets.dataSetInitial
 import io.reactivex.Single
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialRepositoryImpl
-import org.dhis2.usescases.datasets.datasetInitial.DateRangeInputPeriodModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.Category
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.dataset.DataInputPeriod
 import org.hisp.dhis.android.core.dataset.DataSet
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.Period
@@ -21,7 +18,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
 import java.util.UUID
@@ -35,49 +31,6 @@ class DataSetInitialRepositoryImplTest {
     @Before
     fun setUp() {
         repository = DataSetInitialRepositoryImpl(d2, dataSetUid)
-    }
-
-    @Test
-    fun `Should return dataInputPeriod for dataSet`() {
-        val dataInputPeriod = dummyDataInputPeriod()
-        val dataSet = dummyDataSet().toBuilder()
-            .dataInputPeriods(listOf(dataInputPeriod))
-            .build()
-        val period = dummyPeriod()
-        whenever(
-            d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get(),
-        ) doReturn Single.just(dataSet)
-
-        whenever(
-            d2.periodModule().periodHelper(),
-        ) doReturn mock()
-
-        whenever(
-            d2.periodModule().periodHelper()
-                .getPeriodForPeriodId(dataInputPeriod.period().uid()),
-        ) doReturn mock()
-
-        whenever(
-            d2.periodModule().periodHelper()
-                .getPeriodForPeriodId(dataInputPeriod.period().uid())
-                .blockingGet(),
-        ) doReturn period
-
-        val dateRangeInputPeriodModel = DateRangeInputPeriodModel.create(
-            dataSetUid,
-            dataInputPeriod.period().uid(),
-            dataInputPeriod.openingDate(),
-            dataInputPeriod.closingDate(),
-            period.startDate(),
-            period.endDate(),
-        )
-        val testObserver = repository.dataInputPeriod.test()
-
-        testObserver.assertNoErrors()
-        testObserver.assertValueCount(1)
-        testObserver.assertValue(listOf(dateRangeInputPeriodModel))
-
-        testObserver.dispose()
     }
 
     @Test
@@ -194,20 +147,8 @@ class DataSetInitialRepositoryImplTest {
         .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
         .build()
 
-    private fun dummyDataInputPeriod(): DataInputPeriod = DataInputPeriod.builder()
-        .period(ObjectWithUid.create(UUID.randomUUID().toString()))
-        .openingDate(Date())
-        .closingDate(Date())
-        .build()
-
     private fun dummyPeriod(): Period = Period.builder()
         .periodId(UUID.randomUUID().toString())
-        .build()
-
-    private fun dummyCategoryOptionCombo(): CategoryOptionCombo = CategoryOptionCombo.builder()
-        .uid(UUID.randomUUID().toString())
-        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
         .build()
 
     private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()

@@ -33,7 +33,7 @@ import java.util.Date
 fun PeriodSelectorContent(
     periods: LazyPagingItems<Period>,
     scrollState: LazyListState,
-    onPeriodSelected: (Date) -> Unit,
+    onPeriodSelected: (Date, String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -64,7 +64,9 @@ fun PeriodSelectorContent(
                             selected = period?.selected == true,
                             enabled = period?.enabled == true,
                         ) {
-                            period?.startDate?.let(onPeriodSelected)
+                            period?.startDate?.let {
+                                onPeriodSelected(it, period.name)
+                            }
                         }
                     }
                 }
