@@ -43,7 +43,6 @@ internal class HtmlTextWriter(
                 output.append(' ')
             }
             if (contentStartIndex == -1) {
-                output.append(' ')
                 currentState = STATE_SPACE_IN_PROGRESS
                 break
             }

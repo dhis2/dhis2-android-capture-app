@@ -4,11 +4,13 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import org.dhis2.mobile.commons.html.HtmlHandler
 import org.dhis2.mobile.commons.html.HtmlStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 internal class AnnotatedStringHtmlHandler(
@@ -42,9 +44,10 @@ internal class AnnotatedStringHtmlHandler(
     )
     private val mainStyle = spanStyle
     private val pendingSpanStyles = mutableListOf(spanStyle)
+    private var isAnchorPending = false
+    private var pendingAnchorUrl: String? = null
 
     // A negative index means the list is unordered
-    private var boldLevel = 0
     private var paragraphStartIndex = -1
     private var paragraphEndIndex = -1
 
@@ -55,18 +58,16 @@ internal class AnnotatedStringHtmlHandler(
             if (pendingSpanStyles.size > 1) {
                 var italicHasBeenApplied = false
                 var boldHasBeenApplied = false
+                var underlinedHasBeenApplied = false
                 for (i in 0..<size) {
                     combinedSpanStyle = combinedSpanStyle.copy(
-                        textDecoration = pendingSpanStyles[i].textDecoration,
+                        textDecoration = if (!underlinedHasBeenApplied) pendingSpanStyles[i].textDecoration else combinedSpanStyle.textDecoration,
                         fontStyle = if (!italicHasBeenApplied) pendingSpanStyles[i].fontStyle else combinedSpanStyle.fontStyle,
                         fontWeight = if (!boldHasBeenApplied) pendingSpanStyles[i].fontWeight else combinedSpanStyle.fontWeight,
                     )
-                    if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) {
-                        italicHasBeenApplied = true
-                    }
-                    if (pendingSpanStyles[i].fontWeight == FontWeight.Companion.Bold) {
-                        boldHasBeenApplied = true
-                    }
+                    if (pendingSpanStyles[i].textDecoration == TextDecoration.Underline) underlinedHasBeenApplied = true
+                    if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) italicHasBeenApplied = true
+                    if (pendingSpanStyles[i].fontWeight == FontWeight.Companion.Bold) boldHasBeenApplied = true
                 }
                 if (boldHasBeenApplied) combinedSpanStyle = combinedSpanStyle.copy(color = TextColor.OnSurfaceVariant)
                 builder.pushStyle(combinedSpanStyle)
@@ -89,22 +90,17 @@ internal class AnnotatedStringHtmlHandler(
             "strong", "b" -> handleBoldStart()
             "em", "cite", "dfn", "i" -> handleSpanStyleStart(mainStyle.copy(fontStyle = FontStyle.Companion.Italic))
             "a" -> {
-                handleAnchorStart(attributes("href").orEmpty())
+                pendingAnchorUrl = attributes("href").orEmpty()
+                isAnchorPending = true
             }
             "u" -> handleSpanStyleStart(mainStyle.copy(textDecoration = TextDecoration.Companion.Underline))
         }
     }
 
-    private fun incrementBoldLevel(): FontWeight {
-        val level = boldLevel + 1
-        boldLevel = level
-        return if (level == 1) FontWeight.Companion.Bold else FontWeight.Companion.Black
-    }
-
     private fun handleBoldStart() {
         handleSpanStyleStart(
             mainStyle.copy(
-                fontWeight = incrementBoldLevel(),
+                fontWeight = FontWeight.Companion.Bold,
                 color = TextColor.OnSurfaceVariant,
             ),
         )
@@ -113,13 +109,25 @@ internal class AnnotatedStringHtmlHandler(
     private fun handleSpanStyleStart(style: SpanStyle = mainStyle) {
         // Defer pushing the span style until the actual content is about to be written
         pendingSpanStyles.add(style)
+        if (isAnchorPending) {
+            handleAnchorStart(pendingAnchorUrl.orEmpty())
+            isAnchorPending = false
+            pendingAnchorUrl = null
+        }
     }
 
     private fun handleAnchorStart(url: String) {
+        val combinedSpanStyle = pendingSpanStyles.fold(mainStyle) { acc, spanStyle ->
+            acc.merge(spanStyle)
+        }.copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline)
         builder.pushLink(
             LinkAnnotation.Url(
                 url = url,
-                styles = style.textLinkStyles,
+                styles = TextLinkStyles(
+                    style = combinedSpanStyle,
+                    pressedStyle = style.textLinkStyles?.pressedStyle,
+                    hoveredStyle = style.textLinkStyles?.hoveredStyle,
+                ),
                 linkInteractionListener = linkInteractionListener,
             ),
         )
@@ -133,22 +141,12 @@ internal class AnnotatedStringHtmlHandler(
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
             "hr", "script", "head", "table", "form", "fieldset", "title", "span",
             -> {}
-            "strong", "b" -> handleBoldEnd()
-            "em", "cite", "dfn", "i",
+            "strong", "b", "em", "cite", "dfn", "i",
             "u",
             -> handleSpanStyleEnd()
 
             "a" -> handleAnchorEnd()
         }
-    }
-
-    private fun decrementBoldLevel() {
-        boldLevel--
-    }
-
-    private fun handleBoldEnd() {
-        handleSpanStyleEnd()
-        decrementBoldLevel()
     }
 
     private fun handleSpanStyleEnd() {
@@ -173,6 +171,11 @@ internal class AnnotatedStringHtmlHandler(
     }
 
     override fun onText(text: String) {
+        if (isAnchorPending) {
+            handleAnchorStart(pendingAnchorUrl.orEmpty())
+            isAnchorPending = false
+            pendingAnchorUrl = null
+        }
         textWriter.write(text)
     }
 }
