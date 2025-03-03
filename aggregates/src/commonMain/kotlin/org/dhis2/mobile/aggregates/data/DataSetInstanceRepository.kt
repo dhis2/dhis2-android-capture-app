@@ -93,7 +93,8 @@ internal interface DataSetInstanceRepository {
     ): Result<Unit>
 
     suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String
-    suspend fun getCoordinatesFrom(value: String): Pair<Double, Double>
+
+    suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double>
 
     suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean
 

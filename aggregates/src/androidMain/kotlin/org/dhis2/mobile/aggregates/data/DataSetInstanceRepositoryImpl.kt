@@ -18,7 +18,6 @@ import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -468,24 +467,13 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         attributeOptionComboUid: String,
     ): Boolean {
-        return !d2.dataSetModule().dataSets().withCompulsoryDataElementOperands().uid(dataSetUid)
-            .get()
-            .map {
-                it.compulsoryDataElementOperands()?.filter { dataElementOperand ->
-                    dataElementOperand.dataElement()?.let { dataElement ->
-                        dataElementOperand.categoryOptionCombo()?.let { categoryOptionCombo ->
-                            !d2.dataValueModule().dataValues()
-                                .value(
-                                    periodId,
-                                    orgUnitUid,
-                                    dataElement.uid(),
-                                    categoryOptionCombo.uid(),
-                                    attributeOptionComboUid,
-                                ).blockingExists()
-                        }
-                    } ?: false
-                }
-            }.blockingGet().isNullOrEmpty()
+        return d2.dataSetModule().dataSetInstanceService()
+            .blockingGetMissingMandatoryDataElementOperands(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                organisationUnitUid = orgUnitUid,
+                attributeOptionComboUid = attributeOptionComboUid,
+            ).isNotEmpty()
     }
 
     override suspend fun checkIfHasMissingMandatoryFieldsCombination(
@@ -494,36 +482,13 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         attributeOptionComboUid: String,
     ): Boolean {
-        return d2.dataSetModule().dataSets().withDataSetElements().uid(dataSetUid).blockingGet()
-            ?.let { dataSet ->
-                if (dataSet.fieldCombinationRequired() == true) {
-                    dataSet.dataSetElements()
-                        ?.filter { dataSetElement ->
-                            val catComboUid = dataSetElement.categoryCombo()?.uid()
-                                ?: d2.dataElementModule().dataElements()
-                                    .uid(dataSetElement.dataElement().uid())
-                                    .blockingGet()?.categoryComboUid()
-                            val categoryOptionCombos =
-                                d2.categoryModule().categoryOptionCombos().byCategoryComboUid()
-                                    .eq(catComboUid).blockingGet()
-                            val dataValueRepository = d2.dataValueModule().dataValues()
-                                .byPeriod().eq(periodId)
-                                .byOrganisationUnitUid().eq(orgUnitUid)
-                                .byAttributeOptionComboUid().eq(attributeOptionComboUid)
-                                .byDeleted().isFalse
-                                .byDataElementUid().eq(dataSetElement.dataElement().uid())
-                                .byCategoryOptionComboUid()
-                                .`in`(UidsHelper.getUidsList(categoryOptionCombos))
-                            dataValueRepository.blockingGet().isNotEmpty() &&
-                                dataValueRepository
-                                    .blockingCount() != categoryOptionCombos.size
-                        }?.map { dataSetElement ->
-                            dataSetElement.dataElement().uid()
-                        }.isNullOrEmpty().not()
-                } else {
-                    false
-                }
-            } ?: false
+        return d2.dataSetModule().dataSetInstanceService()
+            .blockingGetMissingMandatoryFieldsCombination(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                organisationUnitUid = orgUnitUid,
+                attributeOptionComboUid = attributeOptionComboUid,
+            ).isNotEmpty()
     }
 
     override suspend fun completeDataset(
