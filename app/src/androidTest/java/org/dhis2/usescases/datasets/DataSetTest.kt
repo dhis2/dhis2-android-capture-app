@@ -9,7 +9,6 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -51,8 +50,8 @@ class DataSetTest : BaseTest() {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
-            uid ="BfMAe6Itzgt",
-           name = "Child Health",
+            uid = "BfMAe6Itzgt",
+            name = "Child Health",
         )
         dataSetInstanceInChronologicalOrderStep()
         createDataSetInstanceStep(
@@ -199,9 +198,9 @@ class DataSetTest : BaseTest() {
         val periodSelectorLabel = "Week 9: Feb 24 - Mar 2, 2025"
         val orgUnit = "Ngelehun CHC"
         val tableId = "gbvX3pogf7p"
-        val cellMandatoryFieldCombination01Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
-        val cellMandatoryFieldCombination02Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
-        val cellMandatoryFieldCombination03Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
+        val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
+        val cellMandatoryFieldCombination02Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
+        val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
@@ -209,20 +208,6 @@ class DataSetTest : BaseTest() {
             uid = dataSetUid,
             name = dataSetName,
         )
-    private suspend fun checkCategoryIsMovedToRow() {
-        dataSetTableRobot(composeTestRule) {
-            categoryToRowList.forEach { data ->
-                clickOnSection(data.sectionIndex, data.sectionName)
-                assertTableIsDisplayed()
-                composeTestRule.onRoot().printToLog("TAAAAABLE_${data.sectionIndex}")
-                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
-                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
-                assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
-                assertCategoryHeaderIsDisplayed(data.headerTestTags)
-            }
-        }
-    }
-
 
         createDataSetInstanceStep(
             period = periodSelectorLabel,
@@ -265,6 +250,21 @@ class DataSetTest : BaseTest() {
         checkValidationBarIsDisplayedAndCompleteAnyway()
 
         checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
+    }
+
+
+    private fun checkCategoryIsMovedToRow() {
+        dataSetTableRobot(composeTestRule) {
+            categoryToRowList.forEach { data ->
+                clickOnSection(data.sectionIndex, data.sectionName)
+                assertTableIsDisplayed()
+                composeTestRule.onRoot().printToLog("TAAAAABLE_${data.sectionIndex}")
+                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
+                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
+                assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
+                assertCategoryHeaderIsDisplayed(data.headerTestTags)
+            }
+        }
     }
 
     private fun runOptionalValidationRules() {
