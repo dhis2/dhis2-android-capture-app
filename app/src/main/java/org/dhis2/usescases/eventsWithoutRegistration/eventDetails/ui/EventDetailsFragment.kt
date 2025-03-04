@@ -336,7 +336,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 PeriodSelectorContent(
                     periods = periods,
                     scrollState = scrollState,
-                ) { period, _ ->
+                ) { period ->
                     period.startDate.let { selectedDate ->
                         viewModel.setUpEventReportDate(selectedDate)
                     }

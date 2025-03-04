@@ -417,7 +417,7 @@ class MainActivity :
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
             FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.ENROLLMENT_DATE).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

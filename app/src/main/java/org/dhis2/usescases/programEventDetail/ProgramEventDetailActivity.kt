@@ -358,7 +358,7 @@ class ProgramEventDetailActivity :
         if (periodRequest == PeriodRequest.FROM_TO) {
             FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(Filters.ENROLLMENT_DATE).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

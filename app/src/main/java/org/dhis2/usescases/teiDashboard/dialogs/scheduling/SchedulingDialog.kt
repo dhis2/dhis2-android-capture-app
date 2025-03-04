@@ -203,7 +203,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                 PeriodSelectorContent(
                     periods = periods,
                     scrollState = scrollState,
-                ) { period , _ ->
+                ) { period ->
                     period.startDate.let {
                         viewModel.setUpEventReportDate(it)
                     }

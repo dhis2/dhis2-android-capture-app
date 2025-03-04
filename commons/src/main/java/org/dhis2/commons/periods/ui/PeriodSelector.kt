@@ -28,7 +28,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 fun PeriodSelectorContent(
     periods: LazyPagingItems<Period>,
     scrollState: LazyListState,
-    onPeriodSelected: (Period, String) -> Unit,
+    onPeriodSelected: (Period) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -63,8 +63,8 @@ fun PeriodSelectorContent(
                             selected = period?.selected == true,
                             enabled = period?.enabled == true,
                         ) {
-                            period?.let{
-                                onPeriodSelected(it, period.name)
+                            period?.let {
+                                onPeriodSelected(it)
                             }
                         }
                     }

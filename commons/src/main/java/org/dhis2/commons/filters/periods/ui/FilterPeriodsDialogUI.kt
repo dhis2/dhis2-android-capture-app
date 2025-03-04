@@ -170,8 +170,8 @@ fun FilterPeriodsDialogUI(
                             PeriodSelectorContent(
                                 periods = periods,
                                 scrollState = scrollState,
-                            ) {
-                                viewModel.onPeriodSelected(it)
+                            ) { period ->
+                                viewModel.onPeriodSelected(period)
                                 onDismiss()
                             }
                         }
