@@ -35,6 +35,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
@@ -178,9 +179,28 @@ internal class DataSetTableViewModelTest : KoinTest {
                                 isMultiText = false,
                             ),
                         ),
-                        headerRows = listOf(listOf("Row1"), listOf("Row2")),
+                        headerRows = listOf(
+                            listOf(
+                                CellElement(
+                                    uid = "row1Uid",
+                                    label = "Row1",
+                                    categoryComboUid = null,
+                                    description = null,
+                                    isMultiText = false,
+                                ),
+                            ),
+                            listOf(
+                                CellElement(
+                                    uid = "row2Uid",
+                                    label = "Row2",
+                                    categoryComboUid = null,
+                                    description = null,
+                                    isMultiText = false,
+                                ),
+                            ),
+                        ),
                         headerCombinations = listOf("Values"),
-                        pivotedHeaders = emptyList(),
+                        pivotMode = PivoteMode.None,
                     ),
                 ),
             ),
