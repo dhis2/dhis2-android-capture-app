@@ -1,27 +1,17 @@
 package org.dhis2.usescases.datasets
 
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import android.app.Instrumentation
 import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import androidx.test.platform.app.InstrumentationRegistry
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
@@ -31,7 +21,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
 
 
 @RunWith(AndroidJUnit4::class)
@@ -45,9 +34,6 @@ class DataSetTest : BaseTest() {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val featureConfigRepository: FeatureConfigRepository = mock()
-
-
     override fun teardown() {
         super.teardown()
         disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -56,7 +42,7 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun datasetAutomate() = runTest {
-        val period = "Jul 2025"
+        val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -143,10 +129,11 @@ class DataSetTest : BaseTest() {
     }
 
     @Test
-    fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runBlocking {
+    fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runTest {
         val dataSetUid = "Lpw6GcnTrmS"
         val dataSetName = "Emergency Response"
-        val period = "Jan 2025"
+        val periodListLabel = "Jan 2025"
+        val periodSelectorLabel = "January 2025"
         val orgUnit = "Ngelehun CHC"
         val catCombo = "Result"
         val tableId = "bjDvmb4bfuf"
@@ -161,7 +148,7 @@ class DataSetTest : BaseTest() {
         )
 
         createDataSetInstanceStep(
-            period = period,
+            period = periodSelectorLabel,
             orgUnit = orgUnit,
             catCombo = catCombo,
         )
@@ -194,14 +181,15 @@ class DataSetTest : BaseTest() {
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
-        checkDataSetInstanceHasBeenCreated(period, orgUnit)
+        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
     }
 
     @Test
-    fun saveAndCompleteOptionalValidationRule() = runBlocking {
+    fun saveAndCompleteOptionalValidationRule() = runTest {
         val dataSetUid = "Nyh6laLdBEJ"
         val dataSetName = "IDSR weekly"
-        val period = "Week 9 2025-02-24 To 2025-03-02"
+        val periodListLabel = "Week 9 2025-02-24 To 2025-03-02"
+        val periodSelectorLabel = "Week 9: Feb 24 - Mar 2, 2025"
         val orgUnit = "Ngelehun CHC"
         val tableId = "gbvX3pogf7p"
         val cellMandatoryFieldCombination01Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
@@ -216,7 +204,7 @@ class DataSetTest : BaseTest() {
         )
 
         createDataSetInstanceStep(
-            period = period,
+            period = periodSelectorLabel,
             orgUnit = orgUnit,
         )
 
@@ -255,7 +243,7 @@ class DataSetTest : BaseTest() {
 
         checkValidationBarIsDisplayedAndCompleteAnyway()
 
-        checkDataSetInstanceHasBeenCreated(period, orgUnit)
+        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
     }
 
     private fun runOptionalValidationRules() {
