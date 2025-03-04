@@ -3,7 +3,6 @@ package org.dhis2.form.di
 import android.content.Context
 import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.reporting.CrashReportControllerImpl
@@ -162,7 +161,6 @@ object Injector {
                 provideD2(),
                 provideResourcesManager(context),
             ),
-            dateUtils = DateUtils.getInstance(),
             eventMode = eventRecords.eventMode,
         )
     }

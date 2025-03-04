@@ -386,7 +386,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         return serverComponent.plus(module);
     }
 
-
     @NonNull
     @Override
     public SyncComponentProvider getSyncComponentProvider() {

@@ -111,8 +111,8 @@ class DataSetPeriodDialog(
                                 PeriodSelectorContent(
                                     periods = periods,
                                     scrollState = scrollState,
-                                ) { selectedDate, periodName ->
-                                    onDateSelectedListener(selectedDate, periodName)
+                                ) { period ->
+                                    onDateSelectedListener(period.startDate, period.name)
                                     dismiss()
                                 }
                             },

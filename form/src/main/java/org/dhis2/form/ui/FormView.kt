@@ -472,8 +472,8 @@ class FormView : Fragment() {
                 PeriodSelectorContent(
                     periods = periods,
                     scrollState = scrollState,
-                ) { selectedDate, _ ->
-                    val dateString = DateUtils.oldUiDateFormat().format(selectedDate)
+                ) { period ->
+                    val dateString = DateUtils.oldUiDateFormat().format(period.startDate)
                     intentHandler(
                         FormIntent.OnSave(
                             uiEvent.uid,

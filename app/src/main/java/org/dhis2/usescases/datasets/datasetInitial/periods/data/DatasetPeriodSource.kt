@@ -99,6 +99,7 @@ class DatasetPeriodSource(
                 locale = Locale.getDefault(),
             ),
             startDate = startDate,
+            endDate = endDate,
             enabled = true,
             selected = startDate == selectedDate,
         )

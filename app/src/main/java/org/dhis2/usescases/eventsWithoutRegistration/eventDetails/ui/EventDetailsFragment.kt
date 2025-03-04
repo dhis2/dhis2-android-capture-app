@@ -336,8 +336,10 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
                 PeriodSelectorContent(
                     periods = periods,
                     scrollState = scrollState,
-                ) { selectedDate, _ ->
-                    viewModel.setUpEventReportDate(selectedDate)
+                ) { period ->
+                    period.startDate.let { selectedDate ->
+                        viewModel.setUpEventReportDate(selectedDate)
+                    }
                     bottomSheetDialog.dismiss()
                 }
             },

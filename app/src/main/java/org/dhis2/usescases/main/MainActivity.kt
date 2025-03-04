@@ -38,10 +38,12 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.hasPermissions
 import org.dhis2.commons.animations.hide
 import org.dhis2.commons.animations.show
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -413,16 +415,9 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            DateUtils.getInstance()
-                .showPeriodDialog(
-                    this,
-                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
-                    true,
-                    { FilterManager.getInstance().addPeriod(null) },
-                )
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
