@@ -9,7 +9,6 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -52,8 +51,8 @@ class DataSetTest : BaseTest() {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
-            uid ="BfMAe6Itzgt",
-           name = "Child Health",
+            uid = "BfMAe6Itzgt",
+            name = "Child Health",
         )
         dataSetInstanceInChronologicalOrderStep()
         createDataSetInstanceStep(
@@ -256,7 +255,7 @@ class DataSetTest : BaseTest() {
     }
 
 
-    private suspend fun checkCategoryIsMovedToRow() {
+    private fun checkCategoryIsMovedToRow() {
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
