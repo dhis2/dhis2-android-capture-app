@@ -51,7 +51,6 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
@@ -303,10 +302,11 @@ internal class DataSetTableRobot(
 
     fun tapOnCompleteAnyway() {
         composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG)
+
             .performClick()
     }
 
-    fun assertTablesAreDisplayedInOrder(tableIds:List<String>){
+    fun assertTablesAreDisplayedInOrder(tableIds: List<String>) {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
             .onChildren()
             .fetchSemanticsNodes()
