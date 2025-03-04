@@ -111,10 +111,6 @@ class DataSetTest : BaseTest() {
     }
 
     private suspend fun checkContentBoxesAreDisplayed() {
-        composeTestRule.awaitIdle()
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
         tableIsVisible()
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
@@ -126,9 +122,9 @@ class DataSetTest : BaseTest() {
         }
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
-            clickOnSection("TAB_2")
+            clickOnSection("SCROLLABLE_TAB_1")
         }
-        composeTestRule.awaitIdle()
+        tableIsVisible()
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
