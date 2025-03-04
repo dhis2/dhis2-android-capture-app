@@ -2,17 +2,9 @@ package org.dhis2.usescases.datasets
 
 import android.app.Instrumentation
 import android.os.Bundle
-import androidx.compose.ui.semantics.SemanticsProperties.TestTag
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.test.filter
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performImeAction
-import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
@@ -25,12 +17,7 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headerTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Assert.assertTrue
 import org.junit.Ignore
 import org.junit.Rule
@@ -329,9 +316,10 @@ class DataSetTest : BaseTest() {
         }
         logStep("Finished Checking Mandatory Dialog")
     }
-    private fun checkAutomaticGroupingDisabled(){
+
+    private fun checkAutomaticGroupingDisabled() {
         dataSetTableRobot(composeTestRule) {
-            disableAutomaticGroupingList.forEach{data->
+            disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
                 assertTablesAreDisplayedInOrder(data.tableIdTestTags)
