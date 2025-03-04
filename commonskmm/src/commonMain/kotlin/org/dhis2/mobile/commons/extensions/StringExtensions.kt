@@ -1,5 +1,6 @@
 package org.dhis2.mobile.commons.extensions
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import org.dhis2.mobile.commons.data.ValueParser
@@ -51,3 +52,16 @@ suspend fun String.userFriendlyValue(
 fun String.toDateTimeFormat() = LocalDateTime.parse(this).format(dateTimeFormat)
 fun String.toDateFormat() = LocalDateTime.parse(this).format(dateFormat)
 fun String.toTimeFormat() = LocalDateTime.parse(this).format(timeFormat)
+
+fun String.toColor(): Color {
+    val color = this.replace("#", "")
+    val colorLong = when (color.length) {
+        6 -> {
+            (0xFF shl 24).toLong() or color.toLong(16)
+        }
+
+        8 -> color.toLong(16)
+        else -> throw IllegalArgumentException("Unknown color: $this")
+    }
+    return Color(colorLong)
+}

@@ -405,6 +405,49 @@ internal class DataSetInstanceRepositoryImpl(
             }
     } ?: emptyList()
 
+    override suspend fun getLegend(
+        dataElementUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        categoryOptionComboUid: String,
+        attrOptionComboUid: String,
+    ): Pair<ColorString?, LegendLabel?>? {
+        val dataElement = d2.dataElementModule().dataElements()
+            .uid(dataElementUid)
+            .blockingGet()
+        if (dataElement?.valueType()?.isNumeric != true) return null
+
+        val legendsSet = d2.dataElementModule().dataElements()
+            .withLegendSets()
+            .uid(dataElementUid)
+            .blockingGet()
+            ?.legendSets()
+
+        if (legendsSet.isNullOrEmpty()) return null
+
+        val value = d2.dataValueModule().dataValues()
+            .value(
+                period = periodId,
+                organisationUnit = orgUnitUid,
+                dataElement = dataElementUid,
+                categoryOptionCombo = categoryOptionComboUid,
+                attributeOptionCombo = attrOptionComboUid,
+            )
+            .blockingGet()
+            ?.value()?.toDoubleOrNull()
+
+        if (value == null) return null
+
+        val valueLegend = d2.legendSetModule().legends()
+            .byUid().`in`(legendsSet.map { it.uid() })
+            .byStartValue().smallerThan(value)
+            .byEndValue().biggerOrEqualTo(value)
+            .one()
+            .blockingGet()
+
+        return Pair(valueLegend?.color(), valueLegend?.displayName())
+    }
+
     private fun getTableGroupHeaders(
         catComboUid: String,
         categoryUids: List<String>,
