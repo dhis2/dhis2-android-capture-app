@@ -22,7 +22,13 @@ internal data class TableGroup(
     val label: String,
     val subgroups: List<String>,
     val cellElements: List<CellElement>,
-    val headerRows: List<List<String>>,
+    val headerRows: List<List<CellElement>>,
     val headerCombinations: List<String>,
-    val pivotedHeaders: List<CellElement>,
+    val pivotMode: PivoteMode,
 )
+
+internal sealed interface PivoteMode {
+    data object None : PivoteMode
+    data class CategoryToColumn(val pivotedHeaders: List<CellElement>) : PivoteMode
+    data object Transpose : PivoteMode
+}
