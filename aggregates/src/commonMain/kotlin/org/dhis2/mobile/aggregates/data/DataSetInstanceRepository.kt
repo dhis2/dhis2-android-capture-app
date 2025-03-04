@@ -8,6 +8,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.TableGroup
+import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import java.util.SortedMap
 
 internal interface DataSetInstanceRepository {
@@ -92,5 +93,45 @@ internal interface DataSetInstanceRepository {
     ): Result<Unit>
 
     suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String
-    suspend fun getCoordinatesFrom(value: String): Pair<Double, Double>
+
+    suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double>
+
+    suspend fun checkIfHasValidationRules(dataSetUid: String): Boolean
+
+    suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean
+
+    suspend fun isComplete(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean
+
+    suspend fun checkIfHasMissingMandatoryFields(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Boolean
+
+    suspend fun checkIfHasMissingMandatoryFieldsCombination(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Boolean
+
+    suspend fun completeDataset(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ): Result<Unit>
+
+    suspend fun runValidationRules(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): ValidationRulesResult
 }

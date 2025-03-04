@@ -1,8 +1,8 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
 import org.dhis2.mobile.aggregates.domain.IndicatorMap
-import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
+import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader

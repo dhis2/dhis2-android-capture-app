@@ -59,7 +59,6 @@ root = "0.0.7"
 openid = "0.8.1"
 conscrypt = "2.5.2"
 gson = "2.9.0"
-#gsonconverter = "2.9.0"
 okhttp = "4.9.3"
 jodatime = "2.10.5"
 glide = "4.9.0"
@@ -93,6 +92,7 @@ lifecycleViewmodel = "2.8.7"
 androidx-navigation = "2.7.0"
 junitJupiter = "5.8.1"
 ktxml = "0.3.2"
+atomicfu = "0.27.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -228,6 +228,7 @@ androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycl
 androidx-lifecycle-viewmodel-compose-kpm = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodel" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 [plugins]

@@ -6,7 +6,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.Intents
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import com.google.gson.Gson
 import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import org.dhis2.AppTest
 import org.dhis2.AppTest.Companion.DB_TO_IMPORT
@@ -27,6 +26,7 @@ import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
+import org.dhis2.common.idlingresources.CoroutineIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
@@ -95,6 +95,7 @@ open class BaseTest {
             EventIdlingResourceSingleton.countingIdlingResource,
             OnMapReadyIdlingResourceSingleton.countingIdlingResource,
             AnalyticsCountingIdlingResource.countingIdlingResource,
+            CoroutineIdlingResource,
         )
     }
 
@@ -108,6 +109,7 @@ open class BaseTest {
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
                 AnalyticsCountingIdlingResource.countingIdlingResource,
+                CoroutineIdlingResource,
             )
     }
 
