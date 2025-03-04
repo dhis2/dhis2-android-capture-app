@@ -16,7 +16,6 @@ internal suspend fun TableModel.withTotalsRow(
         tableId = id,
         columnCount = tableHeaderModel.tableMaxColumns(),
         absoluteRowIndex = tableRows.size,
-        showRowTotals = true,
         tableRows = tableRows,
         resourceManager = resourceManager,
     ),
@@ -26,7 +25,6 @@ private suspend fun buildTotalsRow(
     tableId: String,
     columnCount: Int,
     absoluteRowIndex: Int,
-    showRowTotals: Boolean,
     tableRows: List<TableRowModel>,
     resourceManager: ResourceManager,
 ) = TableRowModel(
@@ -49,20 +47,6 @@ private suspend fun buildTotalsRow(
                     value = tableRows.sumOf {
                         it.values[columnIndex]?.value?.toDoubleOrNull()
                             ?: 0.0
-                    }.toString(),
-                    editable = false,
-                ),
-            )
-        }
-        if (showRowTotals) {
-            put(
-                key = columnCount,
-                value = TableCell(
-                    id = totalId(tableId),
-                    row = absoluteRowIndex,
-                    column = columnCount,
-                    value = this.values.sumOf {
-                        it.value?.toDoubleOrNull() ?: 0.0
                     }.toString(),
                     editable = false,
                 ),
