@@ -1,9 +1,11 @@
 package org.dhis2.commons.periods.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import org.dhis2.commons.R
@@ -31,7 +34,7 @@ fun PeriodSelectorContent(
     onPeriodSelected: (Period) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
         state = scrollState,
     ) {
         when (periods.loadState.refresh) {
@@ -81,6 +84,7 @@ fun ProgressItem(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(384.dp)
             .clip(RoundedCornerShape(Spacing8))
             .background(color = Color.Unspecified)
             .padding(contentPadding),
