@@ -45,7 +45,7 @@ internal fun DataSetDetails(
     dataSetDetails: DataSetDetails,
 ) {
     val titleDetails = dataSetDetails.customTitle
-    val columnContentAlignment = getColumContentAlignment(titleDetails?.textAlignment)
+    val columnContentAlignment = getColumContentAlignment(titleDetails.textAlignment)
     val rowContentAlignment = getRowContentAlignment(titleDetails.textAlignment)
     val textAlignment by remember { derivedStateOf { getTextAlignment(titleDetails.textAlignment) } }
 
