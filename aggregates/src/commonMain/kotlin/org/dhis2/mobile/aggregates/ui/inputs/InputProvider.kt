@@ -499,7 +499,7 @@ internal fun InputProvider(
                 inputStyle = inputData.inputStyle,
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
-                inputText = inputData.value,
+                inputText = inputData.displayValue,
                 isRequiredField = inputData.isRequired,
                 onValueChanged = {
                     onAction(UiAction.OnValueChanged(inputData.id, it))
@@ -507,7 +507,7 @@ internal fun InputProvider(
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 modifier = modifier,
                 onOrgUnitActionCLicked = {
-                    TODO()
+                    onAction(UiAction.OnOpenOrgUnitTree(inputData.id))
                 },
             )
         }

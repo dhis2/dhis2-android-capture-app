@@ -224,7 +224,7 @@ internal class DataSetTableViewModel(
                         tableModels = it.dataSetSectionTable.tables().map { table ->
                             table.updateValue(
                                 cellId = cellId,
-                                updatedValue = inputData?.value,
+                                updatedValue = inputData?.displayValue,
                                 legendData = inputData?.legendData,
                                 resourceManager = resourceManager,
                             )
@@ -274,6 +274,20 @@ internal class DataSetTableViewModel(
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
+                is UiAction.OnOpenOrgUnitTree -> {
+                    val inputData = _dataSetScreenState.value.currentInput()
+
+                    onOpenOrgUnitTree(
+                        inputData?.value?.let { listOf(it) } ?: emptyList(),
+                    ) {
+                        onUiAction(
+                            UiAction.OnValueChanged(
+                                cellId = uiAction.cellId,
+                                newValue = it.firstOrNull(),
+                            ),
+                        )
+                    }
+                }
             }
         }
     }

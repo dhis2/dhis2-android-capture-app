@@ -48,6 +48,7 @@ import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
+import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
@@ -291,13 +292,13 @@ internal class DataSetTableViewModelTest : KoinTest {
             CellInfo(
                 label = "Input label",
                 value = "This is it",
-                inputType = InputType.Text,
-                inputExtra = InputExtra.None,
-                supportingText = emptyList(),
-                errors = emptyList(),
-                warnings = emptyList(),
-                isRequired = false,
-                legendColor = "#90EE90",
+                displayValue = "This is it",
+            inputType = InputType.Text,
+            inputExtra = InputExtra.None,
+            supportingText = emptyList(),
+            errors = emptyList(),
+            warnings = emptyList(),
+            isRequired = false,legendColor = "#90EE90",
                 legendLabel = "Legend label 1",
             ),
             CellInfo(
@@ -441,6 +442,34 @@ internal class DataSetTableViewModelTest : KoinTest {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertEquals(modalDialog, (this as DataSetScreenState.Loaded).modalDialog)
             }
+        }
+    }
+
+    @Test
+    fun `should open org unit tree`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId", TableIdType.CategoryOptionCombo)),
+        )
+        val cellInfo = CellInfo(
+            label = "Org Unit Field",
+            value = null,
+            displayValue = null,
+            inputType = InputType.Text,
+            inputExtra = InputExtra.None,
+            supportingText = emptyList(),
+            errors = emptyList(),
+            warnings = emptyList(),
+            isRequired = false,
+        )
+        whenever(getDataValueInput(any(), any())) doReturn cellInfo
+
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.updateSelectedCell(testingId)
+            awaitItem()
+            viewModel.onUiAction(UiAction.OnOpenOrgUnitTree(testingId))
+            verify(onOpenOrgUnitTree).invoke(any(), any())
         }
     }
 

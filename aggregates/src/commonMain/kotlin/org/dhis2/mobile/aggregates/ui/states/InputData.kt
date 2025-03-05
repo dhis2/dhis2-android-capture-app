@@ -15,6 +15,7 @@ internal data class InputData(
     val id: String,
     val label: String,
     val value: String?,
+    val displayValue: String?,
     val inputType: InputType,
     private val inputExtra: InputExtra,
     val inputShellState: InputShellState,

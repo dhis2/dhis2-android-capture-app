@@ -23,16 +23,20 @@ internal sealed class DataSetScreenState {
             is DataSetSectionTable.Loaded -> dataSetSectionTable.id
             is DataSetSectionTable.Loading -> null
         }
+
+        override fun currentInput(): InputData? = selectedCellInfo
     }
 
     data object Loading : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) = false
         override fun currentSection() = null
+        override fun currentInput(): InputData? = null
     }
 
     abstract fun allowTwoPane(canUseTwoPane: Boolean): Boolean
 
     abstract fun currentSection(): String?
+    abstract fun currentInput(): InputData?
 }
 
 internal sealed class DataSetSectionTable {
