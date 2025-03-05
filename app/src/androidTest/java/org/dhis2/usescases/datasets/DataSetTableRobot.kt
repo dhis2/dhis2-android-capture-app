@@ -2,11 +2,13 @@ package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -27,7 +29,6 @@ import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -45,11 +46,9 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
-import org.junit.Assert.assertTrue
 
 internal fun dataSetTableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -142,7 +141,7 @@ internal class DataSetTableRobot(
 
     }
 
-    fun  totalsAreDisplayed(
+    fun totalsAreDisplayed(
         tableId: String,
         totalColumnHeaderRowIndex: Int,
         totalColumnHeaderColumnIndex: Int,
@@ -291,11 +290,13 @@ internal class DataSetTableRobot(
     }
 
     fun acceptOptionalValidationRule() {
-        composeTestRule.onNodeWithTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG).performClick()
+        composeTestRule.onNodeWithTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG)
+            .performClick()
     }
 
     fun tapOnCompleteAnyway() {
-        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG).performClick()
+        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG)
+            .performClick()
     }
 
     fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<CellData>, expectedCount: Int) {
@@ -304,6 +305,23 @@ internal class DataSetTableRobot(
                 hasTestTag(cellData.testTag) and
                         hasTextExactly(cellData.label)
             ).assertCountEquals(expectedCount)
+        }
+    }
+
+    fun assertCategoryAsRowsAreDisplayed(
+        dataElementsRowTestTags: List<CellData>,
+        rowTestTags: List<CellData>
+    ) {
+        dataElementsRowTestTags.forEach { deCellData ->
+            val dataElementIsDisplayed = composeTestRule.onNode(
+                hasTestTag(deCellData.testTag) and hasTextExactly(deCellData.label)
+            ).performScrollTo()
+                .assertIsDisplayed()
+            rowTestTags.forEach { catCellData ->
+                dataElementIsDisplayed.assert(
+                    hasAnySibling(hasTestTag(catCellData.testTag) and hasTextExactly(catCellData.label))
+                )
+            }
         }
     }
 

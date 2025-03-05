@@ -4,9 +4,7 @@ import android.app.Instrumentation
 import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performImeAction
-import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
@@ -258,9 +256,7 @@ class DataSetTest : BaseTest() {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
-                composeTestRule.onRoot().printToLog("TAAAAABLE_${data.sectionIndex}")
-                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
-                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
+                assertCategoryAsRowsAreDisplayed(data.dataElementsRowTestTags, data.rowTestTags)
                 assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
