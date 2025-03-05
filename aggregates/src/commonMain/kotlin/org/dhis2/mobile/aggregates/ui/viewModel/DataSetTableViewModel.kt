@@ -22,6 +22,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
@@ -92,7 +93,12 @@ internal class DataSetTableViewModel(
                 renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                 dataSetSectionTable = DataSetSectionTable.Loading,
             )
-
+            val dataSetSectionTitle =
+                if (!dataSetInstanceData.dataSetDetails.customTitle.isConfiguredTitle && dataSetInstanceData.dataSetSections.isNotEmpty()) {
+                    dataSetInstanceData.dataSetSections.first().title
+                } else {
+                    dataSetInstanceData.dataSetDetails.customTitle.header
+                }
             val sectionToLoad =
                 dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
             val sectionTable = async { sectionData(sectionToLoad) }
@@ -101,6 +107,11 @@ internal class DataSetTableViewModel(
                 when (it) {
                     is DataSetScreenState.Loaded ->
                         it.copy(
+                            dataSetDetails = dataSetInstanceData.dataSetDetails.copy(
+                                customTitle = dataSetInstanceData.dataSetDetails.customTitle.copy(
+                                    header = dataSetSectionTitle,
+                                ),
+                            ),
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionToLoad,
                                 tableModels = sectionTable.await(),
@@ -136,7 +147,20 @@ internal class DataSetTableViewModel(
                 val sectionData = async { sectionData(sectionUid) }
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
+                        val dataSetSectionTitle = if (it.dataSetDetails.customTitle.isConfiguredTitle) {
+                            it.dataSetDetails.customTitle.header
+                        } else {
+                            it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
+                        }
                         it.copy(
+                            dataSetDetails = it.dataSetDetails.copy(
+                                customTitle = DataSetCustomTitle(
+                                    header = dataSetSectionTitle,
+                                    subHeader = it.dataSetDetails.customTitle.subHeader,
+                                    textAlignment = it.dataSetDetails.customTitle.textAlignment,
+                                    isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
+                                ),
+                            ),
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionUid,
                                 tableModels = sectionData.await(),

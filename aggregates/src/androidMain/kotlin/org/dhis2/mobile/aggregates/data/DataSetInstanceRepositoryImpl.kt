@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import org.dhis2.mobile.aggregates.data.mappers.toCustomTitle
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
 import org.dhis2.mobile.aggregates.data.mappers.toInputType
@@ -51,6 +52,8 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()
             ?.isDefault
 
+        val dataSetDTOCustomTitle = dataSet?.displayOptions()?.customText()
+
         return d2.dataSetModule().dataSetInstances()
             .byDataSetUid().eq(dataSetUid)
             .byPeriod().eq(periodId)
@@ -58,10 +61,11 @@ internal class DataSetInstanceRepositoryImpl(
             .byAttributeOptionComboUid().eq(attrOptionComboUid)
             .blockingGet()
             .map { dataSetInstance ->
-                dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true)
+                dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true, customText = dataSetDTOCustomTitle)
             }
             .firstOrNull() ?: DataSetDetails(
-            titleLabel = "",
+            customTitle = dataSetDTOCustomTitle.toCustomTitle(),
+            dataSetTitle = dataSet?.displayName()!!,
             dateLabel = periodId,
             orgUnitLabel = d2.organisationUnitModule().organisationUnits()
                 .uid(orgUnitUid)
