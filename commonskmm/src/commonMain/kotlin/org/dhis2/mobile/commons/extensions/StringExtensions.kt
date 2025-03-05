@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.extensions
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import org.dhis2.mobile.commons.data.ValueParser
@@ -64,4 +65,9 @@ fun String.toColor(): Color {
         else -> throw IllegalArgumentException("Unknown color: $this")
     }
     return Color(colorLong)
+}
+
+fun String.toColorInt(): Int {
+    val color = toColor()
+    return color.toArgb()
 }

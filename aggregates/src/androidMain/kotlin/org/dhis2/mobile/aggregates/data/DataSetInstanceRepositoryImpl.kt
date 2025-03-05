@@ -439,7 +439,7 @@ internal class DataSetInstanceRepositoryImpl(
         if (value == null) return null
 
         val valueLegend = d2.legendSetModule().legends()
-            .byUid().`in`(legendsSet.map { it.uid() })
+            .byLegendSet().`in`(legendsSet.map { it.uid() })
             .byStartValue().smallerThan(value)
             .byEndValue().biggerOrEqualTo(value)
             .one()

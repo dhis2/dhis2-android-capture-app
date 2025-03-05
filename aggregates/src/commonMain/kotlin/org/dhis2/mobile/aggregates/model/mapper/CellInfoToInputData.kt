@@ -30,6 +30,6 @@ internal fun CellInfo.toInputData(cellId: String) =
                 state = SupportingTextState.WARNING,
             )
         },
-        legendData = legendData, // TODO
+        legendData = legendData,
         isRequired = isRequired,
     )

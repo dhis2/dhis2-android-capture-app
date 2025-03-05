@@ -1,12 +1,15 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
+import androidx.compose.ui.graphics.toArgb
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal suspend fun TableModel.updateValue(
     cellId: String?,
     updatedValue: String?,
+    legendData: LegendData?,
     resourceManager: ResourceManager,
 ): TableModel {
     val hasTotalColumn = tableHeaderModel.extraColumns.isNotEmpty()
@@ -19,7 +22,10 @@ internal suspend fun TableModel.updateValue(
             tableRowModel.values.values.last().takeIf { hasTotalColumn }
         if (cell != null) {
             val updatedValues = tableRowModel.values.toMutableMap()
-            updatedValues[cell.column] = cell.copy(value = updatedValue)
+            updatedValues[cell.column] = cell.copy(
+                value = updatedValue,
+                legendColor = legendData?.color?.toArgb(),
+            )
             totalsColumnCell?.let { totalCell ->
                 val totalValue = updatedValues.values.toList().dropLast(1)
                     .sumOf { tableCell ->
