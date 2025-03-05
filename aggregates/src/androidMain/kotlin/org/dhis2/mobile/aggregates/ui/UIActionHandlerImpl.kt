@@ -1,8 +1,10 @@
 package org.dhis2.mobile.aggregates.ui
 
 import android.app.Activity
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import org.dhis2.maps.views.MapSelectorActivity
 
 internal class UIActionHandlerImpl(private val activity: ComponentActivity) : UIActionHandler {
     private var callback: ((String?) -> Unit)? = null
@@ -27,5 +29,19 @@ internal class UIActionHandlerImpl(private val activity: ComponentActivity) : UI
         programUid: String,
         callback: (result: String?) -> Unit,
     ) {
+        this.callback = callback
+        val intent = Intent(activity, MapSelectorActivity::class.java)
+        intent.putExtra(FIELD_UID, fieldUid)
+        intent.putExtra(LOCATION_TYPE_EXTRA, locationType)
+        intent.putExtra(INITIAL_GEOMETRY_COORDINATES, initialData)
+        intent.putExtra(PROGRAM_UID, programUid)
+        launcher.launch(intent)
+    }
+
+    companion object {
+        const val FIELD_UID = "FIELD_UID_EXTRA"
+        const val LOCATION_TYPE_EXTRA = "LOCATION_TYPE_EXTRA"
+        const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
+        const val PROGRAM_UID = "PROGRAM_UID_EXTRA"
     }
 }
