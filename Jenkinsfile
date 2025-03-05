@@ -33,19 +33,6 @@ pipeline {
                 }
             }
         }
-        stage('Unit tests') {
-            environment {
-                ANDROID_HOME = '/opt/android-sdk'
-            }
-            steps {
-                script {
-                    echo 'Running unit tests on app module'
-                    sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
-                    echo 'Running unit tests on all other modules'
-                    sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
-                }
-            }
-        }
         stage('Build Test APKs') {
             steps {
                 script {
@@ -59,6 +46,19 @@ pipeline {
                 timeout(time: 50)
             }
             parallel {
+                stage('Unit tests') {
+                    environment {
+                        ANDROID_HOME = '/opt/android-sdk'
+                    }
+                    steps {
+                        script {
+                            echo 'Running unit tests on app module'
+                            sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
+                            echo 'Running unit tests on all other modules'
+                            sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
+                        }
+                    }
+                }
                 stage('Deploy and run Form Tests') {
                         environment {
                             BROWSERSTACK = credentials('android-browserstack')
@@ -138,31 +138,34 @@ pipeline {
                 }
             }
         }
-        stage('JaCoCo report') {
-            steps {
-                script {
-                    echo 'Running JaCoCo report on app module'
-                    sh './gradlew jacocoReport --stacktrace --no-daemon'
+        stage('Final reports'){
+            parallel {
+                stage('JaCoCo report') {
+                    steps {
+                        script {
+                            echo 'Running JaCoCo report on app module'
+                            sh './gradlew jacocoReport --stacktrace --no-daemon'
+                        }
+                    }
+                }
+                stage('Sonarqube') {
+                    environment {
+                        GIT_BRANCH = "${env.GIT_BRANCH}"
+                        // Jenkinsfile considers empty value ('') as null
+                        GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? '' : env.CHANGE_TARGET}"
+                        PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID }"
+                        SONAR_TOKEN = credentials('android-sonarcloud-token')
+                    }
+                    steps {
+                        script {
+                            echo 'Running Sonarqube'
+                            sh 'chmod +x ./scripts/sonarqube.sh'
+                            sh './scripts/sonarqube.sh'
+                        }
+                    }
                 }
             }
         }
-        stage('Sonarqube') {
-            environment {
-                GIT_BRANCH = "${env.GIT_BRANCH}"
-                // Jenkinsfile considers empty value ('') as null
-                GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? '' : env.CHANGE_TARGET}"
-                PULL_REQUEST = "${env.CHANGE_ID == null ? '' : env.CHANGE_ID }"
-                SONAR_TOKEN = credentials('android-sonarcloud-token')
-            }
-            steps {
-                script {
-                    echo 'Running Sonarqube'
-                    sh 'chmod +x ./scripts/sonarqube.sh'
-                    sh './scripts/sonarqube.sh'
-                }
-            }
-        }
-
     }
     post {
         success {
