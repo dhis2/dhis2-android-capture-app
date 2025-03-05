@@ -1,6 +1,5 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
-import org.dhis2.mobile.aggregates.domain.ResourceManager
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataValueData

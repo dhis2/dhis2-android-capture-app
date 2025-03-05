@@ -2,7 +2,6 @@ package org.dhis2.mobile.aggregates.model.mapper
 
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalCellId
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
-import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalId
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell

@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.Section
+import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
@@ -299,7 +300,7 @@ internal class DataSetInstanceRepositoryImpl(
 
         val pivotedCategoryUid = sectionData?.displayOptions()?.pivotedCategory()
         val disableGrouping = sectionData?.disableDataElementAutoGroup() == true
-        val pivoted = true // sectionData?.displayOptions()?.pivotMode() == SectionPivotMode.PIVOT
+        val pivoted = sectionData?.displayOptions()?.pivotMode() == SectionPivotMode.PIVOT
 
         return if (disableGrouping) {
             DisableDataElementGrouping(
