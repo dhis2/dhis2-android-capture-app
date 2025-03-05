@@ -287,6 +287,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             errors = emptyList(),
             warnings = emptyList(),
             isRequired = false,
+            legendData = null,
         )
         viewModel.dataSetScreenState.test {
             awaitInitialization()
