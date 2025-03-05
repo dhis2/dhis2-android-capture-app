@@ -2,13 +2,17 @@ package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
@@ -25,7 +29,6 @@ import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
@@ -43,11 +46,9 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
-import org.junit.Assert.assertTrue
 
 internal fun dataSetTableRobot(
     composeTestRule: ComposeContentTestRule,
@@ -140,7 +141,7 @@ internal class DataSetTableRobot(
 
     }
 
-    fun  totalsAreDisplayed(
+    fun totalsAreDisplayed(
         tableId: String,
         totalColumnHeaderRowIndex: Int,
         totalColumnHeaderColumnIndex: Int,
@@ -221,6 +222,26 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
+    fun assertColumnTotalValue(
+        tableId: String,
+        columnIndex: Int,
+        expectedValue: String,
+    ) {
+        composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"))
+            .performScrollTo()
+
+        composeTestRule.onNodeWithTag(
+            "CELL_TEST_TAG_${tableId}${tableId}_totals_$columnIndex",
+            true
+        )
+            .onChild().assertTextEquals(expectedValue)
+
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .performScrollToIndex(0)
+
+        composeTestRule.waitForIdle()
+    }
+
     fun returnToDataSetInstanceList() {
         composeTestRule.onNodeWithContentDescription("back arrow")
             .performClick()
@@ -269,10 +290,65 @@ internal class DataSetTableRobot(
     }
 
     fun acceptOptionalValidationRule() {
-        composeTestRule.onNodeWithTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG).performClick()
+        composeTestRule.onNodeWithTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG)
+            .performClick()
     }
 
     fun tapOnCompleteAnyway() {
-        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG).performClick()
+        composeTestRule.onNodeWithTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG)
+            .performClick()
+    }
+
+    fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<CellData>, expectedCount: Int) {
+        rowTestTags.forEach { cellData ->
+            composeTestRule.onAllNodes(
+                hasTestTag(cellData.testTag) and
+                        hasTextExactly(cellData.label)
+            ).assertCountEquals(expectedCount)
+        }
+    }
+
+    fun assertCategoryAsRowsAreDisplayed(
+        dataElementsRowTestTags: List<CellData>,
+        rowTestTags: List<CellData>
+    ) {
+        dataElementsRowTestTags.forEach { deCellData ->
+            val dataElementIsDisplayed = composeTestRule.onNode(
+                hasTestTag(deCellData.testTag) and hasTextExactly(deCellData.label)
+            ).performScrollTo()
+                .assertIsDisplayed()
+            rowTestTags.forEach { catCellData ->
+                dataElementIsDisplayed.assert(
+                    hasAnySibling(hasTestTag(catCellData.testTag) and hasTextExactly(catCellData.label))
+                )
+            }
+        }
+    }
+
+    fun assertCategoryHeaderIsNotDisplayed(headerTestTags: List<CellData>) {
+        headerTestTags.forEach { cellData ->
+            composeTestRule.onNode(
+                hasTestTag(cellData.testTag) and
+                        hasTextExactly(cellData.label),
+            ).assertDoesNotExist()
+        }
+    }
+
+    fun assertCategoryHeaderIsDisplayed(headerTestTags: List<CellData>) {
+        headerTestTags.forEach { cellData ->
+            composeTestRule.onNode(
+                hasTestTag(cellData.testTag) and
+                        hasText(cellData.label)
+            ).assertExists()
+        }
+    }
+
+    fun clickOnSection(sectionIndex: Int, sectionName: String) {
+        composeTestRule.onNode(
+            hasTestTag("SCROLLABLE_TAB_$sectionIndex") and
+                    hasText(sectionName)
+        )
+            .performScrollTo()
+            .performClick()
     }
 }

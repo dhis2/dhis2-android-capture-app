@@ -89,21 +89,25 @@ class DataSetTest : BaseTest() {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
-
+        waitForTableToBeVisible()
 
         // Step - ANDROAPP-6795 Check content boxes above and below the table
         checkContentBoxesAreDisplayed()
         // Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
+        checkCategoryIsMovedToRow()
         // Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
     }
 
-
-    private suspend fun checkContentBoxesAreDisplayed() {
+    private suspend fun waitForTableToBeVisible() {
         composeTestRule.awaitIdle()
         dataSetRobot {
             clickOnDataSetAtPosition(0)
         }
+        tableIsVisible()
+    }
+
+    private suspend fun checkContentBoxesAreDisplayed() {
         tableIsVisible()
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
@@ -115,9 +119,9 @@ class DataSetTest : BaseTest() {
         }
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
-            clickOnSection("TAB_2")
+            clickOnSection("SCROLLABLE_TAB_1")
         }
-        composeTestRule.awaitIdle()
+        tableIsVisible()
         // Check top and bottom content is displayed when changing sections
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
@@ -192,9 +196,9 @@ class DataSetTest : BaseTest() {
         val periodSelectorLabel = "Week 9: Feb 24 - Mar 2, 2025"
         val orgUnit = "Ngelehun CHC"
         val tableId = "gbvX3pogf7p"
-        val cellMandatoryFieldCombination01Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
-        val cellMandatoryFieldCombination02Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
-        val cellMandatoryFieldCombination03Id= "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
+        val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
+        val cellMandatoryFieldCombination02Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
+        val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
@@ -244,6 +248,19 @@ class DataSetTest : BaseTest() {
         checkValidationBarIsDisplayedAndCompleteAnyway()
 
         checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
+    }
+
+
+    private fun checkCategoryIsMovedToRow() {
+        dataSetTableRobot(composeTestRule) {
+            categoryToRowList.forEach { data ->
+                clickOnSection(data.sectionIndex, data.sectionName)
+                assertTableIsDisplayed()
+                assertCategoryAsRowsAreDisplayed(data.dataElementsRowTestTags, data.rowTestTags)
+                assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
+                assertCategoryHeaderIsDisplayed(data.headerTestTags)
+            }
+        }
     }
 
     private fun runOptionalValidationRules() {

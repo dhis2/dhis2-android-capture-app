@@ -62,6 +62,7 @@ import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -138,7 +139,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
             ),
         )
-        whenever(getDataValue(any())) doReturn emptyMap()
+        whenever(getDataValue(any(), anyOrNull())) doReturn emptyMap()
         whenever(getDataSetSectionData(any())).thenReturn(
             DataSetInstanceSectionData(
                 dataSetInstanceConfiguration = DataSetInstanceConfiguration(
@@ -151,6 +152,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 dataSetInstanceSectionConfiguration = DataSetInstanceSectionConfiguration(
                     showRowTotals = true,
                     showColumnTotals = true,
+                    pivotedHeaderId = null,
                 ),
                 tableGroups = listOf(
                     TableGroup(
@@ -175,6 +177,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                         ),
                         headerRows = listOf(listOf("Row1"), listOf("Row2")),
                         headerCombinations = listOf("Values"),
+                        pivotedHeaders = emptyList(),
                     ),
                 ),
             ),

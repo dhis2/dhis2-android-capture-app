@@ -119,8 +119,9 @@ internal class DataSetInstanceRepositoryImpl(
         useVerticalTabs = true,
     )
 
-    override suspend fun categoryOptionCombinations(categoryUids: List<String>): List<String> {
+    private suspend fun categoryOptionCombinations(categoryUids: List<String>, pivotedCategoryUid: String?): List<String> {
         return categoryUids.mapNotNull { categoryUid ->
+            if (categoryUid == pivotedCategoryUid) return@mapNotNull null
             val catOptions = d2.categoryModule().categories()
                 .withCategoryOptions()
                 .uid(categoryUid)
@@ -134,10 +135,14 @@ internal class DataSetInstanceRepositoryImpl(
                 }
             }
         }.mapNotNull { categoryOptions ->
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryOptions(categoryOptions)
-                .one()
-                .blockingGet()?.uid()
+            if (pivotedCategoryUid == null) {
+                d2.categoryModule().categoryOptionCombos()
+                    .byCategoryOptions(categoryOptions)
+                    .one()
+                    .blockingGet()?.uid()
+            } else {
+                categoryOptions.joinToString("_")
+            }
         }
     }
 
@@ -242,6 +247,7 @@ internal class DataSetInstanceRepositoryImpl(
                 DataSetInstanceSectionConfiguration(
                     showRowTotals = section.showRowTotals() == true,
                     showColumnTotals = section.showColumnTotals() == true,
+                    pivotedHeaderId = section.displayOptions()?.pivotedCategory(),
                 )
             }
 
@@ -283,6 +289,12 @@ internal class DataSetInstanceRepositoryImpl(
             }
         }
 
+        val pivotedCategoryUid = d2.dataSetModule().sections()
+            .uid(sectionUid)
+            .blockingGet()
+            ?.displayOptions()
+            ?.pivotedCategory()
+
         return d2.categoryModule().categoryCombos()
             .byUid().`in`(catComboUids)
             .withCategories()
@@ -294,7 +306,7 @@ internal class DataSetInstanceRepositoryImpl(
                 TableGroup(
                     uid = catCombo.uid(),
                     label = catCombo.displayName() ?: "",
-                    subgroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList(),
+                    subgroups = subGroups,
                     cellElements = dataSetElementsInSection.filter { dataSetElement ->
                         val catComboUid =
                             dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
@@ -302,14 +314,31 @@ internal class DataSetInstanceRepositoryImpl(
                             )
                         catComboUid == catCombo.uid()
                     },
-                    headerRows = getTableGroupHeaders(subGroups),
-                    headerCombinations = categoryOptionCombinations(subGroups),
+                    headerRows = getTableGroupHeaders(subGroups, pivotedCategoryUid),
+                    headerCombinations = categoryOptionCombinations(subGroups, pivotedCategoryUid),
+                    pivotedHeaders = pivotedCategoryUid?.let {
+                        d2.categoryModule().categories()
+                            .withCategoryOptions()
+                            .uid(it)
+                            .blockingGet()
+                            ?.categoryOptions()
+                            ?.map { catOption ->
+                                CellElement(
+                                    uid = catOption.uid(),
+                                    label = catOption.displayName() ?: catOption.uid(),
+                                    description = catOption.displayName(),
+                                    isMultiText = false,
+                                    categoryComboUid = null,
+                                )
+                            }
+                    } ?: emptyList(),
                 )
             }
     }
 
-    override suspend fun getTableGroupHeaders(categoryUids: List<String>): List<List<String>> {
+    private suspend fun getTableGroupHeaders(categoryUids: List<String>, pivotedCategoryUid: String?): List<List<String>> {
         return categoryUids.mapNotNull { categoryUid ->
+            if (categoryUid == pivotedCategoryUid) return@mapNotNull null
             d2.categoryModule().categories()
                 .withCategoryOptions()
                 .uid(categoryUid)
@@ -325,14 +354,44 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         dataElementUids: List<String>,
         attrOptionComboUid: String,
-    ) = d2.dataValueModule().dataValues()
-        .byPeriod().eq(periodId)
-        .byOrganisationUnitUid().eq(orgUnitUid)
-        .byAttributeOptionComboUid().eq(attrOptionComboUid)
-        .byDataElementUid().`in`(dataElementUids)
-        .blockingGet().map {
-            Pair(it.dataElement()!!, it.categoryOptionCombo()!!) to it.value()
-        }
+        pivotedCategoryUid: String?,
+    ): List<Pair<Pair<String, String>, String?>> {
+        val pivotedCategoryOptionUids = pivotedCategoryUid?.let {
+            d2.categoryModule().categories()
+                .withCategoryOptions()
+                .uid(pivotedCategoryUid)
+                .blockingGet()
+                ?.categoryOptions()?.map { it.uid() }
+        } ?: emptyList()
+
+        return d2.dataValueModule().dataValues()
+            .byPeriod().eq(periodId)
+            .byOrganisationUnitUid().eq(orgUnitUid)
+            .byAttributeOptionComboUid().eq(attrOptionComboUid)
+            .byDataElementUid().`in`(dataElementUids)
+            .blockingGet().map {
+                val key = if (pivotedCategoryUid.isNullOrEmpty()) {
+                    Pair(it.dataElement()!!, it.categoryOptionCombo()!!)
+                } else {
+                    val catOptionsInCategoryCombo = d2.categoryModule().categoryOptionCombos()
+                        .withCategoryOptions()
+                        .uid(it.categoryOptionCombo())
+                        .blockingGet()
+                        ?.categoryOptions()
+                        ?.map { categoryOption -> categoryOption.uid() }
+                        ?: emptyList()
+                    val pivotedCategoryOptionUid =
+                        pivotedCategoryOptionUids.find { uid -> uid in catOptionsInCategoryCombo }
+                    val headerCategoryOptionsUids =
+                        catOptionsInCategoryCombo.filter { uid -> uid != pivotedCategoryOptionUid }
+                    Pair(
+                        "${it.dataElement()!!}_$pivotedCategoryOptionUid",
+                        headerCategoryOptionsUids.joinToString("_"),
+                    )
+                }
+                key to it.value()
+            }
+    }
 
     override suspend fun value(
         periodId: String,
