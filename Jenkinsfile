@@ -12,7 +12,6 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(daysToKeepStr: '5'))
-        timeout(time: 60)
         disableConcurrentBuilds(abortPrevious: true)
     }
 
@@ -56,6 +55,9 @@ pipeline {
             }
         }
         stage('Run tests') {
+            options{
+                timeout(time: 50)
+            }
             parallel {
                 stage('Deploy and run Form Tests') {
                         environment {
