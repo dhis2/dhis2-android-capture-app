@@ -32,6 +32,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     useTwoPane = useTwoPane,
                     onBackClicked = onBackPressedDispatcher::onBackPressed,
                     onSyncClicked = {},
+                    activity = activity,
                 )
             }
         }

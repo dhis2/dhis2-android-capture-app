@@ -139,6 +139,7 @@ internal val featureModule = module {
         val orgUnitUid = params.get<String>()
         val attrOptionComboUid = params.get<String>()
         val onClose = params.get<() -> Unit>()
+        val activity = params.get<Any>()
 
         DataSetTableViewModel(
             onClose = onClose,
@@ -179,6 +180,9 @@ internal val featureModule = module {
             dispatcher = get(),
             runValidationRules = get {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
+            uiActionHandler = get {
+                parametersOf(activity)
             },
         )
     }

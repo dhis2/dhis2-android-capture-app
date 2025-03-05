@@ -37,6 +37,7 @@ import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
+import org.dhis2.mobile.aggregates.ui.UIActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
@@ -68,6 +69,7 @@ internal class DataSetTableViewModel(
     private val datasetModalDialogProvider: DataSetModalDialogProvider,
     private val completeDataSet: CompleteDataSet,
     private val runValidationRules: RunValidationRules,
+    private val uiActionHandler: UIActionHandler,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
