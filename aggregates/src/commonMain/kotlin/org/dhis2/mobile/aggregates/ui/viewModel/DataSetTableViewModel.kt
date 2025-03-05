@@ -40,6 +40,8 @@ import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.TableId
+import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -205,16 +207,18 @@ internal class DataSetTableViewModel(
 
     fun onUiAction(uiAction: UiAction) {
         viewModelScope.launch(dispatcher.io()) {
+            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+            val dataElementUid = getDataElementUid(rowIds, columnIds)
+
             when (uiAction) {
                 is UiAction.OnFocusChanged -> {
                 }
 
-                UiAction.OnNextClick -> {
+                is UiAction.OnNextClick -> {
                     TODO()
                 }
 
                 is UiAction.OnValueChanged -> {
-                    val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
                     setDataValue(
                         rowIds = rowIds,
                         columnIds = columnIds,
@@ -241,6 +245,14 @@ internal class DataSetTableViewModel(
                 is UiAction.OnShareImage -> TODO()
             }
         }
+    }
+
+    private fun getDataElementUid(rowIds: List<TableId>, columnIds: List<TableId>): String {
+        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
+            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
+
+        return dataElementUids.firstOrNull()
+            ?: throw IllegalArgumentException("Only one data element is allowed")
     }
 
     fun onSaveClicked() {
