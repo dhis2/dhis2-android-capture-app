@@ -25,10 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -59,6 +56,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
+import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
@@ -86,9 +84,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -106,8 +101,9 @@ import org.koin.core.parameter.parametersOf
 fun DataSetInstanceScreen(
     parameters: DataSetInstanceParameters,
     useTwoPane: Boolean,
+    snackbarHostState: SnackbarHostState,
     onBackClicked: () -> Unit,
-    onSyncClicked: () -> Unit,
+    onSyncClicked: (onUpdateData: () -> Unit) -> Unit,
     activity: Any,
 ) {
     val dataSetTableViewModel: DataSetTableViewModel =
@@ -129,7 +125,6 @@ fun DataSetInstanceScreen(
         }
     }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     ObserveAsEvents(
@@ -172,7 +167,8 @@ fun DataSetInstanceScreen(
                                 tint = MaterialTheme.colorScheme.onPrimary,
                             )
                         },
-                        onClick = onSyncClicked,
+                        onClick = { onSyncClicked({ dataSetTableViewModel.loadDataSet() }) },
+
                     )
                 },
                 title = {
@@ -192,7 +188,7 @@ fun DataSetInstanceScreen(
                 ),
             )
         },
-        snackbarHost = { CustomSnackbarHost(snackbarHostState) },
+        snackbarHost = { DataSetSnackbarHost(snackbarHostState) },
         floatingActionButton = {
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
@@ -545,16 +541,4 @@ private fun DataSetTable(
         },
         bottomContent = bottomContent,
     )
-}
-
-@Composable
-private fun CustomSnackbarHost(hostState: SnackbarHostState) {
-    SnackbarHost(hostState = hostState) { data ->
-        Snackbar(
-            modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
-            snackbarData = data,
-            containerColor = SurfaceColor.SurfaceBright,
-            contentColor = TextColor.OnSurface,
-        )
-    }
 }

@@ -82,7 +82,7 @@ internal class DataSetTableViewModel(
             DataSetScreenState.Loading,
         )
 
-    private fun loadDataSet() {
+    fun loadDataSet() {
         viewModelScope.launch(dispatcher.io()) {
             val dataSetInstanceData = getDataSetInstanceData(this)
 
