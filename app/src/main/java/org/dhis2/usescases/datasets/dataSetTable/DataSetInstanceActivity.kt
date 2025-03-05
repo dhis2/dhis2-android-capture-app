@@ -44,13 +44,11 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     onBackClicked = onBackPressedDispatcher::onBackPressed,
                     snackbarHostState = snackbarHostState,
                     onSyncClicked = { onUpdateData ->
-
                         showGranularSync(
                             dataSetParams = dataSetParams,
                             snackbarHostState = snackbarHostState,
                             onUpdateData = onUpdateData,
                         )
-                        onUpdateData()
                     },
                     activity = activity,
                 )
