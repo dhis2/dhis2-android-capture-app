@@ -364,4 +364,22 @@ internal class DataSetTableRobot(
             .performScrollTo()
             .performClick()
     }
+
+    fun assertTableHeaders(headerTestTags: List<CellData>) {
+        headerTestTags.forEach {cellData->
+            composeTestRule.onNode(
+                hasTestTag(cellData.testTag) and
+                        hasText(cellData.label)
+            ).assertExists()
+        }
+    }
+
+    fun assertTableRows(rowTestTags: List<CellData>) {
+        rowTestTags.forEach {cellData->
+            composeTestRule.onNode(
+                hasTestTag(cellData.testTag) and
+                        hasTextExactly(cellData.label)
+            ).assertExists()
+        }
+    }
 }
