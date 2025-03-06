@@ -53,6 +53,7 @@ import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
+import org.dhis2.mobile.commons.extensions.toColor
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -66,6 +67,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -278,23 +280,54 @@ internal class DataSetTableViewModelTest : KoinTest {
             rowIds = listOf(TableId("rowId", TableIdType.DataElement)),
             columnIds = listOf(TableId("columnId", TableIdType.CategoryOptionCombo)),
         )
-        val cellInfo = CellInfo(
-            label = "Input label",
-            value = "This is it",
-            inputType = InputType.Text,
-            inputExtra = InputExtra.None,
-            supportingText = emptyList(),
-            errors = emptyList(),
-            warnings = emptyList(),
-            isRequired = false,
+        val cellInfoData = listOf(
+            CellInfo(
+                label = "Input label",
+                value = "This is it",
+                inputType = InputType.Text,
+                inputExtra = InputExtra.None,
+                supportingText = emptyList(),
+                errors = emptyList(),
+                warnings = emptyList(),
+                isRequired = false,
+                legendColor = "#90EE90",
+                legendLabel = "Legend label 1",
+            ),
+            CellInfo(
+                label = "Input label",
+                value = "This is other",
+                inputType = InputType.Text,
+                inputExtra = InputExtra.None,
+                supportingText = emptyList(),
+                errors = emptyList(),
+                warnings = emptyList(),
+                isRequired = false,
+                legendColor = "#CD5C5C",
+                legendLabel = "Legend label 2",
+            ),
         )
         viewModel.dataSetScreenState.test {
             awaitInitialization()
-            whenever(getDataValueInput(any(), any())) doReturn cellInfo
+            whenever(getDataValueInput(any(), any())) doReturnConsecutively cellInfoData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
-                assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo != null)
+                if (this is DataSetScreenState.Loaded) {
+                    assertTrue(this.selectedCellInfo != null)
+                    assertEquals("Legend label 1", this.selectedCellInfo?.legendData?.title)
+                    assertEquals("#90EE90".toColor(), this.selectedCellInfo?.legendData?.color)
+                } else {
+                    assertTrue(false)
+                }
+            }
+            viewModel.updateSelectedCell(testingId)
+            with(awaitItem()) {
+                if (this is DataSetScreenState.Loaded) {
+                    assertTrue(this.selectedCellInfo != null)
+                    assertEquals("Legend label 2", this.selectedCellInfo?.legendData?.title)
+                    assertEquals("#CD5C5C".toColor(), this.selectedCellInfo?.legendData?.color)
+                } else {
+                    assertTrue(false)
+                }
             }
             viewModel.updateSelectedCell(null)
             with(awaitItem()) {

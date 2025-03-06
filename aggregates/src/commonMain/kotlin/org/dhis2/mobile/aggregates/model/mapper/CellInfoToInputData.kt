@@ -1,8 +1,11 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
+import androidx.compose.ui.graphics.Color
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.ui.states.InputData
+import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
@@ -30,6 +33,9 @@ internal fun CellInfo.toInputData(cellId: String) =
                 state = SupportingTextState.WARNING,
             )
         },
-        legendData = null, // TODO
+        legendData = LegendData(
+            color = legendColor?.toColor() ?: Color.Unspecified,
+            title = legendLabel ?: "",
+        ),
         isRequired = isRequired,
     )

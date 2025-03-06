@@ -11,6 +11,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalRow
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.commons.extensions.toColorInt
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
@@ -200,7 +201,7 @@ internal suspend fun TableGroup.toTableModel(
                                 ),
                                 error = dataValueData?.conflicts?.errors(),
                                 warning = dataValueData?.conflicts?.warnings(),
-                                legendColor = null,
+                                legendColor = dataValueData?.legendColor?.toColorInt(),
                                 isMultiText = dataElementCell.isMultiText,
                             ),
                         )

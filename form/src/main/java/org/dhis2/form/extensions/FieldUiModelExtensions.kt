@@ -33,7 +33,13 @@ fun FieldUiModel.supportingText() = listOfNotNull(
 ).ifEmpty { null }
 
 fun FieldUiModel.legend() = legend?.let {
-    LegendData(Color(it.color), it.label ?: "", it.legendsInfo, windowInsets = { bottomSheetInsets() }, bottomSheetLowerPadding = bottomSheetLowerPadding())
+    LegendData(
+        Color(it.color),
+        it.label ?: "",
+        it.legendsInfo,
+        windowInsets = { bottomSheetInsets() },
+        bottomSheetLowerPadding = bottomSheetLowerPadding(),
+    )
 }
 
 fun FieldUiModel.orientation() = when (renderingType) {

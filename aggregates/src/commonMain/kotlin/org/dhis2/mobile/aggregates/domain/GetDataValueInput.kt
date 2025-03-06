@@ -46,6 +46,14 @@ internal class GetDataValueInput(
             categoryOptionComboUid = categoryOptionComboUid,
         )
 
+        val legendColorAndLabel = repository.getLegend(
+            dataElementUid = dataElementUid,
+            periodId = periodId,
+            orgUnitUid = orgUnitUid,
+            categoryOptionComboUid = categoryOptionComboUid,
+            attrOptionComboUid = attrOptionComboUid,
+        )
+
         return CellInfo(
             label = dataElementInfo.label,
             value = value,
@@ -84,6 +92,8 @@ internal class GetDataValueInput(
             errors = conflicts.first,
             warnings = conflicts.second,
             isRequired = dataElementInfo.isRequired,
+            legendColor = legendColorAndLabel?.first,
+            legendLabel = legendColorAndLabel?.second,
         )
     }
 }

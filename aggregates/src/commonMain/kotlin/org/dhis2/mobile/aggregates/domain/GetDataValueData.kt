@@ -27,6 +27,13 @@ internal class GetDataValueData(
             key to DataValueData(
                 value = value?.userFriendlyValue(key.first),
                 conflicts = conflicts(key.first, key.second),
+                legendColor = dataSetInstanceRepository.getLegend(
+                    dataElementUid = key.first,
+                    periodId = periodId,
+                    orgUnitUid = orgUnitUid,
+                    attrOptionComboUid = attrOptionComboUid,
+                    categoryOptionComboUid = key.second,
+                )?.first,
             )
         }
     }

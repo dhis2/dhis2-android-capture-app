@@ -10,5 +10,7 @@ internal data class CellInfo(
     val supportingText: List<String>,
     val errors: List<String>,
     val warnings: List<String>,
+    val legendColor: String?,
+    val legendLabel: String?,
     val isRequired: Boolean,
 )

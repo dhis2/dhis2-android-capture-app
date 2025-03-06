@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.model
 internal data class DataValueData(
     val value: String?,
     val conflicts: Conflicts,
+    val legendColor: String?,
 )
 
 internal data class Conflicts(

@@ -11,6 +11,9 @@ import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import java.util.SortedMap
 
+typealias ColorString = String
+typealias LegendLabel = String
+
 internal interface DataSetInstanceRepository {
     suspend fun getDataSetInstance(
         dataSetUid: String,
@@ -132,4 +135,12 @@ internal interface DataSetInstanceRepository {
         orgUnitUid: String,
         attrOptionComboUid: String,
     ): ValidationRulesResult
+
+    suspend fun getLegend(
+        dataElementUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        categoryOptionComboUid: String,
+        attrOptionComboUid: String,
+    ): Pair<ColorString?, LegendLabel?>?
 }
