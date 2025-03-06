@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.ui.states
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import org.dhis2.mobile.aggregates.model.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
