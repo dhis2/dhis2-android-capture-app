@@ -1,15 +1,12 @@
 package org.dhis2.mobile.aggregates.domain
 
-import androidx.compose.ui.graphics.Color
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.getFormattedFileSize
-import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
 
@@ -47,6 +44,14 @@ internal class GetDataValueInput(
             attrOptionComboUid = attrOptionComboUid,
             dataElementUid = dataElementUid,
             categoryOptionComboUid = categoryOptionComboUid,
+        )
+
+        val legendColorAndLabel = repository.getLegend(
+            dataElementUid = dataElementUid,
+            periodId = periodId,
+            orgUnitUid = orgUnitUid,
+            categoryOptionComboUid = categoryOptionComboUid,
+            attrOptionComboUid = attrOptionComboUid,
         )
 
         return CellInfo(
@@ -87,19 +92,8 @@ internal class GetDataValueInput(
             errors = conflicts.first,
             warnings = conflicts.second,
             isRequired = dataElementInfo.isRequired,
-            legendData = repository.getLegend(
-                dataElementUid = dataElementUid,
-                periodId = periodId,
-                orgUnitUid = orgUnitUid,
-                categoryOptionComboUid = categoryOptionComboUid,
-                attrOptionComboUid = attrOptionComboUid,
-            )?.let { (color, label) ->
-                LegendData(
-                    color = color?.toColor() ?: Color.Unspecified,
-                    title = label ?: "",
-                    popUpLegendDescriptionData = null,
-                )
-            },
+            legendColor = legendColorAndLabel?.first,
+            legendLabel = legendColorAndLabel?.second,
         )
     }
 }

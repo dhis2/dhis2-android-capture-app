@@ -1,7 +1,6 @@
 package org.dhis2.mobile.aggregates.model
 
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
-import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 
 internal data class CellInfo(
     val label: String,
@@ -11,6 +10,7 @@ internal data class CellInfo(
     val supportingText: List<String>,
     val errors: List<String>,
     val warnings: List<String>,
-    val legendData: LegendData?,
+    val legendColor: String?,
+    val legendLabel: String?,
     val isRequired: Boolean,
 )
