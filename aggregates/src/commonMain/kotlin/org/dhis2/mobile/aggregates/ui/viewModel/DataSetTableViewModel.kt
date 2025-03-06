@@ -271,7 +271,6 @@ internal class DataSetTableViewModel(
                         fieldUid = dataElementUid,
                         locationType = uiAction.locationType,
                         initialData = uiAction.initialData,
-                        programUid = null, // TODO create a way to send datasetUid
                     ) { result ->
                         onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
                     }

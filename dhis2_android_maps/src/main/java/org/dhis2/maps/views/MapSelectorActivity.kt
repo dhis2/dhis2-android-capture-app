@@ -28,6 +28,7 @@ import org.dhis2.maps.di.Injector
 import org.dhis2.maps.geometry.polygon.PolygonAdapter
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.DefaultMapManager
+import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
@@ -62,7 +63,10 @@ class MapSelectorActivity : AppCompatActivity() {
                 FeatureType.valueOf(featureName)
             } ?: FeatureType.POINT,
             initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES),
-            programUid = intent.getStringExtra(PROGRAM_UID),
+            uid = intent.getStringExtra(PROGRAM_UID),
+            scope = intent.getStringExtra(SCOPE)?.let { scope ->
+                MapScope.valueOf(scope)
+            } ?: MapScope.PROGRAM,
         )
     }
 
@@ -234,6 +238,7 @@ class MapSelectorActivity : AppCompatActivity() {
         const val INITIAL_GEOMETRY_COORDINATES = "INITIAL_DATA"
         const val FIELD_UID = "FIELD_UID_EXTRA"
         const val PROGRAM_UID = "PROGRAM_UID_EXTRA"
+        const val SCOPE = "SCOPE"
 
         fun create(
             activity: Context,

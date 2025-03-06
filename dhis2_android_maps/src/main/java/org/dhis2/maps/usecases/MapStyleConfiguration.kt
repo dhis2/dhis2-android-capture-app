@@ -3,6 +3,7 @@ package org.dhis2.maps.usecases
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.build
+import org.dhis2.maps.model.MapScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.map.layer.MapLayerImageryProvider
 
@@ -10,19 +11,34 @@ const val DEFAULT_FORCED_LOCATION_ACCURACY = -1
 
 class MapStyleConfiguration(
     private val d2: D2,
-    val programUid: String? = null,
+    val uid: String? = null,
+    val scope: MapScope,
     programConfigurationRepository: ProgramConfigurationRepository,
 ) {
 
-    private val canCaptureManually = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
-        ?.let { programConfiguration ->
-            programConfiguration.disableManualLocation() != true
-        } ?: true
+    private val canCaptureManually = when (scope) {
+        MapScope.PROGRAM -> programConfigurationRepository.getConfigurationByProgram(uid ?: "")
+            ?.let { programConfiguration ->
+                programConfiguration.disableManualLocation() != true
+            } ?: true
 
-    private val forcedLocationPrecision = programConfigurationRepository.getConfigurationByProgram(programUid ?: "")
-        ?.let { programConfiguration ->
-            programConfiguration.minimumLocationAccuracy() ?: DEFAULT_FORCED_LOCATION_ACCURACY
-        } ?: DEFAULT_FORCED_LOCATION_ACCURACY
+        MapScope.DATA_SET -> programConfigurationRepository.getConfigurationByDataSet(uid ?: "")
+            ?.let { dataSetConfiguration ->
+                dataSetConfiguration.disableManualLocation() != true
+            } ?: true
+    }
+
+    private val forcedLocationPrecision = when (scope) {
+        MapScope.PROGRAM -> programConfigurationRepository.getConfigurationByProgram(uid ?: "")
+            ?.let { programConfiguration ->
+                programConfiguration.minimumLocationAccuracy() ?: DEFAULT_FORCED_LOCATION_ACCURACY
+            } ?: DEFAULT_FORCED_LOCATION_ACCURACY
+
+        MapScope.DATA_SET -> programConfigurationRepository.getConfigurationByDataSet(uid ?: "")
+            ?.let { dataSetConfiguration ->
+                dataSetConfiguration.minimumLocationAccuracy() ?: DEFAULT_FORCED_LOCATION_ACCURACY
+            } ?: DEFAULT_FORCED_LOCATION_ACCURACY
+    }
 
     fun fetchMapStyles(): List<BaseMapStyle> {
         val defaultMap = d2.settingModule().systemSetting().defaultBaseMap().blockingGet()?.value()
