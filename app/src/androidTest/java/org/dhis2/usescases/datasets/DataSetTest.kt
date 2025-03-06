@@ -512,7 +512,6 @@ class DataSetTest : BaseTest() {
         }
 
         orgUnitSelectorRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             selectTreeOrgUnit(orgUnit)
         }
 
