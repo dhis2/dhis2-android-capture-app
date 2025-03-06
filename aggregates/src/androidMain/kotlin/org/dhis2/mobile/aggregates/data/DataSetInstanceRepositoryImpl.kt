@@ -11,6 +11,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataToReview
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
+import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
@@ -25,6 +26,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.Section
+import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
@@ -298,12 +300,14 @@ internal class DataSetInstanceRepositoryImpl(
 
         val pivotedCategoryUid = sectionData?.displayOptions()?.pivotedCategory()
         val disableGrouping = sectionData?.disableDataElementAutoGroup() == true
+        val pivoted = sectionData?.displayOptions()?.pivotMode() == SectionPivotMode.PIVOT
 
         return if (disableGrouping) {
             DisableDataElementGrouping(
                 dataSetElementsInSection.map {
                     it.copy(
-                        categoryComboUid = it.categoryComboUid ?: dataElementCategoryComboUid(it.uid),
+                        categoryComboUid = it.categoryComboUid
+                            ?: dataElementCategoryComboUid(it.uid),
                     )
                 },
             ).mapIndexed { index, noGroupingDataSetElements ->
@@ -323,9 +327,21 @@ internal class DataSetInstanceRepositoryImpl(
                     label = catCombo.displayName() ?: "",
                     subgroups = subGroups,
                     cellElements = noGroupingDataSetElements,
-                    headerRows = getTableGroupHeaders(subGroups, pivotedCategoryUid),
+                    headerRows = getTableGroupHeaders(catComboUid!!, subGroups, pivotedCategoryUid),
                     headerCombinations = categoryOptionCombinations(subGroups, pivotedCategoryUid),
-                    pivotedHeaders = pivotedHeaders(pivotedCategoryUid),
+                    pivotMode = when {
+                        pivoted ->
+                            PivoteMode.Transpose
+
+                        pivotedCategoryUid != null ->
+                            PivoteMode.CategoryToColumn(
+                                pivotedHeaders(
+                                    pivotedCategoryUid,
+                                ),
+                            )
+
+                        else -> PivoteMode.None
+                    },
                 )
             }
         } else {
@@ -336,24 +352,37 @@ internal class DataSetInstanceRepositoryImpl(
                 .blockingGet().map { catCombo ->
 
                     val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+                    val cellElements = dataSetElementsInSection.filter { dataSetElement ->
+                        val catComboUid =
+                            dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
+                                dataSetElement.uid,
+                            )
+                        catComboUid == catCombo.uid()
+                    }
 
                     TableGroup(
                         uid = catCombo.uid(),
                         label = catCombo.displayName() ?: "",
                         subgroups = subGroups,
-                        cellElements = dataSetElementsInSection.filter { dataSetElement ->
-                            val catComboUid =
-                                dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
-                                    dataSetElement.uid,
-                                )
-                            catComboUid == catCombo.uid()
-                        },
-                        headerRows = getTableGroupHeaders(subGroups, pivotedCategoryUid),
+                        cellElements = cellElements,
+                        headerRows = getTableGroupHeaders(catCombo.uid(), subGroups, pivotedCategoryUid),
                         headerCombinations = categoryOptionCombinations(
                             subGroups,
                             pivotedCategoryUid,
                         ),
-                        pivotedHeaders = pivotedHeaders(pivotedCategoryUid),
+                        pivotMode = when {
+                            pivoted ->
+                                PivoteMode.Transpose
+
+                            pivotedCategoryUid != null ->
+                                PivoteMode.CategoryToColumn(
+                                    pivotedHeaders(
+                                        pivotedCategoryUid,
+                                    ),
+                                )
+
+                            else -> PivoteMode.None
+                        },
                     )
                 }
         }
@@ -376,19 +405,41 @@ internal class DataSetInstanceRepositoryImpl(
             }
     } ?: emptyList()
 
-    private suspend fun getTableGroupHeaders(
+    private fun getTableGroupHeaders(
+        catComboUid: String,
         categoryUids: List<String>,
         pivotedCategoryUid: String?,
-    ): List<List<String>> {
+    ): List<List<CellElement>> {
         return categoryUids.mapNotNull { categoryUid ->
             if (categoryUid == pivotedCategoryUid) return@mapNotNull null
-            d2.categoryModule().categories()
+            val categoryOptions = d2.categoryModule().categories()
                 .withCategoryOptions()
                 .uid(categoryUid)
                 .blockingGet()
-                ?.categoryOptions()?.map { categoryOption ->
-                    categoryOption.displayName() ?: categoryOption.uid()
+                ?.categoryOptions() ?: emptyList()
+
+            if (categoryOptions.isNotEmpty()) {
+                categoryOptions.map { categoryOption ->
+                    CellElement(
+                        uid = categoryOption.uid(),
+                        label = categoryOption.displayName() ?: categoryOption.uid(),
+                        description = categoryOption.displayName(),
+                        isMultiText = false,
+                        categoryComboUid = catComboUid,
+                    )
                 }
+            } else {
+                d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(categoryUid)
+                    .blockingGet().map {
+                        CellElement(
+                            uid = it.uid(),
+                            label = it.displayName() ?: it.uid(),
+                            description = it.displayName(),
+                            isMultiText = false,
+                            categoryComboUid = catComboUid,
+                        )
+                    }
+            }
         }
     }
 

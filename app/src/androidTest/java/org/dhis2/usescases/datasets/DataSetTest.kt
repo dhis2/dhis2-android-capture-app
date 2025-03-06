@@ -13,6 +13,7 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
+import org.dhis2.usescases.datasets.dataSetTable.pivotTestingData
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
@@ -99,6 +100,7 @@ class DataSetTest : BaseTest() {
         // Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
         checkAutomaticGroupingDisabled()
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
+        checkPivotOptions()
     }
 
     private suspend fun waitForTableToBeVisible() {
@@ -325,6 +327,16 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    private fun checkPivotOptions() {
+        dataSetTableRobot(composeTestRule) {
+            pivotTestingData.forEach { data ->
+                clickOnSection(data.sectionIndex, data.sectionName)
+                assertTableIsDisplayed()
+                assertTableHeaders(data.headerTestTags)
+                assertTableRows(data.rowTestTags)
+            }
+        }
+    }
 
     private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {
         logStep("Starting Trying to complete dataset")
