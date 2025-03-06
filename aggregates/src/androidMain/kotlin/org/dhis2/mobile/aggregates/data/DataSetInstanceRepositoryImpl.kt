@@ -119,7 +119,10 @@ internal class DataSetInstanceRepositoryImpl(
         useVerticalTabs = true,
     )
 
-    private suspend fun categoryOptionCombinations(categoryUids: List<String>, pivotedCategoryUid: String?): List<String> {
+    private suspend fun categoryOptionCombinations(
+        categoryUids: List<String>,
+        pivotedCategoryUid: String?,
+    ): List<String> {
         return categoryUids.mapNotNull { categoryUid ->
             if (categoryUid == pivotedCategoryUid) return@mapNotNull null
             val catOptions = d2.categoryModule().categories()
@@ -289,54 +292,94 @@ internal class DataSetInstanceRepositoryImpl(
             }
         }
 
-        val pivotedCategoryUid = d2.dataSetModule().sections()
+        val sectionData = d2.dataSetModule().sections()
             .uid(sectionUid)
             .blockingGet()
-            ?.displayOptions()
-            ?.pivotedCategory()
 
-        return d2.categoryModule().categoryCombos()
-            .byUid().`in`(catComboUids)
-            .withCategories()
-            .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-            .blockingGet().map { catCombo ->
+        val pivotedCategoryUid = sectionData?.displayOptions()?.pivotedCategory()
+        val disableGrouping = sectionData?.disableDataElementAutoGroup() == true
+
+        return if (disableGrouping) {
+            DisableDataElementGrouping(
+                dataSetElementsInSection.map {
+                    it.copy(
+                        categoryComboUid = it.categoryComboUid ?: dataElementCategoryComboUid(it.uid),
+                    )
+                },
+            ).mapIndexed { index, noGroupingDataSetElements ->
+                val mainCellElement = noGroupingDataSetElements.first()
+                val catComboUid = mainCellElement.categoryComboUid ?: dataElementCategoryComboUid(
+                    mainCellElement.uid,
+                )
+                val catCombo = d2.categoryModule().categoryCombos()
+                    .withCategories()
+                    .uid(catComboUid)
+                    .blockingGet()!!
 
                 val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
 
                 TableGroup(
-                    uid = catCombo.uid(),
+                    uid = "${catCombo.uid()}_$index",
                     label = catCombo.displayName() ?: "",
                     subgroups = subGroups,
-                    cellElements = dataSetElementsInSection.filter { dataSetElement ->
-                        val catComboUid =
-                            dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
-                                dataSetElement.uid,
-                            )
-                        catComboUid == catCombo.uid()
-                    },
+                    cellElements = noGroupingDataSetElements,
                     headerRows = getTableGroupHeaders(subGroups, pivotedCategoryUid),
                     headerCombinations = categoryOptionCombinations(subGroups, pivotedCategoryUid),
-                    pivotedHeaders = pivotedCategoryUid?.let {
-                        d2.categoryModule().categories()
-                            .withCategoryOptions()
-                            .uid(it)
-                            .blockingGet()
-                            ?.categoryOptions()
-                            ?.map { catOption ->
-                                CellElement(
-                                    uid = catOption.uid(),
-                                    label = catOption.displayName() ?: catOption.uid(),
-                                    description = catOption.displayName(),
-                                    isMultiText = false,
-                                    categoryComboUid = null,
-                                )
-                            }
-                    } ?: emptyList(),
+                    pivotedHeaders = pivotedHeaders(pivotedCategoryUid),
                 )
             }
+        } else {
+            d2.categoryModule().categoryCombos()
+                .byUid().`in`(catComboUids)
+                .withCategories()
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet().map { catCombo ->
+
+                    val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+
+                    TableGroup(
+                        uid = catCombo.uid(),
+                        label = catCombo.displayName() ?: "",
+                        subgroups = subGroups,
+                        cellElements = dataSetElementsInSection.filter { dataSetElement ->
+                            val catComboUid =
+                                dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
+                                    dataSetElement.uid,
+                                )
+                            catComboUid == catCombo.uid()
+                        },
+                        headerRows = getTableGroupHeaders(subGroups, pivotedCategoryUid),
+                        headerCombinations = categoryOptionCombinations(
+                            subGroups,
+                            pivotedCategoryUid,
+                        ),
+                        pivotedHeaders = pivotedHeaders(pivotedCategoryUid),
+                    )
+                }
+        }
     }
 
-    private suspend fun getTableGroupHeaders(categoryUids: List<String>, pivotedCategoryUid: String?): List<List<String>> {
+    private fun pivotedHeaders(pivotedCategoryUid: String?) = pivotedCategoryUid?.let {
+        d2.categoryModule().categories()
+            .withCategoryOptions()
+            .uid(it)
+            .blockingGet()
+            ?.categoryOptions()
+            ?.map { catOption ->
+                CellElement(
+                    uid = catOption.uid(),
+                    label = catOption.displayName() ?: catOption.uid(),
+                    description = catOption.displayName(),
+                    isMultiText = false,
+                    categoryComboUid = null,
+                )
+            }
+    } ?: emptyList()
+
+    private suspend fun getTableGroupHeaders(
+        categoryUids: List<String>,
+        pivotedCategoryUid: String?,
+    ): List<List<String>> {
         return categoryUids.mapNotNull { categoryUid ->
             if (categoryUid == pivotedCategoryUid) return@mapNotNull null
             d2.categoryModule().categories()

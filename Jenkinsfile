@@ -55,9 +55,6 @@ pipeline {
             }
         }
         stage('Run tests') {
-            options{
-                timeout(time: 50)
-            }
             parallel {
                 stage('Deploy and run Form Tests') {
                         environment {

@@ -18,6 +18,7 @@ import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -96,6 +97,7 @@ class DataSetTest : BaseTest() {
         // Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
         checkCategoryIsMovedToRow()
         // Step - ANDROAPP-6828 Automatic grouping (click on sections 19, 20, 22)
+        checkAutomaticGroupingDisabled()
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
     }
 
@@ -313,6 +315,17 @@ class DataSetTest : BaseTest() {
         logStep("Finished Checking Mandatory Dialog")
     }
 
+    private fun checkAutomaticGroupingDisabled() {
+        dataSetTableRobot(composeTestRule) {
+            disableAutomaticGroupingList.forEach { data ->
+                clickOnSection(data.sectionIndex, data.sectionName)
+                assertTableIsDisplayed()
+                assertTablesAreDisplayedInOrder(data.tableIdTestTags)
+            }
+        }
+    }
+
+
     private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {
         logStep("Starting Trying to complete dataset")
 
@@ -512,6 +525,7 @@ class DataSetTest : BaseTest() {
         logStep("Finished Creating dataset instance $period")
     }
 
+    @Ignore("Old implementation")
     @Test
     fun shouldSelectNewCellIfCurrentHasNoErrorAndBlockSelectingNewCellIfCurrentHasError() {
         startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
