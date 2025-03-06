@@ -20,6 +20,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.GeocoderApi
 import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.model.AccuracyRange
+import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.dhis2.maps.views.MapSelectorViewModel
@@ -58,7 +59,7 @@ class MapSelectorViewModelTest {
     private val programConfigurationRepository: ProgramConfigurationRepository = mock()
 
     private val mapStyleConfiguration =
-        MapStyleConfiguration(d2, programUid, programConfigurationRepository)
+        MapStyleConfiguration(d2, programUid, MapScope.PROGRAM, programConfigurationRepository)
 
     private val dispatcherProvider = object : DispatcherProvider {
         override fun io() = testingDispatcher

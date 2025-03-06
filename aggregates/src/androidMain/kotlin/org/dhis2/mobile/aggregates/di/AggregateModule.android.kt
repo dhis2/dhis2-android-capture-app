@@ -10,5 +10,5 @@ import org.koin.dsl.module
 actual val platformModule: Module
     get() = module {
         single<DataSetInstanceRepository> { DataSetInstanceRepositoryImpl(get()) }
-        single<UIActionHandler> { params -> UIActionHandlerImpl(params.get()) }
+        single<UIActionHandler> { params -> UIActionHandlerImpl(params.get(), params.get()) }
     }
