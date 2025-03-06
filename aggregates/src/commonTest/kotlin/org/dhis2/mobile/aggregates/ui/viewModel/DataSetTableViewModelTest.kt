@@ -477,6 +477,48 @@ internal class DataSetTableViewModelTest : KoinTest {
         }
     }
 
+    @Test
+    fun `should start call intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnCall(testingId, "111111111"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onCall("111111111")
+        }
+    }
+
+    @Test
+    fun `should start send email intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnEmailAction(testingId, "email@email.com"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onSendEmail("email@email.com")
+        }
+    }
+
+    @Test
+    fun `should start open url intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnLinkClicked(testingId, "www.test.com"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onOpenLink("www.test.com")
+        }
+    }
+
     private suspend fun ReceiveTurbine<DataSetScreenState>.awaitInitialization() = with(this) {
         awaitItem()
         awaitItem()
