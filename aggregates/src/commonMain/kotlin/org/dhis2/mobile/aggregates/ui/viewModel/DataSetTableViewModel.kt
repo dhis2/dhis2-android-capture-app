@@ -265,7 +265,8 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnAddImage -> TODO()
-                is UiAction.OnCall -> TODO()
+                is UiAction.OnCall ->
+                    uiActionHandler.onCall(uiAction.phoneNumber)
                 is UiAction.OnCaptureCoordinates -> {
                     uiActionHandler.onCaptureCoordinates(
                         fieldUid = dataElementUid,
@@ -276,8 +277,10 @@ internal class DataSetTableViewModel(
                     }
                 }
                 is UiAction.OnDownloadImage -> TODO()
-                is UiAction.OnEmailAction -> TODO()
-                is UiAction.OnLinkClicked -> TODO()
+                is UiAction.OnEmailAction ->
+                    uiActionHandler.onSendEmail(uiAction.email)
+                is UiAction.OnLinkClicked ->
+                    uiActionHandler.onOpenLink(uiAction.link)
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
