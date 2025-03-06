@@ -11,6 +11,7 @@ internal fun CellInfo.toInputData(cellId: String) =
         id = cellId,
         label = label,
         value = value,
+        displayValue = displayValue,
         inputType = inputType,
         inputShellState = InputShellState.UNFOCUSED,
         inputExtra = inputExtra,

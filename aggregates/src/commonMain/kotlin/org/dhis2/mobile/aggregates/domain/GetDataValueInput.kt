@@ -6,6 +6,7 @@ import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.getFormattedFileSize
+import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
@@ -49,6 +50,7 @@ internal class GetDataValueInput(
         return CellInfo(
             label = dataElementInfo.label,
             value = value,
+            displayValue = value?.userFriendlyValue(dataElementUid),
             inputType = dataElementInfo.inputType,
             inputExtra = when (dataElementInfo.inputType) {
                 InputType.Age -> InputExtra.Age(

@@ -5,6 +5,7 @@ import org.dhis2.mobile.aggregates.ui.states.InputExtra
 internal data class CellInfo(
     val label: String,
     val value: String?,
+    val displayValue: String?,
     val inputType: InputType,
     val inputExtra: InputExtra,
     val supportingText: List<String>,

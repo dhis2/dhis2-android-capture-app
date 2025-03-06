@@ -41,6 +41,9 @@ suspend fun String.userFriendlyValue(
                 }
             }
 
+            valueInfo.isCoordinate ->
+                valueParser.valueFromCoordinateAsLatLong(this)
+
             else -> this
         }
     } catch (e: IllegalStateException) {

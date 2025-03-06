@@ -198,7 +198,7 @@ internal class DataSetTableViewModel(
                 (it as? DataSetScreenState.Loaded)?.copy(
                     dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
                         tableModels = it.dataSetSectionTable.tables().map { table ->
-                            table.updateValue(cellId, inputData?.value, resourceManager)
+                            table.updateValue(cellId, inputData?.displayValue, resourceManager)
                         },
                     ) ?: it.dataSetSectionTable,
                     selectedCellInfo = inputData,
