@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.model
 
 internal sealed class InputType {
+    data object OptionSet : InputType()
     data object Text : InputType()
     data object LongText : InputType()
     data object Letter : InputType()
