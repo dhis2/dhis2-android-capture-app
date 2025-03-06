@@ -170,8 +170,8 @@ internal fun InputProvider(
                     onAction(
                         UiAction.OnCaptureCoordinates(
                             cellId = inputData.id,
-                            initialData = inputData.coordinateExtras().coordinateValue,
-                            locationType = "POINT", // TODO change by featury type or domain class
+                            initialData = inputData.value,
+                            locationType = "POINT", // Is always POINT as it is InputCoordinate component
                         ),
                     )
                 },

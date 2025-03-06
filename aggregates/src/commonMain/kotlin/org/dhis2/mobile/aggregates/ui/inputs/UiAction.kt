@@ -1,7 +1,5 @@
 package org.dhis2.mobile.aggregates.ui.inputs
 
-import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-
 sealed class UiAction(open val cellId: String) {
     data class OnNextClick(
         override val cellId: String,
@@ -20,7 +18,7 @@ sealed class UiAction(open val cellId: String) {
     data class OnCaptureCoordinates(
         override val cellId: String,
         val locationType: String,
-        val initialData: Coordinates?,
+        val initialData: String?,
 
     ) : UiAction(cellId)
 
