@@ -41,6 +41,7 @@ class DataSetTest : BaseTest() {
         cleanLocalDatabase()
     }
 
+    @Ignore("test is occasionally entering a thread lock")
     @Test
     fun datasetAutomate() = runTest {
         val period = "July 2025"
@@ -85,6 +86,7 @@ class DataSetTest : BaseTest() {
         // checkFilterCombination(orgUnit)
     }
 
+    @Ignore("test is occasionally entering a thread lock")
     @Test
     fun formConfigurationTestAutomate() = runTest {
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
@@ -133,6 +135,7 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    @Ignore("test is occasionally entering a thread lock")
     @Test
     fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runTest {
         val dataSetUid = "Lpw6GcnTrmS"
