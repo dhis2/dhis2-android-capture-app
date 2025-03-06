@@ -18,6 +18,7 @@ import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -524,6 +525,7 @@ class DataSetTest : BaseTest() {
         logStep("Finished Creating dataset instance $period")
     }
 
+    @Ignore("Old implementation")
     @Test
     fun shouldSelectNewCellIfCurrentHasNoErrorAndBlockSelectingNewCellIfCurrentHasError() {
         startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
