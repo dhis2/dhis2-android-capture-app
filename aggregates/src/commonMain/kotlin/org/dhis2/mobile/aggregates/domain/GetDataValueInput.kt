@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.domain
 
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
+import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -17,6 +18,7 @@ internal class GetDataValueInput(
     private val orgUnitUid: String,
     private val attrOptionComboUid: String,
     private val repository: DataSetInstanceRepository,
+    private val optionRepository: OptionRepository,
 ) : ValueValidator(repository) {
     suspend operator fun invoke(
         rowIds: List<TableId>,
@@ -86,6 +88,15 @@ internal class GetDataValueInput(
 
                 InputType.FileResource -> InputExtra.File(
                     fileWeight = value?.let { getFormattedFileSize(value) },
+                )
+
+                InputType.MultiText -> InputExtra.MultiText(
+                    fetchOptions = {
+                        optionRepository.fetchOptionsMap(
+                            dataElementUid = dataElementUid,
+                            selectedOptionCodes = value?.split(",") ?: emptyList(),
+                        )
+                    },
                 )
 
                 else -> InputExtra.None

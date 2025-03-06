@@ -1,7 +1,9 @@
 package org.dhis2.mobile.aggregates.ui.states
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import org.dhis2.mobile.aggregates.model.InputType
+import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -28,6 +30,7 @@ internal data class InputData(
     fun fileExtras() = inputExtra as InputExtra.File
     fun coordinateExtras() = inputExtra as InputExtra.Coordinate
     fun ageExtras() = inputExtra as InputExtra.Age
+    fun multiTextExtras() = inputExtra as InputExtra.MultiText
 }
 
 internal sealed class InputExtra {
@@ -49,6 +52,10 @@ internal sealed class InputExtra {
 
     data class Age(
         val selectableDates: SelectableDates,
+    ) : InputExtra()
+
+    data class MultiText(
+        val fetchOptions: @Composable () -> Map<String, CheckBoxData>,
     ) : InputExtra()
 
     data object None : InputExtra()

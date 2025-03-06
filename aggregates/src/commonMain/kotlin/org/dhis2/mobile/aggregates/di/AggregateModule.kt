@@ -78,6 +78,7 @@ internal val featureModule = module {
             orgUnitUid = params.get(),
             attrOptionComboUid = params.get(),
             repository = get(),
+            optionRepository = get(),
         )
     }
 

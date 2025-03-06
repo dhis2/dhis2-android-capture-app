@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.domain
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
+import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.DataElementInfo
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.onRunBlocking
@@ -33,12 +34,15 @@ internal class GetDataValueInputTest {
         onRunBlocking { getCoordinatesFrom(any()) } doReturn Pair(0.0, 0.0)
     }
 
+    private val optionRepository: OptionRepository = mock()
+
     val getDataValueInputTest = GetDataValueInput(
         dataSetUid = "dataSetUid",
         periodId = "periodId",
         orgUnitUid = "orgUnitUid",
         attrOptionComboUid = "attrOptionComboUid",
         repository = repository,
+        optionRepository = optionRepository,
     )
 
     @Test
@@ -56,6 +60,7 @@ internal class GetDataValueInputTest {
                     InputType.Date, InputType.Time, InputType.DateTime -> result.inputExtra is InputExtra.Date
                     InputType.Coordinates -> result.inputExtra is InputExtra.Coordinate
                     InputType.FileResource -> result.inputExtra is InputExtra.File
+                    InputType.MultiText -> result.inputExtra is InputExtra.MultiText
                     else -> result.inputExtra is InputExtra.None
                 },
             )

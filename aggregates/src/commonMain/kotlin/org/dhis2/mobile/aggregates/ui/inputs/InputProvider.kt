@@ -440,10 +440,12 @@ internal fun InputProvider(
             )
         }
 
+        InputType.OptionSet -> {
+            // TODO
+        }
+
         InputType.MultiText -> {
-            val dataMap = buildMap<String, CheckBoxData> {
-                // TODO: Fetch options with paging-> paging is not available in multiplatform.
-            }
+            val dataMap = inputData.multiTextExtras().fetchOptions()
 
             val (codeList, data) = dataMap.toList().unzip()
 
@@ -456,9 +458,16 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 isRequired = inputData.isRequired,
                 onItemsSelected = { updatedData ->
-                    val selectedCodes =
-                        updatedData.filter { it.checked }.joinToString(",") { it.uid }
-                    onAction(UiAction.OnValueChanged(inputData.id, selectedCodes))
+                    val selectedCodes = updatedData.mapNotNull { checkBoxData ->
+                        if (checkBoxData.checked) {
+                            val selectedIndex =
+                                data.indexOfFirst { originalData -> originalData.uid == checkBoxData.uid }
+                            codeList[selectedIndex]
+                        } else {
+                            null
+                        }
+                    }
+                    onAction(UiAction.OnValueChanged(inputData.id, selectedCodes.joinToString(",")))
                 },
                 modifier = modifier,
                 noResultsFoundString = stringResource(Res.string.no_results_found),
