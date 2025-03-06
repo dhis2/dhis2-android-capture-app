@@ -266,8 +266,17 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnAddImage -> TODO()
                 is UiAction.OnCall -> TODO()
-                is UiAction.OnCaptureCoordinates -> TODO()
-                is UiAction.OnDateTimeAction -> TODO()
+                is UiAction.OnCaptureCoordinates -> {
+                    uiActionHandler.onCaptureCoordinates(
+                        fieldUid = dataElementUid,
+                        locationType = uiAction.locationType,
+                        initialData = uiAction.initialData,
+                        programUid = null, // TODO create a way to send datasetUid
+                    ) { result ->
+                        onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
+                    }
+                }
+                is UiAction.OnDateTimeAction -> TODO("Remove not needed")
                 is UiAction.OnDownloadImage -> TODO()
                 is UiAction.OnEmailAction -> TODO()
                 is UiAction.OnLinkClicked -> TODO()

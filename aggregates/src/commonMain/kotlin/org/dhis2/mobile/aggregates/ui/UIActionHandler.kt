@@ -4,7 +4,7 @@ internal interface UIActionHandler {
     fun onCaptureCoordinates(
         fieldUid: String,
         locationType: String,
-        initialData: String,
+        initialData: String?,
         callback: (result: String?) -> Unit,
     )
 
