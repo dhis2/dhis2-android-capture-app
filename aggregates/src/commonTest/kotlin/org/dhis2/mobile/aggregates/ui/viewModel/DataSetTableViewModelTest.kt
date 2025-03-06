@@ -448,8 +448,8 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should open org unit tree`() = runTest {
         val testingId = CellIdGenerator.generateId(
-            rowIds = listOf(TableId("rowId", TableIdType.DataElement)),
-            columnIds = listOf(TableId("columnId", TableIdType.CategoryOptionCombo)),
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
         )
         val cellInfo = CellInfo(
             label = "Org Unit Field",
@@ -469,7 +469,8 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(testingId)
             awaitItem()
             viewModel.onUiAction(UiAction.OnOpenOrgUnitTree(testingId))
-            verify(onOpenOrgUnitTree).invoke(any(), any())
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onCaptureOrgUnit(any(), any())
         }
     }
 

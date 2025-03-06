@@ -55,6 +55,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     activity = activity,
                 )
             }
+            supportFragmentManager
         }
     }
 

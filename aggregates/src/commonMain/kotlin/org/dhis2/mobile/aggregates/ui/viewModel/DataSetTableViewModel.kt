@@ -277,13 +277,13 @@ internal class DataSetTableViewModel(
                 is UiAction.OnOpenOrgUnitTree -> {
                     val inputData = _dataSetScreenState.value.currentInput()
 
-                    onOpenOrgUnitTree(
+                    uiActionHandler.onCaptureOrgUnit(
                         inputData?.value?.let { listOf(it) } ?: emptyList(),
                     ) {
                         onUiAction(
                             UiAction.OnValueChanged(
                                 cellId = uiAction.cellId,
-                                newValue = it.firstOrNull(),
+                                newValue = it,
                             ),
                         )
                     }
