@@ -257,8 +257,7 @@ class DataSetTest : BaseTest() {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
-                assertCategoryRowHeaderIsDisplayed(data.dataElementsRowTestTags, 1)
-                assertCategoryRowHeaderIsDisplayed(data.rowTestTags, data.numberOfDataElements)
+                assertCategoryAsRowsAreDisplayed(data.dataElementsRowTestTags, data.rowTestTags)
                 assertCategoryHeaderIsNotDisplayed(data.pivotedHeaderTestTags)
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
@@ -314,9 +313,10 @@ class DataSetTest : BaseTest() {
         }
         logStep("Finished Checking Mandatory Dialog")
     }
-    private fun checkAutomaticGroupingDisabled(){
+
+    private fun checkAutomaticGroupingDisabled() {
         dataSetTableRobot(composeTestRule) {
-            disableAutomaticGroupingList.forEach{data->
+            disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
                 assertTablesAreDisplayedInOrder(data.tableIdTestTags)

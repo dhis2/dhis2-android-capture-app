@@ -317,15 +317,6 @@ internal class DataSetTableRobot(
             }
     }
 
-    fun assertCategoryRowHeaderIsDisplayed(rowTestTags: List<CellData>, expectedCount: Int) {
-        rowTestTags.forEach { cellData ->
-            composeTestRule.onAllNodes(
-                hasTestTag(cellData.testTag) and
-                        hasTextExactly(cellData.label)
-            ).assertCountEquals(expectedCount)
-        }
-    }
-
     fun assertCategoryAsRowsAreDisplayed(
         dataElementsRowTestTags: List<CellData>,
         rowTestTags: List<CellData>
