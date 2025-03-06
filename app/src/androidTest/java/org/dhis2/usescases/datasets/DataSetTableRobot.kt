@@ -138,8 +138,11 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(SYNC_BUTTON_TAG)
             .assertIsDisplayed()
             .performClick()
-
-        //TODO: When sync is implemented add new assertions
+        composeTestRule.onNodeWithText("Refresh")
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Not now")
+            .assertIsDisplayed()
+            .performClick()
     }
 
     fun indicatorTableIsDisplayed() {
