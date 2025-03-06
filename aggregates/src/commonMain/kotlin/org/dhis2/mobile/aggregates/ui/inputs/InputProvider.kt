@@ -119,7 +119,7 @@ internal fun InputProvider(
                     }
                     onAction(UiAction.OnValueChanged(inputData.id, value))
                 },
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifier,
             )
         }
@@ -167,7 +167,13 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, null))
                 },
                 onUpdateButtonClicked = {
-                    onAction(UiAction.OnCaptureCoordinates(inputData.id))
+                    onAction(
+                        UiAction.OnCaptureCoordinates(
+                            cellId = inputData.id,
+                            initialData = inputData.coordinateExtras().coordinateValue,
+                            locationType = "POINT", // TODO change by featury type or domain class
+                        ),
+                    )
                 },
             )
         }
@@ -201,12 +207,12 @@ internal fun InputProvider(
                     legendData = inputData.legendData,
                     supportingText = inputData.supportingText,
                 ),
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onNextClicked = { onAction(UiAction.OnNextClick) },
+                onNextClicked = { onAction(UiAction.OnNextClick(inputData.id)) },
                 onActionClicked = {
                     onAction(
                         UiAction.OnDateTimeAction(
@@ -227,12 +233,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
                 onEmailActionCLicked = {
@@ -323,12 +329,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -343,12 +349,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -363,12 +369,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -383,12 +389,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -403,12 +409,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -423,12 +429,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -474,12 +480,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION,
                 modifier = modifier,
@@ -498,7 +504,7 @@ internal fun InputProvider(
                 onValueChanged = {
                     onAction(UiAction.OnValueChanged(inputData.id, it))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 modifier = modifier,
                 onOrgUnitActionCLicked = {
                     TODO()
@@ -515,12 +521,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
             )
@@ -538,12 +544,12 @@ internal fun InputProvider(
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
                 onCallActionClicked = { onAction(UiAction.OnCall(inputData.id, textValue.text)) },
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 supportingText = inputData.supportingText,
                 allowedCharacters = RegExValidations.PHONE_NUMBER,
@@ -558,12 +564,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
                 inputStyle = inputData.inputStyle,
@@ -599,7 +605,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -618,12 +624,12 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick) },
+                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
-                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(it)) },
+                onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
                 onLinkActionCLicked = { UiAction.OnLinkClicked(inputData.id, textValue.text) },

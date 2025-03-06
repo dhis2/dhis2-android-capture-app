@@ -108,6 +108,7 @@ fun DataSetInstanceScreen(
     useTwoPane: Boolean,
     onBackClicked: () -> Unit,
     onSyncClicked: () -> Unit,
+    activity: Any,
 ) {
     val dataSetTableViewModel: DataSetTableViewModel =
         koinViewModel<DataSetTableViewModel>(parameters = {
@@ -117,6 +118,7 @@ fun DataSetInstanceScreen(
                 parameters.organisationUnitUid,
                 parameters.attributeOptionComboUid,
                 onBackClicked,
+                activity,
             )
         })
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()
