@@ -2,6 +2,9 @@ package org.dhis2.mobile.commons.data
 
 import org.dhis2.mobile.commons.model.internal.ValueInfo
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
 
 internal class ValueParserImpl(private val d2: D2) : ValueParser {
@@ -20,6 +23,7 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
                 isDate = (valueType == ValueType.DATE) or (valueType == ValueType.AGE),
                 isDateTime = valueType == ValueType.DATETIME,
                 isTime = valueType == ValueType.TIME,
+                isCoordinate = valueType == ValueType.COORDINATE,
             )
         }
 
@@ -29,6 +33,17 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
     ) = d2.optionModule().options()
         .byOptionSetUid().eq(optionSetUid)
         .byCode().eq(value).one().blockingGet()?.displayName() ?: value
+
+    override suspend fun valueFromCoordinateAsLatLong(value: String): String {
+        val geometry = Geometry.builder()
+            .coordinates(value)
+            .type(FeatureType.POINT)
+            .build()
+
+        return GeometryHelper.getPoint(geometry).let {
+            "Lat: ${it[1]}\nLong: ${it[0]}"
+        }
+    }
 
     override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) =
         d2.organisationUnitModule().organisationUnits()

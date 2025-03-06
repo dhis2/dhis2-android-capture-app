@@ -12,6 +12,7 @@ data class ValueInfo(
     val isPercentage: Boolean,
     val valueIsAValidOrgUnit: Boolean,
     val valueIsAValidFile: Boolean,
+    val isCoordinate: Boolean,
 ) {
     fun parseToOptionName() = !isMultiText and valueIsValidOption
     fun parseToOrgUnitName() = isOrganisationUnit and valueIsAValidOrgUnit
