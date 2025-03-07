@@ -31,6 +31,7 @@ internal data class InputData(
     fun coordinateExtras() = inputExtra as InputExtra.Coordinate
     fun ageExtras() = inputExtra as InputExtra.Age
     fun multiTextExtras() = inputExtra as InputExtra.MultiText
+    fun optionSetExtras() = inputExtra as InputExtra.OptionSet
 }
 
 internal sealed class InputExtra {
@@ -58,6 +59,10 @@ internal sealed class InputExtra {
         val numberOfOptions: Int,
         val options: List<CheckBoxData>,
         val optionsFetched: Boolean,
+    ) : InputExtra()
+
+    data class OptionSet(
+        val todo: String = "TODO", // TODO()
     ) : InputExtra()
 
     data object None : InputExtra()

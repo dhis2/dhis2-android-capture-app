@@ -45,6 +45,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputFileResource
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
@@ -461,7 +462,36 @@ internal fun InputProvider(
         }
 
         InputType.OptionSet -> {
-            // TODO
+            InputDropDown(
+                title = inputData.label,
+                state = inputData.inputShellState,
+                inputStyle = inputData.inputStyle,
+                itemCount = TODO(),
+                onSearchOption = {
+                    TODO()
+                },
+                fetchItem = { index ->
+                    TODO()
+                },
+                selectedItem = TODO(),
+                supportingTextData = inputData.supportingText,
+                legendData = inputData.legendData,
+                isRequiredField = inputData.isRequired,
+                modifier = modifier,
+                onResetButtonClicked = {
+                    onAction(UiAction.OnValueChanged(inputData.id, null))
+                },
+                onItemSelected = { index, newSelectedItem ->
+                    TODO()
+                },
+                useDropDown = false,
+                loadOptions = {
+                    TODO()
+                },
+                onDismiss = {
+                    inputData.optionSetExtras().onSearch("")
+                },
+            )
         }
 
         InputType.MultiText -> {

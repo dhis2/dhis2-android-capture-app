@@ -81,6 +81,10 @@ internal class GetDataValueInput(
                     optionsFetched = fetchOptions,
                 )
 
+                InputType.OptionSet -> {
+                    InputExtra.OptionSet()
+                }
+
                 else -> null
             },
             supportingText = dataElementInfo.description?.let { listOf(it) } ?: emptyList(),
