@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
@@ -131,7 +132,7 @@ class DataSetTest : BaseTest() {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
         }
         dataSetTableRobot(composeTestRule) {
-            scrollToItem(2)
+            scrollToItem(5)
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
         }
     }
@@ -332,8 +333,10 @@ class DataSetTest : BaseTest() {
             pivotTestingData.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
+
                 assertTableHeaders(data.headerTestTags)
-                assertTableRows(data.rowTestTags)
+
+                assertTableRows(data.rowTestTags, data)
             }
         }
     }

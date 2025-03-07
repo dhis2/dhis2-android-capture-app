@@ -3,16 +3,8 @@ package org.dhis2.usescases.datasets
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertAll
 import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertAll
-import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
@@ -33,6 +25,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -55,8 +48,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
+import org.dhis2.usescases.datasets.dataSetTable.PivotTestingData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
@@ -108,6 +100,11 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag("$tableId$CELL_TEST_TAG$rowIndex$columnIndex", true)
             .performScrollTo()
             .performClick()
+    }
+
+    private fun scrollToCellWithTag(tag: String) {
+        composeTestRule.onNodeWithTag(tag, true)
+            .performScrollTo()
     }
 
     fun scrollToItem(index: Int) {
@@ -171,11 +168,6 @@ internal class DataSetTableRobot(
             }
 
         composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .assertIsDisplayed()
-            .performScrollToIndex(10)
-
         composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"), true)
             .assertIsDisplayed()
 
@@ -369,16 +361,20 @@ internal class DataSetTableRobot(
     }
 
     fun assertTableHeaders(headerTestTags: List<CellData>) {
-        headerTestTags.forEach {cellData->
+        headerTestTags.forEach { cellData ->
+            scrollToCellWithTag(cellData.testTag)
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasText(cellData.label)
             ).assertExists()
+
         }
     }
 
-    fun assertTableRows(rowTestTags: List<CellData>) {
-        rowTestTags.forEach {cellData->
+    fun assertTableRows(rowTestTags: List<CellData>, data: PivotTestingData) {
+        rowTestTags.forEach { cellData ->
+            scrollToCellWithTag(cellData.testTag)
+            composeTestRule.waitForIdle()
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasTextExactly(cellData.label)
