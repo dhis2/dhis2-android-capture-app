@@ -68,6 +68,6 @@ internal class UIActionHandlerImpl(
             }
             .orgUnitScope(OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))
             .build()
-            .show(activity.supportFragmentManager, dataSetUid)
+            .show(context.supportFragmentManager, dataSetUid)
     }
 }
