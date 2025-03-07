@@ -25,8 +25,8 @@ pipeline {
             }
             steps {
                 script {
-                    currentBuild.result = 'ABORTED'
-                    error("Skipping CI because '[skip ci]' was found in the PR title or description.")
+                    currentBuild.result = 'UNSTABLE' // Mark build as a warning instead of an error
+                    echo "⚠️ Warning: Skipping CI because '[skip ci]' was found in the PR title or description."
                 }
             }
         }
