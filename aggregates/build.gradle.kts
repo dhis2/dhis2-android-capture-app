@@ -67,6 +67,7 @@ kotlin {
             // Koin support for Android
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(project(":commons"))
         }
 
         androidUnitTest.dependencies {  }

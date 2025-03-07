@@ -5,7 +5,11 @@ internal interface UIActionHandler {
         fieldUid: String,
         locationType: String,
         initialData: String,
-        programUid: String,
+        callback: (result: String?) -> Unit,
+    )
+
+    fun onCaptureOrgUnit(
+        preselectedOrgUnits: List<String>,
         callback: (result: String?) -> Unit,
     )
 }

@@ -63,4 +63,9 @@ sealed class UiAction(open val cellId: String) {
         override val cellId: String,
         val link: String,
     ) : UiAction(cellId)
+
+    data class OnOpenOrgUnitTree(
+        override val cellId: String,
+        val currentOrgUnitUid: String?,
+    ) : UiAction(cellId)
 }

@@ -182,7 +182,7 @@ internal val featureModule = module {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             uiActionHandler = get {
-                parametersOf(activity)
+                parametersOf(activity, dataSetUid)
             },
         )
     }
