@@ -211,9 +211,26 @@ internal class DataSetTableViewModel(
 
     fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false) {
         viewModelScope.launch(dispatcher.io()) {
+            val currentInputData = (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                ?.selectedCellInfo
+
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                getDataValueInput(rowIds, columnIds, fetchOptions).toInputData(cellId)
+                val input = getDataValueInput(
+                    rowIds,
+                    columnIds,
+                    fetchOptions,
+                ).toInputData(cellId)
+                if (cellId == currentInputData?.id) {
+                    currentInputData.copy(
+                        value = input.value,
+                        displayValue = input.displayValue,
+                        supportingText = input.supportingText,
+                        legendData = input.legendData,
+                    )
+                } else {
+                    input
+                }
             } else {
                 null
             }
@@ -256,7 +273,10 @@ internal class DataSetTableViewModel(
                         value = uiAction.newValue,
                     ).fold(
                         onSuccess = {
-                            updateSelectedCell(uiAction.cellId)
+                            val fetchOptions =
+                                (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                    ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                            updateSelectedCell(uiAction.cellId, fetchOptions)
                         },
                         onFailure = {
                             TODO()

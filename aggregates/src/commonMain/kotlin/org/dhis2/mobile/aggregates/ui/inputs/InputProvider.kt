@@ -476,7 +476,7 @@ internal fun InputProvider(
                 }
             }
 
-            if (!multiTextExtras.optionsFetched) {
+            if (inputData.value == null && !multiTextExtras.optionsFetched) {
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
@@ -511,10 +511,15 @@ internal fun InputProvider(
                                     }
                                 }
                             }.awaitAll()
+                            val selectedData = data.filter { it.checked }
                             onAction(
                                 UiAction.OnValueChanged(
                                     inputData.id,
-                                    data.filter { it.checked }.joinToString(",") { it.uid },
+                                    if (selectedData.isNotEmpty()) {
+                                        selectedData.joinToString(",") { it.uid }
+                                    } else {
+                                        null
+                                    },
                                 ),
                             )
                         }
@@ -535,10 +540,15 @@ internal fun InputProvider(
                     onItemsSelected = { updatedCheckBoxData ->
                         scope.launch {
                             data = updatedCheckBoxData
+                            val selectedData = data.filter { it.checked }
                             onAction(
                                 UiAction.OnValueChanged(
                                     inputData.id,
-                                    data.filter { it.checked }.joinToString(",") { it.uid },
+                                    if (selectedData.isNotEmpty()) {
+                                        selectedData.joinToString(",") { it.uid }
+                                    } else {
+                                        null
+                                    },
                                 ),
                             )
                         }

@@ -20,6 +20,8 @@ suspend fun String.userFriendlyValue(
         val valueInfo = valueParser.getValueInfo(uid, this)
 
         return when {
+            valueInfo.isMultiText ->
+                valueParser.valueFromMultiTextAsOptionNames(valueInfo.optionSetUid!!, this)
             valueInfo.parseToOptionName() ->
                 valueParser.valueFromOptionSetAsOptionName(valueInfo.optionSetUid!!, this)
 
