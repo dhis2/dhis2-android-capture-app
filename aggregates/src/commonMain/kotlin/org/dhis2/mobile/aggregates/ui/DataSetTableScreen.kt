@@ -428,31 +428,31 @@ private fun DataSetSinglePane(
                 dataSetDetails = dataSetDetails,
             )
 
-        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-            HtmlContentBox(
-                text = it,
-                modifier = Modifier.padding(
-                    bottom = Spacing.Spacing8,
-                    start = Spacing.Spacing16,
-                    end = Spacing.Spacing16,
-                ),
-            )
-        }
+            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                HtmlContentBox(
+                    text = it,
+                    modifier = Modifier.padding(
+                        bottom = Spacing.Spacing8,
+                        start = Spacing.Spacing16,
+                        end = Spacing.Spacing16,
+                    ),
+                )
+            }
 
-        when (dataSetSectionTable) {
-            is DataSetSectionTable.Loaded ->
-                DataSetTable(
-                    tableModels = dataSetSectionTable.tables(),
-                    onCellClick = onCellClick,
-                    bottomContent = {
-                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
-                            HtmlContentBox(
-                                text = it,
-                                modifier = Modifier.padding(
-                                    top = Spacing.Spacing24,
-                                    start = Spacing.Spacing0,
-                                    end = Spacing.Spacing0,
-                                ),
+            when (dataSetSectionTable) {
+                is DataSetSectionTable.Loaded ->
+                    DataSetTable(
+                        tableModels = dataSetSectionTable.tables(),
+                        onCellClick = onCellClick,
+                        bottomContent = {
+                            dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                                HtmlContentBox(
+                                    text = it,
+                                    modifier = Modifier.padding(
+                                        top = Spacing.Spacing24,
+                                        start = Spacing.Spacing0,
+                                        end = Spacing.Spacing0,
+                                    ),
 
                                 )
                             }

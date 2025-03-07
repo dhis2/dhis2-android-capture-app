@@ -293,17 +293,18 @@ internal class DataSetTableViewModelTest : KoinTest {
                 label = "Input label",
                 value = "This is it",
                 displayValue = "This is it",
-            inputType = InputType.Text,
-            inputExtra = InputExtra.None,
-            supportingText = emptyList(),
-            errors = emptyList(),
-            warnings = emptyList(),
-            isRequired = false,legendColor = "#90EE90",
+                inputType = InputType.Text,
+                inputExtra = InputExtra.None,
+                supportingText = emptyList(),
+                errors = emptyList(),
+                warnings = emptyList(),
+                isRequired = false, legendColor = "#90EE90",
                 legendLabel = "Legend label 1",
             ),
             CellInfo(
                 label = "Input label",
                 value = "This is other",
+                displayValue = "This is other",
                 inputType = InputType.Text,
                 inputExtra = InputExtra.None,
                 supportingText = emptyList(),
@@ -461,6 +462,8 @@ internal class DataSetTableViewModelTest : KoinTest {
             errors = emptyList(),
             warnings = emptyList(),
             isRequired = false,
+            legendLabel = null,
+            legendColor = null,
         )
         whenever(getDataValueInput(any(), any())) doReturn cellInfo
 
