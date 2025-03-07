@@ -66,5 +66,6 @@ sealed class UiAction(open val cellId: String) {
 
     data class OnOpenOrgUnitTree(
         override val cellId: String,
+        val currentOrgUnitUid: String?,
     ) : UiAction(cellId)
 }

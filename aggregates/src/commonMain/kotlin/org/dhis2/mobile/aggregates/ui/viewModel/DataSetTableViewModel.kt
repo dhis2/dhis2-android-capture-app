@@ -275,10 +275,9 @@ internal class DataSetTableViewModel(
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
                 is UiAction.OnOpenOrgUnitTree -> {
-                    val inputData = _dataSetScreenState.value.currentInput()
-
                     uiActionHandler.onCaptureOrgUnit(
-                        inputData?.value?.let { listOf(it) } ?: emptyList(),
+                        uiAction.currentOrgUnitUid
+                            ?.let { listOf(uiAction.currentOrgUnitUid) } ?: emptyList(),
                     ) {
                         onUiAction(
                             UiAction.OnValueChanged(

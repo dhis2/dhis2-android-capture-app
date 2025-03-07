@@ -507,7 +507,7 @@ internal fun InputProvider(
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 modifier = modifier,
                 onOrgUnitActionCLicked = {
-                    onAction(UiAction.OnOpenOrgUnitTree(inputData.id))
+                    onAction(UiAction.OnOpenOrgUnitTree(inputData.id, inputData.value))
                 },
             )
         }

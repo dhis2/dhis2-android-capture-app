@@ -468,7 +468,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             awaitInitialization()
             viewModel.updateSelectedCell(testingId)
             awaitItem()
-            viewModel.onUiAction(UiAction.OnOpenOrgUnitTree(testingId))
+            viewModel.onUiAction(UiAction.OnOpenOrgUnitTree(testingId, null))
             testDispatcher.scheduler.advanceUntilIdle()
             verify(uiActionHandler).onCaptureOrgUnit(any(), any())
         }
