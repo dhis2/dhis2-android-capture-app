@@ -1,5 +1,8 @@
 package org.dhis2.mobile.aggregates.domain
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
@@ -8,6 +11,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.dhis2.mobile.commons.extensions.userFriendlyValue
+import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
@@ -25,7 +29,8 @@ internal class GetDataValueInput(
     suspend operator fun invoke(
         rowIds: List<TableId>,
         columnIds: List<TableId>,
-    ): CellInfo {
+        fetchOptions: Boolean = false,
+    ): CellInfo = supervisorScope {
         val dataElementUid = checkOnlyOneDataElementIsProvided(rowIds, columnIds)
         val categoryOptionComboUid = checkedCategoryOptionCombos(rowIds, columnIds)
 
@@ -59,7 +64,7 @@ internal class GetDataValueInput(
             attrOptionComboUid = attrOptionComboUid,
         )
 
-        return CellInfo(
+        CellInfo(
             label = dataElementInfo.label,
             value = value,
             displayValue = value?.userFriendlyValue(dataElementUid),
@@ -98,12 +103,24 @@ internal class GetDataValueInput(
                 )
 
                 InputType.MultiText -> InputExtra.MultiText(
-                    fetchOptions = {
-                        optionRepository.fetchOptionsMap(
-                            dataElementUid = dataElementUid,
-                            selectedOptionCodes = value?.split(",") ?: emptyList(),
-                        )
+                    numberOfOptions = optionRepository.optionCount(dataElementUid),
+                    options = if (fetchOptions) {
+                        optionRepository.options(dataElementUid).map { optionData ->
+                            async {
+                                CheckBoxData(
+                                    uid = optionData.code ?: optionData.uid,
+                                    checked = optionData.code?.let {
+                                        value?.contains(it) == true
+                                    } ?: false,
+                                    enabled = true,
+                                    textInput = optionData.label,
+                                )
+                            }
+                        }.awaitAll()
+                    } else {
+                        emptyList()
                     },
+                    optionsFetched = fetchOptions,
                 )
 
                 else -> InputExtra.None

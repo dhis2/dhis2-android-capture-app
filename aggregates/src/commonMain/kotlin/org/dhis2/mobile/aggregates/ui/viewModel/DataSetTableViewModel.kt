@@ -209,11 +209,11 @@ internal class DataSetTableViewModel(
         tables + indicators
     }
 
-    fun updateSelectedCell(cellId: String?) {
+    fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false) {
         viewModelScope.launch(dispatcher.io()) {
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                getDataValueInput(rowIds, columnIds).toInputData(cellId)
+                getDataValueInput(rowIds, columnIds, fetchOptions).toInputData(cellId)
             } else {
                 null
             }
@@ -267,6 +267,7 @@ internal class DataSetTableViewModel(
                 is UiAction.OnAddImage -> TODO()
                 is UiAction.OnCall ->
                     uiActionHandler.onCall(uiAction.phoneNumber)
+
                 is UiAction.OnCaptureCoordinates -> {
                     uiActionHandler.onCaptureCoordinates(
                         fieldUid = dataElementUid,
@@ -279,8 +280,10 @@ internal class DataSetTableViewModel(
                 is UiAction.OnDownloadImage -> TODO()
                 is UiAction.OnEmailAction ->
                     uiActionHandler.onSendEmail(uiAction.email)
+
                 is UiAction.OnLinkClicked ->
                     uiActionHandler.onOpenLink(uiAction.link)
+
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
@@ -297,6 +300,8 @@ internal class DataSetTableViewModel(
                         )
                     }
                 }
+                is UiAction.OnFetchOptions ->
+                    updateSelectedCell(uiAction.cellId, true)
             }
         }
     }

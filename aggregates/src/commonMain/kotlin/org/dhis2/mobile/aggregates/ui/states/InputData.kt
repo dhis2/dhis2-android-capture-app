@@ -1,6 +1,5 @@
 package org.dhis2.mobile.aggregates.ui.states
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import org.dhis2.mobile.aggregates.model.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -55,7 +54,9 @@ internal sealed class InputExtra {
     ) : InputExtra()
 
     data class MultiText(
-        val fetchOptions: @Composable () -> Map<String, CheckBoxData>,
+        val numberOfOptions: Int,
+        val options: List<CheckBoxData>,
+        val optionsFetched: Boolean,
     ) : InputExtra()
 
     data object None : InputExtra()
