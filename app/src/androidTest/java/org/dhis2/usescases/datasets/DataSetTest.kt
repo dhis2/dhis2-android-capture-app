@@ -333,9 +333,7 @@ class DataSetTest : BaseTest() {
             pivotTestingData.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
-
                 assertTableHeaders(data.headerTestTags)
-
                 assertTableRows(data.rowTestTags, data)
             }
         }

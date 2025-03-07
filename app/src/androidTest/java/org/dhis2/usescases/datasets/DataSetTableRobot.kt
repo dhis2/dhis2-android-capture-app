@@ -374,7 +374,6 @@ internal class DataSetTableRobot(
     fun assertTableRows(rowTestTags: List<CellData>, data: PivotTestingData) {
         rowTestTags.forEach { cellData ->
             scrollToCellWithTag(cellData.testTag)
-            composeTestRule.waitForIdle()
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasTextExactly(cellData.label)
