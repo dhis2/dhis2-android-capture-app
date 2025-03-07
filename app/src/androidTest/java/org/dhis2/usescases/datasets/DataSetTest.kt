@@ -118,7 +118,7 @@ class DataSetTest : BaseTest() {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
         }
         dataSetTableRobot(composeTestRule) {
-            scrollToItem(2)
+            scrollToItemWithText("CONTENT AFTER 1:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 1:", true)
         }
         // Check top and bottom content is displayed when changing sections
@@ -131,7 +131,7 @@ class DataSetTest : BaseTest() {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
         }
         dataSetTableRobot(composeTestRule) {
-            scrollToItem(2)
+            scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
         }
     }

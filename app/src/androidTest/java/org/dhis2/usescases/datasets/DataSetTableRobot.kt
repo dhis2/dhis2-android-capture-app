@@ -3,16 +3,8 @@ package org.dhis2.usescases.datasets
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertAll
 import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertAll
-import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
@@ -31,6 +23,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
@@ -54,8 +47,6 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
@@ -110,8 +101,12 @@ internal class DataSetTableRobot(
             .performClick()
     }
 
-    fun scrollToItem(index: Int) {
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(index)
+    private fun scrollToItemWithTag(tag: String) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasTestTag(tag))
+    }
+
+    fun scrollToItemWithText(text: String) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasText(text, substring = true))
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -138,8 +133,11 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(SYNC_BUTTON_TAG)
             .assertIsDisplayed()
             .performClick()
-
-        //TODO: When sync is implemented add new assertions
+        composeTestRule.onNodeWithText("Refresh")
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Not now")
+            .assertIsDisplayed()
+            .performClick()
     }
 
     fun indicatorTableIsDisplayed() {
@@ -168,11 +166,6 @@ internal class DataSetTableRobot(
             }
 
         composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .assertIsDisplayed()
-            .performScrollToIndex(10)
-
         composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"), true)
             .assertIsDisplayed()
 
@@ -366,16 +359,19 @@ internal class DataSetTableRobot(
     }
 
     fun assertTableHeaders(headerTestTags: List<CellData>) {
-        headerTestTags.forEach {cellData->
+        headerTestTags.forEach { cellData ->
+            scrollToItemWithTag(cellData.testTag)
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasText(cellData.label)
             ).assertExists()
+
         }
     }
 
     fun assertTableRows(rowTestTags: List<CellData>) {
-        rowTestTags.forEach {cellData->
+        rowTestTags.forEach { cellData ->
+            scrollToItemWithTag(cellData.testTag)
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasTextExactly(cellData.label)

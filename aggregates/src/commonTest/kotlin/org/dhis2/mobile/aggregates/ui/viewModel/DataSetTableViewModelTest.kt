@@ -27,6 +27,7 @@ import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
@@ -134,10 +135,16 @@ internal class DataSetTableViewModelTest : KoinTest {
         whenever(getDataSetInstanceData(any())).thenReturn(
             DataSetInstanceData(
                 dataSetDetails = DataSetDetails(
-                    titleLabel = "label",
+                    customTitle = DataSetCustomTitle(
+                        header = "title",
+                        subHeader = null,
+                        textAlignment = null,
+                        isConfiguredTitle = true,
+                    ),
                     dateLabel = "date",
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
+                    dataSetTitle = "dataSetTitle",
                 ),
                 dataSetSections = listOf(
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
