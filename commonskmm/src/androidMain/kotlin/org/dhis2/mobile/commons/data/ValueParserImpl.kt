@@ -27,6 +27,18 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
             )
         }
 
+    override suspend fun valueFromMultiTextAsOptionNames(
+        optionSetUid: String,
+        value: String,
+    ): String {
+        val options = d2.optionModule().options()
+            .byOptionSetUid().eq(optionSetUid)
+            .blockingGet().associate { it.code() to it.displayName() }
+        return value.split(",").map { optionCode ->
+            options[optionCode]
+        }.joinToString(",")
+    }
+
     override suspend fun valueFromOptionSetAsOptionName(
         optionSetUid: String,
         value: String,
