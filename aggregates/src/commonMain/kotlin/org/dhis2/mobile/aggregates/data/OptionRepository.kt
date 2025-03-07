@@ -1,9 +1,8 @@
 package org.dhis2.mobile.aggregates.data
 
-import androidx.compose.runtime.Composable
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
+import org.dhis2.mobile.aggregates.model.OptionData
 
 interface OptionRepository {
-    @Composable
-    fun fetchOptionsMap(dataElementUid: String, selectedOptionCodes: List<String>): Map<String, CheckBoxData>
+    suspend fun optionCount(dataElementUid: String): Int
+    suspend fun options(dataElementUid: String): List<OptionData>
 }

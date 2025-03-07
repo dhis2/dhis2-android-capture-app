@@ -1,14 +1,26 @@
 package org.dhis2.mobile.aggregates.ui.inputs
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
@@ -30,6 +42,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
+import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
@@ -53,6 +66,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoField
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoFieldValues
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
@@ -60,7 +76,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.InputAgeData
 import org.hisp.dhis.mobile.ui.designsystem.component.state.InputDateTimeData
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputAgeState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputDateTimeState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -87,6 +105,8 @@ internal fun InputProvider(
     val imeAction by remember(inputData) {
         mutableStateOf(ImeAction.Next) // TODO: Update from inputData
     }
+
+    val scope = rememberCoroutineScope()
 
     when (inputData.inputType) {
         InputType.Age -> {
@@ -445,39 +465,96 @@ internal fun InputProvider(
         }
 
         InputType.MultiText -> {
-            val dataMap = inputData.multiTextExtras().fetchOptions()
+            val multiTextExtras = inputData.multiTextExtras()
+            var data: List<CheckBoxData> by remember(inputData) {
+                mutableStateOf(multiTextExtras.options)
+            }
 
-            val (codeList, data) = dataMap.toList().unzip()
+            LaunchedEffect(multiTextExtras.optionsFetched) {
+                if (!multiTextExtras.optionsFetched) {
+                    onAction(UiAction.OnFetchOptions(inputData.id))
+                }
+            }
 
-            InputMultiSelection(
-                items = data,
-                title = inputData.label,
-                state = inputData.inputShellState,
-                bottomSheetLowerPadding = Spacing0,
-                supportingTextData = inputData.supportingText,
-                legendData = inputData.legendData,
-                isRequired = inputData.isRequired,
-                onItemsSelected = { updatedData ->
-                    val selectedCodes = updatedData.mapNotNull { checkBoxData ->
-                        if (checkBoxData.checked) {
-                            val selectedIndex =
-                                data.indexOfFirst { originalData -> originalData.uid == checkBoxData.uid }
-                            codeList[selectedIndex]
-                        } else {
-                            null
+            if (!multiTextExtras.optionsFetched) {
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(color = inputData.inputStyle.backGroundColor)
+                        .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ProgressIndicator(
+                        modifier = Modifier.padding(Spacing8),
+                        type = ProgressIndicatorType.CIRCULAR_SMALL,
+                    )
+                }
+            } else if (multiTextExtras.numberOfOptions < 7) {
+                InputCheckBox(
+                    title = inputData.label,
+                    checkBoxData = data,
+                    modifier = modifier,
+                    orientation = Orientation.VERTICAL,
+                    state = inputData.inputShellState,
+                    supportingText = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequired = inputData.isRequired,
+                    inputStyle = inputData.inputStyle,
+                    onItemChange = { updatedCheckBoxData ->
+                        scope.launch {
+                            data = data.map {
+                                async {
+                                    if (it.uid == updatedCheckBoxData.uid) {
+                                        it.copy(checked = updatedCheckBoxData.checked)
+                                    } else {
+                                        it
+                                    }
+                                }
+                            }.awaitAll()
+                            onAction(
+                                UiAction.OnValueChanged(
+                                    inputData.id,
+                                    data.filter { it.checked }.joinToString(",") { it.uid },
+                                ),
+                            )
                         }
-                    }
-                    onAction(UiAction.OnValueChanged(inputData.id, selectedCodes.joinToString(",")))
-                },
-                modifier = modifier,
-                noResultsFoundString = stringResource(Res.string.no_results_found),
-                searchToFindMoreString = stringResource(Res.string.search_to_find_more),
-                doneButtonText = stringResource(Res.string.action_done),
-                inputStyle = inputData.inputStyle,
-                onClearItemSelection = {
-                    onAction(UiAction.OnValueChanged(inputData.id, null))
-                },
-            )
+                    },
+                    onClearSelection = {
+                        onAction(UiAction.OnValueChanged(inputData.id, null))
+                    },
+                )
+            } else {
+                InputMultiSelection(
+                    items = data,
+                    title = inputData.label,
+                    state = inputData.inputShellState,
+                    bottomSheetLowerPadding = Spacing0,
+                    supportingTextData = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequired = inputData.isRequired,
+                    onItemsSelected = { updatedCheckBoxData ->
+                        scope.launch {
+                            data = updatedCheckBoxData
+                            onAction(
+                                UiAction.OnValueChanged(
+                                    inputData.id,
+                                    data.filter { it.checked }.joinToString(",") { it.uid },
+                                ),
+                            )
+                        }
+                    },
+                    modifier = modifier,
+                    noResultsFoundString = stringResource(Res.string.no_results_found),
+                    searchToFindMoreString = stringResource(Res.string.search_to_find_more),
+                    doneButtonText = stringResource(Res.string.action_done),
+                    inputStyle = inputData.inputStyle,
+                    onClearItemSelection = {
+                        onAction(UiAction.OnValueChanged(inputData.id, null))
+                    },
+                    bottomSheetExpanded = inputData.value == null,
+                    maxItemsToShow = data.size,
+                )
+            }
         }
 
         InputType.Number -> {
