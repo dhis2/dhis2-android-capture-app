@@ -23,9 +23,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -48,7 +48,6 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
-import org.dhis2.usescases.datasets.dataSetTable.PivotTestingData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.rowHeaderTestTag
@@ -102,13 +101,12 @@ internal class DataSetTableRobot(
             .performClick()
     }
 
-    private fun scrollToCellWithTag(tag: String) {
-        composeTestRule.onNodeWithTag(tag, true)
-            .performScrollTo()
+    private fun scrollToItemWithTag(tag: String) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasTestTag(tag))
     }
 
-    fun scrollToItem(index: Int) {
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(index)
+    fun scrollToItemWithText(text: String) {
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasText(text, substring = true))
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -362,7 +360,7 @@ internal class DataSetTableRobot(
 
     fun assertTableHeaders(headerTestTags: List<CellData>) {
         headerTestTags.forEach { cellData ->
-            scrollToCellWithTag(cellData.testTag)
+            scrollToItemWithTag(cellData.testTag)
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasText(cellData.label)
@@ -371,9 +369,9 @@ internal class DataSetTableRobot(
         }
     }
 
-    fun assertTableRows(rowTestTags: List<CellData>, data: PivotTestingData) {
+    fun assertTableRows(rowTestTags: List<CellData>) {
         rowTestTags.forEach { cellData ->
-            scrollToCellWithTag(cellData.testTag)
+            scrollToItemWithTag(cellData.testTag)
             composeTestRule.onNode(
                 hasTestTag(cellData.testTag) and
                         hasTextExactly(cellData.label)
