@@ -465,7 +465,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             legendLabel = null,
             legendColor = null,
         )
-        whenever(getDataValueInput(any(), any())) doReturn cellInfo
+        whenever(getDataValueInput(any(), any(), any())) doReturn cellInfo
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()

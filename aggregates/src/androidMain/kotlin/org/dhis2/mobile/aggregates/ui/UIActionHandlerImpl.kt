@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import org.dhis2.mobile.aggregates.R
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
@@ -18,6 +16,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.INITIAL_GEOMETRY_COORD
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.PROGRAM_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.SCOPE
+import org.dhis2.mobile.aggregates.R
 
 internal class UIActionHandlerImpl(
     private val context: FragmentActivity,
