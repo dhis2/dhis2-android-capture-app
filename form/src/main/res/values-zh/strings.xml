@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">只允许 0 到 100 之间的值</string>
-    <string name="invalid_field">请检查此字段</string>
-    <string name="formatting_error">格式错误</string>
-    <string name="invalid_possitive">只允许正数</string>
-    <string name="invalid_phone_number">这不是一个有效的电话号码</string>
-    <string name="invalid_email">不是有效的电子邮件</string>
-    <string name="invalid_negative_number">只允许负数</string>
-    <string name="invalid_possitive_zero">只允许正数或零</string>
-    <string name="invalid_interval">只允许从 0 到 1 的值</string>
-    <string name="validation_url">这不是有效的网址</string>
-    <string name="invalid_integer">值必须是整数</string>
-    <string name="wrong_pattern">这不是正确的格式。</string>
-    <string name="pattern_error">配置的模式 %s 错误。</string>
     <string name="update_field_error">无法更新此字段。请再试一次</string>
     <string name="error">错误</string>
     <string name="unique_warning">值应该是唯一的，已经找到了一样的。它没有被保存。请检查一下。</string>
@@ -72,22 +59,7 @@
     <string name="take_photo">拍照</string>
     <string name="warning_error_on_complete_title">检查</string>
     <string name="action_do_not_show_again">不再显示</string>
-    <string name="validation_error_message">该字段不允许提供的值</string>
-    <string name="error_boolean_zero_is_not_false">无效字符 0</string>
-    <string name="error_boolean_one_is_not_true">无效字符 1</string>
-    <string name="error_boolean_malformed">值既不是真也不是假</string>
-    <string name="error_date_parsing">此日期格式无效</string>
-    <string name="error_date_time_parsing">此日期和时间格式无效</string>
-    <string name="error_time_parsing">此时间格式无效</string>
-    <string name="error_letter_empty">值为空</string>
-    <string name="error_letter_more_than_one">该值包含多个字母</string>
-    <string name="error_letter_not_a_letter">值不是字母</string>
-    <string name="error_text_too_long">文字太长</string>
-    <string name="error_true_only_malformed">值既不是真也不是假</string>
-    <string name="error_true_only_false_not_valid">该字段只能为真</string>
-    <string name="error_true_only_one_is_not_true">无效字符 1</string>
     <string name="data_values_save_error">无法使用这些参数保存 DataValues。使用另一个。</string>
-    <string name="leading_zero_error">不允许前导零数字</string>
     <string name="enrollment_single_section_label">属性- %s</string>
     <string name="tei_coordinates">坐标</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>

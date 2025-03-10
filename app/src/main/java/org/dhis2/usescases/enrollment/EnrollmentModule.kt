@@ -39,7 +39,7 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -194,7 +194,7 @@ class EnrollmentModule(
         searchTEIRepository: SearchTEIRepository,
         resourceManager: ResourceManager,
     ): ValueStore {
-        val fieldErrorMessageProvider = FieldErrorMessageProvider(activityContext)
+        val fieldErrorMessageProvider = FieldErrorMessageProvider()
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,

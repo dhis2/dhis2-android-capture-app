@@ -35,6 +35,8 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.ui)
             implementation(compose.material3)
+            implementation(compose.components.resources)
+
             // Koin
             api(libs.koin.core)
             implementation(libs.ktxml)

@@ -15,7 +15,7 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.data.forms.dataentry.ValueStore
 import org.dhis2.data.forms.dataentry.ValueStoreImpl
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 
 @Module
@@ -100,7 +100,7 @@ class DataValueModule(
             crashReportController,
             networkUtils,
             searchRepository,
-            FieldErrorMessageProvider(activityContext),
+            FieldErrorMessageProvider(),
             resourceManager,
         )
     }

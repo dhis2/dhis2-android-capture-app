@@ -10,11 +10,11 @@ import org.hisp.dhis.android.core.common.ValueType
 
 interface FormRepository {
 
-    fun fetchFormItems(shouldOpenErrorLocation: Boolean = false): List<FieldUiModel>
-    fun composeList(skipProgramRules: Boolean = false): List<FieldUiModel>
+    suspend fun fetchFormItems(shouldOpenErrorLocation: Boolean = false): List<FieldUiModel>
+    suspend fun composeList(skipProgramRules: Boolean = false): List<FieldUiModel>
     fun completeEvent()
     fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>?
-    fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult
+    suspend fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult
     fun completedFieldsPercentage(value: List<FieldUiModel>): Float
     fun calculationLoopOverLimit(): Boolean
     fun backupOfChangedItems(): List<FieldUiModel>

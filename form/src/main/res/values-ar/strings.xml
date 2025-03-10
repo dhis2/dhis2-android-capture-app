@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">يُسمح فقط بقيمة بين 0 و 100</string>
-    <string name="invalid_field">يرجى مراجعة هذا الحقل</string>
-    <string name="formatting_error">خطأ في التنسيق</string>
-    <string name="invalid_possitive">يُسمح فقط بالأرقام الموجبة</string>
-    <string name="invalid_phone_number">هذه ليست صيغة رقم هاتف سليمة</string>
-    <string name="invalid_email">هذه ليست صيغة بريد إلكتروني سليمة</string>
-    <string name="invalid_negative_number">يُسمح فقط بالأرقام السالبة</string>
-    <string name="invalid_possitive_zero">يُسمح فقط بالأرقام الموجبة أو صفر</string>
-    <string name="invalid_interval">يُسمح فقط بقيمة بين 0 و 1</string>
-    <string name="validation_url">هذا ليس عنوان url صالحًا</string>
-    <string name="invalid_integer">يجب أن تكون القيمة عددًا صحيحًا</string>
-    <string name="wrong_pattern">ليس تنسيقًا صحيحًا.</string>
     <string name="update_field_error">لا يمكن تحديث هذا الحقل. حاول مرة اخرى</string>
     <string name="error">خطأ</string>
     <string name="unique_warning">يجب أن تكون القيمة فريدة، يوجد تعارض تكرار لنفس القيمة. لم يتم الحفظ. يرجى التحقق.</string>
@@ -66,20 +54,7 @@
     <string name="take_photo">التقط صورة</string>
     <string name="warning_error_on_complete_title">تحقق من هذا!</string>
     <string name="action_do_not_show_again">لا تظهر مرة أخرى</string>
-    <string name="error_boolean_zero_is_not_false">حرف غير صالح 0</string>
-    <string name="error_boolean_one_is_not_true">حرف غير صالح 1</string>
-    <string name="error_boolean_malformed">القيمة ليست صحيحة أو خاطئة</string>
-    <string name="error_date_parsing">تنسيق التاريخ هذا غير صالح</string>
-    <string name="error_date_time_parsing">تنسيق التاريخ والوقت هذا غير صالح</string>
-    <string name="error_time_parsing">تنسيق الوقت هذا غير صالح</string>
-    <string name="error_letter_empty">القيمة فارغة</string>
-    <string name="error_letter_more_than_one">تحتوي القيمة على أكثر من حرف واحد</string>
-    <string name="error_letter_not_a_letter">القيمة ليست حرفًا</string>
-    <string name="error_text_too_long">النص طويل جدًا</string>
-    <string name="error_true_only_malformed">القيمة ليست صحيحة أو خاطئة</string>
-    <string name="error_true_only_one_is_not_true">حرف غير صالح 1</string>
     <string name="data_values_save_error">لا يمكن حفظ DataValues باستخدام هذه المدخلات. استخدم المدخل الآخر.</string>
-    <string name="leading_zero_error">غير مسموح بأرقام الصفر في البداية</string>
     <string name="enrollment_single_section_label">السمات - %s</string>
     <string name="tei_coordinates">إحداثيات لـ </string>
     <string name="no_reserved_values">لا يوجد المزيد من القيم المحجوزة. اتصل بمسؤول النظام</string>

@@ -39,7 +39,7 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
@@ -234,7 +234,7 @@ object Injector {
         provideColorUtils(),
     )
 
-    private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider(context)
+    private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider()
 
     private fun provideDisplayNameProvider(context: Context) = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),

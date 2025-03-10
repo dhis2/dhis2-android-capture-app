@@ -10,6 +10,7 @@ internal suspend fun TableModel.updateValue(
     cellId: String?,
     updatedValue: String?,
     legendData: LegendData?,
+    error: String?,
     resourceManager: ResourceManager,
 ): TableModel {
     val hasTotalColumn = tableHeaderModel.extraColumns.isNotEmpty()
@@ -24,6 +25,7 @@ internal suspend fun TableModel.updateValue(
             val updatedValues = tableRowModel.values.toMutableMap()
             updatedValues[cell.column] = cell.copy(
                 value = updatedValue,
+                error = error,
                 legendColor = legendData?.color?.toArgb(),
             )
             totalsColumnCell?.let { totalCell ->

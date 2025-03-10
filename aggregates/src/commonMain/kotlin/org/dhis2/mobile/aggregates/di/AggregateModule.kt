@@ -16,6 +16,7 @@ import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -24,6 +25,7 @@ import org.koin.dsl.module
 
 internal val featureModule = module {
     singleOf(::ResourceManager)
+    singleOf(::FieldErrorMessageProvider)
 
     factory {
         Dispatcher(
@@ -193,6 +195,7 @@ internal val featureModule = module {
                 parametersOf(context, dataSetUid)
             },
             inputDataUiStateMapper = get(),
+            fieldErrorMessageProvider = get(),
         )
     }
 }

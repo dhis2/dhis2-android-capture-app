@@ -1,7 +1,9 @@
 package org.dhis2.form.ui.validation
 
 import android.content.Context
+import kotlinx.coroutines.runBlocking
 import org.dhis2.form.R
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerNegativeFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerPositiveFailure
@@ -23,11 +25,11 @@ class FieldErrorMessageProviderTest {
     fun setUp() {
         whenever(context.getString(R.string.leading_zero_error)) doReturn LEADING_ZERO_MESSAGE
 
-        fieldErrorMessageProvider = FieldErrorMessageProvider(context)
+        fieldErrorMessageProvider = FieldErrorMessageProvider()
     }
 
     @Test
-    fun `validation throws an integer negative number with leading zero exception`() {
+    fun `validation throws an integer negative number with leading zero exception`() = runBlocking {
         // Given validation throws an integer negative with leading zero exception
         val error = IntegerNegativeFailure.LeadingZeroException
 
@@ -39,7 +41,7 @@ class FieldErrorMessageProviderTest {
     }
 
     @Test
-    fun `validation throws an integer zero or positive with leading zero exception`() {
+    fun `validation throws an integer zero or positive with leading zero exception`() = runBlocking {
         // Given validation throws an integer zero or positive with leading zero exception
         val error = IntegerZeroOrPositiveFailure.LeadingZeroException
 
@@ -51,7 +53,7 @@ class FieldErrorMessageProviderTest {
     }
 
     @Test
-    fun `validation throws an integer positive with leading zero exception`() {
+    fun `validation throws an integer positive with leading zero exception`() = runBlocking {
         // Given validation throws an integer positive with leading zero exception
         val error = IntegerPositiveFailure.LeadingZeroException
 
@@ -63,7 +65,7 @@ class FieldErrorMessageProviderTest {
     }
 
     @Test
-    fun `validation throws an integer with leading zero exception`() {
+    fun `validation throws an integer with leading zero exception`() = runBlocking {
         // Given validation throws an integer with leading zero exception
         val error = IntegerFailure.LeadingZeroException
 
@@ -75,7 +77,7 @@ class FieldErrorMessageProviderTest {
     }
 
     @Test
-    fun `validation throws an number with leading zero exception`() {
+    fun `validation throws an number with leading zero exception`() = runBlocking {
         // Given validation throws an number with leading zero exception
         val error = NumberFailure.LeadingZeroException
 

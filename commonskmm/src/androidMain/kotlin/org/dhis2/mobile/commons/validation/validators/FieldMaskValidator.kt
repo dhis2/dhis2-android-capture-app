@@ -1,22 +1,20 @@
-package org.dhis2.form.ui.validation.validators
+package org.dhis2.mobile.commons.validation.validators
 
-import androidx.annotation.VisibleForTesting
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.valuetype.validation.validators.ValueTypeValidator
-import timber.log.Timber
 import java.util.regex.Pattern
 
-class FieldMaskValidator(val fieldMask: String?) : ValueTypeValidator<FieldMaskFailure> {
+class FieldMaskValidator(fieldMask: String) : ValueTypeValidator<FieldMaskFailure> {
 
-    private val formattedFieldMask = fieldMask?.removeSurrounding("\'")
+    private val formattedFieldMask = fieldMask.removeSurrounding("\'")
 
     fun validateNullSafe(value: String?): Result<String?, FieldMaskFailure> {
         return value?.let { validate(value) } ?: Result.Success(value)
     }
 
     override fun validate(value: String): Result<String, FieldMaskFailure> {
-        return if (formattedFieldMask.isNullOrEmpty() || value.isEmpty()) {
+        return if (formattedFieldMask.isEmpty() || value.isEmpty()) {
             Result.Success(value)
         } else if (fieldMaskIsCorrect()) {
             if (value.matches(formattedFieldMask.toRegex())) {
@@ -29,13 +27,11 @@ class FieldMaskValidator(val fieldMask: String?) : ValueTypeValidator<FieldMaskF
         }
     }
 
-    @VisibleForTesting
-    fun fieldMaskIsCorrect(): Boolean {
+    private fun fieldMaskIsCorrect(): Boolean {
         return try {
             Pattern.compile(formattedFieldMask)
             true
         } catch (e: Exception) {
-            Timber.d(e)
             false
         }
     }

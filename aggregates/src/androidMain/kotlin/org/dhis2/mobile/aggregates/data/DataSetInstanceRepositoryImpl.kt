@@ -19,6 +19,7 @@ import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
+import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -573,12 +574,19 @@ internal class DataSetInstanceRepositoryImpl(
             .uid(dataElementUid).blockingGet()
 
         val validator = dataElement?.valueType()?.validator
+        val fieldMask = dataElement?.fieldMask()
 
         return try {
             if (value.isNullOrEmpty()) {
                 valueRepository.blockingDeleteIfExist()
             } else {
                 val validValue = validator?.validate(value)?.getOrThrow()
+                fieldMask?.let { mask ->
+                    val fieldMaskValidation = FieldMaskValidator(mask).validate(value)
+                    if (fieldMaskValidation is org.hisp.dhis.android.core.arch.helpers.Result.Failure) {
+                        return Result.failure(fieldMaskValidation.failure)
+                    }
+                }
                 valueRepository.blockingSet(validValue)
             }
             Result.success(Unit)

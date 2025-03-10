@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Hanya nilai dari 0 hingga 100 yang diizinkan</string>
-    <string name="formatting_error">Memformat kesalahan</string>
-    <string name="invalid_possitive">Hanya angka positif yang diperbolehkan</string>
-    <string name="invalid_phone_number">Ini bukan nomor telepon yang valid</string>
-    <string name="invalid_email">Ini bukan email yang valid</string>
-    <string name="invalid_negative_number">Hanya angka negatif yang diperbolehkan</string>
-    <string name="invalid_possitive_zero">Hanya angka positif atau nol yang diperbolehkan</string>
-    <string name="invalid_interval">Hanya nilai dari 0 hingga 1 yang diperbolehkan</string>
-    <string name="validation_url">Ini bukan url yang valid</string>
-    <string name="invalid_integer">Nilai harus dalam bilangan bulat</string>
     <string name="error">Kesalahan</string>
     <string name="unique_warning">Nilai harus unik, kebetulan telah ditemukan. Itu belum disimpan. Tolong diperiksa.</string>
     <string name="select_time">Pilih waktu</string>

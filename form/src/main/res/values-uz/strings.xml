@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Фақат 0 дан 100 гача бўлган қийматларга рухсат берилади</string>
-    <string name="formatting_error">Форматлашда хатолик</string>
-    <string name="invalid_possitive">Фақат мусбат рақамларга рухсат берилади</string>
-    <string name="invalid_phone_number">Бу яроқли телефон рақами эмас</string>
-    <string name="invalid_email">Бу яроқли электрон почта манзили эмас</string>
-    <string name="invalid_negative_number">Фақат манфий рақамларга рухсат берилади</string>
-    <string name="invalid_possitive_zero">Фақат мусбат рақамлар ёки нолга рухсат берилади</string>
-    <string name="invalid_interval">Фақат 0 дан 1 гача бўлган қийматларга рухсат берилади</string>
-    <string name="validation_url">Бу ҳақиқий URL эмас</string>
-    <string name="invalid_integer">Қиймат бутун сон бўлиши лозим</string>
-    <string name="wrong_pattern">Бу тўғри формат эмас.</string>
     <string name="error">Хатолик</string>
     <string name="unique_warning">Қиймат ноёб бўлиши лозим, бир бирига ўхшаш топилди. У сақланмади. Илтимос, текшириб кўриш.</string>
     <string name="select_time">Вақтни танланг</string>

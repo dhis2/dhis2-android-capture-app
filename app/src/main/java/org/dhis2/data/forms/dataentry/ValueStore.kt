@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.arch.helpers.Result as ValidatorResult
 interface ValueStore {
     fun save(uid: String, value: String?): Flowable<StoreResult>
     fun saveWithTypeCheck(uid: String, value: String?): Flowable<StoreResult>
-    fun save(
+    suspend fun save(
         orgUnitUid: String,
         periodId: String,
         attributeOptionComboUid: String,

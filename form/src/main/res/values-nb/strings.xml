@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Bare verdier fra 0 til 100 er tillatt</string>
-    <string name="formatting_error">Formateringsfeil</string>
-    <string name="invalid_possitive">Bare positive siffer er tillatt</string>
-    <string name="invalid_phone_number">Dette er ikke et gyldig telefonnummer</string>
-    <string name="invalid_email">Dette er ikke en gyldig e-post</string>
-    <string name="invalid_negative_number">Bare negative siffer er tillatt</string>
-    <string name="invalid_possitive_zero">Bare positive siffer eller null er tillatt</string>
-    <string name="invalid_interval">Bare verdier fra 0 til 1 er tillatt</string>
-    <string name="validation_url">Dette er ikke en gyldig URL</string>
-    <string name="invalid_integer">Verdien må være et heltall</string>
-    <string name="wrong_pattern">Det er ikke et riktig format.</string>
     <string name="error">Feil</string>
     <string name="unique_warning">Verdien skal være unik, et sammentreff ble funnet. Det har ikke blitt lagret. Vennligst sjekk det.</string>
     <string name="select_time">Velg klokkeslett</string>
