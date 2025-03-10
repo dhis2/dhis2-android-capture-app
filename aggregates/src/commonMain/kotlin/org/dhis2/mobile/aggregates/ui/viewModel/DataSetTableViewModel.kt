@@ -43,10 +43,10 @@ import org.dhis2.mobile.aggregates.ui.UIActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
-import org.dhis2.mobile.aggregates.ui.inputs.TableId
-import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
+import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
@@ -215,9 +215,15 @@ internal class DataSetTableViewModel(
         viewModelScope.launch(dispatcher.io()) {
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                getDataValueInput(
+                val dataElementUid = getDataElementUid(rowIds, columnIds)
+                val categoryOptionComboUidData = getCategoryOptionCombo(
                     rowIds,
                     columnIds,
+                )
+
+                getDataValueInput(
+                    dataElementUid,
+                    categoryOptionComboUidData,
                     fetchOptions,
                 ).toInputData(cellId)
             } else {
@@ -325,14 +331,6 @@ internal class DataSetTableViewModel(
                     updateSelectedCell(uiAction.cellId, true)
             }
         }
-    }
-
-    private fun getDataElementUid(rowIds: List<TableId>, columnIds: List<TableId>): String {
-        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
-            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
-
-        return dataElementUids.firstOrNull()
-            ?: throw IllegalArgumentException("Only one data element is allowed")
     }
 
     fun onSaveClicked() {
