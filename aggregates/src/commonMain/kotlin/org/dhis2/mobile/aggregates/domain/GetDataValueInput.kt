@@ -1,15 +1,11 @@
 package org.dhis2.mobile.aggregates.domain
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
+import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.InputType
-import org.dhis2.mobile.aggregates.ui.inputs.TableId
-import org.dhis2.mobile.aggregates.ui.states.InputExtra
-import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
@@ -27,12 +23,15 @@ internal class GetDataValueInput(
     private val optionRepository: OptionRepository,
 ) : ValueValidator(repository) {
     suspend operator fun invoke(
-        rowIds: List<TableId>,
-        columnIds: List<TableId>,
+        dataElementUid: String,
+        categoryOptionComboUidData: Pair<String?, List<String>>,
         fetchOptions: Boolean = false,
     ): CellInfo = supervisorScope {
-        val dataElementUid = checkOnlyOneDataElementIsProvided(rowIds, columnIds)
-        val categoryOptionComboUid = checkedCategoryOptionCombos(rowIds, columnIds)
+        val categoryOptionComboUid =
+            categoryOptionComboUidData.first
+                ?: repository.categoryOptionComboFromCategoryOptions(
+                    categoryOptionComboUidData.second,
+                )
 
         val dataElementInfo = repository.dataElementInfo(
             dataSetUid = dataSetUid,
@@ -98,32 +97,17 @@ internal class GetDataValueInput(
                     },
                 )
 
-                InputType.FileResource -> InputExtra.File(
-                    fileWeight = value?.let { getFormattedFileSize(value) },
-                )
-
-                InputType.MultiText -> InputExtra.MultiText(
-                    numberOfOptions = optionRepository.optionCount(dataElementUid),
+                InputType.MultiText -> CellValueExtra.Options(
+                    optionCount = optionRepository.optionCount(dataElementUid),
                     options = if (fetchOptions) {
-                        optionRepository.options(dataElementUid).map { optionData ->
-                            async {
-                                CheckBoxData(
-                                    uid = optionData.code ?: optionData.uid,
-                                    checked = optionData.code?.let {
-                                        value?.contains(it) == true
-                                    } ?: false,
-                                    enabled = true,
-                                    textInput = optionData.label,
-                                )
-                            }
-                        }.awaitAll()
+                        optionRepository.options(dataElementUid)
                     } else {
                         emptyList()
                     },
                     optionsFetched = fetchOptions,
                 )
 
-                else -> InputExtra.None
+                else -> null
             },
             supportingText = dataElementInfo.description?.let { listOf(it) } ?: emptyList(),
             errors = conflicts.first,
