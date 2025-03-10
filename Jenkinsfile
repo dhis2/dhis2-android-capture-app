@@ -13,9 +13,23 @@ pipeline {
     options {
         buildDiscarder(logRotator(daysToKeepStr: '5'))
         disableConcurrentBuilds(abortPrevious: true)
+        skipStagesAfterUnstable()
     }
 
     stages {
+        stage('Check for [skip ci]') {
+            when {
+                expression {
+                    return isSkipCI()
+                }
+            }
+            steps {
+                script {
+                    currentBuild.result = 'UNSTABLE' // Mark build as a warning instead of an error
+                    echo "⚠️ Warning: Skipping CI because '[skip ci]' was found in the PR title or description."
+                }
+            }
+        }
         stage('Change to JAVA 17') {
             steps {
                 script {
@@ -185,4 +199,10 @@ def custom_msg(){
   def BRANCH_NAME = env.GIT_BRANCH
   def JENKINS_LOG= "*Job:* $JOB_NAME\n *Branch:* $BRANCH_NAME\n *Build Number:* $BUILD_NUMBER (<${BUILD_URL}|Open>)"
   return JENKINS_LOG
+}
+
+def isSkipCI() {
+    def prTitle = env.CHANGE_TITLE ?: ""
+    def prDescription = env.CHANGE_DESCRIPTION ?: ""
+    return (prTitle.contains("[skip ci]") || prDescription.contains("[skip ci]"))
 }
