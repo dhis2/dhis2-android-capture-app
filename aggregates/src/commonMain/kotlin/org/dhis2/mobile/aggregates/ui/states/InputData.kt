@@ -1,6 +1,5 @@
 package org.dhis2.mobile.aggregates.ui.states
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import org.dhis2.mobile.aggregates.model.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -8,6 +7,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
@@ -62,7 +62,9 @@ internal sealed class InputExtra {
     ) : InputExtra()
 
     data class OptionSet(
-        val todo: String = "TODO", // TODO()
+        val numberOfOptions: Int,
+        val options: List<RadioButtonData>,
+        val optionsFetched: Boolean,
     ) : InputExtra()
 
     data object None : InputExtra()

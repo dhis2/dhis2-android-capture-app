@@ -81,9 +81,26 @@ internal class GetDataValueInput(
                     optionsFetched = fetchOptions,
                 )
 
-                InputType.OptionSet -> {
-                    InputExtra.OptionSet()
-                }
+                InputType.OptionSet -> InputExtra.OptionSet(
+                    numberOfOptions = optionRepository.optionCount(dataElementUid),
+                    options = if (fetchOptions) {
+                        optionRepository.options(dataElementUid).map { optionData ->
+                            async {
+                                RadioButtonData(
+                                    uid = optionData.code ?: optionData.uid,
+                                    selected = optionData.code?.let {
+                                        value?.contains(it) == true
+                                    } ?: false,
+                                    enabled = true,
+                                    textInput = optionData.label,
+                                )
+                            }
+                        }.awaitAll()
+                    } else {
+                        emptyList()
+                    },
+                    optionsFetched = fetchOptions,
+                )
 
                 else -> null
             },

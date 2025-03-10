@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import org.dhis2.mobile.aggregates.ui.states.InputData
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
@@ -62,6 +64,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoField
@@ -462,36 +465,87 @@ internal fun InputProvider(
         }
 
         InputType.OptionSet -> {
-            InputDropDown(
-                title = inputData.label,
-                state = inputData.inputShellState,
-                inputStyle = inputData.inputStyle,
-                itemCount = TODO(),
-                onSearchOption = {
-                    TODO()
-                },
-                fetchItem = { index ->
-                    TODO()
-                },
-                selectedItem = TODO(),
-                supportingTextData = inputData.supportingText,
-                legendData = inputData.legendData,
-                isRequiredField = inputData.isRequired,
-                modifier = modifier,
-                onResetButtonClicked = {
-                    onAction(UiAction.OnValueChanged(inputData.id, null))
-                },
-                onItemSelected = { index, newSelectedItem ->
-                    TODO()
-                },
-                useDropDown = false,
-                loadOptions = {
-                    TODO()
-                },
-                onDismiss = {
-                    inputData.optionSetExtras().onSearch("")
-                },
-            )
+            val optionSetExtra = inputData.optionSetExtras()
+            var currentSearchQuery by remember(inputData) {
+                mutableStateOf("")
+            }
+            val options by remember(inputData, currentSearchQuery) {
+                derivedStateOf {
+                    optionSetExtra.options.filter {
+                        currentSearchQuery.isEmpty() or (
+                            it.textInput?.text?.contains(
+                                currentSearchQuery,
+                                true,
+                            ) == true
+                            )
+                    }
+                }
+            }
+
+            if (inputData.value == null && !optionSetExtra.optionsFetched) {
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(color = inputData.inputStyle.backGroundColor)
+                        .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ProgressIndicator(
+                        modifier = Modifier.padding(Spacing8),
+                        type = ProgressIndicatorType.CIRCULAR_SMALL,
+                    )
+                }
+            } else if (optionSetExtra.numberOfOptions < 7) {
+                InputRadioButton(
+                    title = inputData.label,
+                    radioButtonData = options,
+                    modifier = modifier,
+                    orientation = Orientation.VERTICAL,
+                    state = inputData.inputShellState,
+                    inputStyle = inputData.inputStyle,
+                    supportingText = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequired = inputData.isRequired,
+                    itemSelected = options.find { it.textInput?.text == inputData.displayValue },
+                    onItemChange = { data ->
+                        val newValue: String? = TODO()
+                        onAction(UiAction.OnValueChanged(inputData.id, newValue))
+                    },
+                )
+            } else {
+                InputDropDown(
+                    title = inputData.label,
+                    state = inputData.inputShellState,
+                    inputStyle = inputData.inputStyle,
+                    itemCount = optionSetExtra.numberOfOptions,
+                    onSearchOption = {
+                        currentSearchQuery = it
+                    },
+                    fetchItem = { index ->
+                        DropdownItem(options[index].textInput?.text!!)
+                    },
+                    selectedItem = options.find { it.textInput?.text == inputData.displayValue }
+                        ?.let { DropdownItem(it.textInput?.text!!) },
+                    supportingTextData = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequiredField = inputData.isRequired,
+                    modifier = modifier,
+                    onResetButtonClicked = {
+                        onAction(UiAction.OnValueChanged(inputData.id, null))
+                    },
+                    onItemSelected = { index, newSelectedItem ->
+                        val newValue: String? = TODO()
+                        onAction(UiAction.OnValueChanged(inputData.id, newValue))
+                    },
+                    useDropDown = false,
+                    loadOptions = {
+                        onAction(UiAction.OnFetchOptions(inputData.id))
+                    },
+                    onDismiss = {
+                        currentSearchQuery = ""
+                    },
+                )
+            }
         }
 
         InputType.MultiText -> {
