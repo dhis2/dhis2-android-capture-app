@@ -34,9 +34,13 @@ internal fun CellInfo.toInputData(cellId: String) =
                 state = SupportingTextState.WARNING,
             )
         },
-        legendData = LegendData(
-            color = legendColor?.toColor() ?: Color.Unspecified,
-            title = legendLabel ?: "",
-        ),
+        legendData = if (legendColor == null && legendLabel == null) {
+            null
+        } else {
+            LegendData(
+                color = legendColor?.toColor() ?: Color.Unspecified,
+                title = legendLabel ?: "",
+            )
+        },
         isRequired = isRequired,
     )

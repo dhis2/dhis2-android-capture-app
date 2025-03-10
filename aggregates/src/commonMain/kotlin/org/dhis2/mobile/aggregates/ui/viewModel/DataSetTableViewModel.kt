@@ -29,6 +29,7 @@ import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
+import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
@@ -147,11 +148,12 @@ internal class DataSetTableViewModel(
                 val sectionData = async { sectionData(sectionUid) }
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
-                        val dataSetSectionTitle = if (it.dataSetDetails.customTitle.isConfiguredTitle) {
-                            it.dataSetDetails.customTitle.header
-                        } else {
-                            it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
-                        }
+                        val dataSetSectionTitle =
+                            if (it.dataSetDetails.customTitle.isConfiguredTitle) {
+                                it.dataSetDetails.customTitle.header
+                            } else {
+                                it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
+                            }
                         it.copy(
                             dataSetDetails = it.dataSetDetails.copy(
                                 customTitle = DataSetCustomTitle(
@@ -211,26 +213,13 @@ internal class DataSetTableViewModel(
 
     fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false) {
         viewModelScope.launch(dispatcher.io()) {
-            val currentInputData = (_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                ?.selectedCellInfo
-
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                val input = getDataValueInput(
+                getDataValueInput(
                     rowIds,
                     columnIds,
                     fetchOptions,
                 ).toInputData(cellId)
-                if (cellId == currentInputData?.id) {
-                    currentInputData.copy(
-                        value = input.value,
-                        displayValue = input.displayValue,
-                        supportingText = input.supportingText,
-                        legendData = input.legendData,
-                    )
-                } else {
-                    input
-                }
             } else {
                 null
             }
@@ -273,8 +262,15 @@ internal class DataSetTableViewModel(
                     ).fold(
                         onSuccess = {
                             val fetchOptions =
-                                (_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                                    ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                                if ((_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                        ?.selectedCellInfo?.inputType is InputType.MultiText
+                                ) {
+                                    (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                        ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                                } else {
+                                    false
+                                }
+
                             updateSelectedCell(uiAction.cellId, fetchOptions)
                         },
                         onFailure = {
@@ -324,6 +320,7 @@ internal class DataSetTableViewModel(
                         )
                     }
                 }
+
                 is UiAction.OnFetchOptions ->
                     updateSelectedCell(uiAction.cellId, true)
             }
