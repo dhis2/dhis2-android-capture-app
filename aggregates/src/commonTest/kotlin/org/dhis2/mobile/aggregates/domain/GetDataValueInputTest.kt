@@ -49,6 +49,7 @@ internal class GetDataValueInputTest {
     fun `should return cell info`() = runTest {
         inputTypeValues.forEach { inputType ->
             whenever(mockedDataElementInfo.inputType) doReturn inputType
+            whenever(optionRepository.optionCount(any())) doReturn 1
             val result = getDataValueInputTest(
                 rowIds = listOf(TableId("dataElementId", TableIdType.DataElement)),
                 columnIds = listOf(TableId("catOptionComboUid", TableIdType.CategoryOptionCombo)),
