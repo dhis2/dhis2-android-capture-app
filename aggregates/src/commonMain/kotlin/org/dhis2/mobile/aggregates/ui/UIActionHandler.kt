@@ -13,7 +13,7 @@ internal interface UIActionHandler {
         callback: (result: String?) -> Unit,
     )
 
-    fun onCall(phoneNumber: String)
-    fun onSendEmail(email: String)
-    fun onOpenLink(url: String)
+    fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit)
+    fun onSendEmail(email: String, onActivityNotFound: () -> Unit)
+    fun onOpenLink(url: String, onActivityNotFound: () -> Unit)
 }

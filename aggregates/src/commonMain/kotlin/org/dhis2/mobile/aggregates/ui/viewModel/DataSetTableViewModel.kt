@@ -257,7 +257,6 @@ internal class DataSetTableViewModel(
         viewModelScope.launch(dispatcher.io()) {
             val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
             val dataElementUid = getDataElementUid(rowIds, columnIds)
-
             when (uiAction) {
                 is UiAction.OnFocusChanged -> {
                 }
@@ -285,8 +284,12 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnAddImage -> TODO()
-                is UiAction.OnCall ->
-                    uiActionHandler.onCall(uiAction.phoneNumber)
+                is UiAction.OnCall -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onCall(uiAction.phoneNumber) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
 
                 is UiAction.OnCaptureCoordinates -> {
                     uiActionHandler.onCaptureCoordinates(
@@ -298,11 +301,19 @@ internal class DataSetTableViewModel(
                     }
                 }
                 is UiAction.OnDownloadImage -> TODO()
-                is UiAction.OnEmailAction ->
-                    uiActionHandler.onSendEmail(uiAction.email)
+                is UiAction.OnEmailAction -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onSendEmail(uiAction.email) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
 
-                is UiAction.OnLinkClicked ->
-                    uiActionHandler.onOpenLink(uiAction.link)
+                is UiAction.OnLinkClicked -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onOpenLink(uiAction.link) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
 
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()

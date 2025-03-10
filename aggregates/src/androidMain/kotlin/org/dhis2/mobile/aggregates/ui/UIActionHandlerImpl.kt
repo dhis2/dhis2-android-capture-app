@@ -75,21 +75,21 @@ internal class UIActionHandlerImpl(
             .show(context.supportFragmentManager, dataSetUid)
     }
 
-    override fun onCall(phoneNumber: String) {
+    override fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit) {
         val phoneCallIntent = Intent(Intent.ACTION_DIAL).apply {
             data = Uri.parse("tel:$phoneNumber")
         }
-        launchIntentChooser(phoneCallIntent)
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    override fun onSendEmail(email: String) {
+    override fun onSendEmail(email: String, onActivityNotFound: () -> Unit) {
         val phoneCallIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:$email")
         }
-        launchIntentChooser(phoneCallIntent)
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    override fun onOpenLink(url: String) {
+    override fun onOpenLink(url: String, onActivityNotFound: () -> Unit) {
         val phoneCallIntent = Intent(Intent.ACTION_DIAL).apply {
             data =
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -98,17 +98,18 @@ internal class UIActionHandlerImpl(
                     Uri.parse(url)
                 }
         }
-        launchIntentChooser(phoneCallIntent)
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    private fun launchIntentChooser(intent: Intent) {
+    private fun launchIntentChooser(intent: Intent, onActivityNotFound: () -> Unit) {
         val title = activity.getString(R.string.open_with)
         val chooser = Intent.createChooser(intent, title)
 
+        activity.startActivity(chooser)
         try {
             activity.startActivity(chooser)
         } catch (e: ActivityNotFoundException) {
-            /*do nothing*/
+            onActivityNotFound()
         }
     }
 }
