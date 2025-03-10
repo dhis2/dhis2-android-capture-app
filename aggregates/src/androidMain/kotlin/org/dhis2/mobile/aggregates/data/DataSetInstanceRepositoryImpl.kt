@@ -453,8 +453,9 @@ internal class DataSetInstanceRepositoryImpl(
         return Pair(valueLegend?.color(), valueLegend?.displayName())
     }
 
-    private  fun getTableGroupHeaders(
-        catComboUid: String,categoryUids: List<String>,
+    private fun getTableGroupHeaders(
+        catComboUid: String,
+        categoryUids: List<String>,
         pivotedCategoryUid: String?,
     ): List<List<CellElement>> {
         return categoryUids.mapNotNull { categoryUid ->
@@ -605,7 +606,7 @@ internal class DataSetInstanceRepositoryImpl(
             } != null
 
         val inputType = requireNotNull(dataElement?.valueType()?.toInputType()).takeIf {
-            (it !is InputType.MultiText) && dataElement?.optionSet()?.uid() != null
+            (it !is InputType.MultiText) && dataElement?.optionSet()?.uid() == null
         } ?: InputType.OptionSet
 
         return DataElementInfo(

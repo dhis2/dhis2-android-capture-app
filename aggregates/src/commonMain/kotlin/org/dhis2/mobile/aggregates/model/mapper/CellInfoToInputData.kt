@@ -15,6 +15,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
@@ -62,8 +63,28 @@ internal suspend fun CellInfo.toInputData(cellId: String) = supervisorScope {
                         async {
                             CheckBoxData(
                                 uid = optionData.code ?: optionData.uid,
-                                checked = optionData.code?.let {
-                                    value?.contains(it) == true
+                                checked = optionData.code?.let { code ->
+                                    value?.split(",")
+                                        ?.find { valueCode -> valueCode == code } != null
+                                } ?: false,
+                                enabled = true,
+                                textInput = optionData.label,
+                            )
+                        }
+                    }.awaitAll(),
+                    optionsFetched = it.optionsFetched,
+                )
+            } ?: InputExtra.None
+
+            InputType.OptionSet -> (inputExtra as? CellValueExtra.Options)?.let {
+                InputExtra.OptionSet(
+                    numberOfOptions = it.optionCount,
+                    options = it.options.map { optionData ->
+                        async {
+                            RadioButtonData(
+                                uid = optionData.code ?: optionData.uid,
+                                selected = optionData.code?.let { code ->
+                                    value == code
                                 } ?: false,
                                 enabled = true,
                                 textInput = optionData.label,

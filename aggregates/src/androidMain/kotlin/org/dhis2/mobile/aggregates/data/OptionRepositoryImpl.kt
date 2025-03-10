@@ -1,13 +1,10 @@
 package org.dhis2.mobile.aggregates.data
 
-import androidx.compose.runtime.Composable
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import org.dhis2.commons.bindings.dataElement
 import org.dhis2.mobile.aggregates.model.OptionData
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 
 class OptionRepositoryImpl(private val d2: D2) : OptionRepository {
     override suspend fun optionCount(dataElementUid: String): Int {

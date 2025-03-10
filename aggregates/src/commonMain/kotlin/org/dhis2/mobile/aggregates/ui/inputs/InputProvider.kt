@@ -483,6 +483,9 @@ internal fun InputProvider(
             }
 
             if (inputData.value == null && !optionSetExtra.optionsFetched) {
+                LaunchedEffect(inputData) {
+                    onAction(UiAction.OnFetchOptions(inputData.id))
+                }
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
@@ -508,24 +511,34 @@ internal fun InputProvider(
                     isRequired = inputData.isRequired,
                     itemSelected = options.find { it.textInput?.text == inputData.displayValue },
                     onItemChange = { data ->
-                        val newValue: String? = TODO()
-                        onAction(UiAction.OnValueChanged(inputData.id, newValue))
+                        onAction(UiAction.OnValueChanged(inputData.id, data?.uid))
                     },
                 )
             } else {
+                val optionCount by remember(options) {
+                    derivedStateOf {
+                        options.size
+                    }
+                }
+                var selectedItem by remember(inputData) {
+                    mutableStateOf(
+                        inputData.displayValue?.let {
+                            DropdownItem(it)
+                        },
+                    )
+                }
                 InputDropDown(
                     title = inputData.label,
                     state = inputData.inputShellState,
                     inputStyle = inputData.inputStyle,
-                    itemCount = optionSetExtra.numberOfOptions,
+                    itemCount = optionCount,
                     onSearchOption = {
                         currentSearchQuery = it
                     },
                     fetchItem = { index ->
                         DropdownItem(options[index].textInput?.text!!)
                     },
-                    selectedItem = options.find { it.textInput?.text == inputData.displayValue }
-                        ?.let { DropdownItem(it.textInput?.text!!) },
+                    selectedItem = selectedItem,
                     supportingTextData = inputData.supportingText,
                     legendData = inputData.legendData,
                     isRequiredField = inputData.isRequired,
@@ -534,8 +547,8 @@ internal fun InputProvider(
                         onAction(UiAction.OnValueChanged(inputData.id, null))
                     },
                     onItemSelected = { index, newSelectedItem ->
-                        val newValue: String? = TODO()
-                        onAction(UiAction.OnValueChanged(inputData.id, newValue))
+                        selectedItem = newSelectedItem
+                        onAction(UiAction.OnValueChanged(inputData.id, options[index].uid))
                     },
                     useDropDown = false,
                     loadOptions = {

@@ -71,36 +71,18 @@ internal class GetDataValueInput(
                     )
                 }
 
-                InputType.MultiText -> CellValueExtra.Options(
-                    optionCount = optionRepository.optionCount(dataElementUid),
-                    options = if (fetchOptions) {
-                        optionRepository.options(dataElementUid)
-                    } else {
-                        emptyList()
-                    },
-                    optionsFetched = fetchOptions,
-                )
-
-                InputType.OptionSet -> InputExtra.OptionSet(
-                    numberOfOptions = optionRepository.optionCount(dataElementUid),
-                    options = if (fetchOptions) {
-                        optionRepository.options(dataElementUid).map { optionData ->
-                            async {
-                                RadioButtonData(
-                                    uid = optionData.code ?: optionData.uid,
-                                    selected = optionData.code?.let {
-                                        value?.contains(it) == true
-                                    } ?: false,
-                                    enabled = true,
-                                    textInput = optionData.label,
-                                )
-                            }
-                        }.awaitAll()
-                    } else {
-                        emptyList()
-                    },
-                    optionsFetched = fetchOptions,
-                )
+                InputType.MultiText, InputType.OptionSet -> {
+                    val optionCount = optionRepository.optionCount(dataElementUid)
+                    CellValueExtra.Options(
+                        optionCount = optionCount,
+                        options = if (fetchOptions || optionCount < 7) {
+                            optionRepository.options(dataElementUid)
+                        } else {
+                            emptyList()
+                        },
+                        optionsFetched = fetchOptions || optionCount < 7,
+                    )
+                }
 
                 else -> null
             },
