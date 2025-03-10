@@ -247,6 +247,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             runValidationRules = get(),
             uiActionHandler = get(),
             inputDataUiStateMapper = get(),
+            fieldErrorMessageProvider = get(),
         )
     }
 

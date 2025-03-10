@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -321,7 +322,7 @@ class DataValuePresenterTest {
     }
 
     @Test
-    fun shouldSaveValue() {
+    fun shouldSaveValue() = runBlocking {
         val mockedTableCell = mock<TableCell> {
             on { id } doReturn "mocked_id"
             on { column } doReturn 1
@@ -368,7 +369,7 @@ class DataValuePresenterTest {
     }
 
     @Test
-    fun shouldUpdateIndicatorValueWhenSaved() {
+    fun shouldUpdateIndicatorValueWhenSaved() = runBlocking {
         val mockedTableCell = mock<TableCell> {
             on { id } doReturn "mocked_id"
             on { column } doReturn 1
@@ -428,7 +429,7 @@ class DataValuePresenterTest {
     }
 
     @Test
-    fun shouldUpdateValueWhenSavedForTwoTablesAndIndicators() {
+    fun shouldUpdateValueWhenSavedForTwoTablesAndIndicators() = runBlocking {
         val mockedTableCell = mock<TableCell> {
             on { id } doReturn "mocked_id"
             on { column } doReturn 1
@@ -494,7 +495,7 @@ class DataValuePresenterTest {
     }
 
     @Test
-    fun shouldSetErrorValue() {
+    fun shouldSetErrorValue() = runBlocking {
         val mockedTableCell = mock<TableCell> {
             on { id } doReturn "mocked_id"
             on { column } doReturn 1
