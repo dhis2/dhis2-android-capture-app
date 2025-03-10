@@ -275,7 +275,6 @@ internal class DataSetTableViewModel(
                         onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
                     }
                 }
-                is UiAction.OnDateTimeAction -> TODO("Remove not needed")
                 is UiAction.OnDownloadImage -> TODO()
                 is UiAction.OnEmailAction -> TODO()
                 is UiAction.OnLinkClicked -> TODO()

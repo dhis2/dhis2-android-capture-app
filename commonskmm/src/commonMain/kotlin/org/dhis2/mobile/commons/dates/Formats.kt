@@ -2,6 +2,8 @@ package org.dhis2.mobile.commons.dates
 
 import kotlinx.datetime.LocalDateTime.Companion.Format
 import kotlinx.datetime.format.char
+import kotlinx.datetime.LocalDate.Companion.Format as LocalDateFormat
+import kotlinx.datetime.LocalTime.Companion.Format as LocalTimeFormat
 
 val dateTimeFormat = Format {
     dayOfMonth()
@@ -15,7 +17,7 @@ val dateTimeFormat = Format {
     minute()
 }
 
-val dateFormat = Format {
+val dateFormat = LocalDateFormat {
     dayOfMonth()
     char('/')
     monthNumber()
@@ -23,7 +25,7 @@ val dateFormat = Format {
     year()
 }
 
-val timeFormat = Format {
+val timeFormat = LocalTimeFormat {
     hour()
     char(':')
     minute()

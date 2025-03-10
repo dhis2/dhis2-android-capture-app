@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.ui.inputs
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
 import org.dhis2.mobile.aggregates.ui.states.InputData
+import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
@@ -90,6 +92,45 @@ internal fun InputProvider(
 
     when (inputData.inputType) {
         InputType.Age -> {
+            var inputType by remember {
+                mutableStateOf(
+                    when (inputData.value) {
+                        null -> AgeInputType.None
+                        else -> AgeInputType.DateOfBirth(
+                            TextFieldValue(
+                                text = inputData.value,
+                                selection = TextRange(inputData.value.length),
+                            ),
+                        )
+                    },
+                )
+            }
+
+            DisposableEffect(inputData.value) {
+                when (inputType) {
+                    is AgeInputType.Age ->
+                        if (!inputData.value.isNullOrEmpty()) {
+                            inputData.value.let {
+                                (inputType as AgeInputType.Age).copy(value = TextFieldValue(it, TextRange(it.length)))
+                            }
+                        }
+
+                    is AgeInputType.DateOfBirth ->
+                        if (!inputData.value.isNullOrEmpty()) {
+                            inputData.value.let {
+                                (inputType as AgeInputType.DateOfBirth).copy(value = TextFieldValue(it, TextRange(it.length)))
+                            }
+                        }
+
+                    AgeInputType.None -> {
+                        // no-op
+                    }
+                }
+
+                onDispose {
+                    // no-op
+                }
+            }
             InputAge(
                 state = rememberInputAgeState(
                     inputAgeData = InputAgeData(
@@ -105,16 +146,20 @@ internal fun InputProvider(
                         is24hourFormat = true,
                         selectableDates = inputData.ageExtras().selectableDates,
                     ),
-                    inputType = inputData.value?.let { AgeInputType.None }
-                        ?: AgeInputType.DateOfBirth(textValue),
+                    inputType = inputType,
                     inputState = inputData.inputShellState,
                     legendData = inputData.legendData,
                     supportingText = inputData.supportingText,
                 ),
-                onValueChanged = {
-                    val value = when (it) {
-                        is AgeInputType.Age -> it.value.text
-                        is AgeInputType.DateOfBirth -> it.value.text
+                onValueChanged = { ageInputType ->
+                    if (ageInputType != null) {
+                        inputType = ageInputType
+                    }
+                    val value = when (val type = inputType) {
+                        is AgeInputType.Age -> {
+                            type.value.text.getDateFromAge(type)
+                        }
+                        is AgeInputType.DateOfBirth -> type.value.text
                         else -> null
                     }
                     onAction(UiAction.OnValueChanged(inputData.id, value))
@@ -213,14 +258,6 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
                 onNextClicked = { onAction(UiAction.OnNextClick(inputData.id)) },
-                onActionClicked = {
-                    onAction(
-                        UiAction.OnDateTimeAction(
-                            inputData.id,
-                            textValue.text,
-                        ),
-                    )
-                },
                 modifier = modifier,
             )
         }
