@@ -293,13 +293,12 @@ internal class DataSetTableViewModelTest : KoinTest {
                 label = "Input label",
                 value = "This is it",
                 displayValue = "This is it",
-                displayValue = "This is it",
-            inputType = InputType.Text,
-            inputExtra = InputExtra.None,
-            supportingText = emptyList(),
-            errors = emptyList(),
-            warnings = emptyList(),
-            isRequired = false,legendColor = "#90EE90",
+                inputType = InputType.Text,
+                inputExtra = InputExtra.None,
+                supportingText = emptyList(),
+                errors = emptyList(),
+                warnings = emptyList(),
+                isRequired = false, legendColor = "#90EE90",
                 legendLabel = "Legend label 1",
             ),
             CellInfo(
@@ -466,7 +465,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             legendLabel = null,
             legendColor = null,
         )
-        whenever(getDataValueInput(any(), any())) doReturn cellInfo
+        whenever(getDataValueInput(any(), any(), any())) doReturn cellInfo
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()

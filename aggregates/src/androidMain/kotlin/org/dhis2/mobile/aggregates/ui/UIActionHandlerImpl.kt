@@ -4,12 +4,11 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import org.dhis2.mobile.aggregates.R
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.mobile.aggregates.R
 
 internal class UIActionHandlerImpl(
     private val activity: FragmentActivity,

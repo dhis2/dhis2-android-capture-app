@@ -452,8 +452,9 @@ internal class DataSetInstanceRepositoryImpl(
         return Pair(valueLegend?.color(), valueLegend?.displayName())
     }
 
-    private  fun getTableGroupHeaders(
-        catComboUid: String,categoryUids: List<String>,
+    private fun getTableGroupHeaders(
+        catComboUid: String,
+        categoryUids: List<String>,
         pivotedCategoryUid: String?,
     ): List<List<CellElement>> {
         return categoryUids.mapNotNull { categoryUid ->
