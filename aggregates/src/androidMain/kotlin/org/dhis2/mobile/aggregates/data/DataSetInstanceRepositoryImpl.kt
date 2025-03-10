@@ -11,7 +11,6 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataToReview
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
@@ -604,11 +603,7 @@ internal class DataSetInstanceRepositoryImpl(
                     it.categoryOptionCombo()?.uid() == categoryOptionComboUid
             } != null
 
-        val inputType = if (dataElement?.displayFormName() == "Large Multiselect option test") {
-            InputType.MultiText
-        } else {
-            requireNotNull(dataElement?.valueType()?.toInputType())
-        }
+        val inputType = requireNotNull(dataElement?.valueType()?.toInputType())
 
         return DataElementInfo(
             label = "${dataElement?.displayFormName()}/${categoryOptionCombo?.displayName()}",

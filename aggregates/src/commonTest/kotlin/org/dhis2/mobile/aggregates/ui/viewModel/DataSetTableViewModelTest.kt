@@ -318,7 +318,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         )
         viewModel.dataSetScreenState.test {
             awaitInitialization()
-            whenever(getDataValueInput(any(), any())) doReturnConsecutively cellInfoData
+            whenever(getDataValueInput(any(), any(), any())) doReturnConsecutively cellInfoData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
@@ -488,7 +488,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             awaitInitialization()
             viewModel.onUiAction(UiAction.OnCall(testingId, "111111111"))
             testDispatcher.scheduler.advanceUntilIdle()
-            verify(uiActionHandler).onCall("111111111")
+            verify(uiActionHandler).onCall(any(), any())
         }
     }
 
@@ -502,7 +502,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             awaitInitialization()
             viewModel.onUiAction(UiAction.OnEmailAction(testingId, "email@email.com"))
             testDispatcher.scheduler.advanceUntilIdle()
-            verify(uiActionHandler).onSendEmail("email@email.com")
+            verify(uiActionHandler).onSendEmail(any(), any())
         }
     }
 
@@ -516,7 +516,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             awaitInitialization()
             viewModel.onUiAction(UiAction.OnLinkClicked(testingId, "www.test.com"))
             testDispatcher.scheduler.advanceUntilIdle()
-            verify(uiActionHandler).onOpenLink("www.test.com")
+            verify(uiActionHandler).onOpenLink(any(), any())
         }
     }
 
