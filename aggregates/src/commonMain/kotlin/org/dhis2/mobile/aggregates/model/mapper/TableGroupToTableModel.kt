@@ -19,8 +19,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
-import org.koin.core.logger.Level
-import org.koin.core.logger.PrintLogger
 
 internal suspend fun TableGroup.toTableModel(
     resourceManager: ResourceManager,
@@ -64,15 +62,17 @@ internal suspend fun TableGroup.toTableModel(
     )
 
     val rowHeadersCombinations: List<List<CellElement>> = when (pivotMode) {
-        is PivoteMode.CategoryToColumn ->
-            cellElements.map { cellElement ->
-                buildList {
-                    add(cellElement)
-                    pivotMode.pivotedHeaders.forEach { pivotedHeader ->
-                        add(pivotedHeader)
-                    }
+        is PivoteMode.CategoryToColumn -> {
+            val rowList = mutableListOf<List<CellElement>>()
+            cellElements.forEach { cellElement ->
+                pivotMode.pivotedHeaders.forEach { pivotedHeader ->
+                    rowList.add(
+                        listOf(cellElement, pivotedHeader),
+                    )
                 }
             }
+            rowList
+        }
 
         PivoteMode.None -> cellElements.map {
             listOf(it)
@@ -84,8 +84,6 @@ internal suspend fun TableGroup.toTableModel(
             }
         }
     }
-
-    PrintLogger(Level.DEBUG).debug("rowHeadersCombinations: $rowHeadersCombinations")
 
     val tableRows = rowHeadersCombinations
         .mapIndexed { headerRowIndex, tableRowsHeaders ->
