@@ -46,17 +46,16 @@ internal class GetDataValueInputTest {
         inputTypeValues.forEach { inputType ->
             whenever(mockedDataElementInfo.inputType) doReturn inputType
             whenever(optionRepository.optionCount(any())) doReturn 1
+            whenever(optionRepository.options(any())) doReturn mock()
             val result = getDataValueInputTest(
                 dataElementUid = "dataElementId",
                 categoryOptionComboUidData = Pair("catOptionComboUid", emptyList()),
             )
 
-            print("INPUTTYPE: $inputType, extra: ${result.inputExtra}")
-
             assertTrue(
                 when (result.inputType) {
                     InputType.Coordinates -> result.inputExtra is CellValueExtra.Coordinates
-                    InputType.MultiText -> result.inputExtra is CellValueExtra.Options
+                    InputType.MultiText, InputType.OptionSet -> result.inputExtra is CellValueExtra.Options
                     else -> result.inputExtra == null
                 },
             )
