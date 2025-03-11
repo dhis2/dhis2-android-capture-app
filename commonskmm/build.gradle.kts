@@ -83,6 +83,12 @@ kotlin {
 
 }
 
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "org.dhis2.mobile.commons.resources"
+    generateResClass = always
+}
+
 android {
     namespace = "org.dhis2.mobile.commonskmm"
     compileSdk = libs.versions.sdk.get().toInt()
