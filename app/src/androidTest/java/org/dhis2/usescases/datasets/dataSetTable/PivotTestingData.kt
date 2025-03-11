@@ -117,53 +117,53 @@ internal val pivotTestingData = listOf(
         sectionName = "23",
         rowTestTags = listOf(
             CellData(
-                testTag = rowHeaderTestTag("t3aNCvHsoSn", "FbLZS3ueWbQ"),
+                testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "FbLZS3ueWbQ"),
                 label = "0-11m"
             ),
             CellData(
-                testTag = rowHeaderTestTag("t3aNCvHsoSn", "rEq3Hkd3XXH"),
+                testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "rEq3Hkd3XXH"),
                 label = "12-59m"
             ),
             CellData(
-                testTag = rowHeaderTestTag("t3aNCvHsoSn", "dUm5jaCTPBb"),
+                testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "dUm5jaCTPBb"),
                 label = "5-14y"
             ),
             CellData(
-                testTag = rowHeaderTestTag("t3aNCvHsoSn", "ZZxYuoTCcDd"),
+                testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "ZZxYuoTCcDd"),
                 label = "15y+"
             ),
             CellData(
-                testTag = rowHeaderTestTag("t3aNCvHsoSn", "t3aNCvHsoSn_totals"),
+                testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "t3aNCvHsoSn_0_totals"),
                 label = "Total"
             ),
             CellData(
-                testTag = rowHeaderTestTag("aN8uN5b15YG", "Z8aX3AkrDMS"),
+                testTag = rowHeaderTestTag("aN8uN5b15YG_1", "Z8aX3AkrDMS"),
                 label = "On salary"
             ),
             CellData(
-                testTag = rowHeaderTestTag("aN8uN5b15YG", "sNr1y5Qq1YQ"),
+                testTag = rowHeaderTestTag("aN8uN5b15YG_1", "sNr1y5Qq1YQ"),
                 label = "Not on salary"
             ),
             CellData(
-                testTag = rowHeaderTestTag("aN8uN5b15YG", "aN8uN5b15YG_totals"),
+                testTag = rowHeaderTestTag("aN8uN5b15YG_1", "aN8uN5b15YG_1_totals"),
                 label = "Total"
             ),
         ),
         headerTestTags = listOf(
             CellData(
-                testTag = headerTestTag("aN8uN5b15YG", 0, 1),
+                testTag = headerTestTag("aN8uN5b15YG_3", 0, 0),
                 label = "MCH Aide"
             ),
             CellData(
-                testTag = headerTestTag("aN8uN5b15YG", 0, 0),
+                testTag = headerTestTag("aN8uN5b15YG_1", 0, 0),
                 label = "PH Aide"
             ),
             CellData(
-                testTag = headerTestTag("t3aNCvHsoSn", 0, 1),
+                testTag = headerTestTag("t3aNCvHsoSn_2", 0, 0),
                 label = "Onchocerciasis follow-up"
             ),
             CellData(
-                testTag = headerTestTag("t3aNCvHsoSn", 0, 0),
+                testTag = headerTestTag("t3aNCvHsoSn_0", 0, 0),
                 label = "Onchocerciasis new"
             ),
         ),
