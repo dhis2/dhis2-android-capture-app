@@ -100,6 +100,7 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = false,
         valueIsAValidOrgUnit = false,
         valueIsAValidFile = false,
+        isCoordinate = false,
     )
     private val optionSetValueInfo = ValueInfo(
         isDateTime = false,
@@ -113,6 +114,7 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = true,
         valueIsAValidOrgUnit = false,
         valueIsAValidFile = false,
+        isCoordinate = false,
     )
     private val orgUnitValueInfo = ValueInfo(
         isDateTime = false,
@@ -126,6 +128,7 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = false,
         valueIsAValidOrgUnit = true,
         valueIsAValidFile = false,
+        isCoordinate = false,
     )
     private val fileValueInfo = ValueInfo(
         isDateTime = false,
@@ -139,6 +142,7 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = false,
         valueIsAValidOrgUnit = false,
         valueIsAValidFile = true,
+        isCoordinate = false,
     )
     private val defaultValueInfo = ValueInfo(
         isDateTime = false,
@@ -152,6 +156,7 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = false,
         valueIsAValidOrgUnit = false,
         valueIsAValidFile = false,
+        isCoordinate = false,
     )
 
     private val percentageValueInfo = ValueInfo(
@@ -166,5 +171,6 @@ class StringExtensionsTest : KoinTest {
         valueIsValidOption = false,
         valueIsAValidOrgUnit = false,
         valueIsAValidFile = false,
+        isCoordinate = false,
     )
 }

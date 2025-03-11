@@ -68,6 +68,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(project(":commons"))
+            implementation(project(":dhis2_android_maps"))
         }
 
         androidUnitTest.dependencies {  }

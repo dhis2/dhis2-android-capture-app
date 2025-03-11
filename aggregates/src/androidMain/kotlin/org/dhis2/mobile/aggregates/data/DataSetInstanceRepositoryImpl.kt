@@ -21,6 +21,7 @@ import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
@@ -615,7 +616,10 @@ internal class DataSetInstanceRepositoryImpl(
     }
 
     override suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double> {
-        val geometry = Geometry.builder().coordinates(coordinatesValue).build()
+        val geometry = Geometry.builder()
+            .coordinates(coordinatesValue)
+            .type(FeatureType.POINT)
+            .build()
         return GeometryHelper.getPoint(geometry).let {
             Pair(it[1], it[0])
         }

@@ -292,7 +292,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             CellInfo(
                 label = "Input label",
                 value = "This is it",
-                displayValue = "This is it",
+                displayValue = "The display value",
                 inputType = InputType.Text,
                 inputExtra = InputExtra.None,
                 supportingText = emptyList(),
@@ -304,7 +304,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             CellInfo(
                 label = "Input label",
                 value = "This is other",
-                displayValue = "This is other",
+                displayValue = "The display value",
                 inputType = InputType.Text,
                 inputExtra = InputExtra.None,
                 supportingText = emptyList(),
