@@ -88,7 +88,7 @@ internal class GetDataValueInput(
                 else -> null
             },
             supportingText = dataElementInfo.description?.let { listOf(it) } ?: emptyList(),
-            errors = validationError?.let { conflicts.first + it } ?: conflicts.first,
+            errors = conflicts.first,
             warnings = conflicts.second,
             isRequired = dataElementInfo.isRequired,
             legendColor = legendColorAndLabel?.first,
