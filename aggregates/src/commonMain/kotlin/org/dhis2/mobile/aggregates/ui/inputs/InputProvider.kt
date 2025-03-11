@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,10 +44,12 @@ import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCoordinate
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputFileResource
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
@@ -63,6 +66,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoField
@@ -498,7 +502,100 @@ internal fun InputProvider(
         }
 
         InputType.OptionSet -> {
-            // TODO
+            val optionSetExtra = inputData.optionSetExtras()
+            var currentSearchQuery by remember(inputData) {
+                mutableStateOf("")
+            }
+            val options by remember(inputData, currentSearchQuery) {
+                derivedStateOf {
+                    optionSetExtra.options.filter {
+                        currentSearchQuery.isEmpty() or (
+                            it.textInput?.text?.contains(
+                                currentSearchQuery,
+                                true,
+                            ) == true
+                            )
+                    }
+                }
+            }
+
+            if (inputData.value == null && !optionSetExtra.optionsFetched) {
+                LaunchedEffect(inputData) {
+                    onAction(UiAction.OnFetchOptions(inputData.id))
+                }
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(color = inputData.inputStyle.backGroundColor)
+                        .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ProgressIndicator(
+                        modifier = Modifier.padding(Spacing8),
+                        type = ProgressIndicatorType.CIRCULAR_SMALL,
+                    )
+                }
+            } else if (optionSetExtra.numberOfOptions < 7) {
+                InputRadioButton(
+                    title = inputData.label,
+                    radioButtonData = options,
+                    modifier = modifier,
+                    orientation = Orientation.VERTICAL,
+                    state = inputData.inputShellState,
+                    inputStyle = inputData.inputStyle,
+                    supportingText = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequired = inputData.isRequired,
+                    itemSelected = options.find { it.textInput?.text == inputData.displayValue },
+                    onItemChange = { data ->
+                        onAction(UiAction.OnValueChanged(inputData.id, data?.uid))
+                    },
+                )
+            } else {
+                val optionCount by remember(options) {
+                    derivedStateOf {
+                        options.size
+                    }
+                }
+                var selectedItem by remember(inputData) {
+                    mutableStateOf(
+                        inputData.displayValue?.let {
+                            DropdownItem(it)
+                        },
+                    )
+                }
+                InputDropDown(
+                    title = inputData.label,
+                    state = inputData.inputShellState,
+                    inputStyle = inputData.inputStyle,
+                    itemCount = optionCount,
+                    onSearchOption = {
+                        currentSearchQuery = it
+                    },
+                    fetchItem = { index ->
+                        DropdownItem(options[index].textInput?.text!!)
+                    },
+                    selectedItem = selectedItem,
+                    supportingTextData = inputData.supportingText,
+                    legendData = inputData.legendData,
+                    isRequiredField = inputData.isRequired,
+                    modifier = modifier,
+                    onResetButtonClicked = {
+                        onAction(UiAction.OnValueChanged(inputData.id, null))
+                    },
+                    onItemSelected = { index, newSelectedItem ->
+                        selectedItem = newSelectedItem
+                        onAction(UiAction.OnValueChanged(inputData.id, options[index].uid))
+                    },
+                    useDropDown = false,
+                    loadOptions = {
+                        onAction(UiAction.OnFetchOptions(inputData.id))
+                    },
+                    onDismiss = {
+                        currentSearchQuery = ""
+                    },
+                )
+            }
         }
 
         InputType.MultiText -> {
