@@ -121,45 +121,45 @@ internal val categoryToRowList = listOf(
         numberOfDataElements = 2,
         dataElementsRowTestTags = listOf(
             CellData(
-                rowHeaderTestTag("t3aNCvHsoSn", "z9dYcQ2DlBG"),
+                rowHeaderTestTag("t3aNCvHsoSn_0", "z9dYcQ2DlBG"),
                 "Tuberculosis new"
             ),
         ),
         rowTestTags = listOf(
             CellData(
-                rowHeaderTestTag("t3aNCvHsoSn", "Z8aX3AkrDMS"),
+                rowHeaderTestTag("t3aNCvHsoSn_0", "Z8aX3AkrDMS"),
                 "On salary"
             ),
             CellData(
-                rowHeaderTestTag("t3aNCvHsoSn", "sNr1y5Qq1YQ"),
+                rowHeaderTestTag("t3aNCvHsoSn_0", "sNr1y5Qq1YQ"),
                 "Not on salary"
             ),
         ),
         headerTestTags = listOf(
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0, 0),
+                headerTestTag("t3aNCvHsoSn_0", 0, 0),
                 "0-11m"
             ),
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0, 1),
+                headerTestTag("t3aNCvHsoSn_0", 0, 1),
                 "12-59m"
             ),
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0, 2),
+                headerTestTag("t3aNCvHsoSn_0", 0, 2),
                 "5-14y"
             ),
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0, 3),
+                headerTestTag("t3aNCvHsoSn_0", 0, 3),
                 "15y+"
             ),
         ),
         pivotedHeaderTestTags = listOf(
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0,0),
+                headerTestTag("t3aNCvHsoSn_0", 0,0),
                 "On salary"
             ),
             CellData(
-                headerTestTag("t3aNCvHsoSn", 0,1),
+                headerTestTag("t3aNCvHsoSn_0", 0,1),
                 "Not on salary"
             ),
         )
