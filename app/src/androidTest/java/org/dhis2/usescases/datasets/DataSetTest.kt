@@ -93,6 +93,8 @@ class DataSetTest : BaseTest() {
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
         waitForTableToBeVisible()
 
+        // Step - ANDROAPP-6858 Custom title is displayed
+        checkCustomTitleIsDisplayed()
         // Step - ANDROAPP-6795 Check content boxes above and below the table
         checkContentBoxesAreDisplayed()
         // Step - ANDROAPP-6810 Move a category to rows (click on sections 8, 16, 24)
@@ -101,6 +103,14 @@ class DataSetTest : BaseTest() {
         checkAutomaticGroupingDisabled()
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
         checkPivotOptions()
+    }
+
+    private fun checkCustomTitleIsDisplayed() {
+        logStep("Starting check custom title is displayed")
+        dataSetDetailRobot(composeTestRule) {
+            assertItemWithTextIsDisplayed("Line end: Custom Title", true)
+            assertItemWithTextIsDisplayed("Line end: Custom Subtitle test a very long subtitle", true)
+        }
     }
 
     private suspend fun waitForTableToBeVisible() {
@@ -113,6 +123,7 @@ class DataSetTest : BaseTest() {
 
     private suspend fun checkContentBoxesAreDisplayed() {
         tableIsVisible()
+        logStep("Starting Check content boxes above and below the table")
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
@@ -134,6 +145,8 @@ class DataSetTest : BaseTest() {
             scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
         }
+        logStep("Finish Check content boxes above and below the table")
+
     }
 
     @Test
@@ -301,6 +314,7 @@ class DataSetTest : BaseTest() {
     }
 
     private fun checkCategoryIsMovedToRow() {
+        logStep("Starting Check category is moved to row")
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -310,6 +324,8 @@ class DataSetTest : BaseTest() {
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
         }
+        logStep("Finish Check category is moved to row")
+
     }
 
     private fun runOptionalValidationRules() {
@@ -363,6 +379,7 @@ class DataSetTest : BaseTest() {
     }
 
     private fun checkAutomaticGroupingDisabled() {
+        logStep("Starting Check Automatic Grouping")
         dataSetTableRobot(composeTestRule) {
             disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -370,9 +387,12 @@ class DataSetTest : BaseTest() {
                 assertTablesAreDisplayedInOrder(data.tableIdTestTags)
             }
         }
+        logStep("Finish Check Automatic Grouping")
+
     }
 
     private fun checkPivotOptions() {
+        logStep("Starting check Pivot Options")
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -381,6 +401,7 @@ class DataSetTest : BaseTest() {
                 assertTableRows(data.rowTestTags)
             }
         }
+        logStep("Finish check Pivot Options")
     }
 
     private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {

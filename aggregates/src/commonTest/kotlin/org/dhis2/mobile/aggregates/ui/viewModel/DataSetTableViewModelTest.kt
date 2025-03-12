@@ -38,6 +38,7 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
+import org.dhis2.mobile.aggregates.model.TextAlignment
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
@@ -570,6 +571,74 @@ internal class DataSetTableViewModelTest : KoinTest {
                 exception.message,
             )
         }
+
+    @Test
+    fun `should set left title alignment correctly`() = runTest {
+        whenever(getDataSetInstanceData(any())).thenReturn(
+            DataSetInstanceData(
+                dataSetDetails = DataSetDetails(
+                    customTitle = DataSetCustomTitle(
+                        header = "Title",
+                        subHeader = "Subtitle",
+                        textAlignment = TextAlignment.LEFT,
+                        isConfiguredTitle = true,
+                    ),
+                    dateLabel = "date",
+                    orgUnitLabel = "ou",
+                    catOptionComboLabel = null,
+                    dataSetTitle = "dataSetTitle",
+                ),
+                dataSetSections = listOf(
+                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                ),
+                dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+            ),
+        )
+
+        viewModel.dataSetScreenState.test {
+            // Then shows optional validation rules dialog
+            assertTrue(awaitItem() is DataSetScreenState.Loading)
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertEquals(TextAlignment.LEFT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals("Title", this.dataSetDetails.customTitle.header)
+                assertEquals("Subtitle", this.dataSetDetails.customTitle.subHeader)
+            }
+        }
+    }
+
+    @Test
+    fun `should set right title alignment correctly`() = runTest {
+        whenever(getDataSetInstanceData(any())).thenReturn(
+            DataSetInstanceData(
+                dataSetDetails = DataSetDetails(
+                    customTitle = DataSetCustomTitle(
+                        header = "Title",
+                        subHeader = "Subtitle",
+                        textAlignment = TextAlignment.RIGHT,
+                        isConfiguredTitle = true,
+                    ),
+                    dateLabel = "date",
+                    orgUnitLabel = "ou",
+                    catOptionComboLabel = null,
+                    dataSetTitle = "dataSetTitle",
+                ),
+                dataSetSections = listOf(
+                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                ),
+                dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+            ),
+        )
+
+        viewModel.dataSetScreenState.test {
+            // Then shows optional validation rules dialog
+            assertTrue(awaitItem() is DataSetScreenState.Loading)
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertEquals(TextAlignment.RIGHT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+            }
+        }
+    }
 
     private suspend fun ReceiveTurbine<DataSetScreenState>.awaitInitialization() = with(this) {
         awaitItem()
