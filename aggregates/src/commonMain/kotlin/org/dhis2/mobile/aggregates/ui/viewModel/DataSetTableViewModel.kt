@@ -35,7 +35,6 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.Violation
-import org.dhis2.mobile.aggregates.model.mapper.toInputData
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
@@ -53,8 +52,11 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
+import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
 internal class DataSetTableViewModel(
     private val onClose: () -> Unit,
@@ -72,6 +74,7 @@ internal class DataSetTableViewModel(
     private val completeDataSet: CompleteDataSet,
     private val runValidationRules: RunValidationRules,
     private val uiActionHandler: UIActionHandler,
+    private val inputDataUiStateMapper: InputDataUiStateMapper,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -220,12 +223,18 @@ internal class DataSetTableViewModel(
                     rowIds,
                     columnIds,
                 )
-
-                getDataValueInput(
+                val cellInfo = getDataValueInput(
                     dataElementUid,
                     categoryOptionComboUidData,
                     fetchOptions,
-                ).toInputData(cellId)
+                )
+                inputDataUiStateMapper.map(
+                    cellId = cellId,
+                    cellInfo = cellInfo,
+                    isLastCell = isLastCell(cellId),
+                    onDone = { updateSelectedCell(null) },
+                    onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
+                )
             } else {
                 null
             }
@@ -257,7 +266,19 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnNextClick -> {
-                    TODO()
+                    findNextEditableCell(uiAction.cellId)?.let { (tableId, nextCell) ->
+                        _dataSetScreenState.update {
+                            (it as? DataSetScreenState.Loaded)?.copy(
+                                nextCellSelection = TableSelection.CellSelection(
+                                    tableId = tableId,
+                                    rowIndex = nextCell.row ?: return@update it,
+                                    columnIndex = nextCell.column,
+                                    globalIndex = 0, // TODO: Check if this is needed in the mobile UI
+                                ),
+                            ) ?: it
+                        }
+                        updateSelectedCell(nextCell.id)
+                    }
                 }
 
                 is UiAction.OnValueChanged -> {
@@ -301,6 +322,7 @@ internal class DataSetTableViewModel(
                         onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
                     }
                 }
+
                 is UiAction.OnDownloadImage -> TODO()
                 is UiAction.OnEmailAction -> {
                     val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
@@ -337,6 +359,50 @@ internal class DataSetTableViewModel(
                     updateSelectedCell(uiAction.cellId, true)
             }
         }
+    }
+
+    private fun findNextEditableCell(cellId: String): Pair<String, TableCell>? {
+        val tables =
+            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
+        var currentCell: TableCell? = null
+
+        for (table in tables) {
+            for (row in table.tableRows) {
+                for (cell in row.values.values) {
+                    if (currentCell != null && cell.editable) {
+                        return Pair(table.id, cell)
+                    }
+                    if (cell.id == cellId) {
+                        currentCell = cell
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private fun isLastCell(cellId: String): Boolean {
+        val tables =
+            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
+
+        for (table in tables.asReversed()) {
+            val lastEditableCell = getLastEditableCellFromTable(table)
+            if (lastEditableCell != null) {
+                return lastEditableCell == cellId
+            }
+        }
+        return false
+    }
+
+    private fun getLastEditableCellFromTable(table: TableModel): String? {
+        for (row in table.tableRows.asReversed()) {
+            for (cell in row.values.values.reversed()) {
+                if (cell.editable) {
+                    return cell.id
+                }
+            }
+        }
+        return null
     }
 
     fun onSaveClicked() {

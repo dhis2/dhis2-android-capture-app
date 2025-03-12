@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.ui.states
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.vector.ImageVector
 import org.dhis2.mobile.aggregates.model.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
@@ -13,7 +14,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
 
 @Stable
-internal data class InputData(
+internal data class InputDataUiState(
     val id: String,
     val label: String,
     val value: String?,
@@ -25,6 +26,7 @@ internal data class InputData(
     val supportingText: List<SupportingTextData>?,
     val legendData: LegendData?,
     val isRequired: Boolean,
+    val buttonAction: ButtonAction,
 ) {
     fun dateExtras() = inputExtra as InputExtra.Date
     fun fileExtras() = inputExtra as InputExtra.File
@@ -68,4 +70,22 @@ internal sealed class InputExtra {
     ) : InputExtra()
 
     data object None : InputExtra()
+}
+
+internal sealed class ButtonAction(
+    open val buttonText: String,
+    open val icon: ImageVector,
+    open val action: () -> Unit,
+) {
+    data class Next(
+        override val buttonText: String,
+        override val icon: ImageVector,
+        override val action: () -> Unit,
+    ) : ButtonAction(buttonText, icon, action)
+
+    data class Done(
+        override val buttonText: String,
+        override val icon: ImageVector,
+        override val action: () -> Unit,
+    ) : ButtonAction(buttonText, icon, action)
 }
