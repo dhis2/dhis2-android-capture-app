@@ -89,7 +89,7 @@ internal class UIActionHandlerImpl(
     }
 
     override fun onOpenLink(url: String, onActivityNotFound: () -> Unit) {
-        val phoneCallIntent = Intent(Intent.ACTION_DIAL).apply {
+        val phoneCallIntent = Intent(Intent.ACTION_VIEW).apply {
             data =
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
                     Uri.parse("http://$url")
@@ -101,12 +101,11 @@ internal class UIActionHandlerImpl(
     }
 
     private fun launchIntentChooser(intent: Intent, onActivityNotFound: () -> Unit) {
-        val title = activity.getString(R.string.open_with)
+        val title = context.getString(R.string.open_with)
         val chooser = Intent.createChooser(intent, title)
 
-        activity.startActivity(chooser)
         try {
-            activity.startActivity(chooser)
+            context.startActivity(chooser)
         } catch (e: ActivityNotFoundException) {
             onActivityNotFound()
         }

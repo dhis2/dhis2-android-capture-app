@@ -280,7 +280,6 @@ internal class DataSetTableViewModel(
                             updateSelectedCell(uiAction.cellId, fetchOptions)
                         },
                         onFailure = {
-                            TODO()
                         },
                     )
                 }

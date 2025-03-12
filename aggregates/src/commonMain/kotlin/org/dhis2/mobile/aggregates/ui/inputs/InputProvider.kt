@@ -862,7 +862,14 @@ internal fun InputProvider(
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 modifier = modifier,
-                onLinkActionCLicked = { UiAction.OnLinkClicked(inputData.id, textValue.text) },
+                onLinkActionCLicked = {
+                    onAction(
+                        UiAction.OnLinkClicked(
+                            inputData.id,
+                            textValue.text,
+                        ),
+                    )
+                },
             )
         }
 

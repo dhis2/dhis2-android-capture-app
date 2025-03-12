@@ -569,9 +569,10 @@ internal class DataSetInstanceRepositoryImpl(
                 attributeOptionCombo = attrOptionComboUid,
             )
 
-        val validator = d2.dataElementModule().dataElements()
+        val dataElement = d2.dataElementModule().dataElements()
             .uid(dataElementUid).blockingGet()
-            ?.valueType()?.validator
+
+        val validator = dataElement?.valueType()?.validator
 
         return try {
             if (value.isNullOrEmpty()) {
@@ -581,8 +582,8 @@ internal class DataSetInstanceRepositoryImpl(
                 valueRepository.blockingSet(validValue)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (t: Throwable) {
+            Result.failure(t)
         }
     }
 
@@ -605,15 +606,15 @@ internal class DataSetInstanceRepositoryImpl(
                 it.dataElement()?.uid() == dataElementUid &&
                     it.categoryOptionCombo()?.uid() == categoryOptionComboUid
             } != null
-
-        val inputType = requireNotNull(dataElement?.valueType()?.toInputType()).takeIf {
-            (it !is InputType.MultiText) && dataElement?.optionSet()?.uid() == null
-        } ?: InputType.OptionSet
+        val dataElementValueType = dataElement?.valueType()?.toInputType()
+        val inputType = requireNotNull(dataElementValueType).takeIf {
+            (it !is InputType.MultiText) && dataElement.optionSet()?.uid() == null
+        } ?: if (dataElementValueType is InputType.MultiText) InputType.MultiText else InputType.OptionSet
 
         return DataElementInfo(
-            label = "${dataElement?.displayFormName()}/${categoryOptionCombo?.displayName()}",
+            label = "${dataElement.displayFormName()}/${categoryOptionCombo?.displayName()}",
             inputType = inputType,
-            description = dataElement?.displayDescription(),
+            description = dataElement.displayDescription(),
             isRequired = isMandatory,
         )
     }
