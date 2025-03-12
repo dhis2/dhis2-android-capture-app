@@ -203,6 +203,8 @@ class DataSetTest : BaseTest() {
         val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
         val cellMandatoryFieldCombination02Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
         val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
+        val legendTableId = "bjDvmb4bfuf"
+        val cellLegendId = "PGRlPlVzU1VYMGNwS3NIOjxjb2M+SGxsdlg1MGNYQzA="
 
         enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
@@ -214,6 +216,12 @@ class DataSetTest : BaseTest() {
         createDataSetInstanceStep(
             period = periodSelectorLabel,
             orgUnit = orgUnit,
+        )
+
+        checkLegendsStep(
+            tableId = legendTableId,
+            cellId = cellLegendId,
+            legendData = legendTestingData
         )
 
         enterDataStep(
@@ -254,6 +262,43 @@ class DataSetTest : BaseTest() {
         checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
     }
 
+    private fun checkLegendsStep(
+        tableId: String,
+        cellId: String,
+        legendData: List<LegendTestingData>
+    ) {
+
+        logStep("Starting checking legends")
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnCell(tableId, cellId)
+            assertInputDialogIsDisplayed()
+            legendData.forEach { data ->
+                typeOnInputDialog(
+                    value = data.valueToType,
+                    inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD",
+                    pressDone = false,
+                )
+                closeKeyboard()
+                composeTestRule.waitForIdle()
+                assertCellBackgroundColor(
+                    tableId,
+                    cellId,
+                    data.valueToType,
+                    data.expectedColor
+                )
+                assertInputLegendDescription(data.expectedLabel)
+            }
+            typeOnInputDialog(
+                value = "",
+                inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD",
+                pressDone = true,
+            )
+            closeKeyboard()
+        }
+
+        logStep("Finished checking legends")
+    }
 
     private fun checkCategoryIsMovedToRow() {
         dataSetTableRobot(composeTestRule) {
