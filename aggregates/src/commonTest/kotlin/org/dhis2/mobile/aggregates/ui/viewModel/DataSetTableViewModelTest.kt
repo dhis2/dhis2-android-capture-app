@@ -640,6 +640,39 @@ internal class DataSetTableViewModelTest : KoinTest {
         }
     }
 
+    @Test
+    fun `should set center title alignment correctly`() = runTest {
+        whenever(getDataSetInstanceData(any())).thenReturn(
+            DataSetInstanceData(
+                dataSetDetails = DataSetDetails(
+                    customTitle = DataSetCustomTitle(
+                        header = "Title",
+                        subHeader = "Subtitle",
+                        textAlignment = TextAlignment.CENTER,
+                        isConfiguredTitle = true,
+                    ),
+                    dateLabel = "date",
+                    orgUnitLabel = "ou",
+                    catOptionComboLabel = null,
+                    dataSetTitle = "dataSetTitle",
+                ),
+                dataSetSections = listOf(
+                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                ),
+                dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+            ),
+        )
+
+        viewModel.dataSetScreenState.test {
+            // Then shows optional validation rules dialog
+            assertTrue(awaitItem() is DataSetScreenState.Loading)
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertEquals(TextAlignment.CENTER, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+            }
+        }
+    }
+
     private suspend fun ReceiveTurbine<DataSetScreenState>.awaitInitialization() = with(this) {
         awaitItem()
         awaitItem()
