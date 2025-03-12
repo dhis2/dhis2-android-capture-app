@@ -3,8 +3,8 @@ package org.dhis2.usescases.datasets
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
@@ -25,6 +25,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
@@ -47,6 +48,8 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
+import org.dhis2.ui.toColor
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.headersTestTag
@@ -102,11 +105,13 @@ internal class DataSetTableRobot(
     }
 
     private fun scrollToItemWithTag(tag: String) {
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasTestTag(tag))
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .performScrollToNode(hasTestTag(tag))
     }
 
     fun scrollToItemWithText(text: String) {
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToNode(hasText(text, substring = true))
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .performScrollToNode(hasText(text, substring = true))
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -182,10 +187,16 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithText(description, useUnmergedTree = true).assertIsDisplayed()
     }
 
-    fun typeOnInputDialog(value: String, inputTestTag: String) {
-        composeTestRule.onNodeWithTag(inputTestTag).performTextInput(value)
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
+    fun typeOnInputDialog(value: String, inputTestTag: String, pressDone: Boolean = true) {
+        composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
+        if (pressDone) {
+            pressOnInputDialogDone()
+        }
         composeTestRule.waitForIdle()
+    }
+
+    fun pressOnInputDialogDone(){
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
     }
 
     fun assertCellHasValue(
@@ -378,5 +389,24 @@ internal class DataSetTableRobot(
                         hasTextExactly(cellData.label)
             ).assertExists()
         }
+    }
+
+    fun assertCellBackgroundColor(
+        tableId: String,
+        cellId: String,
+        expectedValue: String,
+        expectedColor: String
+    ) {
+        val expectedAlphaColor = expectedColor.toColor().copy(0.3f)
+
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId))
+            .assertIsDisplayed()
+            .assert(hasText(expectedValue))
+            .assert(SemanticsMatcher.expectValue(RowBackground, expectedAlphaColor))
+    }
+
+    fun assertInputLegendDescription(expectedLabel: String) {
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText(expectedLabel).assertIsDisplayed()
     }
 }
