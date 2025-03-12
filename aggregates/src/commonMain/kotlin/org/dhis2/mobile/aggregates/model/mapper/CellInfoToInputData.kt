@@ -20,6 +20,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
 
 internal suspend fun CellInfo.toInputData(cellId: String) = supervisorScope {
     InputData(
@@ -38,7 +40,12 @@ internal suspend fun CellInfo.toInputData(cellId: String) = supervisorScope {
                 InputExtra.Date(
                     allowManualInput = true,
                     is24HourFormat = true,
-                    visualTransformation = DateTimeTransformation(),
+                    visualTransformation = when (inputType) {
+                        InputType.Date -> DateTransformation()
+                        InputType.DateTime -> DateTimeTransformation()
+                        InputType.Time -> TimeTransformation()
+                        else -> throw IllegalArgumentException("Invalid input type")
+                    },
                     selectableDates = SelectableDates("01011940", "12312300"),
                     yearRange = IntRange(1940, 2300),
                 )

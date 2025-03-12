@@ -7,12 +7,7 @@ import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.commons.extensions.userFriendlyValue
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
-import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
-import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
-import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
-import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
 
 internal class GetDataValueInput(
     private val dataSetUid: String,
@@ -69,33 +64,13 @@ internal class GetDataValueInput(
             displayValue = value?.userFriendlyValue(dataElementUid),
             inputType = dataElementInfo.inputType,
             inputExtra = when (dataElementInfo.inputType) {
-                InputType.Age -> InputExtra.Age(
-                    selectableDates = SelectableDates("01011940", "12312300"),
-                )
-
-                InputType.Date, InputType.Time, InputType.DateTime ->
-                    InputExtra.Date(
-                        allowManualInput = true,
-                        is24HourFormat = true,
-                        visualTransformation = when (dataElementInfo.inputType) {
-                            InputType.Date -> DateTransformation()
-                            InputType.DateTime -> DateTimeTransformation()
-                            InputType.Time -> TimeTransformation()
-                            else -> throw IllegalArgumentException("Invalid input type")
-                        },
-                        selectableDates = SelectableDates("01011940", "12312300"),
-                        yearRange = IntRange(1940, 2300),
+                InputType.Coordinates -> value?.let {
+                    val (lat, long) = repository.getCoordinatesFrom(it)
+                    CellValueExtra.Coordinates(
+                        lat = lat,
+                        lon = long,
                     )
-
-                InputType.Coordinates -> InputExtra.Coordinate(
-                    coordinateValue = value?.let {
-                        val (lat, long) = repository.getCoordinatesFrom(it)
-                        Coordinates(
-                            latitude = lat,
-                            longitude = long,
-                        )
-                    },
-                )
+                }
 
                 InputType.MultiText, InputType.OptionSet -> {
                     val optionCount = optionRepository.optionCount(dataElementUid)
