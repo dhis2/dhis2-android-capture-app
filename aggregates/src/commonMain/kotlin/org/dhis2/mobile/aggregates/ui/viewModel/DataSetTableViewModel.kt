@@ -216,7 +216,12 @@ internal class DataSetTableViewModel(
         tables + indicators
     }
 
-    fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false, newValue: String? = null, validationError: String? = null) {
+    fun updateSelectedCell(
+        cellId: String?,
+        fetchOptions: Boolean = false,
+        newValue: String? = null,
+        validationError: String? = null,
+    ) {
         viewModelScope.launch(dispatcher.io()) {
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
@@ -307,9 +312,11 @@ internal class DataSetTableViewModel(
                         },
                         onFailure = {
                             updateSelectedCell(
-                                uiAction.cellId,
-                                uiAction.newValue,
-                                fieldErrorMessageProvider.getFriendlyErrorMessage(it),
+                                cellId = uiAction.cellId,
+                                newValue = uiAction.newValue,
+                                validationError = fieldErrorMessageProvider.getFriendlyErrorMessage(
+                                    it,
+                                ),
                             )
                         },
                     )
