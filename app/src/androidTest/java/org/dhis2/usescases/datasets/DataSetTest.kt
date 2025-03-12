@@ -111,6 +111,7 @@ class DataSetTest : BaseTest() {
             assertItemWithTextIsDisplayed("Line end: Custom Title", true)
             assertItemWithTextIsDisplayed("Line end: Custom Subtitle test a very long subtitle", true)
         }
+        logStep("Finish check custom title is displayed")
     }
 
     private suspend fun waitForTableToBeVisible() {
