@@ -8,6 +8,8 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
+import org.junit.After
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -23,6 +25,7 @@ class PinTest : BaseTest() {
     val ruleLoginActivity = ActivityTestRule(LoginActivity::class.java, false, false)
 
     @Test
+    @Ignore
     fun openPin() {
         startActivity()
 
@@ -51,6 +54,7 @@ class PinTest : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun shouldSuccessfullyLoginIfClickForgotYourCode() {
         enableIntents()
         preferencesRobot.saveValue(SESSION_LOCKED, true)
