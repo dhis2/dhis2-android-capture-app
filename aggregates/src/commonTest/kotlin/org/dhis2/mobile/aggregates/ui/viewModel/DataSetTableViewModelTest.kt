@@ -1,5 +1,8 @@
 package org.dhis2.mobile.aggregates.ui.viewModel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.ui.graphics.Color
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -53,10 +56,16 @@ import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
+import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.InputExtra
+import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.extensions.toColor
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -96,6 +105,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var completeDataSet: CompleteDataSet
     private lateinit var runValidationRules: RunValidationRules
     private lateinit var uiActionHandler: UIActionHandler
+    private lateinit var inputDataUiStateMapper: InputDataUiStateMapper
 
     private val onCloseCallback: () -> Unit = mock()
     private val modalDialog: DataSetModalDialogUIState = mock()
@@ -132,6 +142,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         completeDataSet = declareMock<CompleteDataSet>()
         runValidationRules = declareMock<RunValidationRules>()
         uiActionHandler = declareMock<UIActionHandler>()
+        inputDataUiStateMapper = declareMock<InputDataUiStateMapper>()
 
         whenever(dispatcher.io).thenReturn { testDispatcher }
         whenever(dispatcher.main).thenReturn { testDispatcher }
@@ -235,6 +246,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             completeDataSet = get(),
             runValidationRules = get(),
             uiActionHandler = get(),
+            inputDataUiStateMapper = get(),
         )
     }
 
@@ -300,7 +312,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                 supportingText = emptyList(),
                 errors = emptyList(),
                 warnings = emptyList(),
-                isRequired = false, legendColor = "#90EE90",
+                isRequired = false,
+                legendColor = "#90EE90",
                 legendLabel = "Legend label 1",
             ),
             CellInfo(
@@ -317,9 +330,45 @@ internal class DataSetTableViewModelTest : KoinTest {
                 legendLabel = "Legend label 2",
             ),
         )
+        val inputData = cellInfoData.map { cellInfo ->
+            InputDataUiState(
+                id = testingId,
+                label = cellInfo.label,
+                value = cellInfo.value,
+                displayValue = cellInfo.displayValue,
+                inputType = cellInfo.inputType,
+                inputShellState = InputShellState.UNFOCUSED,
+                inputExtra = InputExtra.None,
+                supportingText = emptyList(),
+                isRequired = cellInfo.isRequired,
+                legendData = if (cellInfo.legendLabel != null) {
+                    LegendData(
+                        color = cellInfo.legendColor?.toColor() ?: Color.Unspecified,
+                        title = cellInfo.legendLabel,
+                    )
+                } else {
+                    null
+                },
+                buttonAction = ButtonAction.Done(
+                    buttonText = "done",
+                    icon = Icons.Default.Done,
+                    action = {},
+                ),
+            )
+        }
+
         viewModel.dataSetScreenState.test {
             awaitInitialization()
             whenever(getDataValueInput(any(), any(), any())) doReturnConsecutively cellInfoData
+            whenever(
+                inputDataUiStateMapper.map(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                ),
+            ) doReturnConsecutively inputData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
@@ -467,7 +516,41 @@ internal class DataSetTableViewModelTest : KoinTest {
             legendLabel = null,
             legendColor = null,
         )
+        val inputData = InputDataUiState(
+            id = testingId,
+            label = cellInfo.label,
+            value = cellInfo.value,
+            displayValue = cellInfo.displayValue,
+            inputType = cellInfo.inputType,
+            inputShellState = InputShellState.UNFOCUSED,
+            inputExtra = InputExtra.None,
+            supportingText = emptyList(),
+            isRequired = cellInfo.isRequired,
+            legendData = if (cellInfo.legendLabel != null) {
+                LegendData(
+                    color = cellInfo.legendColor?.toColor() ?: Color.Unspecified,
+                    title = cellInfo.legendLabel,
+                )
+            } else {
+                null
+            },
+            buttonAction = ButtonAction.Done(
+                buttonText = "done",
+                icon = Icons.Default.Done,
+                action = {},
+            ),
+        )
+
         whenever(getDataValueInput(any(), any(), any())) doReturn cellInfo
+        whenever(
+            inputDataUiStateMapper.map(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturn inputData
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()
