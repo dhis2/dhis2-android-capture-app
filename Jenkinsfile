@@ -40,12 +40,12 @@ pipeline {
             }
         }
         stage('Lint Check') {
-            steps {
-                when {
-                    expression {
-                        return false
-                    }
+            when {
+                expression {
+                    return false
                 }
+            }
+            steps {
                 script {
                     echo 'Running Ktlint'
                     sh './gradlew ktlintCheck'
