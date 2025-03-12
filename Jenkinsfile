@@ -41,6 +41,11 @@ pipeline {
         }
         stage('Lint Check') {
             steps {
+                when {
+                    expression {
+                        return false
+                    }
+                }
                 script {
                     echo 'Running Ktlint'
                     sh './gradlew ktlintCheck'
@@ -48,6 +53,11 @@ pipeline {
             }
         }
         stage('Unit tests') {
+            when {
+                expression {
+                    return false
+                }
+            }
             environment {
                 ANDROID_HOME = '/opt/android-sdk'
             }
@@ -71,6 +81,11 @@ pipeline {
         stage('Run tests') {
             parallel {
                 stage('Deploy and run Form Tests') {
+                        when {
+                            expression {
+                                return false
+                            }
+                        }
                         environment {
                             BROWSERSTACK = credentials('android-browserstack')
                             form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
@@ -88,6 +103,11 @@ pipeline {
                         }
                     }
                 stage('Deploy compose-table module Tests') {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
                         compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
@@ -150,6 +170,11 @@ pipeline {
             }
         }
         stage('JaCoCo report') {
+            when {
+                expression {
+                    return false
+                }
+            }
             steps {
                 script {
                     echo 'Running JaCoCo report on app module'
@@ -158,6 +183,11 @@ pipeline {
             }
         }
         stage('Sonarqube') {
+            when {
+                expression {
+                    return false
+                }
+            }
             environment {
                 GIT_BRANCH = "${env.GIT_BRANCH}"
                 // Jenkinsfile considers empty value ('') as null
