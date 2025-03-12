@@ -2,13 +2,20 @@ package org.dhis2.mobile.commons.extensions
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.dates.dateFormat
 import org.dhis2.mobile.commons.dates.dateTimeFormat
 import org.dhis2.mobile.commons.dates.timeFormat
+import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
+import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 suspend fun String.userFriendlyValue(
     uid: String,
@@ -54,8 +61,8 @@ suspend fun String.userFriendlyValue(
 }
 
 fun String.toDateTimeFormat() = LocalDateTime.parse(this).format(dateTimeFormat)
-fun String.toDateFormat() = LocalDateTime.parse(this).format(dateFormat)
-fun String.toTimeFormat() = LocalDateTime.parse(this).format(timeFormat)
+fun String.toDateFormat() = LocalDate.parse(this).format(dateFormat)
+fun String.toTimeFormat() = LocalTime.parse(this).format(timeFormat)
 
 fun String.toColor(): Color {
     val color = this.replace("#", "")
@@ -74,3 +81,20 @@ fun String.toColorInt(): Int {
     val color = toColor()
     return color.toArgb()
 }
+
+fun String.getDateFromAge(age: AgeInputType.Age): String? {
+    val calendar = Calendar.getInstance()
+    return try {
+        when (age.unit) {
+            TimeUnitValues.YEARS -> calendar.add(Calendar.YEAR, -age.value.text.toInt())
+            TimeUnitValues.MONTHS -> calendar.add(Calendar.MONTH, -age.value.text.toInt())
+            TimeUnitValues.DAYS -> calendar.add(Calendar.DAY_OF_MONTH, -age.value.text.toInt())
+        }
+
+        val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
+        dateFormat.format(calendar.time)
+    } catch (e: Exception) {
+        null
+    }
+}
+private const val DB_FORMAT = "yyyy-MM-dd"

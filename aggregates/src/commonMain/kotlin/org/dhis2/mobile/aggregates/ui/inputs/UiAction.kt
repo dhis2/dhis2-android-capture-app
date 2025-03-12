@@ -22,11 +22,6 @@ sealed class UiAction(open val cellId: String) {
 
     ) : UiAction(cellId)
 
-    data class OnDateTimeAction(
-        override val cellId: String,
-        val currentValue: String,
-    ) : UiAction(cellId)
-
     data class OnEmailAction(
         override val cellId: String,
         val email: String,

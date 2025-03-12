@@ -10,6 +10,8 @@ import org.dhis2.mobile.commons.extensions.userFriendlyValue
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
 
 internal class GetDataValueInput(
     private val dataSetUid: String,
@@ -69,7 +71,12 @@ internal class GetDataValueInput(
                     InputExtra.Date(
                         allowManualInput = true,
                         is24HourFormat = true,
-                        visualTransformation = DateTimeTransformation(),
+                        visualTransformation = when (dataElementInfo.inputType) {
+                            InputType.Date -> DateTransformation()
+                            InputType.DateTime -> DateTimeTransformation()
+                            InputType.Time -> TimeTransformation()
+                            else -> throw IllegalArgumentException("Invalid input type")
+                        },
                         selectableDates = SelectableDates("01011940", "12312300"),
                         yearRange = IntRange(1940, 2300),
                     )
