@@ -258,24 +258,12 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void navigateToDataSetTable(String catOptionCombo, String periodId) {
-        if (featureConfig.isFeatureEnable(Feature.COMPOSE_AGGREGATES_SCREEN)) {
-            Bundle bundle = new Bundle();
-            bundle.putString(INTENT_EXTRA_DATA_SET_UID, dataSetUid);
-            bundle.putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, selectedOrgUnit.uid());
-            bundle.putString(INTENT_EXTRA_PERIOD_ID, periodId);
-            bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptionCombo);
-            startActivity(DataSetInstanceActivity.class, bundle, true, false, null);
-        } else {
-            Bundle bundle = DataSetTableActivity.getBundle(
-                    dataSetUid,
-                    selectedOrgUnit.uid(),
-                    periodId,
-                    catOptionCombo
-            );
-
-            startActivity(DataSetTableActivity.class, bundle, true, false, null);
-        }
-
+        Bundle bundle = new Bundle();
+        bundle.putString(INTENT_EXTRA_DATA_SET_UID, dataSetUid);
+        bundle.putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, selectedOrgUnit.uid());
+        bundle.putString(INTENT_EXTRA_PERIOD_ID, periodId);
+        bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptionCombo);
+        startActivity(DataSetInstanceActivity.class, bundle, true, false, null);
     }
 
     private void checkActionVisivbility() {

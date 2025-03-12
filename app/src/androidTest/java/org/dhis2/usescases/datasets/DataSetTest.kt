@@ -38,7 +38,6 @@ class DataSetTest : BaseTest() {
 
     override fun teardown() {
         super.teardown()
-        disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         cleanLocalDatabase()
     }
 
@@ -46,8 +45,6 @@ class DataSetTest : BaseTest() {
     fun datasetAutomate() = runTest {
         val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
-
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
             uid = "BfMAe6Itzgt",
@@ -88,7 +85,6 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun formConfigurationTestAutomate() = runTest {
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
         waitForTableToBeVisible()
@@ -148,8 +144,6 @@ class DataSetTest : BaseTest() {
         val cellValidationRuleId = "PGRlPktGbkZwYnFEcWppOjxjb2M+SGxsdlg1MGNYQzA="
         val cellMandatoryId = "PGRlPnpGRmIzYmFyNEN0Ojxjb2M+SGxsdlg1MGNYQzA="
 
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
@@ -203,8 +197,6 @@ class DataSetTest : BaseTest() {
         val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
         val cellMandatoryFieldCombination02Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
         val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
-
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
             uid = dataSetUid,
