@@ -195,6 +195,7 @@ internal class DataSetTableRobot(
     ) {
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
+        scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
