@@ -175,7 +175,7 @@ class DataSetTest : BaseTest() {
             catCombo = catCombo,
         )
 
-        tapOnDoneButtonStep()
+        tapOnSaveButtonStep()
 
         checkValidationBarIsDisplayedAndReview()
 
@@ -186,7 +186,7 @@ class DataSetTest : BaseTest() {
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
 
-        tapOnDoneButtonStep()
+        tapOnSaveButtonStep()
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
@@ -199,7 +199,7 @@ class DataSetTest : BaseTest() {
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
 
-        tapOnDoneButtonStep()
+        tapOnSaveButtonStep()
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
@@ -245,7 +245,7 @@ class DataSetTest : BaseTest() {
             inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
         )
 
-        tapOnDoneButtonStep()
+        tapOnSaveButtonStep()
 
         runOptionalValidationRules()
 
@@ -267,7 +267,7 @@ class DataSetTest : BaseTest() {
             inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
         )
 
-        tapOnDoneButtonStep()
+        tapOnSaveButtonStep()
 
         runOptionalValidationRules()
 
@@ -291,7 +291,6 @@ class DataSetTest : BaseTest() {
                 typeOnInputDialog(
                     value = data.valueToType,
                     inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD",
-                    pressDone = false,
                 )
                 closeKeyboard()
                 composeTestRule.waitForIdle()
@@ -306,8 +305,8 @@ class DataSetTest : BaseTest() {
             typeOnInputDialog(
                 value = "",
                 inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD",
-                pressDone = true,
             )
+            pressOnInputDialogDismiss()
             closeKeyboard()
         }
 
@@ -415,7 +414,7 @@ class DataSetTest : BaseTest() {
         logStep("Finished Trying to complete dataset")
     }
 
-    private fun tapOnDoneButtonStep() {
+    private fun tapOnSaveButtonStep() {
         logStep("Starting Tap on Done button")
 
         dataSetTableRobot(composeTestRule) {
@@ -492,6 +491,7 @@ class DataSetTest : BaseTest() {
                 assertInputDescriptionIsDisplayed(dataElementDescription)
             }
             typeOnInputDialog(value, inputTestTag)
+            pressOnInputDialogDismiss()
             assertCellHasValue(tableId, cellId, value)
         }
 

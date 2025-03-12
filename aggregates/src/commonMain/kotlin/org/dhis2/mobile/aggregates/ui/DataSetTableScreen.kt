@@ -51,7 +51,6 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
-import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -356,7 +355,7 @@ fun DataSetInstanceScreen(
                                     )
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                                    .testTag(INPUT_DIALOG_DONE_TAG),
+                                    .testTag(inputData.buttonAction.testTag),
                             )
                         },
                         onDismiss = {

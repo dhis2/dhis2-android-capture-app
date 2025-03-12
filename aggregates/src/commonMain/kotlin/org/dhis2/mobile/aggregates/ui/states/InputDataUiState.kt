@@ -3,6 +3,8 @@ package org.dhis2.mobile.aggregates.ui.states
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -75,17 +77,18 @@ internal sealed class InputExtra {
 internal sealed class ButtonAction(
     open val buttonText: String,
     open val icon: ImageVector,
+    open val testTag: String,
     open val action: () -> Unit,
 ) {
     data class Next(
         override val buttonText: String,
         override val icon: ImageVector,
         override val action: () -> Unit,
-    ) : ButtonAction(buttonText, icon, action)
+    ) : ButtonAction(buttonText, icon, INPUT_DIALOG_NEXT_TAG, action)
 
     data class Done(
         override val buttonText: String,
         override val icon: ImageVector,
         override val action: () -> Unit,
-    ) : ButtonAction(buttonText, icon, action)
+    ) : ButtonAction(buttonText, icon, INPUT_DIALOG_DONE_TAG, action)
 }
