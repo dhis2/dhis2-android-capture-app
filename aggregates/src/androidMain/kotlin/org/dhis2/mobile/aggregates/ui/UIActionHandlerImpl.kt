@@ -1,7 +1,9 @@
 package org.dhis2.mobile.aggregates.ui
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -14,6 +16,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.INITIAL_GEOMETRY_COORD
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.PROGRAM_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.SCOPE
+import org.dhis2.mobile.aggregates.R
 
 internal class UIActionHandlerImpl(
     private val context: FragmentActivity,
@@ -69,5 +72,42 @@ internal class UIActionHandlerImpl(
             .orgUnitScope(OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))
             .build()
             .show(context.supportFragmentManager, dataSetUid)
+    }
+
+    override fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit) {
+        val phoneCallIntent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
+    }
+
+    override fun onSendEmail(email: String, onActivityNotFound: () -> Unit) {
+        val phoneCallIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$email")
+        }
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
+    }
+
+    override fun onOpenLink(url: String, onActivityNotFound: () -> Unit) {
+        val phoneCallIntent = Intent(Intent.ACTION_VIEW).apply {
+            data =
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    Uri.parse("http://$url")
+                } else {
+                    Uri.parse(url)
+                }
+        }
+        launchIntentChooser(phoneCallIntent, onActivityNotFound)
+    }
+
+    private fun launchIntentChooser(intent: Intent, onActivityNotFound: () -> Unit) {
+        val title = context.getString(R.string.open_with)
+        val chooser = Intent.createChooser(intent, title)
+
+        try {
+            context.startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            onActivityNotFound()
+        }
     }
 }

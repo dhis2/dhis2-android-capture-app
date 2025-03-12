@@ -36,5 +36,5 @@
     <string name="complete_anyway">Complete anyway</string>
     <string name="review">Review</string>
     <string name="validation_rules_data_to_review">Data to review</string>
-
+    <string name="action_can_not_be_performed">This action can't be performed</string>
 </resources>

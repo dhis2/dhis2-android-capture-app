@@ -61,4 +61,8 @@ sealed class UiAction(open val cellId: String) {
         override val cellId: String,
         val currentOrgUnitUid: String?,
     ) : UiAction(cellId)
+
+    data class OnFetchOptions(
+        override val cellId: String,
+    ) : UiAction(cellId)
 }

@@ -12,4 +12,8 @@ internal interface UIActionHandler {
         preselectedOrgUnits: List<String>,
         callback: (result: String?) -> Unit,
     )
+
+    fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit)
+    fun onSendEmail(email: String, onActivityNotFound: () -> Unit)
+    fun onOpenLink(url: String, onActivityNotFound: () -> Unit)
 }

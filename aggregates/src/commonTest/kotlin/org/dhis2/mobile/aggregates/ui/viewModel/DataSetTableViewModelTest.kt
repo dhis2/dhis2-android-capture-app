@@ -50,15 +50,17 @@ import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
-import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.toColor
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Test
+import org.junit.jupiter.api.assertThrows
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -72,7 +74,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -118,7 +119,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         getDataValueInput = declareMock<GetDataValueInput>()
         setDataValue = declareMock<SetDataValue>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
-        declareMock<ResourceManager>() {
+        declareMock<ResourceManager> {
             whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
             whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
             whenever(runBlocking { provideSaved() }) doReturn "saved"
@@ -285,8 +286,8 @@ internal class DataSetTableViewModelTest : KoinTest {
     @Test
     fun `should update selected cell`() = runTest {
         val testingId = CellIdGenerator.generateId(
-            rowIds = listOf(TableId("rowId", TableIdType.DataElement)),
-            columnIds = listOf(TableId("columnId", TableIdType.CategoryOptionCombo)),
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
         )
         val cellInfoData = listOf(
             CellInfo(
@@ -294,7 +295,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 value = "This is it",
                 displayValue = "The display value",
                 inputType = InputType.Text,
-                inputExtra = InputExtra.None,
+                inputExtra = null,
                 supportingText = emptyList(),
                 errors = emptyList(),
                 warnings = emptyList(),
@@ -306,7 +307,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 value = "This is other",
                 displayValue = "The display value",
                 inputType = InputType.Text,
-                inputExtra = InputExtra.None,
+                inputExtra = null,
                 supportingText = emptyList(),
                 errors = emptyList(),
                 warnings = emptyList(),
@@ -317,7 +318,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         )
         viewModel.dataSetScreenState.test {
             awaitInitialization()
-            whenever(getDataValueInput(any(), any())) doReturnConsecutively cellInfoData
+            whenever(getDataValueInput(any(), any(), any())) doReturnConsecutively cellInfoData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
@@ -457,7 +458,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             value = null,
             displayValue = null,
             inputType = InputType.Text,
-            inputExtra = InputExtra.None,
+            inputExtra = null,
             supportingText = emptyList(),
             errors = emptyList(),
             warnings = emptyList(),
@@ -465,7 +466,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             legendLabel = null,
             legendColor = null,
         )
-        whenever(getDataValueInput(any(), any())) doReturn cellInfo
+        whenever(getDataValueInput(any(), any(), any())) doReturn cellInfo
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()
@@ -476,6 +477,99 @@ internal class DataSetTableViewModelTest : KoinTest {
             verify(uiActionHandler).onCaptureOrgUnit(any(), any())
         }
     }
+
+    @Test
+    fun `should start call intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnCall(testingId, "111111111"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onCall(any(), any())
+        }
+    }
+
+    @Test
+    fun `should start send email intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnEmailAction(testingId, "email@email.com"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onSendEmail(any(), any())
+        }
+    }
+
+    @Test
+    fun `should start open url intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnLinkClicked(testingId, "www.test.com"))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onOpenLink(any(), any())
+        }
+    }
+
+    @Test
+    fun `should throw error if more than one data element is provided`() {
+        val exception = assertThrows<IllegalStateException> {
+            IdsProvider.getDataElementUid(
+                rowIds = listOf(TableId("dataElementId", TableIdType.DataElement)),
+                columnIds = listOf(TableId("dataElementId", TableIdType.DataElement)),
+            )
+        }
+        assertEquals(
+            "Only one data element can be provided",
+            exception.message,
+        )
+    }
+
+    @Test
+    fun `should throw error if more than one category option combo is provided`() = runTest {
+        val exception = assertThrows<IllegalStateException> {
+            IdsProvider.getCategoryOptionCombo(
+                rowIds = listOf(
+                    TableId("dataElementUid", TableIdType.DataElement),
+                    TableId("catOptionComboUid", TableIdType.CategoryOptionCombo),
+                ),
+                columnIds = listOf(TableId("catOptionComboUid", TableIdType.CategoryOptionCombo)),
+            )
+        }
+        assertEquals(
+            "Only one category option combo can be provided",
+            exception.message,
+        )
+    }
+
+    @Test
+    fun `should throw error if category options and category option combos are provided`() =
+        runTest {
+            val exception = assertThrows<IllegalStateException> {
+                IdsProvider.getCategoryOptionCombo(
+                    rowIds = listOf(
+                        TableId("dataElementUid", TableIdType.DataElement),
+                        TableId("catOptionUid", TableIdType.CategoryOption),
+                    ),
+                    columnIds = listOf(
+                        TableId("catOptionComboUid", TableIdType.CategoryOptionCombo),
+                    ),
+                )
+            }
+            assertEquals(
+                "Category options and category option combos cannot be provided at the same time",
+                exception.message,
+            )
+        }
 
     private suspend fun ReceiveTurbine<DataSetScreenState>.awaitInitialization() = with(this) {
         awaitItem()

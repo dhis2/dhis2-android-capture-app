@@ -2,10 +2,12 @@ package org.dhis2.mobile.aggregates.ui.states
 
 import androidx.compose.runtime.Stable
 import org.dhis2.mobile.aggregates.model.InputType
+import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
@@ -28,6 +30,8 @@ internal data class InputData(
     fun fileExtras() = inputExtra as InputExtra.File
     fun coordinateExtras() = inputExtra as InputExtra.Coordinate
     fun ageExtras() = inputExtra as InputExtra.Age
+    fun multiTextExtras() = inputExtra as InputExtra.MultiText
+    fun optionSetExtras() = inputExtra as InputExtra.OptionSet
 }
 
 internal sealed class InputExtra {
@@ -49,6 +53,18 @@ internal sealed class InputExtra {
 
     data class Age(
         val selectableDates: SelectableDates,
+    ) : InputExtra()
+
+    data class MultiText(
+        val numberOfOptions: Int,
+        val options: List<CheckBoxData>,
+        val optionsFetched: Boolean,
+    ) : InputExtra()
+
+    data class OptionSet(
+        val numberOfOptions: Int,
+        val options: List<RadioButtonData>,
+        val optionsFetched: Boolean,
     ) : InputExtra()
 
     data object None : InputExtra()

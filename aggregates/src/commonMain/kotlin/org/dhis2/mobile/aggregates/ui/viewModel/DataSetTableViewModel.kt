@@ -29,6 +29,7 @@ import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
+import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
@@ -42,10 +43,10 @@ import org.dhis2.mobile.aggregates.ui.UIActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
-import org.dhis2.mobile.aggregates.ui.inputs.TableId
-import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
+import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
+import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
@@ -147,11 +148,12 @@ internal class DataSetTableViewModel(
                 val sectionData = async { sectionData(sectionUid) }
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
-                        val dataSetSectionTitle = if (it.dataSetDetails.customTitle.isConfiguredTitle) {
-                            it.dataSetDetails.customTitle.header
-                        } else {
-                            it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
-                        }
+                        val dataSetSectionTitle =
+                            if (it.dataSetDetails.customTitle.isConfiguredTitle) {
+                                it.dataSetDetails.customTitle.header
+                            } else {
+                                it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
+                            }
                         it.copy(
                             dataSetDetails = it.dataSetDetails.copy(
                                 customTitle = DataSetCustomTitle(
@@ -209,11 +211,21 @@ internal class DataSetTableViewModel(
         tables + indicators
     }
 
-    fun updateSelectedCell(cellId: String?) {
+    fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false) {
         viewModelScope.launch(dispatcher.io()) {
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                getDataValueInput(rowIds, columnIds).toInputData(cellId)
+                val dataElementUid = getDataElementUid(rowIds, columnIds)
+                val categoryOptionComboUidData = getCategoryOptionCombo(
+                    rowIds,
+                    columnIds,
+                )
+
+                getDataValueInput(
+                    dataElementUid,
+                    categoryOptionComboUidData,
+                    fetchOptions,
+                ).toInputData(cellId)
             } else {
                 null
             }
@@ -240,7 +252,6 @@ internal class DataSetTableViewModel(
         viewModelScope.launch(dispatcher.io()) {
             val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
             val dataElementUid = getDataElementUid(rowIds, columnIds)
-
             when (uiAction) {
                 is UiAction.OnFocusChanged -> {
                 }
@@ -256,16 +267,31 @@ internal class DataSetTableViewModel(
                         value = uiAction.newValue,
                     ).fold(
                         onSuccess = {
-                            updateSelectedCell(uiAction.cellId)
+                            val fetchOptions =
+                                if ((_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                        ?.selectedCellInfo?.inputType is InputType.MultiText
+                                ) {
+                                    (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                        ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                                } else {
+                                    false
+                                }
+
+                            updateSelectedCell(uiAction.cellId, fetchOptions)
                         },
                         onFailure = {
-                            TODO()
                         },
                     )
                 }
 
                 is UiAction.OnAddImage -> TODO()
-                is UiAction.OnCall -> TODO()
+                is UiAction.OnCall -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onCall(uiAction.phoneNumber) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
+
                 is UiAction.OnCaptureCoordinates -> {
                     uiActionHandler.onCaptureCoordinates(
                         fieldUid = dataElementUid,
@@ -276,8 +302,20 @@ internal class DataSetTableViewModel(
                     }
                 }
                 is UiAction.OnDownloadImage -> TODO()
-                is UiAction.OnEmailAction -> TODO()
-                is UiAction.OnLinkClicked -> TODO()
+                is UiAction.OnEmailAction -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onSendEmail(uiAction.email) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
+
+                is UiAction.OnLinkClicked -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onOpenLink(uiAction.link) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
+
                 is UiAction.OnOpenFile -> TODO()
                 is UiAction.OnSelectFile -> TODO()
                 is UiAction.OnShareImage -> TODO()
@@ -294,16 +332,11 @@ internal class DataSetTableViewModel(
                         )
                     }
                 }
+
+                is UiAction.OnFetchOptions ->
+                    updateSelectedCell(uiAction.cellId, true)
             }
         }
-    }
-
-    private fun getDataElementUid(rowIds: List<TableId>, columnIds: List<TableId>): String {
-        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
-            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
-
-        return dataElementUids.firstOrNull()
-            ?: throw IllegalArgumentException("Only one data element is allowed")
     }
 
     fun onSaveClicked() {
