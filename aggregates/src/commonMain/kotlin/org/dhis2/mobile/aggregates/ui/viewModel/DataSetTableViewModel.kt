@@ -54,6 +54,7 @@ import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
@@ -75,6 +76,7 @@ internal class DataSetTableViewModel(
     private val runValidationRules: RunValidationRules,
     private val uiActionHandler: UIActionHandler,
     private val inputDataUiStateMapper: InputDataUiStateMapper,
+    private val fieldErrorMessageProvider: FieldErrorMessageProvider,
 ) : ViewModel() {
 
     private val _dataSetScreenState =
@@ -214,7 +216,12 @@ internal class DataSetTableViewModel(
         tables + indicators
     }
 
-    fun updateSelectedCell(cellId: String?, fetchOptions: Boolean = false) {
+    fun updateSelectedCell(
+        cellId: String?,
+        fetchOptions: Boolean = false,
+        newValue: String? = null,
+        validationError: String? = null,
+    ) {
         viewModelScope.launch(dispatcher.io()) {
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
@@ -231,6 +238,8 @@ internal class DataSetTableViewModel(
                 inputDataUiStateMapper.map(
                     cellId = cellId,
                     cellInfo = cellInfo,
+                    validationError = validationError,
+                    valueWithError = newValue,
                     isLastCell = isLastCell(cellId),
                     onDone = { updateSelectedCell(null) },
                     onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
@@ -247,6 +256,7 @@ internal class DataSetTableViewModel(
                                 cellId = cellId,
                                 updatedValue = inputData?.displayValue,
                                 legendData = inputData?.legendData,
+                                error = validationError,
                                 resourceManager = resourceManager,
                             )
                         },
@@ -301,6 +311,13 @@ internal class DataSetTableViewModel(
                             updateSelectedCell(uiAction.cellId, fetchOptions)
                         },
                         onFailure = {
+                            updateSelectedCell(
+                                cellId = uiAction.cellId,
+                                newValue = uiAction.newValue,
+                                validationError = fieldErrorMessageProvider.getFriendlyErrorMessage(
+                                    it,
+                                ),
+                            )
                         },
                     )
                 }

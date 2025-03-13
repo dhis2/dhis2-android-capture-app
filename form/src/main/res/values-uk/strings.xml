@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Допускаються лише значення від 0 до 100</string>
-    <string name="invalid_field">Будь ласка, перегляньте це поле</string>
-    <string name="formatting_error">Помилка форматування</string>
-    <string name="invalid_possitive">Допускаються лише додатні числа</string>
-    <string name="invalid_phone_number">Це недійсний номер телефону</string>
-    <string name="invalid_email">Електронна адреса невірна</string>
-    <string name="invalid_negative_number">Допускаються лише від’ємні числа</string>
-    <string name="invalid_possitive_zero">Дозволені лише додатні числа або нуль</string>
-    <string name="invalid_interval">Допускаються лише значення від 0 до 1</string>
-    <string name="validation_url">Це недійсна URL-адреса</string>
-    <string name="invalid_integer">Значення має бути цілим числом</string>
-    <string name="wrong_pattern">Це не правильний формат.</string>
-    <string name="pattern_error">Налаштований шаблон %s неправильний.</string>
     <string name="update_field_error">Це поле не вдалося оновити. Будь ласка, спробуйте ще раз</string>
     <string name="error">Помилка</string>
     <string name="unique_warning">Значення має бути унікальним, знайдено збіг. Значення не збереглось. Будь ласка, перевірте це.</string>
@@ -77,22 +64,7 @@
     <string name="take_photo">Зробити фото</string>
     <string name="warning_error_on_complete_title">Перевірте це!</string>
     <string name="action_do_not_show_again">Не показувати знову</string>
-    <string name="validation_error_message">надане значення не допускається для цього поля</string>
-    <string name="error_boolean_zero_is_not_false">Недійсний символ 0</string>
-    <string name="error_boolean_one_is_not_true">Недійсний символ 1</string>
-    <string name="error_boolean_malformed">Значення не є ні істинним, ні хибним</string>
-    <string name="error_date_parsing">Цей формат дати недійсний</string>
-    <string name="error_date_time_parsing">Цей формат дати й часу недійсний</string>
-    <string name="error_time_parsing">Цей формат часу недійсний</string>
-    <string name="error_letter_empty">Значення порожнє</string>
-    <string name="error_letter_more_than_one">Значення містить більше, ніж одну літеру</string>
-    <string name="error_letter_not_a_letter">Значення не є літерою</string>
-    <string name="error_text_too_long">Текст задовгий</string>
-    <string name="error_true_only_malformed">Значення не є ні істинним, ні хибним</string>
-    <string name="error_true_only_false_not_valid">Це поле може бути лише істинним</string>
-    <string name="error_true_only_one_is_not_true">Недійсний символ 1</string>
     <string name="data_values_save_error">Значення даних не можна зберегти за допомогою цих аргументів. Використовуйте інші.</string>
-    <string name="leading_zero_error">Нульові цифри на початку не допускаються</string>
     <string name="enrollment_single_section_label">Атрибути - %s</string>
     <string name="tei_coordinates">Координати для</string>
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>

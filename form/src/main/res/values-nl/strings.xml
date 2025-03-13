@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Alleen waarden van 0 tot 100 zijn toegestaan</string>
-    <string name="invalid_field">Controleer dit veld</string>
-    <string name="formatting_error">Formatteringsfout</string>
-    <string name="invalid_possitive">Alleen positieve getallen zijn toegestaan</string>
-    <string name="invalid_phone_number">dit is geen geldig telefoonnummer</string>
-    <string name="invalid_email">Dit is geen geldig e-mailadres</string>
-    <string name="invalid_negative_number">Alleen negatieve getallen zijn toegestaan</string>
-    <string name="invalid_possitive_zero">Alleen positieve getallen of nul toegestaan</string>
-    <string name="invalid_interval">Alleen waarden van 0 tot 1 zijn toegestaan</string>
-    <string name="validation_url">Dit is geen geldige URL</string>
-    <string name="invalid_integer">Waarde moet een geheel getal zijn</string>
-    <string name="wrong_pattern">Het is geen correct formaat.</string>
-    <string name="pattern_error">Het geconfigureerde patroon %s is verkeerd.</string>
     <string name="update_field_error">Dit veld kan niet worden bijgewerkt. Probeer het opnieuw</string>
     <string name="error">Fout</string>
     <string name="unique_warning">De waarde moet uniek zijn, er is een toeval gevonden. Het is niet opgeslagen. Controleer het alstublieft.</string>
@@ -72,22 +59,7 @@
     <string name="take_photo">Neem foto</string>
     <string name="warning_error_on_complete_title">Check dit!</string>
     <string name="action_do_not_show_again">Niet meer laten zien</string>
-    <string name="validation_error_message">de opgegeven waarde is niet toegestaan voor dit veld</string>
-    <string name="error_boolean_zero_is_not_false">Ongeldig teken 0</string>
-    <string name="error_boolean_one_is_not_true">Ongeldig teken 1</string>
-    <string name="error_boolean_malformed">Waarde is niet waar of onjuist</string>
-    <string name="error_date_parsing">Deze datumnotatie is niet geldig</string>
-    <string name="error_date_time_parsing">Deze datum- en tijdnotatie is niet geldig</string>
-    <string name="error_time_parsing">Deze tijdnotatie is niet geldig</string>
-    <string name="error_letter_empty">De waarde is leeg</string>
-    <string name="error_letter_more_than_one">De waarde bevat meer dan één letter</string>
-    <string name="error_letter_not_a_letter">De waarde is geen letter</string>
-    <string name="error_text_too_long">De tekst is te lang</string>
-    <string name="error_true_only_malformed">Waarde is niet waar of onwaar</string>
-    <string name="error_true_only_false_not_valid">Dit veld kan alleen waar zijn</string>
-    <string name="error_true_only_one_is_not_true">Ongeldig teken 1</string>
     <string name="data_values_save_error">DataValues kunnen niet worden opgeslagen met deze argumenten. Gebruik de andere.</string>
-    <string name="leading_zero_error">Voorloopnullen zijn niet toegestaan</string>
     <string name="enrollment_single_section_label">Kenmerken - %s</string>
     <string name="tei_coordinates">Coördinaten voor de</string>
     <string name="no_reserved_values">Er zijn geen gereserveerde waarden meer. Neem contact op met uw systeembeheerder</string>

@@ -35,6 +35,8 @@ internal class InputDataUiStateMapper(
     suspend fun map(
         cellId: String,
         cellInfo: CellInfo,
+        validationError: String?,
+        valueWithError: String?,
         isLastCell: Boolean,
         onDone: () -> Unit,
         onNext: () -> Unit,
@@ -43,7 +45,8 @@ internal class InputDataUiStateMapper(
             id = cellId,
             label = cellInfo.label,
             value = cellInfo.value,
-            displayValue = cellInfo.displayValue,
+            displayValue = valueWithError?.takeIf { valueWithError.isNotEmpty() }
+                ?: cellInfo.displayValue,
             inputType = cellInfo.inputType,
             inputShellState = InputShellState.UNFOCUSED,
             inputExtra = when (cellInfo.inputType) {
@@ -124,7 +127,7 @@ internal class InputDataUiStateMapper(
                     text = text,
                     state = SupportingTextState.DEFAULT,
                 )
-            } + cellInfo.errors.map { error ->
+            } + cellInfo.errors.plus(validationError).filterNotNull().map { error ->
                 SupportingTextData(
                     text = error,
                     state = SupportingTextState.ERROR,

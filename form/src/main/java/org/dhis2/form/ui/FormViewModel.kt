@@ -39,7 +39,7 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.form.ui.validation.validators.FieldMaskValidator
+import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ValueType
@@ -115,10 +115,8 @@ class FormViewModel(
 
         viewModelScope.launch(dispatcher.io()) {
             fieldListChannel.consumeEach { fieldListConfiguration ->
-                val result = async {
-                    repository.composeList(fieldListConfiguration.skipProgramRules)
-                }
-                _items.postValue(result.await())
+                val result = repository.composeList(fieldListConfiguration.skipProgramRules)
+                _items.postValue(result)
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
@@ -192,7 +190,7 @@ class FormViewModel(
         }
     }
 
-    private fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
+    private suspend fun createRowActionStore(it: FormIntent): Pair<RowAction, StoreResult> {
         val rowAction = rowActionFromIntent(it)
 
         if (rowAction.type == ActionType.ON_FOCUS) {
@@ -205,7 +203,7 @@ class FormViewModel(
         return Pair(rowAction, result)
     }
 
-    private fun processUserAction(action: RowAction): StoreResult {
+    private suspend fun processUserAction(action: RowAction): StoreResult {
         return when (action.type) {
             ActionType.ON_SAVE -> handleOnSaveAction(action)
             ActionType.ON_FOCUS, ActionType.ON_NEXT -> handleFocusOrNextAction(action)
@@ -231,7 +229,7 @@ class FormViewModel(
         )
     }
 
-    private fun handleOnSaveAction(action: RowAction): StoreResult {
+    private suspend fun handleOnSaveAction(action: RowAction): StoreResult {
         if (action.valueType == ValueType.COORDINATE) {
             repository.setFieldRequestingCoordinates(action.id, false)
         }
@@ -319,7 +317,7 @@ class FormViewModel(
         )
     }
 
-    private fun handleOnStoreFileAction(action: RowAction): StoreResult {
+    private suspend fun handleOnStoreFileAction(action: RowAction): StoreResult {
         val saveResult = repository.storeFile(action.id, action.value)
         return when (saveResult?.valueStoreResult) {
             ValueStoreResult.FILE_SAVED -> {
@@ -829,14 +827,12 @@ class FormViewModel(
     fun loadData() {
         loading.postValue(true)
         viewModelScope.launch(dispatcher.io()) {
-            val result = async {
-                repository.fetchFormItems(openErrorLocation)
-            }
+            val result = repository.fetchFormItems(openErrorLocation)
             dateFormatConfig = async {
                 repository.getDateFormatConfiguration()
             }.await()
             try {
-                _items.postValue(result.await())
+                _items.postValue(result)
             } catch (e: Exception) {
                 Timber.e(e)
                 _items.postValue(emptyList())

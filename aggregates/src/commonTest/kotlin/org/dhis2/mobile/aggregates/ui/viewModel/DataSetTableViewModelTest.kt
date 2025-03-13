@@ -247,6 +247,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             runValidationRules = get(),
             uiActionHandler = get(),
             inputDataUiStateMapper = get(),
+            fieldErrorMessageProvider = get(),
         )
     }
 
@@ -362,11 +363,13 @@ internal class DataSetTableViewModelTest : KoinTest {
             whenever(getDataValueInput(any(), any(), any())) doReturnConsecutively cellInfoData
             whenever(
                 inputDataUiStateMapper.map(
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
+                    cellId = any(),
+                    cellInfo = any(),
+                    validationError = anyOrNull(),
+                    valueWithError = anyOrNull(),
+                    isLastCell = any(),
+                    onDone = any(),
+                    onNext = any(),
                 ),
             ) doReturnConsecutively inputData
             viewModel.updateSelectedCell(testingId)
@@ -544,11 +547,13 @@ internal class DataSetTableViewModelTest : KoinTest {
         whenever(getDataValueInput(any(), any(), any())) doReturn cellInfo
         whenever(
             inputDataUiStateMapper.map(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
+                cellId = any(),
+                cellInfo = any(),
+                validationError = anyOrNull(),
+                valueWithError = anyOrNull(),
+                isLastCell = any(),
+                onDone = any(),
+                onNext = any(),
             ),
         ) doReturn inputData
 

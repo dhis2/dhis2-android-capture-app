@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Seules les valeurs de 0 à 100 sont autorisées</string>
-    <string name="invalid_field">Veuillez vérifier ce champ</string>
-    <string name="formatting_error">Erreur de formattage</string>
-    <string name="invalid_possitive">Seuls les nombres positifs sont autorisés</string>
-    <string name="invalid_phone_number">N´est pas un numéro de téléphone valide</string>
-    <string name="invalid_email">Ce n´est pas une adresse e-mail</string>
-    <string name="invalid_negative_number">Seuls les nombres négatifs sont autorisés</string>
-    <string name="invalid_possitive_zero">Seuls les nombres positifs ou zéro sont autorisés</string>
-    <string name="invalid_interval">Seules les valeurs de 0 à 1 sont autorisées</string>
-    <string name="validation_url">Ceci n\'est pas un lien URL valide</string>
-    <string name="invalid_integer">La valeur doit être un entier</string>
-    <string name="wrong_pattern">Ceci n\'est pas le format correcte.</string>
-    <string name="pattern_error">Le modèle configuré 1%s est erroné.</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>
     <string name="error">Erreur</string>
     <string name="unique_warning">La valeur doit être unique, une coincidence a été trouvée. Elle n\'a pas été sauvegardée. Veuillez vérifier. </string>

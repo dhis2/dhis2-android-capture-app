@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Chỉ cho phép giá trị từ 0 đến 100</string>
-    <string name="invalid_field">Xin vui lòng xem lại trường này</string>
-    <string name="formatting_error">Lỗi định dạng</string>
-    <string name="invalid_possitive">Chỉ cho phép số dương</string>
-    <string name="invalid_phone_number">Số điện thoại không hợp lệ</string>
-    <string name="invalid_email">Địa chỉ thư điện tử không hợp lệ</string>
-    <string name="invalid_negative_number">Chỉ cho phép số âm</string>
-    <string name="invalid_possitive_zero">Chỉ cho phép số nguyên hoặc số 0</string>
-    <string name="invalid_interval">Chỉ cho phép giá trị từ 0 đến 1</string>
-    <string name="validation_url">Đường dẫn liên kết không đúng</string>
-    <string name="invalid_integer">Giá trị phải là số nguyên</string>
-    <string name="wrong_pattern">Định dạng không đúng</string>
-    <string name="pattern_error">Cấu hình mẫu %s không đúng</string>
     <string name="update_field_error">Không thể cập nhật trường này. Xin vui lòng thử lại.</string>
     <string name="error">Lỗi</string>
     <string name="unique_warning">Giá trị phải là duy nhất, có một giá trị bị trùng. Nó chưa được lưu lại. Xin vui lòng kiểm tra. </string>
@@ -79,22 +66,7 @@
     <string name="take_photo">Chụp ảnh</string>
     <string name="warning_error_on_complete_title">Kiểm tra cái này!</string>
     <string name="action_do_not_show_again">Không hiển thị lại</string>
-    <string name="validation_error_message">giá trị cung cấp không phù hợp với trường này</string>
-    <string name="error_boolean_zero_is_not_false">Ký tự 0 không hợp lệ</string>
-    <string name="error_boolean_one_is_not_true">Ký tự 1 không hợp lệ</string>
-    <string name="error_boolean_malformed">Giá trị không phải là Đúng hoặc Sai</string>
-    <string name="error_date_parsing">Định dạng ngày này không hợp lệ</string>
-    <string name="error_date_time_parsing">Định dạng ngày và thời gian này không hợp lệ</string>
-    <string name="error_time_parsing">Định dạng thời gian này không hợp lệ</string>
-    <string name="error_letter_empty">Giá trị rỗng</string>
-    <string name="error_letter_more_than_one">Giá trị chứa nhiều hơn 1 ký tự</string>
-    <string name="error_letter_not_a_letter">Giá trị không phải là 1 ký tự</string>
-    <string name="error_text_too_long">Văn bản quá dài</string>
-    <string name="error_true_only_malformed">Giá trị không là Đúng hoặc Sai</string>
-    <string name="error_true_only_false_not_valid">Trường này chỉ có thể là Đúng</string>
-    <string name="error_true_only_one_is_not_true">Ký tự 1 không hợp lệ</string>
     <string name="data_values_save_error">Các Giá trị dữ liệu không thể được lưu bằng những đối số này. Vui lòng sử dụng đối số khác.</string>
-    <string name="leading_zero_error">Các số có số 0 đứng đầu không được chấp nhận</string>
     <string name="enrollment_single_section_label">Thuộc tính - %s</string>
     <string name="tei_coordinates">Tọa độ của </string>
     <string name="no_reserved_values">Không có giá trị dành riêng nào nữa. Liên hệ với quản lý của bạn</string>

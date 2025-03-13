@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">仅仅从0到100的值允许</string>
-    <string name="formatting_error">格式化错误</string>
-    <string name="invalid_possitive">仅仅允许正数。</string>
-    <string name="invalid_phone_number">不是有效的的电话号码</string>
-    <string name="invalid_email">不是有效的电子邮件</string>
-    <string name="invalid_negative_number">仅仅允许负数</string>
-    <string name="invalid_possitive_zero">仅仅允许正整数和零</string>
-    <string name="invalid_interval">仅仅 从0到1的值允许</string>
-    <string name="validation_url">没有有效的URL</string>
-    <string name="invalid_integer">值必须是一个整数</string>
-    <string name="wrong_pattern">不正确的格式</string>
     <string name="error">错误</string>
     <string name="unique_warning">值应该唯一，发现相同的。还没有保存，请检查。</string>
     <string name="select_time">选择时间</string>

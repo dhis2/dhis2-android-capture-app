@@ -18,7 +18,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.ValidationStrategy
 import org.hisp.dhis.android.core.common.ValueType
@@ -56,7 +56,7 @@ class FormRepositoryImpl(
     private val disableCollapsableSections: Boolean? =
         dataEntryRepository.disableCollapsableSections()
 
-    override fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
+    override suspend fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
         itemList = dataEntryRepository.list().blockingFirst() ?: emptyList()
         openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
@@ -75,7 +75,7 @@ class FormRepositoryImpl(
             dataEntryRepository.firstSectionToOpen()
     }
 
-    override fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
+    override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0
         return itemList
             .applyRuleEffects(skipProgramRules)
@@ -159,7 +159,7 @@ class FormRepositoryImpl(
         return ruleEffectsResult?.configurationErrors
     }
 
-    override fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult {
+    override suspend fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult {
         runDataIntegrity = true
         val itemsWithErrors = getFieldsWithError()
         val isEvent = dataEntryRepository.isEvent()
@@ -456,7 +456,7 @@ class FormRepositoryImpl(
 
     override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
-    private fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
+    private suspend fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
         itemList.find { item ->
             item.uid == errorItem.id
         }?.let { item ->
@@ -541,7 +541,7 @@ class FormRepositoryImpl(
         } ?: this
     }
 
-    private fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> {
+    private suspend fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> {
         return map { field ->
             if (field.isSection()) {
                 updateSection(field, this)
@@ -610,7 +610,7 @@ class FormRepositoryImpl(
         )
     }
 
-    private fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
+    private suspend fun updateField(fieldUiModel: FieldUiModel): FieldUiModel {
         val needsMandatoryWarning = hasMandatoryWarnings(fieldUiModel)
         if (needsMandatoryWarning) {
             mandatoryItemsWithoutValue[fieldUiModel.label] = fieldUiModel.programStageSection ?: ""
@@ -730,7 +730,7 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun List<FieldUiModel>.mergeListWithErrorFields(
+    private suspend fun List<FieldUiModel>.mergeListWithErrorFields(
         fieldsWithError: List<RowAction>,
     ): List<FieldUiModel> {
         mandatoryItemsWithoutValue.clear()

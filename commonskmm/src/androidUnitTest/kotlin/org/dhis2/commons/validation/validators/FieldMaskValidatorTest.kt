@@ -1,6 +1,7 @@
-package org.dhis2.form.ui.validation.validators
+package org.dhis2.commons.validation.validators
 
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
+import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -37,14 +38,6 @@ class FieldMaskValidatorTest {
     @Test
     fun `should call onSuccess if valueToEvaluate is empty`() {
         FieldMaskValidator("\'w\'w\'x\'x").validate("").fold(
-            { assertTrue(true) },
-            { assertTrue(false) },
-        )
-    }
-
-    @Test
-    fun `should call onSuccess if fieldMask is null`() {
-        FieldMaskValidator(null).validate("hello").fold(
             { assertTrue(true) },
             { assertTrue(false) },
         )
