@@ -35,16 +35,19 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnAddEvent()
         }
         eventRobot(composeTestRule) {
             typeOnDateParameter(
                 dateValue = "01012001",
             )
+            composeTestRule.waitForIdle()
             clickOnFormFabButton()
+            composeTestRule.waitForIdle()
             clickOnCompleteButton()
+            composeTestRule.waitForIdle()
         }
-        composeTestRule.waitForIdle()
         programEventsRobot(composeTestRule) {
             checkEventWasCreatedAndClosed()
         }
@@ -58,7 +61,9 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnEvent(eventDate)
+            composeTestRule.waitForIdle()
         }
 
         eventRobot(composeTestRule) {
@@ -73,21 +78,30 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnEvent(eventDate)
+            composeTestRule.waitForIdle()
         }
 
         eventRobot(composeTestRule) {
             clickOnFormFabButton()
+            composeTestRule.waitForIdle()
             clickOnCompleteButton()
+            composeTestRule.waitForIdle()
         }
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             checkEventIsComplete(eventDate)
+            composeTestRule.waitForIdle()
             clickOnEvent(eventDate)
+            composeTestRule.waitForIdle()
         }
 
         eventRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnReopen()
+            composeTestRule.waitForIdle()
             checkEventIsOpen()
         }
     }
@@ -99,17 +113,23 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(antenatalCare)
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnEvent(eventDate)
         }
         eventRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             openMenuMoreOptions()
+            composeTestRule.waitForIdle()
             clickOnDelete()
+            composeTestRule.waitForIdle()
             clickOnDeleteDialog()
+            composeTestRule.waitForIdle()
         }
         programEventsRobot(composeTestRule) {
             checkEventWasDeleted(eventDate)
+            composeTestRule.waitForIdle()
         }
-        composeTestRule.waitForIdle()
+
         rule.getScenario().onActivity {
             context.applicationContext.deleteDatabase(DB_TO_IMPORT)
         }
@@ -120,7 +140,9 @@ class ProgramEventTest : BaseTest() {
         prepareProgramAndLaunchActivity(informationCampaign)
 
         programEventsRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnMap()
+            composeTestRule.waitForIdle()
             checkMapIsDisplayed()
         }
     }

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,10 +22,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.R
 import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
@@ -45,10 +49,15 @@ fun EventListScreen(
             workingListViewModel,
         )
         val events = eventListViewModel.eventList.collectAsLazyPagingItems()
+
+        when (events.loadState.source) {
+        }
+
         when (events.loadState.refresh) {
             is LoadState.Error -> {
                 // no-op
             }
+
             LoadState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -84,16 +93,28 @@ fun EventListScreen(
                             val card = events[index]!!
                             ListCard(
                                 modifier = Modifier.testTag("EVENT_ITEM"),
+                                listCardState = rememberListCardState(
+                                    title = ListCardTitleModel(text = card.title),
+                                    description = card.description?.let {
+                                        ListCardDescriptionModel(
+                                            text = it,
+                                        )
+                                    },
+                                    lastUpdated = card.lastUpdated,
+                                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
+                                        additionalInfoList = card.additionalInfo,
+                                        syncProgressItem = AdditionalInfoItem(
+                                            key = stringResource(id = R.string.syncing),
+                                            value = "",
+                                        ),
+                                        expandLabelText = card.expandLabelText,
+                                        shrinkLabelText = card.shrinkLabelText,
+                                    ),
+                                ),
                                 listAvatar = card.avatar,
-                                title = ListCardTitleModel(text = card.title),
-                                lastUpdated = card.lastUpdated,
-                                additionalInfoList = card.additionalInfo,
                                 actionButton = card.actionButton,
-                                expandLabelText = card.expandLabelText,
-                                shrinkLabelText = card.shrinkLabelText,
                                 onCardClick = card.onCardCLick,
                             )
-
                             if (index == events.itemCount - 1) {
                                 Spacer(modifier = Modifier.padding(100.dp))
                             }
@@ -102,6 +123,5 @@ fun EventListScreen(
                 }
             }
         }
-        EventListIdlingResourceSingleton.decrement()
     }
 }

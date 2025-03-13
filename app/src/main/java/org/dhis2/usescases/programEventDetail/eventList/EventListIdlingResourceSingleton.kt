@@ -13,13 +13,11 @@ object EventListIdlingResourceSingleton {
         if (countingIdlingResource.isIdleNow) {
             countingIdlingResource.increment()
         }
-        countingIdlingResource.dumpStateToLogs()
     }
 
     fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
             countingIdlingResource.decrement()
         }
-        countingIdlingResource.dumpStateToLogs()
     }
 }

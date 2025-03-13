@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.model.ListCardUiModel
@@ -37,7 +39,6 @@ class EventListViewModel(
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
         filterManager.asFlow(viewModelScope)
             .flatMapLatest {
-                EventListIdlingResourceSingleton.increment()
                 eventRepository.filteredProgramEvents()
                     .map { pagingData ->
                         pagingData.map { event ->
@@ -73,6 +74,8 @@ class EventListViewModel(
             }.flowOn(dispatchers.io())
 
     val eventList = _eventList
+        .onStart { EventListIdlingResourceSingleton.increment() }
+        .onEach { EventListIdlingResourceSingleton.decrement() }
 
     fun refreshData() {
         filterManager.publishData()
