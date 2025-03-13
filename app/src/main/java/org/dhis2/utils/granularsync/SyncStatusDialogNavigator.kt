@@ -3,11 +3,12 @@ package org.dhis2.utils.granularsync
 import android.content.Context
 import android.content.Intent
 import org.dhis2.android.rtsm.ui.home.HomeActivity
+import org.dhis2.android.rtsm.utils.ActivityManager.Companion.startActivity
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.form.model.EventMode
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -152,14 +153,15 @@ class SyncStatusDialogNavigator(
     private fun navigateToDataSetInstanceTable(
         tableSyncItem: SyncStatusType.DataSetInstance,
     ): Intent? {
-        return if (context !is DataSetTableActivity) {
-            DataSetTableActivity.intent(
+        return if (context !is DataSetInstanceActivity) {
+            DataSetInstanceActivity.intent(
                 context,
                 tableSyncItem.dataSetUid,
                 tableSyncItem.orgUnitUid,
                 tableSyncItem.periodId,
                 tableSyncItem.attrOptComboUid,
-            ).openErrorLocation()
+                true,
+            )
         } else {
             null
         }

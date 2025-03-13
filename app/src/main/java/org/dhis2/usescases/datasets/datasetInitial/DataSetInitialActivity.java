@@ -26,7 +26,6 @@ import org.dhis2.data.dhislogic.OrganisationUnitExtensionsKt;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity;
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.periods.ui.DataSetPeriodDialog;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.category.CategoryDialog;
@@ -258,23 +257,13 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public void navigateToDataSetTable(String catOptionCombo, String periodId) {
-        if (featureConfig.isFeatureEnable(Feature.COMPOSE_AGGREGATES_SCREEN)) {
             Bundle bundle = new Bundle();
             bundle.putString(INTENT_EXTRA_DATA_SET_UID, dataSetUid);
             bundle.putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, selectedOrgUnit.uid());
             bundle.putString(INTENT_EXTRA_PERIOD_ID, periodId);
             bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptionCombo);
             startActivity(DataSetInstanceActivity.class, bundle, true, false, null);
-        } else {
-            Bundle bundle = DataSetTableActivity.getBundle(
-                    dataSetUid,
-                    selectedOrgUnit.uid(),
-                    periodId,
-                    catOptionCombo
-            );
 
-            startActivity(DataSetTableActivity.class, bundle, true, false, null);
-        }
 
     }
 

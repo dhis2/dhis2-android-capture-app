@@ -11,6 +11,7 @@ internal sealed class DataSetScreenState {
     data class Loaded(
         val dataSetDetails: DataSetDetails,
         val dataSetSections: List<DataSetSection>,
+        val initialSection: Int,
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
         val selectedCellInfo: InputDataUiState? = null,

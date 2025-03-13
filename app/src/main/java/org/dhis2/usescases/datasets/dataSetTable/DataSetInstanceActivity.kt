@@ -1,5 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.material3.SnackbarDuration
@@ -16,6 +18,11 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.mobile.aggregates.di.mappers.toDataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.ui.DataSetInstanceScreen
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_DATA_SET_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_UID
+import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
+import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -28,6 +35,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        enableEdgeToEdge()
+
         setContent {
             DHIS2Theme {
                 val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
@@ -86,5 +94,37 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
 
     companion object {
         private const val DATA_VALUE_SYNC = "DATA_VALUE_SYNC"
+
+        @JvmStatic
+        fun getBundle(
+            dataSetUid: String,
+            orgUnitUid: String,
+            periodId: String,
+            catOptCombo: String,
+            openErrorLocation: Boolean,
+        ): Bundle {
+            val bundle = Bundle()
+            bundle.putString(INTENT_EXTRA_DATA_SET_UID, dataSetUid)
+            bundle.putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, orgUnitUid)
+            bundle.putString(INTENT_EXTRA_PERIOD_ID, periodId)
+            bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptCombo)
+            bundle.putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, catOptCombo)
+            bundle.putBoolean(OPEN_ERROR_LOCATION, openErrorLocation)
+
+            return bundle
+        }
+
+        fun intent(
+            context: Context,
+            dataSetUid: String,
+            orgUnitUid: String,
+            periodId: String,
+            catOptCombo: String,
+            openErrorLocation: Boolean,
+        ): Intent {
+            val intent = Intent(context, DataSetInstanceActivity::class.java)
+            intent.putExtras(getBundle(dataSetUid, orgUnitUid, periodId, catOptCombo, openErrorLocation))
+            return intent
+        }
     }
 }

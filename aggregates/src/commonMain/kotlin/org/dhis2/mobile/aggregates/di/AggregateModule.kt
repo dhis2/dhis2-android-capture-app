@@ -42,6 +42,7 @@ internal val featureModule = module {
             orgUnitUid = params.get(),
             attrOptionComboUid = params.get(),
             dataSetInstanceRepository = get(),
+            openErrorLocation = params.get(),
         )
     }
 
@@ -148,6 +149,7 @@ internal val featureModule = module {
         val periodId = params.get<String>()
         val orgUnitUid = params.get<String>()
         val attrOptionComboUid = params.get<String>()
+        val openErrorLocation = params.getOrNull<Boolean>() ?: false
         val onClose = params.get<() -> Unit>()
         val context = params.get<Any>()
 
@@ -159,6 +161,7 @@ internal val featureModule = module {
                     periodId,
                     orgUnitUid,
                     attrOptionComboUid,
+                    openErrorLocation,
                 )
             },
             getDataSetSectionData = get {

@@ -44,6 +44,14 @@ internal interface DataSetInstanceRepository {
         sectionUid: String,
     ): List<TableGroup>
 
+    suspend fun getInitialSectionToLoad(
+        openErrorLocation: Boolean,
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        catOptCombo: String,
+    ): Int
+
     suspend fun dataSetInstanceSectionConfiguration(sectionUid: String): DataSetInstanceSectionConfiguration?
     suspend fun conflicts(
         dataSetUid: String,

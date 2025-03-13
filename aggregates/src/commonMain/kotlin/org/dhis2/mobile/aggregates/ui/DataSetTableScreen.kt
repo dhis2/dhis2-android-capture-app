@@ -111,6 +111,7 @@ fun DataSetInstanceScreen(
                 parameters.periodId,
                 parameters.organisationUnitUid,
                 parameters.attributeOptionComboUid,
+                parameters.openErrorLocation,
                 onBackClicked,
                 activity,
             )
@@ -289,6 +290,7 @@ fun DataSetInstanceScreen(
                                     .padding(all = Spacing.Spacing0),
                                 tabs = tabs,
                                 onSectionSelected = dataSetTableViewModel::onSectionSelected,
+                                initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                             )
                         } else {
                             ContentLoading(
@@ -303,6 +305,7 @@ fun DataSetInstanceScreen(
                         modifier = Modifier.fillMaxSize(),
                         dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
+                        initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                         onSectionSelected = dataSetTableViewModel::onSectionSelected,
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
@@ -385,6 +388,7 @@ private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
+    initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
     onCellClick: (cellId: String) -> Unit,
@@ -408,6 +412,7 @@ private fun DataSetSinglePane(
         SectionTabs(
             dataSetSections = dataSetSections,
             onSectionSelected = onSectionSelected,
+            selectedTab = initialTab,
         )
         Column(
             modifier = Modifier.background(
@@ -485,6 +490,7 @@ private fun DataSetSinglePane(
 private fun SectionTabs(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
+    selectedTab: Int,
     onSectionSelected: (uid: String) -> Unit,
 ) {
     val tabLabels = remember {
@@ -495,6 +501,7 @@ private fun SectionTabs(
             .height(Spacing.Spacing48)
             .fillMaxWidth(),
         tabLabels = tabLabels,
+        selectedTab = selectedTab,
         onTabClicked = { selectedTabIndex ->
             onSectionSelected(dataSetSections[selectedTabIndex].uid)
         },
