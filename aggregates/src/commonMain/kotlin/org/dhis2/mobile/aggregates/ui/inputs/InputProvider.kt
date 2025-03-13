@@ -39,7 +39,7 @@ import org.dhis2.mobile.aggregates.resources.input_date_out_of_range
 import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
-import org.dhis2.mobile.aggregates.ui.states.InputData
+import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -90,7 +90,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun InputProvider(
     modifier: Modifier = Modifier,
-    inputData: InputData,
+    inputData: InputDataUiState,
     onAction: (UiAction) -> Unit,
 ) {
     val savedTextSelection by remember(inputData.value) {

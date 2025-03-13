@@ -14,6 +14,7 @@ import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -134,6 +135,12 @@ internal val featureModule = module {
         )
     }
 
+    factory {
+        InputDataUiStateMapper(
+            resourceManager = get(),
+        )
+    }
+
     viewModel { params ->
         val dataSetUid = params.get<String>()
         val periodId = params.get<String>()
@@ -185,6 +192,7 @@ internal val featureModule = module {
             uiActionHandler = get {
                 parametersOf(context, dataSetUid)
             },
+            inputDataUiStateMapper = get(),
         )
     }
 }

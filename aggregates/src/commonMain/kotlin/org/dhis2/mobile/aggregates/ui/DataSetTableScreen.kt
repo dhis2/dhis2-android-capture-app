@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,11 +29,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,12 +48,9 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
-import org.dhis2.mobile.aggregates.resources.Res
-import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
-import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
@@ -84,7 +83,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -139,6 +137,13 @@ fun DataSetInstanceScreen(
                 duration = SnackbarDuration.Short,
             )
         }
+    }
+
+    var tableCellSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
+
+    LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection) {
+        tableCellSelection = (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection
+            ?: TableSelection.Unselected()
     }
 
     Scaffold(
@@ -244,6 +249,10 @@ fun DataSetInstanceScreen(
                                     onCellClick = dataSetTableViewModel::updateSelectedCell,
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
+                                    onCellSelected = { cellSelection ->
+                                        tableCellSelection = cellSelection
+                                    },
+                                    currentSelection = tableCellSelection,
                                 )
 
                             DataSetScreenState.Loading ->
@@ -298,6 +307,10 @@ fun DataSetInstanceScreen(
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
                         currentSection = dataSetScreenState.currentSection(),
+                        currentSelection = tableCellSelection,
+                        onCellSelected = { cellSelection ->
+                            tableCellSelection = cellSelection
+                        },
                     )
                 } else {
                     ContentLoading(
@@ -318,40 +331,38 @@ fun DataSetInstanceScreen(
                     targetOffsetY = { fullHeight -> fullHeight },
                 ),
             ) {
-                InputDialog(
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                        .testTag(INPUT_DIALOG_TAG),
-                    input = {
-                        selectedCellInfo?.let { inputData ->
+                selectedCellInfo?.let { inputData ->
+                    InputDialog(
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                            .testTag(INPUT_DIALOG_TAG),
+                        input = {
                             InputProvider(
                                 modifier = Modifier,
                                 inputData = inputData,
                                 onAction = dataSetTableViewModel::onUiAction,
                             )
-                        }
-                    },
-                    details = null,
-                    actionButton = {
-                        Button(
-                            style = ButtonStyle.FILLED,
-                            text = stringResource(Res.string.action_done),
-                            onClick = {
-                                dataSetTableViewModel.updateSelectedCell(null)
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "Done",
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .testTag(INPUT_DIALOG_DONE_TAG),
-                        )
-                    },
-                    onDismiss = {
-                        dataSetTableViewModel.updateSelectedCell(null)
-                    },
-                )
+                        },
+                        details = null,
+                        actionButton = {
+                            Button(
+                                style = ButtonStyle.FILLED,
+                                text = inputData.buttonAction.buttonText,
+                                onClick = inputData.buttonAction.action,
+                                icon = {
+                                    Icon(
+                                        imageVector = inputData.buttonAction.icon,
+                                        contentDescription = inputData.buttonAction.buttonText,
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .testTag(inputData.buttonAction.testTag),
+                            )
+                        },
+                        onDismiss = {
+                            dataSetTableViewModel.updateSelectedCell(null)
+                        },
+                    )
+                }
             }
         }
     }
@@ -377,7 +388,9 @@ private fun DataSetSinglePane(
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
     onCellClick: (cellId: String) -> Unit,
+    onCellSelected: (TableSelection) -> Unit,
     currentSection: String?,
+    currentSelection: TableSelection,
 ) {
     Column(
         modifier = modifier
@@ -457,6 +470,8 @@ private fun DataSetSinglePane(
                                 )
                             }
                         },
+                        onCellSelected = onCellSelected,
+                        currentSelection = currentSelection,
                     )
 
                 DataSetSectionTable.Loading ->
@@ -494,6 +509,8 @@ private fun DataSetTableContent(
     dataSetSectionTable: DataSetSectionTable,
     currentSection: String?,
     onCellClick: (cellId: String) -> Unit,
+    onCellSelected: (TableSelection) -> Unit,
+    currentSelection: TableSelection,
 ) {
     Column(
         modifier = modifier
@@ -541,6 +558,8 @@ private fun DataSetTableContent(
                             )
                         }
                     },
+                    onCellSelected = onCellSelected,
+                    currentSelection = currentSelection,
                 )
 
             DataSetSectionTable.Loading ->
@@ -565,9 +584,10 @@ private fun ContentLoading(
 @Composable
 private fun DataSetTable(
     tableModels: List<TableModel>,
-    currentSelection: TableSelection = TableSelection.Unselected(),
+    currentSelection: TableSelection,
     bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (cellId: String) -> Unit,
+    onCellSelected: (TableSelection) -> Unit,
 ) {
     DataTable(
         tableList = tableModels,
@@ -580,6 +600,7 @@ private fun DataSetTable(
 
             override fun onSelectionChange(newTableSelection: TableSelection) {
                 super.onSelectionChange(newTableSelection)
+                onCellSelected(newTableSelection)
             }
         },
         bottomContent = bottomContent,

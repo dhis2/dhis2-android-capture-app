@@ -38,7 +38,9 @@ import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CellSelected
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DISMISS_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
+import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG
@@ -187,16 +189,21 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithText(description, useUnmergedTree = true).assertIsDisplayed()
     }
 
-    fun typeOnInputDialog(value: String, inputTestTag: String, pressDone: Boolean = true) {
+    fun typeOnInputDialog(value: String, inputTestTag: String) {
         composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
-        if (pressDone) {
-            pressOnInputDialogDone()
-        }
         composeTestRule.waitForIdle()
     }
 
     fun pressOnInputDialogDone() {
         composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
+    }
+
+    fun pressOnInputDialogNext(){
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_NEXT_TAG).performClick()
+    }
+
+    fun pressOnInputDialogDismiss(){
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_DISMISS_TAG).performClick()
     }
 
     fun assertCellHasValue(

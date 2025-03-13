@@ -2,6 +2,8 @@ package org.dhis2.mobile.aggregates.ui.provider
 
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_can_not_be_performed
+import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.resources.action_next
 import org.dhis2.mobile.aggregates.resources.dataset_saved_completed
 import org.dhis2.mobile.aggregates.resources.default_column_label
 import org.dhis2.mobile.aggregates.resources.error
@@ -48,4 +50,8 @@ internal class ResourceManager {
     }
 
     suspend fun actionCantBePerformed(): String = getString(Res.string.action_can_not_be_performed)
+
+    suspend fun provideDone() = getString(Res.string.action_done)
+
+    suspend fun provideNext() = getString(Res.string.action_next)
 }
