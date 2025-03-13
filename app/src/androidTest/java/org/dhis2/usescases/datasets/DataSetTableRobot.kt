@@ -278,24 +278,32 @@ internal class DataSetTableRobot(
             timeoutMillis = 3000
         )
         composeTestRule.onNodeWithTag(SAVE_BUTTON_TAG).performClick()
-
+        composeTestRule.waitForIdle()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkCompleteDialogIsDisplayed() {
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag("COMPLETION"),3000)
         composeTestRule.onNodeWithTag("COMPLETION").assertIsDisplayed()
     }
 
     fun tapOnCompleteButton() {
         composeTestRule.onNodeWithTag(COMPLETION_DIALOG_BUTTON_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkMandatoryDialogIsDisplayed() {
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("MANDATORY_FIELDS"),
+            3000
+        )
         composeTestRule.onNodeWithTag("MANDATORY_FIELDS").assertIsDisplayed()
     }
 
     fun acceptMandatoryDialog() {
         composeTestRule.onNodeWithTag(MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun assertValidationBarIsDisplayed() {
