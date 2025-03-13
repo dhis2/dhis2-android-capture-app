@@ -253,17 +253,11 @@ class DataSetTest : BaseTest() {
 
         checkMandatoryDialogIsDisplayedAndAcceptStep()
 
-        enterDataStep(
+        enterTwoSequentialSteps(
             tableId = tableId,
-            cellId = cellMandatoryFieldCombination02Id,
-            value = "2",
-            inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
-        )
-
-        enterDataStep(
-            tableId = tableId,
-            cellId = cellMandatoryFieldCombination03Id,
-            value = "3",
+            firstCellId = cellMandatoryFieldCombination02Id,
+            firstValue = "2",
+            secondValue = "3",
             inputTestTag = "INPUT_POSITIVE_INTEGER_OR_ZERO_FIELD"
         )
 
@@ -496,6 +490,25 @@ class DataSetTest : BaseTest() {
         }
 
         logStep("Finished Enter value: $value into cell ${dataElementDescription ?: cellId}")
+    }
+
+    private fun enterTwoSequentialSteps(
+        tableId: String,
+        firstCellId: String,
+        firstValue:String,
+        secondValue: String,
+        inputTestTag: String,
+
+    ){
+        logStep("Starting Enter value: $firstValue into cell $firstCellId")
+        dataSetTableRobot(composeTestRule) {
+            clickOnCell(tableId, firstCellId)
+            typeOnInputDialog(firstValue, inputTestTag)
+            pressOnInputDialogNext()
+            typeOnInputDialog(secondValue, inputTestTag)
+            pressOnInputDialogDismiss()
+        }
+        logStep("Finished Enter value")
     }
 
     private fun checkTotalsUpdated(
