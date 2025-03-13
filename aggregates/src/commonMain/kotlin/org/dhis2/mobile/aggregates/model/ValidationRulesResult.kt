@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.model
 internal data class ValidationRulesResult(
     val validationResultStatus: ValidationResultStatus,
     val violations: List<Violation>,
+    val mandatory: Boolean = false,
 )
 
 internal data class Violation(

@@ -503,7 +503,12 @@ internal class DataSetTableViewModel(
                                     description = resourceManager.provideValidationErrorDescription(
                                         errors = rules.violations.size,
                                     ),
-                                    onExpandErrors = { expandValidationErrors(rules.violations) },
+                                    onExpandErrors = {
+                                        expandValidationErrors(
+                                            violations = rules.violations,
+                                            mandatory = rules.mandatory
+                                        )
+                                    },
                                 ),
                             )
                         } else {
@@ -516,13 +521,14 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun expandValidationErrors(violations: List<Violation>) {
+    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean) {
         viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
                     it.copy(
                         modalDialog = datasetModalDialogProvider.provideValidationRulesErrorDialog(
                             violations = violations,
+                            mandatory = mandatory,
                             onDismiss = { onModalDialogDismissed() },
                             onMarkAsComplete = { attemptToComplete() },
                         ),
