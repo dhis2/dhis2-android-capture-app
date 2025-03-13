@@ -195,7 +195,7 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
-    fun pressOnInputDialogDone(){
+    fun pressOnInputDialogDone() {
         composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
     }
 
@@ -271,7 +271,12 @@ internal class DataSetTableRobot(
         )
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun tapOnSaveButton() {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(SAVE_BUTTON_TAG),
+            timeoutMillis = 3000
+        )
         composeTestRule.onNodeWithTag(SAVE_BUTTON_TAG).performClick()
 
     }
@@ -391,6 +396,7 @@ internal class DataSetTableRobot(
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun assertCellBackgroundColor(
         tableId: String,
         cellId: String,
@@ -398,6 +404,11 @@ internal class DataSetTableRobot(
         expectedColor: String
     ) {
         val expectedAlphaColor = expectedColor.toColor().copy(0.3f)
+
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(cellTestTag(tableId, cellId)) and hasText(expectedValue),
+            timeoutMillis = 3000
+        )
 
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId))
             .assertIsDisplayed()
