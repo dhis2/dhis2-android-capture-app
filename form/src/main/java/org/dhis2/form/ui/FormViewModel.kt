@@ -115,10 +115,8 @@ class FormViewModel(
 
         viewModelScope.launch(dispatcher.io()) {
             fieldListChannel.consumeEach { fieldListConfiguration ->
-                val result = async {
-                    repository.composeList(fieldListConfiguration.skipProgramRules)
-                }
-                _items.postValue(result.await())
+                val result = repository.composeList(fieldListConfiguration.skipProgramRules)
+                _items.postValue(result)
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
@@ -829,14 +827,12 @@ class FormViewModel(
     fun loadData() {
         loading.postValue(true)
         viewModelScope.launch(dispatcher.io()) {
-            val result = async {
-                repository.fetchFormItems(openErrorLocation)
-            }
+            val result = repository.fetchFormItems(openErrorLocation)
             dateFormatConfig = async {
                 repository.getDateFormatConfiguration()
             }.await()
             try {
-                _items.postValue(result.await())
+                _items.postValue(result)
             } catch (e: Exception) {
                 Timber.e(e)
                 _items.postValue(emptyList())

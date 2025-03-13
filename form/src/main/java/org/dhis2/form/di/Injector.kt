@@ -91,7 +91,7 @@ object Injector {
                 recordUid = repositoryRecords.recordUid,
                 entryMode = repositoryRecords.entryMode,
             ),
-            fieldErrorMessageProvider = provideFieldErrorMessage(context),
+            fieldErrorMessageProvider = provideFieldErrorMessage(),
             displayNameProvider = provideDisplayNameProvider(context),
             dataEntryRepository = provideDataEntryRepository(
                 entryMode = repositoryRecords.entryMode,
@@ -234,7 +234,7 @@ object Injector {
         provideColorUtils(),
     )
 
-    private fun provideFieldErrorMessage(context: Context) = FieldErrorMessageProvider()
+    private fun provideFieldErrorMessage() = FieldErrorMessageProvider()
 
     private fun provideDisplayNameProvider(context: Context) = DisplayNameProviderImpl(
         OptionSetConfiguration(provideD2()),
