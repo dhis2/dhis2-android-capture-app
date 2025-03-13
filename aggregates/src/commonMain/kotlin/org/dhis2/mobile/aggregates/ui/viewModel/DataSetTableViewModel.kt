@@ -239,7 +239,7 @@ internal class DataSetTableViewModel(
                     cellId = cellId,
                     cellInfo = cellInfo,
                     validationError = validationError,
-                    newValue = newValue,
+                    valueWithError = newValue,
                     isLastCell = isLastCell(cellId),
                     onDone = { updateSelectedCell(null) },
                     onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
