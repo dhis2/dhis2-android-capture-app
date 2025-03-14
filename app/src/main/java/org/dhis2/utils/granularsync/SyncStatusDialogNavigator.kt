@@ -3,7 +3,6 @@ package org.dhis2.utils.granularsync
 import android.content.Context
 import android.content.Intent
 import org.dhis2.android.rtsm.ui.home.HomeActivity
-import org.dhis2.android.rtsm.utils.ActivityManager.Companion.startActivity
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
