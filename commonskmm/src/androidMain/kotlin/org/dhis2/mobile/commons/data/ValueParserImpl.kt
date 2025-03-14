@@ -1,11 +1,15 @@
 package org.dhis2.mobile.commons.data
 
 import org.dhis2.mobile.commons.model.internal.ValueInfo
+import org.dhis2.mobile.commons.resources.Res
+import org.dhis2.mobile.commons.resources.no
+import org.dhis2.mobile.commons.resources.yes
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.ValueType
+import org.jetbrains.compose.resources.getString
 
 internal class ValueParserImpl(private val d2: D2) : ValueParser {
 
@@ -24,6 +28,7 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
                 isDateTime = valueType == ValueType.DATETIME,
                 isTime = valueType == ValueType.TIME,
                 isCoordinate = valueType == ValueType.COORDINATE,
+                isBooleanType = valueType == ValueType.TRUE_ONLY || valueType == ValueType.BOOLEAN,
             )
         }
 
@@ -55,6 +60,9 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
         return GeometryHelper.getPoint(geometry).let {
             "Lat: ${it[1]}\nLong: ${it[0]}"
         }
+    }
+    override suspend fun valueFromBooleanType(value: String): String {
+        return if (value == "true") getString(Res.string.yes) else getString(Res.string.no)
     }
 
     override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) =
