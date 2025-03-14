@@ -9,6 +9,9 @@
     <string name="conf_error_value_to_assign_option_set">项目规则%s试图分配不属于选项集%s的值%s</string>
     <string name="conf_error_value_option_set">字段%s的值不属于%s中设置的选项集</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
+    <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
+    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
+    <string name="required">必须的</string>
     <string name="date">日期</string>
     <string name="hint_year">年</string>
     <string name="hint_month">月</string>
@@ -41,9 +44,13 @@
     <string name="complete">完成</string>
     <string name="discard_changes">忽略修改</string>
     <string name="saved">已经保存！</string>
+    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
+    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
     <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="not_now">现在不要</string>
+    <string name="save_anyway">仍然保存</string>
     <string name="keep_editing">继续编辑</string>
+    <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="discard_go_back">如果您现在退出，表单中的所有信息都将被丢弃。</string>
     <string name="field_errors_not_saved_discard">一些字段有错误并且它们没有被保存。 \n 如果您现在退出，更改将被丢弃。</string>
     <string name="field_errors_not_saved">一些字段有错误并且它们没有被保存。</string>
@@ -57,6 +64,7 @@
     <string name="copied_text">副本</string>
     <string name="empty_description">该字段没有相关信息</string>
     <string name="take_photo">拍照</string>
+    <string name="from_gallery_v2">来自画廊</string>
     <string name="warning_error_on_complete_title">检查</string>
     <string name="action_do_not_show_again">不再显示</string>
     <string name="data_values_save_error">无法使用这些参数保存 DataValues。使用另一个。</string>
@@ -64,8 +72,22 @@
     <string name="tei_coordinates">坐标</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
     <string name="incident_date">事件日期</string>
+    <string name="location_permission_denied">获取坐标需要位置权限。请在应用程序设置中启用它们</string>
+    <string name="open_with">打开用</string>
+    <string name="no_option_found">找不到选项</string>
+    <string name="download">下载</string>
     <string name="scan">扫描</string>
     <string name="qr_code">二维码</string>
     <string name="bar_code">条码</string>
     <string name="add_location">添加位置</string>
-    </resources>
+    <string name="form_without_fields">该表单没有配置任何字段</string>
+    <string name="event_details_section_title">%s详细信息</string>
+    <string name="event_data_section_title">%s 数据</string>
+    <string name="org_unit">机构</string>
+    <string name="coordinates">坐标</string>
+    <string name="category_combo">分类组合</string>
+    <string name="no_options">无可用选项</string>
+    <string name="cat_combo">分类选择框</string>
+    <string name="storage_permission_denied">没有授予存储权限。\n 您需要启用它才能使用此功能。</string>
+
+</resources>
