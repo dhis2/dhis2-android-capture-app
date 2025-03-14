@@ -291,7 +291,10 @@ fun DataSetInstanceScreen(
                                     )
                                     .padding(all = Spacing.Spacing0),
                                 tabs = tabs,
-                                onSectionSelected = dataSetTableViewModel::onSectionSelected,
+                                onSectionSelected = { sectionUid ->
+                                    tableCellSelection = TableSelection.Unselected()
+                                    dataSetTableViewModel.onSectionSelected(sectionUid)
+                                },
                                 initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                             )
                         } else {
@@ -308,7 +311,10 @@ fun DataSetInstanceScreen(
                         dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
-                        onSectionSelected = dataSetTableViewModel::onSectionSelected,
+                        onSectionSelected = { sectionUid ->
+                            tableCellSelection = TableSelection.Unselected()
+                            dataSetTableViewModel.onSectionSelected(sectionUid)
+                        },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = dataSetTableViewModel::updateSelectedCell,
                         currentSection = dataSetScreenState.currentSection(),

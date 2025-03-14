@@ -151,7 +151,10 @@ internal class DataSetTableViewModel(
             if (dataSetScreenState.value.currentSection() != sectionUid) {
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
-                        it.copy(dataSetSectionTable = DataSetSectionTable.Loading)
+                        it.copy(
+                            dataSetSectionTable = DataSetSectionTable.Loading,
+                            selectedCellInfo = null,
+                        )
                     } else {
                         it
                     }
