@@ -20,7 +20,7 @@ internal suspend fun TableModel.updateValue(
             tableCell.id == cellId
         }
         val totalsColumnCell =
-            tableRowModel.values.values.last().takeIf { hasTotalColumn }
+            tableRowModel.values.values.lastOrNull().takeIf { hasTotalColumn }
         if (cell != null) {
             val updatedValues = tableRowModel.values.toMutableMap()
             updatedValues[cell.column] = cell.copy(

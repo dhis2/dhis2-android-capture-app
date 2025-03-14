@@ -11,6 +11,7 @@ internal class GetDataSetInstanceData(
     private val orgUnitUid: String,
     private val attrOptionComboUid: String,
     private val dataSetInstanceRepository: DataSetInstanceRepository,
+    private val openErrorLocation: Boolean,
 ) {
     suspend operator fun invoke(scope: CoroutineScope): DataSetInstanceData = with(scope) {
         val dataSetDetails = async {
@@ -27,10 +28,21 @@ internal class GetDataSetInstanceData(
         val dataSetSections = async {
             dataSetInstanceRepository.getDataSetInstanceSections(datasetUid)
         }
+
+        val initialSectionToLoad = async {
+            dataSetInstanceRepository.getInitialSectionToLoad(
+                openErrorLocation = openErrorLocation,
+                dataSetUid = datasetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                catOptCombo = attrOptionComboUid,
+            )
+        }
         DataSetInstanceData(
             dataSetDetails = dataSetDetails.await(),
             dataSetRenderingConfig = dataSetRenderingConfig.await(),
             dataSetSections = dataSetSections.await(),
+            initialSectionToLoad = initialSectionToLoad.await(),
         )
     }
 }

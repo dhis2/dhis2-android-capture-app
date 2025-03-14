@@ -98,15 +98,21 @@ internal class DataSetTableViewModel(
                 dataSetSections = dataSetInstanceData.dataSetSections,
                 renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                 dataSetSectionTable = DataSetSectionTable.Loading,
+                initialSection = dataSetInstanceData.initialSectionToLoad,
             )
+            val initialSection = dataSetInstanceData.initialSectionToLoad
+
             val dataSetSectionTitle =
                 if (!dataSetInstanceData.dataSetDetails.customTitle.isConfiguredTitle && dataSetInstanceData.dataSetSections.isNotEmpty()) {
-                    dataSetInstanceData.dataSetSections.first().title
+                    dataSetInstanceData.dataSetSections[initialSection].title
                 } else {
                     dataSetInstanceData.dataSetDetails.customTitle.header
                 }
-            val sectionToLoad =
+            val sectionToLoad = if (initialSection != 0) {
+                dataSetInstanceData.dataSetSections[initialSection].uid
+            } else {
                 dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
+            }
             val sectionTable = async { sectionData(sectionToLoad) }
 
             _dataSetScreenState.update {
@@ -133,6 +139,7 @@ internal class DataSetTableViewModel(
                                 id = sectionToLoad,
                                 tableModels = sectionTable.await(),
                             ),
+                            initialSection = initialSection,
                         )
                 }
             }

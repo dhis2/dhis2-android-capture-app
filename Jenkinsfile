@@ -87,23 +87,6 @@ pipeline {
                             }
                         }
                     }
-                stage('Deploy compose-table module Tests') {
-                    environment {
-                        BROWSERSTACK = credentials('android-browserstack')
-                        compose_table_apk = sh(returnStdout: true, script: 'find compose-table/build/outputs -iname "*.apk" | sed -n 1p')
-                        compose_table_apk_path = "${env.WORKSPACE}/${compose_table_apk}"
-                        buildTag = "${env.GIT_BRANCH} - table"
-                    }
-                    steps {
-                        dir("${env.WORKSPACE}/scripts"){
-                            script {
-                                echo 'Browserstack deployment and running compose-table module tests'
-                                sh 'chmod +x browserstackJenkinsCompose.sh'
-                                sh './browserstackJenkinsCompose.sh'
-                            }
-                        }
-                    }
-                }
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')

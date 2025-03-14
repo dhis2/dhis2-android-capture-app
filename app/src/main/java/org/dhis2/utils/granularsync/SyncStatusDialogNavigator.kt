@@ -7,7 +7,7 @@ import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.form.model.EventMode
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -152,14 +152,15 @@ class SyncStatusDialogNavigator(
     private fun navigateToDataSetInstanceTable(
         tableSyncItem: SyncStatusType.DataSetInstance,
     ): Intent? {
-        return if (context !is DataSetTableActivity) {
-            DataSetTableActivity.intent(
+        return if (context !is DataSetInstanceActivity) {
+            DataSetInstanceActivity.intent(
                 context,
                 tableSyncItem.dataSetUid,
                 tableSyncItem.orgUnitUid,
                 tableSyncItem.periodId,
                 tableSyncItem.attrOptComboUid,
-            ).openErrorLocation()
+                true,
+            )
         } else {
             null
         }

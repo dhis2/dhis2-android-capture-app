@@ -395,6 +395,40 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
+    override suspend fun getInitialSectionToLoad(
+        openErrorLocation: Boolean,
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        catOptCombo: String,
+    ): Int {
+        return if (openErrorLocation) {
+            val sections = d2.dataSetModule().sections()
+                .byDataSetUid().eq(dataSetUid)
+                .withDataElements()
+                .blockingGet().associate {
+                    it.uid() to it.dataElements()?.map { dataElement -> dataElement.uid() }
+                }
+
+            val sectionWithError = d2.dataValueModule().dataValueConflicts()
+                .byDataSet(dataSetUid)
+                .byPeriod().eq(periodId)
+                .byOrganisationUnitUid().eq(orgUnitUid)
+                .byAttributeOptionCombo().eq(catOptCombo)
+                .blockingGet()?.mapNotNull { dataValueConflict ->
+                    dataValueConflict.dataElement()?.let { dataElementUid ->
+                        sections.filter { it.value?.contains(dataElementUid) == true }.keys
+                    }
+                }?.flatten()
+
+            return sectionWithError?.firstOrNull()?.let {
+                sections.keys.indexOf(it)
+            } ?: 0
+        } else {
+            0
+        }
+    }
+
     private fun pivotedHeaders(pivotedCategoryUid: String?) = pivotedCategoryUid?.let {
         d2.categoryModule().categories()
             .withCategoryOptions()

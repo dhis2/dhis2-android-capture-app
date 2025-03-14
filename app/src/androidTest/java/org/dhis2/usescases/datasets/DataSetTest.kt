@@ -603,31 +603,6 @@ class DataSetTest : BaseTest() {
         logStep("Finished Creating dataset instance $period")
     }
 
-    @Ignore("Old implementation")
-    @Test
-    fun shouldSelectNewCellIfCurrentHasNoErrorAndBlockSelectingNewCellIfCurrentHasError() {
-        startDataSetDetailActivity("BfMAe6Itzgt", "Child Health", ruleDataSetDetail)
-
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
-
-        dataSetTableRobot(composeTestRule) {
-            clickOnCell("dzjKKQq0cSO", 0, 0)
-            clickOnEditValue()
-            typeInput("5")
-            composeTestRule.waitForIdle()
-            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
-            assertCellSelected("dzjKKQq0cSO", 0, 1)
-
-            clickOnEditValue()
-            typeInput("5,,")
-            composeTestRule.waitForIdle()
-            composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
-            assertCellSelected("dzjKKQq0cSO", 0, 1)
-        }
-    }
-
     private fun logStep(message: String) {
         val bundle = Bundle()
         bundle.putString("Step", message)

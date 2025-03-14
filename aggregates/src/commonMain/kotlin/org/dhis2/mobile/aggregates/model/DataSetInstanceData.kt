@@ -4,4 +4,5 @@ internal data class DataSetInstanceData(
     val dataSetDetails: DataSetDetails,
     val dataSetRenderingConfig: DataSetRenderingConfig,
     val dataSetSections: List<DataSetSection>,
+    val initialSectionToLoad: Int,
 )

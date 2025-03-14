@@ -5,4 +5,5 @@ data class DataSetInstanceParameters(
     val periodId: String,
     val organisationUnitUid: String,
     val attributeOptionComboUid: String,
+    val openErrorLocation: Boolean,
 )

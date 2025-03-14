@@ -37,11 +37,12 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 fun AdaptiveTabRow(
     modifier: Modifier = Modifier,
     tabLabels: List<String>,
+    selectedTab: Int,
     onTabClicked: (index: Int) -> Unit,
 ) {
     if (tabLabels.isEmpty()) return
 
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(selectedTab) }
     val tabWidths = remember { mutableStateListOf<Int>() }
     var scrollable by remember { mutableStateOf(false) }
 
