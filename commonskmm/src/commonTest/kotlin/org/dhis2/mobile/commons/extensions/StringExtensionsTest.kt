@@ -31,7 +31,6 @@ class StringExtensionsTest : KoinTest {
     private val expectedValue = "Mary"
     private val expectedBooleanValue = "yes"
 
-
     @Before
     fun setUp() = runTest {
         startKoin {
@@ -125,7 +124,7 @@ class StringExtensionsTest : KoinTest {
         valueIsAValidFile = false,
         isCoordinate = false,
         isBooleanType = false,
-        )
+    )
     private val orgUnitValueInfo = ValueInfo(
         isDateTime = false,
         isDate = false,
