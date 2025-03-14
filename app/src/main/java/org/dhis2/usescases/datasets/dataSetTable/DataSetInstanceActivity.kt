@@ -25,7 +25,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class DataSetInstanceActivity : ActivityGlobalAbstract() {
@@ -37,7 +37,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
 //        enableEdgeToEdge()
 
         setContent {
-            DHIS2Theme {
+            TableTheme {
                 val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
                     WindowWidthSizeClass.Medium -> false
                     WindowWidthSizeClass.Compact -> false
@@ -65,7 +65,11 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
         }
     }
 
-    private fun showGranularSync(dataSetParams: DataSetInstanceParameters, snackbarHostState: SnackbarHostState, onUpdateData: () -> Unit) {
+    private fun showGranularSync(
+        dataSetParams: DataSetInstanceParameters,
+        snackbarHostState: SnackbarHostState,
+        onUpdateData: () -> Unit,
+    ) {
         SyncStatusDialog.Builder()
             .withContext(this)
             .withSyncContext(

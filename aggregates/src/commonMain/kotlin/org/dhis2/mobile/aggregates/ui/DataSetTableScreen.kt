@@ -9,8 +9,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -174,7 +176,6 @@ fun DataSetInstanceScreen(
                             )
                         },
                         onClick = { onSyncClicked({ dataSetTableViewModel.loadDataSet() }) },
-
                     )
                 },
                 title = {
@@ -401,12 +402,6 @@ private fun DataSetSinglePane(
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colorScheme.primary,
-            )
-            .clip(
-                RoundedCornerShape(
-                    topStart = Radius.L,
-                    topEnd = Radius.L,
-                ),
             ),
     ) {
         SectionTabs(
@@ -414,54 +409,41 @@ private fun DataSetSinglePane(
             onSectionSelected = onSectionSelected,
             selectedTab = initialTab,
         )
-        Column(
-            modifier = Modifier.background(
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(
-                    topStart = Radius.L,
-                    topEnd = Radius.L,
-                ),
-            ).clip(
-                RoundedCornerShape(
-                    topStart = Radius.L,
-                    topEnd = Radius.L,
-                ),
+
+        Box(
+            modifier = Modifier.clip(
+                shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
             ),
         ) {
-            val dataSetDetailsBottomPadding =
-                if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
-                    Spacing.Spacing24
-                } else {
-                    Spacing.Spacing8
-                }
-            DataSetDetails(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .padding(
-                        start = Spacing.Spacing16,
-                        end = Spacing.Spacing16,
-                        bottom = dataSetDetailsBottomPadding,
-                    ),
-                dataSetDetails = dataSetDetails,
-            )
-
-            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-                HtmlContentBox(
-                    text = it,
-                    modifier = Modifier.padding(
-                        bottom = Spacing.Spacing8,
-                        start = Spacing.Spacing16,
-                        end = Spacing.Spacing16,
-                    ),
-                )
-            }
-
             when (dataSetSectionTable) {
                 is DataSetSectionTable.Loaded ->
                     DataSetTable(
                         tableModels = dataSetSectionTable.tables(),
                         onCellClick = onCellClick,
+                        topContent = {
+                            Column(
+                                modifier = modifier.fillMaxWidth()
+                                    .padding(bottom = Spacing.Spacing24),
+                                verticalArrangement = spacedBy(Spacing.Spacing24),
+                            ) {
+                                DataSetDetails(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    dataSetDetails = dataSetDetails,
+                                )
+
+                                dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                                    HtmlContentBox(
+                                        text = it,
+                                        modifier = Modifier.padding(
+                                            bottom = Spacing.Spacing8,
+                                            start = Spacing.Spacing16,
+                                            end = Spacing.Spacing16,
+                                        ),
+                                    )
+                                }
+                            }
+                        },
                         bottomContent = {
                             dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                                 HtmlContentBox(
@@ -480,7 +462,7 @@ private fun DataSetSinglePane(
                     )
 
                 DataSetSectionTable.Loading ->
-                    ContentLoading(Modifier.weight(1f))
+                    ContentLoading(Modifier.fillMaxSize())
             }
         }
     }
@@ -519,40 +501,50 @@ private fun DataSetTableContent(
     onCellSelected: (TableSelection) -> Unit,
     currentSelection: TableSelection,
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
+    Box(
+        modifier = modifier,
     ) {
-        val dataSetDetailsBottomPadding =
-            if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
-                Spacing.Spacing24
-            } else {
-                Spacing.Spacing8
-            }
-        DataSetDetails(
-            modifier.padding(
-                start = Spacing.Spacing16,
-                end = Spacing.Spacing16,
-                bottom = dataSetDetailsBottomPadding,
-            ).animateContentSize(),
-            dataSetDetails = dataSetDetails,
-        )
-        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-            HtmlContentBox(
-                text = it,
-                modifier = Modifier.padding(
-                    bottom = Spacing.Spacing8,
-                    start = Spacing.Spacing16,
-                    end = Spacing.Spacing16,
-                ),
-            )
-        }
-
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     tableModels = dataSetSectionTable.tables(),
                     onCellClick = onCellClick,
+                    topContent = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            val dataSetDetailsBottomPadding =
+                                if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
+                                    Spacing.Spacing24
+                                } else {
+                                    Spacing.Spacing8
+                                }
+                            DataSetDetails(
+                                modifier.clip(
+                                    RoundedCornerShape(
+                                        topStart = Radius.L,
+                                        topEnd = Radius.L,
+                                    ),
+                                ).padding(
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                    bottom = dataSetDetailsBottomPadding,
+                                ).animateContentSize(),
+                                dataSetDetails = dataSetDetails,
+                            )
+
+                            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                                HtmlContentBox(
+                                    text = it,
+                                    modifier = Modifier.padding(
+                                        bottom = Spacing.Spacing8,
+                                        start = Spacing.Spacing16,
+                                        end = Spacing.Spacing16,
+                                    ),
+                                )
+                            }
+                        }
+                    },
                     bottomContent = {
                         dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                             HtmlContentBox(
@@ -570,7 +562,7 @@ private fun DataSetTableContent(
                 )
 
             DataSetSectionTable.Loading ->
-                ContentLoading(Modifier.weight(1f))
+                ContentLoading(Modifier.fillMaxSize())
         }
     }
 }
@@ -592,6 +584,7 @@ private fun ContentLoading(
 private fun DataSetTable(
     tableModels: List<TableModel>,
     currentSelection: TableSelection,
+    topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (cellId: String) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
@@ -610,6 +603,13 @@ private fun DataSetTable(
                 onCellSelected(newTableSelection)
             }
         },
+        topContent = topContent,
         bottomContent = bottomContent,
+        contentPadding = PaddingValues(
+            start = Spacing.Spacing16,
+            top = Spacing.Spacing8,
+            end = Spacing.Spacing16,
+            bottom = Spacing.Spacing200,
+        ),
     )
 }

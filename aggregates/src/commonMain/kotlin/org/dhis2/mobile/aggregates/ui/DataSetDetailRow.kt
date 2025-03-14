@@ -53,65 +53,65 @@ internal fun DataSetDetails(
         modifier = modifier,
         horizontalAlignment = columnContentAlignment,
     ) {
-        titleDetails.header?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = Spacing.Spacing16),
-                textAlign = textAlignment,
-                color = TextColor.OnSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        titleDetails.subHeader?.let { subHeaderText ->
-            if (titleDetails.header == null) Spacer(Modifier.height(Spacing.Spacing16))
-            val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
-            val textLayoutResult = textLayoutResultState.value
-            val subHeaderTextStyle =
-                MaterialTheme.typography.bodyMedium.copy(color = TextColor.OnSurfaceLight)
-                    .toSpanStyle()
-            var annotatedText by remember {
-                mutableStateOf(
-                    buildAnnotatedString {
-                        withStyle(style = ParagraphStyle(lineHeight = 20.sp)) {
-                            withStyle(style = subHeaderTextStyle) {
-                                append(subHeaderText)
-                            }
-                        }
-                    },
+        Column(
+            modifier = Modifier.fillMaxWidth()
+                .padding(vertical = Spacing.Spacing8),
+        ) {
+            titleDetails.header?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier,
+                    textAlign = textAlignment,
+                    color = TextColor.OnSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            if (textLayoutResult?.hasVisualOverflow == true) {
-                val lastCharIndex = textLayoutResult.getLineEnd(1)
-                val adjustedText = subHeaderText
-                    .substring(startIndex = 0, endIndex = lastCharIndex)
-                    .dropLast(3)
-                    .dropLastWhile { it == ' ' || it == '.' }
+            titleDetails.subHeader?.let { subHeaderText ->
+                if (titleDetails.header == null) Spacer(Modifier.height(Spacing.Spacing16))
+                val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
+                val textLayoutResult = textLayoutResultState.value
+                val subHeaderTextStyle =
+                    MaterialTheme.typography.bodyMedium.copy(color = TextColor.OnSurfaceLight)
+                        .toSpanStyle()
+                var annotatedText by remember {
+                    mutableStateOf(
+                        buildAnnotatedString {
+                            withStyle(style = ParagraphStyle(lineHeight = 20.sp)) {
+                                withStyle(style = subHeaderTextStyle) {
+                                    append(subHeaderText)
+                                }
+                            }
+                        },
+                    )
+                }
+                if (textLayoutResult?.hasVisualOverflow == true) {
+                    val lastCharIndex = textLayoutResult.getLineEnd(1)
+                    val adjustedText = subHeaderText
+                        .substring(startIndex = 0, endIndex = lastCharIndex)
+                        .dropLast(3)
+                        .dropLastWhile { it == ' ' || it == '.' }
 
-                val textWithAppliedOverflow = "$adjustedText..."
+                    val textWithAppliedOverflow = "$adjustedText..."
 
-                annotatedText = buildAnnotatedString {
-                    withStyle(style = subHeaderTextStyle) {
-                        append(textWithAppliedOverflow)
+                    annotatedText = buildAnnotatedString {
+                        withStyle(style = subHeaderTextStyle) {
+                            append(textWithAppliedOverflow)
+                        }
                     }
                 }
+                Text(
+                    text = annotatedText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = TextColor.OnSurfaceLight,
+                    textAlign = textAlignment,
+                    onTextLayout = { textLayoutResultState.value = it },
+                    maxLines = 2,
+                )
+                Spacer(modifier = Modifier.height(Spacing.Spacing8))
             }
-            Text(
-                text = annotatedText,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth(),
-                color = TextColor.OnSurfaceLight,
-                textAlign = textAlignment,
-                onTextLayout = { textLayoutResultState.value = it },
-                maxLines = 2,
-            )
-            Spacer(modifier = Modifier.height(Spacing.Spacing8))
-        }
-        if (titleDetails.header == null && titleDetails.subHeader == null) {
-            Spacer(modifier = Modifier.height(Spacing.Spacing24))
-        } else if (titleDetails.header != null && titleDetails.subHeader == null) {
-            Spacer(modifier = Modifier.height(Spacing.Spacing8))
         }
 
         LazyRow(
@@ -120,7 +120,7 @@ internal fun DataSetDetails(
             horizontalArrangement = rowContentAlignment,
 
         ) {
-            item {
+            item(key = dataSetDetails.dateLabel) {
                 if (editable) {
                     AssistChip(
                         label = dataSetDetails.dateLabel,
@@ -143,7 +143,7 @@ internal fun DataSetDetails(
                 Spacer(Modifier.size(Spacing.Spacing8))
             }
 
-            item {
+            item(key = dataSetDetails.orgUnitLabel) {
                 if (editable) {
                     AssistChip(
                         label = dataSetDetails.orgUnitLabel,
@@ -167,7 +167,7 @@ internal fun DataSetDetails(
             }
 
             dataSetDetails.catOptionComboLabel?.let { catOptionComboLabel ->
-                item {
+                item(key = catOptionComboLabel) {
                     if (editable) {
                         AssistChip(
                             label = catOptionComboLabel,

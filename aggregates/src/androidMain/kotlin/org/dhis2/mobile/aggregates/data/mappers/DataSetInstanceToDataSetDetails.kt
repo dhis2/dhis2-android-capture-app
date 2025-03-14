@@ -7,10 +7,19 @@ import org.hisp.dhis.android.core.dataset.CustomText
 import org.hisp.dhis.android.core.dataset.DataSetInstance
 import org.hisp.dhis.android.core.dataset.TextAlign
 
-internal fun DataSetInstance.toDataSetDetails(isDefaultCatCombo: Boolean, customText: CustomText?) = DataSetDetails(
-    customTitle = customText?.toCustomTitle() ?: DataSetCustomTitle(header = null, subHeader = null, textAlignment = null, isConfiguredTitle = false),
+internal fun DataSetInstance.toDataSetDetails(
+    isDefaultCatCombo: Boolean,
+    customText: CustomText?,
+    periodLabel: String,
+) = DataSetDetails(
+    customTitle = customText?.toCustomTitle() ?: DataSetCustomTitle(
+        header = null,
+        subHeader = null,
+        textAlignment = null,
+        isConfiguredTitle = false,
+    ),
     dataSetTitle = this.dataSetDisplayName(),
-    dateLabel = this.period(),
+    dateLabel = periodLabel,
     orgUnitLabel = this.organisationUnitDisplayName(),
     catOptionComboLabel = if (isDefaultCatCombo) {
         null
