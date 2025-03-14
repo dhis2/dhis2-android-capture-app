@@ -9,4 +9,5 @@ internal interface ValueParser {
     suspend fun valueFromOrgUnitAsOrgUnitName(value: String): String
     suspend fun valueFromFileAsPath(value: String): String
     suspend fun valueFromCoordinateAsLatLong(value: String): String
+    suspend fun valueFromBooleanType(value: String): String
 }

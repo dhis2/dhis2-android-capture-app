@@ -52,6 +52,10 @@ suspend fun String.userFriendlyValue(
                 }
             }
 
+            valueInfo.isBooleanType -> {
+                valueParser.valueFromBooleanType(this)
+            }
+
             valueInfo.isCoordinate ->
                 valueParser.valueFromCoordinateAsLatLong(this)
 
