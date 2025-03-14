@@ -681,6 +681,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+                initialSectionToLoad = 0,
             ),
         )
 
@@ -716,6 +717,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+                initialSectionToLoad = 0,
             ),
         )
 
@@ -749,6 +751,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
+                initialSectionToLoad = 0,
             ),
         )
 
