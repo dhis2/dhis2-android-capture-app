@@ -1,17 +1,26 @@
 package org.dhis2.mobile.commons.coroutine
 
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 object CoroutineTracker {
     private val activeTasks = atomic(0)
+    private val _isIdle = MutableStateFlow(true)
+
+    val isIdle: StateFlow<Boolean> get() = _isIdle
 
     fun increment() {
-        activeTasks.incrementAndGet()
+        val count = activeTasks.incrementAndGet()
+        _isIdle.value = false
+        idlingResource.increment()
+//        println("CoroutineTracker Incremented: $count")
     }
 
     fun decrement() {
-        activeTasks.decrementAndGet()
+        val count = activeTasks.decrementAndGet()
+        _isIdle.value = (count == 0)
+        idlingResource.decrement()
+//        println("CoroutineTracker Decremented: $count")
     }
-
-    fun isIdle(): Boolean = activeTasks.value == 0
 }
