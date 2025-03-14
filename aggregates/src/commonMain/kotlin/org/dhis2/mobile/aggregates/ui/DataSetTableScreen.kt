@@ -457,7 +457,7 @@ private fun DataSetSinglePane(
                                 )
                             }
                         },
-                    onCellSelected = onCellSelected,
+                        onCellSelected = onCellSelected,
                         currentSelection = currentSelection,
                     )
 
