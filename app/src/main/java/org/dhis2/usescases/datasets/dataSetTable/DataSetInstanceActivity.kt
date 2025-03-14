@@ -10,7 +10,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.dhis2.R
@@ -26,7 +25,6 @@ import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.LocalTableDimensions
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -39,12 +37,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
 //        enableEdgeToEdge()
 
         setContent {
-            TableTheme(
-                tableDimensions = LocalTableDimensions.current.copy(
-                    tableHorizontalPadding = 0.dp,
-                    tableVerticalPadding = 0.dp,
-                ),
-            ) {
+            TableTheme {
                 val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
                     WindowWidthSizeClass.Medium -> false
                     WindowWidthSizeClass.Compact -> false

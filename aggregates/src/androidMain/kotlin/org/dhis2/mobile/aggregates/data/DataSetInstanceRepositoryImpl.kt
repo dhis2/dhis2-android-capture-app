@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import org.dhis2.commons.periods.data.PeriodLabelProvider
 import org.dhis2.mobile.aggregates.data.mappers.toCustomTitle
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
@@ -34,9 +35,11 @@ import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
+import java.util.Locale
 
 internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
+    private val periodLabelProvider: PeriodLabelProvider,
 ) : DataSetInstanceRepository {
 
     override suspend fun getDataSetInstance(
@@ -64,7 +67,22 @@ internal class DataSetInstanceRepositoryImpl(
             .byAttributeOptionComboUid().eq(attrOptionComboUid)
             .blockingGet()
             .map { dataSetInstance ->
-                dataSetInstance.toDataSetDetails(isDefaultCatCombo = isDefaultCatCombo == true, customText = dataSetDTOCustomTitle)
+                val period = d2.periodModule().periods().byPeriodId().eq(dataSetInstance.period())
+                    .one().blockingGet()
+
+                dataSetInstance.toDataSetDetails(
+                    periodLabel = period?.let {
+                        periodLabelProvider(
+                            periodType = period.periodType(),
+                            periodId = period.periodId()!!,
+                            periodStartDate = period.startDate()!!,
+                            periodEndDate = period.endDate()!!,
+                            locale = Locale.getDefault(),
+                        )
+                    } ?: dataSetInstance.period(),
+                    isDefaultCatCombo = isDefaultCatCombo == true,
+                    customText = dataSetDTOCustomTitle,
+                )
             }
             .firstOrNull() ?: DataSetDetails(
             customTitle = dataSetDTOCustomTitle.toCustomTitle(),
@@ -372,7 +390,11 @@ internal class DataSetInstanceRepositoryImpl(
                         label = catCombo.displayName() ?: "",
                         subgroups = subGroups,
                         cellElements = cellElements,
-                        headerRows = getTableGroupHeaders(catCombo.uid(), subGroups, pivotedCategoryUid),
+                        headerRows = getTableGroupHeaders(
+                            catCombo.uid(),
+                            subGroups,
+                            pivotedCategoryUid,
+                        ),
                         headerCombinations = categoryOptionCombinations(
                             subGroups,
                             pivotedCategoryUid,
@@ -651,7 +673,8 @@ internal class DataSetInstanceRepositoryImpl(
         val dataElementValueType = dataElement?.valueType()?.toInputType()
         val inputType = requireNotNull(dataElementValueType).takeIf {
             (it !is InputType.MultiText) && dataElement.optionSet()?.uid() == null
-        } ?: if (dataElementValueType is InputType.MultiText) InputType.MultiText else InputType.OptionSet
+        }
+            ?: if (dataElementValueType is InputType.MultiText) InputType.MultiText else InputType.OptionSet
 
         return DataElementInfo(
             label = "${dataElement.displayFormName()}/${categoryOptionCombo?.displayName()}",

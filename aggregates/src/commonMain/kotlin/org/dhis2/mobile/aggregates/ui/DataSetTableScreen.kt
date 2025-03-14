@@ -9,8 +9,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -408,64 +410,60 @@ private fun DataSetSinglePane(
             selectedTab = initialTab,
         )
 
-        when (dataSetSectionTable) {
-            is DataSetSectionTable.Loaded ->
-                DataSetTable(
-                    tableModels = dataSetSectionTable.tables(),
-                    onCellClick = onCellClick,
-                    topContent = {
-                        Column(
-                            modifier = modifier.fillMaxWidth(),
-                        ) {
-                            val dataSetDetailsBottomPadding =
-                                if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
-                                    Spacing.Spacing24
-                                } else {
-                                    Spacing.Spacing8
+        Box(
+            modifier = Modifier.clip(
+                shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+            ),
+        ) {
+            when (dataSetSectionTable) {
+                is DataSetSectionTable.Loaded ->
+                    DataSetTable(
+                        tableModels = dataSetSectionTable.tables(),
+                        onCellClick = onCellClick,
+                        topContent = {
+                            Column(
+                                modifier = modifier.fillMaxWidth()
+                                    .padding(bottom = Spacing.Spacing24),
+                                verticalArrangement = spacedBy(Spacing.Spacing24),
+                            ) {
+                                DataSetDetails(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    dataSetDetails = dataSetDetails,
+                                )
+
+                                dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                                    HtmlContentBox(
+                                        text = it,
+                                        modifier = Modifier.padding(
+                                            bottom = Spacing.Spacing8,
+                                            start = Spacing.Spacing16,
+                                            end = Spacing.Spacing16,
+                                        ),
+                                    )
                                 }
-
-                            DataSetDetails(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
-                                        bottom = dataSetDetailsBottomPadding,
-                                    ),
-                                dataSetDetails = dataSetDetails,
-                            )
-
-                            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                            }
+                        },
+                        bottomContent = {
+                            dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                                 HtmlContentBox(
                                     text = it,
                                     modifier = Modifier.padding(
-                                        bottom = Spacing.Spacing8,
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
+                                        top = Spacing.Spacing24,
+                                        start = Spacing.Spacing0,
+                                        end = Spacing.Spacing0,
                                     ),
+
                                 )
                             }
-                        }
-                    },
-                    bottomContent = {
-                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
-                            HtmlContentBox(
-                                text = it,
-                                modifier = Modifier.padding(
-                                    top = Spacing.Spacing24,
-                                    start = Spacing.Spacing0,
-                                    end = Spacing.Spacing0,
-                                ),
-
-                            )
-                        }
-                    },
-                onCellSelected = onCellSelected,
+                        },
+                    onCellSelected = onCellSelected,
                         currentSelection = currentSelection,
                     )
 
-            DataSetSectionTable.Loading ->
-                ContentLoading(Modifier.fillMaxSize())
+                DataSetSectionTable.Loading ->
+                    ContentLoading(Modifier.fillMaxSize())
+            }
         }
     }
 }
@@ -504,8 +502,7 @@ private fun DataSetTableContent(
     currentSelection: TableSelection,
 ) {
     Box(
-        modifier = modifier
-            .padding(horizontal = Spacing.Spacing16, vertical = Spacing.Spacing24),
+        modifier = modifier,
     ) {
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
@@ -608,5 +605,11 @@ private fun DataSetTable(
         },
         topContent = topContent,
         bottomContent = bottomContent,
+        contentPadding = PaddingValues(
+            start = Spacing.Spacing16,
+            top = Spacing.Spacing8,
+            end = Spacing.Spacing16,
+            bottom = Spacing.Spacing200,
+        ),
     )
 }
