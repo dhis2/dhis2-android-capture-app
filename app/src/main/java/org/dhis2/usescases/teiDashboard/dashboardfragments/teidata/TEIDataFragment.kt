@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -76,6 +77,8 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
 import timber.log.Timber
 import javax.inject.Inject
+
+const val FETCH_EVENTS = "FETCH_EVENTS"
 
 class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
 
@@ -192,7 +195,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                 val eventLabel = bundle.getString(EVENT_LABEL) ?: getString(R.string.event)
                 val snackbar = Snackbar.make(
                     binding.teiRootView,
-                    requireContext().getString(R.string.event_cancelled, eventLabel.replaceFirstChar { it.uppercaseChar() }),
+                    requireContext().getString(
+                        R.string.event_cancelled,
+                        eventLabel.replaceFirstChar { it.uppercaseChar() },
+                    ),
                     Snackbar.LENGTH_LONG,
                 )
 
@@ -218,6 +224,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     snackbar.dismiss()
                 }
                 snackbar.show()
+                presenter.fetchEvents()
+            }
+
+            setFragmentResultListener(FETCH_EVENTS) { _, _ ->
                 presenter.fetchEvents()
             }
         }.root
@@ -293,6 +303,10 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     )
                 }
 
+                LaunchedEffect(dashboardModel) {
+                    presenter.fetchEvents()
+                }
+
                 TeiDetailDashboard(
                     infoBarModels = listOfNotNull(syncInfoBar, followUpInfoBar, enrollmentInfoBar),
                     card = card,
@@ -318,6 +332,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             }
         }
     }
+
     private fun onQuickAction(quickActionType: QuickActionType) {
         val teiDashboardActivity = activity as TeiDashboardMobileActivity
         when (quickActionType) {
@@ -325,15 +340,19 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
             QuickActionType.TRANSFER -> programUid?.let {
                 teiDashboardActivity.showOrgUnitSelector(it)
             }
+
             QuickActionType.COMPLETE_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
                 EnrollmentStatus.COMPLETED,
             )
+
             QuickActionType.CANCEL_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
                 EnrollmentStatus.CANCELLED,
             )
+
             QuickActionType.REOPEN_ENROLLMENT -> dashboardViewModel.updateEnrollmentStatus(
                 EnrollmentStatus.ACTIVE,
             )
+
             QuickActionType.MORE_ENROLLMENTS ->
                 teiDashboardActivity.goToEnrollmentList()
         }
@@ -467,7 +486,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun displayScheduleEvent(programStage: ProgramStage?, showYesNoOptions: Boolean, eventCreationType: EventCreationType) {
+    override fun displayScheduleEvent(
+        programStage: ProgramStage?,
+        showYesNoOptions: Boolean,
+        eventCreationType: EventCreationType,
+    ) {
         val model = dashboardViewModel.dashboardModel.value
         if (model is DashboardEnrollmentModel) {
             val programStages = programStage?.let { listOf(it.uid()) }
@@ -485,7 +508,11 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
         }
     }
 
-    override fun displayEnterEvent(eventUid: String, showYesNoOptions: Boolean, eventCreationType: EventCreationType) {
+    override fun displayEnterEvent(
+        eventUid: String,
+        showYesNoOptions: Boolean,
+        eventCreationType: EventCreationType,
+    ) {
         SchedulingDialog.enterEvent(
             eventUid = eventUid,
             showYesNoOptions = showYesNoOptions,
