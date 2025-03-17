@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
+import org.dhis2.mobile.aggregates.resources.add_file
 import org.dhis2.mobile.aggregates.resources.format_error
 import org.dhis2.mobile.aggregates.resources.input_action_accept
 import org.dhis2.mobile.aggregates.resources.input_action_cancel
@@ -353,7 +354,7 @@ internal fun InputProvider(
 
             InputFileResource(
                 title = inputData.label,
-                buttonText = "button text",
+                buttonText = stringResource(Res.string.add_file),
                 fileName = file?.name,
                 fileWeight = file?.length()?.let { fileSizeLabel(it) },
                 onSelectFile = {
