@@ -54,7 +54,7 @@ class StringExtensionsTest : KoinTest {
 
         whenever(valueParser.valueFromOptionSetAsOptionName(optionSetUid, "optionCode")) doReturn expectedOptionName
         whenever(valueParser.valueFromOrgUnitAsOrgUnitName("orgUnitUid")) doReturn expectedOrgUnitName
-        whenever(valueParser.valueFromFileAsPath("fileUid")) doReturn expectedPath
+        whenever(valueParser.valueToFileName("fileUid")) doReturn expectedPath
         whenever(valueParser.valueFromBooleanType("true")) doReturn expectedBooleanValue
     }
 
