@@ -48,7 +48,11 @@ internal class InputDataUiStateMapper(
             displayValue = valueWithError?.takeIf { valueWithError.isNotEmpty() }
                 ?: cellInfo.displayValue,
             inputType = cellInfo.inputType,
-            inputShellState = InputShellState.FOCUSED,
+            inputShellState = when {
+                validationError != null || cellInfo.errors.isNotEmpty() -> InputShellState.ERROR
+                cellInfo.warnings.isNotEmpty() -> InputShellState.WARNING
+                else -> InputShellState.FOCUSED
+            },
             inputExtra = when (cellInfo.inputType) {
                 InputType.Age -> InputExtra.Age(
                     selectableDates = SelectableDates("01011940", "12312300"),

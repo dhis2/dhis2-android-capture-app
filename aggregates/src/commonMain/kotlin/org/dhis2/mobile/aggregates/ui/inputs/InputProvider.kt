@@ -95,16 +95,16 @@ internal fun InputProvider(
     inputData: InputDataUiState,
     onAction: (UiAction) -> Unit,
 ) {
-    val savedTextSelection by remember(inputData.value) {
+    val savedTextSelection by remember(inputData.displayValue) {
         mutableStateOf(
-            TextRange(inputData.value?.length ?: 0),
+            TextRange(inputData.displayValue?.length ?: 0),
         )
     }
 
-    var textValue by remember(inputData.value) {
+    var textValue by remember(inputData.displayValue) {
         mutableStateOf(
             TextFieldValue(
-                text = inputData.value ?: "",
+                text = inputData.displayValue ?: "",
                 selection = savedTextSelection,
             ),
         )
