@@ -22,8 +22,15 @@ actual val commonsModule: Module
                         isPercentage = false,
                         valueIsAValidOrgUnit = false,
                         valueIsAValidFile = false,
+                        isCoordinate = false,
+                        isBooleanType = false,
                     )
                 }
+
+                override suspend fun valueFromMultiTextAsOptionNames(
+                    optionSetUid: String,
+                    value: String,
+                ) = value
 
                 override suspend fun valueFromOptionSetAsOptionName(
                     optionSetUid: String,
@@ -33,6 +40,9 @@ actual val commonsModule: Module
                 override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) = value
 
                 override suspend fun valueFromFileAsPath(value: String) = value
+                override suspend fun valueFromCoordinateAsLatLong(value: String) = value
+
+                override suspend fun valueFromBooleanType(value: String) = value
             }
         }
     }

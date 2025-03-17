@@ -5,9 +5,4 @@ interface CoroutineIdlingResource {
     fun decrement()
 }
 
-object DefaultIdlingResource : CoroutineIdlingResource {
-    override fun increment() {}
-    override fun decrement() {}
-}
-
 expect val idlingResource: CoroutineIdlingResource
