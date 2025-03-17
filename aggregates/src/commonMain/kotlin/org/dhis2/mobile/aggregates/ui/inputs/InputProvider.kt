@@ -17,6 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -114,6 +116,16 @@ internal fun InputProvider(
 
     val scope = rememberCoroutineScope()
 
+    val focusRequester = remember { FocusRequester() }
+    val modifierWithFocus = modifier
+        .focusRequester(focusRequester)
+
+    LaunchedEffect(inputData) {
+        if (inputData.inputType.isText() or inputData.inputType.isNumeric() or inputData.inputType.isDate()) {
+            focusRequester.requestFocus()
+        }
+    }
+
     when (inputData.inputType) {
         InputType.Age -> {
             var inputType by remember {
@@ -135,14 +147,24 @@ internal fun InputProvider(
                     is AgeInputType.Age ->
                         if (!inputData.value.isNullOrEmpty()) {
                             inputData.value.let {
-                                (inputType as AgeInputType.Age).copy(value = TextFieldValue(it, TextRange(it.length)))
+                                (inputType as AgeInputType.Age).copy(
+                                    value = TextFieldValue(
+                                        it,
+                                        TextRange(it.length),
+                                    ),
+                                )
                             }
                         }
 
                     is AgeInputType.DateOfBirth ->
                         if (!inputData.value.isNullOrEmpty()) {
                             inputData.value.let {
-                                (inputType as AgeInputType.DateOfBirth).copy(value = TextFieldValue(it, TextRange(it.length)))
+                                (inputType as AgeInputType.DateOfBirth).copy(
+                                    value = TextFieldValue(
+                                        it,
+                                        TextRange(it.length),
+                                    ),
+                                )
                             }
                         }
 
@@ -183,20 +205,21 @@ internal fun InputProvider(
                         is AgeInputType.Age -> {
                             type.value.text.getDateFromAge(type)
                         }
+
                         is AgeInputType.DateOfBirth -> type.value.text
                         else -> null
                     }
                     onAction(UiAction.OnValueChanged(inputData.id, value))
                 },
                 onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
         InputType.Boolean -> {
             InputYesNoField(
                 title = inputData.label,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 state = inputData.inputShellState,
                 inputStyle = inputData.inputStyle,
                 supportingText = inputData.supportingText,
@@ -231,7 +254,7 @@ internal fun InputProvider(
                 longitudeText = stringResource(Res.string.input_coordinate_longitude),
                 addLocationBtnText = stringResource(Res.string.input_coordinate_add_location),
                 isRequired = inputData.isRequired,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 onResetButtonClicked = {
                     onAction(UiAction.OnValueChanged(inputData.id, null))
                 },
@@ -282,7 +305,7 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
                 onNextClicked = { onAction(UiAction.OnNextClick(inputData.id)) },
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -301,7 +324,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 onEmailActionCLicked = {
                     onAction(
                         UiAction.OnEmailAction(
@@ -347,7 +370,7 @@ internal fun InputProvider(
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
                 isRequired = inputData.isRequired,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -373,7 +396,7 @@ internal fun InputProvider(
                 isRequired = inputData.isRequired,
                 load = { TODO() },
                 painterFor = { remember { it } },
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 onDownloadButtonClick = { onAction(UiAction.OnDownloadImage(inputData.id)) },
                 onShareButtonClick = { onAction(UiAction.OnShareImage(inputData.id)) },
                 onResetButtonClicked = { onAction(UiAction.OnValueChanged(inputData.id, null)) },
@@ -397,7 +420,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -417,7 +440,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -437,7 +460,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -457,7 +480,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -477,7 +500,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -497,7 +520,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -539,7 +562,7 @@ internal fun InputProvider(
                 InputRadioButton(
                     title = inputData.label,
                     radioButtonData = options,
-                    modifier = modifier,
+                    modifier = modifierWithFocus,
                     orientation = Orientation.VERTICAL,
                     state = inputData.inputShellState,
                     inputStyle = inputData.inputStyle,
@@ -579,7 +602,7 @@ internal fun InputProvider(
                     supportingTextData = inputData.supportingText,
                     legendData = inputData.legendData,
                     isRequiredField = inputData.isRequired,
-                    modifier = modifier,
+                    modifier = modifierWithFocus,
                     onResetButtonClicked = {
                         onAction(UiAction.OnValueChanged(inputData.id, null))
                     },
@@ -627,7 +650,7 @@ internal fun InputProvider(
                 InputCheckBox(
                     title = inputData.label,
                     checkBoxData = data,
-                    modifier = modifier,
+                    modifier = modifierWithFocus,
                     orientation = Orientation.VERTICAL,
                     state = inputData.inputShellState,
                     supportingText = inputData.supportingText,
@@ -687,7 +710,7 @@ internal fun InputProvider(
                             )
                         }
                     },
-                    modifier = modifier,
+                    modifier = modifierWithFocus,
                     noResultsFoundString = stringResource(Res.string.no_results_found),
                     searchToFindMoreString = stringResource(Res.string.search_to_find_more),
                     doneButtonText = stringResource(Res.string.action_done),
@@ -718,7 +741,7 @@ internal fun InputProvider(
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
                 notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -735,7 +758,7 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, it))
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 onOrgUnitActionCLicked = {
                     onAction(UiAction.OnOpenOrgUnitTree(inputData.id, inputData.value))
                 },
@@ -758,14 +781,14 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
         is InputType.PhoneNumber -> {
             InputPhoneNumber(
                 title = inputData.label,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 maxLength = 12,
                 minLength = 4,
                 state = inputData.inputShellState,
@@ -801,7 +824,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 inputStyle = inputData.inputStyle,
             )
         }
@@ -814,7 +837,7 @@ internal fun InputProvider(
                     enabled = true,
                     textInput = inputData.label,
                 ),
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 state = inputData.inputShellState,
                 inputStyle = inputData.inputStyle,
                 supportingText = inputData.supportingText,
@@ -841,7 +864,7 @@ internal fun InputProvider(
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
                 },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
             )
         }
 
@@ -861,7 +884,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                modifier = modifier,
+                modifier = modifierWithFocus,
                 onLinkActionCLicked = {
                     onAction(
                         UiAction.OnLinkClicked(

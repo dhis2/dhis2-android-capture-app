@@ -30,4 +30,31 @@ internal sealed class InputType {
     data object Image : InputType()
     data object GeoJson : InputType()
     data object MultiText : InputType()
+
+    fun isText() = listOf(
+        Text,
+        LongText,
+        Letter,
+        Time,
+        Username,
+        Url,
+        PhoneNumber,
+        Email,
+    ).contains(this)
+
+    fun isNumeric() = listOf(
+        Integer,
+        IntegerPositive,
+        IntegerNegative,
+        IntegerZeroOrPositive,
+        Number,
+        UnitInterval,
+        Percentage,
+    ).contains(this)
+
+    fun isDate() = listOf(
+        Date,
+        DateTime,
+        Age,
+    ).contains(this)
 }

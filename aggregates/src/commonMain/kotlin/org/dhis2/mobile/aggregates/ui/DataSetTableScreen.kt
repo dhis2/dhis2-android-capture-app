@@ -330,8 +330,11 @@ fun DataSetInstanceScreen(
                 }
             }
 
-            val selectedCellInfo =
-                (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo
+            val selectedCellInfo by remember {
+                derivedStateOf {
+                    (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo
+                }
+            }
 
             AnimatedVisibility(
                 visible = selectedCellInfo != null,
