@@ -11,6 +11,8 @@ import org.dhis2.mobile.aggregates.resources.error_on_complete_dataset
 import org.dhis2.mobile.aggregates.resources.errors
 import org.dhis2.mobile.aggregates.resources.field_mandatory
 import org.dhis2.mobile.aggregates.resources.field_required
+import org.dhis2.mobile.aggregates.resources.file_download_error
+import org.dhis2.mobile.aggregates.resources.file_downloaded
 import org.dhis2.mobile.aggregates.resources.mark_dataset_complete
 import org.dhis2.mobile.aggregates.resources.run_validation_rules
 import org.dhis2.mobile.aggregates.resources.saved
@@ -54,4 +56,8 @@ internal class ResourceManager {
     suspend fun provideDone() = getString(Res.string.action_done)
 
     suspend fun provideNext() = getString(Res.string.action_next)
+
+    suspend fun provideFileDownload() = getString(Res.string.file_downloaded)
+
+    suspend fun provideFileDownloadError() = getString(Res.string.file_download_error)
 }

@@ -13,6 +13,7 @@ import org.dhis2.mobile.commons.dates.timeFormat
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -35,8 +36,8 @@ suspend fun String.userFriendlyValue(
             valueInfo.parseToOrgUnitName() ->
                 valueParser.valueFromOrgUnitAsOrgUnitName(this)
 
-            valueInfo.parseToFilePath() ->
-                valueParser.valueFromFileAsPath(this)
+            valueInfo.parseToFileName() ->
+                valueParser.valueToFileName(this)
 
             valueInfo.isDate -> this.toDateFormat()
 
@@ -103,4 +104,7 @@ fun String.getDateFromAge(age: AgeInputType.Age): String? {
         null
     }
 }
+
+fun String.pathToFileName() = File(this).name
+
 private const val DB_FORMAT = "yyyy-MM-dd"

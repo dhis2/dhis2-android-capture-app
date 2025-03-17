@@ -48,6 +48,7 @@ internal sealed class InputExtra {
     ) : InputExtra()
 
     data class File(
+        val filePath: String?,
         val fileWeight: String?,
     ) : InputExtra()
 

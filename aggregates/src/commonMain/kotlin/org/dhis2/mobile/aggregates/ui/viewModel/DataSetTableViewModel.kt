@@ -23,6 +23,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
@@ -39,6 +40,7 @@ import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
+import org.dhis2.mobile.aggregates.ui.CallbackStatus
 import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
@@ -70,6 +72,7 @@ internal class DataSetTableViewModel(
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
     private val getDataValueInput: GetDataValueInput,
     private val setDataValue: SetDataValue,
+    private val uploadFile: UploadFile,
     private val computeResizeAction: ComputeResizeAction,
     private val resourceManager: ResourceManager,
     private val checkValidationRulesConfiguration: CheckValidationRulesConfiguration,
@@ -399,8 +402,31 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                is UiAction.OnOpenFile -> TODO()
-                is UiAction.OnSelectFile -> TODO()
+                is UiAction.OnOpenFile -> {
+                    val fileDownloadMsg = resourceManager.provideFileDownload()
+                    val fileDownloadErrorMsg = resourceManager.provideFileDownloadError()
+                    uiActionHandler.onOpenFile(
+                        uiAction.cellId,
+                        uiAction.filePath,
+                    ) { result ->
+                        result?.let {
+                            if (it == CallbackStatus.OK.name) {
+                                showSnackbar(fileDownloadMsg)
+                            } else {
+                                showSnackbar(fileDownloadErrorMsg)
+                            }
+                        }
+                    }
+                }
+                is UiAction.OnSelectFile -> {
+                    uiActionHandler.onSelectFile(
+                        uiAction.cellId,
+                    ) { result ->
+                        result?.let {
+                            uploadFile(uiAction.cellId, result)
+                        }
+                    }
+                }
                 is UiAction.OnShareImage -> TODO()
                 is UiAction.OnOpenOrgUnitTree -> {
                     uiActionHandler.onCaptureOrgUnit(
@@ -470,6 +496,21 @@ internal class DataSetTableViewModel(
             }
         }
         return null
+    }
+
+    private fun uploadFile(cellId: String, path: String) {
+        viewModelScope.launch {
+            val result = withContext(dispatcher.io()) {
+                uploadFile(path)
+            }
+            result.fold(
+                onSuccess = {
+                    onUiAction(UiAction.OnValueChanged(cellId, it))
+                },
+                onFailure = {
+                },
+            )
+        }
     }
 
     fun onSaveClicked() {

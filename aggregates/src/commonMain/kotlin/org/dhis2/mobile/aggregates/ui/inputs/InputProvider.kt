@@ -42,6 +42,7 @@ import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -88,6 +89,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing8
 import org.jetbrains.compose.resources.stringResource
+import java.io.File
 
 @Composable
 internal fun InputProvider(
@@ -338,30 +340,30 @@ internal fun InputProvider(
         }
 
         InputType.FileResource -> {
-            var uploadingState by remember(inputData.value) {
+            var uploadingState by remember(inputData.fileExtras().filePath) {
                 mutableStateOf(
-                    when (inputData.value) {
+                    when (inputData.fileExtras().filePath) {
                         null -> UploadFileState.ADD
                         else -> UploadFileState.LOADED
                     },
                 )
             }
 
+            val file = inputData.fileExtras().filePath?.let { File(it) }
+
             InputFileResource(
                 title = inputData.label,
                 buttonText = "button text",
-                fileName = inputData.value,
-                fileWeight = inputData.fileExtras().fileWeight,
+                fileName = file?.name,
+                fileWeight = file?.length()?.let { fileSizeLabel(it) },
                 onSelectFile = {
                     uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnSelectFile(inputData.id))
                 },
                 onUploadFile = {
-                    uploadingState = UploadFileState.UPLOADING
-                    onAction(UiAction.OnOpenFile(inputData.id))
+                    onAction(UiAction.OnOpenFile(inputData.id, inputData.fileExtras().filePath))
                 },
                 onClear = {
-                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnValueChanged(inputData.id, null))
                 },
                 uploadFileState = uploadingState,

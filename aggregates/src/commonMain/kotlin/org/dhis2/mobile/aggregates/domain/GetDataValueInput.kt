@@ -6,8 +6,8 @@ import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.dhis2.mobile.commons.extensions.userFriendlyValue
-import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 
 internal class GetDataValueInput(
     private val dataSetUid: String,
@@ -85,6 +85,15 @@ internal class GetDataValueInput(
                         },
                         optionsFetched = fetchOptions || optionCount < 7,
                     )
+                }
+                InputType.FileResource -> {
+                    value?.let {
+                        val filePath = repository.getFilePath(value)
+                        CellValueExtra.FileResource(
+                            filePath = filePath,
+                            fileWeight = filePath?.let { getFormattedFileSize(it) },
+                        )
+                    }
                 }
 
                 else -> null

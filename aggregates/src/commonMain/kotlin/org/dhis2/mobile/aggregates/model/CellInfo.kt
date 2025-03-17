@@ -21,4 +21,8 @@ internal sealed class CellValueExtra {
         val options: List<OptionData>,
         val optionsFetched: Boolean,
     ) : CellValueExtra()
+    data class FileResource(
+        val filePath: String?,
+        val fileWeight: String?,
+    ) : CellValueExtra()
 }

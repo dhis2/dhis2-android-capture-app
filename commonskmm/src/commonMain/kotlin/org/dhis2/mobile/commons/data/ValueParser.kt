@@ -7,7 +7,7 @@ internal interface ValueParser {
     suspend fun valueFromMultiTextAsOptionNames(optionSetUid: String, value: String): String
     suspend fun valueFromOptionSetAsOptionName(optionSetUid: String, value: String): String
     suspend fun valueFromOrgUnitAsOrgUnitName(value: String): String
-    suspend fun valueFromFileAsPath(value: String): String
+    suspend fun valueToFileName(value: String): String
     suspend fun valueFromCoordinateAsLatLong(value: String): String
     suspend fun valueFromBooleanType(value: String): String
 }
