@@ -7,7 +7,6 @@ import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.program.ProgramIndicator
-import org.hisp.dhis.android.core.program.ProgramRule
 import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
@@ -113,24 +112,24 @@ class EventIndicatorRepositoryTest {
         whenever(
             d2.programModule().programRules()
                 .byProgramUid().eq("programUid")
-                .get(),
-        ) doReturn Single.just(mockedRules())
+                .getUids(),
+        ) doReturn Single.just(mockedRuleUids())
         whenever(
             d2.programModule().programRuleActions()
                 .byProgramRuleUid(),
         ) doReturn mock()
         whenever(
             d2.programModule().programRuleActions()
-                .byProgramRuleUid().`in`(mockedRules().map { it.uid() }),
+                .byProgramRuleUid().`in`(mockedRuleUids()),
         ) doReturn mock()
         whenever(
             d2.programModule().programRuleActions()
-                .byProgramRuleUid().`in`(mockedRules().map { it.uid() })
+                .byProgramRuleUid().`in`(mockedRuleUids())
                 .byProgramRuleActionType(),
         ) doReturn mock()
         whenever(
             d2.programModule().programRuleActions()
-                .byProgramRuleUid().`in`(mockedRules().map { it.uid() })
+                .byProgramRuleUid().`in`(mockedRuleUids())
                 .byProgramRuleActionType().`in`(
                     ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                     ProgramRuleActionType.DISPLAYTEXT,
@@ -138,7 +137,7 @@ class EventIndicatorRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.programModule().programRuleActions()
-                .byProgramRuleUid().`in`(mockedRules().map { it.uid() })
+                .byProgramRuleUid().`in`(mockedRuleUids())
                 .byProgramRuleActionType().`in`(
                     ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                     ProgramRuleActionType.DISPLAYTEXT,
@@ -171,10 +170,8 @@ class EventIndicatorRepositoryTest {
         )
     }
 
-    private fun mockedRules(): List<ProgramRule> {
-        return listOf(
-            ProgramRule.builder().uid("rule_1").build(),
-        )
+    private fun mockedRuleUids(): List<String> {
+        return listOf("rule_1")
     }
 
     private fun mockedActions(): List<ProgramRuleAction> {
