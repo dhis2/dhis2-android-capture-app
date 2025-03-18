@@ -15,7 +15,6 @@ import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect

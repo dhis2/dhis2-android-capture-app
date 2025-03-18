@@ -22,12 +22,12 @@ class RuleEngineHelperTest {
     private fun createFeedbackRule(
         data: String,
         actionType: String,
-        priority: Int?
+        priority: Int?,
     ): Rule {
         return Rule(
             condition = "true",
             actions = listOf(
-                RuleAction(data = "'$data'", type = actionType)
+                RuleAction(data = "'$data'", type = actionType),
             ),
             uid = data,
             name = "Rule 1",
@@ -90,7 +90,7 @@ class RuleEngineHelperTest {
 
         assertEquals(
             ruleEffects.map { it.data },
-            listOf("Rule1", "Rule4", "Rule2", "Rule3")
+            listOf("Rule1", "Rule4", "Rule2", "Rule3"),
         )
     }
 }
