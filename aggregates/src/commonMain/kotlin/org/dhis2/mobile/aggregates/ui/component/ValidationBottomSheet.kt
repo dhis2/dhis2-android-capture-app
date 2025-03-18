@@ -52,6 +52,7 @@ internal fun ValidationBottomSheet(dataSetUIState: DataSetModalDialogUIState) {
                 type = dataSetUIState.type,
                 onPrimaryButtonClick = dataSetUIState.onPrimaryButtonClick,
                 onSecondaryButtonClick = dataSetUIState.onSecondaryButtonClick,
+                mandatory = dataSetUIState.mandatory,
             )
         },
         onDismiss = dataSetUIState.onDismiss,
@@ -103,6 +104,7 @@ private fun provideButtonBlock(
     type: DataSetModalType,
     onPrimaryButtonClick: () -> Unit,
     onSecondaryButtonClick: () -> Unit,
+    mandatory: Boolean,
 ) {
     when (type) {
         COMPLETION -> {
@@ -179,14 +181,16 @@ private fun provideButtonBlock(
                     BottomSheetShellDefaults.buttonBlockPaddings(),
                 ),
                 primaryButton = {
-                    Button(
-                        modifier = Modifier.testTag(
-                            VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG,
-                        ),
-                        style = ButtonStyle.TEXT,
-                        text = stringResource(Res.string.complete_anyway),
-                        onClick = onPrimaryButtonClick,
-                    )
+                    if (!mandatory) {
+                        Button(
+                            modifier = Modifier.testTag(
+                                VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG,
+                            ),
+                            style = ButtonStyle.TEXT,
+                            text = stringResource(Res.string.complete_anyway),
+                            onClick = onPrimaryButtonClick,
+                        )
+                    }
                 },
                 secondaryButton = {
                     Button(

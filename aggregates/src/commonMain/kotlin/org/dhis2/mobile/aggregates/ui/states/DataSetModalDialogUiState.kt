@@ -10,6 +10,7 @@ internal data class DataSetModalDialogUIState(
     val onSecondaryButtonClick: () -> Unit = {},
     val type: DataSetModalType,
     val violations: List<Violation>? = null,
+    val mandatory: Boolean = false,
 )
 
 internal enum class DataSetModalType {

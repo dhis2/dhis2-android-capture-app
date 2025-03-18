@@ -60,6 +60,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
+            implementation(libs.test.espresso.idlingresource)
         }
 
         androidUnitTest.dependencies {
