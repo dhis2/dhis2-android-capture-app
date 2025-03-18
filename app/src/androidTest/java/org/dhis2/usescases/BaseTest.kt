@@ -27,6 +27,8 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
 import org.dhis2.mobile.commons.coroutine.AndroidIdlingResource
+import org.dhis2.mobile.commons.coroutine.IdlingResourceProvider
+import org.dhis2.mobile.commons.coroutine.NoOpIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
@@ -85,6 +87,7 @@ open class BaseTest {
     }
 
     private fun registerCountingIdlingResource() {
+        IdlingResourceProvider.idlingResource = AndroidIdlingResource
         IdlingRegistry.getInstance().register(
             EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
@@ -99,6 +102,7 @@ open class BaseTest {
     }
 
     private fun unregisterCountingIdlingResource() {
+        IdlingResourceProvider.idlingResource = NoOpIdlingResource
         IdlingRegistry.getInstance()
             .unregister(
                 EventListIdlingResourceSingleton.countingIdlingResource,

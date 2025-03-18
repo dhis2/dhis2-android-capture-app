@@ -4,5 +4,3 @@ interface CoroutineIdlingResource {
     fun increment()
     fun decrement()
 }
-
-expect val idlingResource: CoroutineIdlingResource

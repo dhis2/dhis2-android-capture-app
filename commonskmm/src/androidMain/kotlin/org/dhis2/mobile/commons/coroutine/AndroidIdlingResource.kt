@@ -18,6 +18,3 @@ object AndroidIdlingResource : CoroutineIdlingResource {
 
     fun getIdlingResource() = countingIdlingResource
 }
-
-// Provide the actual instance for Android
-actual val idlingResource: CoroutineIdlingResource = AndroidIdlingResource

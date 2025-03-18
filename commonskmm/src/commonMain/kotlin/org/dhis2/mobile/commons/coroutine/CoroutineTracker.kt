@@ -13,14 +13,14 @@ object CoroutineTracker {
     fun increment() {
         val count = activeTasks.incrementAndGet()
         _isIdle.value = false
-        idlingResource.increment()
+        IdlingResourceProvider.idlingResource.increment()
 //        println("CoroutineTracker Incremented: $count")
     }
 
     fun decrement() {
         val count = activeTasks.decrementAndGet()
         _isIdle.value = (count == 0)
-        idlingResource.decrement()
+        IdlingResourceProvider.idlingResource.decrement()
 //        println("CoroutineTracker Decremented: $count")
     }
 }
