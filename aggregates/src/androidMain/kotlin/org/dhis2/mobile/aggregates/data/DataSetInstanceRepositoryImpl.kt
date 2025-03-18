@@ -665,6 +665,10 @@ internal class DataSetInstanceRepositoryImpl(
         val categoryOptionCombo = d2.categoryModule().categoryOptionCombos()
             .uid(categoryOptionComboUid)
             .blockingGet()
+        val isDefaultCategoryCombo = d2.categoryModule().categoryCombos()
+            .uid(categoryOptionCombo?.categoryCombo()?.uid())
+            .blockingGet()
+            ?.isDefault ?: false
         val isMandatory = d2.dataSetModule().dataSets().withCompulsoryDataElementOperands()
             .uid(dataSetUid)
             .blockingGet()
@@ -679,8 +683,17 @@ internal class DataSetInstanceRepositoryImpl(
         }
             ?: if (dataElementValueType is InputType.MultiText) InputType.MultiText else InputType.OptionSet
 
+        val categoryOptionComboSuffix =
+            if (isDefaultCategoryCombo) {
+                ""
+            } else {
+                " / ${categoryOptionCombo?.displayName()}"
+            }
+
+        val dataElementLabel = "${dataElement.displayFormName()}$categoryOptionComboSuffix"
+
         return DataElementInfo(
-            label = "${dataElement.displayFormName()}/${categoryOptionCombo?.displayName()}",
+            label = dataElementLabel,
             inputType = inputType,
             description = dataElement.displayDescription(),
             isRequired = isMandatory,
