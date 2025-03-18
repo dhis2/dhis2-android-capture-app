@@ -3,13 +3,9 @@ package org.dhis2.usescases.datasets
 import android.app.Instrumentation
 import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performImeAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import org.dhis2.commons.featureconfig.model.Feature
-import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
@@ -18,8 +14,8 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
+import org.hisp.dhis.android.core.D2Manager
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,7 +34,6 @@ class DataSetTest : BaseTest() {
 
     override fun teardown() {
         super.teardown()
-        disableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         cleanLocalDatabase()
     }
 
@@ -46,8 +41,6 @@ class DataSetTest : BaseTest() {
     fun datasetAutomate() = runTest {
         val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
-
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
             uid = "BfMAe6Itzgt",
@@ -88,7 +81,6 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun formConfigurationTestAutomate() = runTest {
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
         // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
         waitForTableToBeVisible()
@@ -103,6 +95,19 @@ class DataSetTest : BaseTest() {
         checkAutomaticGroupingDisabled()
         // Step - ANDROAPP-6811 Pivot options (click on sections 5, 13, 23)
         checkPivotOptions()
+    }
+
+    @Test
+    fun checkAllSections() = runTest {
+        enterDataSetStep("DMicXfEri6s", "Form configuration options")
+        waitForTableToBeVisible()
+        D2Manager.getD2().dataSetModule().sections().byDataSetUid().eq("DMicXfEri6s").blockingGet()
+            .forEachIndexed { sectionIndex, section ->
+                dataSetTableRobot(composeTestRule) {
+                    clickOnSection(sectionIndex, section.displayName()!!)
+                    assertTableIsDisplayed()
+                }
+            }
     }
 
     private fun checkCustomTitleIsDisplayed() {
@@ -162,8 +167,6 @@ class DataSetTest : BaseTest() {
         val cellValidationRuleId = "PGRlPktGbkZwYnFEcWppOjxjb2M+SGxsdlg1MGNYQzA="
         val cellMandatoryId = "PGRlPnpGRmIzYmFyNEN0Ojxjb2M+SGxsdlg1MGNYQzA="
 
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
-
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
@@ -219,8 +222,6 @@ class DataSetTest : BaseTest() {
         val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
         val legendTableId = "bjDvmb4bfuf"
         val cellLegendId = "PGRlPlVzU1VYMGNwS3NIOjxjb2M+SGxsdlg1MGNYQzA="
-
-        enableFeatureConfigValue(Feature.COMPOSE_AGGREGATES_SCREEN)
 
         enterDataSetStep(
             uid = dataSetUid,
@@ -495,11 +496,11 @@ class DataSetTest : BaseTest() {
     private fun enterTwoSequentialSteps(
         tableId: String,
         firstCellId: String,
-        firstValue:String,
+        firstValue: String,
         secondValue: String,
         inputTestTag: String,
 
-    ){
+        ) {
         logStep("Starting Enter value: $firstValue into cell $firstCellId")
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, firstCellId)
