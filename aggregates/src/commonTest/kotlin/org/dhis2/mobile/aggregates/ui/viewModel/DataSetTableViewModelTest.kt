@@ -628,9 +628,55 @@ internal class DataSetTableViewModelTest : KoinTest {
 
         viewModel.dataSetScreenState.test {
             awaitInitialization()
-            viewModel.onUiAction(UiAction.OnOpenFile(testingId, filepath))
+            viewModel.onUiAction(UiAction.OnDownloadFile(testingId, filepath))
             testDispatcher.scheduler.advanceUntilIdle()
-            verify(uiActionHandler).onOpenFile(any(), any(), any())
+            verify(uiActionHandler).onDownloadFile(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `should start a share image intent`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        val filepath = "filepath"
+
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnShareImage(testingId, filepath))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onShareImage(any(), any())
+        }
+    }
+
+    @Test
+    fun `should select image from gallery`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnAddImage(testingId))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onAddImage(any(), any())
+        }
+    }
+
+    @Test
+    fun `should open camera to take photo`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnTakePhoto(testingId))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onTakePicture(any())
         }
     }
 

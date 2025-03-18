@@ -80,7 +80,9 @@ internal class InputDataUiStateMapper(
                     },
                 )
 
-                InputType.FileResource -> (cellInfo.inputExtra as? CellValueExtra.FileResource)?.let {
+                InputType.FileResource,
+                InputType.Image,
+                -> (cellInfo.inputExtra as? CellValueExtra.FileResource)?.let {
                     InputExtra.File(
                         filePath = it.filePath,
                         fileWeight = it.fileWeight,

@@ -91,7 +91,8 @@ android {
     namespace = "org.dhis2.mobile.aggregates"
     compileSdk = libs.versions.sdk.get().toInt()
 
-    sourceSets["main"].res.srcDirs("aggregates/src/androidMain/res", "aggregates/src/commonMain/composeResources")
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/androidMain/res", "aggregates/src/commonMain/composeResources")
     sourceSets["main"].resources.srcDirs("aggregates/src/commonMain/composeResources")
 
     defaultConfig {
