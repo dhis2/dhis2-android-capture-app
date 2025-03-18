@@ -68,8 +68,7 @@ abstract class BaseIndicatorRepository(
     }
 
     fun getRulesIndicators(): Flowable<List<AnalyticsModel>> =
-        d2.programModule().programRules().byProgramUid().eq(programUid).get()
-            .map { UidsHelper.getUidsList(it) }
+        d2.programModule().programRules().byProgramUid().eq(programUid).getUids()
             .flatMap {
                 d2.programModule().programRuleActions()
                     .byProgramRuleUid().`in`(it)
