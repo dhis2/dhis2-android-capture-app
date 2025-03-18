@@ -232,7 +232,8 @@ internal class DataSetTableViewModel(
         newValue: String? = null,
         validationError: String? = null,
     ) {
-        viewModelScope.launch(dispatcher.io()) {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
                 val dataElementUid = getDataElementUid(rowIds, columnIds)
@@ -240,20 +241,23 @@ internal class DataSetTableViewModel(
                     rowIds,
                     columnIds,
                 )
-                val cellInfo = getDataValueInput(
-                    dataElementUid,
-                    categoryOptionComboUidData,
-                    fetchOptions,
-                )
-                inputDataUiStateMapper.map(
-                    cellId = cellId,
-                    cellInfo = cellInfo,
-                    validationError = validationError,
-                    valueWithError = newValue,
-                    isLastCell = isLastCell(cellId),
-                    onDone = { updateSelectedCell(null) },
-                    onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
-                )
+
+                withContext(dispatcher.io()) {
+                    val cellInfo = getDataValueInput(
+                        dataElementUid,
+                        categoryOptionComboUidData,
+                        fetchOptions,
+                    )
+                    inputDataUiStateMapper.map(
+                        cellId = cellId,
+                        cellInfo = cellInfo,
+                        validationError = validationError,
+                        valueWithError = newValue,
+                        isLastCell = isLastCell(cellId),
+                        onDone = { updateSelectedCell(null) },
+                        onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
+                    )
+                }
             } else {
                 null
             }
@@ -274,13 +278,12 @@ internal class DataSetTableViewModel(
                     selectedCellInfo = inputData,
                 ) ?: it
             }
+            CoroutineTracker.decrement()
         }
     }
 
     fun onUiAction(uiAction: UiAction) {
-        viewModelScope.launch(dispatcher.io()) {
-            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
-            val dataElementUid = getDataElementUid(rowIds, columnIds)
+        viewModelScope.launch {
             when (uiAction) {
                 is UiAction.OnFocusChanged -> {
                 }
@@ -302,11 +305,17 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnValueChanged -> {
-                    setDataValue(
-                        rowIds = rowIds,
-                        columnIds = columnIds,
-                        value = uiAction.newValue,
-                    ).fold(
+                    CoroutineTracker.increment()
+
+                    val result = withContext(dispatcher.io()) {
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        setDataValue(
+                            rowIds = rowIds,
+                            columnIds = columnIds,
+                            value = uiAction.newValue,
+                        )
+                    }
+                    result.fold(
                         onSuccess = {
                             val fetchOptions =
                                 if ((_dataSetScreenState.value as? DataSetScreenState.Loaded)
@@ -330,6 +339,7 @@ internal class DataSetTableViewModel(
                             )
                         },
                     )
+                    CoroutineTracker.decrement()
                 }
 
                 is UiAction.OnAddImage -> TODO()
@@ -341,6 +351,11 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnCaptureCoordinates -> {
+                    val dataElementUid = withContext(dispatcher.io()) {
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        getDataElementUid(rowIds, columnIds)
+                    }
+
                     uiActionHandler.onCaptureCoordinates(
                         fieldUid = dataElementUid,
                         locationType = uiAction.locationType,
@@ -503,7 +518,12 @@ internal class DataSetTableViewModel(
                                     description = resourceManager.provideValidationErrorDescription(
                                         errors = rules.violations.size,
                                     ),
-                                    onExpandErrors = { expandValidationErrors(rules.violations) },
+                                    onExpandErrors = {
+                                        expandValidationErrors(
+                                            violations = rules.violations,
+                                            mandatory = rules.mandatory,
+                                        )
+                                    },
                                 ),
                             )
                         } else {
@@ -516,13 +536,14 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun expandValidationErrors(violations: List<Violation>) {
+    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean) {
         viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
                     it.copy(
                         modalDialog = datasetModalDialogProvider.provideValidationRulesErrorDialog(
                             violations = violations,
+                            mandatory = mandatory,
                             onDismiss = { onModalDialogDismissed() },
                             onMarkAsComplete = { attemptToComplete() },
                         ),

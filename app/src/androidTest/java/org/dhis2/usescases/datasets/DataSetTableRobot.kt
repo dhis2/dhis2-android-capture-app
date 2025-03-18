@@ -82,18 +82,8 @@ internal class DataSetTableRobot(
         itemWithTextIsDisplayed(text, substring, composeTestRule)
     }
 
-
-    fun openMenuMoreOptions() {
-        onView(withId(R.id.moreOptions)).perform(click())
-    }
-
-    fun clickOnMenuReOpen() {
-        with(InstrumentationRegistry.getInstrumentation().targetContext) {
-            composeTestRule.onNodeWithText(getString(R.string.re_open)).performClick()
-        }
-    }
-
     fun clickOnCell(tableId: String, cellId: String) {
+        scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()

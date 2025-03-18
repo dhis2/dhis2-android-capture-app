@@ -1,11 +1,10 @@
-package org.dhs2.mobile.commons.html
+package org.dhis2.mobile.commons.html
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import org.dhis2.mobile.commons.html.htmlToAnnotatedString
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -26,7 +26,9 @@ import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
-import org.dhis2.common.idlingresources.CoroutineIdlingResource
+import org.dhis2.mobile.commons.coroutine.AndroidIdlingResource
+import org.dhis2.mobile.commons.coroutine.IdlingResourceProvider
+import org.dhis2.mobile.commons.coroutine.NoOpIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
@@ -36,7 +38,6 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.Timeout
 import java.util.concurrent.TimeUnit
-import org.hisp.dhis.android.core.D2Manager
 
 open class BaseTest {
 
@@ -86,6 +87,7 @@ open class BaseTest {
     }
 
     private fun registerCountingIdlingResource() {
+        IdlingResourceProvider.idlingResource = AndroidIdlingResource
         IdlingRegistry.getInstance().register(
             EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
@@ -95,11 +97,12 @@ open class BaseTest {
             EventIdlingResourceSingleton.countingIdlingResource,
             OnMapReadyIdlingResourceSingleton.countingIdlingResource,
             AnalyticsCountingIdlingResource.countingIdlingResource,
-            CoroutineIdlingResource,
+            AndroidIdlingResource.getIdlingResource(),
         )
     }
 
     private fun unregisterCountingIdlingResource() {
+        IdlingResourceProvider.idlingResource = NoOpIdlingResource
         IdlingRegistry.getInstance()
             .unregister(
                 EventListIdlingResourceSingleton.countingIdlingResource,
@@ -109,7 +112,7 @@ open class BaseTest {
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
                 AnalyticsCountingIdlingResource.countingIdlingResource,
-                CoroutineIdlingResource,
+                AndroidIdlingResource.getIdlingResource(),
             )
     }
 
