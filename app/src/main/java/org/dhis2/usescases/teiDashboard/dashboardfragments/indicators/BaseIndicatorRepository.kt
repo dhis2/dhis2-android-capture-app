@@ -185,7 +185,7 @@ abstract class BaseIndicatorRepository(
         return mutableListOf<AnalyticsModel>().apply {
             val feedbackList = ruleIndicators.filter {
                 it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
-            }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+            }
             if (feedbackList.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionFeedback()))
                 addAll(feedbackList)
