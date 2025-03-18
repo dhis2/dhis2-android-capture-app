@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,6 +59,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
+import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
@@ -80,10 +82,12 @@ import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneConfig
 import org.hisp.dhis.mobile.ui.designsystem.component.layout.TwoPaneLayout
 import org.hisp.dhis.mobile.ui.designsystem.component.model.Tab
 import org.hisp.dhis.mobile.ui.designsystem.component.table.actions.TableInteractions
+import org.hisp.dhis.mobile.ui.designsystem.component.table.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
-import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.DataTable
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableDimensions
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
@@ -262,6 +266,7 @@ fun DataSetInstanceScreen(
                                         tableCellSelection = cellSelection
                                     },
                                     currentSelection = tableCellSelection,
+                                    onTableResize = dataSetTableViewModel::onTableResize,
                                 )
 
                             DataSetScreenState.Loading ->
@@ -334,6 +339,7 @@ fun DataSetInstanceScreen(
                         onCellSelected = { cellSelection ->
                             tableCellSelection = cellSelection
                         },
+                        onTableResize = dataSetTableViewModel::onTableResize,
                     )
                 } else {
                     ContentLoading(
@@ -423,6 +429,7 @@ private fun DataSetSinglePane(
     onCellSelected: (TableSelection) -> Unit,
     currentSection: String?,
     currentSelection: TableSelection,
+    onTableResize: (ResizeAction) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -445,7 +452,7 @@ private fun DataSetSinglePane(
             when (dataSetSectionTable) {
                 is DataSetSectionTable.Loaded ->
                     DataSetTable(
-                        tableModels = dataSetSectionTable.tables(),
+                        dataSetSectionTable = dataSetSectionTable,
                         onCellClick = onCellClick,
                         topContent = {
                             Column(
@@ -486,6 +493,7 @@ private fun DataSetSinglePane(
                         },
                         onCellSelected = onCellSelected,
                         currentSelection = currentSelection,
+                        onTableResize = onTableResize,
                     )
 
                 DataSetSectionTable.Loading ->
@@ -531,6 +539,7 @@ private fun DataSetTableContent(
     ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
     currentSelection: TableSelection,
+    onTableResize: (ResizeAction) -> Unit,
 ) {
     Box(
         modifier = modifier,
@@ -538,7 +547,7 @@ private fun DataSetTableContent(
         when (dataSetSectionTable) {
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
-                    tableModels = dataSetSectionTable.tables(),
+                    dataSetSectionTable = dataSetSectionTable,
                     onCellClick = onCellClick,
                     topContent = {
                         Column(
@@ -590,6 +599,7 @@ private fun DataSetTableContent(
                     },
                     onCellSelected = onCellSelected,
                     currentSelection = currentSelection,
+                    onTableResize = onTableResize,
                 )
 
             DataSetSectionTable.Loading ->
@@ -613,7 +623,7 @@ private fun ContentLoading(
 
 @Composable
 private fun DataSetTable(
-    tableModels: List<TableModel>,
+    dataSetSectionTable: DataSetSectionTable,
     currentSelection: TableSelection,
     topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
@@ -623,28 +633,97 @@ private fun DataSetTable(
         cellError: String?,
     ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
+    onTableResize: (ResizeAction) -> Unit,
 ) {
-    DataTable(
-        tableList = tableModels,
-        currentSelection = currentSelection,
-        tableInteractions = object : TableInteractions {
-            override fun onClick(tableCell: TableCell) {
-                super.onClick(tableCell)
-                onCellClick(tableCell.id, tableCell.value, tableCell.error)
-            }
+    val density = LocalDensity.current
 
-            override fun onSelectionChange(newTableSelection: TableSelection) {
-                super.onSelectionChange(newTableSelection)
-                onCellSelected(newTableSelection)
-            }
-        },
-        topContent = topContent,
-        bottomContent = bottomContent,
-        contentPadding = PaddingValues(
-            start = Spacing.Spacing16,
-            top = Spacing.Spacing8,
-            end = Spacing.Spacing16,
-            bottom = Spacing.Spacing200,
-        ),
-    )
+    TableTheme(
+        tableDimensions = dataSetSectionTable.overridingDimensions()?.let { overwrittenDimension ->
+            TableDimensions(
+                extraWidths = with(density) {
+                    overwrittenDimension.overwrittenTableWidth.mapValues { (_, width) ->
+                        width.dp.roundToPx()
+                    }
+                },
+                rowHeaderWidths = with(density) {
+                    overwrittenDimension.overwrittenRowHeaderWidth.mapValues { (_, width) ->
+                        width.dp.roundToPx()
+                    }
+                },
+                columnWidth = with(density) {
+                    overwrittenDimension.overwrittenColumnWidth.mapValues { (_, value) ->
+                        value.mapValues { (_, width) ->
+                            width.dp.roundToPx()
+                        }
+                    }
+                },
+            )
+        } ?: TableDimensions(),
+    ) {
+        val sectionId by remember(dataSetSectionTable) {
+            derivedStateOf { dataSetSectionTable.sectionId() }
+        }
+
+        DataTable(
+            tableList = dataSetSectionTable.tables(),
+            currentSelection = currentSelection,
+            onResizedActions = object : TableResizeActions {
+                override fun onRowHeaderResize(tableId: String, newValue: Float) {
+                    sectionId?.let { sectionId ->
+                        onTableResize(
+                            ResizeAction.RowHeaderChanged(tableId, sectionId, newValue),
+                        )
+                    }
+                }
+
+                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
+                    sectionId?.let { sectionId ->
+                        onTableResize(
+                            ResizeAction.ColumnHeaderChanged(
+                                tableId,
+                                sectionId,
+                                column,
+                                newValue,
+                            ),
+                        )
+                    }
+                }
+
+                override fun onTableDimensionResize(tableId: String, newValue: Float) {
+                    sectionId?.let { sectionId ->
+                        onTableResize(
+                            ResizeAction.TableDimension(tableId, sectionId, newValue),
+                        )
+                    }
+                }
+
+                override fun onTableDimensionReset(tableId: String) {
+                    sectionId?.let { sectionId ->
+                        onTableResize(
+                            ResizeAction.Reset(tableId, sectionId),
+                        )
+                    }
+                }
+            },
+            tableInteractions = object : TableInteractions {
+                override fun onClick(tableCell: TableCell) {
+                    super.onClick(tableCell)
+                    onCellClick(tableCell.id, tableCell.value, tableCell.error)
+                }
+
+                override fun onSelectionChange(newTableSelection: TableSelection) {
+                    super.onSelectionChange(newTableSelection)
+                    onCellSelected(newTableSelection)
+                }
+            },
+            topContent = topContent,
+            bottomContent = bottomContent,
+            contentPadding = PaddingValues(
+                start = Spacing.Spacing16,
+                top = Spacing.Spacing8,
+                end = Spacing.Spacing16,
+                bottom = Spacing.Spacing200,
+            ),
+        )
+    }
 }

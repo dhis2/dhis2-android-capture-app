@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
+import org.dhis2.mobile.aggregates.domain.ComputeResizeAction
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
@@ -42,6 +43,7 @@ import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
@@ -51,6 +53,7 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
+import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
@@ -67,6 +70,7 @@ internal class DataSetTableViewModel(
     private val getDataSetSectionIndicators: GetDataSetSectionIndicators,
     private val getDataValueInput: GetDataValueInput,
     private val setDataValue: SetDataValue,
+    private val computeResizeAction: ComputeResizeAction,
     private val resourceManager: ResourceManager,
     private val checkValidationRulesConfiguration: CheckValidationRulesConfiguration,
     private val checkCompletionStatus: CheckCompletionStatus,
@@ -127,6 +131,7 @@ internal class DataSetTableViewModel(
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionToLoad,
                                 tableModels = sectionTable.await(),
+                                overridingDimensions = overwrittenWidths(sectionToLoad),
                             ),
                         )
 
@@ -138,6 +143,7 @@ internal class DataSetTableViewModel(
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionToLoad,
                                 tableModels = sectionTable.await(),
+                                overridingDimensions = overwrittenWidths(sectionToLoad),
                             ),
                             initialSection = initialSection,
                         )
@@ -181,6 +187,7 @@ internal class DataSetTableViewModel(
                             dataSetSectionTable = DataSetSectionTable.Loaded(
                                 id = sectionUid,
                                 tableModels = sectionData.await(),
+                                overridingDimensions = overwrittenWidths(sectionUid),
                             ),
                         )
                     } else {
@@ -190,6 +197,18 @@ internal class DataSetTableViewModel(
             }
         }
     }
+
+    private suspend fun overwrittenWidths(sectionUid: String) = OverwrittenDimension(
+        overwrittenTableWidth = computeResizeAction(
+            ResizeAction.GetTableSavedWidth(sectionUid),
+        )?.tableWidth() ?: emptyMap(),
+        overwrittenRowHeaderWidth = computeResizeAction(
+            ResizeAction.GetRowHeaderSavedWidth(sectionUid),
+        )?.rowHeaderWidths() ?: emptyMap(),
+        overwrittenColumnWidth = computeResizeAction(
+            ResizeAction.GetColumSavedWidth(sectionUid),
+        )?.columnWidths() ?: emptyMap(),
+    )
 
     private suspend fun sectionData(sectionUid: String): List<TableModel> = supervisorScope {
         var absoluteRowIndex = 0
@@ -400,6 +419,12 @@ internal class DataSetTableViewModel(
                 is UiAction.OnFetchOptions ->
                     updateSelectedCell(uiAction.cellId, true)
             }
+        }
+    }
+
+    fun onTableResize(resizeAction: ResizeAction) {
+        viewModelScope.launch(dispatcher.io()) {
+            computeResizeAction(resizeAction)
         }
     }
 

@@ -26,7 +26,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_PERIOD_ID
 import org.dhis2.mobile.aggregates.ui.constants.OPEN_ERROR_LOCATION
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class DataSetInstanceActivity : ActivityGlobalAbstract() {
@@ -43,7 +43,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
         )
 
         setContent {
-            TableTheme {
+            DHIS2Theme {
                 val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
                     WindowWidthSizeClass.Medium -> false
                     WindowWidthSizeClass.Compact -> false
