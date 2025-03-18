@@ -249,7 +249,13 @@ fun DataSetInstanceScreen(
                                     ),
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
-                                    onCellClick = dataSetTableViewModel::updateSelectedCell,
+                                    onCellClick = { cellId, cellValue, cellError ->
+                                        dataSetTableViewModel.updateSelectedCell(
+                                            cellId = cellId,
+                                            newValue = cellValue,
+                                            validationError = cellError,
+                                        )
+                                    },
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                     onCellSelected = { cellSelection ->
@@ -316,7 +322,13 @@ fun DataSetInstanceScreen(
                             dataSetTableViewModel.onSectionSelected(sectionUid)
                         },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
-                        onCellClick = dataSetTableViewModel::updateSelectedCell,
+                        onCellClick = { cellId, cellValue, cellError ->
+                            dataSetTableViewModel.updateSelectedCell(
+                                cellId = cellId,
+                                newValue = cellValue,
+                                validationError = cellError,
+                            )
+                        },
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
                         onCellSelected = { cellSelection ->
@@ -403,7 +415,11 @@ private fun DataSetSinglePane(
     initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
     onSectionSelected: (uid: String) -> Unit,
-    onCellClick: (cellId: String) -> Unit,
+    onCellClick: (
+        cellId: String,
+        cellValue: String?,
+        cellError: String?,
+    ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
     currentSection: String?,
     currentSelection: TableSelection,
@@ -508,7 +524,11 @@ private fun DataSetTableContent(
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
     currentSection: String?,
-    onCellClick: (cellId: String) -> Unit,
+    onCellClick: (
+        cellId: String,
+        cellValue: String?,
+        cellError: String?,
+    ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
     currentSelection: TableSelection,
 ) {
@@ -597,7 +617,11 @@ private fun DataSetTable(
     currentSelection: TableSelection,
     topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
-    onCellClick: (cellId: String) -> Unit,
+    onCellClick: (
+        cellId: String,
+        cellValue: String?,
+        cellError: String?,
+    ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
 ) {
     DataTable(
@@ -606,7 +630,7 @@ private fun DataSetTable(
         tableInteractions = object : TableInteractions {
             override fun onClick(tableCell: TableCell) {
                 super.onClick(tableCell)
-                onCellClick(tableCell.id)
+                onCellClick(tableCell.id, tableCell.value, tableCell.error)
             }
 
             override fun onSelectionChange(newTableSelection: TableSelection) {
