@@ -362,9 +362,11 @@ internal class DataSetInstanceRepositoryImpl(
 
                 val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
 
+                val tableTitle = catCombo.displayName()?.takeIf { pivotedCategoryUid == null }
+
                 TableGroup(
                     uid = "${catCombo.uid()}_$index",
-                    label = catCombo.displayName() ?: "",
+                    label = tableTitle ?: "",
                     subgroups = subGroups,
                     cellElements = noGroupingDataSetElements,
                     headerRows = getTableGroupHeaders(catComboUid!!, subGroups, pivotedCategory),
@@ -407,9 +409,11 @@ internal class DataSetInstanceRepositoryImpl(
                         null
                     }
 
+                    val tableTitle = catCombo.displayName()?.takeIf { pivotedCategoryUid == null }
+
                     TableGroup(
                         uid = catCombo.uid(),
-                        label = catCombo.displayName() ?: "",
+                        label = tableTitle ?: "",
                         subgroups = subGroups,
                         cellElements = cellElements,
                         headerRows = getTableGroupHeaders(

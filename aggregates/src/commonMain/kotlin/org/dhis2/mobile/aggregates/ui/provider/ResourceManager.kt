@@ -13,6 +13,7 @@ import org.dhis2.mobile.aggregates.resources.field_mandatory
 import org.dhis2.mobile.aggregates.resources.field_required
 import org.dhis2.mobile.aggregates.resources.file_download_error
 import org.dhis2.mobile.aggregates.resources.file_downloaded
+import org.dhis2.mobile.aggregates.resources.indicators_label
 import org.dhis2.mobile.aggregates.resources.mark_dataset_complete
 import org.dhis2.mobile.aggregates.resources.run_validation_rules
 import org.dhis2.mobile.aggregates.resources.saved
@@ -60,4 +61,6 @@ internal class ResourceManager {
     suspend fun provideFileDownload() = getString(Res.string.file_downloaded)
 
     suspend fun provideFileDownloadError() = getString(Res.string.file_download_error)
+
+    suspend fun indicatorsLabel() = getString(Res.string.indicators_label)
 }
