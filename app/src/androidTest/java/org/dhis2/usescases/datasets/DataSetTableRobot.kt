@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
+import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
@@ -27,6 +28,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -152,6 +155,13 @@ internal class DataSetTableRobot(
         totalColumnHeaderRowIndex: Int,
         totalColumnHeaderColumnIndex: Int,
     ) {
+        composeTestRule.onNodeWithTag(headersTestTag(tableId)).printToLog("HEADERSSS")
+
+        composeTestRule.onNodeWithTag(headersTestTag(tableId)).assertIsDisplayed()
+            .performScrollToNode(
+                hasAnyChild(hasTestTag("HEADER_CELL$tableId$totalColumnHeaderRowIndex$totalColumnHeaderColumnIndex"))
+            )
+
         composeTestRule.onNodeWithTag("HEADER_CELL$tableId$totalColumnHeaderRowIndex$totalColumnHeaderColumnIndex")
             .performScrollTo()
 
@@ -215,10 +225,6 @@ internal class DataSetTableRobot(
         rowIndex: Int,
         expectedValue: String,
     ) {
-        composeTestRule.onNodeWithTag("HEADER_CELL${tableId}12")
-            .performScrollTo()
-            .assertIsDisplayed()
-
         composeTestRule
             .onNode(
                 hasParent(hasTestTag("CELL_TEST_TAG_${tableId}${tableId}_${rowIndex}_totals")) and

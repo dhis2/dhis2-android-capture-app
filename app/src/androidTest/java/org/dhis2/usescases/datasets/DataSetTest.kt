@@ -457,7 +457,7 @@ class DataSetTest : BaseTest() {
             totalsAreDisplayed(
                 tableId = "dzjKKQq0cSO",
                 totalColumnHeaderRowIndex = 1,
-                totalColumnHeaderColumnIndex = 2,
+                totalColumnHeaderColumnIndex = 4,
             )
         }
     }
