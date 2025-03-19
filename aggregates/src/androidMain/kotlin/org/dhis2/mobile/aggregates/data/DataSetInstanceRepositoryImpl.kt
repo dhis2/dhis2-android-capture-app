@@ -566,6 +566,7 @@ internal class DataSetInstanceRepositoryImpl(
         } ?: emptyList()
 
         return d2.dataValueModule().dataValues()
+            .byDeleted().isFalse
             .byPeriod().eq(periodId)
             .byOrganisationUnitUid().eq(orgUnitUid)
             .byAttributeOptionComboUid().eq(attrOptionComboUid)
@@ -601,6 +602,7 @@ internal class DataSetInstanceRepositoryImpl(
         dataElementUid: String,
         categoryOptionComboUid: String,
     ) = d2.dataValueModule().dataValues()
+        .byDeleted().isFalse
         .value(
             periodId,
             orgUnitUid,
