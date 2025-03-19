@@ -11,6 +11,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -151,7 +152,7 @@ internal val featureModule = module {
         val attrOptionComboUid = params.get<String>()
         val openErrorLocation = params.getOrNull<Boolean>() ?: false
         val onClose = params.get<() -> Unit>()
-        val context = params.get<Any>()
+        val uiActionHandler = params.get<UiActionHandler>()
 
         DataSetTableViewModel(
             onClose = onClose,
@@ -194,9 +195,7 @@ internal val featureModule = module {
             runValidationRules = get {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
-            uiActionHandler = get {
-                parametersOf(context, dataSetUid)
-            },
+            uiActionHandler = uiActionHandler,
             inputDataUiStateMapper = get(),
             fieldErrorMessageProvider = get(),
         )

@@ -105,7 +105,7 @@ fun DataSetInstanceScreen(
     snackbarHostState: SnackbarHostState,
     onBackClicked: () -> Unit,
     onSyncClicked: (onUpdateData: () -> Unit) -> Unit,
-    activity: Any,
+    uiActionHandler: UiActionHandler,
 ) {
     val dataSetTableViewModel: DataSetTableViewModel =
         koinViewModel<DataSetTableViewModel>(parameters = {
@@ -116,7 +116,7 @@ fun DataSetInstanceScreen(
                 parameters.attributeOptionComboUid,
                 parameters.openErrorLocation,
                 onBackClicked,
-                activity,
+                uiActionHandler,
             )
         })
     val dataSetScreenState by dataSetTableViewModel.dataSetScreenState.collectAsState()

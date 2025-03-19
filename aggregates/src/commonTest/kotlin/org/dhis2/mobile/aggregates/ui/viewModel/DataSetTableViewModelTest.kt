@@ -47,7 +47,7 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
-import org.dhis2.mobile.aggregates.ui.UIActionHandler
+import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -104,7 +104,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var dataSetModalDialogProvider: DataSetModalDialogProvider
     private lateinit var completeDataSet: CompleteDataSet
     private lateinit var runValidationRules: RunValidationRules
-    private lateinit var uiActionHandler: UIActionHandler
+    private lateinit var uiActionHandler: UiActionHandler
     private lateinit var inputDataUiStateMapper: InputDataUiStateMapper
 
     private val onCloseCallback: () -> Unit = mock()
@@ -141,7 +141,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         dataSetModalDialogProvider = declareMock<DataSetModalDialogProvider>()
         completeDataSet = declareMock<CompleteDataSet>()
         runValidationRules = declareMock<RunValidationRules>()
-        uiActionHandler = declareMock<UIActionHandler>()
+        uiActionHandler = declareMock<UiActionHandler>()
         inputDataUiStateMapper = declareMock<InputDataUiStateMapper>()
 
         whenever(dispatcher.io).thenReturn { testDispatcher }
