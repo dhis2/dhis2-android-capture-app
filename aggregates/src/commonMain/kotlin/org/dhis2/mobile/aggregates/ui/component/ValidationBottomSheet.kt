@@ -183,9 +183,8 @@ private fun provideButtonBlock(
                 primaryButton = {
                     if (!mandatory) {
                         Button(
-                            modifier = Modifier.testTag(
-                                VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG,
-                            ),
+                            modifier = Modifier.fillMaxWidth()
+                                .testTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG),
                             style = ButtonStyle.TEXT,
                             text = stringResource(Res.string.complete_anyway),
                             onClick = onPrimaryButtonClick,
