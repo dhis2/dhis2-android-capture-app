@@ -67,7 +67,9 @@ class UiActionHandlerImpl(
             .withPreselectedOrgUnits(preselectedOrgUnits)
             .singleSelection()
             .onSelection { selectedOrgUnits ->
-                callback(selectedOrgUnits.firstOrNull()?.uid())
+                if (selectedOrgUnits.isNotEmpty()) {
+                    callback(selectedOrgUnits.firstOrNull()?.uid())
+                }
             }
             .orgUnitScope(OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))
             .build()
