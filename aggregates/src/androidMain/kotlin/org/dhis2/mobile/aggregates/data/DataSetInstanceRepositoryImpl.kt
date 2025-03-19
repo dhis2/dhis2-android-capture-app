@@ -25,10 +25,12 @@ import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.Section
@@ -680,7 +682,7 @@ internal class DataSetInstanceRepositoryImpl(
             ?: if (dataElementValueType is InputType.MultiText) InputType.MultiText else InputType.OptionSet
 
         return DataElementInfo(
-            label = "${dataElement.displayFormName()}/${categoryOptionCombo?.displayName()}",
+            label = getDataElementInfoLabel(dataElement, categoryOptionCombo),
             inputType = inputType,
             description = dataElement.displayDescription(),
             isRequired = isMandatory,
@@ -906,5 +908,23 @@ internal class DataSetInstanceRepositoryImpl(
             }
         }
         return dataToReview
+    }
+
+    private fun getDataElementInfoLabel(
+        dataElement: DataElement,
+        coc: CategoryOptionCombo?,
+    ): String {
+        val isDefaultCategoryCombo = d2.categoryModule().categoryCombos()
+            .uid(coc?.categoryCombo()?.uid())
+            .blockingGet()
+            ?.isDefault ?: false
+
+        val dataElementLabel = dataElement.run { displayFormName() ?: displayName() ?: uid() }
+
+        return if (isDefaultCategoryCombo) {
+            dataElementLabel
+        } else {
+            "$dataElementLabel / ${coc?.displayName()}"
+        }
     }
 }
