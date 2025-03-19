@@ -19,6 +19,7 @@ import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
+import org.dhis2.mobile.aggregates.domain.ComputeResizeAction
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
@@ -95,6 +96,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var getDataValueInput: GetDataValueInput
     private lateinit var setDataValue: SetDataValue
+    private lateinit var computeResizeAction: ComputeResizeAction
 
     private lateinit var dispatcher: Dispatcher
     private lateinit var testDispatcher: TestDispatcher
@@ -143,6 +145,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         runValidationRules = declareMock<RunValidationRules>()
         uiActionHandler = declareMock<UiActionHandler>()
         inputDataUiStateMapper = declareMock<InputDataUiStateMapper>()
+        computeResizeAction = declareMock<ComputeResizeAction>()
 
         whenever(dispatcher.io).thenReturn { testDispatcher }
         whenever(dispatcher.main).thenReturn { testDispatcher }
@@ -249,6 +252,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             uiActionHandler = get(),
             inputDataUiStateMapper = get(),
             fieldErrorMessageProvider = get(),
+            computeResizeAction = get(),
         )
     }
 

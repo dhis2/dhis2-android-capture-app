@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
 import org.dhis2.mobile.aggregates.domain.CompleteDataSet
+import org.dhis2.mobile.aggregates.domain.ComputeResizeAction
 import org.dhis2.mobile.aggregates.domain.GetDataSetInstanceData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
@@ -145,6 +146,12 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        ComputeResizeAction(
+            dimensionRepository = get { parametersOf(params.get()) },
+        )
+    }
+
     viewModel { params ->
         val dataSetUid = params.get<String>()
         val periodId = params.get<String>()
@@ -198,6 +205,9 @@ internal val featureModule = module {
             uiActionHandler = uiActionHandler,
             inputDataUiStateMapper = get(),
             fieldErrorMessageProvider = get(),
+            computeResizeAction = get {
+                parametersOf(dataSetUid)
+            },
         )
     }
 }
