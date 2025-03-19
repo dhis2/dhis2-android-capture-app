@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,44 +29,48 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 internal fun ValidationBar(
     uiState: ValidationBarUiState,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
-        modifier = Modifier
-            .testTag(VALIDATION_BAR_TEST_TAG)
-            .fillMaxWidth()
-            .background(color = SurfaceColor.ErrorContainer)
-            .padding(
-                start = Spacing.Spacing16,
-                end = Spacing.Spacing4,
-            ),
+    BottomAppBar(
+        containerColor = SurfaceColor.ErrorContainer,
     ) {
-        Badge(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
             modifier = Modifier
+                .testTag(VALIDATION_BAR_TEST_TAG)
+                .fillMaxWidth()
+                .background(color = SurfaceColor.ErrorContainer)
                 .padding(
-                    start = Spacing.Spacing4,
+                    start = Spacing.Spacing16,
                     end = Spacing.Spacing4,
                 ),
-            text = uiState.quantity.toString(),
-            color = SurfaceColor.Error,
-            textColor = TextColor.OnPrimary,
-        )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = uiState.description,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        IconButton(
-            modifier = Modifier.testTag(VALIDATION_BAR_EXPAND_TEST_TAG),
-            style = IconButtonStyle.STANDARD,
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.ExpandLess,
-                    contentDescription = "Expand",
-                    tint = TextColor.OnSurfaceVariant,
-                )
-            },
-            onClick = uiState.onExpandErrors,
-        )
+        ) {
+            Badge(
+                modifier = Modifier
+                    .padding(
+                        start = Spacing.Spacing4,
+                        end = Spacing.Spacing4,
+                    ),
+                text = uiState.quantity.toString(),
+                color = SurfaceColor.Error,
+                textColor = TextColor.OnPrimary,
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = uiState.description,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            IconButton(
+                modifier = Modifier.testTag(VALIDATION_BAR_EXPAND_TEST_TAG),
+                style = IconButtonStyle.STANDARD,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ExpandLess,
+                        contentDescription = "Expand",
+                        tint = TextColor.OnSurfaceVariant,
+                    )
+                },
+                onClick = uiState.onExpandErrors,
+            )
+        }
     }
 }

@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -157,7 +158,6 @@ fun DataSetInstanceScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.primary,
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -225,14 +225,18 @@ fun DataSetInstanceScreen(
             }
         },
         bottomBar = {
-            (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar?.let { validationBarUiState ->
-                ValidationBar(uiState = validationBarUiState)
+            when {
+                (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog != null ->
+                    ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
+                (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar != null ->
+                    ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
             }
         },
-    ) {
+        contentWindowInsets = WindowInsets.safeDrawing,
+    ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
-                .padding(it),
+                .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
             if (allowTwoPane) {
@@ -343,7 +347,7 @@ fun DataSetInstanceScreen(
                     )
                 } else {
                     ContentLoading(
-                        modifier = Modifier.fillMaxSize().padding(it),
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
                     )
                 }
             }
@@ -366,8 +370,7 @@ fun DataSetInstanceScreen(
                 selectedCellInfo?.let { inputData ->
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
-                            .testTag(INPUT_DIALOG_TAG)
-                            .imePadding(),
+                            .testTag(INPUT_DIALOG_TAG),
                         input = {
                             InputProvider(
                                 modifier = Modifier,
@@ -399,10 +402,6 @@ fun DataSetInstanceScreen(
             }
         }
     }
-
-    (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog?.let { dataSetUIState ->
-        ValidationBottomSheet(dataSetUIState = dataSetUIState)
-    }
 }
 
 /**
@@ -433,10 +432,7 @@ private fun DataSetSinglePane(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-            ),
+            .fillMaxSize(),
     ) {
         SectionTabs(
             dataSetSections = dataSetSections,
