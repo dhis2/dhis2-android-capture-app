@@ -60,7 +60,6 @@ class FeatureConfigRepositoryImpl @Inject constructor(
         return when (feature) {
             Feature.AUTO_LOGOUT -> null
             Feature.RESPONSIVE_HOME -> FeatureOptions.ResponsiveHome(totalItems = getResponsiveHomeTotalItems())
-            Feature.COMPOSE_AGGREGATES_SCREEN -> null
         }
     }
 

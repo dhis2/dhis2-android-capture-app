@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.data
 
+import org.dhis2.commons.bindings.dataElement
 import org.dhis2.commons.periods.data.PeriodLabelProvider
 import org.dhis2.mobile.aggregates.data.mappers.toCustomTitle
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
@@ -694,12 +695,19 @@ internal class DataSetInstanceRepositoryImpl(
         }
     }
 
-    override suspend fun categoryOptionComboFromCategoryOptions(categoryOptions: List<String>): String {
+    override suspend fun categoryOptionComboFromCategoryOptions(
+        dataElementUid: String,
+        categoryOptions: List<String>,
+    ): String {
+        val categoryComboUid = d2.dataElement(dataElementUid)?.categoryComboUid()
         val categoryOptionCombos = d2.categoryModule().categoryOptionCombos()
+            .byCategoryComboUid().eq(categoryComboUid)
             .byCategoryOptions(categoryOptions)
             .blockingGet()
 
-        if (categoryOptionCombos.size != 1) throw IllegalStateException("More than one category option combo found")
+        if (categoryOptionCombos.isEmpty()) throw IllegalStateException("No category option combo found")
+        if (categoryOptionCombos.size > 1) throw IllegalStateException("More than one category option combo found")
+
         return categoryOptionCombos.first().uid()
     }
 

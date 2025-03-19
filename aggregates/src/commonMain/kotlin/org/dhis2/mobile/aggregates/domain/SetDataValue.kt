@@ -15,7 +15,7 @@ internal class SetDataValue(
         value: String?,
     ): Result<Unit> {
         val dataElementUid = checkOnlyOneDataElementIsProvided(rowIds, columnIds)
-        val categoryOptionComboUid = checkedCategoryOptionCombos(rowIds, columnIds)
+        val categoryOptionComboUid = checkedCategoryOptionCombos(dataElementUid, rowIds, columnIds)
 
         return repository.updateValue(
             periodId = periodId,
