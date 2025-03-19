@@ -18,6 +18,7 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.mobile.aggregates.di.mappers.toDataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.ui.DataSetInstanceScreen
+import org.dhis2.mobile.aggregates.ui.UiActionHandlerImpl
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_DATA_SET_UID
 import org.dhis2.mobile.aggregates.ui.constants.INTENT_EXTRA_ORGANISATION_UNIT_UID
@@ -35,6 +36,11 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        enableEdgeToEdge()
+
+        val uiActionHandler = UiActionHandlerImpl(
+            context = this,
+            dataSetUid = intent.getStringExtra(INTENT_EXTRA_DATA_SET_UID) ?: "",
+        )
 
         setContent {
             TableTheme {
@@ -58,7 +64,7 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                             onUpdateData = onUpdateData,
                         )
                     },
-                    activity = activity,
+                    uiActionHandler = uiActionHandler,
                 )
             }
             supportFragmentManager

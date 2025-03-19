@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.ui
 
-internal interface UIActionHandler {
+interface UiActionHandler {
     fun onCaptureCoordinates(
         fieldUid: String,
         locationType: String,

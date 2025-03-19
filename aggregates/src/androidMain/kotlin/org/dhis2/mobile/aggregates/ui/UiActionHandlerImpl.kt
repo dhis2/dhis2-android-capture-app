@@ -18,10 +18,10 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.PROGRAM_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.SCOPE
 import org.dhis2.mobile.aggregates.R
 
-internal class UIActionHandlerImpl(
+class UiActionHandlerImpl(
     private val context: FragmentActivity,
     private val dataSetUid: String,
-) : UIActionHandler {
+) : UiActionHandler {
     private var callback: ((String?) -> Unit)? = null
 
     private val mapLauncher =
