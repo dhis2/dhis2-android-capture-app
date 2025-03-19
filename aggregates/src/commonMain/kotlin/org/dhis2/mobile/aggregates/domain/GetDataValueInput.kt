@@ -25,6 +25,7 @@ internal class GetDataValueInput(
         val categoryOptionComboUid =
             categoryOptionComboUidData.first
                 ?: repository.categoryOptionComboFromCategoryOptions(
+                    dataSetUid,
                     dataElementUid,
                     categoryOptionComboUidData.second,
                 )

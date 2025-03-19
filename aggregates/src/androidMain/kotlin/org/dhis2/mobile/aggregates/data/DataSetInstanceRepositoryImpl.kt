@@ -348,6 +348,15 @@ internal class DataSetInstanceRepositoryImpl(
                     .uid(catComboUid)
                     .blockingGet()!!
 
+                val catComboHasPivotedCategory =
+                    catCombo.categories()?.any { it.uid() == pivotedCategoryUid } ?: false
+
+                val pivotedCategory = if (catComboHasPivotedCategory) {
+                    pivotedCategoryUid
+                } else {
+                    null
+                }
+
                 val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
 
                 TableGroup(
@@ -355,17 +364,15 @@ internal class DataSetInstanceRepositoryImpl(
                     label = catCombo.displayName() ?: "",
                     subgroups = subGroups,
                     cellElements = noGroupingDataSetElements,
-                    headerRows = getTableGroupHeaders(catComboUid!!, subGroups, pivotedCategoryUid),
-                    headerCombinations = categoryOptionCombinations(subGroups, pivotedCategoryUid),
+                    headerRows = getTableGroupHeaders(catComboUid!!, subGroups, pivotedCategory),
+                    headerCombinations = categoryOptionCombinations(subGroups, pivotedCategory),
                     pivotMode = when {
                         pivoted ->
                             PivoteMode.Transpose
 
-                        pivotedCategoryUid != null ->
+                        pivotedCategory != null ->
                             PivoteMode.CategoryToColumn(
-                                pivotedHeaders(
-                                    pivotedCategoryUid,
-                                ),
+                                pivotedHeaders(pivotedCategory),
                             )
 
                         else -> PivoteMode.None
@@ -388,6 +395,15 @@ internal class DataSetInstanceRepositoryImpl(
                         catComboUid == catCombo.uid()
                     }
 
+                    val catComboHasPivotedCategory =
+                        catCombo.categories()?.any { it.uid() == pivotedCategoryUid } ?: false
+
+                    val pivotedCategory = if (catComboHasPivotedCategory) {
+                        pivotedCategoryUid
+                    } else {
+                        null
+                    }
+
                     TableGroup(
                         uid = catCombo.uid(),
                         label = catCombo.displayName() ?: "",
@@ -396,21 +412,19 @@ internal class DataSetInstanceRepositoryImpl(
                         headerRows = getTableGroupHeaders(
                             catCombo.uid(),
                             subGroups,
-                            pivotedCategoryUid,
+                            pivotedCategory,
                         ),
                         headerCombinations = categoryOptionCombinations(
                             subGroups,
-                            pivotedCategoryUid,
+                            pivotedCategory,
                         ),
                         pivotMode = when {
                             pivoted ->
                                 PivoteMode.Transpose
 
-                            pivotedCategoryUid != null ->
+                            pivotedCategory != null ->
                                 PivoteMode.CategoryToColumn(
-                                    pivotedHeaders(
-                                        pivotedCategoryUid,
-                                    ),
+                                    pivotedHeaders(pivotedCategory),
                                 )
 
                             else -> PivoteMode.None
@@ -700,10 +714,16 @@ internal class DataSetInstanceRepositoryImpl(
     }
 
     override suspend fun categoryOptionComboFromCategoryOptions(
+        dataSetUid: String,
         dataElementUid: String,
         categoryOptions: List<String>,
     ): String {
-        val categoryComboUid = d2.dataElement(dataElementUid)?.categoryComboUid()
+        val dataSetElement = d2.dataSetModule().dataSets()
+            .withDataSetElements().uid(dataSetUid).blockingGet()?.dataSetElements()
+            ?.find { it.dataElement().uid() == dataElementUid }
+        val categoryComboUid =
+            dataSetElement?.categoryCombo()?.uid() ?: d2.dataElement(dataElementUid)
+                ?.categoryComboUid()
         val categoryOptionCombos = d2.categoryModule().categoryOptionCombos()
             .byCategoryComboUid().eq(categoryComboUid)
             .byCategoryOptions(categoryOptions)

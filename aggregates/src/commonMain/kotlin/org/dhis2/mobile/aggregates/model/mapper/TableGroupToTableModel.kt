@@ -130,7 +130,7 @@ internal suspend fun TableGroup.toTableModel(
                                 id = CellIdGenerator.generateId(
                                     rowIds = when (pivotMode) {
                                         is PivoteMode.CategoryToColumn -> buildList {
-                                            pivotMode.pivotedHeaders.forEachIndexed { index, cellElement ->
+                                            tableRowsHeaders.forEachIndexed { index, cellElement ->
                                                 add(
                                                     TableId(
                                                         id = cellElement.uid,
