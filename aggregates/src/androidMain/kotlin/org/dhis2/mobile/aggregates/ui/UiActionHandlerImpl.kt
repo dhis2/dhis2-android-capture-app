@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.commons.orgunitselector.OUTreeFragment
@@ -17,12 +18,18 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.PROGRAM_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.SCOPE
 import org.dhis2.mobile.aggregates.R
+import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.mobile.commons.files.GetFileResource
+import org.dhis2.mobile.commons.files.toFile
+import java.io.File
 
 class UiActionHandlerImpl(
     private val context: FragmentActivity,
     private val dataSetUid: String,
+    private val fileHandler: FileHandler,
 ) : UiActionHandler {
     private var callback: ((String?) -> Unit)? = null
+    private var filepath: String? = null
 
     private val mapLauncher =
         context.activityResultRegistry.register(
@@ -38,6 +45,29 @@ class UiActionHandlerImpl(
                         callback?.invoke(coordinates)
                     }
                 } ?: callback?.invoke(null)
+            } else {
+                callback?.invoke(null)
+            }
+        }
+
+    private val fileLauncher =
+        context.activityResultRegistry.register(
+            key = "FILE_LAUNCHER",
+            contract = GetFileResource(),
+        ) { uris ->
+            callback?.invoke(uris.firstOrNull()?.toFile(context = context)?.path)
+        }
+
+    private val requestStoragePermissionLauncher =
+        context.activityResultRegistry.register(
+            key = "STORAGE_PERMISSION_LAUNCHER",
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            if (isGranted) {
+                filepath?.let {
+                    downloadFile(it)
+                }
+                filepath = null
             } else {
                 callback?.invoke(null)
             }
@@ -100,6 +130,31 @@ class UiActionHandlerImpl(
                 }
         }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
+    }
+
+    override fun onSelectFile(fieldUid: String, callback: (result: String?) -> Unit) {
+        this.callback = callback
+        fileLauncher.launch("*/*")
+    }
+
+    override fun onOpenFile(
+        fieldUid: String,
+        filepath: String?,
+        callback: (result: String?) -> Unit,
+    ) {
+        this.callback = callback
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            filepath?.let { downloadFile(it) } ?: callback(null)
+        } else {
+            this.filepath = filepath
+            requestStoragePermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun downloadFile(filepath: String) {
+        fileHandler.copyAndOpen(File(filepath)) {
+            callback?.invoke(CallbackStatus.OK.name)
+        }
     }
 
     private fun launchIntentChooser(intent: Intent, onActivityNotFound: () -> Unit) {

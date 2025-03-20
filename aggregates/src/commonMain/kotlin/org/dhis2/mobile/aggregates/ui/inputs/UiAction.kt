@@ -33,6 +33,7 @@ sealed class UiAction(open val cellId: String) {
 
     data class OnOpenFile(
         override val cellId: String,
+        val filePath: String?,
     ) : UiAction(cellId)
 
     data class OnShareImage(

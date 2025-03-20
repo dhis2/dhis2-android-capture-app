@@ -39,7 +39,7 @@ actual val commonsModule: Module
 
                 override suspend fun valueFromOrgUnitAsOrgUnitName(value: String) = value
 
-                override suspend fun valueFromFileAsPath(value: String) = value
+                override suspend fun valueToFileName(value: String) = value
                 override suspend fun valueFromCoordinateAsLatLong(value: String) = value
 
                 override suspend fun valueFromBooleanType(value: String) = value

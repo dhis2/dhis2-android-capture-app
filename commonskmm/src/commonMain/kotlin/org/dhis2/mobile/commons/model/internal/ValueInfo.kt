@@ -17,5 +17,5 @@ data class ValueInfo(
 ) {
     fun parseToOptionName() = !isMultiText and valueIsValidOption
     fun parseToOrgUnitName() = isOrganisationUnit and valueIsAValidOrgUnit
-    fun parseToFilePath() = isFile and valueIsAValidFile
+    fun parseToFileName() = isFile and valueIsAValidFile
 }

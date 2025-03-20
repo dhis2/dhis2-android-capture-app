@@ -27,6 +27,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
@@ -96,6 +97,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var getIndicators: GetDataSetSectionIndicators
     private lateinit var getDataValueInput: GetDataValueInput
     private lateinit var setDataValue: SetDataValue
+    private lateinit var uploadFile: UploadFile
     private lateinit var computeResizeAction: ComputeResizeAction
 
     private lateinit var dispatcher: Dispatcher
@@ -132,6 +134,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         getDataValueInput = declareMock<GetDataValueInput>()
         setDataValue = declareMock<SetDataValue>()
         getIndicators = declareMock<GetDataSetSectionIndicators>()
+        uploadFile = declareMock<UploadFile>()
         declareMock<ResourceManager> {
             whenever(runBlocking { defaultHeaderLabel() }) doReturn "HeaderLabel"
             whenever(runBlocking { totalsHeader() }) doReturn "TotalsHeader"
@@ -242,6 +245,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             getDataSetSectionIndicators = get(),
             getDataValueInput = get(),
             setDataValue = get(),
+            uploadFile = get(),
             resourceManager = get(),
             checkValidationRulesConfiguration = get(),
             checkCompletionStatus = get(),
@@ -611,6 +615,22 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.onUiAction(UiAction.OnLinkClicked(testingId, "www.test.com"))
             testDispatcher.scheduler.advanceUntilIdle()
             verify(uiActionHandler).onOpenLink(any(), any())
+        }
+    }
+
+    @Test
+    fun `should upload file`() = runTest {
+        val testingId = CellIdGenerator.generateId(
+            rowIds = listOf(TableId("rowId123456", TableIdType.DataElement)),
+            columnIds = listOf(TableId("columnId123", TableIdType.CategoryOptionCombo)),
+        )
+        val filepath = "filepath"
+
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onUiAction(UiAction.OnOpenFile(testingId, filepath))
+            testDispatcher.scheduler.advanceUntilIdle()
+            verify(uiActionHandler).onOpenFile(any(), any(), any())
         }
     }
 

@@ -14,7 +14,6 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
-import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
@@ -81,9 +80,12 @@ internal class InputDataUiStateMapper(
                     },
                 )
 
-                InputType.FileResource -> InputExtra.File(
-                    fileWeight = cellInfo.value?.let { getFormattedFileSize(cellInfo.value) },
-                )
+                InputType.FileResource -> (cellInfo.inputExtra as? CellValueExtra.FileResource)?.let {
+                    InputExtra.File(
+                        filePath = it.filePath,
+                        fileWeight = it.fileWeight,
+                    )
+                } ?: InputExtra.File(null, null)
 
                 InputType.MultiText -> (cellInfo.inputExtra as? CellValueExtra.Options)?.let {
                     InputExtra.MultiText(

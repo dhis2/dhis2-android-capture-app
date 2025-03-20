@@ -12,6 +12,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
+import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
@@ -141,6 +142,12 @@ internal val featureModule = module {
         )
     }
 
+    factory { params ->
+        UploadFile(
+            repository = get(),
+        )
+    }
+
     factory {
         InputDataUiStateMapper(
             resourceManager = get(),
@@ -188,6 +195,7 @@ internal val featureModule = module {
             setDataValue = get {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
+            uploadFile = get(),
             resourceManager = get(),
             checkValidationRulesConfiguration = get {
                 parametersOf(dataSetUid)

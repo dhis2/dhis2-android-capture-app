@@ -38,5 +38,8 @@
     <string name="validation_rules_data_to_review">Data to review</string>
     <string name="action_can_not_be_performed">This action can't be performed</string>
     <string name="action_next">Next</string>
+    <string name="add_file">Add file</string>
+    <string name="file_downloaded">File downloaded successfully</string>
+    <string name="file_download_error">Could not download file</string>
 
 </resources>

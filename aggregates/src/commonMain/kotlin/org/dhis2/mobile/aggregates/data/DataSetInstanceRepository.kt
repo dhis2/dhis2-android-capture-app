@@ -151,4 +151,11 @@ internal interface DataSetInstanceRepository {
         categoryOptionComboUid: String,
         attrOptionComboUid: String,
     ): Pair<ColorString?, LegendLabel?>?
+
+    suspend fun uploadFile(
+        path: String,
+        isImage: Boolean,
+    ): Result<String?>
+
+    suspend fun getFilePath(fileUid: String): String?
 }

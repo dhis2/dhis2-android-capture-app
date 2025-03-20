@@ -56,6 +56,7 @@ internal class GetDataValueInputTest {
                 when (result.inputType) {
                     InputType.Coordinates -> result.inputExtra is CellValueExtra.Coordinates
                     InputType.MultiText, InputType.OptionSet -> result.inputExtra is CellValueExtra.Options
+                    InputType.FileResource -> result.inputExtra is CellValueExtra.FileResource
                     else -> result.inputExtra == null
                 },
             )

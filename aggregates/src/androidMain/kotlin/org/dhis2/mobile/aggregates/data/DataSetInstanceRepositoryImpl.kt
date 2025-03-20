@@ -21,6 +21,7 @@ import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
+import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -38,11 +39,13 @@ import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.validation.engine.ValidationResultViolation
+import java.io.File
 import java.util.Locale
 
 internal class DataSetInstanceRepositoryImpl(
     private val d2: D2,
     private val periodLabelProvider: PeriodLabelProvider,
+    private val fileController: FileController,
 ) : DataSetInstanceRepository {
 
     override suspend fun getDataSetInstance(
@@ -835,6 +838,28 @@ internal class DataSetInstanceRepositoryImpl(
                 attrOptionComboUid = attrOptionComboUid,
             ),
         )
+    }
+
+    override suspend fun uploadFile(
+        path: String,
+        isImage: Boolean,
+    ): Result<String?> {
+        val file = if (isImage) {
+            fileController.resize(path)
+        } else {
+            File(path)
+        }
+        return try {
+            Result.success(d2.fileResourceModule().fileResources().blockingAdd(file))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getFilePath(
+        fileUid: String,
+    ): String? {
+        return d2.fileResourceModule().fileResources().uid(fileUid).blockingGet()?.path()
     }
 
     private fun mapViolations(
