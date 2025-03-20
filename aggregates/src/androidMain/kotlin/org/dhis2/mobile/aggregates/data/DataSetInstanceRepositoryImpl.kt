@@ -26,6 +26,7 @@ import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -362,7 +363,7 @@ internal class DataSetInstanceRepositoryImpl(
 
                 val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
 
-                val tableTitle = catCombo.displayName()?.takeIf { pivotedCategoryUid == null }
+                val tableTitle = tableTitle(catCombo, pivotedCategoryUid)
 
                 TableGroup(
                     uid = "${catCombo.uid()}_$index",
@@ -409,7 +410,7 @@ internal class DataSetInstanceRepositoryImpl(
                         null
                     }
 
-                    val tableTitle = catCombo.displayName()?.takeIf { pivotedCategoryUid == null }
+                    val tableTitle = tableTitle(catCombo, pivotedCategoryUid)
 
                     TableGroup(
                         uid = catCombo.uid(),
@@ -439,6 +440,17 @@ internal class DataSetInstanceRepositoryImpl(
                     )
                 }
         }
+    }
+
+    private fun tableTitle(categoryCombo: CategoryCombo, pivotedCategoryUid: String?): String? {
+        return categoryCombo.displayName()
+            ?.takeIf {
+                val hasMoreThanOneCategory = (categoryCombo.categories()?.size ?: 0) > 1
+                val hasPivotedCategory = pivotedCategoryUid != null
+                val isDefaultCatCombo = categoryCombo.isDefault == true
+
+                hasMoreThanOneCategory and hasPivotedCategory.not() and isDefaultCatCombo.not()
+            }
     }
 
     override suspend fun getInitialSectionToLoad(
