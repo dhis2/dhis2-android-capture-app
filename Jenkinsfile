@@ -74,7 +74,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest :form:assembleAndroidTest'
+                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :form:assembleAndroidTest'
                 }
             }
         }
