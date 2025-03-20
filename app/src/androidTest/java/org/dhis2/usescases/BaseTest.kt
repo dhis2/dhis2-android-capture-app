@@ -125,6 +125,7 @@ open class BaseTest {
         closeKeyboard()
         disableIntents()
         cleanPreferences()
+        cleanLocalDatabase()
         cleanKeystore()
         stopMockServer()
         unregisterCountingIdlingResource()
