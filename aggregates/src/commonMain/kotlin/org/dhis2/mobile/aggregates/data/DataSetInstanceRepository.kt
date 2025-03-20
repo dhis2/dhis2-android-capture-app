@@ -101,7 +101,7 @@ internal interface DataSetInstanceRepository {
         value: String?,
     ): Result<Unit>
 
-    suspend fun categoryOptionComboFromCategoryOptions(dataElementUid: String, categoryOptions: List<String>): String
+    suspend fun categoryOptionComboFromCategoryOptions(dataSetUid: String, dataElementUid: String, categoryOptions: List<String>): String
 
     suspend fun getCoordinatesFrom(coordinatesValue: String): Pair<Double, Double>
 

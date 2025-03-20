@@ -90,6 +90,7 @@ internal val featureModule = module {
 
     factory { params ->
         SetDataValue(
+            dataSetUid = params.get(),
             periodId = params.get(),
             orgUnitUid = params.get(),
             attrOptionComboUid = params.get(),
@@ -185,7 +186,7 @@ internal val featureModule = module {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             setDataValue = get {
-                parametersOf(periodId, orgUnitUid, attrOptionComboUid)
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             resourceManager = get(),
             checkValidationRulesConfiguration = get {

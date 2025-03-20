@@ -9,6 +9,7 @@ internal abstract class ValueValidator(
 ) {
 
     suspend fun checkedCategoryOptionCombos(
+        dataSetUid: String,
         dataElementUid: String,
         rowIds: List<TableId>,
         columnIds: List<TableId>,
@@ -29,7 +30,7 @@ internal abstract class ValueValidator(
 
         return when {
             categoryOptionCombos.isNotEmpty() -> categoryOptionCombos.first()
-            else -> repository.categoryOptionComboFromCategoryOptions(dataElementUid, categoryOptions)
+            else -> repository.categoryOptionComboFromCategoryOptions(dataSetUid, dataElementUid, categoryOptions)
         }
     }
 

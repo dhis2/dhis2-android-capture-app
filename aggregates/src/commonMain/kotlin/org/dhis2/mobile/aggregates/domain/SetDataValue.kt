@@ -4,6 +4,7 @@ import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 
 internal class SetDataValue(
+    val dataSetUid: String,
     val periodId: String,
     val orgUnitUid: String,
     val attrOptionComboUid: String,
@@ -15,7 +16,7 @@ internal class SetDataValue(
         value: String?,
     ): Result<Unit> {
         val dataElementUid = checkOnlyOneDataElementIsProvided(rowIds, columnIds)
-        val categoryOptionComboUid = checkedCategoryOptionCombos(dataElementUid, rowIds, columnIds)
+        val categoryOptionComboUid = checkedCategoryOptionCombos(dataSetUid, dataElementUid, rowIds, columnIds)
 
         return repository.updateValue(
             periodId = periodId,
