@@ -26,7 +26,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.Constants
-import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.AlertBottomDialog
@@ -69,6 +68,7 @@ import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
+import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
@@ -152,7 +152,7 @@ class FormView : Fragment() {
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
 
-    private val fileHandler = FileHandler()
+    private val fileHandler = FileHandlerImpl()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -605,14 +605,12 @@ class FormView : Fragment() {
 
     private fun downloadFile(fileName: String?) {
         fileName?.let { filePath ->
-            fileHandler.copyAndOpen(File(filePath)) { file ->
-                file.observe(viewLifecycleOwner) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.file_downloaded),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
+            fileHandler.copyAndOpen(File(filePath)) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.file_downloaded),
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }

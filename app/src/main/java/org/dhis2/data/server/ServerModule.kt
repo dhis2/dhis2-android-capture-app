@@ -25,7 +25,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
-import org.dhis2.form.data.FileController
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.data.RulesUtilsProviderImpl
@@ -33,6 +32,8 @@ import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.metadata.usecases.DataSetConfiguration
 import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
+import org.dhis2.mobile.commons.files.FileController
+import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor
@@ -139,7 +140,7 @@ class ServerModule {
     @Provides
     @PerServer
     fun providesFileController(): FileController {
-        return FileController()
+        return FileControllerImpl()
     }
 
     @Provides

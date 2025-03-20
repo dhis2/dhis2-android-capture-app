@@ -19,7 +19,7 @@ class FileHandlerImpl : FileHandler {
         return sourceFile.copyTo(destinationDirectory, true)
     }
 
-    private fun getDownloadDirectory(outputFileName: String) = if (Build.VERSION.SDK_INT >= 29) {
+    fun getDownloadDirectory(outputFileName: String): File = if (Build.VERSION.SDK_INT >= 29) {
         File(
             Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS,

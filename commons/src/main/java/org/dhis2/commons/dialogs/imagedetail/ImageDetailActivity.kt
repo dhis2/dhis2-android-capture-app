@@ -7,13 +7,12 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.core.content.FileProvider
 import org.dhis2.commons.R
-import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
-import org.dhis2.commons.extensions.getBitmap
+import org.dhis2.mobile.commons.extensions.toImageBitmap
+import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.hisp.dhis.mobile.ui.designsystem.component.FullScreenImage
 import timber.log.Timber
 import java.io.File
@@ -34,7 +33,7 @@ class ImageDetailActivity : AppCompatActivity() {
         }
     }
 
-    private val fileHandler = FileHandler()
+    private val fileHandler = FileHandlerImpl()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +42,7 @@ class ImageDetailActivity : AppCompatActivity() {
 
         setContent {
             val painter = remember(imagePath) {
-                imagePath.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
+                imagePath.toImageBitmap()?.let { BitmapPainter(it) }
             }
 
             FullScreenImage(
@@ -53,14 +52,12 @@ class ImageDetailActivity : AppCompatActivity() {
                 onDownloadButtonClick = {
                     fileHandler.copyAndOpen(
                         File(imagePath),
-                    ) { file ->
-                        file.observe(this) {
-                            Toast.makeText(
-                                this,
-                                getString(R.string.file_downloaded),
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
+                    ) {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.file_downloaded),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                     }
                 },
                 onShareButtonClick = { shareImage(imagePath) },

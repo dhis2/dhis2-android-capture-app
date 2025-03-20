@@ -387,7 +387,7 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnAddImage -> {
-                    uiActionHandler.onAddImage(fieldUid = dataElementUid) { result ->
+                    uiActionHandler.onAddImage(uiAction.cellId) { result ->
                         result?.let {
                             uploadFile(uiAction.cellId, result)
                         }

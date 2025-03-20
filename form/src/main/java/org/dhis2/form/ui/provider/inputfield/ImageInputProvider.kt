@@ -10,21 +10,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import org.dhis2.commons.extensions.getBitmap
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.ui.dialog.ImagePickerOptionsDialog
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.files.rememberCameraPicker
 import org.dhis2.form.ui.files.rememberFilePicker
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.extensions.toImageBitmap
+import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 
@@ -48,7 +48,7 @@ internal fun ProvideInputImage(
         )
     }
 
-    val painter = fieldUiModel.displayName?.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
+    val painter = fieldUiModel.displayName?.toImageBitmap()?.let { BitmapPainter(it) }
 
     val filePicker = rememberFilePicker(onFileSelected)
 
@@ -107,11 +107,15 @@ internal fun ProvideInputImage(
         },
     )
 
+    val context = LocalContext.current
+
     ImagePickerOptionsDialog(
         title = fieldUiModel.label,
         showImageOptions = showImageOptions,
+        cameraButtonLabel = resources.getString(R.string.take_photo),
+        galleryButtonLabel = resources.getString(R.string.from_gallery_v2),
         onDismiss = { showImageOptions = false },
-        onTakePicture = { context ->
+        onTakePicture = {
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.CAMERA,
