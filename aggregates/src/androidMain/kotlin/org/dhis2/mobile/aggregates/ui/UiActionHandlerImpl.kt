@@ -77,8 +77,12 @@ class UiActionHandlerImpl(
             contract = ActivityResultContracts.TakePicture(),
         ) { success ->
             if (success) {
-                tempFile?.let { callback?.invoke(it.rotateImage(context).path) }
-                callback?.invoke(tempFile?.path)
+                tempFile?.let {
+                    callback?.invoke(it.rotateImage(context).path)
+                } ?: run {
+                    callback?.invoke(CallbackStatus.ERROR.name)
+                }
+                tempFile = null
             } else {
                 callback?.invoke(CallbackStatus.ERROR.name)
             }
