@@ -40,6 +40,11 @@ pipeline {
             }
         }
         stage('Lint Check') {
+            when {
+                expression {
+                    return onlyUiTest() != true
+                }
+            }
             steps {
                 script {
                     echo 'Running Ktlint'
@@ -48,6 +53,11 @@ pipeline {
             }
         }
         stage('Unit tests') {
+            when {
+                expression {
+                    return onlyUiTest() != true
+                }
+            }
             environment {
                 ANDROID_HOME = '/opt/android-sdk'
             }
@@ -71,6 +81,11 @@ pipeline {
         stage('Run tests') {
             parallel {
                 stage('Deploy and run Form Tests') {
+                        when {
+                            expression {
+                                return onlyUiTest() != true
+                            }
+                        }
                         environment {
                             BROWSERSTACK = credentials('android-browserstack')
                             form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
@@ -188,4 +203,11 @@ def isSkipCI() {
     def prTitle = env.CHANGE_TITLE ?: ""
     def prDescription = env.CHANGE_DESCRIPTION ?: ""
     return (prTitle.contains("[skip ci]") || prDescription.contains("[skip ci]"))
+}
+
+
+def onlyUiTest(){
+    def prTitle = env.CHANGE_TITLE ?: ""
+    def prDescription = env.CHANGE_DESCRIPTION ?: ""
+    return (prTitle.contains("[only test]") || prDescription.contains("[only test]"))
 }
