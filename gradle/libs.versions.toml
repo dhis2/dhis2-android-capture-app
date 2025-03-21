@@ -3,7 +3,7 @@ kotlinxDatetime = "0.6.2"
 sdk = "35"
 minSdk = "21"
 vCode = "140"
-vName = "3.2.0-DEV"
+vName = "3.2.1"
 gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
@@ -93,7 +93,6 @@ androidx-navigation = "2.7.0"
 junitJupiter = "5.8.1"
 ktxml = "0.3.2"
 atomicfu = "0.27.0"
-
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -229,7 +228,6 @@ androidx-lifecycle-viewmodel-compose-kpm = { module = "org.jetbrains.androidx.li
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
-
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
