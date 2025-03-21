@@ -1,6 +1,5 @@
-package org.dhis2.form.ui.dialog
+package org.dhis2.mobile.commons.ui
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,45 +11,51 @@ import androidx.compose.material.icons.outlined.Collections
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import org.dhis2.form.R
+import androidx.compose.ui.Modifier
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
-internal fun ImagePickerOptionsDialog(
+fun ImagePickerOptionsDialog(
     title: String,
+    cameraButtonLabel: String,
+    galleryButtonLabel: String,
     showImageOptions: Boolean,
     onDismiss: () -> Unit,
-    onTakePicture: (Context) -> Unit,
+    onTakePicture: () -> Unit,
     onSelectFromGallery: () -> Unit,
 ) {
+    val state = BottomSheetShellUIState(
+        title = title,
+    )
+
     AnimatedVisibility(
         visible = showImageOptions,
         enter = slideInVertically() + fadeIn(),
         exit = slideOutVertically() + fadeOut(),
     ) {
         BottomSheetShell(
-            title = title,
+            uiState = state,
+            modifier = Modifier,
             icon = {
                 Icon(Icons.Outlined.Image, contentDescription = null, tint = SurfaceColor.Primary)
             },
             onDismiss = onDismiss,
+            content = null,
             buttonBlock = {
-                val context = LocalContext.current
                 ButtonCarousel(
                     carouselButtonList = listOf(
                         CarouselButtonData(
                             onClick = {
                                 onDismiss()
-                                onTakePicture(context)
+                                onTakePicture()
                             },
                             enabled = true,
-                            text = stringResource(R.string.take_photo),
+                            text = cameraButtonLabel,
                             icon = {
                                 Icon(
                                     Icons.Outlined.CameraAlt,
@@ -65,7 +70,7 @@ internal fun ImagePickerOptionsDialog(
                                 onSelectFromGallery()
                             },
                             enabled = true,
-                            text = stringResource(R.string.from_gallery_v2),
+                            text = galleryButtonLabel,
                             icon = {
                                 Icon(
                                     Icons.Outlined.Collections,
@@ -77,7 +82,6 @@ internal fun ImagePickerOptionsDialog(
                     ),
                 )
             },
-            content = null,
         )
     }
 }

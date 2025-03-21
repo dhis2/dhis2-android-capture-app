@@ -86,7 +86,7 @@ internal class GetDataValueInput(
                         optionsFetched = fetchOptions || optionCount < 7,
                     )
                 }
-                InputType.FileResource -> {
+                InputType.FileResource, InputType.Image -> {
                     value?.let {
                         val filePath = repository.getFilePath(value)
                         CellValueExtra.FileResource(

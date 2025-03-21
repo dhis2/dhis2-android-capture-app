@@ -9,6 +9,7 @@ import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.model.ValueStoreResult.VALUE_CHANGED
 import org.dhis2.form.model.ValueStoreResult.VALUE_NOT_UNIQUE
+import org.dhis2.mobile.commons.files.FileController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectWithUid

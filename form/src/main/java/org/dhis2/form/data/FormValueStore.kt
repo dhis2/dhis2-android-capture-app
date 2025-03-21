@@ -16,6 +16,8 @@ import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
 import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.files.FileController
+import org.dhis2.mobile.commons.files.FileControllerImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -36,7 +38,7 @@ class FormValueStore(
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val resourceManager: ResourceManager,
-    private val fileController: FileController = FileController(),
+    private val fileController: FileController = FileControllerImpl(),
     private val uniqueAttributeController: UniqueAttributeController = UniqueAttributeController(
         d2,
         crashReportController,

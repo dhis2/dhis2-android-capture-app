@@ -31,20 +31,21 @@ sealed class UiAction(open val cellId: String) {
         override val cellId: String,
     ) : UiAction(cellId)
 
-    data class OnOpenFile(
+    data class OnShareImage(
         override val cellId: String,
         val filePath: String?,
     ) : UiAction(cellId)
 
-    data class OnShareImage(
+    data class OnDownloadFile(
         override val cellId: String,
-    ) : UiAction(cellId)
-
-    data class OnDownloadImage(
-        override val cellId: String,
+        val filePath: String?,
     ) : UiAction(cellId)
 
     data class OnAddImage(
+        override val cellId: String,
+    ) : UiAction(cellId)
+
+    data class OnTakePhoto(
         override val cellId: String,
     ) : UiAction(cellId)
 

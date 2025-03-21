@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.extensions
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -13,10 +14,11 @@ import org.dhis2.mobile.commons.dates.timeFormat
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
+expect fun String.toImageBitmap(): ImageBitmap?
 
 suspend fun String.userFriendlyValue(
     uid: String,
@@ -104,7 +106,5 @@ fun String.getDateFromAge(age: AgeInputType.Age): String? {
         null
     }
 }
-
-fun String.pathToFileName() = File(this).name
 
 private const val DB_FORMAT = "yyyy-MM-dd"

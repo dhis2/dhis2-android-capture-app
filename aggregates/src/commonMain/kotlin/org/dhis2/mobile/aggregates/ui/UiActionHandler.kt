@@ -21,10 +21,20 @@ interface UiActionHandler {
         fieldUid: String,
         callback: (result: String?) -> Unit,
     )
-    fun onOpenFile(
+    fun onDownloadFile(
         fieldUid: String,
         filepath: String?,
         callback: (result: String?) -> Unit,
+    )
+    fun onAddImage(
+        fieldUid: String,
+        callback: (result: String?) -> Unit,
+    )
+    fun onTakePicture(callback: (result: String?) -> Unit)
+
+    fun onShareImage(
+        filepath: String?,
+        onActivityNotFound: () -> Unit,
     )
 }
 

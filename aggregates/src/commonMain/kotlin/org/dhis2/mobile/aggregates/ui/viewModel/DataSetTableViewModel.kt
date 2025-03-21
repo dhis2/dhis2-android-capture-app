@@ -364,7 +364,6 @@ internal class DataSetTableViewModel(
                     CoroutineTracker.decrement()
                 }
 
-                is UiAction.OnAddImage -> TODO()
                 is UiAction.OnCall -> {
                     val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
                     uiActionHandler.onCall(uiAction.phoneNumber) {
@@ -387,7 +386,20 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                is UiAction.OnDownloadImage -> TODO()
+                is UiAction.OnAddImage -> {
+                    uiActionHandler.onAddImage(uiAction.cellId) { result ->
+                        result?.let {
+                            uploadFile(uiAction.cellId, result)
+                        }
+                    }
+                }
+                is UiAction.OnTakePhoto -> {
+                    uiActionHandler.onTakePicture { result ->
+                        result?.let {
+                            uploadFile(uiAction.cellId, it)
+                        }
+                    }
+                }
                 is UiAction.OnEmailAction -> {
                     val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
                     uiActionHandler.onSendEmail(uiAction.email) {
@@ -402,10 +414,10 @@ internal class DataSetTableViewModel(
                     }
                 }
 
-                is UiAction.OnOpenFile -> {
+                is UiAction.OnDownloadFile -> {
                     val fileDownloadMsg = resourceManager.provideFileDownload()
                     val fileDownloadErrorMsg = resourceManager.provideFileDownloadError()
-                    uiActionHandler.onOpenFile(
+                    uiActionHandler.onDownloadFile(
                         uiAction.cellId,
                         uiAction.filePath,
                     ) { result ->
@@ -427,7 +439,12 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
-                is UiAction.OnShareImage -> TODO()
+                is UiAction.OnShareImage -> {
+                    val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
+                    uiActionHandler.onShareImage(uiAction.filePath) {
+                        showSnackbar(actionCanNotBePerformedMsg)
+                    }
+                }
                 is UiAction.OnOpenOrgUnitTree -> {
                     uiActionHandler.onCaptureOrgUnit(
                         uiAction.currentOrgUnitUid

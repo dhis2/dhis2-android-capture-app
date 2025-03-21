@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -29,7 +30,9 @@ import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.resources.add_file
+import org.dhis2.mobile.aggregates.resources.add_image
 import org.dhis2.mobile.aggregates.resources.format_error
+import org.dhis2.mobile.aggregates.resources.from_gallery
 import org.dhis2.mobile.aggregates.resources.input_action_accept
 import org.dhis2.mobile.aggregates.resources.input_action_cancel
 import org.dhis2.mobile.aggregates.resources.input_age
@@ -42,9 +45,12 @@ import org.dhis2.mobile.aggregates.resources.input_date_out_of_range
 import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
+import org.dhis2.mobile.aggregates.resources.take_photo
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
+import org.dhis2.mobile.commons.extensions.toImageBitmap
+import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
@@ -362,7 +368,7 @@ internal fun InputProvider(
                     onAction(UiAction.OnSelectFile(inputData.id))
                 },
                 onUploadFile = {
-                    onAction(UiAction.OnOpenFile(inputData.id, inputData.fileExtras().filePath))
+                    onAction(UiAction.OnDownloadFile(inputData.id, inputData.fileExtras().filePath))
                 },
                 onClear = {
                     onAction(UiAction.OnValueChanged(inputData.id, null))
@@ -378,14 +384,18 @@ internal fun InputProvider(
         }
 
         InputType.Image -> {
-            var uploadingState by remember(inputData.value) {
+            var showImageOptions by remember { mutableStateOf(false) }
+
+            val uploadingState by remember(inputData.fileExtras().filePath) {
                 mutableStateOf(
-                    when (inputData.value) {
+                    when (inputData.fileExtras().filePath) {
                         null -> UploadState.ADD
                         else -> UploadState.LOADED
                     },
                 )
             }
+
+            val painter = inputData.fileExtras().filePath?.toImageBitmap()?.let { BitmapPainter(it) }
 
             InputImage(
                 title = inputData.label,
@@ -394,16 +404,30 @@ internal fun InputProvider(
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
                 uploadState = uploadingState,
-                addImageBtnText = "Add image",
+                addImageBtnText = stringResource(Res.string.add_image),
                 downloadButtonVisible = inputData.value != null,
                 isRequired = inputData.isRequired,
-                load = { TODO() },
-                painterFor = { remember { it } },
+                load = { painter },
+                painterFor = { remember { it!! } },
                 modifier = modifierWithFocus,
-                onDownloadButtonClick = { onAction(UiAction.OnDownloadImage(inputData.id)) },
-                onShareButtonClick = { onAction(UiAction.OnShareImage(inputData.id)) },
+                onDownloadButtonClick = { onAction(UiAction.OnDownloadFile(inputData.id, inputData.fileExtras().filePath)) },
+                onShareButtonClick = { onAction(UiAction.OnShareImage(inputData.id, inputData.fileExtras().filePath)) },
                 onResetButtonClicked = { onAction(UiAction.OnValueChanged(inputData.id, null)) },
-                onAddButtonClicked = { onAction(UiAction.OnAddImage(inputData.id)) },
+                onAddButtonClicked = { showImageOptions = true },
+            )
+
+            ImagePickerOptionsDialog(
+                title = inputData.label,
+                cameraButtonLabel = stringResource(Res.string.take_photo),
+                galleryButtonLabel = stringResource(Res.string.from_gallery),
+                showImageOptions = showImageOptions,
+                onDismiss = { showImageOptions = false },
+                onTakePicture = {
+                    onAction(UiAction.OnTakePhoto(inputData.id))
+                },
+                onSelectFromGallery = {
+                    onAction(UiAction.OnAddImage(inputData.id))
+                },
             )
         }
 

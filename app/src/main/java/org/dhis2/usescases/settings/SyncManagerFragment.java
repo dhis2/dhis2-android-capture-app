@@ -38,7 +38,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
@@ -54,7 +53,6 @@ import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
-import org.dhis2.commons.data.FileHandler;
 import org.dhis2.commons.data.FormFileProvider;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.ColorType;
@@ -63,6 +61,7 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.service.SyncResult;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.databinding.FragmentSettingsBinding;
+import org.dhis2.mobile.commons.files.FileHandlerImpl;
 import org.dhis2.ui.dialogs.alert.AlertDialog;
 import org.dhis2.ui.model.ButtonUiModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -84,8 +83,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.coroutines.Continuation;
-import kotlinx.coroutines.flow.FlowCollector;
 import timber.log.Timber;
 
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
@@ -171,34 +168,30 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void shareDB(ExportDbModel fileData) {
-        new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
-            fileLiveData.observe(getViewLifecycleOwner(), file -> {
-                Uri contentUri = FileProvider.getUriForFile(requireContext(),
-                        FormFileProvider.fileProviderAuthority,
-                        fileData.getFile());
-                Intent intentShare = new Intent(Intent.ACTION_SEND)
-                        .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        .putExtra(Intent.EXTRA_STREAM, contentUri);
-                Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
-                try {
-                    startActivity(chooser);
-                } catch (Exception e) {
-                    Timber.e(e);
-                }finally {
-                    presenter.onExportEnd();
-                }
-            });
+        new FileHandlerImpl().copyAndOpen(fileData.getFile(), () -> {
+            Uri contentUri = FileProvider.getUriForFile(requireContext(),
+                    FormFileProvider.fileProviderAuthority,
+                    fileData.getFile());
+            Intent intentShare = new Intent(Intent.ACTION_SEND)
+                    .setDataAndType(contentUri, requireContext().getContentResolver().getType(contentUri))
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .putExtra(Intent.EXTRA_STREAM, contentUri);
+            Intent chooser = Intent.createChooser(intentShare, getString(R.string.open_with));
+            try {
+                startActivity(chooser);
+            } catch (Exception e) {
+                Timber.e(e);
+            }finally {
+                presenter.onExportEnd();
+            }
             return null;
         });
     }
 
     private void downloadDB(ExportDbModel fileData) {
-        new FileHandler().copyAndOpen(fileData.getFile(), fileLiveData -> {
-            fileLiveData.observe(getViewLifecycleOwner(), file -> {
-                Toast.makeText(requireContext(), R.string.database_export_downloaded, Toast.LENGTH_SHORT).show();
-                presenter.onExportEnd();
-            });
+        new FileHandlerImpl().copyAndOpen(fileData.getFile(), () -> {
+            Toast.makeText(requireContext(), R.string.database_export_downloaded, Toast.LENGTH_SHORT).show();
+            presenter.onExportEnd();
             return null;
         });
     }
