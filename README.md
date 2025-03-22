@@ -7,4 +7,6 @@ Check the [Wiki](https://github.com/dhis2/dhis2-android-capture-app/wiki) for in
 
 ### What is this repository for? ###
 
+signed commit test
+
 DHIS2 Android application.
