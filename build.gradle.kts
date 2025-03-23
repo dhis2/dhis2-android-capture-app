@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        mavenCentral()
     }
     dependencies {
         classpath(libs.gradlePlugin)
@@ -19,6 +20,8 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint").version("11.5.1")
     id("org.sonarqube").version("3.5.0.2730")
     id("com.github.ben-manes.versions").version("0.46.0")
+//    alias(libs.plugins.android.library) apply false
+//    alias(libs.plugins.kotlin.android) apply false
 }
 
 sonarqube {
