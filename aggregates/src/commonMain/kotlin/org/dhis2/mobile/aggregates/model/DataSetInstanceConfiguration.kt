@@ -23,6 +23,7 @@ internal data class CellElement(
     val label: String,
     val description: String?,
     val isMultiText: Boolean,
+    val disabled: Boolean = false,
 )
 
 internal data class MandatoryCellElements(
