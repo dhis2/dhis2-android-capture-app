@@ -69,6 +69,7 @@ allprojects {
             url = uri("https://maven.google.com")
         }
         maven { url = uri("https://jitpack.io") }
+        mavenLocal()
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
