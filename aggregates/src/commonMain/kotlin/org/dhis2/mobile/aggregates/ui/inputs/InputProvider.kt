@@ -104,7 +104,7 @@ internal fun InputProvider(
     inputData: InputDataUiState,
     onAction: (UiAction) -> Unit,
 ) {
-    var textValue by remember {
+    var textValue by remember(inputData.id) {
         mutableStateOf(
             TextFieldValue(
                 text = inputData.displayValue ?: "",
@@ -114,7 +114,7 @@ internal fun InputProvider(
     }
 
     val imeAction by remember(inputData) {
-        mutableStateOf(ImeAction.Next) // TODO: Update from inputData
+        mutableStateOf(ImeAction.Next)
     }
 
     val scope = rememberCoroutineScope()
