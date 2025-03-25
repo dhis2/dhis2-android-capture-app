@@ -278,8 +278,8 @@
 
     <!--Enrollment labels-->
     <plurals name="enrollment">
-        <item quantity="many">enrollments</item>
-        <item quantity="other">enrollment</item>
+        <item quantity="one">enrollment</item>
+        <item quantity="other">enrollments</item>
     </plurals>
     <string name="dialog_layer_enrollment_coordinates_v2">Show %s coordinates</string>
     <string name="enrollment_data_section_label_V2">%s data</string>
