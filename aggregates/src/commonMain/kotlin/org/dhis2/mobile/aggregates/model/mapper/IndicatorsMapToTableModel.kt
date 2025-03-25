@@ -16,7 +16,7 @@ internal suspend fun IndicatorMap.toTableModel(
     absoluteRowIndex: Int,
 ) = TableModel(
     id = INDICATOR_TABLE_UID,
-    title = "",
+    title = resourceManager.indicatorsLabel(),
     tableHeaderModel = TableHeader(
         rows = listOf(
             TableHeaderRow(

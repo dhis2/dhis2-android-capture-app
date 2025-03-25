@@ -78,7 +78,7 @@ internal val pivotTestingData = listOf(
             ),
             CellData(
                 testTag = rowHeaderTestTag("t3aNCvHsoSn", "t3aNCvHsoSn_totals"),
-                label = "Total"
+                label = "Totals"
             ),
             CellData(
                 testTag = rowHeaderTestTag("UnNIOt1uB0J", "D3E6Qfzjs6I"),
@@ -90,7 +90,7 @@ internal val pivotTestingData = listOf(
             ),
             CellData(
                 testTag = rowHeaderTestTag("UnNIOt1uB0J", "UnNIOt1uB0J_totals"),
-                label = "Total"
+                label = "Totals"
             ),
         ),
         headerTestTags = listOf(
@@ -134,7 +134,7 @@ internal val pivotTestingData = listOf(
             ),
             CellData(
                 testTag = rowHeaderTestTag("t3aNCvHsoSn_0", "t3aNCvHsoSn_0_totals"),
-                label = "Total"
+                label = "Totals"
             ),
             CellData(
                 testTag = rowHeaderTestTag("aN8uN5b15YG_1", "Z8aX3AkrDMS"),
@@ -146,7 +146,7 @@ internal val pivotTestingData = listOf(
             ),
             CellData(
                 testTag = rowHeaderTestTag("aN8uN5b15YG_1", "aN8uN5b15YG_1_totals"),
-                label = "Total"
+                label = "Totals"
             ),
         ),
         headerTestTags = listOf(
