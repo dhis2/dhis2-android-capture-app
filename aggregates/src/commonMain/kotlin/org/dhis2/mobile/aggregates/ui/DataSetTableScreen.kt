@@ -477,7 +477,7 @@ private fun DataSetSinglePane(
                                 )
 
                                 if (dataSetSectionTable.tables().isEmpty()) {
-                                    val emptyMessage = if (dataSetSections.isEmpty() && dataSetSectionTable.tables().isEmpty()) {
+                                    val emptyMessage = if (dataSetSections.isEmpty()) {
                                         emptyDatasetMessage
                                     } else {
                                         emptySectionMessage
@@ -616,7 +616,7 @@ private fun DataSetTableContent(
                             )
 
                             if (dataSetSectionTable.tables().isEmpty()) {
-                                val emptyMessage = if (dataSetSections.isEmpty() && dataSetSectionTable.tables().isEmpty()) {
+                                val emptyMessage = if (dataSetSections.isEmpty()) {
                                     emptyDatasetMessage
                                 } else {
                                     emptySectionMessage
