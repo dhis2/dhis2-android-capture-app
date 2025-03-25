@@ -59,7 +59,8 @@ open class BaseTest {
     var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.CAMERA
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.POST_NOTIFICATIONS
         )
     } else {
         GrantPermissionRule.grant(

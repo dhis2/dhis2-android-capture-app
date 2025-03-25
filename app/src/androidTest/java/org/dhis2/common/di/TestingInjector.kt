@@ -1,6 +1,7 @@
 package org.dhis2.common.di
 
 import android.content.Context
+import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.DBTestLoader
 import org.dhis2.common.FileReader
 import org.dhis2.common.featureConfig.FeatureConfigRobot
@@ -37,7 +38,7 @@ class TestingInjector {
             return  FeatureConfigRobot(FeatureConfigRepositoryImpl(D2Manager.getD2()))
         }
         fun providesMockWebserverRobot(context: Context): MockWebServerRobot {
-            return MockWebServerRobot(Dhis2MockServer(FileReader(context), 8080))
+            return MockWebServerRobot(Dhis2MockServer(FileReader(InstrumentationRegistry.getInstrumentation().context), 8080))
         }
         fun provideDBImporter(context: Context): DBTestLoader {
             return DBTestLoader(context)
