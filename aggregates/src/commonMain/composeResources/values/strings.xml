@@ -19,7 +19,7 @@
     <string name="completion_dialog_title">Everything looks good</string>
     <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
     <string name="validation_success_title">Everything looks good</string>
-    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
+    <string name="mark_dataset_complete">Do you also want to complete the data set?</string>
     <string name="not_now">Not now</string>
     <string name="complete">Complete</string>
     <string name="saved">Saved!</string>
