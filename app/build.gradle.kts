@@ -1,5 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -153,31 +154,13 @@ android {
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
         }
+
+        create("playServices"){
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+        }
     }
     flavorDimensions += listOf("default")
-
-    productFlavors {
-        create("dhis") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-
-        create("dhisPlayServices") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-
-        create("dhisUITesting") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-    }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -218,12 +201,11 @@ android {
     androidComponents {
         onVariants { variant ->
             val buildType = variant.buildType
-            val flavorName = variant.flavorName
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
-                    val suffix = when {
-                        buildType == "debug" && flavorName == "dhis" -> "-training"
-                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
+                    val suffix = when (buildType) {
+                        "debug" -> "-training"
+                        "playServices" -> "-googlePlay"
                         else -> ""
                     }
 
@@ -286,8 +268,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    "dhisPlayServicesImplementation"(libs.google.auth)
-    "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
+    "playServicesImplementation"(libs.google.auth)
+    "playServicesImplementation"(libs.google.auth.apiphone)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)

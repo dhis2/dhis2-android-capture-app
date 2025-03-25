@@ -44,7 +44,7 @@ jobs:
 
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDhisDebug
+        run: ./gradlew assembleDebug
 
       - name: Read version name from file
         working-directory: ./gradle
@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

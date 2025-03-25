@@ -3,6 +3,7 @@ package org.dhis2.usescases.main
 import android.content.Context
 import android.net.Uri
 import android.view.Gravity
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
@@ -51,7 +52,7 @@ import kotlin.coroutines.CoroutineContext
 const val DEFAULT = "default"
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
-const val PLAY_FLAVOR = "dhisPlayServices"
+const val PLAY_BUILD_TYPE = "playServices"
 
 class MainPresenter(
     private val view: MainView,
@@ -345,9 +346,9 @@ class MainPresenter(
         onDownloadCompleted: (Uri) -> Unit,
         onLaunchUrl: (Uri) -> Unit,
     ) {
-        if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
+        if (BuildConfig.BUILD_TYPE == PLAY_BUILD_TYPE) {
             val url = versionRepository.getUrl()
-            onLaunchUrl(Uri.parse(url))
+            url?.toUri()?.let { onLaunchUrl(it) }
         } else {
             versionRepository.download(
                 context = context,
