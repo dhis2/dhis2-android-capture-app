@@ -104,23 +104,17 @@ internal fun InputProvider(
     inputData: InputDataUiState,
     onAction: (UiAction) -> Unit,
 ) {
-    val savedTextSelection by remember(inputData.displayValue) {
-        mutableStateOf(
-            TextRange(inputData.displayValue?.length ?: 0),
-        )
-    }
-
-    var textValue by remember(inputData.displayValue) {
+    var textValue by remember(inputData.id) {
         mutableStateOf(
             TextFieldValue(
                 text = inputData.displayValue ?: "",
-                selection = savedTextSelection,
+                selection = TextRange(inputData.displayValue?.length ?: 0),
             ),
         )
     }
 
     val imeAction by remember(inputData) {
-        mutableStateOf(ImeAction.Next) // TODO: Update from inputData
+        mutableStateOf(ImeAction.Next)
     }
 
     val scope = rememberCoroutineScope()
@@ -280,6 +274,14 @@ internal fun InputProvider(
         }
 
         InputType.DateTime, InputType.Date, InputType.Time -> {
+            var dateTextValue by remember(inputData.id) {
+                mutableStateOf(
+                    TextFieldValue(
+                        text = inputData.value ?: "",
+                        selection = TextRange(inputData.displayValue?.length ?: 0),
+                    ),
+                )
+            }
             InputDateTime(
                 state = rememberInputDateTimeState(
                     inputDateTimeData = InputDateTimeData(
@@ -303,15 +305,15 @@ internal fun InputProvider(
                         selectableDates = inputData.dateExtras().selectableDates,
                         yearRange = inputData.dateExtras().yearRange,
                     ),
-                    inputTextFieldValue = textValue,
+                    inputTextFieldValue = dateTextValue,
                     inputState = inputData.inputShellState,
                     legendData = inputData.legendData,
                     supportingText = inputData.supportingText,
                 ),
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 onValueChanged = {
-                    textValue = it ?: TextFieldValue()
-                    onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
+                    dateTextValue = it ?: TextFieldValue()
+                    onAction(UiAction.OnValueChanged(inputData.id, dateTextValue.text))
                 },
                 onNextClicked = { onAction(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifierWithFocus,
