@@ -231,7 +231,7 @@ internal class DataSetTableViewModel(
                 ).also { absoluteRowIndex += it.tableRows.size }
 
                 if (sectionData.showColumnTotals()) {
-                    tableModel.withTotalsRow(resourceManager)
+                    tableModel.withTotalsRow(resourceManager, absoluteRowIndex)
                         .also { absoluteRowIndex += 1 }
                 } else {
                     tableModel
