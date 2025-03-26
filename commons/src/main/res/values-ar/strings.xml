@@ -38,12 +38,7 @@
     <string name="filters_title_state">حالة التزامن</string>
     <string name="filters_title_assigned">تم تعيينه لي</string>
     <string name="filters_title_date">التاريخ</string>
-    <string name="filters_title_event_date">تاريخ الحدث</string>
-    <string name="enrollment_date">تاريخ التسجيل</string>
-    <string name="filters_title_event_status">حالة الحدث</string>
-    <string name="filters_title_enrollment_status">حالة التسجيل</string>
     <string name="filter_follow_up_label">تمت متابعة %s</string>
-
     <!-- State -->
     <string name="state_synced">حالة التزامن</string>
     <string name="state_to_post">للإرسال</string>
@@ -134,9 +129,6 @@
     <string name="section_indicators">المؤشرات</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="section_charts_indicators">الرسوم البيانية والمؤشرات</string>
-
-    <!-- Enrollment -->
-    <string name="enrolled_in">مسجل في:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">كلمة المرور مفقودة. الرجاء إدخال كلمة المرور.</string>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Випадок</string>
     <string name="no_data">Немає даних</string>
     <string name="feature_configuration">Конфігурація функції</string>
     <string name="change_calendar_view">Змінити вид календаря</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Аналітика</string>
     <string name="navigation_tasks">Завдання</string>
     <string name="navigation_programs">Програми</string>
-    <string name="navigation_events">Випадки</string>
     <string name="navigation_relationships">Зв\'язки</string>
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>
@@ -25,8 +23,6 @@
     <string name="event_overview">Деталі</string>
     <string name="select_option">Обрати опцію</string>
     <string name="search">Пошук</string>
-    <string name="jira_issue_sent">Надіслано сповіщення про проблему</string>
-    <string name="jira_issue_sent_error">Помилка при надсиланні сповіщення про проблему</string>
     <string name="events">випадки</string>
     <string name="data_sets">Набори даних</string>
     <string name="tei">Об’єкт, який відстежується</string>
@@ -43,12 +39,7 @@
     <string name="filters_title_state">Синхронізувати</string>
     <string name="filters_title_assigned">Призначено мені</string>
     <string name="filters_title_date">Дата</string>
-    <string name="filters_title_event_date">Дата випадку</string>
-    <string name="enrollment_date">Дата реєстрації</string>
-    <string name="filters_title_event_status">Статус випадку</string>
-    <string name="filters_title_enrollment_status">Статус реєстрації</string>
     <string name="filter_follow_up_label">Для подальших дій %s</string>
-
     <!-- State -->
     <string name="state_synced">Синхронізувати</string>
     <string name="state_to_post">Надіслати</string>
@@ -74,8 +65,6 @@
     <string name="enrollment_status_completed">Завершити</string>
     <string name="enrollment_status_cancelled">Скасовано</string>
     <string name="record_marked_for_deletion">Цей запис позначено для видалення. Ви не можете отримати до нього доступ.</string>
-
-    <string name="enrollment_org_unit">Організаційний підрозділ, який здійснює реєстрацію</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Сьогодні</string>
@@ -141,9 +130,6 @@
     <string name="section_indicators">Індикатори</string>
     <string name="section_charts">Діаграми</string>
     <string name="section_charts_indicators">Діаграми та індикатори</string>
-
-    <!-- Enrollment -->
-    <string name="enrolled_in">Зареєстровано в:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
@@ -237,4 +223,5 @@
         <item quantity="many">%d роками прострочені</item>
         <item quantity="other">%d років прострочено</item>
     </plurals>
-</resources>
+
+    </resources>

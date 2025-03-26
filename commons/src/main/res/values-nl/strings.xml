@@ -39,12 +39,7 @@
     <string name="filters_title_state">Synchroniseren</string>
     <string name="filters_title_assigned">Toegewezen aan mij</string>
     <string name="filters_title_date">Datum</string>
-    <string name="filters_title_event_date">Evenement datum</string>
-    <string name="enrollment_date">Inschrijvingsdatum</string>
-    <string name="filters_title_event_status">Gebeurtenisstatus</string>
-    <string name="filters_title_enrollment_status">Inschrijving Status</string>
     <string name="filter_follow_up_label">Gevolgd %s</string>
-
     <!-- State -->
     <string name="state_synced">Synchroniseren</string>
     <string name="state_to_post">Versturen</string>
@@ -135,9 +130,6 @@
     <string name="section_indicators">Indicatoren</string>
     <string name="section_charts">Grafieken</string>
     <string name="section_charts_indicators">Grafieken en indicatoren</string>
-
-    <!-- Enrollment -->
-    <string name="enrolled_in">Ingeschreven in:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Wachtwoord ontbreekt. Voer wachtwoord in alstublieft.</string>

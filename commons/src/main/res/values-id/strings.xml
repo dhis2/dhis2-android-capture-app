@@ -38,10 +38,6 @@
     <string name="filters_title_state">Sinkronkan</string>
     <string name="filters_title_assigned">Ditugaskan kepada saya</string>
     <string name="filters_title_date">Tanggal</string>
-    <string name="filters_title_event_date">Tanggal Even</string>
-    <string name="enrollment_date">Tanggal pendaftaran</string>
-    <string name="filters_title_event_status">Status Even</string>
-    <string name="filters_title_enrollment_status">Status pendaftaran</string>
     <!-- State -->
     <string name="state_synced">Sinkronkan</string>
     <string name="state_to_post">Untuk dikirim</string>
