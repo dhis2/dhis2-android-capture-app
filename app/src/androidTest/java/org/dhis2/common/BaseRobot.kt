@@ -34,7 +34,7 @@ import java.lang.Thread.sleep
 open class BaseRobot {
 
     fun pressBack(): BaseRobot {
-        val pressed = UiDevice.getInstance(getInstrumentation()).pressBack()
+        UiDevice.getInstance(getInstrumentation()).pressBack()
         return this
     }
 

@@ -43,6 +43,7 @@ open class BaseTest {
 
     @JvmField
     protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    private var testContext = InstrumentationRegistry.getInstrumentation().context
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     lateinit var preferencesRobot: PreferencesRobot
@@ -82,7 +83,7 @@ open class BaseTest {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
-            mockWebServerRobot = providesMockWebserverRobot(context)
+            mockWebServerRobot = providesMockWebserverRobot(testContext)
             featureConfigRobot = providesFeatureConfigRobot()
         }
     }
