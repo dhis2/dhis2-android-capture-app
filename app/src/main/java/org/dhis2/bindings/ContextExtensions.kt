@@ -43,7 +43,3 @@ fun Context.hasPermissions(permissions: Array<String>): Boolean {
     }
     return true
 }
-
-fun Context.showSMS(): Boolean {
-    return true
-}

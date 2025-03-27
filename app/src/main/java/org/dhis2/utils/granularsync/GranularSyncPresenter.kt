@@ -110,8 +110,8 @@ class GranularSyncPresenter(
         loadSyncInfo()
     }
 
-    fun isSMSEnabled(showSms: Boolean): Boolean {
-        return smsSyncProvider.isSMSEnabled(syncContext.conflictType() == TEI) && showSms
+    fun isSMSEnabled(): Boolean {
+        return smsSyncProvider.isSMSEnabled(syncContext.conflictType() == TEI)
     }
 
     fun canSendSMS(): Boolean {
