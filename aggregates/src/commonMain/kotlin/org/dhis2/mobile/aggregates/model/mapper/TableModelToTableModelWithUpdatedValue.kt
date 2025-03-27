@@ -44,7 +44,8 @@ internal suspend fun TableModel.updateValue(
     }
 
     return if (hasTotalRow) {
-        copy(tableRows = tableRows.dropLast(1)).withTotalsRow(resourceManager)
+        val totalRowIndex = tableRows.last().row()
+        copy(tableRows = tableRows.dropLast(1)).withTotalsRow(resourceManager, totalRowIndex)
     } else {
         copy(tableRows = tableRows)
     }
