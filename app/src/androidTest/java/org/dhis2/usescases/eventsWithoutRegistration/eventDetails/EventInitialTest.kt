@@ -51,7 +51,6 @@ import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.domain.ConfigurePeriodSelector
-import org.junit.Ignore
 
 class EventInitialTest {
 
