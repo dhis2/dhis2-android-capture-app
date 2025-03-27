@@ -215,7 +215,6 @@ class EventInitialTest {
     )
 
     @Test
-    @Ignore("Not passing with single test runner")
     fun shouldAddStandardIntervalDaysIfScheduleIntervalIsGreaterThanZero() {
         viewModel = initViewModel(
             periodType = null,
