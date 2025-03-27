@@ -15,3 +15,4 @@ Briefly describe how the issue is resolved.
 - Add the **JIRA issue number** in `[ANDROAPP-XXXX]`.
 - Include a brief description.
 - Append `[skip ci]` to skip CI if needed.
+- Append `[skip size]` to skip PR size limitation.
