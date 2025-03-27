@@ -10,6 +10,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
+import org.dhis2.mobile.aggregates.domain.ReopenDataSet
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
@@ -133,6 +134,16 @@ internal val featureModule = module {
     }
 
     factory { params ->
+        ReopenDataSet(
+            dataSetUid = params.get(),
+            periodId = params.get(),
+            orgUnitUid = params.get(),
+            attrOptionComboUid = params.get(),
+            dataSetInstanceRepository = get(),
+        )
+    }
+
+    factory { params ->
         RunValidationRules(
             dataSetUid = params.get(),
             periodId = params.get(),
@@ -205,6 +216,9 @@ internal val featureModule = module {
             },
             datasetModalDialogProvider = get(),
             completeDataSet = get {
+                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+            },
+            reopenDataSet = get {
                 parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
             },
             dispatcher = get(),

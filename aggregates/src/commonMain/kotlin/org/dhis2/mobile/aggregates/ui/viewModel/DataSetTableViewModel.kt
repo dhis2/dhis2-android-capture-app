@@ -20,6 +20,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
+import org.dhis2.mobile.aggregates.domain.ReopenDataSet
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
@@ -79,6 +80,7 @@ internal class DataSetTableViewModel(
     private val dispatcher: Dispatcher,
     private val datasetModalDialogProvider: DataSetModalDialogProvider,
     private val completeDataSet: CompleteDataSet,
+    private val reopenDataSet: ReopenDataSet,
     private val runValidationRules: RunValidationRules,
     private val uiActionHandler: UiActionHandler,
     private val inputDataUiStateMapper: InputDataUiStateMapper,
@@ -469,6 +471,20 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnFetchOptions ->
                     updateSelectedCell(uiAction.cellId, true)
+            }
+        }
+    }
+
+    fun onReopenDataSet() {
+        viewModelScope.launch(dispatcher.io()) {
+            reopenDataSet()
+            val updatedDetails = getDataSetInstanceData(this).dataSetDetails
+            withContext(dispatcher.main()) {
+                _dataSetScreenState.update {
+                    (it as? DataSetScreenState.Loaded)?.copy(
+                        dataSetDetails = updatedDetails,
+                    ) ?: it
+                }
             }
         }
     }

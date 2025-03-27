@@ -943,7 +943,6 @@
     <string name="optional">可选项描述</string>
     <string name="database_export_downloaded">数据库已下载</string>
     <string name="importing_database">导入数据库</string>
-    <string name="re_open_to_edit">重新打开表单进行编辑</string>
     <string name="empty_search_attributes_message">没有配置可用的搜索字段，请联系您的管理员。</string>
     <string name="show_more">更多</string>
     <string name="show_less">显示较少</string>

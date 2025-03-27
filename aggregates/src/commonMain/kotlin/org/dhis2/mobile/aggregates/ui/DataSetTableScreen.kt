@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,8 +53,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.model.NonEditableReason
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.attribute_option_combo_no_access
+import org.dhis2.mobile.aggregates.resources.attribute_option_combo_not_assigned_to_org_unit
+import org.dhis2.mobile.aggregates.resources.dataset_closed
+import org.dhis2.mobile.aggregates.resources.dataset_expired
+import org.dhis2.mobile.aggregates.resources.no_data_write_access
+import org.dhis2.mobile.aggregates.resources.org_unit_not_in_capture_scope
+import org.dhis2.mobile.aggregates.resources.period_not_in_attribute_option_combo_range
+import org.dhis2.mobile.aggregates.resources.period_not_in_org_unit_range
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
@@ -67,6 +80,7 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
@@ -91,6 +105,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -225,11 +240,30 @@ fun DataSetInstanceScreen(
             }
         },
         bottomBar = {
-            when {
-                (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog != null ->
-                    ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
-                (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar != null ->
-                    ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.let { state ->
+                when {
+                    state.modalDialog != null ->
+                        ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
+
+                    state.validationBar != null ->
+                        ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
+
+                    state.dataSetDetails.isCompleted or !state.dataSetDetails.edition.editable -> {
+                        val edition = state.dataSetDetails.edition
+                        NonEditableReasonBlock(
+                            paddingValues = PaddingValues(
+                                start = Spacing.Spacing16,
+                                top = Spacing.Spacing8,
+                                end = Spacing.Spacing16,
+                                bottom = Spacing.Spacing8 + WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding(),
+                            ),
+                            reason = nonEditableReasonLabel(edition),
+                            canBeReopened = state.dataSetDetails.isCompleted,
+                            onReopenClick = dataSetTableViewModel::onReopenDataSet,
+                        )
+                    }
+                }
             }
         },
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -402,6 +436,52 @@ fun DataSetInstanceScreen(
             }
         }
     }
+}
+
+@Composable
+private fun nonEditableReasonLabel(edition: DataSetEdition) = when (edition.nonEditableReason) {
+    is NonEditableReason.AttributeOptionComboNotAssignedToOrgUnit ->
+        stringResource(
+            Res.string.attribute_option_combo_not_assigned_to_org_unit,
+            edition.nonEditableReason.attributeOptionComboLabel,
+            edition.nonEditableReason.orgUnitLabel,
+        )
+
+    NonEditableReason.Closed ->
+        stringResource(Res.string.dataset_closed)
+
+    NonEditableReason.Expired ->
+        stringResource(Res.string.dataset_expired)
+
+    is NonEditableReason.NoAttributeOptionComboAccess ->
+        stringResource(
+            Res.string.attribute_option_combo_no_access,
+            edition.nonEditableReason.attributeOptionComboLabel,
+        )
+
+    NonEditableReason.NoDataWriteAccess ->
+        stringResource(Res.string.no_data_write_access)
+
+    NonEditableReason.None -> ""
+    is NonEditableReason.OrgUnitNotInCaptureScope ->
+        stringResource(
+            Res.string.org_unit_not_in_capture_scope,
+            edition.nonEditableReason.orgUnitLabel,
+        )
+
+    is NonEditableReason.PeriodIsNotInAttributeOptionComboRange ->
+        stringResource(
+            Res.string.period_not_in_attribute_option_combo_range,
+            edition.nonEditableReason.periodLabel,
+            edition.nonEditableReason.attributeOptionComboLabel,
+        )
+
+    is NonEditableReason.PeriodIsNotInOrgUnitRange ->
+        stringResource(
+            Res.string.period_not_in_org_unit_range,
+            edition.nonEditableReason.periodLabel,
+            edition.nonEditableReason.orgUnitLabel,
+        )
 }
 
 /**

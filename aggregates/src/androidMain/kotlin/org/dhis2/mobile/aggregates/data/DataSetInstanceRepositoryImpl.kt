@@ -9,12 +9,14 @@ import org.dhis2.mobile.aggregates.data.mappers.toInputType
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.DataElementInfo
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataToReview
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
+import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
@@ -35,6 +37,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
+import org.hisp.dhis.android.core.dataset.DataSetNonEditableReason
 import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
@@ -67,31 +70,96 @@ internal class DataSetInstanceRepositoryImpl(
 
         val dataSetDTOCustomTitle = dataSet?.displayOptions()?.customText()
 
-        return d2.dataSetModule().dataSetInstances()
-            .byDataSetUid().eq(dataSetUid)
-            .byPeriod().eq(periodId)
-            .byOrganisationUnitUid().eq(orgUnitUid)
-            .byAttributeOptionComboUid().eq(attrOptionComboUid)
-            .blockingGet()
-            .map { dataSetInstance ->
-                val period = d2.periodModule().periods().byPeriodId().eq(dataSetInstance.period())
-                    .one().blockingGet()
+        val period = d2.periodModule().periods().byPeriodId().eq(periodId)
+            .one().blockingGet()
 
-                dataSetInstance.toDataSetDetails(
-                    periodLabel = period?.let {
-                        periodLabelProvider(
-                            periodType = period.periodType(),
-                            periodId = period.periodId()!!,
-                            periodStartDate = period.startDate()!!,
-                            periodEndDate = period.endDate()!!,
-                            locale = Locale.getDefault(),
-                        )
-                    } ?: dataSetInstance.period(),
-                    isDefaultCatCombo = isDefaultCatCombo == true,
-                    customText = dataSetDTOCustomTitle,
-                )
-            }
-            .firstOrNull() ?: DataSetDetails(
+        val periodLabel = period?.let {
+            periodLabelProvider(
+                periodType = period.periodType(),
+                periodId = period.periodId()!!,
+                periodStartDate = period.startDate()!!,
+                periodEndDate = period.endDate()!!,
+                locale = Locale.getDefault(),
+            )
+        } ?: periodId
+
+        val edition = d2.dataSetModule().dataSetInstanceService().blockingGetEditableStatus(
+            dataSetUid,
+            periodId,
+            orgUnitUid,
+            attrOptionComboUid,
+        ).let {
+            DataSetEdition(
+                editable = it == DataSetEditableStatus.Editable,
+                nonEditableReason = (it as? DataSetEditableStatus.NonEditable)?.reason?.let { reason ->
+                    when (reason) {
+                        DataSetNonEditableReason.NO_DATASET_DATA_WRITE_ACCESS ->
+                            NonEditableReason.NoDataWriteAccess
+
+                        DataSetNonEditableReason.NO_ATTRIBUTE_OPTION_COMBO_ACCESS ->
+                            NonEditableReason.NoAttributeOptionComboAccess(
+                                d2.categoryModule().categoryOptionCombos()
+                                    .uid(attrOptionComboUid)
+                                    .blockingGet()?.displayName() ?: attrOptionComboUid,
+                            )
+
+                        DataSetNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
+                            NonEditableReason.OrgUnitNotInCaptureScope(
+                                d2.organisationUnitModule().organisationUnits()
+                                    .uid(orgUnitUid)
+                                    .blockingGet()?.displayName() ?: orgUnitUid,
+                            )
+
+                        DataSetNonEditableReason.ATTRIBUTE_OPTION_COMBO_NO_ASSIGN_TO_ORGUNIT ->
+                            NonEditableReason.AttributeOptionComboNotAssignedToOrgUnit(
+                                d2.categoryModule().categoryOptionCombos()
+                                    .uid(attrOptionComboUid)
+                                    .blockingGet()?.displayName() ?: attrOptionComboUid,
+                                d2.organisationUnitModule().organisationUnits()
+                                    .uid(orgUnitUid)
+                                    .blockingGet()?.displayName() ?: orgUnitUid,
+                            )
+
+                        DataSetNonEditableReason.PERIOD_IS_NOT_IN_ORGUNIT_RANGE ->
+                            NonEditableReason.PeriodIsNotInOrgUnitRange(
+                                periodLabel,
+                                d2.organisationUnitModule().organisationUnits()
+                                    .uid(orgUnitUid)
+                                    .blockingGet()?.displayName() ?: orgUnitUid,
+                            )
+
+                        DataSetNonEditableReason.PERIOD_IS_NOT_IN_ATTRIBUTE_OPTION_RANGE ->
+                            NonEditableReason.PeriodIsNotInAttributeOptionComboRange(
+                                periodLabel,
+                                d2.categoryModule().categoryOptionCombos()
+                                    .uid(attrOptionComboUid)
+                                    .blockingGet()?.displayName() ?: attrOptionComboUid,
+                            )
+
+                        DataSetNonEditableReason.CLOSED ->
+                            NonEditableReason.Closed
+
+                        DataSetNonEditableReason.EXPIRED ->
+                            NonEditableReason.Expired
+                    }
+                } ?: NonEditableReason.None,
+            )
+        }
+
+        return d2.dataSetModule().dataSetInstances()
+            .dataSetInstance(
+                dataSet = dataSetUid,
+                period = periodId,
+                organisationUnit = orgUnitUid,
+                attributeOptionCombo = attrOptionComboUid,
+            )
+            .blockingGet()?.toDataSetDetails(
+                periodLabel = periodLabel,
+                isDefaultCatCombo = isDefaultCatCombo == true,
+                customText = dataSetDTOCustomTitle,
+                isCompleted = isComplete(dataSetUid, periodId, orgUnitUid, attrOptionComboUid),
+                edition = edition,
+            ) ?: DataSetDetails(
             customTitle = dataSetDTOCustomTitle.toCustomTitle(),
             dataSetTitle = dataSet?.displayName()!!,
             dateLabel = periodId,
@@ -103,6 +171,8 @@ internal class DataSetInstanceRepositoryImpl(
                 .uid(attrOptionComboUid)
                 .blockingGet()
                 ?.displayName(),
+            isCompleted = isComplete(dataSetUid, periodId, orgUnitUid, attrOptionComboUid),
+            edition = edition,
         )
     }
 
@@ -473,13 +543,13 @@ internal class DataSetInstanceRepositoryImpl(
                 .byPeriod().eq(periodId)
                 .byOrganisationUnitUid().eq(orgUnitUid)
                 .byAttributeOptionCombo().eq(catOptCombo)
-                .blockingGet()?.mapNotNull { dataValueConflict ->
+                .blockingGet().mapNotNull { dataValueConflict ->
                     dataValueConflict.dataElement()?.let { dataElementUid ->
                         sections.filter { it.value?.contains(dataElementUid) == true }.keys
                     }
-                }?.flatten()
+                }.flatten()
 
-            return sectionWithError?.firstOrNull()?.let {
+            return sectionWithError.firstOrNull()?.let {
                 sections.keys.indexOf(it)
             } ?: 0
         } else {
@@ -829,6 +899,17 @@ internal class DataSetInstanceRepositoryImpl(
         } catch (error: D2Error) {
             Result.failure(error)
         }
+    }
+
+    override suspend fun reopenDataSet(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    ) {
+        d2.dataSetModule().dataSetCompleteRegistrations()
+            .value(periodId, orgUnitUid, dataSetUid, attributeOptionComboUid)
+            .blockingDeleteIfExist()
     }
 
     override suspend fun runValidationRules(

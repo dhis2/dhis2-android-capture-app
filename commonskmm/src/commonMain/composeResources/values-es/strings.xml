@@ -115,4 +115,5 @@
     <string name="category_combo">Combo de categoría</string>
     <string name="no_options">No hay opciones disponibles</string>
     <string name="cat_combo">Cat Combo</string>
-    </resources>
+    <string name="re_open_to_edit">Reabrir el formulario para editar</string>
+</resources>

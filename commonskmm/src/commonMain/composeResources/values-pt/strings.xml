@@ -116,5 +116,6 @@
     <string name="no_options">Nenhuma opção disponível</string>
     <string name="cat_combo">Combinação de categoria</string>
     <string name="storage_permission_denied">A permissão de armazenamento não é concedida.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
+    <string name="re_open_to_edit">Reabrir o formulário para editar</string>
 
 </resources>

@@ -115,4 +115,5 @@
     <string name="category_combo">Tổ hợp phân loại</string>
     <string name="no_options">Không có tùy chọn</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
-    </resources>
+    <string name="re_open_to_edit">Mở lại form để chỉnh sửa</string>
+</resources>

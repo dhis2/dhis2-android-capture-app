@@ -15,9 +15,9 @@ import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.ui.showNonEditableReasonMessage
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.utils.granularsync.OPEN_ERROR_LOCATION
 import javax.inject.Inject
@@ -147,12 +147,12 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
     override fun showNonEditableMessage(reason: String, canBeReOpened: Boolean) {
         binding.editableReasonContainer.visibility = View.VISIBLE
 
-        showNonEditableReasonMessage(
-            binding.editableReasonContainer,
-            reason,
-            canBeReOpened,
-        ) {
-            presenter.reOpenEvent()
+        binding.editableReasonContainer.setContent {
+            NonEditableReasonBlock(
+                reason = reason,
+                canBeReopened = canBeReOpened,
+                onReopenClick = presenter::reOpenEvent,
+            )
         }
     }
 
