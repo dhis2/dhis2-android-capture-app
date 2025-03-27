@@ -477,33 +477,12 @@ private fun DataSetSinglePane(
                                 )
 
                                 if (dataSetSectionTable.tables().isEmpty()) {
-                                    val emptyMessage = if (dataSetSections.isEmpty()) {
+                                    val message = if (dataSetSections.isEmpty()) {
                                         emptyDatasetMessage
                                     } else {
                                         emptySectionMessage
                                     }
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth()
-                                            .padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                    ) {
-                                        InfoBar(
-                                            infoBarData = InfoBarData(
-                                                text = emptyMessage ?: "",
-                                                icon = {
-                                                    Icon(
-                                                        imageVector = Icons.Outlined.ErrorOutline,
-                                                        contentDescription = "warning",
-                                                        tint = AdditionalInfoItemColor.WARNING.color,
-                                                    )
-                                                },
-                                                color = AdditionalInfoItemColor.WARNING.color,
-                                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                                                actionText = null,
-                                                onClick = {},
-                                            ),
-                                        )
-                                    }
+                                    WarningInfoBar(message)
                                 }
 
                                 dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
@@ -616,33 +595,12 @@ private fun DataSetTableContent(
                             )
 
                             if (dataSetSectionTable.tables().isEmpty()) {
-                                val emptyMessage = if (dataSetSections.isEmpty()) {
+                                val message = if (dataSetSections.isEmpty()) {
                                     emptyDatasetMessage
                                 } else {
                                     emptySectionMessage
                                 }
-                                Column(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    InfoBar(
-                                        infoBarData = InfoBarData(
-                                            text = emptyMessage ?: "",
-                                            icon = {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.ErrorOutline,
-                                                    contentDescription = "warning",
-                                                    tint = AdditionalInfoItemColor.WARNING.color,
-                                                )
-                                            },
-                                            color = AdditionalInfoItemColor.WARNING.color,
-                                            backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                                            actionText = null,
-                                            onClick = {},
-                                        ),
-                                    )
-                                }
+                                WarningInfoBar(message)
                             }
 
                             dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
@@ -690,6 +648,32 @@ private fun ContentLoading(
         contentAlignment = Alignment.Center,
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    }
+}
+
+@Composable
+private fun WarningInfoBar(message: String?) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        InfoBar(
+            infoBarData = InfoBarData(
+                text = message ?: "",
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = "warning",
+                        tint = AdditionalInfoItemColor.WARNING.color,
+                    )
+                },
+                color = AdditionalInfoItemColor.WARNING.color,
+                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                actionText = null,
+                onClick = {},
+            ),
+        )
     }
 }
 
