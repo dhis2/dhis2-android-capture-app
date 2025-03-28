@@ -24,14 +24,21 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
-        populateDBIfNeeded(false)
+        populateDBIfNeeded()
         super.onCreate()
     }
 
-    fun populateDBIfNeeded(forceCleanDatabase: Boolean) {
+    private fun populateDBIfNeeded() {
         TestingInjector.provideDBImporter(applicationContext).apply {
-            copyDatabaseFromAssetsIfNeeded(forceCleanDatabase)
+            copyDatabaseFromAssetsIfNeeded()
         }
+    }
+
+    fun restoreDB() {
+        TestingInjector.provideDBImporter(applicationContext).apply {
+            copyDatabaseFromAssetsIfNeeded(true)
+        }
+        setUpServerComponent()
     }
 
     @Override

@@ -73,7 +73,7 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
-        (context.applicationContext as AppTest).populateDBIfNeeded(true)
+        (context.applicationContext as AppTest).restoreDB()
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
