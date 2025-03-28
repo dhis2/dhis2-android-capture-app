@@ -73,9 +73,22 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
+        (context.applicationContext as AppTest).populateDBIfNeeded(true)
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
+    }
+
+    @After
+    @Throws(Exception::class)
+    open fun teardown() {
+        closeKeyboard()
+        disableIntents()
+        cleanPreferences()
+        cleanLocalDatabase()
+        cleanKeystore()
+        stopMockServer()
+        unregisterCountingIdlingResource()
     }
 
     private fun injectDependencies() {
@@ -117,18 +130,6 @@ open class BaseTest {
 
     fun setupMockServer() {
         mockWebServerRobot.start()
-    }
-
-    @After
-    @Throws(Exception::class)
-    open fun teardown() {
-        closeKeyboard()
-        disableIntents()
-        cleanPreferences()
-        cleanLocalDatabase()
-        cleanKeystore()
-        stopMockServer()
-        unregisterCountingIdlingResource()
     }
 
     fun enableIntents() {
