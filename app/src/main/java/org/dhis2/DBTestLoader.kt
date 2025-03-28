@@ -10,11 +10,11 @@ import java.io.OutputStream
 
 class DBTestLoader(private val context: Context) {
 
-    fun copyDatabaseFromAssetsIfNeeded() {
+    fun copyDatabaseFromAssetsIfNeeded(force: Boolean = false) {
         val databasePath = context.applicationInfo?.dataDir + "/databases"
         val file = File("$databasePath/$DB_NAME")
 
-        if (file.exists()) {
+        if (file.exists() and !force) {
             Timber.i("Database won't be copy, it already exits")
             return
         }

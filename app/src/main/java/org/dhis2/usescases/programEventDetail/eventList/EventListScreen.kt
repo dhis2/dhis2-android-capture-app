@@ -102,6 +102,5 @@ fun EventListScreen(
                 }
             }
         }
-        EventListIdlingResourceSingleton.decrement()
     }
 }
