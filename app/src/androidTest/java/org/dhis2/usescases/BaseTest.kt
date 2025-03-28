@@ -52,7 +52,6 @@ open class BaseTest {
     lateinit var mockWebServerRobot: MockWebServerRobot
     lateinit var featureConfigRobot: FeatureConfigRobot
 
-
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
 
     @get:Rule
@@ -80,7 +79,7 @@ open class BaseTest {
     open fun setUp() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
-        (context.applicationContext as AppTest).restoreDB()
+        (context.applicationContext as AppTest).restoreDB() // Restore the database before each test
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
@@ -189,7 +188,7 @@ open class BaseTest {
     }
 
     fun cleanLocalDatabase() {
-       val deleted = (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+        val deleted = (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("CleanDataBaseResult. Is deleted? answer: $deleted for $currentTest")
     }
