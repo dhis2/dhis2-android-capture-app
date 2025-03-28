@@ -251,6 +251,7 @@ fun DataSetInstanceScreen(
                     state.dataSetDetails.isCompleted or !state.dataSetDetails.edition.editable -> {
                         val edition = state.dataSetDetails.edition
                         NonEditableReasonBlock(
+                            modifier = Modifier.fillMaxWidth(),
                             paddingValues = PaddingValues(
                                 start = Spacing.Spacing16,
                                 top = Spacing.Spacing8,
@@ -259,7 +260,7 @@ fun DataSetInstanceScreen(
                                     .calculateBottomPadding(),
                             ),
                             reason = nonEditableReasonLabel(edition),
-                            canBeReopened = state.dataSetDetails.isCompleted,
+                            canBeReopened = state.dataSetDetails.isCompleted && edition.editable,
                             onReopenClick = dataSetTableViewModel::onReopenDataSet,
                         )
                     }

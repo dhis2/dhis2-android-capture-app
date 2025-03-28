@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
 import org.dhis2.commons.Constants
@@ -149,6 +151,7 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
 
         binding.editableReasonContainer.setContent {
             NonEditableReasonBlock(
+                modifier = Modifier.fillMaxWidth(),
                 reason = reason,
                 canBeReopened = canBeReOpened,
                 onReopenClick = presenter::reOpenEvent,

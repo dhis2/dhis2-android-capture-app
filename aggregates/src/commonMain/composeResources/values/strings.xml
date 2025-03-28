@@ -47,28 +47,28 @@
     <string name="indicators_label">Indicators</string>
     <string name="no_data_write_access">You do not have permission to edit this data</string>
     <!--
-    %s is the attribute option combo name
+    %1$s is the attribute option combo name
     -->
-    <string name="attribute_option_combo_no_access">You do not have permission to edit data for %s</string>
+    <string name="attribute_option_combo_no_access">You do not have permission to edit data for %1$s</string>
     <!--
-    %s is the organisation unit name
+    %1$s is the organisation unit name
     -->
-    <string name="org_unit_not_in_capture_scope">You cannot edit data from %s</string>
+    <string name="org_unit_not_in_capture_scope">You cannot edit data from %1$s</string>
     <!--
-    %1s is the attribute option combo name
-    %2s is the organisation unit name
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
     -->
-    <string name="attribute_option_combo_not_assigned_to_org_unit">You cannot edit data for %1s in %2s</string>
+    <string name="attribute_option_combo_not_assigned_to_org_unit">You cannot edit data for %1$s in %2$s</string>
     <!--
-    %1s is the period name
-    %2s is the organisation unit name
+    %1$s is the period name
+    %2$s is the organisation unit name
     -->
-    <string name="period_not_in_org_unit_range">You cannot edit data for %1s in %2s</string>
+    <string name="period_not_in_org_unit_range">You cannot edit data for %1$s in %2$s</string>
     <!--
-    %1s is the period name
-    %2s is the attribute option combo name
+    %1$s is the period name
+    %2$s is the attribute option combo name
     -->
-    <string name="period_not_in_attribute_option_combo_range">You cannot edit data for the period %1s in %2s</string>
+    <string name="period_not_in_attribute_option_combo_range">You cannot edit data for the period %1$s in %2$s</string>
     <string name="dataset_closed">This data is not editable because it is marked as closed</string>
     <string name="dataset_expired">This data is not editable because its edition time has expired</string>
 
