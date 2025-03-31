@@ -10,11 +10,12 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 
 internal suspend fun TableModel.withTotalsRow(
     resourceManager: ResourceManager,
+    absoluteRowIndex: Int,
 ) = this.copy(
     tableRows = tableRows + buildTotalsRow(
         tableId = id,
         columnCount = tableHeaderModel.tableMaxColumns(),
-        absoluteRowIndex = tableRows.size,
+        absoluteRowIndex = absoluteRowIndex,
         tableRows = tableRows,
         resourceManager = resourceManager,
     ),

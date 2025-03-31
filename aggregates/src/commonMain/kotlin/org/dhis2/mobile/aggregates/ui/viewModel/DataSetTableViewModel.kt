@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import org.dhis2.mobile.aggregates.domain.CheckCompletionStatus
 import org.dhis2.mobile.aggregates.domain.CheckValidationRulesConfiguration
@@ -213,16 +212,21 @@ internal class DataSetTableViewModel(
         )?.columnWidths() ?: emptyMap(),
     )
 
-    private suspend fun sectionData(sectionUid: String): List<TableModel> = supervisorScope {
-        var absoluteRowIndex = 0
-        val sectionData = getDataSetSectionData(sectionUid)
-        val tables = sectionData.tableGroups.map { tableGroup ->
-            async(dispatcher.io()) {
-                val dataValueDataMap = getDataValueData(
-                    dataElementUids = tableGroup.cellElements.map { it.uid },
-                    pivotedCategoryUid = sectionData.pivotedHeaderId(),
-                )
+    private suspend fun sectionData(sectionUid: String): List<TableModel> =
+        withContext(dispatcher.io()) {
+            val sectionData = getDataSetSectionData(sectionUid)
 
+            val dataMaps = sectionData.tableGroups.map { tableGroup ->
+                async {
+                    tableGroup to getDataValueData(
+                        dataElementUids = tableGroup.cellElements.map { it.uid },
+                        pivotedCategoryUid = sectionData.pivotedHeaderId(),
+                    )
+                }
+            }.awaitAll()
+
+            var absoluteRowIndex = 0
+            val tables = dataMaps.map { (tableGroup, dataValueDataMap) ->
                 val tableModel = tableGroup.toTableModel(
                     resourceManager = resourceManager,
                     sectionData = sectionData,
@@ -231,22 +235,21 @@ internal class DataSetTableViewModel(
                 ).also { absoluteRowIndex += it.tableRows.size }
 
                 if (sectionData.showColumnTotals()) {
-                    tableModel.withTotalsRow(resourceManager)
+                    tableModel.withTotalsRow(resourceManager, absoluteRowIndex)
                         .also { absoluteRowIndex += 1 }
                 } else {
                     tableModel
                 }
             }
-        }.awaitAll()
 
-        val indicators = getDataSetSectionIndicators(sectionUid)
-            ?.toTableModel(resourceManager, absoluteRowIndex)
-            ?.also { absoluteRowIndex + it.tableRows.size }
-            ?.let { listOf(it) }
-            ?: emptyList()
+            val indicators = getDataSetSectionIndicators(sectionUid)
+                ?.toTableModel(resourceManager, absoluteRowIndex)
+                ?.also { absoluteRowIndex + it.tableRows.size }
+                ?.let { listOf(it) }
+                ?: emptyList()
 
-        tables + indicators
-    }
+            tables + indicators
+        }
 
     fun updateSelectedCell(
         cellId: String?,
@@ -393,6 +396,7 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
+
                 is UiAction.OnTakePhoto -> {
                     uiActionHandler.onTakePicture { result ->
                         result?.let {
@@ -400,6 +404,7 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
+
                 is UiAction.OnEmailAction -> {
                     val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
                     uiActionHandler.onSendEmail(uiAction.email) {
@@ -430,6 +435,7 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
+
                 is UiAction.OnSelectFile -> {
                     uiActionHandler.onSelectFile(
                         uiAction.cellId,
@@ -439,12 +445,14 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
+
                 is UiAction.OnShareImage -> {
                     val actionCanNotBePerformedMsg = resourceManager.actionCantBePerformed()
                     uiActionHandler.onShareImage(uiAction.filePath) {
                         showSnackbar(actionCanNotBePerformedMsg)
                     }
                 }
+
                 is UiAction.OnOpenOrgUnitTree -> {
                     uiActionHandler.onCaptureOrgUnit(
                         uiAction.currentOrgUnitUid
