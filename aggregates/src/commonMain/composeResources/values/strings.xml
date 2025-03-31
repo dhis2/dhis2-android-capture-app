@@ -19,7 +19,7 @@
     <string name="completion_dialog_title">Everything looks good</string>
     <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
     <string name="validation_success_title">Everything looks good</string>
-    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
+    <string name="mark_dataset_complete">Do you also want to complete the data set?</string>
     <string name="not_now">Not now</string>
     <string name="complete">Complete</string>
     <string name="saved">Saved!</string>
@@ -36,7 +36,7 @@
     <string name="complete_anyway">Complete anyway</string>
     <string name="review">Review</string>
     <string name="validation_rules_data_to_review">Data to review</string>
-    <string name="action_can_not_be_performed">This action can't be performed</string>
+    <string name="action_can_not_be_performed">This action can not be performed</string>
     <string name="action_next">Next</string>
     <string name="add_file">Add file</string>
     <string name="file_downloaded">File downloaded successfully</string>

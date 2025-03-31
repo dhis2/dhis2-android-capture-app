@@ -38,10 +38,6 @@
     <string name="filters_title_state">Synk</string>
     <string name="filters_title_assigned">Tildelt til meg</string>
     <string name="filters_title_date">Dato</string>
-    <string name="filters_title_event_date">Hendelsesdato</string>
-    <string name="enrollment_date">Registreringsdato</string>
-    <string name="filters_title_event_status">Hendelsesstatus</string>
-    <string name="filters_title_enrollment_status">Registreringsstatus</string>
     <!-- State -->
     <string name="state_synced">Synk</string>
     <string name="state_to_post">Å sende</string>

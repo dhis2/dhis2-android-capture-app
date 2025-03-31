@@ -39,6 +39,24 @@ pipeline {
                 }
             }
         }
+        stage('Check PR Size') {
+            when {
+                expression {
+                    return !isSkipSizeCheck()
+                }
+            }
+            environment {
+                GIT_BRANCH = "${env.CHANGE_BRANCH}"
+                GIT_BRANCH_DEST = "${env.CHANGE_TARGET == null ? '' : env.CHANGE_TARGET}"
+            }
+            steps {
+                script {
+                    echo "Checking PR Size against ${env.CHANGE_TARGET ?: 'None (CI build)'}"
+                    sh 'chmod +x ./scripts/check_pr_size.sh'
+                    sh './scripts/check_pr_size.sh'
+                }
+            }
+        }
         stage('Lint Check') {
             steps {
                 script {
@@ -188,4 +206,10 @@ def isSkipCI() {
     def prTitle = env.CHANGE_TITLE ?: ""
     def prDescription = env.CHANGE_DESCRIPTION ?: ""
     return (prTitle.contains("[skip ci]") || prDescription.contains("[skip ci]"))
+}
+
+def isSkipSizeCheck() {
+    def prTitle = env.CHANGE_TITLE ?: ""
+    def prDescription = env.CHANGE_DESCRIPTION ?: ""
+    return (prTitle.contains("[skip size]") || prDescription.contains("[skip size]"))
 }
