@@ -25,6 +25,7 @@ import org.dhis2.mobile.aggregates.domain.GetDataSetSectionData
 import org.dhis2.mobile.aggregates.domain.GetDataSetSectionIndicators
 import org.dhis2.mobile.aggregates.domain.GetDataValueData
 import org.dhis2.mobile.aggregates.domain.GetDataValueInput
+import org.dhis2.mobile.aggregates.domain.ReopenDataSet
 import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
@@ -34,6 +35,7 @@ import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceData
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
@@ -41,6 +43,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.TextAlignment
@@ -107,6 +110,7 @@ internal class DataSetTableViewModelTest : KoinTest {
     private lateinit var checkCompletionStatus: CheckCompletionStatus
     private lateinit var dataSetModalDialogProvider: DataSetModalDialogProvider
     private lateinit var completeDataSet: CompleteDataSet
+    private lateinit var reopenDataSet: ReopenDataSet
     private lateinit var runValidationRules: RunValidationRules
     private lateinit var uiActionHandler: UiActionHandler
     private lateinit var inputDataUiStateMapper: InputDataUiStateMapper
@@ -145,6 +149,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         checkCompletionStatus = declareMock<CheckCompletionStatus>()
         dataSetModalDialogProvider = declareMock<DataSetModalDialogProvider>()
         completeDataSet = declareMock<CompleteDataSet>()
+        reopenDataSet = declareMock<ReopenDataSet>()
         runValidationRules = declareMock<RunValidationRules>()
         uiActionHandler = declareMock<UiActionHandler>()
         inputDataUiStateMapper = declareMock<InputDataUiStateMapper>()
@@ -165,6 +170,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
                     dataSetTitle = "dataSetTitle",
+                    isCompleted = false,
+                    edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
@@ -252,6 +259,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             dispatcher = get(),
             datasetModalDialogProvider = get(),
             completeDataSet = get(),
+            reopenDataSet = get(),
             runValidationRules = get(),
             uiActionHandler = get(),
             inputDataUiStateMapper = get(),
@@ -746,6 +754,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
                     dataSetTitle = "dataSetTitle",
+                    isCompleted = false,
+                    edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
@@ -782,6 +792,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
                     dataSetTitle = "dataSetTitle",
+                    isCompleted = false,
+                    edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
@@ -816,6 +828,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                     orgUnitLabel = "ou",
                     catOptionComboLabel = null,
                     dataSetTitle = "dataSetTitle",
+                    isCompleted = false,
+                    edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
                     DataSetSection(uid = "sectionUid", title = "sectionTitle"),
