@@ -154,13 +154,13 @@ android {
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
         }
-
-        create("playServices"){
-            initWith(getByName("release"))
-            matchingFallbacks.add("release")
-        }
     }
     flavorDimensions += listOf("default")
+
+    productFlavors {
+        create("dhis")
+        create("dhisPlayServices")
+    }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -201,11 +201,12 @@ android {
     androidComponents {
         onVariants { variant ->
             val buildType = variant.buildType
+            val flavorName = variant.flavorName
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
-                    val suffix = when (buildType) {
-                        "debug" -> "-training"
-                        "playServices" -> "-googlePlay"
+                    val suffix = when {
+                        buildType == "debug" && flavorName == "dhis" -> "-training"
+                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
                         else -> ""
                     }
 
@@ -268,8 +269,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    "playServicesImplementation"(libs.google.auth)
-    "playServicesImplementation"(libs.google.auth.apiphone)
+    "dhisPlayServicesImplementation"(libs.google.auth)
+    "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import org.dhis2.BuildConfig
 
 fun Context.buildInfo(): String {
-    return if (BuildConfig.BUILD_TYPE == "release" || BuildConfig.BUILD_TYPE == "playServices") {
+    return if (BuildConfig.BUILD_TYPE == "release") {
         "v${BuildConfig.VERSION_NAME}"
     } else {
         "v${BuildConfig.VERSION_NAME} : ${BuildConfig.GIT_SHA} "

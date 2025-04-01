@@ -52,7 +52,7 @@ import kotlin.coroutines.CoroutineContext
 const val DEFAULT = "default"
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
-const val PLAY_BUILD_TYPE = "playServices"
+const val PLAY_FLAVOR = "dhisPlayServices"
 
 class MainPresenter(
     private val view: MainView,
@@ -346,7 +346,7 @@ class MainPresenter(
         onDownloadCompleted: (Uri) -> Unit,
         onLaunchUrl: (Uri) -> Unit,
     ) {
-        if (BuildConfig.BUILD_TYPE == PLAY_BUILD_TYPE) {
+        if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
             val url = versionRepository.getUrl()
             url?.toUri()?.let { onLaunchUrl(it) }
         } else {
