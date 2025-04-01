@@ -98,7 +98,7 @@ pipeline {
         }
         stage('Run tests') {
             parallel {
-                stage('Deploy and run Form Tests') {
+                stage('Run Form Tests') {
                         when {
                             expression {
                                 return onlyUiTest() != true
@@ -120,7 +120,7 @@ pipeline {
                             }
                         }
                     }
-                stage('Deploy and Run UI Tests') {
+                stage('Run UI Tests in portrait') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
                         app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
