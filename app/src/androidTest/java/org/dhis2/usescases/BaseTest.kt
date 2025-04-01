@@ -32,6 +32,7 @@ import org.dhis2.mobile.commons.coroutine.NoOpIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
+import org.hisp.dhis.android.core.D2Manager
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -79,7 +80,7 @@ open class BaseTest {
     open fun setUp() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
-        (context.applicationContext as AppTest).restoreDB() // Restore the database before each test
+        (context.applicationContext as AppTest).restoreDB()
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()

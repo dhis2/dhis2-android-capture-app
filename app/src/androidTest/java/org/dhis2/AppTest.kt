@@ -35,6 +35,7 @@ class AppTest : App() {
     }
 
     fun restoreDB() {
+        D2Manager.clear()
         TestingInjector.provideDBImporter(applicationContext).apply {
             copyDatabaseFromAssetsIfNeeded(true)
         }
