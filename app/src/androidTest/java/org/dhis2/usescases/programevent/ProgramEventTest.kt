@@ -91,6 +91,7 @@ class ProgramEventTest : BaseTest() {
         }
     }
 
+    @Ignore("Deletes an element and make open existing event fail")
     @Test
     fun shouldDeleteEvent() {
         val eventDate = "07/04/2024"
