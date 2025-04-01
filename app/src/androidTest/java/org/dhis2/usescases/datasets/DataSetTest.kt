@@ -1,10 +1,7 @@
 package org.dhis2.usescases.datasets
 
 import android.app.Instrumentation
-import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
@@ -113,12 +110,13 @@ class DataSetTest : BaseTest() {
     }
 
     private fun checkCustomTitleIsDisplayed() {
-        logStep("Starting check custom title is displayed")
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("Line end: Custom Title", true)
-            assertItemWithTextIsDisplayed("Line end: Custom Subtitle test a very long subtitle", true)
+            assertItemWithTextIsDisplayed(
+                "Line end: Custom Subtitle test a very long subtitle",
+                true
+            )
         }
-        logStep("Finish check custom title is displayed")
     }
 
     private suspend fun waitForTableToBeVisible() {
@@ -131,7 +129,6 @@ class DataSetTest : BaseTest() {
 
     private suspend fun checkContentBoxesAreDisplayed() {
         tableIsVisible()
-        logStep("Starting Check content boxes above and below the table")
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
@@ -153,8 +150,6 @@ class DataSetTest : BaseTest() {
             scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
         }
-        logStep("Finish Check content boxes above and below the table")
-
     }
 
     @Test
@@ -278,9 +273,6 @@ class DataSetTest : BaseTest() {
         cellId: String,
         legendData: List<LegendTestingData>
     ) {
-
-        logStep("Starting checking legends")
-
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
@@ -306,12 +298,9 @@ class DataSetTest : BaseTest() {
             pressOnInputDialogDismiss()
             closeKeyboard()
         }
-
-        logStep("Finished checking legends")
     }
 
     private fun checkCategoryIsMovedToRow() {
-        logStep("Starting Check category is moved to row")
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -321,62 +310,47 @@ class DataSetTest : BaseTest() {
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
         }
-        logStep("Finish Check category is moved to row")
-
     }
 
     private fun runOptionalValidationRules() {
-        logStep("Starting Run Optional Validation Rules")
         dataSetTableRobot(composeTestRule) {
             acceptOptionalValidationRule()
         }
-        logStep("Finished Run Optional Validation Rules")
     }
 
     private fun checkValidationBarIsDisplayedAndReview() {
-        logStep("Starting Check Validation Rule errors and review")
-
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
             tapOnReview()
         }
-        logStep("Finished Check Validation Rule errors and review")
     }
 
     private fun checkValidationBarIsDisplayedAndCompleteAnyway() {
-        logStep("Starting Check Validation Rule errors and complete anyway")
-
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
             tapOnCompleteAnyway()
         }
-        logStep("Finished Check Validation Rule errors and complete anyway")
     }
 
     private fun checkDataSetInstanceHasBeenCreated(
         period: String,
         orgUnit: String,
     ) {
-        logStep("Starting Check dataset instance has been created")
         dataSetDetailRobot(composeTestRule) {
             checkDataSetInList(period, orgUnit)
         }
-        logStep("Finished Check dataset instance has been created")
     }
 
     private fun checkMandatoryDialogIsDisplayedAndAcceptStep() {
-        logStep("Starting Checking Mandatory Dialog")
         dataSetTableRobot(composeTestRule) {
             checkMandatoryDialogIsDisplayed()
             acceptMandatoryDialog()
         }
-        logStep("Finished Checking Mandatory Dialog")
     }
 
     private fun checkAutomaticGroupingDisabled() {
-        logStep("Starting Check Automatic Grouping")
         dataSetTableRobot(composeTestRule) {
             disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -384,12 +358,9 @@ class DataSetTest : BaseTest() {
                 assertTablesAreDisplayedInOrder(data.tableIdTestTags)
             }
         }
-        logStep("Finish Check Automatic Grouping")
-
     }
 
     private fun checkPivotOptions() {
-        logStep("Starting check Pivot Options")
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -398,39 +369,31 @@ class DataSetTest : BaseTest() {
                 assertTableRows(data.rowTestTags)
             }
         }
-        logStep("Finish check Pivot Options")
     }
 
     private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {
-        logStep("Starting Trying to complete dataset")
 
         dataSetTableRobot(composeTestRule) {
             checkCompleteDialogIsDisplayed()
             tapOnCompleteButton()
         }
-        logStep("Finished Trying to complete dataset")
     }
 
     private fun tapOnSaveButtonStep() {
-        logStep("Starting Tap on Done button")
-
         dataSetTableRobot(composeTestRule) {
             tapOnSaveButton()
         }
-        logStep("Finished Tap on Done button")
     }
 
     private fun enterDataSetStep(
         uid: String,
         name: String,
     ) {
-        logStep("Starting Entering dataset $name")
         startDataSetDetailActivity(
             dataSetUid = uid,
             dataSetName = name,
             rule = ruleDataSetDetail
         )
-        logStep("Finished Entering dataset $name")
     }
 
     private fun dataSetInstanceInChronologicalOrderStep() {
@@ -479,8 +442,6 @@ class DataSetTest : BaseTest() {
         value: String,
         inputTestTag: String,
     ) {
-        logStep("Starting Enter value: $value into cell ${dataElementDescription ?: cellId}")
-
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
@@ -491,8 +452,6 @@ class DataSetTest : BaseTest() {
             pressOnInputDialogDismiss()
             assertCellHasValue(tableId, cellId, value)
         }
-
-        logStep("Finished Enter value: $value into cell ${dataElementDescription ?: cellId}")
     }
 
     private fun enterTwoSequentialSteps(
@@ -503,7 +462,6 @@ class DataSetTest : BaseTest() {
         inputTestTag: String,
 
         ) {
-        logStep("Starting Enter value: $firstValue into cell $firstCellId")
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, firstCellId)
             typeOnInputDialog(firstValue, inputTestTag)
@@ -511,7 +469,6 @@ class DataSetTest : BaseTest() {
             typeOnInputDialog(secondValue, inputTestTag)
             pressOnInputDialogDismiss()
         }
-        logStep("Finished Enter value")
     }
 
     private fun checkTotalsUpdated(
@@ -585,8 +542,6 @@ class DataSetTest : BaseTest() {
         period: String,
         catCombo: String? = null,
     ) {
-        logStep("Starting Creating dataset instance $period")
-
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
@@ -616,12 +571,5 @@ class DataSetTest : BaseTest() {
         dataSetInitialRobot {
             clickOnActionButton()
         }
-        logStep("Finished Creating dataset instance $period")
-    }
-
-    private fun logStep(message: String) {
-        val bundle = Bundle()
-        bundle.putString("Step", message)
-        instrumentation.sendStatus(0, bundle)
     }
 }
