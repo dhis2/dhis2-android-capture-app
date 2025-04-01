@@ -81,7 +81,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
         versionName = libs.versions.vName.get()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
 
