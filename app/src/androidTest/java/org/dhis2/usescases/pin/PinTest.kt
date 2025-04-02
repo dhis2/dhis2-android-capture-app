@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-@Ignore("Not passing with single test runner")
+//@Ignore("Not passing with single test runner")
 class PinTest : BaseTest() {
 
     @get:Rule
@@ -51,6 +51,7 @@ class PinTest : BaseTest() {
         }
     }
 
+    @Ignore("Blocks the access to the database")
     @Test
     fun shouldSuccessfullyLoginIfClickForgotYourCode() {
         enableIntents()
@@ -65,6 +66,8 @@ class PinTest : BaseTest() {
         homeRobot {
             checkLogInIsLaunched()
         }
+        preferencesRobot.saveValue(SESSION_LOCKED, false)
+        preferencesRobot.saveValue(PIN, null)
     }
 
     fun startActivity() {
