@@ -691,7 +691,7 @@ internal fun InputProvider(
                             data = data.map {
                                 async {
                                     if (it.uid == updatedCheckBoxData.uid) {
-                                        it.copy(checked = updatedCheckBoxData.checked)
+                                        it.copy(checked = !it.checked)
                                     } else {
                                         it
                                     }
