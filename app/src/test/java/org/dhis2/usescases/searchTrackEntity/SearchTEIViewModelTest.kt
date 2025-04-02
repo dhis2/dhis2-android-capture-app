@@ -6,11 +6,13 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.outlined.Map
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.mapbox.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -208,7 +210,7 @@ class SearchTEIViewModelTest {
     fun `Should return local results LiveData if not searching and displayInList is true`() {
         val testingProgram = testingProgram()
         setCurrentProgram(testingProgram)
-        viewModel.fetchListResults {}
+//        viewModel.fetchListResults {}
         testingDispatcher.scheduler.advanceUntilIdle()
         verify(repositoryKt).searchTrackedEntities(
             SearchParametersModel(
@@ -220,33 +222,33 @@ class SearchTEIViewModelTest {
     }
 
     @Test
-    fun `Should return null if not searching and displayInList is false`() {
+    fun `Should return null if not searching and displayInList is false`() = runTest {
         val testingProgram = testingProgram(displayFrontPageList = false)
         setCurrentProgram(testingProgram)
-        viewModel.fetchListResults {}
+        viewModel.searchPagingData.test {
+            awaitItem()
+            verify(repositoryKt, times(0)).searchTrackedEntities(
+                SearchParametersModel(
+                    selectedProgram = testingProgram,
+                    queryData = mutableMapOf(),
+                ),
+                true,
+            )
 
-        verify(repositoryKt, times(0)).searchTrackedEntities(
-            SearchParametersModel(
-                selectedProgram = testingProgram,
-                queryData = mutableMapOf(),
-            ),
-            true,
-        )
-
-        verify(repositoryKt, times(0)).searchTrackedEntities(
-            SearchParametersModel(
-                selectedProgram = testingProgram,
-                queryData = mutableMapOf(),
-            ),
-            false,
-        )
+            verify(repositoryKt, times(0)).searchTrackedEntities(
+                SearchParametersModel(
+                    selectedProgram = testingProgram,
+                    queryData = mutableMapOf(),
+                ),
+                false,
+            )
+        }
     }
 
     @Test
-    fun `Should return null global results if not searching`() {
-        viewModel.fetchListResults {
-            assertTrue(it == null)
-        }
+    fun `Should return empty global results if not searching`() = runTest {
+        val result = viewModel.searchPagingData.take(1).asSnapshot()
+        assertTrue(result.isEmpty())
     }
 
     @ExperimentalCoroutinesApi

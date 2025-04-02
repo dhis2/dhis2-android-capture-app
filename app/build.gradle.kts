@@ -284,7 +284,7 @@ dependencies {
     testImplementation(libs.test.truth)
     testImplementation(libs.test.kotlinCoroutines)
     testImplementation(libs.test.turbine)
-
+    testImplementation(libs.test.androidx.paging)
     androidTestUtil(libs.test.orchestrator)
 
     androidTestImplementation(libs.test.testRunner)
