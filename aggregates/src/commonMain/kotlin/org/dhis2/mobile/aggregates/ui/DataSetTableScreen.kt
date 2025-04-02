@@ -654,8 +654,7 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
