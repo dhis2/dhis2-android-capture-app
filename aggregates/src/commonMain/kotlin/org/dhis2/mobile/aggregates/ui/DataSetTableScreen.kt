@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
@@ -271,6 +272,8 @@ fun DataSetInstanceScreen(
         },
         contentWindowInsets = WindowInsets.safeDrawing,
     ) { paddingValues ->
+
+        var inputDialogSize: Int? by remember { mutableStateOf(null) }
         Box(
             modifier = Modifier.fillMaxSize()
                 .padding(paddingValues),
@@ -360,6 +363,7 @@ fun DataSetInstanceScreen(
                 if (dataSetScreenState is DataSetScreenState.Loaded) {
                     DataSetSinglePane(
                         modifier = Modifier.fillMaxSize(),
+                        inputDialogSize = inputDialogSize,
                         dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -407,7 +411,10 @@ fun DataSetInstanceScreen(
                 selectedCellInfo?.let { inputData ->
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
-                            .testTag(INPUT_DIALOG_TAG),
+                            .testTag(INPUT_DIALOG_TAG)
+                            .onGloballyPositioned { coordinates ->
+                                inputDialogSize = coordinates.size.height
+                            },
                         input = {
                             InputProvider(
                                 modifier = Modifier,
@@ -499,6 +506,7 @@ private fun nonEditableReasonLabel(edition: DataSetEdition) = when (edition.nonE
 private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
+    inputDialogSize: Int?,
     dataSetDetails: DataSetDetails,
     initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
@@ -533,6 +541,7 @@ private fun DataSetSinglePane(
                     DataSetTable(
                         dataSetSectionTable = dataSetSectionTable,
                         onCellClick = onCellClick,
+                        inputDialogSize = inputDialogSize,
                         topContent = {
                             Column(
                                 modifier = modifier.fillMaxWidth()
@@ -610,6 +619,7 @@ private fun DataSetTableContent(
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
+    inputDialogSize: Int? = null,
     currentSection: String?,
     onCellClick: (
         cellId: String,
@@ -627,6 +637,7 @@ private fun DataSetTableContent(
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     dataSetSectionTable = dataSetSectionTable,
+                    inputDialogSize = inputDialogSize,
                     onCellClick = onCellClick,
                     topContent = {
                         Column(
@@ -704,6 +715,7 @@ private fun ContentLoading(
 private fun DataSetTable(
     dataSetSectionTable: DataSetSectionTable,
     currentSelection: TableSelection,
+    inputDialogSize: Int?,
     topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (
@@ -801,7 +813,7 @@ private fun DataSetTable(
                 start = Spacing.Spacing16,
                 top = Spacing.Spacing8,
                 end = Spacing.Spacing16,
-                bottom = Spacing.Spacing200,
+                bottom = if (inputDialogSize == null) Spacing.Spacing200 else (Spacing.Spacing200 + (inputDialogSize.dp / 2)),
             ),
         )
     }
