@@ -81,7 +81,7 @@ open class BaseTest {
     open fun setUp() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
-        (context.applicationContext as AppTest).restoreDB()
+//        (context.applicationContext as AppTest).restoreDB()
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
