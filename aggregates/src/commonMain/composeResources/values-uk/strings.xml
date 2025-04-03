@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Все виглядає добре!</string>
-    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних?</string>
+    <string name="default_column_label">Значення</string>
+    <string name="total_header_label">Усього</string>
+    <string name="input_age_date_of_birth">Дата народження</string>
+    <string name="input_age_or">або</string>
+    <string name="input_action_accept">Прийняти</string>
+    <string name="input_action_cancel">Скасувати</string>
+    <string name="no_results_found">Результатів не знайдено</string>
+    <string name="action_done">Обрати</string>
+    <string name="input_coordinate_latitude">Широта</string>
+    <string name="input_coordinate_longitude">Довгота</string>
+    <string name="input_not_supported">Не підтримується</string>
+    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних\?</string>
     <string name="not_now">Не зараз</string>
     <string name="complete">Завершити</string>
     <string name="saved">Збережено!</string>
@@ -9,10 +19,16 @@
     <string name="field_required">Якщо Ви встановлюєте значення, то щодо усього рядка потрібно вказати всі значення, щоб завершити набір даних.</string>
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Збережено та завершено!</string>
-    <string name="run_validation_rules">Хочете перевірити якість даних?</string>
+    <string name="run_validation_rules">Хочете перевірити якість даних\?</string>
+    <string name="no">Ні</string>
+    <string name="yes">Так</string>
     <string name="error">Помилка</string>
+    <string name="errors">Помилки</string>
     <string name="complete_anyway">Все одно завершити</string>
     <string name="review">Перегляд</string>
     <string name="validation_rules_data_to_review">Дані для перегляду</string>
-
-</resources>
+    <string name="action_next">Далі</string>
+    <string name="add_file">Додати файл</string>
+    <string name="add_image">Додати зображення</string>
+    <string name="take_photo">Зробити фото</string>
+    </resources>
