@@ -270,12 +270,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     },
                 ) {
                     relationshipMapManager?.let {
-                        MapLayerDialog(it, programUid()) { layersVisibility ->
-                            presenter.filterVisibleMapItems(layersVisibility)
-                        }.show(
-                            childFragmentManager,
-                            MapLayerDialog::class.java.name,
-                        )
+                        MapLayerDialog.newInstance(programUid())
+                            .setMapManager(it)
+                            .setOnLayersVisibilityListener { layersVisibility ->
+                                presenter.filterVisibleMapItems(layersVisibility)
+                            }.show(childFragmentManager, MapLayerDialog::class.java.name)
                     }
                 }
                 locationState?.let {

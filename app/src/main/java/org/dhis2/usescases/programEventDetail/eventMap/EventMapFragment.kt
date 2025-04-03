@@ -132,12 +132,11 @@ class EventMapFragment :
                                     )
                                 },
                             ) {
-                                MapLayerDialog(eventMapManager!!, presenter.programUid()) { layersVisibility ->
-                                    presenter.filterVisibleMapItems(layersVisibility)
-                                }.show(
-                                    childFragmentManager,
-                                    MapLayerDialog::class.java.name,
-                                )
+                                MapLayerDialog.newInstance(presenter.programUid())
+                                    .setMapManager(eventMapManager!!)
+                                    .setOnLayersVisibilityListener { layersVisibility ->
+                                        presenter.filterVisibleMapItems(layersVisibility)
+                                    }.show(childFragmentManager, MapLayerDialog::class.java.name)
                             }
                             locationState?.let {
                                 LocationIcon(

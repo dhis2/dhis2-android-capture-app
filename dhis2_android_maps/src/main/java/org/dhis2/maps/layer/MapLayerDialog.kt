@@ -33,11 +33,11 @@ import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
 
-class MapLayerDialog(
-    private val mapManager: MapManager,
-    private val programUid: String?,
-    private val onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {},
-) : BottomSheetDialogFragment() {
+class MapLayerDialog : BottomSheetDialogFragment() {
+
+    private var mapManager: MapManager? = null
+    private var programUid: String? = null
+    private var onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {}
 
     private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
     lateinit var binding: DialogMapLayerBinding
@@ -51,6 +51,7 @@ class MapLayerDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+        programUid = arguments?.getString(ARG_PROGRAM_UID)
     }
 
     override fun onCreateView(
@@ -59,7 +60,9 @@ class MapLayerDialog(
         savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
-        binding.baseMapCarousel.adapter = BasemapAdapter(mapManager.mapLayerManager)
+        mapManager?.let {
+            binding.baseMapCarousel.adapter = BasemapAdapter(it.mapLayerManager)
+        }
         binding.acceptButton.setTextColor(
             ColorStateList.valueOf(
                 requireContext().getPrimaryColor(ColorType.PRIMARY),
@@ -111,6 +114,28 @@ class MapLayerDialog(
         return dialog
     }
 
+    fun setMapManager(mapManager: MapManager): MapLayerDialog {
+        this.mapManager = mapManager
+        return this
+    }
+
+    fun setOnLayersVisibilityListener(listener: (HashMap<String, MapLayer>) -> Unit): MapLayerDialog {
+        this.onLayersVisibility = listener
+        return this
+    }
+
+    companion object {
+        private const val ARG_PROGRAM_UID = "programUid"
+
+        fun newInstance(programUid: String?): MapLayerDialog {
+            return MapLayerDialog().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PROGRAM_UID, programUid)
+                }
+            }
+        }
+    }
+
     private fun initProgramData() {
         val layerMap: LinkedHashMap<String, MutableList<View>> = linkedMapOf(
             Pair("TEI", mutableListOf()),
@@ -121,7 +146,7 @@ class MapLayerDialog(
             Pair("DE", mutableListOf()),
             Pair("HEATMAP", mutableListOf()),
         )
-        mapManager.mapLayerManager.mapLayers.toSortedMap().forEach { (source, layer) ->
+        mapManager?.mapLayerManager?.mapLayers?.toSortedMap()?.forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
             when (layer) {
                 is TeiMapLayer -> layerMap["TEI"]?.add(
@@ -178,7 +203,7 @@ class MapLayerDialog(
                 is FieldMapLayer -> layerMap["DE"]?.add(
                     addCheckBox(
                         source,
-                        mapManager.getLayerName(source),
+                        mapManager?.getLayerName(source),
                         "${EventMapManager.DE_ICON_ID}_$source",
                     ),
                 )
@@ -196,11 +221,11 @@ class MapLayerDialog(
     private fun initListeners() {
         binding.acceptButton.setOnClickListener {
             layerVisibility.forEach { (sourceId, visible) ->
-                mapManager.mapLayerManager.handleLayer(sourceId, visible)
+                mapManager?.mapLayerManager?.handleLayer(sourceId, visible)
             }
-            onLayersVisibility(
-                mapManager.updateLayersVisibility(layerVisibility),
-            )
+            mapManager?.let {
+                onLayersVisibility(it.updateLayersVisibility(layerVisibility))
+            }
             dismiss()
         }
     }
@@ -229,11 +254,11 @@ class MapLayerDialog(
                 if (it == HEATMAP_ICON) {
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
-                    layerIcon.setImageBitmap(
-                        mapManager.mapLayerManager.mapBoxMap.style?.getImage(
-                            image,
-                        ),
-                    )
+                    mapManager?.let { manager ->
+                        layerIcon.setImageBitmap(
+                            manager.mapLayerManager.mapBoxMap.style?.getImage(image),
+                        )
+                    }
                 }
             }
         }.root

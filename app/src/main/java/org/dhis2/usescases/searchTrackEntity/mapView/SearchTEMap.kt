@@ -190,9 +190,11 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                         )
                                     },
                                 ) {
-                                    MapLayerDialog(teiMapManager!!, viewModel.initialProgramUid) { layersVisibility ->
-                                        viewModel.filterVisibleMapItems(layersVisibility)
-                                    }
+                                    MapLayerDialog.newInstance(viewModel.initialProgramUid)
+                                        .setMapManager(teiMapManager!!)
+                                        .setOnLayersVisibilityListener { layersVisibility ->
+                                            viewModel.filterVisibleMapItems(layersVisibility)
+                                        }
                                         .show(childFragmentManager, MapLayerDialog::class.java.name)
                                 }
                                 locationState?.let {
