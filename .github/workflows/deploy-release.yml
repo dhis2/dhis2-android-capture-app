@@ -59,7 +59,7 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
-        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
+        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
         track: production
         status: inProgress
         whatsNewDirectory: whatsnew
@@ -74,4 +74,4 @@ jobs:
         bodyFile: "RELEASE.md"
         name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
         tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/playServices/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
