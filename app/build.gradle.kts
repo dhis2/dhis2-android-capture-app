@@ -158,8 +158,8 @@ android {
     flavorDimensions += listOf("default")
 
     productFlavors {
-        create("dhis")
-        create("dhisPlayServices")
+        create("dhis2")
+        create("dhis2PlayServices")
     }
 
     compileOptions {
@@ -269,8 +269,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    "dhisPlayServicesImplementation"(libs.google.auth)
-    "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
+    "dhis2PlayServicesImplementation"(libs.google.auth)
+    "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)

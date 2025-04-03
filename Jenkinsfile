@@ -82,7 +82,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisDebug :app:assembleDhisDebugAndroidTest :form:assembleAndroidTest'
+                    sh './gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest'
                 }
             }
         }

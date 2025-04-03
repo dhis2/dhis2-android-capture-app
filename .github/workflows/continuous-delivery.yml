@@ -44,7 +44,7 @@ jobs:
 
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleDhisDebug
+        run: ./gradlew assembleDhis2Debug
 
       - name: Read version name from file
         working-directory: ./gradle
