@@ -411,26 +411,6 @@ class SearchTEIViewModel(
         uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
-    fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
-        CoroutineTracker.increment()
-        viewModelScope.launch(dispatchers.io()) {
-            val resultPagedList = async {
-                when {
-                    searching -> loadSearchResults().cachedIn(viewModelScope)
-                    displayFrontPageList() -> loadDisplayInListResults().cachedIn(viewModelScope)
-                    else -> null
-                }
-            }
-            try {
-                onPagedListReady(resultPagedList.await())
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                CoroutineTracker.decrement()
-            }
-        }
-    }
-
     private suspend fun loadSearchResults() = withContext(dispatchers.io()) {
         val searchParametersModel = SearchParametersModel(
             selectedProgram = searchRepository.getProgram(initialProgramUid),
