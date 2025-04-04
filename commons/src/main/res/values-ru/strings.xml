@@ -24,6 +24,23 @@
     <string name="filters_title_sorting">Сортировка</string>
     <string name="filters_title_status">Статус</string>
     <string name="filters_title_date">Дата</string>
+    <string name="select_period">Выбрать тип периода</string>
+    <string name="daily_period">Ежедневно</string>
+    <string name="weekly">Еженедельно</string>
+    <string name="bi_weekly">Каждые две недели</string>
+    <string name="weekly_start_wednesday">Еженедельно со среды</string>
+    <string name="weekly_start_thursday">Еженедельно с четверга</string>
+    <string name="weekly_start_saturday">Еженедельно с субботы</string>
+    <string name="weekly_start_sunday">Еженедельно с воскресенья</string>
+    <string name="monthly">Ежемесячно</string>
+    <string name="bi_monthly">Раз в два месяца</string>
+    <string name="quarterly">Ежеквартально</string>
+    <string name="six_monthly">Раз в полугодие</string>
+    <string name="six_monthly_april">По шесть месяцев начиная с апреля</string>
+    <string name="yearly">Ежегодно</string>
+    <string name="financial_year_april">Финансовый год начиная с апреля</string>
+    <string name="financial_year_july">Финансовый год начиная с июля</string>
+    <string name="financial_year_october">Финансовый год начиная с октября</string>
     <string name="state_error">Ошибка</string>
     <string name="state_warning">Предупреждение</string>
     <string name="state_relationship">Зависимость</string>
@@ -78,4 +95,11 @@
     <string name="discard_changes">Сбросить изменения</string>
     <string name="default_empty_dataset_section_label">Данные</string>
     <string name="overdue_today">Сегодня</string>
+    <string name="remove">Убрать</string>
+    <string name="period_daily_title">Ежедневно</string>
+    <string name="period_weekly_title">Неделя</string>
+    <string name="period_biweekly_title">Раз в две недели</string>
+    <string name="period_monthly_title">Месяц</string>
+    <string name="period_quarter_title">Квартал</string>
+    <string name="period_yearly_title">Год</string>
     </resources>

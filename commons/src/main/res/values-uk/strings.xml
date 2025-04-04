@@ -40,6 +40,15 @@
     <string name="filters_title_assigned">Призначено мені</string>
     <string name="filters_title_date">Дата</string>
     <string name="filter_follow_up_label">Для подальших дій %s</string>
+    <string name="select_period">Обрати тип періоду</string>
+    <string name="daily_period">Щодня</string>
+    <string name="weekly">Щотижня</string>
+    <string name="bi_weekly">Щодва тижні</string>
+    <string name="monthly">Щомісяця</string>
+    <string name="bi_monthly">Щодва місяці</string>
+    <string name="quarterly">Щоквартально</string>
+    <string name="six_monthly">Раз на півріччя</string>
+    <string name="yearly">Щорічно</string>
     <!-- State -->
     <string name="state_synced">Синхронізувати</string>
     <string name="state_to_post">Надіслати</string>
@@ -224,4 +233,13 @@
         <item quantity="other">%d років прострочено</item>
     </plurals>
 
+    <string name="enrolling_ou">Зареєстровано в:</string> <string name="delete_event_label">Видалити %s</string>
+    <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
+    <string name="enrollment_reopen">повторно відкрити</string>
+
+    <string name="syncing">Синхронізація...</string>
+    <string name="remove">Видалити</string>
+    <string name="period_daily_title">Щодня</string>
+    <string name="period_weekly_title">Тиждень</string>
+    <string name="period_yearly_title">Рік</string>
     </resources>
