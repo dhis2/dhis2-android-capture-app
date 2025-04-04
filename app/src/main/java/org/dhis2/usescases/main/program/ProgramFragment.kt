@@ -40,9 +40,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         programViewModelFactory
     }
 
-    @Inject
-    lateinit var animation: ProgramAnimation
-
     private val getActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }

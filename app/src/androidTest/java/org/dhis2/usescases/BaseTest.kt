@@ -43,6 +43,7 @@ open class BaseTest {
 
     @JvmField
     protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    private var testContext = InstrumentationRegistry.getInstrumentation().context
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     lateinit var preferencesRobot: PreferencesRobot
@@ -59,7 +60,8 @@ open class BaseTest {
     var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.CAMERA
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.POST_NOTIFICATIONS
         )
     } else {
         GrantPermissionRule.grant(
@@ -81,7 +83,7 @@ open class BaseTest {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
-            mockWebServerRobot = providesMockWebserverRobot(context)
+            mockWebServerRobot = providesMockWebserverRobot(testContext)
             featureConfigRobot = providesFeatureConfigRobot()
         }
     }

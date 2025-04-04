@@ -1,5 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -157,26 +158,8 @@ android {
     flavorDimensions += listOf("default")
 
     productFlavors {
-        create("dhis") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-
-        create("dhisPlayServices") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
-
-        create("dhisUITesting") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
-        }
+        create("dhis2")
+        create("dhis2PlayServices")
     }
 
     compileOptions {
@@ -286,8 +269,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    "dhisPlayServicesImplementation"(libs.google.auth)
-    "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
+    "dhis2PlayServicesImplementation"(libs.google.auth)
+    "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)

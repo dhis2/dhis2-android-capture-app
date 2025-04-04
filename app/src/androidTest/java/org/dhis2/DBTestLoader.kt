@@ -1,6 +1,7 @@
 package org.dhis2
 
 import android.content.Context
+import androidx.test.platform.app.InstrumentationRegistry
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -19,9 +20,11 @@ class DBTestLoader(private val context: Context) {
             return
         }
         try {
-            val input = context.assets.open("databases/$DB_NAME_TEST")
+            val input = InstrumentationRegistry.getInstrumentation()
+                .context.assets.open("databases/$DB_NAME_TEST")
             val output = FileOutputStream("$databasePath/$DB_NAME")
             writeExtractedFileToDisk(input, output)
+            Timber.d("Database copy done")
         } catch (e: IOException) {
             Timber.e(Throwable("Could not load testing database"))
         }

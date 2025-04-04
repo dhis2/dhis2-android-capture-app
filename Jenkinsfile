@@ -82,7 +82,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhisUITestingDebug :app:assembleDhisUITestingDebugAndroidTest :compose-table:assembleAndroidTest :form:assembleAndroidTest'
+                    sh './gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest'
                 }
             }
         }
@@ -108,7 +108,7 @@ pipeline {
                 stage('Deploy and Run UI Tests') {
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
-                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhisUITesting -iname "*.apk"')
+                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
                         test_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/androidTest -iname "*.apk"')
                         app_apk_path = "${env.WORKSPACE}/${app_apk}"
                         test_apk_path = "${env.WORKSPACE}/${test_apk}"
@@ -132,7 +132,7 @@ pipeline {
                     }
                     environment {
                         BROWSERSTACK = credentials('android-browserstack')
-                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhisUITesting -iname "*.apk"')
+                        app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
                         test_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/androidTest -iname "*.apk"')
                         app_apk_path = "${env.WORKSPACE}/${app_apk}"
                         test_apk_path = "${env.WORKSPACE}/${test_apk}"
