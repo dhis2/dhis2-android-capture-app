@@ -33,7 +33,6 @@ import org.dhis2.commons.extensions.toFriendlyDate
 import org.dhis2.commons.extensions.toFriendlyDateTime
 import org.dhis2.commons.extensions.toPercentage
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -45,6 +44,7 @@ import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
@@ -385,7 +385,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
-        SearchIdlingResourceSingleton.increment()
+        CoroutineTracker.increment()
         viewModelScope.launch(dispatchers.io()) {
             val resultPagedList = async {
                 when {
@@ -399,7 +399,7 @@ class SearchTEIViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                SearchIdlingResourceSingleton.decrement()
+                CoroutineTracker.decrement()
             }
         }
     }
@@ -505,7 +505,7 @@ class SearchTEIViewModel(
     }
 
     fun fetchMapResults() {
-        SearchIdlingResourceSingleton.increment()
+        CoroutineTracker.increment()
         viewModelScope.launch {
             val result = async(context = dispatchers.io()) {
                 mapDataRepository.getTrackerMapData(
@@ -521,7 +521,7 @@ class SearchTEIViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                SearchIdlingResourceSingleton.decrement()
+                CoroutineTracker.decrement()
             }
             searching = false
         }
@@ -550,7 +550,7 @@ class SearchTEIViewModel(
                                     fetchListResults { flow ->
                                         flow?.let {
                                             _refreshData.postValue(Unit)
-                                            SearchIdlingResourceSingleton.decrement()
+                                            CoroutineTracker.decrement()
                                         }
                                     }
                                 }

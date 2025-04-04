@@ -30,9 +30,9 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
-import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
@@ -169,9 +169,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        SearchIdlingResourceSingleton.decrement()
+                        CoroutineTracker.decrement()
                     } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        SearchIdlingResourceSingleton.increment()
+                        CoroutineTracker.increment()
                     }
                     if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
                         viewModel.isScrollingDown.value = false
