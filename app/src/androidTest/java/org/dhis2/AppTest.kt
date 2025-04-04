@@ -1,6 +1,8 @@
 package org.dhis2
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.WorkInfo
 import org.dhis2.common.di.TestingInjector
 import org.dhis2.common.keystore.KeyStoreRobot
@@ -24,6 +26,9 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
+        val bundle = Bundle()
+        bundle.putString("RUNNER_LOG", "AppTest - OnCreate()")
+        InstrumentationRegistry.getInstrumentation().sendStatus(0, bundle)
         populateDBIfNeeded()
         super.onCreate()
     }

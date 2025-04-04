@@ -20,6 +20,7 @@ class DBTestLoader(private val context: Context) {
             return
         }
         try {
+            Timber.tag("RUNNER_LOG").d("Copying database")
             val input = InstrumentationRegistry.getInstrumentation()
                 .context.assets.open("databases/$DB_NAME_TEST")
             val output = FileOutputStream("$databasePath/$DB_NAME")
