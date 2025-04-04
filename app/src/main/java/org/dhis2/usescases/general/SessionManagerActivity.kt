@@ -253,9 +253,11 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
             this.app().disableBackGroundFlag()
             comesFromImageSource = false
         } else {
-            if (this.app().isSessionBlocked && this !is SplashActivity) {
+            if (this.app().isSessionBlocked && this !is SplashActivity && this !is LoginActivity) {
                 if (pinDialog == null) {
                     initPinDialog()
+                    showPinDialog()
+                } else if (pinDialog?.isVisible == false) {
                     showPinDialog()
                 }
             } else {
