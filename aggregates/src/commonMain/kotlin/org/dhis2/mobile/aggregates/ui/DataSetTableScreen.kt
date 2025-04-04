@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,9 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.empty_dataset_message
+import org.dhis2.mobile.aggregates.resources.empty_section_message
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
@@ -67,12 +71,15 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -91,6 +98,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableTheme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -271,6 +279,8 @@ fun DataSetInstanceScreen(
                                     },
                                     currentSelection = tableCellSelection,
                                     onTableResize = dataSetTableViewModel::onTableResize,
+                                    emptySectionMessage = stringResource(Res.string.empty_section_message),
+                                    emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
                                 )
 
                             DataSetScreenState.Loading ->
@@ -344,6 +354,8 @@ fun DataSetInstanceScreen(
                             tableCellSelection = cellSelection
                         },
                         onTableResize = dataSetTableViewModel::onTableResize,
+                        emptySectionMessage = stringResource(Res.string.empty_section_message),
+                        emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
                     )
                 } else {
                     ContentLoading(
@@ -419,6 +431,8 @@ private fun DataSetSinglePane(
     dataSetDetails: DataSetDetails,
     initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
+    emptySectionMessage: String? = null,
+    emptyDatasetMessage: String? = null,
     onSectionSelected: (uid: String) -> Unit,
     onCellClick: (
         cellId: String,
@@ -461,6 +475,15 @@ private fun DataSetSinglePane(
                                         .fillMaxWidth(),
                                     dataSetDetails = dataSetDetails,
                                 )
+
+                                if (dataSetSectionTable.tables().isEmpty()) {
+                                    val message = if (dataSetSections.isEmpty()) {
+                                        emptyDatasetMessage
+                                    } else {
+                                        emptySectionMessage
+                                    }
+                                    WarningInfoBar(message)
+                                }
 
                                 dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                                     HtmlContentBox(
@@ -528,6 +551,8 @@ private fun DataSetTableContent(
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
     currentSection: String?,
+    emptySectionMessage: String? = null,
+    emptyDatasetMessage: String? = null,
     onCellClick: (
         cellId: String,
         cellValue: String?,
@@ -568,6 +593,15 @@ private fun DataSetTableContent(
                                 ).animateContentSize(),
                                 dataSetDetails = dataSetDetails,
                             )
+
+                            if (dataSetSectionTable.tables().isEmpty()) {
+                                val message = if (dataSetSections.isEmpty()) {
+                                    emptyDatasetMessage
+                                } else {
+                                    emptySectionMessage
+                                }
+                                WarningInfoBar(message)
+                            }
 
                             dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                                 HtmlContentBox(
@@ -614,6 +648,31 @@ private fun ContentLoading(
         contentAlignment = Alignment.Center,
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+    }
+}
+
+@Composable
+private fun WarningInfoBar(message: String?) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        InfoBar(
+            infoBarData = InfoBarData(
+                text = message ?: "",
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = "warning",
+                        tint = AdditionalInfoItemColor.WARNING.color,
+                    )
+                },
+                color = AdditionalInfoItemColor.WARNING.color,
+                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                actionText = null,
+                onClick = {},
+            ),
+        )
     }
 }
 
