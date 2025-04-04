@@ -10,6 +10,7 @@ import org.dhis2.maps.api.GeocoderApi
 import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import timber.log.Timber
+import java.io.IOException
 import kotlin.coroutines.resume
 
 class GeocoderSearchImpl(
@@ -51,7 +52,12 @@ class GeocoderSearchImpl(
                     }
                 }
             } else {
-                geocoder.getFromLocationName(name, maxResults)?.mapToLocationItems() ?: emptyList()
+                try {
+                    geocoder.getFromLocationName(name, maxResults)?.mapToLocationItems()
+                        ?: emptyList()
+                } catch (e: IOException) {
+                    emptyList()
+                }
             }
         }
     }
