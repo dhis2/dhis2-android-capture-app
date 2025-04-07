@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueObjectRepository
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueObjectRepository
+import java.text.ParseException
 
 fun TrackedEntityAttributeValue.userFriendlyValue(
     d2: D2,
@@ -91,19 +92,31 @@ fun checkValueTypeValue(
             d2.fileResourceModule().fileResources().uid(value).blockingGet()?.path() ?: ""
 
         ValueType.DATE, ValueType.AGE ->
-            DateUtils.uiDateFormat().format(
-                DateUtils.oldUiDateFormat().parse(value) ?: "",
-            )
+            try {
+                DateUtils.uiDateFormat().format(
+                    DateUtils.oldUiDateFormat().parse(value) ?: "",
+                )
+            } catch (exception: ParseException) {
+                value
+            }
 
         ValueType.DATETIME ->
-            DateUtils.uiDateTimeFormat().format(
-                DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
-            )
+            try {
+                DateUtils.uiDateTimeFormat().format(
+                    DateUtils.databaseDateFormatNoSeconds().parse(value) ?: "",
+                )
+            } catch (exception: ParseException) {
+                value
+            }
 
         ValueType.TIME ->
-            DateUtils.timeFormat().format(
-                DateUtils.timeFormat().parse(value) ?: "",
-            )
+            try {
+                DateUtils.timeFormat().format(
+                    DateUtils.timeFormat().parse(value) ?: "",
+                )
+            } catch (exception: ParseException) {
+                value
+            }
 
         ValueType.PERCENTAGE -> {
             if (addPercentageSymbol) {
