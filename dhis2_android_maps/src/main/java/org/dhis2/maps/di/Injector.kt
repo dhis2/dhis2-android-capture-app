@@ -59,7 +59,11 @@ object Injector {
     fun provideMapLayerViewModelFactory() =
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return MapLayerDialogViewModel() as T
+                if (modelClass.isAssignableFrom(MapLayerDialogViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return MapLayerDialogViewModel() as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }
         }
 }
