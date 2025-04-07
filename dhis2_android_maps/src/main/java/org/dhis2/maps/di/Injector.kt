@@ -9,6 +9,7 @@ import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.resources.LocaleSelector
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.api.NominatimGeocoderApi
+import org.dhis2.maps.layer.MapLayerDialogViewModel
 import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.usecases.GeocoderSearchImpl
 import org.dhis2.maps.usecases.MapStyleConfiguration
@@ -54,4 +55,11 @@ object Injector {
         override fun computation() = Dispatchers.Unconfined
         override fun ui() = Dispatchers.Main
     }
+
+    fun provideMapLayerViewModelFactory() =
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return MapLayerDialogViewModel() as T
+            }
+        }
 }
