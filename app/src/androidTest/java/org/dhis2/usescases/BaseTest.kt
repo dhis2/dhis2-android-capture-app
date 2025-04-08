@@ -22,7 +22,6 @@ import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
-import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
@@ -94,7 +93,6 @@ open class BaseTest {
             EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
-            SearchIdlingResourceSingleton.countingIdlingResource,
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
             OnMapReadyIdlingResourceSingleton.countingIdlingResource,
@@ -110,7 +108,6 @@ open class BaseTest {
                 EventListIdlingResourceSingleton.countingIdlingResource,
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
-                SearchIdlingResourceSingleton.countingIdlingResource,
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
                 AnalyticsCountingIdlingResource.countingIdlingResource,
