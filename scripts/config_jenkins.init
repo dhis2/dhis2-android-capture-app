@@ -12,6 +12,6 @@ browserstack_deviceLogs=true
 browserstack_singleRunnerInvocation=true
 browserstack_number_of_parallel_executions=1
 bitrise_max_parallel_builds=3
-browserstack_class="\"org.dhis2.usescases.UseCaseTestsSuite\",\"org.dhis2.usescases.FlowTestsSuite\""
+browserstack_class="\"org.dhis2.usescases.FlowTestsSuite\",\"org.dhis2.usescases.UseCaseTestsSuite\""
 browserstack_allowDeviceMockServer=true
 browserstack_deviceOrientation="landscape"
