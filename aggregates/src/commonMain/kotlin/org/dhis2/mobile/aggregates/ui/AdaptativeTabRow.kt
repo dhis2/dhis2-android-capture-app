@@ -81,7 +81,7 @@ fun AdaptiveTabRow(
         val finalPlaceable = subcompose("finalLayout") {
             if (scrollable) {
                 ScrollableTabRow(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .semantics {
                             testTag = "SCROLLABLE_TAB_ROW"
