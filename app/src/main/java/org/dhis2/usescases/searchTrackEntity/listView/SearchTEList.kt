@@ -291,7 +291,6 @@ class SearchTEList : FragmentGlobalAbstract() {
         initData()
         viewModel.refreshData.observe(viewLifecycleOwner) {
             restoreAdapters()
-//            initData()
         }
 
         viewModel.dataResult.observe(viewLifecycleOwner) {
