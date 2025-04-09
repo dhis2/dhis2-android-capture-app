@@ -1,9 +1,7 @@
 package org.dhis2.usescases.datasets
 
-import android.app.Instrumentation
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -22,8 +20,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
-
-    private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
 
     @get:Rule
     val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)

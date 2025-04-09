@@ -1,6 +1,5 @@
 package org.dhis2.mobile.commons.coroutine
 
-import android.util.Log
 import androidx.test.espresso.idling.CountingIdlingResource
 
 object AndroidIdlingResource : CoroutineIdlingResource {
@@ -9,16 +8,16 @@ object AndroidIdlingResource : CoroutineIdlingResource {
 
     override fun increment() {
         if (countingIdlingResource.isIdleNow) {
-            Log.d("CoroutineIdlingResource", "Increment")
             countingIdlingResource.increment()
         }
+        countingIdlingResource.dumpStateToLogs()
     }
 
     override fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
-            Log.d("CoroutineIdlingResource", "Decrement")
             countingIdlingResource.decrement()
         }
+        countingIdlingResource.dumpStateToLogs()
     }
 
     fun getIdlingResource() = countingIdlingResource
