@@ -49,6 +49,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
         enrollmentRobot(composeTestRule) {
             typeOnDateParameterWithLabel("LMP Date *", incidentDate)
+            pressBack()
             clickOnSaveEnrollment()
         }
     }

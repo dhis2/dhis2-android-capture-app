@@ -355,6 +355,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                 viewModel.searchPagingData.collect { data ->
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
+                        CoroutineTracker.decrement()
                     }
                     liveAdapter.submitData(lifecycle, data)
                 }
