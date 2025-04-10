@@ -35,8 +35,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
+import org.junit.rules.TestName
 import org.junit.rules.Timeout
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
+
 
 open class BaseTest {
 
@@ -54,6 +57,9 @@ open class BaseTest {
 
     @get:Rule
     val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
+
+    @get: Rule
+    var testName: TestName = TestName()
 
     @get:Rule
     var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
@@ -73,9 +79,26 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
+        (context.applicationContext as AppTest).restoreDB()
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
+    }
+
+    @After
+    @Throws(Exception::class)
+    open fun teardown() {
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("Executing After Actions for $currentTest")
+        closeKeyboard()
+        disableIntents()
+        cleanPreferences()
+        cleanLocalDatabase()
+        cleanKeystore()
+        stopMockServer()
+        unregisterCountingIdlingResource()
     }
 
     private fun injectDependencies() {
@@ -117,17 +140,6 @@ open class BaseTest {
 
     fun setupMockServer() {
         mockWebServerRobot.start()
-    }
-
-    @After
-    @Throws(Exception::class)
-    open fun teardown() {
-        closeKeyboard()
-        disableIntents()
-        cleanPreferences()
-        cleanKeystore()
-        stopMockServer()
-        unregisterCountingIdlingResource()
     }
 
     fun enableIntents() {
@@ -176,7 +188,9 @@ open class BaseTest {
     }
 
     fun cleanLocalDatabase() {
-        (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+       val deleted = (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("CleanDataBaseResult. Is deleted? answer: $deleted for $currentTest")
     }
 
     protected fun enableFeatureConfigValue(feature: Feature) {
