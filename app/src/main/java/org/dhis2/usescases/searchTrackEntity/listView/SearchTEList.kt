@@ -18,7 +18,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
@@ -286,9 +288,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun observeNewData() {
+        initData()
         viewModel.refreshData.observe(viewLifecycleOwner) {
             restoreAdapters()
-            initData()
         }
 
         viewModel.dataResult.observe(viewLifecycleOwner) {
@@ -348,14 +350,15 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
 
-        viewModel.fetchListResults {
-            lifecycleScope.launch {
-                it?.takeIf { view != null }?.collectLatest {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchPagingData.collect { data ->
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
+                        CoroutineTracker.decrement()
                     }
-                    liveAdapter.submitData(lifecycle, it)
-                } ?: onInitDataLoaded()
+                    liveAdapter.submitData(lifecycle, data)
+                }
             }
         }
     }

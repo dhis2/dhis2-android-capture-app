@@ -24,8 +24,16 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
@@ -128,6 +136,26 @@ class SearchTEIViewModel(
 
     private var fetchJob: Job? = null
 
+    private val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    val searchPagingData = onNewSearch.onStart { emit(Unit) }
+        .flatMapLatest {
+            flow {
+                CoroutineTracker.increment()
+                emitAll(
+                    when {
+                        searching -> loadSearchResults()
+                        displayFrontPageList() -> loadDisplayInListResults()
+                        else -> emptyFlow()
+                    },
+                )
+                CoroutineTracker.decrement()
+            }
+        }
+        .flowOn(dispatchers.io())
+        .cachedIn(viewModelScope)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
+
     init {
         viewModelScope.launch(dispatchers.io()) {
             createButtonScrollVisibility.postValue(
@@ -217,8 +245,7 @@ class SearchTEIViewModel(
                 previousSate = _screenState.value?.screenState ?: SearchScreenState.NONE,
                 listType = SearchScreenState.LIST,
                 displayFrontPageList = searchRepository.getProgram(initialProgramUid)
-                    ?.displayFrontPageList()
-                    ?: false,
+                    ?.displayFrontPageList() == true,
                 canCreateWithoutSearch = searchRepository.canCreateInProgramWithoutSearch(),
                 isSearching = searching,
                 searchForm = SearchForm(
@@ -384,26 +411,6 @@ class SearchTEIViewModel(
         uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
-    fun fetchListResults(onPagedListReady: (Flow<PagingData<SearchTeiModel>>?) -> Unit) {
-        CoroutineTracker.increment()
-        viewModelScope.launch(dispatchers.io()) {
-            val resultPagedList = async {
-                when {
-                    searching -> loadSearchResults().cachedIn(viewModelScope)
-                    displayFrontPageList() -> loadDisplayInListResults().cachedIn(viewModelScope)
-                    else -> null
-                }
-            }
-            try {
-                onPagedListReady(resultPagedList.await())
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                CoroutineTracker.decrement()
-            }
-        }
-    }
-
     private suspend fun loadSearchResults() = withContext(dispatchers.io()) {
         val searchParametersModel = SearchParametersModel(
             selectedProgram = searchRepository.getProgram(initialProgramUid),
@@ -545,16 +552,8 @@ class SearchTEIViewModel(
                     when (_screenState.value?.screenState) {
                         SearchScreenState.LIST -> {
                             setListScreen()
-                            fetchListResults { flow ->
-                                flow?.let {
-                                    fetchListResults { flow ->
-                                        flow?.let {
-                                            _refreshData.postValue(Unit)
-                                            CoroutineTracker.decrement()
-                                        }
-                                    }
-                                }
-                            }
+                            onNewSearch.emit(Unit)
+                            CoroutineTracker.decrement()
                         }
 
                         SearchScreenState.MAP -> {
@@ -577,9 +576,10 @@ class SearchTEIViewModel(
                     uiState.updateMinAttributeWarning(true)
                     setSearchScreen()
                     _refreshData.postValue(Unit)
+                    onNewSearch.emit(Unit)
                 }
             } catch (e: Exception) {
-                Timber.d(e.message)
+                Timber.d(e)
             }
         }
     }
