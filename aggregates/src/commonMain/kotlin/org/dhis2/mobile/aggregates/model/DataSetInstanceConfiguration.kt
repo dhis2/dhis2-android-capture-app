@@ -4,11 +4,24 @@ internal data class DataSetInstanceConfiguration(
     val hasDataElementDecoration: Boolean,
     val compulsoryDataElements: List<MandatoryCellElements>,
     val allDataSetElements: List<CellElement>,
-    val greyedOutFields: List<String>,
+    val greyedOutFields: List<GreyedOutField>,
     val editable: Boolean,
 ) {
-    fun isCellEditable(rowId: String) =
-        editable && !greyedOutFields.contains(rowId)
+    fun isCellEditable(
+        dataElementUid: String,
+        categoryOptionComboUid: String?,
+        categoryOptionComboUids: List<String>?,
+    ): Boolean {
+        val isGreyedOut = greyedOutFields.find {
+            if (categoryOptionComboUid != null) {
+                it.dataElementUid == dataElementUid && it.categoryOptionComboUid == categoryOptionComboUid
+            } else {
+                it.dataElementUid == dataElementUid && it.categoryOptionUids == categoryOptionComboUids
+            }
+        } != null
+
+        return editable && isGreyedOut.not()
+    }
 
     fun isMandatory(rowId: String, columnId: String) =
         compulsoryDataElements.find {
@@ -28,4 +41,10 @@ internal data class CellElement(
 internal data class MandatoryCellElements(
     val uid: String?,
     val categoryOptionComboUid: String?,
+)
+
+internal data class GreyedOutField(
+    val dataElementUid: String,
+    val categoryOptionComboUid: String,
+    val categoryOptionUids: List<String>,
 )

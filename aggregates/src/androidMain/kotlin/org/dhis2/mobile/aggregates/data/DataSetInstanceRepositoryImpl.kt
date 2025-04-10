@@ -14,6 +14,7 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataToReview
+import org.dhis2.mobile.aggregates.model.GreyedOutField
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
 import org.dhis2.mobile.aggregates.model.NonEditableReason
@@ -224,6 +225,7 @@ internal class DataSetInstanceRepositoryImpl(
     )
 
     private suspend fun categoryOptionCombinations(
+        categoryCombinationUid: String,
         categoryUids: List<String>,
         pivotedCategoryUid: String?,
     ): List<String> {
@@ -244,6 +246,7 @@ internal class DataSetInstanceRepositoryImpl(
         }.mapNotNull { categoryOptions ->
             if (pivotedCategoryUid == null) {
                 d2.categoryModule().categoryOptionCombos()
+                    .byCategoryComboUid().eq(categoryCombinationUid)
                     .byCategoryOptions(categoryOptions)
                     .one()
                     .blockingGet()?.uid()
@@ -332,7 +335,22 @@ internal class DataSetInstanceRepositoryImpl(
             .uid(sectionUid)
             .blockingGet()
             ?.greyedFields()
-            ?.mapNotNull { it.dataElement()?.uid() }
+            ?.mapNotNull {
+                val dataElementUid = it.dataElement()?.uid() ?: return@mapNotNull null
+                val categoryOptionComboUid =
+                    it.categoryOptionCombo()?.uid() ?: return@mapNotNull null
+                val categoryOptionUids = d2.categoryModule().categoryOptionCombos()
+                    .withCategoryOptions()
+                    .uid(categoryOptionComboUid)
+                    .blockingGet()
+                    ?.categoryOptions()?.map { it.uid() } ?: emptyList()
+
+                GreyedOutField(
+                    dataElementUid,
+                    categoryOptionComboUid,
+                    categoryOptionUids,
+                )
+            }
 
         val isEditable = d2.dataSetModule().dataSetInstanceService()
             .getEditableStatus(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
@@ -441,7 +459,11 @@ internal class DataSetInstanceRepositoryImpl(
                     subgroups = subGroups,
                     cellElements = noGroupingDataSetElements,
                     headerRows = getTableGroupHeaders(catComboUid!!, subGroups, pivotedCategory),
-                    headerCombinations = categoryOptionCombinations(subGroups, pivotedCategory),
+                    headerCombinations = categoryOptionCombinations(
+                        categoryCombinationUid = catCombo.uid(),
+                        categoryUids = subGroups,
+                        pivotedCategoryUid = pivotedCategory,
+                    ),
                     pivotMode = when {
                         pivoted ->
                             PivoteMode.Transpose
@@ -493,8 +515,9 @@ internal class DataSetInstanceRepositoryImpl(
                             pivotedCategory,
                         ),
                         headerCombinations = categoryOptionCombinations(
-                            subGroups,
-                            pivotedCategory,
+                            categoryCombinationUid = catCombo.uid(),
+                            categoryUids = subGroups,
+                            pivotedCategoryUid = pivotedCategory,
                         ),
                         pivotMode = when {
                             pivoted ->
