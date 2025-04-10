@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -108,6 +109,10 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
                 useUnmergedTree = true,
             ).performTextReplacement(dateValue)
+            onNode(
+                hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
+                useUnmergedTree = true,
+            ).performImeAction()
         }
     }
 
