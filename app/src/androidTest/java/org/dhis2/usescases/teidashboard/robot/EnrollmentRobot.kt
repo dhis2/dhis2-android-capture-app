@@ -131,6 +131,14 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 ),
                 useUnmergedTree = true,
             ).performTextReplacement(dateValue)
+            onNode(
+                hasTestTag(
+                    "INPUT_DATE_TIME_TEXT_FIELD"
+                ) and hasAnySibling(
+                    hasText(title)
+                ),
+                useUnmergedTree = true,
+            ).performImeAction()
         }
     }
 
