@@ -136,7 +136,7 @@ class SearchTEIViewModel(
 
     private var fetchJob: Job? = null
 
-    val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     val searchPagingData = onNewSearch.onStart { emit(Unit) }
         .flatMapLatest {
