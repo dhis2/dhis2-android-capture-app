@@ -769,7 +769,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION,
+                notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
                 modifier = modifierWithFocus,
             )
         }
