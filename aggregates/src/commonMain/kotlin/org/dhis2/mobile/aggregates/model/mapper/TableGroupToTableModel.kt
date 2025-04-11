@@ -54,7 +54,10 @@ internal suspend fun TableGroup.toTableModel(
         rows = headerRows,
         extraColumns = if (sectionData.showRowTotals()) {
             listOf(
-                TableHeaderCell(resourceManager.totalsHeader()),
+                TableHeaderCell(
+                    value = resourceManager.totalsHeader(),
+                    disabled = true,
+                ),
             )
         } else {
             emptyList()
@@ -96,6 +99,7 @@ internal suspend fun TableGroup.toTableModel(
                         row = rowIndex,
                         column = columnIndex,
                         description = cellElement.description,
+                        disabled = cellElement.disabled,
                     )
                 },
                 values = buildMap {
