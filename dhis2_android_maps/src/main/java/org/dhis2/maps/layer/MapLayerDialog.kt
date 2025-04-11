@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.widget.CompoundButtonCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -21,7 +20,6 @@ import org.dhis2.commons.resources.getPrimaryColor
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.DialogMapLayerBinding
 import org.dhis2.maps.databinding.ItemLayerBinding
-import org.dhis2.maps.di.Injector
 import org.dhis2.maps.layer.basemaps.BasemapAdapter
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
@@ -37,8 +35,7 @@ import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICO
 
 class MapLayerDialog : BottomSheetDialogFragment() {
 
-    private lateinit var viewModel: MapLayerDialogViewModel
-
+    var mapManager: MapManager? = null
     private var programUid: String? = null
     private var onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {}
 
@@ -49,8 +46,6 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         resourceManager = ResourceManager(context, ColorUtils())
-        viewModel = ViewModelProvider(requireActivity(), Injector.provideMapLayerViewModelFactory())[MapLayerDialogViewModel::class.java]
-        viewModel.mapManager = mapManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +60,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
-        viewModel.mapManager?.let {
+        mapManager?.let {
             binding.baseMapCarousel.adapter = BasemapAdapter(it.mapLayerManager)
         }
         binding.acceptButton.setTextColor(
@@ -126,14 +121,12 @@ class MapLayerDialog : BottomSheetDialogFragment() {
 
     companion object {
         private const val ARG_PROGRAM_UID = "programUid"
-        private var mapManager: MapManager? = null
 
-        fun newInstance(programUid: String?, mapManager: MapManager): MapLayerDialog {
+        fun newInstance(programUid: String?): MapLayerDialog {
             return MapLayerDialog().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PROGRAM_UID, programUid)
                 }
-                this@Companion.mapManager = mapManager
             }
         }
     }
@@ -148,7 +141,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             Pair("DE", mutableListOf()),
             Pair("HEATMAP", mutableListOf()),
         )
-        viewModel.mapManager?.mapLayerManager?.mapLayers?.toSortedMap()?.forEach { (source, layer) ->
+        mapManager?.mapLayerManager?.mapLayers?.toSortedMap()?.forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
             when (layer) {
                 is TeiMapLayer -> layerMap["TEI"]?.add(
@@ -205,7 +198,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 is FieldMapLayer -> layerMap["DE"]?.add(
                     addCheckBox(
                         source,
-                        viewModel.mapManager?.getLayerName(source),
+                        mapManager?.getLayerName(source),
                         "${EventMapManager.DE_ICON_ID}_$source",
                     ),
                 )
@@ -223,9 +216,9 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     private fun initListeners() {
         binding.acceptButton.setOnClickListener {
             layerVisibility.forEach { (sourceId, visible) ->
-                viewModel.mapManager?.mapLayerManager?.handleLayer(sourceId, visible)
+                mapManager?.mapLayerManager?.handleLayer(sourceId, visible)
             }
-            viewModel.mapManager?.let {
+            mapManager?.let {
                 onLayersVisibility(it.updateLayersVisibility(layerVisibility))
             }
             dismiss()
@@ -256,7 +249,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 if (it == HEATMAP_ICON) {
                     layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
                 } else {
-                    viewModel.mapManager?.let { manager ->
+                    mapManager?.let { manager ->
                         layerIcon.setImageBitmap(
                             manager.mapLayerManager.mapBoxMap.style?.getImage(image),
                         )

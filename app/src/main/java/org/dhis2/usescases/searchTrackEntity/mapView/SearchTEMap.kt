@@ -146,7 +146,9 @@ class SearchTEMap : FragmentGlobalAbstract() {
                             data.eventFeatures,
                             data.dataElementFeaturess,
                             data.teiBoundingBox,
-                        )
+                        ).also {
+                            viewModel.mapManager = teiMapManager
+                        }
                     }
                 }
 
@@ -190,12 +192,15 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                         )
                                     },
                                 ) {
-                                    MapLayerDialog.newInstance(
-                                        viewModel.initialProgramUid,
-                                        teiMapManager!!,
-                                    ).setOnLayersVisibilityListener { layersVisibility ->
+                                    val mapLayerDialog = MapLayerDialog.newInstance(viewModel.initialProgramUid)
+                                    mapLayerDialog.mapManager = viewModel.mapManager
+                                    mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
                                         viewModel.filterVisibleMapItems(layersVisibility)
-                                    }.show(childFragmentManager, MapLayerDialog::class.java.name)
+                                    }
+                                    mapLayerDialog.show(
+                                        childFragmentManager,
+                                        MapLayerDialog::class.java.name,
+                                    )
                                 }
                                 locationState?.let {
                                     LocationIcon(
@@ -326,6 +331,13 @@ class SearchTEMap : FragmentGlobalAbstract() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         teiMapManager?.onSaveInstanceState(outState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val exists = childFragmentManager
+            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        exists?.dismiss()
     }
 
     @Deprecated("Deprecated in Java")

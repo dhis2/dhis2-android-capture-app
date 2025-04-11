@@ -100,7 +100,9 @@ class EventMapFragment :
                             eventMapManager?.takeIf { it.isMapReady() }?.update(
                                 data.featureCollectionMap,
                                 data.boundingBox,
-                            )
+                            ).also {
+                                presenter.mapManager = eventMapManager
+                            }
                         }
                     }
 
@@ -132,10 +134,9 @@ class EventMapFragment :
                                     )
                                 },
                             ) {
-                                MapLayerDialog.newInstance(
-                                    presenter.programUid(),
-                                    eventMapManager!!,
-                                ).setOnLayersVisibilityListener { layersVisibility ->
+                                val mapLayerDialog = MapLayerDialog.newInstance(presenter.programUid())
+                                mapLayerDialog.mapManager = presenter.mapManager
+                                mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
                                     presenter.filterVisibleMapItems(layersVisibility)
                                 }.show(childFragmentManager, MapLayerDialog::class.java.name)
                             }
@@ -218,6 +219,9 @@ class EventMapFragment :
             programEventsViewModel.setProgress(true)
             presenter.getEventInfo(eventUid)
         }
+        val exists = childFragmentManager
+            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        exists?.dismiss()
     }
 
     override fun onDestroy() {

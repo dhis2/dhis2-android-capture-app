@@ -51,6 +51,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
@@ -133,6 +134,8 @@ class SearchTEIViewModel(
     val teTypeName: LiveData<String> = _teTypeName
 
     var uiState by mutableStateOf(SearchParametersUiState())
+
+    var mapManager: MapManager? = null
 
     private var fetchJob: Job? = null
 
