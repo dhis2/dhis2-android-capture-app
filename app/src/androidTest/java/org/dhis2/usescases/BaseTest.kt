@@ -92,7 +92,7 @@ open class BaseTest {
     open fun teardown() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing After Actions for $currentTest")
-        closeKeyboard()
+//        closeKeyboard()
         disableIntents()
         cleanPreferences()
         cleanLocalDatabase()
