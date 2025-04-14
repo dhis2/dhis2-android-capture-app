@@ -270,12 +270,12 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                     },
                 ) {
                     relationshipMapManager?.let {
-                        MapLayerDialog(it, programUid()) { layersVisibility ->
+                        val dialog = MapLayerDialog.newInstance(programUid())
+                        dialog.mapManager = it
+                        dialog.setOnLayersVisibilityListener { layersVisibility ->
                             presenter.filterVisibleMapItems(layersVisibility)
-                        }.show(
-                            childFragmentManager,
-                            MapLayerDialog::class.java.name,
-                        )
+                        }
+                            .show(childFragmentManager, MapLayerDialog::class.java.name)
                     }
                 }
                 locationState?.let {
@@ -386,6 +386,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         super.onResume()
         presenter.init()
         relationShipsViewModel.refreshRelationships()
+        val exists = childFragmentManager
+            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        exists?.dismiss()
     }
 
     override fun onPause() {

@@ -13,6 +13,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.defaultSubscribe
 import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
+import org.dhis2.maps.managers.MapManager
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapData
 import org.hisp.dhis.android.core.common.FeatureType
@@ -27,6 +28,7 @@ class EventMapPresenter(
 ) {
 
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
+    var mapManager: MapManager? = null
 
     private val _eventMapData = MutableLiveData<ProgramEventMapData>()
     val eventMapData: LiveData<ProgramEventMapData> = _eventMapData
