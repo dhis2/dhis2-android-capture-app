@@ -429,7 +429,7 @@ internal class DataSetInstanceRepositoryImpl(
                             ?: dataElementCategoryComboUid(it.uid),
                     )
                 },
-            ).mapIndexed { index, noGroupingDataSetElements ->
+            ).mapIndexedNotNull { index, noGroupingDataSetElements ->
                 val mainCellElement = noGroupingDataSetElements.first()
                 val catComboUid = mainCellElement.categoryComboUid ?: dataElementCategoryComboUid(
                     mainCellElement.uid,
@@ -438,6 +438,8 @@ internal class DataSetInstanceRepositoryImpl(
                     .withCategories()
                     .uid(catComboUid)
                     .blockingGet()!!
+
+                if (catCombo.categories()?.isEmpty() == true) return@mapIndexedNotNull null
 
                 val catComboHasPivotedCategory =
                     catCombo.categories()?.any { it.uid() == pivotedCategoryUid } ?: false
@@ -481,9 +483,9 @@ internal class DataSetInstanceRepositoryImpl(
                 .byUid().`in`(catComboUids)
                 .withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().map { catCombo ->
-
-                    val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+                .blockingGet().mapNotNull { catCombo ->
+                    if (catCombo.categories()?.isEmpty() == true) return@mapNotNull null
+                    val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: return@mapNotNull null
                     val cellElements = dataSetElementsInSection.filter { dataSetElement ->
                         val catComboUid =
                             dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
