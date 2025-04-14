@@ -205,8 +205,8 @@ android {
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
                     val suffix = when {
-                        buildType == "debug" && flavorName == "dhis" -> "-training"
-                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
+                        buildType == "debug" && flavorName == "dhis2" -> "-training"
+                        buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
                         else -> ""
                     }
 
