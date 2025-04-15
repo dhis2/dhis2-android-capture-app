@@ -605,6 +605,7 @@ internal class DataSetTableViewModel(
             val rules = withContext(dispatcher.io()) {
                 runValidationRules()
             }
+
             when (rules.validationResultStatus) {
                 ValidationResultStatus.OK -> {
                     _dataSetScreenState.update {
@@ -619,6 +620,9 @@ internal class DataSetTableViewModel(
 
                 ValidationResultStatus.ERROR -> {
                     onModalDialogDismissed()
+                    val completionStatus = withContext(dispatcher.io()) {
+                        checkCompletionStatus()
+                    }
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -631,6 +635,7 @@ internal class DataSetTableViewModel(
                                         expandValidationErrors(
                                             violations = rules.violations,
                                             mandatory = rules.mandatory,
+                                            canComplete = completionStatus == NOT_COMPLETED_EDITABLE,
                                         )
                                     },
                                 ),
@@ -645,7 +650,7 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean) {
+    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean, canComplete: Boolean) {
         viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
@@ -655,6 +660,7 @@ internal class DataSetTableViewModel(
                             mandatory = mandatory,
                             onDismiss = { onModalDialogDismissed() },
                             onMarkAsComplete = { attemptToComplete() },
+                            canComplete = canComplete,
                         ),
                     )
                 } else {
