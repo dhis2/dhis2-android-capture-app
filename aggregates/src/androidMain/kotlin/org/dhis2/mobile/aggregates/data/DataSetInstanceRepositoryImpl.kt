@@ -199,6 +199,17 @@ internal class DataSetInstanceRepositoryImpl(
             .map { isEmpty -> !isEmpty }.blockingGet()
     }
 
+    override suspend fun isEditable(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean {
+        return d2.dataSetModule()
+            .dataSetInstanceService()
+            .getEditableStatus(dataSetUid, periodId, orgUnitUid, attrOptionComboUid).blockingGet() == DataSetEditableStatus.Editable
+    }
+
     override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean {
         return d2.dataSetModule()
             .dataSets().uid(dataSetUid)
