@@ -3,7 +3,7 @@ package org.dhis2.mobile.aggregates.domain
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -67,6 +67,6 @@ class CheckCompletionStatusTest {
         val result = checkCompletionStatus()
 
         // Then return completed
-        assertEquals(NOT_COMPLETED, result)
+        assertEquals(NOT_COMPLETED_EDITABLE, result)
     }
 }
