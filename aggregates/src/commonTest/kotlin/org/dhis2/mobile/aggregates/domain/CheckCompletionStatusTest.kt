@@ -90,7 +90,7 @@ class CheckCompletionStatusTest {
     }
 
     @Test
-    fun `should return dataset instance is not completed ando not editable` () = runTest {
+    fun `should return dataset instance is not completed ando not editable`() = runTest {
         // Given dataset instance is not completed
         whenever(
             dataSetInstanceRepository.isComplete(
