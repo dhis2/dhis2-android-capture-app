@@ -10,6 +10,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationListenerCompat
+import okhttp3.internal.toImmutableList
 
 private const val FUSED_LOCATION_PROVIDER = "fused"
 
@@ -68,7 +69,7 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                     onLocationProviderChanged()
                 }
             }
-            val deviceProviders = locationManager.allProviders
+            val deviceProviders = locationManager.allProviders.toImmutableList()
             if (deviceProviders.contains(LocationManager.NETWORK_PROVIDER)) {
                 locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
