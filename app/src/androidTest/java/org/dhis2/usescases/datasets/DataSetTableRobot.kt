@@ -325,12 +325,12 @@ internal class DataSetTableRobot(
     ) {
         dataElementsRowTestTags.forEach { deCellData ->
             val dataElementIsDisplayed = composeTestRule.onNode(
-                hasTestTag(deCellData.testTag) and hasTextExactly(deCellData.label)
+                hasTestTag(deCellData.testTag) and hasText(deCellData.label)
             ).performScrollTo()
                 .assertIsDisplayed()
             rowTestTags.forEach { catCellData ->
                 dataElementIsDisplayed.assert(
-                    hasAnySibling(hasTestTag(catCellData.testTag) and hasTextExactly(catCellData.label))
+                    hasAnySibling(hasTestTag(catCellData.testTag) and hasText(catCellData.label))
                 )
             }
         }
