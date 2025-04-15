@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_NOT_EDITABLE
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -44,6 +45,15 @@ class CheckCompletionStatusTest {
             ),
         ) doReturn true
 
+        whenever(
+            dataSetInstanceRepository.isEditable(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            ),
+        ) doReturn true
+
         // When user check if dataset is completed
         val result = checkCompletionStatus()
 
@@ -52,10 +62,47 @@ class CheckCompletionStatusTest {
     }
 
     @Test
-    fun `should return dataset instance is not completed`() = runTest {
+    fun `should return dataset instance is not completed and editable`() = runTest {
         // Given dataset instance is not completed
         whenever(
             dataSetInstanceRepository.isComplete(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            ),
+        ) doReturn false
+
+        whenever(
+            dataSetInstanceRepository.isEditable(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            ),
+        ) doReturn true
+
+        // When user check if dataset is completed
+        val result = checkCompletionStatus()
+
+        // Then return completed
+        assertEquals(NOT_COMPLETED_EDITABLE, result)
+    }
+
+    @Test
+    fun `should return dataset instance is not completed ando not editable` () = runTest {
+        // Given dataset instance is not completed
+        whenever(
+            dataSetInstanceRepository.isComplete(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            ),
+        ) doReturn false
+
+        whenever(
+            dataSetInstanceRepository.isEditable(
                 dataSetUid = dataSetUid,
                 periodId = periodId,
                 orgUnitUid = orgUnitUid,
@@ -67,6 +114,6 @@ class CheckCompletionStatusTest {
         val result = checkCompletionStatus()
 
         // Then return completed
-        assertEquals(NOT_COMPLETED_EDITABLE, result)
+        assertEquals(NOT_COMPLETED_NOT_EDITABLE, result)
     }
 }
