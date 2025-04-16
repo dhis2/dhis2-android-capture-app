@@ -57,6 +57,7 @@ class TeiFlowTest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             closeEnrollmentAndCheckEvents()
+            composeTestRule.waitForIdle()
             enrollToProgram(ADULT_WOMAN_PROGRAM, enrollmentListDetails)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
             checkPastEventsAreClosed(totalEventsPerEnrollment)
@@ -118,7 +119,5 @@ class TeiFlowTest : BaseTest() {
         const val ORG_UNIT = "Ngelehun CHC"
         const val NAME = "Marta"
         const val LASTNAME = "Stuart"
-
-        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }
