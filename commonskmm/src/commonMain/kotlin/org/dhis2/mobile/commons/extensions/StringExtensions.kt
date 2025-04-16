@@ -15,6 +15,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
 import java.text.SimpleDateFormat
+import java.time.DateTimeException
 import java.util.Calendar
 import java.util.Locale
 
@@ -69,9 +70,22 @@ suspend fun String.userFriendlyValue(
     }
 }
 
-fun String.toDateTimeFormat() = LocalDateTime.parse(this).format(dateTimeFormat)
-fun String.toDateFormat() = LocalDate.parse(this).format(dateFormat)
-fun String.toTimeFormat() = LocalTime.parse(this).format(timeFormat)
+fun String.toDateTimeFormat() = try {
+    LocalDateTime.parse(this).format(dateTimeFormat)
+} catch (e: Exception) {
+    this
+}
+fun String.toDateFormat() = try {
+    LocalDate.parse(this).format(dateFormat)
+} catch (e: Exception) {
+    this
+}
+
+fun String.toTimeFormat() = try {
+    LocalTime.parse(this).format(timeFormat)
+} catch (e: Exception) {
+    this
+}
 
 fun String.toColor(): Color {
     val color = this.replace("#", "")
