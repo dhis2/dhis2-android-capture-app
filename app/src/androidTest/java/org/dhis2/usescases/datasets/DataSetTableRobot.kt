@@ -29,6 +29,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
@@ -107,6 +108,14 @@ internal class DataSetTableRobot(
     fun scrollToItemWithText(text: String) {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
             .performScrollToNode(hasText(text, substring = true))
+    }
+
+    fun scrollToTop(){
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
+            .performTouchInput {
+                swipeDown()
+                swipeDown()
+            }
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {

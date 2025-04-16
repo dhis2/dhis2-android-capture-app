@@ -144,6 +144,7 @@ class DataSetTest : BaseTest() {
         dataSetTableRobot(composeTestRule) {
             scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
+            scrollToTop()
         }
     }
 
@@ -521,6 +522,7 @@ class DataSetTest : BaseTest() {
 
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
+                scrollToTop()
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
                 assertTableHeaders(data.headerTestTags)
