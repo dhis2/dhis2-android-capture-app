@@ -144,9 +144,6 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.getByName("debug")
-
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -157,7 +154,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+
             buildConfigField("int", "MATOMO_ID", "1")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -166,8 +163,12 @@ android {
     flavorDimensions += listOf("default")
 
     productFlavors {
-        create("dhis2")
-        create("dhis2PlayServices")
+        create("dhis2") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+        create("dhis2PlayServices") {
+            signingConfig = signingConfigs.getByName("release")
+        }
         create("dhis2Training") {
             signingConfig = signingConfigs.getByName("training")
         }
