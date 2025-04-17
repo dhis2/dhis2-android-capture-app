@@ -10,7 +10,7 @@ env:
 # or API.
 on:
   workflow_dispatch:
-  
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
@@ -36,14 +36,15 @@ jobs:
 
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
-      
+
     - name: Decode Keystore
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
-    - name: build prod
+
+    - name: Build Production APKs
       run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
@@ -51,6 +52,19 @@ jobs:
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+
+    - name: Decode Training Keystore
+      run: |
+        echo ${{ secrets.TRAINING_KEYSTORE_BASE64 }} | base64 -d > training.keystore
+
+    - name: Build Training APK
+      env:
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        TRAINING_KEY_ALIAS: ${{ secrets.TRAINING_KEY_ALIAS }}
+        TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
+        TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
+        TRAINING_STORE_FILE: training.keystore
+      run: ./gradlew app:assembleDhis2TrainingRelease
 
     - name: Read version name from file
       working-directory: ./gradle
@@ -70,3 +84,10 @@ jobs:
       with:
         name: ${{ env.repository_name }} - DhisPlayServicesRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
+
+      # Upload Training Release APK
+    - name: Upload Training Release APK
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: ${{ env.repository_name }} - Training Release APK
+        path: ${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

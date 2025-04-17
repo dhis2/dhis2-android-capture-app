@@ -50,6 +50,14 @@ android {
             }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
         }
+        create("training") {
+            keyAlias = System.getenv("TRAINING_KEY_ALIAS")
+            keyPassword = System.getenv("TRAINING_KEY_PASSWORD")
+            System.getenv("TRAINING_STORE_FILE")?.let { path ->
+                storeFile = file(path)
+            }
+            storePassword = System.getenv("TRAINING_STORE_PASSWORD")
+        }
     }
 
     testOptions {
@@ -160,6 +168,9 @@ android {
     productFlavors {
         create("dhis2")
         create("dhis2PlayServices")
+        create("dhis2Training") {
+            signingConfig = signingConfigs.getByName("training")
+        }
     }
 
     compileOptions {
@@ -202,10 +213,16 @@ android {
         onVariants { variant ->
             val buildType = variant.buildType
             val flavorName = variant.flavorName
+
+            // Apply suffix only for training flavor in release buildType
+            if (buildType == "release" && flavorName == "dhis2Training") {
+                variant.applicationId.set("${variant.applicationId.get()}.training")
+            }
+
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
                     val suffix = when {
-                        buildType == "debug" && flavorName == "dhis2" -> "-training"
+                        buildType == "release" && flavorName == "dhis2Training" -> "-training"
                         buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
                         else -> ""
                     }
