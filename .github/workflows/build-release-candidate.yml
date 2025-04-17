@@ -57,7 +57,7 @@ jobs:
       id: decode_training_keystore
       uses: timheuer/base64-to-file@v1
       with:
-        fileName: 'dhis_keystore.jks'
+        fileName: 'dhis_training_keystore.jks'
         encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
 
     - name: Build Training APK
