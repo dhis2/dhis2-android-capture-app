@@ -54,8 +54,11 @@ jobs:
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
     - name: Decode Training Keystore
-      run: |
-        echo ${{ secrets.TRAINING_KEYSTORE_BASE64 }} | base64 -d > training.keystore
+      id: decode_training_keystore
+      uses: timheuer/base64-to-file@v1
+      with:
+        fileName: 'dhis_keystore.jks'
+        encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
 
     - name: Build Training APK
       env:
@@ -63,7 +66,7 @@ jobs:
         TRAINING_KEY_ALIAS: ${{ secrets.TRAINING_KEY_ALIAS }}
         TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
         TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
-        TRAINING_STORE_FILE: training.keystore
+        TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
       run: ./gradlew app:assembleDhis2TrainingRelease
 
     - name: Read version name from file
