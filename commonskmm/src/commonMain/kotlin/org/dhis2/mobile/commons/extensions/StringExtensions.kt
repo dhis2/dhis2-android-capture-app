@@ -15,7 +15,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
 import java.text.SimpleDateFormat
-import java.time.DateTimeException
 import java.util.Calendar
 import java.util.Locale
 
