@@ -1,9 +1,18 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isEditable
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
@@ -108,6 +117,17 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
+    fun chooseDate(date: String) {
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(
+            label = "text",
+            substring = true,
+            useUnmergedTree = true,
+        ).performClick()
+        composeTestRule.onNodeWithText("Date").performTextReplacement(date)
+        composeTestRule.onNodeWithText("OK", true).performClick()
+    }
+
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
             .check(
@@ -157,8 +177,8 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-    fun clickOnLastMonthPeriodFilter() {
-        onView(withId(R.id.last_month)).perform(click())
+    fun clickOnThisMonthPeriodFilter() {
+        onView(withId(R.id.this_month)).perform(click())
     }
 
     fun clickOnAnytimePeriodFilter() {
