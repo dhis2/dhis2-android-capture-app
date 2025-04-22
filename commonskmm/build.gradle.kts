@@ -54,6 +54,9 @@ kotlin {
 
             // Atomicfu
             implementation(libs.atomicfu)
+
+            // Sentry
+            api(libs.analytics.sentry)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
