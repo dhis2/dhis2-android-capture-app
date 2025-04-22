@@ -3,6 +3,7 @@ package org.dhis2.mobile.commons.extensions
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
+import io.sentry.Sentry
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -72,17 +73,20 @@ suspend fun String.userFriendlyValue(
 fun String.toDateTimeFormat() = try {
     LocalDateTime.parse(this).format(dateTimeFormat)
 } catch (e: Exception) {
+    Sentry.captureException(e)
     this
 }
 fun String.toDateFormat() = try {
     LocalDate.parse(this).format(dateFormat)
 } catch (e: Exception) {
+    Sentry.captureException(e)
     this
 }
 
 fun String.toTimeFormat() = try {
     LocalTime.parse(this).format(timeFormat)
 } catch (e: Exception) {
+    Sentry.captureException(e)
     this
 }
 
