@@ -850,6 +850,9 @@ class TeiDashboardMobileActivity :
 
                     EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
                     EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
+                    else ->{
+                        // Do nothing
+                    }
                 }
             }
         }
@@ -869,5 +872,6 @@ enum class EnrollmentMenuItem {
     DEACTIVATE,
     COMPLETE,
     DELETE,
-    REMOVE
+    REMOVE,
+    SEND_SMS
 }
