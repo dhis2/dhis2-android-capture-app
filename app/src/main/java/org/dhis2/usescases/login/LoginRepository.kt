@@ -2,23 +2,27 @@ package org.dhis2.usescases.login
 
 import android.content.res.Resources
 import com.google.gson.Gson
+import kotlinx.coroutines.withContext
 import org.dhis2.BuildConfig
 import org.dhis2.R
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.utils.TestingCredential
 
 class LoginRepository(
     private val resources: Resources,
     private val gson: Gson,
+    private val dispatchers: DispatcherProvider,
 ) {
-    fun getTestingCredentials(): List<TestingCredential> {
-        return if (BuildConfig.DEBUG) {
-            getCredentialsFromFile(R.raw.testing_credentials)
-        } else if (BuildConfig.FLAVOR == "dhis2Training") {
-            getCredentialsFromFile(R.raw.training_credentials)
-        } else {
-            emptyList()
+    suspend fun getTestingCredentials(): List<TestingCredential> =
+        withContext(dispatchers.io()) {
+            if (BuildConfig.DEBUG) {
+                getCredentialsFromFile(R.raw.testing_credentials)
+            } else if (BuildConfig.FLAVOR == "dhis2Training") {
+                getCredentialsFromFile(R.raw.training_credentials)
+            } else {
+                emptyList()
+            }
         }
-    }
 
     private fun getCredentialsFromFile(rawFile: Int): List<TestingCredential> {
         return try {
