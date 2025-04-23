@@ -261,7 +261,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             showLoginProgress(show, getString(R.string.authenticating))
         }
 
-        presenter.setTestingCredentials()
         setAutocompleteAdapters()
         checkMessage()
         presenter.apply {

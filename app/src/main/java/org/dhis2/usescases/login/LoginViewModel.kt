@@ -117,6 +117,10 @@ class LoginViewModel(
             )
         } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
         displayManageAccount()
+
+        viewModelScope.launch {
+            testingCredentials = repository.getTestingCredentials()
+        }
     }
 
     private fun trackServerVersion() {
@@ -465,8 +469,8 @@ class LoginViewModel(
 
     private fun checkData() {
         val newValue = !serverUrl.value.isNullOrEmpty() &&
-            !userName.value.isNullOrEmpty() &&
-            !password.value.isNullOrEmpty()
+                !userName.value.isNullOrEmpty() &&
+                !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
@@ -481,10 +485,6 @@ class LoginViewModel(
                 credentials.user_pass,
             )
         }
-    }
-
-    fun setTestingCredentials() {
-        this.testingCredentials = repository.getTestingCredentials()
     }
 
     fun setAccountInfo(serverUrl: String?, userName: String?) {

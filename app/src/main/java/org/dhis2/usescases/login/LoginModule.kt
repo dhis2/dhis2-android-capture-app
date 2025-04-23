@@ -77,10 +77,12 @@ class LoginModule(
     @PerActivity
     fun provideLoginRepository(
         context: Context,
+        dispatcherProvider: DispatcherProvider,
     ): LoginRepository {
         return LoginRepository(
             context.resources,
             Gson(),
+            dispatcherProvider,
         )
     }
 }
