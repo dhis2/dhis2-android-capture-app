@@ -59,6 +59,7 @@ class LoginViewModel(
     private val crashReportController: CrashReportController,
     private val network: NetworkUtils,
     private var userManager: UserManager?,
+    private val repository: LoginRepository,
 ) : ViewModel() {
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
@@ -381,14 +382,12 @@ class LoginViewModel(
         }
     }
 
-    fun getAutocompleteData(
-        testingCredentials: List<TestingCredential>,
-    ): Pair<MutableList<String>, MutableList<String>> {
+    fun getAutocompleteData(): Pair<MutableList<String>, MutableList<String>> {
         val urls = preferenceProvider.getSet(PREFS_URLS, emptySet())!!.toMutableList()
         val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
 
         urls.let {
-            for (testingCredential in testingCredentials) {
+            for (testingCredential in testingCredentials!!.values) {
                 if (!it.contains(testingCredential.server_url)) {
                     it.add(testingCredential.server_url)
                 }
@@ -483,9 +482,10 @@ class LoginViewModel(
         }
     }
 
-    fun setTestingCredentials(testingCredentials: List<TestingCredential>) {
+    fun setTestingCredentials() {
+        val credentials = repository.getTestingCredentials()
         this.testingCredentials = HashMap()
-        for (testingCredential in testingCredentials) {
+        for (testingCredential in credentials) {
             this.testingCredentials!![testingCredential.server_url] = testingCredential
         }
     }
