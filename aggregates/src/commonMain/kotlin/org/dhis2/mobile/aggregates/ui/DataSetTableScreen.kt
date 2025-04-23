@@ -252,9 +252,9 @@ fun DataSetInstanceScreen(
             (dataSetScreenState as? DataSetScreenState.Loaded)?.let { state ->
                 when {
                     state.modalDialog != null ->
-                        ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
+                    ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
 
-                    state.validationBar != null ->
+                state.validationBar != null ->
                         ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
 
                     state.dataSetDetails.isCompleted or !state.dataSetDetails.edition.editable -> {
@@ -573,6 +573,21 @@ private fun DataSetSinglePane(
                                         emptySectionMessage
                                     }
                                     WarningInfoBar(message)
+                                }
+
+                                with(
+                                    dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
+                                ) {
+                                    val message =
+                                        "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
+                                    val info = when {
+                                        this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
+                                        this != null -> joinToString(", ")
+                                        else -> null
+                                    }
+                                    if (!this.isNullOrEmpty()) {
+                                        WarningInfoBar(message.format(info))
+                                    }
                                 }
 
                                 dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
