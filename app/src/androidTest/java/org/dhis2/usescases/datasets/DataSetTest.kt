@@ -76,7 +76,6 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun formConfigurationTestAutomate() = runTest {
-        // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
         waitForTableToBeVisible()
 
@@ -296,7 +295,66 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkCategoryIsMovedToRow() {
+    private suspend fun checkCategoryIsMovedToRow() {
+        val cellIdSection8 = "PGRlPlAzakpINVR1NVZDLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellId2Section8 = "PGRlPkZRMm84VUJsY3JTLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellIdSection16 = "PGRlPkFyUzdWeXVMOTVmLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellId2Section16 = "PGRlPkFyUzdWeXVMOTVmLCA8Y28+Wlp4WXVvVENjRGQ6PGNvPg=="
+        val cellIdSection24 = "PGRlPnpnZUFkbnBTWTVLLCA8Y28+WjhhWDNBa3JETVM6PGNvPg=="
+        val cellId2Section24 = "PGRlPnpnZUFkbnBTWTVLLCA8Y28+c05yMXk1UXExWVE6PGNvPg=="
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[0].sectionIndex, categoryToRowList[0].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellIdSection8,
+            value = "10",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellId2Section8,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[1].sectionIndex, categoryToRowList[1].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellIdSection16,
+            value = "11",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellId2Section16,
+            value = "24",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[2].sectionIndex, categoryToRowList[2].sectionName)
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = "aN8uN5b15YG_1",
+            cellId = cellIdSection24,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "aN8uN5b15YG_1",
+            cellId = cellId2Section24,
+            value = "14",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -346,7 +404,72 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkAutomaticGroupingDisabled() {
+    private suspend fun checkAutomaticGroupingDisabled() {
+        val table19 = "t3aNCvHsoSn_0"
+        val table219 = "aN8uN5b15YG_1"
+        val table20 = "ck7mRNwGDjP_1"
+        val table220 = "ck7mRNwGDjP_3"
+        val table22 = "t3aNCvHsoSn_0"
+        val table222 = "aN8uN5b15YG_1"
+        val cellIdSection19 = "PGNvYz5TMzRVTE1jSE1jYTo8ZGU+Q2o1clRjOW5Fdmw="
+        val cellId2Section19 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+RXpSNVkyVjBKRjk="
+        val cellIdSection20 = "PGRlPnlxQmtuOUNXS2loOjxjb2M+bzJneEV0NkVrMkM="
+        val cellId2Section20 = "PGRlPmxhWkxRZG51Y1YxOjxjb2M+bzJneEV0NkVrMkM="
+        val cellIdSection22 = "PGRlPndjd2JOMWpSMGFyOjxjb2M+U2RPVUkyeVQ0Nkg="
+        val cellId2Section22 = "PGRlPk9LajZ2VjhobVRQOjxjb2M+RE9DN2VtTHp5Umk="
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(disableAutomaticGroupingList[0].sectionIndex, disableAutomaticGroupingList[0].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table19,
+            cellId = cellIdSection19,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = table219,
+            cellId = cellId2Section19,
+            value = "14",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(disableAutomaticGroupingList[1].sectionIndex, disableAutomaticGroupingList[1].sectionName)
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = table20,
+            cellId = cellIdSection20,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = table220,
+            cellId = cellId2Section20,
+            value = "11",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(disableAutomaticGroupingList[2].sectionIndex, disableAutomaticGroupingList[2].sectionName)
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = table22,
+            cellId = cellIdSection22,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = table222,
+            cellId = cellId2Section22,
+            value = "11",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
         dataSetTableRobot(composeTestRule) {
             disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -356,7 +479,46 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkPivotOptions() {
+    private suspend fun checkPivotOptions() {
+        val table5 = "aN8uN5b15YG"
+        val table13 = "t3aNCvHsoSn"
+        val table23 = "aN8uN5b15YG_1"
+        val cellIdSection5 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+TFNKNW1LcHlFdjE="
+        val cellIdSection13 = "PGNvYz5MRURRUVhFcFdVbDo8ZGU+aUtHam5PT2FQbEU="
+        val cellIdSection23 = "PGNvYz5SMjNoOVFaUmJSdDo8ZGU+ZElxeDdyZG5WYzk="
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[0].sectionIndex, pivotTestingData[0].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table5,
+            cellId = cellIdSection5,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[1].sectionIndex, pivotTestingData[1].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table13,
+            cellId = cellIdSection13,
+            value = "9",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[2].sectionIndex, pivotTestingData[2].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table23,
+            cellId = cellIdSection23,
+            value = "15",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
