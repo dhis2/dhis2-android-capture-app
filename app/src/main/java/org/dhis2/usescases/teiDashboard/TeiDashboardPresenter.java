@@ -4,9 +4,12 @@ import static org.dhis2.commons.matomo.Actions.OPEN_ANALYTICS;
 import static org.dhis2.commons.matomo.Actions.OPEN_NOTES;
 import static org.dhis2.commons.matomo.Actions.OPEN_RELATIONSHIPS;
 import static org.dhis2.commons.matomo.Categories.DASHBOARD;
+import static org.dhis2.usescases.sms.ConstantsKt.CMO_PROGRAM;
 import static org.dhis2.utils.analytics.AnalyticsConstants.CLICK;
 import static org.dhis2.utils.analytics.AnalyticsConstants.DELETE_TEI;
 
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.prefs.PreferenceProvider;
@@ -201,5 +204,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public boolean hasWriteAccess() {
         return dashboardRepository.enrollmentHasWriteAccess();
+    }
+
+    @Override public boolean isCmoProgram() {
+        return !Objects.equals(programUid, CMO_PROGRAM);
     }
 }

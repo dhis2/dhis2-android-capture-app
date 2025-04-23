@@ -72,5 +72,7 @@ public class TeiDashboardContracts {
         void onTransferClick();
 
         boolean hasWriteAccess();
+
+        boolean isCmoProgram();
     }
 }

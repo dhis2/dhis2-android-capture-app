@@ -66,7 +66,9 @@ private fun buildMenuForEnrollment(
         addFollowUpMenuItem(dashboardViewModel, resourceManager)
         addTimelineOrGroupByStageMenuItem(dashboardViewModel, resourceManager)
         addHelpMenuItem(resourceManager)
-        addSendSmsMenuItem(resourceManager) // New Menu Item
+        if (presenter.isCmoProgram) {
+            addSendSmsMenuItem(resourceManager) // New Menu Item
+        }
         addMoreEnrollmentsMenuItem(resourceManager)
         addShareMenuItem(resourceManager)
         addStatusMenuItems(enrollmentUid, resourceManager, presenter)
