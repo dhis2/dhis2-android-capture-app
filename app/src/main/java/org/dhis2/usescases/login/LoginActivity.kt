@@ -430,16 +430,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.serverUrlEdit.dropDownWidth = resources.displayMetrics.widthPixels
         binding.userNameEdit.dropDownWidth = resources.displayMetrics.widthPixels
 
-        val (urls, users) = presenter.getAutocompleteData()
+        presenter.autoCompleteData.observe(this) { (urls, users) ->
+            urls.let {
+                val urlAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
+                binding.serverUrlEdit.setAdapter(urlAdapter)
+            }
 
-        urls.let {
-            val urlAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
-            binding.serverUrlEdit.setAdapter(urlAdapter)
-        }
-
-        users.let {
-            val userAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
-            binding.userNameEdit.setAdapter(userAdapter)
+            users.let {
+                val userAdapter =
+                    ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, it)
+                binding.userNameEdit.setAdapter(userAdapter)
+            }
         }
     }
 
