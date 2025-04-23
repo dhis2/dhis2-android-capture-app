@@ -6,7 +6,8 @@ import org.hisp.dhis.android.core.D2
 import org.dhis2.usescases.sms.domain.types.Maybe
 
 class MessageTemplateD2Repository(
-  private val d2: D2, private val constantApi: ConstantApi
+  private val d2: D2,
+  private val constantApi: ConstantApi
 ) : MessageTemplateRepository {
 
   override suspend fun getByLanguage(

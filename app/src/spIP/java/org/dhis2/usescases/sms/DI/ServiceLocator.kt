@@ -11,21 +11,16 @@ import org.dhis2.usescases.sms.data.repository.preferred.PreferredLanguageD2Repo
 import org.dhis2.usescases.sms.data.repository.sms.SmsApiRepository
 import org.dhis2.usescases.sms.domain.usecase.SendSmsUseCase
 import org.hisp.dhis.android.core.D2Manager
-import org.hisp.dhis.android.core.arch.api.HttpServiceClient
 
 object ServiceLocator {
 
-  fun sms(): SendSmsUseCase {
-
-    // Create the KTOR HttpClient instance
-    val client = HttpServiceClient(
-      client = HttpClient()
-    )
-
+  fun provideSendSmsUseCase(): SendSmsUseCase {
+    
     val d2 = D2Manager.getD2()
+    val httpClient = d2.httpServiceClient()
 
-    val constantApi: ConstantApi = ConstantApiImpl(client)
-    val outboundApi: OutboundApi = OutboundApiImpl(client)
+    val constantApi: ConstantApi = ConstantApiImpl(httpClient)
+    val outboundApi: OutboundApi = OutboundApiImpl(httpClient)
 
     val patientRepository = PatientD2Repository(d2)
     val messageTemplate = MessageTemplateD2Repository(d2, constantApi)
