@@ -207,6 +207,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override public boolean isCmoProgram() {
-        return !Objects.equals(programUid, CMO_PROGRAM);
+        return Objects.equals(programUid, CMO_PROGRAM);
     }
 }

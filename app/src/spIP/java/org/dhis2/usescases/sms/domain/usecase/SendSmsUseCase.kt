@@ -15,7 +15,7 @@ class SendSmsUseCase(
   private val smsTemplateRepository: MessageTemplateRepository,
   private val preferredLanguageRepository: PreferredLanguageRepository,
   private val smsRepository: SmsRepository
-) : (String) -> SmsResult {
+) : suspend (String) -> SmsResult {
 
   /**
    * Sends an SMS message to a patient.
@@ -23,7 +23,7 @@ class SendSmsUseCase(
    * @param uid The unique identifier of the patient.
    * @return The result of the SMS sending operation.
    */
-  override fun invoke(
+  override suspend fun invoke(
     uid: String
   ): SmsResult {
     val patient = patientRepository.getByUid(uid)
@@ -60,7 +60,7 @@ class SendSmsUseCase(
    * @param language The language code for the message template.
    * @return The message template for the specified language, or null if not found.
    */
-  private fun getMessageTemplate(
+  private suspend fun getMessageTemplate(
     language: String
   ): MessageTemplate? {
     val messageTemplate = smsTemplateRepository.getByLanguage(language)
