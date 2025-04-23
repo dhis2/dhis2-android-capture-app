@@ -75,9 +75,11 @@ class LoginModule(
 
     @Provides
     @PerActivity
-    fun provideLoginRepository(): LoginRepository {
+    fun provideLoginRepository(
+        context: Context,
+    ): LoginRepository {
         return LoginRepository(
-            view.context,
+            context.resources,
             Gson(),
         )
     }
