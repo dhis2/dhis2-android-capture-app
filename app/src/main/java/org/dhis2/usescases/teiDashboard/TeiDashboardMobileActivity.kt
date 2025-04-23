@@ -69,6 +69,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
 import org.dhis2.usescases.teiDashboard.ui.RelationshipTopBarIcon
 import org.dhis2.usescases.teiDashboard.ui.getEnrollmentMenuList
 import org.dhis2.usescases.teiDashboard.ui.setButtonContent
+import org.dhis2.usescases.teiDashboard.ui.setCustomEnrollmentMenuItemAction
 import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SHARE_TEI
@@ -851,7 +852,7 @@ class TeiDashboardMobileActivity :
                     EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
                     EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
                     else ->{
-                        // Do nothing
+                        setCustomEnrollmentMenuItemAction(itemId, this)
                     }
                 }
             }
