@@ -70,7 +70,7 @@ class LoginViewModel(
     val password = MutableLiveData<String>()
     val isDataComplete = MutableLiveData<Boolean>()
     val isTestingEnvironment = MutableLiveData<Trio<String, String, String>>()
-    var testingCredentials: MutableMap<String, TestingCredential>? = null
+    private var testingCredentials: List<TestingCredential> = emptyList()
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
 
@@ -177,7 +177,8 @@ class LoginViewModel(
         _canLoginWithBiometrics.value =
             biometricController.hasBiometric() &&
             userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
-            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false &&
+            preferenceProvider.getString(SECURE_SERVER_URL)
+                ?.let { it == serverUrl.value } ?: false &&
             preferenceProvider.contains(SECURE_PASS)
     }
 
@@ -387,7 +388,7 @@ class LoginViewModel(
         val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
 
         urls.let {
-            for (testingCredential in testingCredentials!!.values) {
+            for (testingCredential in testingCredentials) {
                 if (!it.contains(testingCredential.server_url)) {
                     it.add(testingCredential.server_url)
                 }
@@ -473,7 +474,7 @@ class LoginViewModel(
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        testingCredentials?.get(serverUrl)?.let { credentials ->
+        testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
             isTestingEnvironment.value = Trio.create(
                 serverUrl,
                 credentials.user_name,
@@ -483,11 +484,7 @@ class LoginViewModel(
     }
 
     fun setTestingCredentials() {
-        val credentials = repository.getTestingCredentials()
-        this.testingCredentials = HashMap()
-        for (testingCredential in credentials) {
-            this.testingCredentials!![testingCredential.server_url] = testingCredential
-        }
+        this.testingCredentials = repository.getTestingCredentials()
     }
 
     fun setAccountInfo(serverUrl: String?, userName: String?) {
