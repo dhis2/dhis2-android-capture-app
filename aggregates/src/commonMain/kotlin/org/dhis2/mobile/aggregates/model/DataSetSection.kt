@@ -5,4 +5,5 @@ internal data class DataSetSection(
     val title: String,
     val topContent: String? = null,
     val bottomContent: String? = null,
+    val misconfiguredRows: List<String>,
 )
