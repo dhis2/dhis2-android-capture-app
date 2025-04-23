@@ -83,6 +83,9 @@ class LoginViewModel(
     private val _displayMoreActions = MutableLiveData<Boolean>(true)
     val displayMoreActions: LiveData<Boolean> = _displayMoreActions
 
+    private val _autoCompleteData = MutableLiveData<Pair<List<String>, List<String>>>()
+    val autoCompleteData: LiveData<Pair<List<String>, List<String>>> = _autoCompleteData
+
     init {
         this.userManager?.let {
             disposable.add(
@@ -120,6 +123,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             testingCredentials = repository.getTestingCredentials()
+            loadAutoCompleteData(testingCredentials)
         }
     }
 
@@ -387,9 +391,11 @@ class LoginViewModel(
         }
     }
 
-    fun getAutocompleteData(): Pair<MutableList<String>, MutableList<String>> {
-        val urls = preferenceProvider.getSet(PREFS_URLS, emptySet())!!.toMutableList()
-        val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
+    private fun loadAutoCompleteData(testingCredentials: List<TestingCredential>) {
+        val urls =
+            preferenceProvider.getSet(PREFS_URLS, emptySet())?.toMutableList() ?: mutableListOf()
+        val users =
+            preferenceProvider.getSet(PREFS_USERS, emptySet())?.toMutableList() ?: mutableListOf()
 
         urls.let {
             for (testingCredential in testingCredentials) {
@@ -397,19 +403,19 @@ class LoginViewModel(
                     it.add(testingCredential.server_url)
                 }
             }
-        }
 
-        preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+            preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+        }
 
         users.let {
             if (!it.contains(USER_TEST_ANDROID)) {
                 it.add(USER_TEST_ANDROID)
             }
+
+            preferenceProvider.setValue(PREFS_USERS, HashSet(users))
         }
 
-        preferenceProvider.setValue(PREFS_USERS, HashSet(users))
-
-        return Pair(urls, users)
+        _autoCompleteData.value = Pair(urls, users)
     }
 
     fun displayManageAccount() {
@@ -469,8 +475,8 @@ class LoginViewModel(
 
     private fun checkData() {
         val newValue = !serverUrl.value.isNullOrEmpty() &&
-                !userName.value.isNullOrEmpty() &&
-                !password.value.isNullOrEmpty()
+            !userName.value.isNullOrEmpty() &&
+            !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
