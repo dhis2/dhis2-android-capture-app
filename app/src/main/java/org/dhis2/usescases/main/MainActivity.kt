@@ -106,8 +106,7 @@ class MainActivity :
                 onDownloadNewVersion()
             } else if (granted) {
                 onDownloadNewVersion()
-            } 
-            else {
+            } else {
                 Toast.makeText(
                     context,
                     getString(R.string.storage_denied),
