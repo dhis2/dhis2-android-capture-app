@@ -21,6 +21,7 @@ import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
+import org.dhis2.usescases.sms.DI.SmsModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.Validator;
@@ -53,9 +54,10 @@ import dispatch.core.DispatcherProvider;
         DispatcherModule.class,
         FeatureConfigModule.class,
         NetworkUtilsModule.class,
-        CustomDispatcherModule.class
+        CustomDispatcherModule.class,
+        SmsModule.class,
 })
-public  interface AppComponent {
+public interface AppComponent {
 
     @Component.Builder
     interface Builder {

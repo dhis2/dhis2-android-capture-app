@@ -1,14 +1,19 @@
 package org.dhis2.usescases.sms.data.repository.message
 
+import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.usescases.sms.data.api.ConstantApi
+import org.dhis2.usescases.sms.data.model.MessageTemplate
 import org.dhis2.usescases.sms.domain.repository.message.MessageTemplateRepository
 import org.hisp.dhis.android.core.D2
 import org.dhis2.usescases.sms.domain.types.Maybe
+import org.hisp.dhis.android.core.D2Manager
+import javax.inject.Inject
 
-class MessageTemplateD2Repository(
-  private val d2: D2,
+class MessageTemplateD2Repository @Inject constructor(
   private val constantApi: ConstantApi
 ) : MessageTemplateRepository {
+
+  private val d2: D2 = D2Manager.getD2()
 
   override suspend fun getByLanguage(
     language: String

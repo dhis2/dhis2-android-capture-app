@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.ContextWrapper
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.DhisAnalyticCharts
 import okhttp3.Interceptor

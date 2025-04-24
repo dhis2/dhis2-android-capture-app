@@ -1,8 +1,8 @@
 package org.dhis2.usescases.sms.data.api
 
-import io.ktor.client.call.body
 import org.dhis2.usescases.sms.data.model.D2Constant
 import org.hisp.dhis.android.core.arch.api.HttpServiceClient
+import javax.inject.Inject
 
 interface ConstantApi {
   /**
@@ -18,7 +18,7 @@ interface ConstantApi {
   ): D2Constant?
 }
 
-class ConstantApiImpl(
+class ConstantApiImpl @Inject constructor(
   private val client: HttpServiceClient
 ) : ConstantApi{
 

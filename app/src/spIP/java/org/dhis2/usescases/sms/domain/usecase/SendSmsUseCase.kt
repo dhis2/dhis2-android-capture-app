@@ -1,21 +1,22 @@
 package org.dhis2.usescases.sms.domain.usecase
 
-import org.dhis2.usescases.sms.data.repository.message.MessageTemplate
+import org.dhis2.usescases.sms.data.model.MessageTemplate
 import org.dhis2.usescases.sms.domain.model.sms.Message
 import org.dhis2.usescases.sms.domain.model.sms.SmsResult
 import org.dhis2.usescases.sms.domain.repository.message.MessageTemplateRepository
 import org.dhis2.usescases.sms.domain.repository.patient.PatientRepository
 import org.dhis2.usescases.sms.domain.repository.preferred.PreferredLanguageRepository
 import org.dhis2.usescases.sms.domain.repository.sms.SmsRepository
+import javax.inject.Inject
 
 private const val LANGUAGE_EN = "en"
 
-class SendSmsUseCase(
+class SendSmsUseCase @Inject constructor(
   private val patientRepository: PatientRepository,
   private val smsTemplateRepository: MessageTemplateRepository,
   private val preferredLanguageRepository: PreferredLanguageRepository,
   private val smsRepository: SmsRepository
-) : suspend (String) -> SmsResult {
+){
 
   /**
    * Sends an SMS message to a patient.
@@ -23,7 +24,7 @@ class SendSmsUseCase(
    * @param uid The unique identifier of the patient.
    * @return The result of the SMS sending operation.
    */
-  override suspend fun invoke(
+  suspend fun invoke(
     uid: String
   ): SmsResult {
     val patient = patientRepository.getByUid(uid)

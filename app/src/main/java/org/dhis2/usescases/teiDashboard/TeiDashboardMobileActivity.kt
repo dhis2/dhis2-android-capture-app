@@ -11,6 +11,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoveDown
 import androidx.compose.runtime.collectAsState
@@ -58,6 +59,7 @@ import org.dhis2.usescases.enrollment.buildEnrollmentForm
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NotesFragment
 import org.dhis2.usescases.qrCodes.QrActivity
+import org.dhis2.usescases.sms.presentation.sendsms.SendSmsViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.IndicatorsFragment
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VISUALIZATION_TYPE
 import org.dhis2.usescases.teiDashboard.dashboardfragments.indicators.VisualizationType
@@ -126,6 +128,9 @@ class TeiDashboardMobileActivity :
 
     @Inject
     lateinit var eventResourcesProvider: EventResourcesProvider
+
+    @Inject
+    lateinit var teiDashboardMenuCustomActions: TeiDashboardMenuCustomActionsManager
 
     lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
@@ -437,6 +442,7 @@ class TeiDashboardMobileActivity :
 
     override fun onDestroy() {
         (applicationContext as App).releaseDashboardComponent()
+        teiDashboardMenuCustomActions.onDestroy()
         super.onDestroy()
     }
 
@@ -851,9 +857,7 @@ class TeiDashboardMobileActivity :
 
                     EnrollmentMenuItem.DELETE -> showDeleteTEIConfirmationDialog()
                     EnrollmentMenuItem.REMOVE -> showRemoveEnrollmentConfirmationDialog()
-                    else ->{
-                        setCustomEnrollmentMenuItemAction(itemId, this)
-                    }
+                    EnrollmentMenuItem.SEND_SMS -> teiDashboardMenuCustomActions.sendSms(teiUid)
                 }
             }
         }
