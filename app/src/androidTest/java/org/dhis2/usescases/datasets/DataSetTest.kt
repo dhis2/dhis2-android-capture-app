@@ -199,7 +199,7 @@ class DataSetTest : BaseTest() {
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
-        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
     }
 
     @Test
@@ -260,8 +260,8 @@ class DataSetTest : BaseTest() {
         runOptionalValidationRules()
 
         checkValidationBarIsDisplayedAndCompleteAnyway()
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
 
-        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
     }
 
     private fun checkLegendsStep(
@@ -330,12 +330,12 @@ class DataSetTest : BaseTest() {
         }
     }
 
-    private fun checkDataSetInstanceHasBeenCreated(
+    private fun checkDataSetInstanceHasBeenCreatedAndIsCompleted(
         period: String,
         orgUnit: String,
     ) {
         dataSetDetailRobot(composeTestRule) {
-            checkDataSetInList(period, orgUnit)
+            checkDataSetIsCompletedAndModified(period, orgUnit)
         }
     }
 

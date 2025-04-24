@@ -66,28 +66,14 @@ internal class DataSetDetailRobot(
         itemWithTextIsDisplayed(text, substring, composeTestRule)
     }
 
-
-    fun checkDataSetInList(period: String, orgUnit: String) {
+    fun checkDataSetIsCompletedAndModified(period: String, orgUnit: String ) {
         onView(withId(R.id.recycler))
             .check(
                 matches(
                     hasItem(
                         allOf(
                             hasDescendant(withText(period)),
-                            hasDescendant(withText(orgUnit))
-                        )
-                    )
-                )
-            )
-    }
-
-    fun checkDataSetIsCompleteAndModified(period: String) {
-        onView(withId(R.id.recycler))
-            .check(
-                matches(
-                    hasItem(
-                        allOf(
-                            hasDescendant(withText(period)),
+                            hasDescendant(withText(orgUnit)),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete))),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_sync_problem_grey)))
                         )
