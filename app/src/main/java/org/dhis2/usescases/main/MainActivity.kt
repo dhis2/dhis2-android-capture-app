@@ -252,7 +252,7 @@ class MainActivity :
     }
 
     private fun setUpDevelopmentMode() {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training") {
             binding.menu.setOnLongClickListener {
                 getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
                 false

@@ -50,6 +50,14 @@ android {
             }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
         }
+        create("training") {
+            keyAlias = System.getenv("TRAINING_KEY_ALIAS")
+            keyPassword = System.getenv("TRAINING_KEY_PASSWORD")
+            System.getenv("TRAINING_STORE_FILE")?.let { path ->
+                storeFile = file(path)
+            }
+            storePassword = System.getenv("TRAINING_STORE_PASSWORD")
+        }
     }
 
     testOptions {
@@ -136,9 +144,6 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.getByName("debug")
-
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -149,7 +154,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+
             buildConfigField("int", "MATOMO_ID", "1")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -158,8 +163,15 @@ android {
     flavorDimensions += listOf("default")
 
     productFlavors {
-        create("dhis2")
-        create("dhis2PlayServices")
+        create("dhis2") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+        create("dhis2PlayServices") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+        create("dhis2Training") {
+            signingConfig = signingConfigs.getByName("training")
+        }
     }
 
     compileOptions {
@@ -202,10 +214,16 @@ android {
         onVariants { variant ->
             val buildType = variant.buildType
             val flavorName = variant.flavorName
+
+            // Apply suffix only for training flavor in release buildType
+            if (buildType == "release" && flavorName == "dhis2Training") {
+                variant.applicationId.set("${variant.applicationId.get()}.training")
+            }
+
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
                     val suffix = when {
-                        buildType == "debug" && flavorName == "dhis2" -> "-training"
+                        buildType == "release" && flavorName == "dhis2Training" -> "-training"
                         buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
                         else -> ""
                     }
