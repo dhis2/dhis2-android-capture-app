@@ -606,7 +606,7 @@ internal class DataSetTableViewModel(
                     it.copy(
                         modalDialog = datasetModalDialogProvider.provideAskRunValidationsDialog(
                             onDismiss = { onModalDialogDismissed() },
-                            onDeny = { attemptToComplete() },
+                            onDeny = { attemptToFinish() },
                             onAccept = { checkValidationRules() },
                         ),
                     )
