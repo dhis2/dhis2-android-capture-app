@@ -24,12 +24,12 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY

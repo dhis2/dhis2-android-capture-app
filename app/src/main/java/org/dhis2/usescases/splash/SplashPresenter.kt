@@ -4,9 +4,9 @@ import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
