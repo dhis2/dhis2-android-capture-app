@@ -57,6 +57,8 @@ kotlin {
 
             // Sentry
             api(libs.analytics.sentry)
+            api(libs.analytics.timber)
+
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -70,6 +72,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
             implementation(libs.test.espresso.idlingresource)
+            api(libs.analytics.timber)
         }
 
         androidUnitTest.dependencies {

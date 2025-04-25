@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import org.dhis2.commons.reporting.CrashReportController
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
