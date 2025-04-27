@@ -1,4 +1,4 @@
-package org.dhis2.usescases.sms.presentation.sendsms
+package org.dhis2.usescases.sms.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +11,7 @@ import org.dhis2.usescases.sms.domain.model.sms.SmsResult.Success
 import org.dhis2.usescases.sms.domain.model.sms.SmsResult.SuccessUsingEn
 import org.dhis2.usescases.sms.domain.model.sms.SmsResult.TemplateFailure
 import org.dhis2.usescases.sms.domain.usecase.SendSmsUseCase
+import org.dhis2.usescases.sms.presentation.contentprovider.SpipSmsContentResourcesProvider
 import org.dhis2.usescases.teiDashboard.TeiDashboardResultUiState
 import javax.inject.Inject
 

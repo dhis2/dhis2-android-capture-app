@@ -1,7 +1,7 @@
 package org.dhis2.usescases.sms.data.repository.message
 
-import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.usescases.sms.data.api.ConstantApi
+import org.dhis2.usescases.sms.data.model.D2Constant
 import org.dhis2.usescases.sms.data.model.MessageTemplate
 import org.dhis2.usescases.sms.domain.repository.message.MessageTemplateRepository
 import org.hisp.dhis.android.core.D2
@@ -25,12 +25,16 @@ class MessageTemplateD2Repository @Inject constructor(
     if (templateConstants.isEmpty()) return Maybe.None
 
     val templateConstant = templateConstants.first()
-    val description = getDescriptionConstant(templateConstant.uid())
-
-    if (description.isEmpty()) return Maybe.None
-
-    val messageTemplate = MessageTemplate(text = description, language = language)
-    return Maybe.Some(messageTemplate)
+    return getDescriptionConstant(templateConstant.uid()).fold(
+      onSuccess = { constant ->
+        if (constant.description.isEmpty()) Maybe.None
+        val messageTemplate = MessageTemplate(text = constant.description, language = language)
+        Maybe.Some(messageTemplate)
+      },
+      onFailure = {
+        Maybe.None
+      }
+    )
   }
 
   /**
@@ -39,9 +43,13 @@ class MessageTemplateD2Repository @Inject constructor(
    * @param uid The UID of the constant to retrieve.
    * @return The description of the constant, or an empty string if not found.
    */
-  private suspend fun getDescriptionConstant(uid: String): String {
-    val body = constantApi.getConstant(uid)
-    return body?.description ?: ""
+  private suspend fun getDescriptionConstant(uid: String): Result<D2Constant> {
+    return try {
+      val body = constantApi.getConstant(uid)
+      return Result.success(body)
+    }catch (e: Exception) {
+      Result.failure(Exception("Error retrieving constant description: ${e.message}"))
+    }
   }
 
 }

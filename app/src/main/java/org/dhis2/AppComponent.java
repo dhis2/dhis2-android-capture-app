@@ -55,7 +55,7 @@ import dispatch.core.DispatcherProvider;
         FeatureConfigModule.class,
         NetworkUtilsModule.class,
         CustomDispatcherModule.class,
-        SmsModule.class,
+        SmsModule.class
 })
 public interface AppComponent {
 

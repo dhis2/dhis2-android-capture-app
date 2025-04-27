@@ -39,20 +39,19 @@ class SendSmsUseCase @Inject constructor(
       recipients = listOf(cleanupPhoneNumber(patient.phone))
     )
 
-    try {
-      smsRepository.send(message)
-
-      return if (patient.preferredLanguage != LANGUAGE_EN && messageTemplate.language == LANGUAGE_EN) {
-        val language = preferredLanguageRepository.getByCode(patient.preferredLanguage)
-
-        SmsResult.SuccessUsingEn(language.name)
-      } else {
-        SmsResult.Success
+    return smsRepository.send(message).fold(
+      onSuccess = {
+        if (patient.preferredLanguage != LANGUAGE_EN && messageTemplate.language == LANGUAGE_EN) {
+          val language = preferredLanguageRepository.getByCode(patient.preferredLanguage)
+          SmsResult.SuccessUsingEn(language.name)
+        } else {
+          SmsResult.Success
+        }
+      },
+      onFailure = {
+        SmsResult.SendFailure
       }
-    } catch (e: Exception) {
-      return SmsResult.SendFailure
-    }
-
+    )
   }
 
   /**

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teiDashboard.ui
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
@@ -280,19 +279,4 @@ fun MutableList<MenuItemData<EnrollmentMenuItem>>.addSendSmsMenuItem(resourceMan
             leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Sms),
         ),
     )
-}
-
-fun setCustomEnrollmentMenuItemAction(
-    enrollmentMenuItem: EnrollmentMenuItem,
-    context: Context
-): EnrollmentMenuItem {
-    when(enrollmentMenuItem){
-        SEND_SMS -> {
-            // Handle the action for SEND_SMS
-        }
-        else -> {
-        // Handle other actions//
-        }
-    }
-    return enrollmentMenuItem
 }

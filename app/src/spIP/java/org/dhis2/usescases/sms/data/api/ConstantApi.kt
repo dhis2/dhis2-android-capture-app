@@ -15,7 +15,7 @@ interface ConstantApi {
   suspend fun getConstant(
     id: String,
     fields: String = "id,name,description"
-  ): D2Constant?
+  ): D2Constant
 }
 
 class ConstantApiImpl @Inject constructor(
@@ -25,9 +25,9 @@ class ConstantApiImpl @Inject constructor(
   override suspend fun getConstant(
     id: String,
     fields: String
-  ): D2Constant? {
+  ): D2Constant {
     return client.get {
-      url("\"constants/$id")
+      url("constants/$id")
       parameters {
         attribute("fields", fields)
       }

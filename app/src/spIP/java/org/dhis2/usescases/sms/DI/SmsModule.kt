@@ -17,10 +17,8 @@ import org.dhis2.usescases.sms.domain.repository.message.MessageTemplateReposito
 import org.dhis2.usescases.sms.domain.repository.patient.PatientRepository
 import org.dhis2.usescases.sms.domain.repository.preferred.PreferredLanguageRepository
 import org.dhis2.usescases.sms.domain.repository.sms.SmsRepository
-import org.dhis2.usescases.sms.domain.usecase.SendSmsUseCase
 import org.dhis2.usescases.teiDashboard.TeiDashboardMenuCustomActionsManager
 import org.dhis2.usescases.teiDashboard.ui.TeiDashboardMenuCustomActionsManagerImpl
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.arch.api.HttpServiceClient
 
@@ -49,27 +47,11 @@ abstract class SmsModule {
   @Binds
   abstract fun bindTeiDashboardMenuCustomActions(impl: TeiDashboardMenuCustomActionsManagerImpl): TeiDashboardMenuCustomActionsManager
 
-  companion object{
+  companion object {
 
     @Provides
-    fun provideHttpServiceClient() : HttpServiceClient{
+    fun provideHttpServiceClient(): HttpServiceClient {
       return D2Manager.getD2().httpServiceClient()
     }
-
-//    @Provides
-//    fun provideSendSmsUseCase(
-//      patientRepository: PatientD2Repository,
-//      messageTemplate: MessageTemplateD2Repository,
-//      preferredLanguageRepository: PreferredLanguageD2Repository,
-//      smsRepository: SmsApiRepository
-//    ): SendSmsUseCase {
-//      return SendSmsUseCase(
-//        patientRepository,
-//        messageTemplate,
-//        preferredLanguageRepository,
-//        smsRepository
-//      )
-//    }
-
   }
 }
