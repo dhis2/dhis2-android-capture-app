@@ -1,12 +1,9 @@
 package org.dhis2.usescases.sms.data.repository.patient
 
-import org.dhis2.commons.di.dagger.PerServer
 import org.dhis2.usescases.sms.domain.model.patient.Patient
 import org.dhis2.usescases.sms.domain.repository.patient.PatientRepository
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
-import javax.inject.Inject
 
 const val numberAtt = "Pntz2rubsPu"
 const val firstNameAtt = "SinKvMFe2mD"
@@ -14,9 +11,10 @@ const val lastNameAtt = "nOguXiyCUSv"
 const val phoneAtt = "yXS3uuFF5ul"
 const val preferredLanguageAtt = "VnOpPm1uZJR"
 
-class PatientD2Repository @Inject constructor() : PatientRepository {
+class PatientD2Repository(
+  private val d2: D2
+) : PatientRepository {
 
-  private val d2: D2 = D2Manager.getD2()
   /**
    * This repository is responsible for fetching patient data from the D2 database.
    * It uses the D2 API to retrieve the tracked entity instance (TEI) associated with a given UID.

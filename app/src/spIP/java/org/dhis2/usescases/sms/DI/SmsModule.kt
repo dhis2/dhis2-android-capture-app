@@ -53,5 +53,29 @@ abstract class SmsModule {
     fun provideHttpServiceClient(): HttpServiceClient {
       return D2Manager.getD2().httpServiceClient()
     }
+
+    @Provides
+    fun providePreferredLanguageRepository(): PreferredLanguageD2Repository {
+      val d2 = D2Manager.getD2()
+      return PreferredLanguageD2Repository(d2)
+    }
+
+    @Provides
+    fun providePatientRepository(): PatientD2Repository{
+      val d2 = D2Manager.getD2()
+      return PatientD2Repository(d2)
+    }
+
+    @Provides
+    fun provideMessageTemplateRepository(
+      constantApi: ConstantApi,
+    ): MessageTemplateD2Repository {
+      val d2 = D2Manager.getD2()
+      return MessageTemplateD2Repository(
+        constantApi,
+        d2,
+      )
+    }
+
   }
 }

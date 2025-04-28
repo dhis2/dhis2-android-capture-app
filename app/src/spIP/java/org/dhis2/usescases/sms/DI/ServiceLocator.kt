@@ -21,9 +21,9 @@ object ServiceLocator {
     val outboundApi: OutboundApi = OutboundApiImpl(httpClient)
     val constantApi: ConstantApi = ConstantApiImpl(httpClient)
 
-    val patientRepository = PatientD2Repository()
-    val messageTemplate = MessageTemplateD2Repository(constantApi)
-    val preferredLanguageRepository = PreferredLanguageD2Repository()
+    val patientRepository = PatientD2Repository(d2)
+    val messageTemplate = MessageTemplateD2Repository(constantApi,d2)
+    val preferredLanguageRepository = PreferredLanguageD2Repository(d2)
     val smsRepository = SmsApiRepository(outboundApi)
 
     return SendSmsUseCase(

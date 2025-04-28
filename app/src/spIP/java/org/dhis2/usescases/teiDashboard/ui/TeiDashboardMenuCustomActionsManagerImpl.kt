@@ -24,8 +24,6 @@ class TeiDashboardMenuCustomActionsManagerImpl @Inject constructor(
   private val job = Job()
   override val coroutineContext = dispatcher.io() + job
 
-  val dialog = SimpleProgressDialog()
-
   /**
    * This method is used to send SMS to the TEI.
    * @param teiUid The UID of the TEI to whom the SMS will be sent.
@@ -35,40 +33,18 @@ class TeiDashboardMenuCustomActionsManagerImpl @Inject constructor(
     parentView: View
   ) {
     launch {
-      if (teiUid == null) {
-        showCustomSnackBar(
-          spipSmsContentResourcesProvider.onSmsSentGenericError(),
-          false,
-          parentView
-        )
-        return@launch
+      val result = teiUid?.let { sendSmsUseCase.invoke(it) } ?: SmsResult.TemplateFailure
+      val message = when (result) {
+        is SmsResult.Success -> spipSmsContentResourcesProvider.onSmsSentSuccessfully()
+        is SmsResult.SuccessUsingEn -> spipSmsContentResourcesProvider.onSmsSentEnSuccessfully()
+        is SmsResult.TemplateFailure -> spipSmsContentResourcesProvider.onSmsSentGenericError()
+        is SmsResult.SendFailure -> spipSmsContentResourcesProvider.onSmsSentError()
       }
-      val result = sendSmsUseCase.invoke(teiUid)
-      when (result) {
-        is SmsResult.Success -> showCustomSnackBar(
-          spipSmsContentResourcesProvider.onSmsSentSuccessfully(),
-          true,
-          parentView
-        )
-
-        is SmsResult.SuccessUsingEn -> showCustomSnackBar(
-          spipSmsContentResourcesProvider.onSmsSentEnSuccessfully(),
-          true,
-          parentView
-        )
-
-        is SmsResult.TemplateFailure -> showCustomSnackBar(
-          spipSmsContentResourcesProvider.onSmsSentGenericError(),
-          false,
-          parentView
-        )
-
-        is SmsResult.SendFailure -> showCustomSnackBar(
-          spipSmsContentResourcesProvider.onSmsSentError(),
-          false,
-          parentView
-        )
-      }
+      showCustomSnackBar(
+        message = message,
+        isSuccess = result is SmsResult.Success || result is SmsResult.SuccessUsingEn,
+        parentView = parentView
+      )
     }
   }
 

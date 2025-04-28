@@ -9,7 +9,7 @@ import org.dhis2.usescases.sms.domain.repository.preferred.PreferredLanguageRepo
 import org.dhis2.usescases.sms.domain.repository.sms.SmsRepository
 import javax.inject.Inject
 
-private const val LANGUAGE_EN = "en"
+const val LANGUAGE_EN = "en"
 
 class SendSmsUseCase @Inject constructor(
   private val patientRepository: PatientRepository,
@@ -24,7 +24,7 @@ class SendSmsUseCase @Inject constructor(
    * @param uid The unique identifier of the patient.
    * @return The result of the SMS sending operation.
    */
-  suspend fun invoke(
+  suspend operator fun invoke(
     uid: String
   ): SmsResult {
     val patient = patientRepository.getByUid(uid)
@@ -60,21 +60,11 @@ class SendSmsUseCase @Inject constructor(
    * @param language The language code for the message template.
    * @return The message template for the specified language, or null if not found.
    */
-  private suspend fun getMessageTemplate(
-    language: String
-  ): MessageTemplate? {
-    val messageTemplate = smsTemplateRepository.getByLanguage(language)
-    return if (messageTemplate.isSome()) {
-      messageTemplate.getOrThrow()
-    } else {
-      val defaultMessageTemplate = smsTemplateRepository.getByLanguage(LANGUAGE_EN)
-
-      if (defaultMessageTemplate.isSome()) {
-        defaultMessageTemplate.getOrThrow()
-      } else {
-        return null
-      }
+  private suspend fun getMessageTemplate(language: String): MessageTemplate? {
+    smsTemplateRepository.getByLanguage(language).takeIf { it.isSuccess }?.let {
+      return it.getOrThrow()
     }
+    return smsTemplateRepository.getByLanguage(LANGUAGE_EN).takeIf { it.isSuccess }?.getOrThrow()
   }
 
   /**
