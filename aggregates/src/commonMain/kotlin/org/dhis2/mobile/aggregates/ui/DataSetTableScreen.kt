@@ -59,15 +59,14 @@ import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
-import org.dhis2.mobile.aggregates.resources.Res
-import org.dhis2.mobile.aggregates.resources.empty_dataset_message
-import org.dhis2.mobile.aggregates.resources.empty_section_message
 import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.attribute_option_combo_no_access
 import org.dhis2.mobile.aggregates.resources.attribute_option_combo_not_assigned_to_org_unit
 import org.dhis2.mobile.aggregates.resources.dataset_closed
 import org.dhis2.mobile.aggregates.resources.dataset_expired
+import org.dhis2.mobile.aggregates.resources.empty_dataset_message
+import org.dhis2.mobile.aggregates.resources.empty_section_message
 import org.dhis2.mobile.aggregates.resources.no_data_write_access
 import org.dhis2.mobile.aggregates.resources.org_unit_not_in_capture_scope
 import org.dhis2.mobile.aggregates.resources.period_not_in_attribute_option_combo_range
@@ -86,8 +85,8 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
-import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
