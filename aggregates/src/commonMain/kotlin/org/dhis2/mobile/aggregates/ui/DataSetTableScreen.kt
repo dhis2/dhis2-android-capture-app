@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,17 +49,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.DataSetInstanceParameters
 import org.dhis2.mobile.aggregates.model.DataSetSection
+import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.resources.Res
+import org.dhis2.mobile.aggregates.resources.attribute_option_combo_no_access
+import org.dhis2.mobile.aggregates.resources.attribute_option_combo_not_assigned_to_org_unit
+import org.dhis2.mobile.aggregates.resources.dataset_closed
+import org.dhis2.mobile.aggregates.resources.dataset_expired
 import org.dhis2.mobile.aggregates.resources.empty_dataset_message
 import org.dhis2.mobile.aggregates.resources.empty_section_message
+import org.dhis2.mobile.aggregates.resources.no_data_write_access
+import org.dhis2.mobile.aggregates.resources.org_unit_not_in_capture_scope
+import org.dhis2.mobile.aggregates.resources.period_not_in_attribute_option_combo_range
+import org.dhis2.mobile.aggregates.resources.period_not_in_org_unit_range
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
 import org.dhis2.mobile.aggregates.ui.component.ValidationBottomSheet
@@ -71,6 +85,7 @@ import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -165,7 +180,8 @@ fun DataSetInstanceScreen(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .imePadding(),
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -233,15 +249,37 @@ fun DataSetInstanceScreen(
             }
         },
         bottomBar = {
-            when {
-                (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog != null ->
-                    ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
-                (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar != null ->
-                    ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.let { state ->
+                when {
+                    state.modalDialog != null ->
+                        ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
+
+                    state.validationBar != null ->
+                        ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
+
+                    state.dataSetDetails.isCompleted or !state.dataSetDetails.edition.editable -> {
+                        val edition = state.dataSetDetails.edition
+                        NonEditableReasonBlock(
+                            modifier = Modifier.fillMaxWidth(),
+                            paddingValues = PaddingValues(
+                                start = Spacing.Spacing16,
+                                top = Spacing.Spacing8,
+                                end = Spacing.Spacing16,
+                                bottom = Spacing.Spacing8 + WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding(),
+                            ),
+                            reason = nonEditableReasonLabel(edition),
+                            canBeReopened = state.dataSetDetails.isCompleted && edition.editable,
+                            onReopenClick = dataSetTableViewModel::onReopenDataSet,
+                        )
+                    }
+                }
             }
         },
         contentWindowInsets = WindowInsets.safeDrawing,
     ) { paddingValues ->
+
+        var inputDialogSize: Int? by remember { mutableStateOf(null) }
         Box(
             modifier = Modifier.fillMaxSize()
                 .padding(paddingValues),
@@ -333,6 +371,7 @@ fun DataSetInstanceScreen(
                 if (dataSetScreenState is DataSetScreenState.Loaded) {
                     DataSetSinglePane(
                         modifier = Modifier.fillMaxSize(),
+                        inputDialogSize = inputDialogSize,
                         dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -382,7 +421,10 @@ fun DataSetInstanceScreen(
                 selectedCellInfo?.let { inputData ->
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
-                            .testTag(INPUT_DIALOG_TAG),
+                            .testTag(INPUT_DIALOG_TAG)
+                            .onGloballyPositioned { coordinates ->
+                                inputDialogSize = coordinates.size.height
+                            },
                         input = {
                             InputProvider(
                                 modifier = Modifier,
@@ -416,6 +458,52 @@ fun DataSetInstanceScreen(
     }
 }
 
+@Composable
+private fun nonEditableReasonLabel(edition: DataSetEdition) = when (edition.nonEditableReason) {
+    is NonEditableReason.AttributeOptionComboNotAssignedToOrgUnit ->
+        stringResource(
+            Res.string.attribute_option_combo_not_assigned_to_org_unit,
+            edition.nonEditableReason.attributeOptionComboLabel,
+            edition.nonEditableReason.orgUnitLabel,
+        )
+
+    NonEditableReason.Closed ->
+        stringResource(Res.string.dataset_closed)
+
+    NonEditableReason.Expired ->
+        stringResource(Res.string.dataset_expired)
+
+    is NonEditableReason.NoAttributeOptionComboAccess ->
+        stringResource(
+            Res.string.attribute_option_combo_no_access,
+            edition.nonEditableReason.attributeOptionComboLabel,
+        )
+
+    NonEditableReason.NoDataWriteAccess ->
+        stringResource(Res.string.no_data_write_access)
+
+    NonEditableReason.None -> ""
+    is NonEditableReason.OrgUnitNotInCaptureScope ->
+        stringResource(
+            Res.string.org_unit_not_in_capture_scope,
+            edition.nonEditableReason.orgUnitLabel,
+        )
+
+    is NonEditableReason.PeriodIsNotInAttributeOptionComboRange ->
+        stringResource(
+            Res.string.period_not_in_attribute_option_combo_range,
+            edition.nonEditableReason.periodLabel,
+            edition.nonEditableReason.attributeOptionComboLabel,
+        )
+
+    is NonEditableReason.PeriodIsNotInOrgUnitRange ->
+        stringResource(
+            Res.string.period_not_in_org_unit_range,
+            edition.nonEditableReason.periodLabel,
+            edition.nonEditableReason.orgUnitLabel,
+        )
+}
+
 /**
  * Data set single pane layout
  * Default layout for portrait devices
@@ -428,6 +516,7 @@ fun DataSetInstanceScreen(
 private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
+    inputDialogSize: Int?,
     dataSetDetails: DataSetDetails,
     initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
@@ -464,6 +553,7 @@ private fun DataSetSinglePane(
                     DataSetTable(
                         dataSetSectionTable = dataSetSectionTable,
                         onCellClick = onCellClick,
+                        inputDialogSize = inputDialogSize,
                         topContent = {
                             Column(
                                 modifier = modifier.fillMaxWidth()
@@ -550,6 +640,7 @@ private fun DataSetTableContent(
     dataSetSections: List<DataSetSection>,
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
+    inputDialogSize: Int? = null,
     currentSection: String?,
     emptySectionMessage: String? = null,
     emptyDatasetMessage: String? = null,
@@ -569,6 +660,7 @@ private fun DataSetTableContent(
             is DataSetSectionTable.Loaded ->
                 DataSetTable(
                     dataSetSectionTable = dataSetSectionTable,
+                    inputDialogSize = inputDialogSize,
                     onCellClick = onCellClick,
                     topContent = {
                         Column(
@@ -680,6 +772,7 @@ private fun WarningInfoBar(message: String?) {
 private fun DataSetTable(
     dataSetSectionTable: DataSetSectionTable,
     currentSelection: TableSelection,
+    inputDialogSize: Int?,
     topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (
@@ -777,7 +870,7 @@ private fun DataSetTable(
                 start = Spacing.Spacing16,
                 top = Spacing.Spacing8,
                 end = Spacing.Spacing16,
-                bottom = Spacing.Spacing200,
+                bottom = if (inputDialogSize == null) Spacing.Spacing200 else (Spacing.Spacing200 + (inputDialogSize.dp / 2)),
             ),
         )
     }

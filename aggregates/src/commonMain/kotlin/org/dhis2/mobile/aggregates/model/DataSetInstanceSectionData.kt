@@ -6,7 +6,16 @@ internal data class DataSetInstanceSectionData(
     val tableGroups: List<TableGroup>,
 ) {
     fun hasDecoration() = dataSetInstanceConfiguration.hasDataElementDecoration
-    fun isEditable(rowId: String) = dataSetInstanceConfiguration.isCellEditable(rowId)
+    fun isEditable(
+        dataElementUid: String,
+        categoryOptionComboUid: String?,
+        categoryOptionComboUids: List<String>?,
+    ) = dataSetInstanceConfiguration.isCellEditable(
+        dataElementUid,
+        categoryOptionComboUid,
+        categoryOptionComboUids,
+    )
+
     fun isMandatory(rowId: String, columnId: String) = dataSetInstanceConfiguration.isMandatory(
         rowId = rowId,
         columnId = columnId,

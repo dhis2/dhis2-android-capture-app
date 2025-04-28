@@ -691,7 +691,7 @@ internal fun InputProvider(
                             data = data.map {
                                 async {
                                     if (it.uid == updatedCheckBoxData.uid) {
-                                        it.copy(checked = updatedCheckBoxData.checked)
+                                        it.copy(checked = !it.checked)
                                     } else {
                                         it
                                     }
@@ -769,7 +769,7 @@ internal fun InputProvider(
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
-                notation = RegExValidations.EUROPEAN_DECIMAL_NOTATION,
+                notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
                 modifier = modifierWithFocus,
             )
         }

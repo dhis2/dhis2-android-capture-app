@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -100,11 +101,17 @@ class MainActivity :
     private var backDropActive = false
 
     private val requestWritePermissions =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-        ) { granted ->
-            if (granted) {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 onDownloadNewVersion()
+            } else if (granted) {
+                onDownloadNewVersion()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.storage_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
             }
         }
 
@@ -663,10 +670,9 @@ class MainActivity :
             hasNoPermissionToInstall() ->
                 manageUnknownSources.launch(
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(Uri.parse(String.format("package:%s", packageName))),
+                        .setData(String.format("package:%s", packageName).toUri()),
                 )
-
-            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
+            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 
             else -> Intent(Intent.ACTION_VIEW).apply {
@@ -699,7 +705,9 @@ class MainActivity :
 
     private val requestReadStoragePermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                onDownloadNewVersion()
+            } else if (granted) {
                 onDownloadNewVersion()
             } else {
                 Toast.makeText(

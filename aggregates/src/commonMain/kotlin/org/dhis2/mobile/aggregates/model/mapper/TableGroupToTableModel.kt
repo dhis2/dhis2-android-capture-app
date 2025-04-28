@@ -128,69 +128,49 @@ internal suspend fun TableGroup.toTableModel(
 
                         val dataValueData = dataValueDataMap[key]
 
+                        val cellId = cellId(
+                            dataElementCellUid = dataElementCell.uid,
+                            pivotMode = pivotMode,
+                            tableRowsHeaders = tableRowsHeaders,
+                            headerCombinations = headerCombinations,
+                            headerRowIndex = headerRowIndex,
+                            columnIndex = columnIndex,
+                        )
+
+                        val dataElementUid = dataElementUid(
+                            dataElementCellUid = dataElementCell.uid,
+                            pivotMode = pivotMode,
+                            tableRowsHeaders = tableRowsHeaders,
+                        )
+
+                        val categoryOptionComboUid = categoryOptionComboUid(
+                            pivotMode = pivotMode,
+                            headerCombinations = headerCombinations,
+                            headerRowIndex = headerRowIndex,
+                            columnIndex = columnIndex,
+                        )
+
+                        val categoryOptionUids = categoryOptionUids(
+                            pivotMode = pivotMode,
+                            tableRowsHeaders = tableRowsHeaders,
+                            headerCombinations = headerCombinations,
+                            columnIndex = columnIndex,
+                        )
+
+                        val isEditable = sectionData.isEditable(
+                            dataElementUid = dataElementUid,
+                            categoryOptionComboUid = categoryOptionComboUid,
+                            categoryOptionComboUids = categoryOptionUids,
+                        )
+
                         put(
                             key = columnIndex,
                             value = TableCell(
-                                id = CellIdGenerator.generateId(
-                                    rowIds = when (pivotMode) {
-                                        is PivoteMode.CategoryToColumn -> buildList {
-                                            tableRowsHeaders.forEachIndexed { index, cellElement ->
-                                                add(
-                                                    TableId(
-                                                        id = cellElement.uid,
-                                                        type = if (index == 0) TableIdType.DataElement else TableIdType.CategoryOption,
-                                                    ),
-                                                )
-                                            }
-                                        }
-
-                                        PivoteMode.None -> buildList {
-                                            add(
-                                                TableId(
-                                                    id = dataElementCell.uid,
-                                                    type = TableIdType.DataElement,
-                                                ),
-                                            )
-                                        }
-
-                                        PivoteMode.Transpose -> listOf(
-                                            TableId(
-                                                id = headerCombinations[headerRowIndex],
-                                                type = TableIdType.CategoryOptionCombo,
-                                            ),
-                                        )
-                                    },
-                                    columnIds = when (pivotMode) {
-                                        is PivoteMode.CategoryToColumn -> buildList {
-                                            headerCombinations[columnIndex].split("_").forEach {
-                                                add(
-                                                    TableId(
-                                                        id = it,
-                                                        type = TableIdType.CategoryOption,
-                                                    ),
-                                                )
-                                            }
-                                        }
-
-                                        PivoteMode.None -> listOf(
-                                            TableId(
-                                                id = headerCombinations[columnIndex],
-                                                type = TableIdType.CategoryOptionCombo,
-                                            ),
-                                        )
-
-                                        PivoteMode.Transpose -> listOf(
-                                            TableId(
-                                                id = dataElementCell.uid,
-                                                type = TableIdType.DataElement,
-                                            ),
-                                        )
-                                    },
-                                ),
+                                id = cellId,
                                 row = rowIndex,
                                 column = columnIndex,
                                 value = dataValueData?.value,
-                                editable = sectionData.isEditable(dataElementCell.uid),
+                                editable = isEditable,
                                 mandatory = sectionData.isMandatory(
                                     rowId = dataElementCell.uid,
                                     columnId = when (pivotMode) {
@@ -233,4 +213,108 @@ internal suspend fun TableGroup.toTableModel(
         tableHeaderModel = tableHeader,
         tableRows = tableRows,
     )
+}
+
+private fun cellId(
+    dataElementCellUid: String,
+    pivotMode: PivoteMode,
+    tableRowsHeaders: List<CellElement>,
+    headerCombinations: List<String>,
+    headerRowIndex: Int,
+    columnIndex: Int,
+) = CellIdGenerator.generateId(
+    rowIds = when (pivotMode) {
+        is PivoteMode.CategoryToColumn -> buildList {
+            tableRowsHeaders.forEachIndexed { index, cellElement ->
+                add(
+                    TableId(
+                        id = cellElement.uid,
+                        type = if (index == 0) TableIdType.DataElement else TableIdType.CategoryOption,
+                    ),
+                )
+            }
+        }
+
+        PivoteMode.None -> buildList {
+            add(
+                TableId(
+                    id = dataElementCellUid,
+                    type = TableIdType.DataElement,
+                ),
+            )
+        }
+
+        PivoteMode.Transpose -> listOf(
+            TableId(
+                id = headerCombinations[headerRowIndex],
+                type = TableIdType.CategoryOptionCombo,
+            ),
+        )
+    },
+    columnIds = when (pivotMode) {
+        is PivoteMode.CategoryToColumn -> buildList {
+            headerCombinations[columnIndex].split("_").forEach {
+                add(
+                    TableId(
+                        id = it,
+                        type = TableIdType.CategoryOption,
+                    ),
+                )
+            }
+        }
+
+        PivoteMode.None -> listOf(
+            TableId(
+                id = headerCombinations[columnIndex],
+                type = TableIdType.CategoryOptionCombo,
+            ),
+        )
+
+        PivoteMode.Transpose -> listOf(
+            TableId(
+                id = dataElementCellUid,
+                type = TableIdType.DataElement,
+            ),
+        )
+    },
+)
+
+private fun dataElementUid(
+    dataElementCellUid: String,
+    pivotMode: PivoteMode,
+    tableRowsHeaders: List<CellElement>,
+): String = when (pivotMode) {
+    is PivoteMode.CategoryToColumn -> tableRowsHeaders.first().uid
+    PivoteMode.None -> dataElementCellUid
+    PivoteMode.Transpose -> dataElementCellUid
+}
+
+private fun categoryOptionComboUid(
+    pivotMode: PivoteMode,
+    headerCombinations: List<String>,
+    headerRowIndex: Int,
+    columnIndex: Int,
+): String? = when (pivotMode) {
+    is PivoteMode.CategoryToColumn -> null
+    PivoteMode.None -> headerCombinations[columnIndex]
+    PivoteMode.Transpose -> headerCombinations[headerRowIndex]
+}
+
+private fun categoryOptionUids(
+    pivotMode: PivoteMode,
+    tableRowsHeaders: List<CellElement>,
+    headerCombinations: List<String>,
+    columnIndex: Int,
+): List<String>? = when (pivotMode) {
+    is PivoteMode.CategoryToColumn -> buildList {
+        tableRowsHeaders.drop(1).forEachIndexed { index, cellElement ->
+            add(cellElement.uid)
+            headerCombinations[columnIndex].split("_").forEach {
+                add(it)
+            }
+        }
+    }
+
+    PivoteMode.None -> null
+    PivoteMode.Transpose -> null
 }

@@ -137,6 +137,13 @@ internal interface DataSetInstanceRepository {
         attributeOptionComboUid: String,
     ): Result<Unit>
 
+    suspend fun reopenDataSet(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attributeOptionComboUid: String,
+    )
+
     suspend fun runValidationRules(
         dataSetUid: String,
         periodId: String,

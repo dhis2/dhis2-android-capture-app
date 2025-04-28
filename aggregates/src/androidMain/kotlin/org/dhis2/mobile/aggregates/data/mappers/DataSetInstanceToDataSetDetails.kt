@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.data.mappers
 
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetDetails
+import org.dhis2.mobile.aggregates.model.DataSetEdition
 import org.dhis2.mobile.aggregates.model.TextAlignment
 import org.hisp.dhis.android.core.dataset.CustomText
 import org.hisp.dhis.android.core.dataset.DataSetInstance
@@ -11,6 +12,8 @@ internal fun DataSetInstance.toDataSetDetails(
     isDefaultCatCombo: Boolean,
     customText: CustomText?,
     periodLabel: String,
+    isCompleted: Boolean,
+    edition: DataSetEdition,
 ) = DataSetDetails(
     customTitle = customText?.toCustomTitle() ?: DataSetCustomTitle(
         header = null,
@@ -26,6 +29,8 @@ internal fun DataSetInstance.toDataSetDetails(
     } else {
         this.attributeOptionComboDisplayName()
     },
+    isCompleted = isCompleted,
+    edition = edition,
 )
 
 internal fun CustomText?.toCustomTitle() = DataSetCustomTitle(

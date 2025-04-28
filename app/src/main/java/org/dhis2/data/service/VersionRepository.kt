@@ -1,6 +1,5 @@
 package org.dhis2.data.service
 
-import android.Manifest
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,7 +8,9 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import org.dhis2.BuildConfig
@@ -45,7 +46,7 @@ class VersionRepository(val d2: D2) {
         if (apkFile.exists()) {
             onDownloadCompleted(apkUri)
         } else if (fileName?.endsWith("apk") == true) {
-            val request = DownloadManager.Request(Uri.parse(url))
+            val request = DownloadManager.Request(url.toUri())
                 .setAllowedNetworkTypes(
                     DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE,
                 )
@@ -66,14 +67,14 @@ class VersionRepository(val d2: D2) {
                     onDownloadCompleted(apkUri)
                 }
             }
-            context.registerReceiver(
+            ContextCompat.registerReceiver(
+                context,
                 onComplete,
                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                null,
+                ContextCompat.RECEIVER_EXPORTED,
             )
         } else {
-            onDownloadCompleted(Uri.parse(url))
+            url?.let { onDownloadCompleted(it.toUri()) }
         }
     }
 
