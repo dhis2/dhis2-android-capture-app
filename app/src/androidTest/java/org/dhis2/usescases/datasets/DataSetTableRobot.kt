@@ -274,12 +274,8 @@ internal class DataSetTableRobot(
         )
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun tapOnSaveButton() {
-        composeTestRule.waitUntilExactlyOneExists(
-            hasTestTag(SAVE_BUTTON_TAG),
-            timeoutMillis = 3000
-        )
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(SAVE_BUTTON_TAG).performClick()
         composeTestRule.waitForIdle()
     }
