@@ -557,10 +557,11 @@ internal class DataSetTableViewModel(
     fun onSaveClicked() {
         viewModelScope.launch {
             CoroutineTracker.increment()
-
             val result = withContext(dispatcher.io()) {
                 checkValidationRulesConfiguration()
             }
+            CoroutineTracker.decrement()
+
             when (result) {
                 NONE -> {
                     attemptToFinnish()
@@ -574,7 +575,6 @@ internal class DataSetTableViewModel(
                     askRunValidationRules()
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
@@ -593,6 +593,7 @@ internal class DataSetTableViewModel(
                     it
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 

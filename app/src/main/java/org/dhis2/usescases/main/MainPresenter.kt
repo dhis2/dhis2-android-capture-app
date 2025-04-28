@@ -3,6 +3,7 @@ package org.dhis2.usescases.main
 import android.content.Context
 import android.net.Uri
 import android.view.Gravity
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
@@ -347,7 +348,7 @@ class MainPresenter(
     ) {
         if (BuildConfig.FLAVOR == PLAY_FLAVOR) {
             val url = versionRepository.getUrl()
-            onLaunchUrl(Uri.parse(url))
+            url?.toUri()?.let { onLaunchUrl(it) }
         } else {
             versionRepository.download(
                 context = context,

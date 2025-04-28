@@ -49,7 +49,6 @@ import com.google.android.material.snackbar.Snackbar;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
-import org.dhis2.bindings.ContextExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.animations.ViewAnimationsKt;
@@ -139,7 +138,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
         binding.setLifecycleOwner(this);
         binding.setPresenter(presenter);
-        binding.smsSettings.setVisibility(ContextExtensionsKt.showSMS(context) ? View.VISIBLE : View.GONE);
+        binding.smsSettings.setVisibility(View.VISIBLE);
         binding.setVersionName(BuildConfig.VERSION_NAME);
         FormFileProvider.INSTANCE.init(requireContext());
 

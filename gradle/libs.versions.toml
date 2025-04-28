@@ -3,13 +3,13 @@ kotlinxDatetime = "0.6.2"
 sdk = "35"
 minSdk = "21"
 vCode = "142"
-vName = "3.2.0-RC"
+vName = "3.2.1-Dev"
 gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
 jacoco = '0.8.10'
-designSystem = "0.5.0-SNAPSHOT"
-dhis2sdk = "1.12.0-SNAPSHOT"
+designSystem = "0.5.1-SNAPSHOT"
+dhis2sdk = "1.12.1-SNAPSHOT"
 ruleEngine = "3.3.9"
 expressionParser = "1.1.10"
 appcompat = "1.6.1"
@@ -29,6 +29,7 @@ recyclerview = "1.3.1"
 compose = "1.5.4"
 composePlugin = "1.7.3"
 composePaging = "3.3.0"
+pagingTesting = "3.3.0"
 composeLifecycle = "2.8.1"
 composeConstraintLayout = "1.0.1"
 activityCompose = "1.8.2"
@@ -119,6 +120,7 @@ androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling
 androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
 androidx-compose-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding", version.ref = "compose" }
 androidx-compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
+test-androidx-paging = { group = "androidx.paging", name = "paging-testing", version.ref = "pagingTesting" }
 androidx-compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "composeLifecycle" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "corektx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }

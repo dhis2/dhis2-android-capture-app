@@ -10,8 +10,8 @@ import org.dhis2.commons.schedulers.SchedulersProviderImpl
 import org.dhis2.data.server.ServerModule
 import org.dhis2.data.user.UserModule
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
-import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.usescases.sync.MockedWorkManagerController
+import org.dhis2.usescases.sync.MockedWorkManagerModule
 import org.dhis2.utils.analytics.AnalyticsModule
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.D2Manager.blockingInstantiateD2
@@ -32,6 +32,13 @@ class AppTest : App() {
         TestingInjector.provideDBImporter(applicationContext).apply {
             copyDatabaseFromAssetsIfNeeded()
         }
+    }
+
+    fun restoreDB() {
+        TestingInjector.provideDBImporter(applicationContext).apply {
+            copyDatabaseFromAssetsIfNeeded(true)
+        }
+        setUpServerComponent()
     }
 
     @Override

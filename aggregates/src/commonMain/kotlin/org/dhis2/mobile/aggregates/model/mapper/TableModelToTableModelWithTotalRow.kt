@@ -34,6 +34,7 @@ private suspend fun buildTotalsRow(
             title = resourceManager.totalsHeader(),
             row = absoluteRowIndex,
             column = 0,
+            disabled = true,
         ),
     ),
     values = buildMap {

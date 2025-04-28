@@ -22,7 +22,6 @@ import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
-import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.maps.utils.OnMapReadyIdlingResourceSingleton
@@ -36,13 +35,17 @@ import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
+import org.junit.rules.TestName
 import org.junit.rules.Timeout
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
+
 
 open class BaseTest {
 
     @JvmField
     protected var context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    private var testContext = InstrumentationRegistry.getInstrumentation().context
     private var isIntentsEnable = false
     private lateinit var keyStoreRobot: KeyStoreRobot
     lateinit var preferencesRobot: PreferencesRobot
@@ -55,11 +58,15 @@ open class BaseTest {
     @get:Rule
     val timeout: Timeout = Timeout(120000, TimeUnit.MILLISECONDS)
 
+    @get: Rule
+    var testName: TestName = TestName()
+
     @get:Rule
     var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.CAMERA
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.POST_NOTIFICATIONS
         )
     } else {
         GrantPermissionRule.grant(
@@ -72,16 +79,33 @@ open class BaseTest {
     @Before
     @Throws(Exception::class)
     open fun setUp() {
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
+        (context.applicationContext as AppTest).restoreDB()
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
+    }
+
+    @After
+    @Throws(Exception::class)
+    open fun teardown() {
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("Executing After Actions for $currentTest")
+        closeKeyboard()
+        disableIntents()
+        cleanPreferences()
+        cleanLocalDatabase()
+        cleanKeystore()
+        stopMockServer()
+        unregisterCountingIdlingResource()
     }
 
     private fun injectDependencies() {
         TestingInjector.apply {
             keyStoreRobot = providesKeyStoreRobot(context)
             preferencesRobot = providesPreferencesRobot(context)
-            mockWebServerRobot = providesMockWebserverRobot(context)
+            mockWebServerRobot = providesMockWebserverRobot(testContext)
             featureConfigRobot = providesFeatureConfigRobot()
         }
     }
@@ -92,7 +116,6 @@ open class BaseTest {
             EventListIdlingResourceSingleton.countingIdlingResource,
             CountingIdlingResourceSingleton.countingIdlingResource,
             FormCountingIdlingResource.countingIdlingResource,
-            SearchIdlingResourceSingleton.countingIdlingResource,
             TeiDataIdlingResourceSingleton.countingIdlingResource,
             EventIdlingResourceSingleton.countingIdlingResource,
             OnMapReadyIdlingResourceSingleton.countingIdlingResource,
@@ -108,7 +131,6 @@ open class BaseTest {
                 EventListIdlingResourceSingleton.countingIdlingResource,
                 CountingIdlingResourceSingleton.countingIdlingResource,
                 FormCountingIdlingResource.countingIdlingResource,
-                SearchIdlingResourceSingleton.countingIdlingResource,
                 TeiDataIdlingResourceSingleton.countingIdlingResource,
                 EventIdlingResourceSingleton.countingIdlingResource,
                 AnalyticsCountingIdlingResource.countingIdlingResource,
@@ -118,17 +140,6 @@ open class BaseTest {
 
     fun setupMockServer() {
         mockWebServerRobot.start()
-    }
-
-    @After
-    @Throws(Exception::class)
-    open fun teardown() {
-        closeKeyboard()
-        disableIntents()
-        cleanPreferences()
-        cleanKeystore()
-        stopMockServer()
-        unregisterCountingIdlingResource()
     }
 
     fun enableIntents() {
@@ -177,7 +188,9 @@ open class BaseTest {
     }
 
     fun cleanLocalDatabase() {
-        (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+       val deleted = (context.applicationContext as AppTest).deleteDatabase(DB_TO_IMPORT)
+        val currentTest = testName.methodName
+        Timber.tag("RUNNER_LOG").d("CleanDataBaseResult. Is deleted? answer: $deleted for $currentTest")
     }
 
     protected fun enableFeatureConfigValue(feature: Feature) {
