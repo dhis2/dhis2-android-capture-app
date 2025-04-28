@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.R
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
 import javax.inject.Inject
@@ -71,6 +72,7 @@ class OUTreeFragment : BottomSheetDialogFragment() {
         }
 
         fun build(): OUTreeFragment {
+            CoroutineTracker.increment()
             return OUTreeFragment().apply {
                 selectionCallback = selectionListener
                 model = ouTreeModel
@@ -79,6 +81,7 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                     putParcelable(ARG_SCOPE, orgUnitScope)
                     putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
                 }
+                CoroutineTracker.decrement()
             }
         }
     }

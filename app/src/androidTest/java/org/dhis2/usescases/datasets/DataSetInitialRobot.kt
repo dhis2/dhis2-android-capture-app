@@ -20,7 +20,6 @@ internal class DataSetInitialRobot : BaseRobot() {
     }
 
     fun clickOnInputPeriod() {
-        waitForView(withId(R.id.dataSetPeriodInputLayout), 5000)
         onView(withId(R.id.dataSetPeriodInputLayout)).perform(click())
     }
 
