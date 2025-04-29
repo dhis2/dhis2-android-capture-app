@@ -429,8 +429,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should import database`() {
+    fun `Should import database`() = runTest {
         val mockedDatabase: File = mock()
+        whenever(repository.getTestingCredentials()) doReturn testingCredentials
 
         instantiateLoginViewModel()
         whenever(resourceManager.getString(any())) doReturn "Import successful"
