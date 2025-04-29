@@ -27,6 +27,10 @@ kotlin {
     }
 
     sourceSets {
+        commonMain{
+            resources.srcDirs("src/commonMain/composeResources")
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -90,7 +94,7 @@ android {
     compileSdk = libs.versions.sdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/composeResources")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
