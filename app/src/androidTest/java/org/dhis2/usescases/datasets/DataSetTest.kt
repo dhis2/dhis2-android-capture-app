@@ -51,7 +51,6 @@ class DataSetTest : BaseTest() {
         syncButtonIsAvailableStep()
         checkIndicatorsStep()
         checkTotals()
-        checkGreyFields()
         enterDataStep(
             tableId = "dzjKKQq0cSO",
             cellId = "PGRlPnM0Nm01TVMwaHh1Ojxjb2M+UHJsdDBDMVJGMHM=",
@@ -64,6 +63,7 @@ class DataSetTest : BaseTest() {
             rowIndex = 0,
             value = "12.0",
         )
+        checkGreyFields()
         reenterDataSetToCheckValueSavedStep()
 
         checkFilterCombination(orgUnit)
