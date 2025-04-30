@@ -481,10 +481,10 @@ class DataSetTest : BaseTest() {
 
     private suspend fun checkPivotOptions() {
         val table5 = "aN8uN5b15YG"
-        val table13 = "t3aNCvHsoSn"
+        val table13 = "UnNIOt1uB0J"
         val table23 = "aN8uN5b15YG_1"
         val cellIdSection5 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+TFNKNW1LcHlFdjE="
-        val cellIdSection13 = "PGNvYz5MRURRUVhFcFdVbDo8ZGU+aUtHam5PT2FQbEU="
+        val cellIdSection13 = "PGNvYz5wY0tqRUVscHZxZDo8ZGU+V0hCdHNDTVpWQUU="
         val cellIdSection23 = "PGNvYz5SMjNoOVFaUmJSdDo8ZGU+ZElxeDdyZG5WYzk="
         dataSetTableRobot(composeTestRule) {
             clickOnSection(pivotTestingData[0].sectionIndex, pivotTestingData[0].sectionName)
@@ -504,8 +504,8 @@ class DataSetTest : BaseTest() {
         enterDataStep(
             tableId = table13,
             cellId = cellIdSection13,
-            value = "9",
-            inputTestTag = "INPUT_NUMBER_FIELD"
+            value = "4",
+            inputTestTag = "INPUT_INTEGER_FIELD"
         )
 
         dataSetTableRobot(composeTestRule) {
