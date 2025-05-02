@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.UUID
+import org.junit.After
 
 @RunWith(AndroidJUnit4::class)
 class SyncActivityTest : BaseTest() {
@@ -27,6 +28,12 @@ class SyncActivityTest : BaseTest() {
         super.setUp()
         workInfoStatusLiveData =
             ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
+    }
+
+    @After
+    override fun teardown() {
+        super.teardown()
+        workInfoStatusLiveData.postValue(emptyList())
     }
 
     @Test

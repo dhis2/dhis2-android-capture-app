@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
-import org.dhis2.AppTest.Companion.DB_TO_IMPORT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
@@ -94,7 +93,7 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldDeleteEvent() {
-        val eventDate = "07/04/2024"
+        val eventDate = "26/11/2021"
 
         prepareProgramAndLaunchActivity(antenatalCare)
 
@@ -108,10 +107,6 @@ class ProgramEventTest : BaseTest() {
         }
         programEventsRobot(composeTestRule) {
             checkEventWasDeleted(eventDate)
-        }
-        composeTestRule.waitForIdle()
-        rule.getScenario().onActivity {
-            context.applicationContext.deleteDatabase(DB_TO_IMPORT)
         }
     }
 

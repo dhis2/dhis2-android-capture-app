@@ -93,40 +93,6 @@ class TableRobot(
     lateinit var onSaveTableCell: TableCell
     val keyboardHelper = KeyboardHelper(composeTestRule, timeout = 3000L)
 
-    fun initTable(
-        fakeModelType: FakeModelType,
-        tableColors: TableColors = TableColors(),
-        onSave: (TableCell) -> Unit = {}
-    ): List<TableModel> {
-        var fakeModel: List<TableModel> = emptyList()
-        composeTestRule.setContent {
-            fakeModel = FakeTableModels(LocalContext.current).getMultiHeaderTables(fakeModelType)
-            var tableSelection by remember {
-                mutableStateOf<TableSelection>(TableSelection.Unselected())
-            }
-            TableTheme(
-                tableColors = tableColors.copy(primary = SurfaceColor.Primary),
-                tableConfiguration = TableConfiguration(headerActionsEnabled = false),
-                tableResizeActions = object : TableResizeActions {}
-            ) {
-                val iteractions = object : TableInteractions {
-                    override fun onSelectionChange(newTableSelection: TableSelection) {
-                        tableSelection = newTableSelection
-                    }
-                }
-                CompositionLocalProvider(
-                    LocalTableSelection provides tableSelection,
-                    LocalInteraction provides iteractions
-                ) {
-                    DataTable(
-                        tableList = fakeModel
-                    )
-                }
-            }
-        }
-        return fakeModel
-    }
-
     fun initTableAppScreen(
         fakeModelType: FakeModelType,
         tableAppScreenOptions: TableAppScreenOptions = TableAppScreenOptions(),

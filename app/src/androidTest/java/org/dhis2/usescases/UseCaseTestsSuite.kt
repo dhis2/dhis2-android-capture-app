@@ -24,7 +24,6 @@ import org.junit.runners.Suite
     EnrollmentTest::class,
     EventInitialTest::class,
     EventTest::class,
-    LoginTest::class,
     MainTest::class,
     PinTest::class,
     ProgramEventTest::class,
@@ -33,5 +32,6 @@ import org.junit.runners.Suite
     SyncActivityTest::class,
     TeiDashboardTest::class,
     SchedulingDialogUiTest::class,
+    LoginTest::class,
 )
 class UseCaseTestsSuite
