@@ -2,8 +2,8 @@
 kotlinxDatetime = "0.6.2"
 sdk = "35"
 minSdk = "21"
-vCode = "142"
-vName = "3.2.0-RC"
+vCode = "143"
+vName = "3.2.0"
 gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
