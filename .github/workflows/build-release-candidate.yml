@@ -21,14 +21,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     # Set Repository Name As Env Variable
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
 
     - name: Set Up JDK
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '17'
@@ -44,7 +44,7 @@ jobs:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
 
-    - name: Build Production APKs
+    - name: Build Release APKs
       run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
